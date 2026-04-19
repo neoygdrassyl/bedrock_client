@@ -152,7 +152,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     cell: row => <>
                         <VIZUALIZER url={row.path + "/" + row.filename} apipath={'/files/'}
                             icon='fas fa-search'
-                            iconWrapper='btn btn-sm btn-info m-0 p-1 shadow-none'
+                            iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
                             iconStyle={{ fontSize: '150%' }} />
                         <FUN_6_HISTORY translation={translation}
                             swaMsg={swaMsg}

@@ -707,7 +707,6 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             },
         ]
         // CUSTOM STYLES FOR THE MODAL
-        const customStyles = {};
         const customStylesForModalMacro = {};
         //NAVIGATION
         const handleFillClick = (state) => {
@@ -905,8 +904,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                 <div className="row">
                                     <div className='col ms-5 mb-3'>
                                         <div className="flex flex-wrap gap-1">
-                                            <button type="button" className={`btn btn-sm ${!filterreply ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setFilterreply(prev => !prev)}>VER POR RESPONDER: {dataFilter(items, true, false).length}</button>
-                                            <button type="button" className={`btn btn-sm ${!filterreply2 ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setFilterreply2(prev => !prev)}>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</button>
+                                            <Button variant={!filterreply ? "outline" : "default"} size="sm" onClick={() => setFilterreply(prev => !prev)}>VER POR RESPONDER: {dataFilter(items, true, false).length}</Button>
+                                            <Button variant={!filterreply2 ? "outline" : "default"} size="sm" onClick={() => setFilterreply2(prev => !prev)}>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</Button>
                                         </div>
                                     </div>
                                 </div>

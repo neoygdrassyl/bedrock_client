@@ -1924,8 +1924,8 @@ export default function FUN_REPORT_GEN(props) {
             <div className='row my-2'>
                 <div className='col'>
                     <label className='fw-bold'>DATOS CONTRALORIA - <Button variant="outline" size="sm" onClick={() => generateCVS(header_1, dataContraloria, 'CONTRALORIA')}>
-                        <Icon name="download" size={16} /></Button> <button type="button" className={`btn btn-sm ${!!preview['pre_0'] ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setPre({ ['pre_0']: !preview['pre_0'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                        <Icon name="download" size={16} /></Button> <Button variant={!!preview['pre_0'] ? "outline" : "default"} size="sm" onClick={() => setPre({ ['pre_0']: !preview['pre_0'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_0'] ? <div className='row container-sh'>

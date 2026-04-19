@@ -310,7 +310,7 @@ function RECORD_LAW_DOCSCHECK(props) {
                     url={_FIND_6(id6).path + "/" + _FIND_6(id6).filename}
                     apipath={'/files/'}
                     icon='fas fa-search'
-                    iconWrapper='btn btn-sm btn-info m-0 p-1 shadow-none'
+                    iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
                     iconStyle={{ fontSize: '150%' }}
                 />
                 else return '';

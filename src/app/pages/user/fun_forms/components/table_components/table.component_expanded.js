@@ -346,8 +346,8 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         </div>
                         : inforDate}</h6></div>
                     <div className='col-1 border'>
-                        <button type="button" className={`btn btn-sm me-1 ${!editDate[index + '_' + state] ? "btn-outline-secondary" : "btn-secondary"}`}
-                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><Icon name="edit" size={16} /></button>
+                        <Button variant={!editDate[index + '_' + state] ? "outline" : "default"} size="sm"
+                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><Icon name="edit" size={16} /></Button>
                     </div>
                 </div>
             })}

@@ -574,7 +574,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         let id6Object = _FIND_6(id6);
                         if (id6Object.id > 0) return <VIZUALIZER url={id6Object.path + "/" + id6Object.filename} apipath={'/files/'}
                             icon='fas fa-search'
-                            iconWrapper='btn btn-sm btn-info m-0 p-1 shadow-none'
+                            iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
                             iconStyle={{ fontSize: '150%' }} />
                         return ''
                     }

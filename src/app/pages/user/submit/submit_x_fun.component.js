@@ -405,7 +405,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                         {listIncPopOver(row)}
                         <button
                                 onClick={() => openModal({ ...row, version: 1 }, 'archive')}
-                                className="px-1 btn-sm btn-secondary btn"
+                                variant="outline" size="sm" className="px-1"
                             ><Icon name="archive" size={16} />
                             </button>
                     </>,
@@ -483,12 +483,12 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                         {listItemPopOver(row)}
                         <button
                                 onClick={() => openModal(row, 'general')}
-                                className="px-1 btn-sm btn-info btn"
+                                size="sm" className="px-1"
                             > <Icon name="folder-open" size={16} />
                             </button>
                         <button
                                 onClick={() => { setModal(true); setSelectedItem(row); }}
-                                className="px-1 btn-sm btn-warning btn"
+                                size="sm" className="px-1 bg-warning text-warning-foreground hover:bg-warning/90"
                             > <Icon name="user-clock" size={16} />
                             </button>
                     </>,
@@ -523,13 +523,11 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                         <label className="fw-bold">SOLICITUDES PARA DECLARAR EN LYDF</label>
                     </div>
                     <div className="col text-end">
-                        <span title="Detalles"><button type="button" className="btn"
-                                color="info"
-                                size="sm"
+                        <span title="Detalles"><Button variant="ghost" size="sm"
                                 onClick={() => setLicList(prev => !prev)}
                                 className="px-2"
                             > <Icon name="info-circle" size={16} />
-                            </button></span>
+                            </Button></span>
                     </div>
                 </div>
                 {lic_list && (

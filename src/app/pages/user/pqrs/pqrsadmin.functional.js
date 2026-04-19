@@ -728,8 +728,6 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         },
     ]
     // CUSTOM STYLES FOR THE MODAL
-    const customStyles = {};
-    const customStylesForModalMacro = {};
     //NAVIGATION
     const handleFillClick = (state) => {
         if (state === fillActive) {
@@ -935,8 +933,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             <div className="row">
                                 <div className='col ms-5 mb-3'>
                                     <div className="flex flex-wrap gap-1">
-                                        <button type="button" className={`btn btn-sm ${!filterreply ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setFilterreply(prev => !prev)}>VER POR RESPONDER: {dataFilter(items, true, false).length}</button>
-                                        <button type="button" className={`btn btn-sm ${!filterreply2 ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setFilterreply2(prev => !prev)}>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</button>
+                                        <Button variant={!filterreply ? "outline" : "default"} size="sm" onClick={() => setFilterreply(prev => !prev)}>VER POR RESPONDER: {dataFilter(items, true, false).length}</Button>
+                                        <Button variant={!filterreply2 ? "outline" : "default"} size="sm" onClick={() => setFilterreply2(prev => !prev)}>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</Button>
                                     </div>
                                 </div>
                             </div>
@@ -995,7 +993,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <Modal contentLabel="GENERAR SOLCITUD PQRS"
                     isOpen={modalNew}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1023,7 +1021,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <Modal contentLabel="INFORMACION PQRS"
                     isOpen={modalInfo}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1052,7 +1050,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <Modal contentLabel="ASIGNAR PROFESIONALES PQRS"
                     isOpen={modalAsign}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1082,7 +1080,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <Modal contentLabel="RESPUESTA PROFESIONAL PQRS"
                     isOpen={modalInformal}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1114,7 +1112,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <Modal contentLabel="RESPONDER PETICION PQRS"
                     isOpen={modalReply}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1145,7 +1143,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <Modal contentLabel="CERRAR PQRS"
                     isOpen={modalLock}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1175,7 +1173,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <Modal contentLabel="EDIT PQRS"
                     isOpen={modalEdit}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1204,7 +1202,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 </Modal>
                 <Modal contentLabel="MANAGE PQRS"
                     isOpen={modalManage}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1236,7 +1234,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 </Modal>
                 <Modal contentLabel="EDIT PQRS"
                     isOpen={modalEditable}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -1277,7 +1275,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <Modal contentLabel="MACRO TABLE"
                     isOpen={modal_macro}
-                    style={customStylesForModalMacro}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">

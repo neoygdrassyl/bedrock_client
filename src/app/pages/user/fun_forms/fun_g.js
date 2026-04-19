@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 import DataTable from '@/components/data-table-bridge';
 import {
@@ -1040,14 +1041,14 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     {/* Duplicate project section */}
                     <fieldset className="p-3">
                         <div className="text-center mb-3">
-                            <button
-                                className={`btn ${showDuplicate ? 'btn-outline-secondary' : 'btn-outline-primary'}`}
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={() => setShowDuplicate(prev => !prev)}
-                                type="button"
                             >
                                 <Icon name={showDuplicate ? 'times' : 'copy'} size={16} className="me-2" />
                                 {showDuplicate ? 'Cerrar duplicación' : 'Duplicar proyecto'}
-                            </button>
+                            </Button>
                         </div>
                         {showDuplicate && (
                             <FUN_DUPLICATE

@@ -950,25 +950,25 @@ const NAV_FUNA = () => {
                     </legend>
                     <br />
                     <a href="#fun_alert_1">
-                        <legend className="px-3 btn-info">
+                        <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                             <h6>1. VALLA O AVISO</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_2">
-                        <legend className="px-3 btn-info">
+                        <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                             <h6>2. COMUNICACION A VECINOS</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_21">
-                        <legend className="px-3 btn-info">
+                        <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                             <h6>2.1 GENERAR DOCUMENTOS DE CITACION</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_22">
-                        <legend className="px-3 btn-info">
+                        <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                             <h6>2.2 CONFIRMACIÓN DE AVISOS</h6>
                         </legend>
                     </a>

@@ -43,15 +43,15 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             +5d<Icon name="chevron-right" size={16} className="ms-1" />
           </Button>
           
-          <button 
-            type="button" 
-            className={`btn btn-sm ${isToday ? 'btn-secondary' : 'btn-primary'}`}
+          <Button 
+            variant={isToday ? "outline" : "default"}
+            size="sm"
             title="Volver a la fecha actual"
             onClick={onDateReset}
             disabled={isToday}
           >
             <Icon name="undo" size={16} className="me-1" /> Hoy
-          </button>
+          </Button>
         </div>
         <div className="actions">
             {onClose && (

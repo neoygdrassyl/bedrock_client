@@ -847,43 +847,43 @@ const NAV_FUNC = (state) => {
                         </legend>
                         <br />
                         <a href="#func_1">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>1. Identificacion de la Solicitud</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_2">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>2. IDENTIFICACION DEL SOLICITANTE</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_3">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3. ENCARGADO DE LA REVISION</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_4">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>4. CONDICION DE LA RADICACION</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_5">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>5. Generar Documento de Confirmacion</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_6">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>6. LISTA DE CHEQUEO DE DOCUMENTOS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_pdf" >
-                            <legend className="px-3 btn-danger">
+                            <legend className="px-3 rounded text-sm font-medium bg-destructive text-destructive-foreground">
                                 <h6>DESCARGAR PDF</h6>
                             </legend>
                         </a>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 import FUNService from '../../../../services/fun.service';
 import { Icon } from '@/components/icon';
@@ -212,15 +213,15 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                         <span className="text-muted">
                             {selectedCount} de {ALL_OPTION_KEYS.length} entidades seleccionadas
                         </span>
-                        <button
-                            type="button"
-                            className={`btn btn-sm ${allSelected ? 'btn-outline-secondary' : 'btn-outline-primary'}`}
+                        <Button
+                            variant="outline"
+                            size="sm"
                             onClick={toggleAll}
                             disabled={isSubmitting}
                         >
                             <Icon name={allSelected ? 'times' : 'check-double'} size={16} className="me-1" />
                             {allSelected ? 'Deseleccionar todo' : 'Seleccionar todo'}
-                        </button>
+                        </Button>
                     </div>
 
                     {/* Option groups */}

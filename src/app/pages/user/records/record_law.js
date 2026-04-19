@@ -501,53 +501,53 @@ const NAV_FUNA = (_CHILD) => {
                         </legend>
                         <br />
                         <a href="#record_law_gen">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>I. CONTROL DEL DEBIDO PROCESO DE LA SOLICITUD</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_gen_2">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>II. Observaciones Jurídicas</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_21">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.1 TIPO DE SOLICITUD</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_22">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.2 Inventario de Información Aportada</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_23">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.3 DOCUMENTOS DIGITALIZADOS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_24">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_25">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.5 Formulario Único Nacional</h6>
                             </legend>
                         </a>
                         <a href="#record_law_26">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</h6>
                             </legend>
                         </a>
                         <a href="#record_law_gen_3">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>III. Viabilidad Jurídica</h6>
                             </legend>
                         </a>

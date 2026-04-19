@@ -211,55 +211,55 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
 //                     </legend>
 //                     <br />
 //                     <a href="#fun_0">
-//                         <legend className="px-3 btn-success">
+//                         <legend className="px-3 rounded text-sm font-medium bg-accent text-accent-foreground">
 //                             <h6>0. Meta datos</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_1">
-//                         <legend className="px-3 btn-info">
+//                         <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
 //                             <h6>1. Identificación de la Solicitud</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_2">
-//                         <legend className="px-3 btn-info">
+//                         <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
 //                             <h6>2. Información del Predio</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_3">
-//                         <legend className="px-3 btn-info">
+//                         <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
 //                             <h6>3. Información de Vecinos Colindante</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_4">
-//                         <legend className="px-3 btn-info">
+//                         <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
 //                             <h6>4. Linderos, Dimensiones y Áreas</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_51">
-//                         <legend className="px-3 btn-info">
+//                         <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
 //                             <h6>5.1 Titular(es) de la Licencia</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_52">
-//                         <legend className="px-3 btn-info">
+//                         <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
 //                             <h6>5.2 Profesionales Responsables</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_53">
-//                         <legend className="px-3 btn-info">
+//                         <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
 //                             <h6>5.3 Responsable de la Solicitud</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#fun_pdf">
-//                         <legend className="px-3 btn-danger">
+//                         <legend className="px-3 rounded text-sm font-medium bg-destructive text-destructive-foreground">
 //                             <h6>DESCARGAR PDF</h6>
 //                         </legend>
 //                     </a>

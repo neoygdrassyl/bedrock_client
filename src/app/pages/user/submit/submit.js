@@ -142,7 +142,6 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
         ]
 
         // CUSTOM STYLES FOR THE MODAL
-        const customStyles = {};
         // CREATES A NEW LICENCE
         let delete_submit = (id) => {
             swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {

@@ -403,31 +403,31 @@ const NAV_FUNA = (_CHILD) => {
                         </legend>
                         <br />
                         <a href="#record_ph_1">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>1. ANÁLISIS JURÍDICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_ph_2">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>2. ANÁLISIS ARQUITECTÓNICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_ph_21">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>2.1 INFORMACIÓN GENERAL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_ph_22">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>2.1 DESCRIPCIÓN PROYECTO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_ph_3">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3. APROBACIÓN</h6>
                             </legend>
                         </a>

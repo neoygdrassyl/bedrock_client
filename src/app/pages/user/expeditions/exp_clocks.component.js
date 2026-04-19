@@ -1106,7 +1106,7 @@ export default function EXP_CLOCKS(props) {
                             url={`${file.path}/${file.filename}`}
                             apipath={'/files/'}
                             icon={'fas fa-search'}
-                            iconWrapper={'btn btn-sm btn-info p-1 shadow-none'}
+                            iconWrapper={'inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'}
                           />
                         )
                       }

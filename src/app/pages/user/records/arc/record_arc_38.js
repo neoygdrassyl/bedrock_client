@@ -450,8 +450,8 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                                 }
                             </div>
                             <div className="col-1">
-                                {allowReview ? <button type="button" className={`btn btn-sm ${!rewState['REW' + i] ? "btn-outline-secondary" : "btn-secondary"}`}
-                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></button>
+                                {allowReview ? <Button variant={!rewState['REW' + i] ? "outline" : "default"} size="sm"
+                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></Button>
                                     : ''}
                                 {rewState['REW' + i]
                                     ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
