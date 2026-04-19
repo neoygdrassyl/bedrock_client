@@ -46,7 +46,7 @@ export function ContextPanel({ title, items = [], collapsed = false }) {
                   </h3>
                 )}
                 <nav className="flex flex-col gap-px">
-                  {grouped[groupKey].map((item) => {
+                  {grouped[groupKey].map((item, itemIdx) => {
                     const isActive =
                       location.pathname === item.route ||
                       location.pathname.startsWith(item.route + '/');
@@ -55,15 +55,19 @@ export function ContextPanel({ title, items = [], collapsed = false }) {
                         key={item.id}
                         to={item.route}
                         className={cn(
-                          'flex items-center gap-2 rounded-md px-2 py-[5px] text-[12.5px] transition-all duration-150 no-underline group',
+                          'relative flex items-center gap-2 rounded-md px-2 py-[5px] text-[12.5px] transition-all duration-150 no-underline group',
                           isActive
                             ? 'bg-primary/10 text-primary font-medium'
                             : 'text-foreground/60 hover:bg-muted/80 hover:text-foreground'
                         )}
+                        style={{ animationDelay: `${itemIdx * 30}ms` }}
                       >
+                        {isActive && (
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-3.5 rounded-r-full bg-primary transition-all duration-200" />
+                        )}
                         {item.icon && (
                           <Icon name={item.icon} size={14} className={cn(
-                            'shrink-0 transition-colors',
+                            'shrink-0 transition-colors duration-150',
                             isActive ? 'text-primary' : 'text-muted-foreground/60 group-hover:text-muted-foreground'
                           )} />
                         )}

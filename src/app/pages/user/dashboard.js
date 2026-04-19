@@ -128,7 +128,7 @@ function Dashboard({ breadCrums }) {
   ];
 
   return (
-    <div className="space-y-6 max-w-6xl">
+    <div className="space-y-6 max-w-6xl animate-fade-in-up">
       {/* Greeting */}
       <div className="flex flex-col gap-0.5">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">{getGreeting()}</h1>
@@ -181,20 +181,20 @@ function ModuleCard({ title, icon, desc, link, count, loadingCount }) {
   return (
     <Link to={link} className="no-underline group">
       <Card className={cn(
-        'hover:shadow-sm hover:border-border transition-all duration-200 cursor-pointer border-border/40',
+        'hover:shadow-md hover:border-border/60 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-border/40',
         'border-l-2',
         borderColor
       )}>
         <CardContent className="flex items-start gap-3 p-3.5">
           <div className={cn(
-            'flex items-center justify-center w-8 h-8 rounded-md shrink-0 transition-colors duration-200',
+            'flex items-center justify-center w-8 h-8 rounded-md shrink-0 transition-all duration-200 group-hover:scale-105',
             iconColor
           )}>
             <Icon name={icon} size={16} />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-1.5">
-              <h3 className="text-[13px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors">{title}</h3>
+              <h3 className="text-[13px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors duration-150">{title}</h3>
               {loadingCount ? (
                 <Skeleton className="h-5 w-7 rounded" />
               ) : count != null ? (

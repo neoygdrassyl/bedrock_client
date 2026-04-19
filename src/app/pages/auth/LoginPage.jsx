@@ -166,7 +166,7 @@ export default function LoginPage({ signin }) {
 
       {/* Form panel — right side */}
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-[340px] space-y-8 animate-[fadeInUp_0.3s_ease-out]">
+        <div className="w-full max-w-[340px] space-y-8 animate-fade-in-up">
           {/* Mobile logo (visible only on small screens) */}
           <div className="lg:hidden text-center mb-6">
             {infoCud.icon ? (
@@ -227,7 +227,7 @@ export default function LoginPage({ signin }) {
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 w-full border-0 bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition-all shadow-sm"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 w-full border-0 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition-all duration-150 shadow-sm"
             >
               Iniciar sesión
             </button>
