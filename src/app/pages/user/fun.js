@@ -1423,19 +1423,19 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     </Card>
 
                     <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <Icon name="Search" size={18} className="text-primary" />
+                        <CardHeader className="py-2.5 px-3">
+                            <CardTitle className="text-sm flex items-center gap-2">
+                                <Icon name="Search" size={15} className="text-primary" />
                                 Consultar Solicitud
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <form onSubmit={search} id="app-form" className="space-y-3">
+                        <CardContent className="px-3 pb-3">
+                            <form onSubmit={search} id="app-form" className="space-y-2">
                                 <div className="flex gap-2">
                                     <div className="flex-1">
                                         <div className="input-group">
                                             <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="Info" size={14} />
+                                                <Icon name="Info" size={13} />
                                             </span>
                                             <select className="form-select" id="search_0" required>
                                                 <option value="1">Número de Radicado</option>
@@ -1450,15 +1450,15 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                     <div className="flex-1">
                                         <div className="input-group">
                                             <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="MessageCircle" size={14} />
+                                                <Icon name="MessageCircle" size={13} />
                                             </span>
                                             <input type="text" className="form-control" id="search_1" />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="text-center">
-                                    <Button type="submit" variant="secondary">
-                                        <Icon name="SearchCheck" size={14} /> Consultar
+                                    <Button type="submit" variant="secondary" size="sm">
+                                        <Icon name="SearchCheck" size={13} /> Consultar
                                     </Button>
                                 </div>
                             </form>
@@ -1469,8 +1469,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 {/* ── Search results ─────────────────────────────── */}
                 {state.hasSearchResult && (
                     <div>
-                        <h3 className="text-base font-semibold text-center mb-3 flex items-center justify-center gap-2">
-                            <Icon name="SearchCheck" size={18} className="text-primary" />
+                        <h3 className="text-sm font-semibold text-center mb-2 flex items-center justify-center gap-2">
+                            <Icon name="SearchCheck" size={15} className="text-primary" />
                             Resultado de la Búsqueda
                         </h3>
                         <DataTable
@@ -1511,7 +1511,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 aria-selected={state.fillActive === tab.key}
                                 onClick={() => handleFillClick(tab.key)}
                                 className={cn(
-                                    'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                    'flex items-center gap-1.5 px-3 py-2 text-[0.8125rem] font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
                                     state.fillActive === tab.key
                                         ? 'border-b-primary text-primary'
                                         : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
