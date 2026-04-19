@@ -1,14 +1,12 @@
-import Swal from 'sweetalert2'
 
 import Icon from '@/components/icon';
-import withReactContent from 'sweetalert2-react-content'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
 
 const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVersion, toCreate, aim, requestUpdate }) => {
     var formData = new FormData();
-    const MySwal = withReactContent(Swal);
-
+    
         let _COPY_CHILD = () => {
             formData = new FormData();
 
@@ -676,31 +674,15 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
             FUNService.create_version(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -714,31 +696,15 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
             FUNService.update_version(currentItem.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -827,12 +793,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 value = "";
             }
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             switch (aim) {
                 case "NT":

@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import DataTable from '@/components/data-table-bridge';
 import {
@@ -23,8 +21,8 @@ import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.compoentn';
 import FUN_CHECKLIST_N from './components/fun_checklist_n';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 import FUN_DUPLICATE from './components/fun_duplicate.component';
+import { swalError } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 
 function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, NAVIGATION_VERSION, onDuplicateSuccess }) {
     const [load, setLoad] = useState(false);
@@ -45,12 +43,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     };
 

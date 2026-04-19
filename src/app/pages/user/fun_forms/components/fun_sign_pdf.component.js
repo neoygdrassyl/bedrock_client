@@ -1,14 +1,12 @@
 import dayjs from 'dayjs';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import writtenNumber from 'written-number';
 import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { formsParser1, getJSON, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
 import FunService from '../../../../services/fun.service';
 import { Icon } from '@/components/icon';
+import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersion }) {
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -357,12 +355,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
         // GENERATES AND GETS PDF SEAL
         let generate_pdf = (e) => {
             e.preventDefault()
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             formData = new FormData();
             let id_public = document.getElementById("sign_pdf_1").value
             formData.set('id_public', id_public);
@@ -418,9 +411,9 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
             FunService.gen_doc_sign(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/pdf/sign/" + "Valla " + id_public + " tamaño " + size + ".pdf");
-                        MySwal.close();
+                        swalClose();
                     } else {
 
                     }

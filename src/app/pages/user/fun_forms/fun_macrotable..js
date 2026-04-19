@@ -1,6 +1,4 @@
 import React, { useReducer, useEffect, useRef } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
 
@@ -45,7 +43,6 @@ import FUN_CHART_NEGATIVE from './components/charts_components.js/chart_negative
 import FUN_CHART_TIME from './components/charts_components.js/chart_time.component';
 import ChartErrorBoundary from '../../../components/ChartErrorBoundary';
 
-const MySwal = withReactContent(Swal);
 const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15, '0': 45 };
 const priority_colors = ['4c75a3', '#ed302f ', '#ff4500', '#ffac44', '#25d366']
 const _fun_0_type_days = { 'i': 4, 'ii': 6, 'iii': 8, 'iv': 10, 'oa': 2, '0': 10 };
@@ -118,6 +115,7 @@ const _fun_0_type_days_matrix = {
     '0': { 'law': 1, 'arc': 1, 'eng': 0 },
 }
 import dayjs from 'dayjs';
+import { swalError } from '@/app/utils/swalAdapter';
 function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilter, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
     const tagRef = useRef(null);
     const [state, setState] = useReducer(
@@ -217,12 +215,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
     function retrieveMacroClocks() {
@@ -233,12 +226,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
     function retrieveMacroNegative() {
@@ -248,12 +236,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
     function retrieveWorkerList() {
@@ -263,12 +246,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
     function asignNegativeList(LIST) {

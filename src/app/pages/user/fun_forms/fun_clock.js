@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 
 import FUN_MODULE_NAV from './components/fun_moduleNav';
 import FUN_SERVICE from '../../../services/fun.service';
 import CLOCKS_CONTROL from './components/clocks_control.component';
 import EMAILS_COMPONENT from '../../../components/emails.component';
+import { swalError } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 
 function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, requesRefresh, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
@@ -25,12 +23,7 @@ function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, req
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
             });
     }
 

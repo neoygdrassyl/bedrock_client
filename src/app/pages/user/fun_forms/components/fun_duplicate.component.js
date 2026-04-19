@@ -1,11 +1,9 @@
 import { useState } from 'react';
 
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import FUNService from '../../../../services/fun.service';
 import { Icon } from '@/components/icon';
+import { swalError, swalLoading } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 
 // Options grouped for UI display
 const OPTION_GROUPS = [
@@ -99,12 +97,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
         e.preventDefault();
 
         if (!newIdPublic.trim()) {
-            MySwal.fire({
-                title: 'Campo requerido',
-                text: 'Debe ingresar el nuevo ID público para el proyecto duplicado.',
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-            });
+            swalError({ title: 'Campo requerido', text: 'Debe ingresar el nuevo ID público para el proyecto duplicado.' });
             return;
         }
 
@@ -135,13 +128,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
             options: { ...options },
         };
 
-        MySwal.fire({
-            title: 'Duplicando proyecto...',
-            text: 'Por favor espere mientras se crea el nuevo proyecto.',
-            icon: 'info',
-            showConfirmButton: false,
-            allowOutsideClick: false,
-        });
+        swalLoading({ title: 'Duplicando proyecto...', text: 'Por favor espere mientras se crea el nuevo proyecto.' });
 
         FUNService.duplicate(payload)
             .then(response => {
@@ -183,33 +170,13 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                 const detail = err.response?.data?.detail || '';
 
                 if (status === 409) {
-                    MySwal.fire({
-                        title: 'ID público ya existe',
-                        text: `El ID público "${newIdPublic}" ya está en uso. Por favor ingrese otro.`,
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: 'ID público ya existe' });
                 } else if (status === 404) {
-                    MySwal.fire({
-                        title: 'Proyecto no encontrado',
-                        text: msg || 'El proyecto origen no fue encontrado.',
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: 'Proyecto no encontrado', text: msg });
                 } else if (status === 400) {
-                    MySwal.fire({
-                        title: 'Datos incompletos',
-                        text: msg || 'Faltan campos requeridos para la duplicación.',
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: 'Datos incompletos', text: msg });
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: msg || 'Ocurrió un error al duplicar el proyecto.',
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: msg });
                 }
             });
     };

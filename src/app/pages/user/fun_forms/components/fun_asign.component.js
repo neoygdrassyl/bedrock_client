@@ -2,8 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
@@ -41,6 +39,7 @@ const Popover = ({ children }) => <>{children}</>;
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import FUN_ASIGNS_HISTORY_COMPONENT from './fun_asign_history.component';
 import './fun_modal_shared.css';
+import { swalError } from '@/app/utils/swalAdapter';
 
 const customStylesForModal = {
     overlay: {
@@ -72,8 +71,7 @@ const customStylesForModal = {
 export default function FUN_ASIGNS_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
 
-    const MySwal = withReactContent(Swal);
-    const Colors = ['#ffc38f', '#ff8f93', '#c38fff', '#8f93ff', '#8ffffb', '#8fffc3', '#cbf071', '#fffb8f']
+        const Colors = ['#ffc38f', '#ff8f93', '#c38fff', '#8f93ff', '#8ffffb', '#8fffc3', '#cbf071', '#fffb8f']
     const matrixLoad = {
         'i': { law: 1, arc: 2, eng: 2 },
         'ii': { law: 1, arc: 3, eng: 3 },
@@ -120,12 +118,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 .catch(e => {
                     if (cancelled) return;
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar este item, inténtelo nuevamente.",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
                 });
             // Fetch workers
             retrieveWorker();
@@ -153,12 +146,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
             });
     }
     function retrieveWorker() {
@@ -168,12 +156,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
     function loppJump(array, Iterator) {

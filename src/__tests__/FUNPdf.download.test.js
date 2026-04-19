@@ -2,20 +2,17 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-const { fireMock, pdfLoadMock } = vi.hoisted(() => ({
-  fireMock: vi.fn(() => Promise.resolve({ isConfirmed: true })),
+const { swalErrorMock, swalLoadingMock, swalCloseMock, pdfLoadMock } = vi.hoisted(() => ({
+  swalErrorMock: vi.fn(),
+  swalLoadingMock: vi.fn(),
+  swalCloseMock: vi.fn(),
   pdfLoadMock: vi.fn(),
 }));
 
-vi.mock('sweetalert2', () => ({
-  default: {},
-}));
-
-vi.mock('sweetalert2-react-content', () => ({
-  default: () => ({
-    fire: fireMock,
-    close: vi.fn(),
-  }),
+vi.mock('../app/utils/swalAdapter', () => ({
+  swalError: swalErrorMock,
+  swalLoading: swalLoadingMock,
+  swalClose: swalCloseMock,
 }));
 
 vi.mock('pdf-lib', () => ({
@@ -89,7 +86,9 @@ function getReactClickHandler(element) {
 
 describe('FUN_PDF download flow', () => {
   beforeEach(() => {
-    fireMock.mockClear();
+    swalErrorMock.mockClear();
+    swalLoadingMock.mockClear();
+    swalCloseMock.mockClear();
     pdfLoadMock.mockReset();
     vi.stubGlobal('fetch', vi.fn());
   });
@@ -100,11 +99,10 @@ describe('FUN_PDF download flow', () => {
 
     await clickHandler();
 
-    expect(fireMock).toHaveBeenCalledWith(
+    expect(swalErrorMock).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'SOLICITUD SIN MODELO',
         text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
-        icon: 'error',
       })
     );
     expect(pdfLoadMock).not.toHaveBeenCalled();

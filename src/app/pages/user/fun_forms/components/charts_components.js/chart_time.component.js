@@ -2,14 +2,11 @@
 import dayjs from 'dayjs';
 import { useEffect, useState, memo } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { dateParser_dateDiff, formsParser1, formsParser1_exlucde2, regexChecker_isOA } from '../../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../../components/jsons/vars';
 import SERVICE_FUN from '../../../../../services/fun.service'
 import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
 const _tickValues = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200];
 const YtickValues = [0, 1, 2, 3, 4, 5];
 const BUILD_AREAS = ['OBRA NUEVA', 'AMPLIADA', 'ADECUADA', 'MODIFICADA', 'RESTAURADA', 'REFORZADA', 'DEMOLIDA TOTAL', 'DEMOLIDA PARCIAL', 'RECONSTRUIDA', 'REFORZADA', 'RECONOCIDA']

@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 // FUN FAMILY
 import FUNN1 from './fun_n_1'
@@ -19,8 +17,8 @@ import FUN_SERVICE from '../../../services/fun.service';
 import FUN_ARCHIVE from './components/fun_archive.component';
 import FUN_ANEX from './fun_anex';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
+import { swalError } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesRefresh, NAVIGATION, NAVIGATION_VERSION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [pqrsxfun, setPqrsxfun] = useState(false);
@@ -37,12 +35,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     };
     const retrievePQRSxFUN = (id_public) => {

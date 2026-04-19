@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import FUNService from '../../../../services/fun.service'
 
 import Collapsible from '../../../../components/Collapsible';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import dayjs from 'dayjs';
 import FUN6DATALIST from './fun_6_datalist';
 
@@ -32,8 +30,8 @@ import { PDFDocument } from 'pdf-lib'
 import FUN_D_ABDICATE from './fun_doc_abdicate.component';
 import FUN_D_CONTROL_2 from './fun_d_control.component_2';
 import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translation, globals, currentVersion }) {
         const [attachs, setAttachs] = useState(0);
@@ -61,12 +59,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
     const retrievePQRSxFUN = (id_public) => {
@@ -220,40 +213,20 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
             formData.set('dates', array_form.join());
             array_form = [];
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.create_fun6(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                         setAttachs(0);
                         requestUpdate(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
 
         }

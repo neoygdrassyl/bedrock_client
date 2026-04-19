@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import FUNService from '../../../../services/fun.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import dayjs from 'dayjs';
 import { formsParser1, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -9,9 +7,9 @@ import { infoCud } from '../../../../components/jsons/vars';
 import SubmitService from '../../../../services/submit.service'
 import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 
 
-const MySwal = withReactContent(Swal);
 function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, currentVersion, vr, cubSelected, setVr }) {
         const [vrsRelated, setVrsRelated] = useState([]);
 
@@ -293,12 +291,7 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
         // FUNCTIONS & APIS
         let gen_doc_nconfirm = (_AIM) => {
             let address_i = document.getElementById("gen_alert_address_n").value;
-            if (!address_i) return MySwal.fire({
-                title: 'NO HAY VECINO SELECCIONADO',
-                text: 'Para poder generar el documento de citación a vecinos se debe seleccionar un vecino de la lista 2.1.10',
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-            });
+            if (!address_i) return swalError({ title: 'NO HAY VECINO SELECCIONADO', text: 'Para poder generar el documento de citación a vecinos se debe seleccionar un vecino de la lista 2.1.10' });
             let formData = new FormData();
             let date = document.getElementById("gen_alert_date").value;
             formData.set('date', date);
@@ -338,34 +331,19 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
             formData.set('digital_firm', digital_firm);
 
             formData.set('list', _AIM);
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.gen_doc_nconfirm(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -398,34 +376,19 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
 
             formData.set('neighbour', _SET_CHILD_2().item_261);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.gen_doc_npublish(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
         return (

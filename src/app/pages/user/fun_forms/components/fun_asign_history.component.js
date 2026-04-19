@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import Icon from '@/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { formsParser1_exlucde2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import DataTable from '@/components/data-table-bridge';
 
-const MySwal = withReactContent(Swal);
 import dayjs from 'dayjs';
+import { swalError } from '@/app/utils/swalAdapter';
 
 export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     const { swaMsg, translation, globals, name, id, type } = props;
@@ -232,22 +230,12 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 if (response.data) {
                     PROCESS_DATA(response.data)
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             })
             .finally(() => setLoad(1));
 

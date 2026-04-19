@@ -1,13 +1,11 @@
 
 import FUN_SERVICE from '../../../../services/fun.service';
 import Icon from '@/components/icon';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
 
 export default function FUN_D_ABDICATE(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, id_related, related } = props;
@@ -323,34 +321,19 @@ export default function FUN_D_ABDICATE(props) {
             formData.set('resources', resources);
         }
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FUN_SERVICE.gen_doc_abdicate(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.close();
+                    swalClose();
                     window.open(import.meta.env.VITE_API_URL + "/pdf/expdocresabd/" + "INFORMACIÓN LIENCIA RENUNCIADO DE TÉRMINOS " + currentItem.id_public + ".pdf");
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             });
     }
 

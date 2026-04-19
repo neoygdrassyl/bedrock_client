@@ -1,8 +1,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -11,6 +9,7 @@ import FUN_CHART_MACRO_GRANTT from './charts_components.js/chart_macroGant.compo
 import { nomens } from '../../../../components/jsons/vars';
 import ChartErrorBoundary from '../../../../components/ChartErrorBoundary';
 import { Icon } from '@/components/icon';
+import { swalError } from '@/app/utils/swalAdapter';
 
 // Helper to create a fresh default data structure (avoids mutation issues)
 function createDefaultData() {
@@ -108,8 +107,7 @@ function LegacyChartLoading({
 export default function FUN_DAILY_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
     const TYPE_TIME = { 'iv': 45, 'iii': 35, 'ii': 25, 'i': 20, 'oa': 15 }
-    const MySwal = withReactContent(Swal);
-    const defaultData = createDefaultData();
+        const defaultData = createDefaultData();
     const VRDI = VR_DOCUMENTS_OF_INTEREST;
     var [id1, setId1] = useState(`${nomens}${dayjs().subtract(1, 'year').format('YY')}-0000`);
     var [id2, setId2] = useState(`${nomens}${dayjs().format('YY')}-9999`);
@@ -138,12 +136,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 .catch(e => {
                     if (cancelled) return;
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar este item, inténtelo nuevamente.",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
                 });
             return () => { cancelled = true; };
         }
@@ -161,12 +154,7 @@ export default function FUN_DAILY_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
             });
     }
     // *************************  DATA CONVERTERS ********************** //
