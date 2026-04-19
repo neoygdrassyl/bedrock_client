@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
+import { swalLoading, swalSuccess, swalError } from '../../../utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
@@ -633,7 +634,7 @@ export default function EXP_CLOCKS(props) {
       const availableTypes = _GET_AVAILABLE_SUSPENSION_TYPES();
       const availableDays = 10 - _GET_TOTAL_SUSPENSION_DAYS();
       if (availableTypes.length === 0) {
-        MySwal.fire({ title: 'No disponible', text: 'No hay espacios disponibles para añadir suspensiones', icon: 'warning' });
+        swalError({ title: 'No disponible', text: 'No hay espacios disponibles para añadir suspensiones', icon: 'warning' });
         return;
       }
       let typeSelectHtml = '';
@@ -1202,22 +1203,18 @@ export default function EXP_CLOCKS(props) {
     formDataClock.set('fun0Id', currentItem.id);
 
     if (useMySwal) {
-      MySwal.fire({
+      swalLoading({
         title: swaMsg.title_wait,
         text: swaMsg.text_wait,
-        icon: 'info',
-        showConfirmButton: false,
       });
     }
 
     const onOk = () => {
       if (useMySwal) {
-        MySwal.fire({
+        swalSuccess({
           title: swaMsg.publish_success_title,
           text: swaMsg.publish_success_text,
           footer: swaMsg.text_footer,
-          icon: 'success',
-          confirmButtonText: swaMsg.text_btn,
         });
       }
       // Disparar recalculo en padre y refresco local
@@ -1232,11 +1229,10 @@ export default function EXP_CLOCKS(props) {
     const onErr = (e) => {
       console.log(e);
       if (useMySwal) {
-        MySwal.fire({
+        swalError({
           title: swaMsg.generic_eror_title,
           text: swaMsg.generic_error_text,
           icon: 'warning',
-          confirmButtonText: swaMsg.text_btn,
         });
       }
     }
