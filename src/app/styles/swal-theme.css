@@ -10,36 +10,45 @@
   background: hsl(var(--background));
   color: hsl(var(--foreground));
   border: 1px solid hsl(var(--border));
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  font-size: 0.875rem;
-  padding: 2rem;
+  box-shadow:
+    0 0 0 1px hsl(var(--border) / 0.05),
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  font-size: 0.8125rem;
+  padding: 1.5rem;
+  max-width: 380px;
 }
 
 /* Backdrop */
 .swal2-container {
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  background: rgb(0 0 0 / 0.4) !important;
 }
 
 /* Title */
 .swal2-title {
   color: hsl(var(--foreground));
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
-  padding: 0 0 0.5rem;
+  padding: 0 0 0.25rem;
+  letter-spacing: -0.01em;
 }
 
 /* Content text */
 .swal2-html-container {
   color: hsl(var(--muted-foreground));
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.5;
+  margin: 0.5rem 0 0;
 }
 
 /* Footer */
 .swal2-footer {
   border-top-color: hsl(var(--border));
   color: hsl(var(--muted-foreground));
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
+  padding-top: 0.75rem;
+  margin-top: 1rem;
 }
 
 /* Confirm button */
@@ -82,6 +91,26 @@
   border-radius: 0.375rem;
   font-size: 0.8125rem;
   font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  box-shadow: none;
+}
+
+/* Actions container — tighter spacing */
+.swal2-actions {
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 0;
+}
+
+/* Icon sizing — smaller, more refined */
+.swal2-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0.5rem auto 0.75rem;
+  border-width: 2px;
+}
+.swal2-icon .swal2-icon-content {
+  font-size: 2rem;
 }
 
 /* Icon colors */
@@ -129,17 +158,21 @@
   border-radius: 0.375rem;
   color: hsl(var(--foreground));
   background: hsl(var(--background));
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  height: 2.25rem;
 }
 .swal2-input:focus,
 .swal2-textarea:focus {
   border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.25);
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
 }
 
 /* Close button */
 .swal2-close {
   color: hsl(var(--muted-foreground));
+  font-size: 1.25rem;
+  top: 0.75rem;
+  right: 0.75rem;
 }
 .swal2-close:hover {
   color: hsl(var(--foreground));
@@ -157,8 +190,36 @@
   color: hsl(var(--primary));
 }
 
+/* Loading state (showConfirmButton: false) — used as progress indicator */
+.swal2-popup:not(.swal2-show) {
+  animation: swal2-show 0.2s ease-out;
+}
+
+/* Validation message */
+.swal2-validation-message {
+  background: hsl(var(--destructive) / 0.08);
+  color: hsl(var(--destructive));
+  font-size: 0.75rem;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
 /* Dark mode adjustments */
 .dark .swal2-popup {
   background: hsl(var(--background));
   border-color: hsl(var(--border));
+  box-shadow:
+    0 0 0 1px hsl(var(--border) / 0.1),
+    0 10px 15px -3px rgb(0 0 0 / 0.3),
+    0 4px 6px -4px rgb(0 0 0 / 0.2);
+}
+
+.dark .swal2-container {
+  background: rgb(0 0 0 / 0.6) !important;
+}
+
+/* Swal2 animated icon size fix for compact popup */
+.swal2-icon.swal2-success .swal2-success-fix {
+  height: 3rem;
 }
