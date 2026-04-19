@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
+import { swalInfo, swalError } from '../../../../utils/swalAdapter';
 import withReactContent from 'sweetalert2-react-content';
 import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
 import { GanttModal } from './gantt/GanttModal';
 import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
 
 // --- COPIAR Y PEGAR TODOS LOS COMPONENTES AUXILIARES (STATUS_MAP, ResponsiblePill, etc.) ---
 // ... (Estos componentes no cambian)
@@ -319,7 +318,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
   
   const showDebug = () => {
       const info = processPhases?.debugInfo;
-      if (!info || !manager) return Swal.fire('No info', 'No hay información de debug disponible.', 'warning');
+      if (!info || !manager) return swalError({ title: 'No info', text: 'No hay información de debug disponible.', icon: 'warning' });
 
       const system = info.system || {};
       const { getClock, calcularDiasHabiles, currentItem } = manager;
@@ -337,7 +336,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
       
       const fmt = (d) => (d ? dayjs(d).format('YYYY-MM-DD') : '—');
 
-      MySwal.fire({
+      swalInfo({
           title: 'Diagnóstico de Fases y Tiempos',
           width: 720,
           html: `
@@ -377,9 +376,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
               </div>
           `,
           showCloseButton: true,
-          confirmButtonText: 'Cerrar',
-          confirmButtonColor: '#5bc0de',
-      });
+          });
   };
 
 
@@ -401,12 +398,10 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
     const totalUsed = phase1Used + phase4Used;
     const totalRemaining = Math.max(0, totalDays - totalUsed);
 
-    MySwal.fire({
+    swalInfo({
       title: 'Control de Tiempos - Curaduría',
       width: 560,
       showCloseButton: true,
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#5bc0de',
       customClass: {
         popup: 'days-modal-popup',
         title: 'days-modal-title',
@@ -486,12 +481,10 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
 
     const phaseTitle = phase?.title ? escapeHtml(phase.title) : '—';
 
-    return MySwal.fire({
+    return swalInfo({
       title: 'Detalle del Actor',
       width: 560,
       showCloseButton: true,
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#5bc0de',
       customClass: {
         popup: 'phase-detail-modal-popup',
         title: 'phase-detail-modal-title',
@@ -556,12 +549,10 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
         ]
       : [];
 
-    return MySwal.fire({
+    return swalInfo({
       title: 'Detalle de la Fase',
       width: 720,
       showCloseButton: true,
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#5bc0de',
       customClass: {
         popup: 'phase-detail-modal-popup',
         title: 'phase-detail-modal-title',

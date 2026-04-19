@@ -58,3 +58,17 @@ export function swalLoading(opts = {}) {
 export function swalClose() {
   Swal.close();
 }
+
+/**
+ * Info/display modal with rich HTML content.
+ * For read-only information modals — no form inputs, just content + close button.
+ */
+export function swalInfo(opts = {}) {
+  return Swal.fire({
+    ...BASE,
+    icon: opts.icon ?? undefined,
+    showCloseButton: true,
+    confirmButtonText: 'Cerrar',
+    ...opts,
+  });
+}
