@@ -1,15 +1,13 @@
 
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import dayjs from 'dayjs';
 import FUNService from '../../../services/fun.service';
 import { PDFDocument } from 'pdf-lib';
 import VIEWER from '../../../components/viewer.component';
 import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 const customStylesForModal = {
     overlay: {
         position: 'fixed',
@@ -167,40 +165,20 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         formData.set('pages', page);
         formData.set('dates', date);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FUNService.create_fun6(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.generic_success_title,
-                        text: swaMsg.generic_success_text,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                     props.requestUpdate(currentItem.id);
                     setModal(false)
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }

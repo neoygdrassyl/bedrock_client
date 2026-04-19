@@ -1,8 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
 import FUN_SERVICE from '../../../services/fun.service';
 import RECORD_PH_SERVICE from '../../../services/record_ph.service';
 import FUN_VERSION_NAV from '../fun_forms/components/fun_versionNav';
@@ -20,12 +17,11 @@ import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import RECORD_PH_GEN_REVIEW from './ph/record_ph_gen_arc_review.component';
 import RECORD_PH_CHECK_LIST from './ph/record_ph_check_list.component';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
 // RECORDS
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
-
 function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, requestUpdate: propRequestUpdate, closeModal: propCloseModal, requesRefresh, NAVIGATION }) {
     const [currentRecord, setCurrentRecord] = useState(null);
     const [currentVersionR, setCurrentVersionR] = useState(null);
@@ -47,12 +43,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }, [currentId, swaMsg]);
 
@@ -84,12 +75,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }, [swaMsg]);
 
@@ -181,31 +167,15 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
             RECORD_PH_SERVICE.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdateRecord(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (

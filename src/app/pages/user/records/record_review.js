@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
 import FUN_SERVICE from '../../../services/fun.service';
@@ -22,8 +20,8 @@ import PQRS_Service from '../../../services/pqrs_main.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, translation, globals, currentVersion, closeModal, NAVIGATION, navigation_version }) {
@@ -60,12 +58,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -98,12 +91,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
 
@@ -131,12 +119,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
     }
 
     async function CREATE_CHECK_PDF(_detail, chekcs, _currentItem, _headers) {
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         // ****************** CREATES NEW PDF DOC AND PASTE THE OLD PDF ON TOP *********** //
         const mergedPdf = await PDFDocument.create();
@@ -196,7 +179,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         var pdfBytes = await mergedPdf.save();
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'FORMATO DE REVISIÓN E INFORMACIÓN DEPROYECTOS ' + id_public + '.pdf');
-        MySwal.close();
+        swalClose();
     }
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -375,12 +358,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -1097,31 +1075,15 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             RECORD_REVIEW_SERVICE.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdateRecord(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let new_version = () => {
@@ -1129,35 +1091,13 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             let engId = _CHECK_ENG_REPORT();
             let arcId = _CHECK_ARC_REPORT();
 
-            if (currentItem.version >= 2) return MySwal.fire({
-                title: "MAXIMO NUMERO DE REVISIONES ALCANZADO",
-                text: `Esta solicitud ya tiene 2 revisiones, el sistema no puede generar mas.`,
-                icon: 'warning',
-                confirmButtonText: "CONTINUAR",
-            })
+            if (currentItem.version >= 2) return swalError({ title: "MAXIMO NUMERO DE REVISIONES ALCANZADO", text: `Esta solicitud ya tiene 2 revisiones, el sistema no puede generar mas.`, icon: 'warning' })
 
-            if (!lawId || !engId || !arcId) return MySwal.fire({
-                title: "FALTAN INFORMES",
-                text: `Para poder generar una nueva revision, se debe de tener los informes ya revisados.`,
-                icon: 'error',
-                confirmButtonText: "REVISAR",
-            })
+            if (!lawId || !engId || !arcId) return swalError({ title: "FALTAN INFORMES", text: `Para poder generar una nueva revision, se debe de tener los informes ya revisados.` })
 
-            MySwal.fire({
-                title: "NUEVA REVISION",
-                text: `¿Esta seguro de generar una nueva revision (${currentItem.version + 1}) de esta solicitud?`,
-                icon: 'question',
-                confirmButtonText: "REVISAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "NUEVA REVISION", text: `¿Esta seguro de generar una nueva revision (${currentItem.version + 1}) de esta solicitud?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     formData = new FormData();
                     formData.set('fun0Id', currentItem.id);
                     formData.set('version', currentItem.version);
@@ -1169,32 +1109,16 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     RECORD_REVIEW_SERVICE.newVersion(formData)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                                 requestUpdateRecord(currentItem.id);
                                 retrieveItem(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -1207,22 +1131,10 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
             /*
             if (window.user.roleId != 1) {
-                if ((!lawId || !engId || !arcId)) return MySwal.fire({
-                    title: "FALTAN INFORMES",
-                    text: `Para poder generar la revicion, se debe de tener los informes ya revisados.`,
-                    icon: 'error',
-                    confirmButtonText: "REVISAR",
-                })
+                if ((!lawId || !engId || !arcId)) return swalError({ title: "FALTAN INFORMES", text: `Para poder generar la revicion, se debe de tener los informes ya revisados.` })
             }*/
 
-            MySwal.fire({
-                title: "REALIZAR REVISION",
-                text: `¿Esta seguro de realizar la revision ${currentItem.version} del ACTA DE CORRECIONES / OBSERVACIONES?`,
-                icon: 'question',
-                confirmButtonText: "REVISAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "REALIZAR REVISION", text: `¿Esta seguro de realizar la revision ${currentItem.version} del ACTA DE CORRECIONES / OBSERVACIONES?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     save_review();
                     save_clock();
@@ -1260,55 +1172,29 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         let manage_review = (useMySwal) => {
             let _CHILD = currentRecord;
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             RECORD_REVIEW_SERVICE.update(_CHILD.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         requestUpdateRecord(currentItem.id)
                         retrieveItem(currentItem.id)
                         requestUpdate(currentItem.id)
                     } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACION", text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo` });
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 });
         }
@@ -1384,12 +1270,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
             formDataClock.set('fun0Id', currentItem.id);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
 
             if (_CHILD.id) {
@@ -1397,36 +1278,20 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
                             requestUpdateRecord(currentItem.id)
                             retrieveItem(currentItem.id)
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -1435,36 +1300,20 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
                             requestUpdateRecord(currentItem.id)
                             retrieveItem(currentItem.id)
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -1476,21 +1325,9 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             let acta1 = [currentRecord.date, currentRecord.check];
             let acta2 = [currentRecord.date_2, currentRecord.check_2];
 
-            if (!(acta1[1] == 1 || (acta1[1] == 0 && acta2[1] == 1))) MySwal.fire({
-                title: "ADVERTENCIA",
-                text: `No hay valores validos para el Acta, si realmente desea continuar, realicé la revision.`,
-                icon: 'info',
-                confirmButtonText: "CONTINUAR",
-            }).then(SweetAlertResult => {
+            if (!(acta1[1] == 1 || (acta1[1] == 0 && acta2[1] == 1))) swalLoading({ title: "ADVERTENCIA", text: `No hay valores validos para el Acta, si realmente desea continuar, realicé la revision.` }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: "¿PROSEGUIR A EXPEDICIÓN?",
-                        text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`,
-                        icon: 'question',
-                        confirmButtonText: "PROSEGUIR",
-                        showCancelButton: true,
-                        cancelButtonText: "CANCELAR"
-                    }).then(SweetAlertResult => {
+                    swalConfirm({ title: "¿PROSEGUIR A EXPEDICIÓN?", text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`, icon: 'question', confirmButtonText: "PROSEGUIR" }).then(SweetAlertResult => {
                         if (SweetAlertResult.isConfirmed) {
                             manage_fun_0();
                             save_clock_exp();
@@ -1498,14 +1335,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     });
                 }
             });
-            else MySwal.fire({
-                title: "¿PROSEGUIR A EXPEDICIÓN?",
-                text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`,
-                icon: 'question',
-                confirmButtonText: "PROSEGUIR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            else swalConfirm({ title: "¿PROSEGUIR A EXPEDICIÓN?", text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`, icon: 'question', confirmButtonText: "PROSEGUIR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     manage_fun_0();
                     save_clock_exp();
@@ -1520,35 +1350,19 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             FunService.update(currentItem.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdateRecord(currentItem.id)
                         retrieveItem(currentItem.id)
                         requestUpdate(currentItem.id)
                         closeModal();
 
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -1622,34 +1436,19 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             let r_eng_diagnostic = document.getElementById("record_eng_diagnostic").checked;
             formData.set('r_eng_diagnostic', r_eng_diagnostic);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_REVIEW_SERVICE.pdfgen(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/pdf/recordrew/" + "ACTA OBSERVACIONES Y CORECCIONES " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let CREATE_PDF_CHECK = () => {
