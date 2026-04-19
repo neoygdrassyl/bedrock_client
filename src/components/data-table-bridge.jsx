@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/lib/utils';
 import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -295,16 +296,11 @@ export function DataTableBridge({
             ) : (
               <TableRow>
                 <TableCell colSpan={tanstackColumns.length} className="h-32 text-center">
-                  <div className="flex flex-col items-center gap-2 py-4">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                      <svg className="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-                    </div>
-                    {typeof noDataComponent === 'string' ? (
-                      <p className="text-sm text-muted-foreground">{noDataComponent}</p>
-                    ) : (
-                      noDataComponent
-                    )}
-                  </div>
+                  {typeof noDataComponent === 'string' ? (
+                    <EmptyState message={noDataComponent} icon="FileText" />
+                  ) : (
+                    noDataComponent
+                  )}
                 </TableCell>
               </TableRow>
             )}
