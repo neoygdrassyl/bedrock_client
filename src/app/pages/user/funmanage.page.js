@@ -37,6 +37,7 @@ import FUN_ASIGNS_COMPONENT from './fun_forms/components/fun_asign.component';
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 const MySwal = withReactContent(Swal);
 
 function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
@@ -670,25 +671,50 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         </div>
                     </div>
 
-                    <nav className="nav nav-tabs">
-                        
-                            <button type="button" className={`nav-link ${fillActive === '4' ? "active" : ""}`} onClick={() => handleFillClick('4')}>
-                                <span className="text-xs font-medium uppercase tracking-wide">Procesos Diarios</span>
-                            </button>
-                        
-
-                        
-                            <button type="button" className={`nav-link ${fillActive === '2' ? "active" : ""}`} onClick={() => handleFillClick('2')}>
-                                <span className="text-xs font-medium uppercase tracking-wide">Entrada de Documentos</span>
-                            </button>
-                        
-                        
-                            <button type="button" className={`nav-link ${fillActive === '3' ? "active" : ""}`} onClick={() => handleFillClick('3')}>
-                                <span className="text-xs font-medium uppercase tracking-wide">Carga Profesional</span>
-                            </button>
-                        
-
-                    </nav>
+                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                        <button
+                            role="tab"
+                            aria-selected={fillActive === '4'}
+                            onClick={() => handleFillClick('4')}
+                            className={cn(
+                                'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                fillActive === '4'
+                                    ? 'border-b-primary text-primary'
+                                    : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                            )}
+                        >
+                            <Icon name="CalendarDays" size={14} />
+                            Procesos Diarios
+                        </button>
+                        <button
+                            role="tab"
+                            aria-selected={fillActive === '2'}
+                            onClick={() => handleFillClick('2')}
+                            className={cn(
+                                'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                fillActive === '2'
+                                    ? 'border-b-primary text-primary'
+                                    : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                            )}
+                        >
+                            <Icon name="FileInput" size={14} />
+                            Entrada de Documentos
+                        </button>
+                        <button
+                            role="tab"
+                            aria-selected={fillActive === '3'}
+                            onClick={() => handleFillClick('3')}
+                            className={cn(
+                                'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                fillActive === '3'
+                                    ? 'border-b-primary text-primary'
+                                    : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                            )}
+                        >
+                            <Icon name="Users" size={14} />
+                            Carga Profesional
+                        </button>
+                    </div>
 
                     <div>
                         <TabPane show={fillActive === '4'}>

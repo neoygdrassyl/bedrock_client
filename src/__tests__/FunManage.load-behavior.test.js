@@ -181,10 +181,10 @@ describe('FUN_MANAGE initial load behavior', () => {
     expect(screen.queryByTestId('submit-docs-tab')).not.toBeInTheDocument();
     expect(screen.queryByTestId('assigns-tab')).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: /entrada de documentos/i }));
+    await userEvent.click(screen.getByRole('tab', { name: /entrada de documentos/i }));
     expect(await screen.findByTestId('submit-docs-tab')).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: /carga profesional/i }));
+    await userEvent.click(screen.getByRole('tab', { name: /carga profesional/i }));
     expect(await screen.findByTestId('assigns-tab')).toBeInTheDocument();
   });
 });
