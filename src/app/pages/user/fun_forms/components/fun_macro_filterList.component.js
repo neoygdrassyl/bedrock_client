@@ -296,9 +296,10 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
                 {data.map((parent, i) => {
                     return <>
                         <ul className="list-group">
-                            <button type="button" tag='a' outline color={parent.color} className={'my-1 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
+                            <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2 text-left transition-colors hover:bg-muted/60"
                                 onClick={(prevState) => setCollapsables({ ...prevState, [parent.title]: !collapsables[parent.title] })}>
-                                <label className="app-p lead fw-normal text-muted" >{i + 1}. {parent.title}</label>
+                                <span className="text-sm font-medium text-foreground/80">{i + 1}. {parent.title}</span>
+                                <Icon name={!collapsables[parent.title] ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
                             </button>
                             <Collapsible open={collapsables[parent.title]}>
                             <CollapsibleContent>

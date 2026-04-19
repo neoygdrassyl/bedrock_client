@@ -2607,9 +2607,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     <label className="app-p lead fw-normal">PAGOS</label>
                 </legend>
 
-                <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_21"
+                <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_21"
                     onClick={() => setShowCollapse_expedition_21(!showCollapse_expedition_21)}>
-                    <label className="app-p lead fw-normal text-info">Acto de tramite de licencia</label>
+                    <span className="text-sm font-medium text-foreground/80">Acto de tramite de licencia</span>
+                    <Icon name={!showCollapse_expedition_21 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
                 </button>
                 <UiCollapsible open={showCollapse_expedition_21}><CollapsibleContent>
                     <fieldset className="p-3">
@@ -2626,10 +2627,11 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 {_GLOBAL_ID === 'cp1' ?
                     <>
-                        <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_27"
-                            onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
-                            <label className="app-p lead fw-normal text-info">Liquidación de Expensas</label>
-                        </button>
+                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_27"
+                    onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
+                    <span className="text-sm font-medium text-foreground/80">Liquidación de Expensas</span>
+                    <Icon name={!showCollapse_expedition_27 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
                         <UiCollapsible open={showCollapse_expedition_27}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_7}>
@@ -2646,10 +2648,11 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     : ''}
 
                 {!conOA() && _GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2' ? <>
-                    <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_22"
-                        onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
-                        <label className="app-p lead fw-normal text-info">Liquidacion de Expensas</label>
-                    </button>
+                    <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_22"
+                    onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
+                    <span className="text-sm font-medium text-foreground/80">Liquidacion de Expensas</span>
+                    <Icon name={!showCollapse_expedition_22 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
                     <UiCollapsible open={showCollapse_expedition_22}><CollapsibleContent>
                         <fieldset className="p-3">
                             <form id="form_expedition_2" onSubmit={pdf_gen_2}>
@@ -2665,10 +2668,11 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 </> : null}
 
                 {!conOA() && _GLOBAL_ID === 'cb1' ? <>
-                    <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_23"
-                        onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
-                        <label className="app-p lead fw-normal text-info">Impuestos Municipales</label>
-                    </button>
+                    <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_23"
+                    onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
+                    <span className="text-sm font-medium text-foreground/80">Impuestos Municipales</span>
+                    <Icon name={!showCollapse_expedition_23 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
                     <UiCollapsible open={showCollapse_expedition_23}><CollapsibleContent>
 
                         <fieldset className="p-3">
@@ -2684,9 +2688,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </CollapsibleContent></UiCollapsible>
                 </> : null}
 
-                <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_24"
+                <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_24"
                     onClick={() => setShowCollapse_expedition_24(!showCollapse_expedition_24)}>
-                    <label className="app-p lead fw-normal text-info">Estampilla PRO-UIS</label>
+                    <span className="text-sm font-medium text-foreground/80">Estampilla PRO-UIS</span>
+                    <Icon name={!showCollapse_expedition_24 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
                 </button>
                 <UiCollapsible open={showCollapse_expedition_24}><CollapsibleContent>
                     <fieldset className="p-3">
@@ -2703,10 +2708,11 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 {_GET_CHILD_2().item_267 > 2 && _GLOBAL_ID === 'cb1'
                     ? <>
-                        <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_25"
-                            onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
-                            <label className="app-p lead fw-normal text-info">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</label>
-                        </button>
+                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_25"
+                    onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
+                    <span className="text-sm font-medium text-foreground/80">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</span>
+                    <Icon name={!showCollapse_expedition_25 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
                         <UiCollapsible open={showCollapse_expedition_25}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_5}>
@@ -2725,10 +2731,11 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 {_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2' ?
                     <>
-                        <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_26"
-                            onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
-                            <label className="app-p lead fw-normal text-info">Impuesto Delineación Urbana</label>
-                        </button>
+                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_26"
+                    onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
+                    <span className="text-sm font-medium text-foreground/80">Impuesto Delineación Urbana</span>
+                    <Icon name={!showCollapse_expedition_26 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
                         <UiCollapsible open={showCollapse_expedition_26}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_6}>
