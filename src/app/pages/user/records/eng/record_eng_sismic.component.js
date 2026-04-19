@@ -1,4 +1,5 @@
-import { MDBPopover, MDBPopoverBody, MDBPopoverHeader } from '../../../../components/ui';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import React, { useState, useEffect } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import Swal from 'sweetalert2'
@@ -599,19 +600,24 @@ function RECORD_ENG_SISMIC(props) {
             return <>
                 {qedit[row.id]
                     ? <button type="button" onClick={() => manage_edit_item(row.id)} className="btn btn-sm btn-success">Guardar</button>
-                    : <MDBPopover size='sm' color='info' btnChildren={'OPCIONES'} placement='left' dismiss>
-                        <MDBPopoverBody>
-                            <div className="list-group list-group-flush">
-                                <button type="button" onClick={() => setQedit(prev => ({ ...prev, [row.id]: true }))} className="list-group-item list-group-item-action" ><Icon name="pencil-alt" size={16} /> Edición Rapida</button>
-                                <button type="button" onClick={() => setEdit(row)} className="list-group-item list-group-item-action"><Icon name="pencil-alt" size={16} /> Edición Completa</button>
-                                <button type="button" onClick={() => delete_item(row.id)} className="list-group-item list-group-item-action list-group-item-danger"><Icon name="trash-alt" size={16} /> Eliminar</button>
-                                <button type="button" onClick={() => new_x('up', row.pos)} className="list-group-item list-group-item-action"><Icon name="plus" size={16} /> Añadir Arriba</button>
-                                <button type="button" onClick={() => new_x('dw', row.pos)} className="list-group-item list-group-item-action"><Icon name="plus" size={16} /> Añadir Abajo</button>
-                                <button type="button" onClick={() => new_x('up', row.pos, true)} className="list-group-item list-group-item-action"><Icon name="copy" size={16} /> Copiar Arriba</button>
-                                <button type="button" onClick={() => new_x('dw', row.pos, true)} className="list-group-item list-group-item-action"><Icon name="copy" size={16} /> Copiar Abajo</button>
-                            </div>
-                        </MDBPopoverBody>
-                    </MDBPopover>
+                    : <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                                <Icon name="MoreHorizontal" size={14} />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={() => setQedit(prev => ({ ...prev, [row.id]: true }))}><Icon name="Pencil" size={14} className="mr-2" /> Edición Rápida</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setEdit(row)}><Icon name="Pencil" size={14} className="mr-2" /> Edición Completa</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => new_x('up', row.pos)}><Icon name="Plus" size={14} className="mr-2" /> Añadir Arriba</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => new_x('dw', row.pos)}><Icon name="Plus" size={14} className="mr-2" /> Añadir Abajo</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => new_x('up', row.pos, true)}><Icon name="Copy" size={14} className="mr-2" /> Copiar Arriba</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => new_x('dw', row.pos, true)}><Icon name="Copy" size={14} className="mr-2" /> Copiar Abajo</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => delete_item(row.id)} className="text-destructive"><Icon name="Trash2" size={14} className="mr-2" /> Eliminar</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 }
             </>
         }
