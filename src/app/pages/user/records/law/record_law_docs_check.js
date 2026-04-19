@@ -1,15 +1,11 @@
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
 import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import DataTable from '@/components/data-table-bridge';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
-
-const MySwal = withReactContent(Swal);
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function RECORD_LAW_DOCSCHECK(props) {
     const [VRDocs, setVRDocs] = useState([]);
@@ -356,48 +352,27 @@ function RECORD_LAW_DOCSCHECK(props) {
 
     let manage_fun_r = (useMySwal) => {
         if (useMySwal) {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         }
         if (_FUN_R) {
             FUN_SERVICE.update_r(_FUN_R.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         props.requestUpdate(currentItem.id);
                         //props.requestUpdateRecord(currentItem.id);
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 });
         }

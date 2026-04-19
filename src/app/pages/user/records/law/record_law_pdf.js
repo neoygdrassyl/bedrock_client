@@ -1,12 +1,10 @@
-import Swal from 'sweetalert2'
 import Icon from '@/components/icon';
-import withReactContent from 'sweetalert2-react-content'
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleLAWhCheck } from '../../../../components/customClasses/pdfCheckHandler';
-const MySwal = withReactContent(Swal);
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function RECORD_LAW_PDF(props) {
@@ -88,21 +86,10 @@ function RECORD_LAW_PDF(props) {
         }, '');
     };
     const CREATE_CHECK = async (_detail, chekcs, _currentItem, _headers, _date) => {
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         let model = props.currentItem.model
-        if (!model) return MySwal.fire({
-            title: 'SOLICITUD SIN MODELO',
-            text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
-            icon: 'error',
-            showConfirmButton: true,
-            confirmButtonText: 'CONTINUAR',
-        });
+        if (!model) return swalError({ title: 'SOLICITUD SIN MODELO', text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.' });
 
         var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
         if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
@@ -164,7 +151,7 @@ function RECORD_LAW_PDF(props) {
         var pdfBytes = await pdfDoc.save();
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'INFORME JURIDICO ' + id_public + '.pdf');
-        MySwal.close();
+        swalClose();
 
 
     }
@@ -230,34 +217,19 @@ function RECORD_LAW_PDF(props) {
         let r_law_pending = document.getElementById("record_law_pending").checked;
         formData.set('r_law_pending', r_law_pending);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         RECORD_LAW_SERVICE.pdfgen(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.close();
+                    swalClose();
                     window.open(import.meta.env.VITE_API_URL + "/pdf/recordlaw/" + "INFORME JURIDICO " + currentItem.id_public + ".pdf");
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let _CHILD = _GET_CHILD_REVIEW();

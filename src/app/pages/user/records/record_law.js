@@ -1,8 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
 import FUN_SERVICE from '../../../services/fun.service';
 import submitService from '../../../services/submit.service';
 
@@ -29,10 +26,9 @@ import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
 // RECORDS
-
-const MySwal = withReactContent(Swal);
 
 function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION }) {
     const [currentRecord, setCurrentRecord] = useState(null);
@@ -59,12 +55,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }, [swaMsg, retrievePQRSxFUN]);
 
@@ -83,12 +74,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }, [currentId, swaMsg]);
 
@@ -213,31 +199,15 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
             RECORD_LAW_SERVICE.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdateRecord(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 

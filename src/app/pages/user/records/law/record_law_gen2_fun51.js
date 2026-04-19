@@ -1,12 +1,9 @@
 import DataTable from '@/components/data-table-bridge';
 import Icon from '@/components/icon';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import FUN_Service from '../../../../services/fun.service'
 import { dateParser, dateParser_yearsPassed } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
-
-const MySwal = withReactContent(Swal);
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function RECORD_LAW_GEN_2_FUN51(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
@@ -175,46 +172,25 @@ function RECORD_LAW_GEN_2_FUN51(props) {
 
         let manage_51 = (useMySwal, _id) => {
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             FUN_Service.update_51(_id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         props.requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 });
         }
