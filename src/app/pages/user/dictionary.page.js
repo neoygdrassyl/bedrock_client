@@ -1,4 +1,5 @@
-import { MDBTabsContent, MDBTabsPane, MDBPopover, MDBPopoverHeader, MDBPopoverBody } from '../../components/ui';
+import { MDBPopover, MDBPopoverHeader, MDBPopoverBody } from '../../components/ui';
+import { TabPane } from '@/components/ui/tab-pane';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
@@ -586,30 +587,30 @@ export default function DICTIONARY(props) {
                 </div>
             </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'A'}>
+            <div>
+                <TabPane show={tab == 'A'}>
                     {_COMPONENT_SEARCH_BAR('search_a', filter_A, setFil_A)}
                     {_COMPONENT_LIST_A()}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'B'}>
+            <div>
+                <TabPane show={tab == 'B'}>
                     {_COMPONENT_SEARCH_BAR('search_b', filter_B, setFil_B)}
                     {_COMPONENT_LIST_B()}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'C'}>
+            <div>
+                <TabPane show={tab == 'C'}>
                     {_COMPONENT_SEARCH_BAR('search_c', filter_C, setFil_C)}
                     {_COMPONENT_PAGINATION(LIST_C, pag_C, limit_c, setPag_C, filter_C, '', 'id_public')}
                     {_COMPONENT_MAIN_LIST(LIST_C, filter_C,'', 'id_public', limit_c, pag_C, _COMPONENT_POPC_C)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'D'}>
+            <div>
+                <TabPane show={tab == 'D'}>
                     {_COMPONENT_SEARCH_BAR_CUB('search_d', filter_D, setFil_D, setProccessToFilter, proccessToFilter)}
                     {_COMPONENT_PAGINATION(LIST_D, pag_D, limit_D, setPag_D, filter_D, proccessToFilter, 'cub')}
                     <div className='row mx-3'>
@@ -623,39 +624,39 @@ export default function DICTIONARY(props) {
                         </div>
                     </div>
                     {_COMPONENT_MAIN_LIST(LIST_D, filter_D, proccessToFilter, 'cub', limit_D, pag_D, _COMPONENT_POPC_D)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'E'}>
+            <div>
+                <TabPane show={tab == 'E'}>
                     {_COMPONENT_SEARCH_BAR('search_e', filter_E, setFil_E)}
                     {_COMPONENT_PAGINATION(LIST_E, pag_E, limit_E, setPag_E, filter_E, '', 'vr')}
                     {_COMPONENT_MAIN_LIST(LIST_E, filter_E,'', 'vr', limit_E, pag_E, _COMPONENT_POPC_E)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'F'}>
+            <div>
+                <TabPane show={tab == 'F'}>
                     {_COMPONENT_SEARCH_BAR('search_f', filter_F, setFil_F)}
                     {_COMPONENT_PAGINATION(LIST_F, pag_F, limit_F, setPag_F, filter_F, '', 'id_child')}
                     {_COMPONENT_MAIN_LIST(LIST_F, filter_F,'', 'id_child', limit_F, pag_F, _COMPONENT_POPC_F)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'G'}>
+            <div>
+                <TabPane show={tab == 'G'}>
                     {_COMPONENT_SEARCH_BAR('search_g', filter_G, setFil_G)}
                     {_COMPONENT_PAGINATION(LIST_G, pag_G, limit_G, setPag_G, filter_G, '', 'id_public')}
                     {_COMPONENT_MAIN_LIST(LIST_G, filter_G,'', 'id_public', limit_G, pag_G, _COMPONENT_POPC_G)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'H'}>
+            <div>
+                <TabPane show={tab == 'H'}>
                     {_COMPONENT_SEARCH_BAR('search_h', filter_H, setFil_H)}
                     {_COMPONENT_LIST_H()}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
         </>
     }
     // ***************************  DATATABLES *********************** //

@@ -7,7 +7,7 @@ import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from "../../../../services/fun.service"
 import FUN_CLOCKS_EMAILS from './fun_clocks_email.component';
 import { dateParser_finalDate, dateParser_timePassed } from '../../../../components/customClasses/typeParse';
-import { MDBTabsContent, MDBTabsPane } from '../../../../components/ui';
+import { TabPane } from '@/components/ui/tab-pane';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 
@@ -1036,26 +1036,26 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 
                 </nav>
 
-                <MDBTabsContent>
-                    <MDBTabsPane show={fillActive == '-101'}>
+                <div>
+                    <TabPane show={fillActive == '-101'}>
                         {_MANAGE_NEGATIVE_PROCESS('-1')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={fillActive == '-102'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-102'}>
                         {_MANAGE_NEGATIVE_PROCESS('-2')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={fillActive == '-103'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-103'}>
                         {_MANAGE_NEGATIVE_PROCESS('-3')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={fillActive == '-104'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-104'}>
                         {_MANAGE_NEGATIVE_PROCESS('-4')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={fillActive == '-105'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-105'}>
                         {_MANAGE_NEGATIVE_PROCESS('-5')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={fillActive == '-106'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-106'}>
                     {_MANAGE_NEGATIVE_PROCESS('-6')}
-                </MDBTabsPane>
-                </MDBTabsContent>
+                </TabPane>
+                </div>
 
                 {currentItem.state < -100 ? <>
                     <legend className="my-2 px-3 text-uppercase bg-light" id="new_process">

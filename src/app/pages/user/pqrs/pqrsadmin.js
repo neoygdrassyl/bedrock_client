@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { MDBTabsPane, MDBTabsContent } from '../../../components/ui';
+import { TabPane } from '@/components/ui/tab-pane';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
@@ -960,8 +960,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         
                     </nav>
 
-                    <MDBTabsContent>
-                        <MDBTabsPane show={fillActive === '1'}>
+                    <div>
+                        <TabPane show={fillActive === '1'}>
                             {isLoaded ? <>
                                 <div className="row">
                                     <div className='col ms-5 mb-3'>
@@ -994,8 +994,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                 <div>
                                     <h4>No hay información</h4>
                                 </div>}
-                        </MDBTabsPane>
-                        <MDBTabsPane show={fillActive === '10'}>
+                        </TabPane>
+                        <TabPane show={fillActive === '10'}>
                             {isLoaded ? <>
                                 <DataTable
                                     title="Lista de peticiones archivadas"
@@ -1020,9 +1020,9 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                 <div>
                                     <h4>No hay información</h4>
                                 </div>}
-                        </MDBTabsPane>
+                        </TabPane>
 
-                    </MDBTabsContent>
+                    </div>
 
                     <Modal contentLabel="GENERAR SOLCITUD PQRS"
                         isOpen={modalNew}
