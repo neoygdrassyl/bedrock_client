@@ -973,7 +973,7 @@ function RECORD_ENG_SISMIC(props) {
                     </div>
                     <div className="col-3"><label>T {'<'} 0.5     K= 1.0</label></div>
                     <div className="col-2"> </div>
-                    <div className="col-2"><button className='btn btn-info btn-sm' onClick={() => set_values()}>ACTUALIZAR</button></div>
+                    <div className="col-2"><Button size="sm" onClick={() => set_values()}>ACTUALIZAR</Button></div>
                 </div>
 
                 <div className="row mb-1">

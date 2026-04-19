@@ -374,7 +374,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className="col-1 p-1">
                             <div className="input-group">
-                                <a className="btn btn-info btn-sm p-2 ms-2 mt-3" target="_blank" href="http://www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/perfil_10.00_m_tipo_a.png" id={"r_a_36_imglink" + edit}><Icon name="image" size={16} /></a>
+                                <a className="inline-flex items-center justify-center rounded-md text-sm font-medium h-8 w-8 bg-primary text-primary-foreground hover:bg-primary/90 ms-2 mt-3" target="_blank" href="http://www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/perfil_10.00_m_tipo_a.png" id={"r_a_36_imglink" + edit}><Icon name="image" size={16} /></a>
                             </div>
                         </div>
                         <div className="col p-1">

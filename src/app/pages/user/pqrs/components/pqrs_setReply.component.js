@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
@@ -121,7 +122,7 @@ parentRetrieveItem(currentItem.id);
                                 </span>
                                 <input type="text" className="form-control" defaultValue={currentItem.id_reply}
                                     id="pqrs_master_idreply" require />
-                                <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                             </div>
                         </div>
 

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import FUN_SERVICE from "../../../../services/fun.service"
 
@@ -361,7 +362,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <div className="input-group">
                             <input type="text" className="form-control" id="phnot_cub"
                                 defaultValue={currentRecord.cub || ''} />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('phnot_cub')}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID('phnot_cub')}>GENERAR</Button>
                         </div>
                     </div>
                 </div>
@@ -465,7 +466,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             </span>
                             <input type="text" className="form-control" id="f_02_ph"
                                 defaultValue={currentRecord.id_public} />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_OA()}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_OA()}>GENERAR</Button>
                         </div>
                     </div>
                 </div>

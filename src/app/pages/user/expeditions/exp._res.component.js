@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from '@/components/ui/button';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -3118,7 +3119,7 @@ export default function EXP_RES(props) {
                     <div className="input-group">
                         <input type="text" className="form-control" id="expedition_doc_res_id"
                             defaultValue={currentRecord.id_public} />
-                        <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</button>
+                        <Button size="sm" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</Button>
                     </div>
                 </div>
                 <div className="col">

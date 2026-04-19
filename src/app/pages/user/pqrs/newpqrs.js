@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
@@ -500,7 +501,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                         <Icon name="hashtag" size={16} />
                                     </span>
                                     <input type="text" className="form-control" id="pqrs_mas_1" />
-                                    <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                    <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                                 </div>
                             </div>
 

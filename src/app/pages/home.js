@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 import { Link } from "react-router-dom";
 // Carousel IMGS
 import NEW_ING from '../img/news1.jpg'
@@ -371,9 +372,9 @@ function Home({ translation, history }) {
                   <Icon name="file-invoice" size={16} />
                   <h3 className="display-6 fw-bold">Radicación de Licencias</h3>
                   <p className="lead">Inicie aquí su proceso para radicar una Licencia</p>
-                  <Link to={'/file'}><button type="button" className="btn btn-info">
+                  <Link to={'/file'}><Button size="sm">
                     <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Radicar</h4>
-                  </button></Link>
+                  </Button></Link>
                 </div>
                 <div className="col-md-4">
                   <i class="fas fa-calculator fa-4x"></i>
@@ -472,9 +473,9 @@ function Home({ translation, history }) {
           </div>
 
           <div className="text-end py-4 mt-3">
-            <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(false)}>
+            <Button variant="outline" size="sm" onClick={() => setModal(false)}>
               <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-            </button>
+            </Button>
           </div>
 
         </Modal> */}

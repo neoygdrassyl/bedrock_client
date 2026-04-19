@@ -1,5 +1,6 @@
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
+import { Button } from '@/components/ui/button';
 import NOMENCLATURE_ANEX from './nomenclature_anex.componen';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
@@ -103,7 +104,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                             </span>
                             <input type="text" className="form-control" id="nomen_1" required
                                 defaultValue={_CHILD.id_public} />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col-4">

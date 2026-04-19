@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import HTMLDatalist from '../../../components/HTMLDatalist';
 import { LegacyModal as ReactModal } from '@/components/legacy-modal';
 import { formsParser1, getJSON, getJSONFull, _GET_SERIE_COD, _GET_SUBSERIE_COD } from '../../../components/customClasses/typeParse';
@@ -451,9 +452,9 @@ export default function ARCHIVE_X_FUN(props) {
 
                 <hr />
                 <div className="text-end">
-                    <button type="button" className="btn btn-info btn-sm" onClick={() => setModal_d(!modal_d)}>
-                        <label ><Icon name="times-circle" size={16} /> CERRAR</label>
-                    </button>
+                    <Button variant="outline" size="sm" onClick={() => setModal_d(!modal_d)}>
+                        <Icon name="times-circle" size={16} /> CERRAR
+                    </Button>
                 </div>
             </ReactModal>
         </>

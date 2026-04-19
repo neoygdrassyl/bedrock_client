@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
@@ -494,10 +495,10 @@ export default function EXP_CLOCKS(props) {
               </button>
             )}
             {!isDesisted && canAddExt && (
-              <button type="button" className="btn btn-info btn-sm" onClick={() => addTimeControl('extension')}>
+              <Button size="sm" onClick={() => addTimeControl('extension')}>
                 <Icon name="clock" size={16} className="me-2" />
                 Prórroga por Complejidad
-              </button>
+              </Button>
             )}
             {!isFull && (
               <button type="button" className="btn btn-sm btn-light ms-1 exp-full-btn" title="Pantalla completa" onClick={() => setIsFull(true)}>
@@ -1049,14 +1050,15 @@ export default function EXP_CLOCKS(props) {
                     ) : ''}
                     
                     {value.suspensionInfo && (
-                      <button
-                        type="button"
-                        className="btn btn-outline-info btn-suspension-info"
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="btn-suspension-info"
                         title="Ver información de suspensión"
                         onClick={() => showSuspensionInfo(value.suspensionInfo.data, value.suspensionInfo.type)}
                       >
                         <Icon name="question" size={16} />
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>

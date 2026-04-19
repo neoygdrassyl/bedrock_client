@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
@@ -215,7 +216,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             </span>
                             <input type="text" className="form-control" id="submit_1" required
                                 defaultValue={_CHILD.id_public} />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col-5">
@@ -257,10 +258,10 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <div className="col-4">
                             {payment
                                 ? <>
-                                    <button type="button" className="btn btn-info shadow-none me-1"
-                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</button>
-                                    <button type="button" className="btn btn-info shadow-none"
-                                        onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</button>
+                                    <Button size="sm" className="me-1"
+                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
+                                    <Button size="sm"
+                                        onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
                                 </>
                                 : ""}
                         </div>

@@ -585,9 +585,9 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                         : null}
 
                     <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={() => setModal(false)}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                        <Button variant="outline" size="sm" onClick={() => setModal(false)}>
+                            <Icon name="times-circle" size={16} /> CERRAR
+                        </Button>
                     </div>
                 </Modal>
 

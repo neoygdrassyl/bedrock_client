@@ -490,9 +490,9 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             <span className="font-semibold text-sm">PQRS PENDIENTES POR VENTANILLA ÚNICA: </span>
                         </div>
                         <div className="col text-end">
-                            <button type="button" title="Ver Listado" className="btn btn-info btn-sm px-2" onClick={() => setPending_open(prev => !prev)}>
+                            <Button variant="ghost" size="sm" title="Ver Listado" onClick={() => setPending_open(prev => !prev)}>
                                 <Icon name="info-circle" size={16} />
-                            </button>
+                            </Button>
                         </div>
                     </div>
                     {pending_open && (

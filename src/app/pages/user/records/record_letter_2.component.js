@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse'
+import { Button } from '@/components/ui/button';import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse'
 import FUNService from '../../../services/fun.service'
 import dayjs from 'dayjs';
 import { infoCud } from '../../../components/jsons/vars';
@@ -167,7 +167,7 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
                         <div className="input-group">
                             <input type="text" className="form-control" id="gena_cub_act2"
                                 defaultValue={_GET_CHILD_LAW().cub_act2 || cubSelected || ""} />
-                                {edit ? <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
+                                {edit ? <Button size="sm" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</Button>
                                 : ''}
                         </div>
                     </div>

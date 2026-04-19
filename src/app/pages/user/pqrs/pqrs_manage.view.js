@@ -372,8 +372,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <button title="Confirmar visto bueno" hidden={window.user.id != row.worker_id} onClick={() => setViewform(row)} className="btn btn-info btn-sm mx-0 px-2 shadow-none">
-                            <Icon name="check-square" size={16} /></button>
+                    <Button size="sm" title="Confirmar visto bueno" hidden={window.user.id != row.worker_id} onClick={() => setViewform(row)}>
+                            <Icon name="check-square" size={16} /></Button>
                 </>,
             },
         ];

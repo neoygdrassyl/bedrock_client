@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol';
 import PQRS_EMAILS from './pqrs_emails.component';
@@ -153,7 +154,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                             </span>
                             <input type="text" className="form-control" id="pqrs_edit_info_1"
                                 defaultValue={_CHILD.id_publico} />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
 
