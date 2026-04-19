@@ -1,6 +1,6 @@
-import { MDBPopover, MDBPopoverHeader, MDBPopoverBody } from '../../components/ui';
-import { TabPane } from '@/components/ui/tab-pane';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { TabPane } from '@/components/ui/tab-pane';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 
@@ -508,21 +508,27 @@ export default function DICTIONARY(props) {
     }
 
     let _COMPONENT_POPC_C = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.id_public} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.id_public}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.id_public}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.id_public}</p>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item"><label>Modalidad: {formsParser1(it)}</label></li>
                     <li className="list-group-item"><label>Estado: {_GET_STATE_STR(it.state)}</label></li>
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENT_POPC_D = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.cub} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.cub}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.cub}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.cub}</p>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item"><label>Relación: <label className='fw-bold'>{it.id === '1' ? it.vr : it.id}</label></label></li>
                     {
@@ -530,44 +536,53 @@ export default function DICTIONARY(props) {
                     }
                     <li className="list-group-item"><label>Proceso: <label className='fw-bold'>{it.res}</label></label></li>
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENT_POPC_E = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.vr} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.vr}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.vr}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.vr}</p>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item"><label>Relación: <label className='fw-bold'>{it.desc}</label></label></li>
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENT_POPC_F = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.id_child} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.id_child}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.id_child}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.id_child}</p>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item"><label>Proceso: <label className='fw-bold'>{it.id_public}</label></label></li>
                     <li className="list-group-item"><label>Modalidad: {formsParser1(it)}</label></li>
                     <li className="list-group-item"><label>Estado: {_GET_STATE_STR(it.state)}</label></li>
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENT_POPC_G = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.id_public} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.id_public}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.id_public}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.id_public}</p>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item"><label>Descripción: <label className='fw-bold'>{it.description}</label></label></li>
                     {it.id_related ? <li className="list-group-item"><label>Proceso: {it.id_related}</label></li> : ''}
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENTN_TABS = () => {
