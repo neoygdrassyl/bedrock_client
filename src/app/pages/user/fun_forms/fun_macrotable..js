@@ -3,7 +3,8 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
-import { MDBCollapse, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabsContent, MDBTabsPane } from '../../../components/ui';
+import { MDBCollapse, MDBPopover, MDBPopoverBody, MDBPopoverHeader } from '../../../components/ui';
+import { TabPane } from '@/components/ui/tab-pane';
 import TagInput from "../../../components/TagInput";
 import Collapsible from '../../../components/Collapsible';
 
@@ -2801,9 +2802,9 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 </nav>
 
-                <MDBTabsContent>
+                <div>
 
-                    <MDBTabsPane show={state.fillActive === '1'}>
+                    <TabPane show={state.fillActive === '1'}>
                         <div className="row">
 
                             <DataTable
@@ -2844,9 +2845,9 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             />
 
                         </div>
-                    </MDBTabsPane>
+                    </TabPane>
 
-                    <MDBTabsPane show={state.fillActive === '2'}>
+                    <TabPane show={state.fillActive === '2'}>
                         <div className="row">
 
                             <DataTable
@@ -2886,9 +2887,9 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             />
 
                         </div>
-                    </MDBTabsPane>
+                    </TabPane>
 
-                    <MDBTabsPane show={state.fillActive === '-1'}>
+                    <TabPane show={state.fillActive === '-1'}>
                         <div className="row">
                             <div className="col-2">
                                 <div className="input-group mb-3">
@@ -2933,11 +2934,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                         <div className="row">
 
                         </div>
-                    </MDBTabsPane>
+                    </TabPane>
                     {
                         /*
     
-    <MDBTabsPane show={state.fillActive === '2'}>
+    <TabPane show={state.fillActive === '2'}>
                         <FUN_MACROTABLE_CLOCKS translation={translation} swaMsg={swaMsg} globals={globals}
                             date_start={date_start}
                             date_end={date_end}
@@ -2953,11 +2954,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             retrieveMacro={retrieveMacro}
                             load={load}
                         />
-                    </MDBTabsPane>
+                    </TabPane>
                         */
                     }
 
-                </MDBTabsContent>
+                </div>
             </div >
         );
 }

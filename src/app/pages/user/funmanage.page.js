@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { MDBTabsContent, MDBTabsPane } from '../../components/ui';
+import { TabPane } from '@/components/ui/tab-pane';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -690,31 +690,31 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     </nav>
 
-                    <MDBTabsContent>
-                        <MDBTabsPane show={fillActive === '4'}>
+                    <div>
+                        <TabPane show={fillActive === '4'}>
                             {mountedTabs['4'] && <FUN_DAILY_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
                                 NAVIGATION_GEN={navigation}
                                 requestUpdate={requestUpdate}
                                 requesRefresh={retrievePublish}
                             />}
-                        </MDBTabsPane>
+                        </TabPane>
 
-                        <MDBTabsPane show={fillActive === '2'}>
+                        <TabPane show={fillActive === '2'}>
                             {mountedTabs['2'] && <SUBMIT_X_FUN translation={translation} globals={globals}
                                 setSubtmitRows={setSubtmitRows}
                                 type={"LIC"}
                                 retrievSingle={retrievSingle}
                                 openModal={openModal}
                                 listIncomplete={list_started} />}
-                        </MDBTabsPane>
-                        <MDBTabsPane show={fillActive === '3'}>
+                        </TabPane>
+                        <TabPane show={fillActive === '3'}>
                             {mountedTabs['3'] && <FUN_ASIGNS_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
                                 NAVIGATION_GEN={navigation}
                                 requestUpdate={requestUpdate}
                                 requesRefresh={retrievePublish}
                             />}
-                        </MDBTabsPane>
-                    </MDBTabsContent>
+                        </TabPane>
+                    </div>
 
                 </div >
 

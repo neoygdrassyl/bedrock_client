@@ -1,6 +1,6 @@
 import ChartErrorBoundary from '../../components/ChartErrorBoundary';
 import { useReducer, useEffect, useRef } from 'react';
-import { MDBTabsPane } from '../../components/ui';
+import { TabPane } from '@/components/ui/tab-pane';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
@@ -1524,7 +1524,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     {/* Tab content */}
                     <div className="mt-2">
-                        <MDBTabsPane show={state.fillActive === '1'}>
+                        <TabPane show={state.fillActive === '1'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1543,8 +1543,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-                        </MDBTabsPane>
-                        <MDBTabsPane show={state.fillActive === '-1'}>
+                        </TabPane>
+                        <TabPane show={state.fillActive === '-1'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1563,8 +1563,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-                        </MDBTabsPane>
-                        <MDBTabsPane show={state.fillActive === '5'}>
+                        </TabPane>
+                        <TabPane show={state.fillActive === '5'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1583,8 +1583,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-                        </MDBTabsPane>
-                        <MDBTabsPane show={state.fillActive === '10'}>
+                        </TabPane>
+                        <TabPane show={state.fillActive === '10'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1603,8 +1603,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-                        </MDBTabsPane>
-                        <MDBTabsPane show={state.fillActive === '50'}>
+                        </TabPane>
+                        <TabPane show={state.fillActive === '50'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1623,8 +1623,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-                        </MDBTabsPane>
-                        <MDBTabsPane show={state.fillActive === '100'}>
+                        </TabPane>
+                        <TabPane show={state.fillActive === '100'}>
                             <div className='my-2'>
                                 <Button variant="outline" size="sm" onClick={() => { generateCVS(state.list_archive, "LICENCIAS ARCHIVADAS") }}>
                                     <Icon name="FileSpreadsheet" size={14} /> Descargar CSV
@@ -1648,7 +1648,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-                        </MDBTabsPane>
+                        </TabPane>
                     </div>
                 </div>
 
