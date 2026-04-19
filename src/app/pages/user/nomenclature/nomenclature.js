@@ -12,6 +12,7 @@ import { dateParser } from '../../../components/customClasses/typeParse'
 import NOMENCLATURE_NEW from './new_nomenclature';
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
@@ -374,7 +375,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         currentItem={currentItem} />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <Button variant="outline" size="sm" onClick={() => toggle()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -399,7 +400,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         refreshList={refreshList}
                         closeModal={toggle_new} />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <Button variant="outline" size="sm" onClick={() => toggle_new()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 

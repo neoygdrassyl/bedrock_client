@@ -13,6 +13,7 @@ import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
@@ -382,7 +383,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                                     ? <>
                                         {_WORKERS_COMPONENT()}
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-warning"><Icon name="user-plus" size={16} /> ASIGNAR </button>
+                                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90"><Icon name="user-plus" size={14} /> Asignar</Button>
                                         </div>
                                     </> : ""}
                             </form>

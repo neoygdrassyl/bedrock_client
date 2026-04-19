@@ -806,7 +806,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                     <h4 className="text-center font-semibold mb-3">GENERAR PQRS</h4>
                                     <p className="app-text-primary text-justify"> Permite la digitalización de una solicitud PQRS</p>
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-success" onClick={() => toggle()}><Icon name="folder-plus" size={16} /> NUEVA SOLICITUD </button>
+                                        <Button size="sm" onClick={() => toggle()}><Icon name="folder-plus" size={14} /> Nueva solicitud</Button>
                                     </div>
                                 </div>
                             </div>
@@ -836,7 +836,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                             <input type="text" className="form-control" id="search_1" />
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-secondary"><Icon name="search-plus" size={16} /> CONSULTAR </button>
+                                            <Button variant="outline" size="sm"><Icon name="search-plus" size={14} /> Consultar</Button>
                                         </div>
                                     </form>
                                 </div>
@@ -862,7 +862,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                                 defaultValue={dayjs().format('YYYY-MM-DD')} />
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-danger"><Icon name="th" size={16} /> CARGAR </button>
+                                            <Button variant="destructive" size="sm"><Icon name="th" size={14} /> Cargar</Button>
                                         </div>
                                     </form>
                                 </div>

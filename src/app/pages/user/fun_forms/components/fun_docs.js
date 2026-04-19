@@ -326,7 +326,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             {attachs > 0
                                 ? <div className="row text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-warning btn-lg my-3"><Icon name="file-alt" size={16} /> AÑADIR {attachs} DOCUMENTO(S)</button>
+                                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3"><Icon name="file-alt" size={14} /> Añadir {attachs} documento(s)</Button>
                                     </div>
                                 </div> : ""}
                         </form>

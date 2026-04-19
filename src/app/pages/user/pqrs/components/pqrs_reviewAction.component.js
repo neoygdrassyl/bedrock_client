@@ -4,6 +4,7 @@ import { LegacyModal as Modal } from '@/components/legacy-modal';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars'
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalError } from '@/app/utils/swalAdapter';
 
 const customStyles = {};
@@ -506,8 +507,8 @@ export const PQRS_ACTION_REVIEW = (props) => {
                     : "CARGARGANDO..."}
 
                 <div className="text-end py-4 mt-3">
-                    <button className="btn btn-lg btn-info" onClick={() => setModal(prev => !prev)}>
-                        <Icon name="times-circle" size={16} /> CERRAR </button>
+                    <Button variant="outline" size="sm" onClick={() => setModal(prev => !prev)}>
+                        <Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
         </div>

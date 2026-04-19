@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
 
 import RECORD_ARCSERVICE from '../../../services/record_arc.service';
 import RECORD_LAW_SERVICE from '../../../services/record_law.service';
@@ -608,7 +610,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
 
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <button className="btn btn-info btn-lg" onClick={() => new_record_arc()}> GENERAR INFORME EN BLANCO</button>
+                                        <Button size="sm" onClick={() => new_record_arc()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
                                     </div>
                                 </fieldset>
 

@@ -549,7 +549,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   </div>
                 </div>
                 <div className="text-center py-1 mt-1">
-                  <button className="btn btn-lg btn-info"> Enviar </button>
+                  <Button size="sm"><Icon name="Send" size={14} /> Enviar</Button>
                 </div>
 
 
@@ -705,7 +705,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
           {Edit_components()}
 
           <div className="text-end py-4 mt-3">
-            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><Icon name="times-circle" size={16} /> CERRAR </button>
+            <Button variant="outline" size="sm" onClick={() => toggleManage()}><Icon name="X" size={14} /> Cerrar</Button>
           </div>
         </Modal>
       </div>

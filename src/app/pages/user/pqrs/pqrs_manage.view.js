@@ -28,6 +28,7 @@ import cubXvrService from '../../../services/cubXvr.service';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -939,7 +940,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 ? <>
                                     {_WORKERS_COMPONENT()}
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-warning"><Icon name="user-plus" size={16} /> ASIGNAR </button>
+                                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90"><Icon name="user-plus" size={14} /> Asignar</Button>
                                     </div>
                                 </> : ""}
                         </form>

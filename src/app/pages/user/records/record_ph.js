@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import RECORD_PH_SERVICE from '../../../services/record_ph.service';
@@ -361,7 +363,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
 
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <button className="btn btn-info btn-lg" onClick={() => new_record_ph()}> GENERAR INFORME EN BLANCO</button>
+                                        <Button size="sm" onClick={() => new_record_ph()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
                                     </div>
                                 </fieldset>
 

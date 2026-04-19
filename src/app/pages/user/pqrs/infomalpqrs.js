@@ -8,6 +8,7 @@ import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentId, currentItemAsign, refreshList: refreshListProp, closeModal, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
@@ -179,9 +180,9 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                 <label className="app-p lead text-start fw-bold">ANEXAR DOCUMENTO</label>
                                 <div className="text-end m-3">
                                     {attachs > 0
-                                        ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
+                                        ? <Button type="button" variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={14} /> Remover último</Button>
                                         : ""}
-                                    <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button>
+                                    <Button type="button" variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={14} /> Añadir otro</Button>
                                 </div>
                                 {_ATTACHS_COMPONENT()}
 
@@ -199,7 +200,7 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                     </div>
                                 </div>
                                 <div className="text-center py-4 mt-3">
-                                    <button className="btn btn-lg btn-success"><Icon name="reply" size={16} /> RESPONDER </button>
+                                    <Button size="sm"><Icon name="reply" size={14} /> Responder</Button>
                                 </div>
                             </form></> : <fieldset className="p-3" id="fung_0">
                             <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORMACIÓN, INTÉNTELO NUEVAMENTE</h3></div>

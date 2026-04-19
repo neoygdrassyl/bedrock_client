@@ -1,5 +1,6 @@
 
 import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import { useState, useEffect } from 'react';
 import DataTable from '@/components/data-table-bridge';
@@ -168,7 +169,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                             {WOERKER_FEEBACK_COMPONENT()}
                             <div className="row d-flex justify-content-center">
                                 <div className="col-4 text-center">
-                                    <button className="btn btn-lg btn-success"><Icon name="check-square" size={16} /> DAR VISTO </button>
+                                    <Button size="sm"><Icon name="check-square" size={14} /> Dar visto</Button>
                                 </div>
                             </div>
                         </form>
