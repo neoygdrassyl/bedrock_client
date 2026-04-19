@@ -13,14 +13,8 @@ class DataService {
         return window.user.roleDesc
     }
     getUserData(){
-        return {
-            id: window.user.id,
-            name: window.user.name,
-            surname: window.user.surname,
-            role: window.user.role,
-            active: window.user.active,
-            roleId: window.user.roleId,
-        }
+        if (!window.user) return null;
+        return { ...window.user };
     }
     setUser(userData){
         window.user = userData;

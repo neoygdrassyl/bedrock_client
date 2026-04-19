@@ -3,7 +3,7 @@
  * Defines the icon rail items, role visibility, routes, and legacy redirects.
  */
 
-/** @typedef {'ADMIN' | 'AUX' | 'USER'} RoleShort */
+/** @typedef {'ADMIN' | 'ADM' | 'AUX' | 'USER'} RoleShort */
 
 /**
  * All navigation items. `roles` array defines who can see each item.
@@ -107,10 +107,18 @@ const NAV_ITEMS = [
  * @param {RoleShort | null} role
  * @returns {typeof NAV_ITEMS}
  */
+function normalizeRoleCode(role) {
+  if (!role) return null;
+  const normalized = String(role).toUpperCase();
+  if (normalized === 'ADM') return 'ADMIN';
+  return normalized;
+}
+
 export function getNavItems(role) {
-  if (!role) return NAV_ITEMS;
+  const normalizedRole = normalizeRoleCode(role);
+  if (!normalizedRole) return NAV_ITEMS;
   return NAV_ITEMS.filter(
-    (item) => item.roles.length === 0 || item.roles.includes(role)
+    (item) => item.roles.length === 0 || item.roles.includes(normalizedRole)
   );
 }
 
