@@ -1,15 +1,13 @@
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import CubXVrDataService from '../../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 export const PQRS_SET_REPLY1 = (props) => {
     const { currentItem } = props;
 
@@ -135,12 +133,7 @@ export const PQRS_SET_REPLY1 = (props) => {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este ítem, intentelo nuevamente." });
                 setState({
                     load: false
                 })
@@ -185,13 +178,7 @@ export const PQRS_SET_REPLY1 = (props) => {
             PQRS_Service.formalReply(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.retrieveItem(currentItem.id);
                         props.refreshList();
                         if (hardReset) {
@@ -199,20 +186,10 @@ export const PQRS_SET_REPLY1 = (props) => {
                         }
 
                     } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACIÓN",
-                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACIÓN", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
@@ -220,11 +197,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 });
 
         } else {
-            MySwal.fire({
-                title: "NO HAY CONSECUTIVO DE SALIDA",
-                text: "Se debe de espeficiar primero el consecutivo de Salida.",
-                icon: 'error',
-            });
+            swalError({ title: "NO HAY CONSECUTIVO DE SALIDA", text: "Se debe de espeficiar primero el consecutivo de Salida." });
         }
 
     };
@@ -255,12 +228,7 @@ export const PQRS_SET_REPLY1 = (props) => {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
             });
     }
     let createVRxCUB_relation = (cub_selected) => {

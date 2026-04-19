@@ -1,13 +1,11 @@
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { dateParser } from '../../../../components/customClasses/typeParse'
 import { cities } from '../../../../components/jsons/vars';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
-const MySwal = withReactContent(Swal);
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
         var formData = new FormData();
 
@@ -197,34 +195,19 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
             let city = document.getElementById("pqrs_reply_city").value;
             formData.set('city', city);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.request_pdfReply(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (

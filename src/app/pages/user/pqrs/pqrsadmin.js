@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../components/customClasses/typeParse'
 import { LegacyModal as Modal } from '@/components/legacy-modal';
@@ -46,8 +44,7 @@ import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
 import { Icon } from '@/components/icon';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-const MySwal = withReactContent(Swal);
-
+import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
 function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums }) {
     // State
     const [error, setError] = useState(null);
@@ -798,19 +795,14 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             let serach_str = document.getElementById("search_1").value;
             formData.set('serach_str', serach_str);
             if (serach_str) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 PQRS_Main.search(formData)
                     .then(response => {
                         //asignLists(response.data);
                         // asignListsWorkers(response.data);
                         setItemsSearch(response.data);
                         setIsloadedSearch(true);
-                        MySwal.close();
+                        swalClose();
                     })
                     .catch(e => {
                         console.log(e);

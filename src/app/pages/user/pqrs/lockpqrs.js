@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
 import DataTable from '@/components/data-table-bridge';
 import PQRS_COMPONENT_REPLIES_PROFESIONAL_2 from './components/pqrs_replies_3.component';
@@ -21,8 +19,7 @@ import Collapsible from '../../../components/Collapsible';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
-const MySwal = withReactContent(Swal);
-
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, refreshList: propRefreshList, NAVIGATION }) {
     const [attachs, setAttachs] = useState(0);
     const [attachsForEmails, setAttachsForEmails] = useState(0);
@@ -38,12 +35,7 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                 setLoad(false);
             });
     }, [swaMsg]);
@@ -173,21 +165,9 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
 
         let lockPQRS = (e) => {
             e.preventDefault();
-            MySwal.fire({
-                title: "CERRAR PETICION " + currentItem.id_publico,
-                text: "¿Esta seguro de cerrar esta peticion?",
-                icon: 'warning',
-                confirmButtonText: "CERRAR",
-                cancelButtonText: "CANCELAR",
-                showCancelButton: true
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "CERRAR PETICION ", text: "¿Esta seguro de cerrar esta peticion?", icon: 'warning', confirmButtonText: "CERRAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     formData = new FormData();
                     formData.set('id_master', currentItem.id);
                     formData.set('id_reply', currentItem.id_reply);
@@ -212,21 +192,11 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     PQRS_Service.close(formData)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.generic_success_title,
-                                    text: swaMsg.generic_success_text,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                                 retrieveItem(currentItem.id)
                                 refreshList()
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
@@ -254,30 +224,15 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
             }
             formData.set('files_names', array_form);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.addAttachsClose(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                         retrieveItem(currentItem.id)
                         setAttachs(0);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
@@ -286,38 +241,16 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
         }
 
         let deteleAttach = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ITEM",
-                text: "¿Esta seguro de eliminar este item de forma permanente?",
-                icon: 'warning',
-                confirmButtonText: "ELIMINAR",
-                cancelButtonText: "CANCELAR",
-                showCancelButton: true
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ITEM", text: "¿Esta seguro de eliminar este item de forma permanente?", icon: 'warning', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     PQRS_Service.deleteAttach(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.generic_success_title,
-                                    text: swaMsg.generic_success_text,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                                 retrieveItem(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {

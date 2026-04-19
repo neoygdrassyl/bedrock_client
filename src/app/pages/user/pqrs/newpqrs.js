@@ -1,13 +1,10 @@
 import { useState } from 'react';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
-const MySwal = withReactContent(Swal);
-
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshRequested }) {
     const [solicitors, setSolicitors] = useState(1);
     const [contacts, setContacts] = useState(1);
@@ -342,50 +339,25 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
             }
             */
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                         clearForm();
                         refreshRequested();
                     }
                     else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
 
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         };
 
@@ -404,12 +376,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }

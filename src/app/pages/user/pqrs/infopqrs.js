@@ -11,15 +11,12 @@ import PQRS_COMPONENT_ATTACH_PROFESIONAL from './components/pqrs_attach_pro.comp
 import PQRS_COMPONENT_REPLIES_TOSOLICITOR from './components/pqrs_replies_2.component';
 import PQRS_Service from '../../../services/pqrs_main.service';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import { PQRS_COMPONENT_REPLIES_PROFESIONAL1 } from './components/pqrs_replices_11.component';
 import { PQRS_COMPONENT_REPLIES_TOSOLICITOR2 } from './components/pqrs_replies_22.component';
 import { Icon } from '@/components/icon';
-const MySwal = withReactContent(Swal);
-
+import { swalError } from '@/app/utils/swalAdapter';
 function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
@@ -36,12 +33,7 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este ítem, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este ítem, inténtelo nuevamente." });
                 setLoad(false);
             });
     };

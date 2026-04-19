@@ -4,11 +4,9 @@ import Icon from '@/components/icon';
 import { useState, useEffect } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_WORKERS_EMAILS from './pqrs_workersEmails.component'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentItem, retrieveItem, refreshList }) {
     const [feedback, setFeedback] = useState(false);
     const [worker, setWorker] = useState(false);
@@ -142,42 +140,21 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
             let feedback_argument = document.getElementById("pqrs_worker_feeback_3").value;
             if (feedback_argument) formData.set('feedback_argument', feedback_argument);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.updateWorker(feedback.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         retrieveItem(currentItem.id);
                         refreshList();
                         setFeedback(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 

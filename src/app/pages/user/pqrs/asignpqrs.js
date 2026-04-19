@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
 import USERS_Service from '../../../services/users.service'
 import DataTable from '@/components/data-table-bridge';
@@ -15,8 +13,7 @@ import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
-const MySwal = withReactContent(Swal);
-
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
@@ -36,12 +33,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                 setLoad(false);
             });
         USERS_Service.getAll()
@@ -50,12 +42,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                 setLoad(false);
             });
     };
@@ -291,77 +278,36 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                 let competence = document.getElementById('pqrs_worker_3').value;
                 formData.set('competence', competence);
 
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 PQRS_Service.createWorker(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                             clearForm();
                             retrieveItem(currentItem.id)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
                     });
             } else {
-                MySwal.fire({
-                    title: "NO ES POSIBLE ASIGNAR",
-                    text: "Este profesional ya fue asignado a esta solicitud, los profesionales solo pueden ser asignador una vez por solicitud.",
-                    icon: 'error',
-                });
+                swalError({ title: "NO ES POSIBLE ASIGNAR", text: "Este profesional ya fue asignado a esta solicitud, los profesionales solo pueden ser asignador una vez por solicitud." });
             }
         };
         let removeAsign = (id) => {
-            MySwal.fire({
-                title: "REMOVER PROFESIONAL ",
-                text: "¿Está seguro de remover este profesional de la Peticion?",
-                icon: 'warning',
-                confirmButtonText: "REMOVER",
-                cancelButtonText: "CANCELAR",
-                showCancelButton: true
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "REMOVER PROFESIONAL ", text: "¿Está seguro de remover este profesional de la Peticion?", icon: 'warning', confirmButtonText: "REMOVER" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     PQRS_Service.deleteWorker(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.generic_success_title,
-                                    text: swaMsg.generic_success_text,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                                 clearForm();
                                 retrieveItem(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
@@ -384,34 +330,19 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
             let body = document.getElementById("pqrs_confirmation_doc_body").value;
             formData.set('body', body);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.request_pdfConfirmation(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
