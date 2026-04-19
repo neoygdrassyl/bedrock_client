@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import dayjs from 'dayjs';
 
 import { useClocksManager, useScheduleConfig } from './hooks/useClocksManager';
@@ -12,7 +10,7 @@ import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
 import { ScheduleModal } from './components/ScheduleModal';
 import { AlarmsWidget } from './components/AlarmsWidget';
-import { ToolsMenu } from './components/ToolsMenu'; // Importamos el nuevo menú
+import { ToolsMenu } from './components/ToolsMenu';
 import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles, sumarDiasHabiles } from './hooks/useClocksManager';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
@@ -24,8 +22,7 @@ import './centralClocks.css';
 import './gantt.css';
 import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
-import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose } from '../../../utils/swalAdapter';
+import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose, swalFormDialog, Swal } from '../../../utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
@@ -493,7 +490,7 @@ export default function EXP_CLOCKS(props) {
         ? `<div class="col-12"><label class="form-label">Ubicación</label><select id="susp_type" class="form-select">${availableSuspensionTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}</select></div>`
         : `<input type="hidden" id="susp_type" value="${availableSuspensionTypes[0].value}">`;
 
-      MySwal.fire({
+      swalFormDialog({
         title: 'Nueva Suspensión de Términos',
         html: `<div class="row g-3">
             <div class="col-12"><div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Días disponibles: <strong>${availableDays}</strong></div></div>
@@ -501,7 +498,6 @@ export default function EXP_CLOCKS(props) {
             <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="susp_start" class="form-control" value="${systemDate}"/></div>
             <div class="col-12"><label class="form-label">Información Adicional</label><textarea id="susp_info" class="form-control" rows="3" placeholder="Detalles..."></textarea></div>
           </div>`,
-        showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
         preConfirm: () => {
           const suspType = document.getElementById('susp_type').value;
           const startDate = document.getElementById('susp_start').value;
@@ -524,14 +520,13 @@ export default function EXP_CLOCKS(props) {
       });
 
     } else if (type === 'extension') {
-      MySwal.fire({
+      swalFormDialog({
         title: 'Nueva Prórroga por Complejidad',
         html: `<div class="row g-3">
                 <div class="col-12"><div class="alert alert-info"><i class="fas fa-clock me-2"></i>Otorga hasta <strong>22 días hábiles</strong> adicionales.</div></div>
                 <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="ext_start" class="form-control" value="${systemDate}"/></div>
                 <div class="col-12"><label class="form-label">Fecha de Fin (Opcional)</label><input type="date" id="ext_end" class="form-control"/></div>
             </div>`,
-        showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
         preConfirm: () => {
           const startDate = document.getElementById('ext_start').value;
           const endDate = document.getElementById('ext_end').value;
@@ -596,17 +591,17 @@ export default function EXP_CLOCKS(props) {
       }
     });
 
-    MySwal.fire({
+    swalFormDialog({
       title: 'Programar Tiempos del Proceso',
       html: modalContainer,
-      width: '90vw', // Usamos un ancho relativo al viewport para mayor espacio
-      showCancelButton: true,
+      width: '90vw',
       showDenyButton: hasSchedule,
-      confirmButtonText: '<Icon name="save" size={16} className="me-2" />Guardar Programación',
-      cancelButtonText: 'Cancelar',
-      denyButtonText: '<Icon name="trash" size={16} className="me-2" />Eliminar Programación',
+      confirmButtonText: 'Guardar Programación',
+      denyButtonText: 'Eliminar Programación',
       customClass: {
-        popup: 'schedule-modal-popup', // Clase para control de altura y scroll
+        popup: 'swal2-themed schedule-modal-popup',
+        confirmButton: 'swal2-confirm-themed',
+        cancelButton: 'swal2-cancel-themed',
       },
       didOpen: () => {
         const modalRoot = createRoot(modalContainer);

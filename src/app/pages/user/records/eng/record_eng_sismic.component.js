@@ -2,13 +2,10 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Button } from '@/components/ui/button';
 import React, { useState, useEffect } from 'react';
 import DataTable from '@/components/data-table-bridge';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess, swalFormDialog } from '@/app/utils/swalAdapter';
 
 function RECORD_ENG_SISMIC(props) {
     const [isNew, setIsNew] = useState(false);
@@ -307,14 +304,13 @@ function RECORD_ENG_SISMIC(props) {
         else if (dir == 'up' && sort == 'desc') op = '-1';
         else if (dir == 'dw' && sort == 'desc') op = '0';
 
-        const { value: formValues } = await MySwal.fire({
+        const { value: formValues } = await swalFormDialog({
             title: `${isCopy ? 'COPIAR' : 'AÑADIR'} ITEMS`,
             input: 'text',
             icon: 'question',
             confirmButtonText: `${isCopy ? 'COPIAR' : 'AÑADIR'}`,
             inputLabel: `Especifique la cantidad de Items a ${isCopy ? 'copiar' : 'añadir'}`,
             inputValue: '1',
-            showCancelButton: true,
             cancelButtonText: "CANCELAR",
             inputValidator: (value) => {
                 let n = Number(value)

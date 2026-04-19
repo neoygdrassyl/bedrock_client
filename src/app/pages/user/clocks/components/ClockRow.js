@@ -1,12 +1,9 @@
 import React, { useState, useCallback, useMemo, memo } from 'react';
 import dayjs from 'dayjs';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
 import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 import { Icon } from '@/components/icon';
-
-const MySwal = withReactContent(Swal);
+import { swalFormDialog } from '../../../../utils/swalAdapter';
 
 // --- Anchos de columna centralizados ---
 const COL_WIDTHS = {
@@ -538,7 +535,7 @@ export const ClockRow = memo((props) => {
             existingObs = clock.desc.split('|| OBS:')[1].trim();
         }
 
-        MySwal.fire({
+        swalFormDialog({
             html: `
             <div class="time-detail-modal">
                 <div class="tdm-header">
@@ -594,12 +591,12 @@ export const ClockRow = memo((props) => {
             </div>
             `,
             showCloseButton: true,
-            showCancelButton: true,
-            confirmButtonText: '<Icon name="save" size={16} className="me-2" />Guardar Observación',
-            confirmButtonColor: '#1971c2',
+            confirmButtonText: 'Guardar Observación',
             cancelButtonText: 'Cerrar',
             customClass: {
-                popup: 'tdm-popup',
+                popup: 'swal2-themed tdm-popup',
+                confirmButton: 'swal2-confirm-themed',
+                cancelButton: 'swal2-cancel-themed',
                 htmlContainer: 'tdm-container'
             },
             width: 600,

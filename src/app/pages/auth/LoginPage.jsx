@@ -2,13 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ReCAPTCHA from 'react-google-recaptcha';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import CustomsDataService from '@/app/services/custom.service';
 import DataSerive from '@/app/services/data.service';
 import { infoCud } from '@/app/components/jsons/vars';
-
-const MySwal = withReactContent(Swal);
+import { swalError } from '@/app/utils/swalAdapter';
 
 /**
  * Login page — split-screen layout with brand panel + form panel.
@@ -31,13 +28,7 @@ export default function LoginPage({ signin }) {
     event.preventDefault();
 
     const showAuthError = ({ title, text, footer }) => {
-      MySwal.fire({
-        title,
-        text,
-        footer,
-        icon: 'error',
-        confirmButtonText: 'CONTINUAR',
-      });
+      swalError({ title, text, footer, icon: 'error' });
     };
 
     recaptchaRef.current

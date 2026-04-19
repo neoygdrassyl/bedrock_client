@@ -1,10 +1,7 @@
 import { useState, useMemo } from 'react';
 import dayjs from 'dayjs';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import { Icon } from '@/components/icon';
-
-const MySwal = withReactContent(Swal);
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 // --- Componente para una fila de la tabla en el modal ---
 const AlarmTableRow = ({ alarm }) => {
@@ -130,27 +127,16 @@ const AlarmPreviewCard = ({ alarm }) => {
 
 // --- Componente principal del Widget ACTUALIZADO ---
 export const AlarmsWidget = ({ alarms, onClose }) => {
-    
-    const openExpandedModal = () => {
-        MySwal.fire({
-            html: <ExpandedAlarmsModal alarms={alarms} />,
-            showCloseButton: true,
-            showConfirmButton: false,
-            width: '90vw',
-            customClass: {
-                popup: 'alarm-modal-popup',
-                htmlContainer: 'alarm-modal-container',
-            }
-        });
-    };
+    const [showExpanded, setShowExpanded] = useState(false);
 
     return (
+        <>
         <div className="alarms-widget-preview">
             <div className="widget-preview-header">
                 <Icon name="bell-on" size={16} />
                 <h5>Alertas ({alarms.length})</h5>
                 <div className="widget-preview-actions">
-                    <button onClick={openExpandedModal} className="btn-expand" title="Ver todas las alertas">
+                    <button onClick={() => setShowExpanded(true)} className="btn-expand" title="Ver todas las alertas">
                         <Icon name="expand-alt" size={16} className="me-1" /> Expandir
                     </button>
                     <button onClick={onClose} className="btn-close-widget" title="Cerrar">
@@ -170,6 +156,12 @@ export const AlarmsWidget = ({ alarms, onClose }) => {
                 )}
             </div>
         </div>
+        <Dialog open={showExpanded} onOpenChange={setShowExpanded}>
+            <DialogContent className="alarm-modal-popup" style={{ maxWidth: '90vw', width: '90vw' }}>
+                <ExpandedAlarmsModal alarms={alarms} />
+            </DialogContent>
+        </Dialog>
+        </>
     );
 };
 

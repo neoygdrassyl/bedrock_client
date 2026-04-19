@@ -72,3 +72,23 @@ export function swalInfo(opts = {}) {
     ...opts,
   });
 }
+
+/**
+ * Form dialog with HTML content and preConfirm validation.
+ * For dialogs that collect user input via HTML form elements.
+ * Supports preConfirm, Swal.showValidationMessage, and all Swal options.
+ */
+export function swalFormDialog(opts = {}) {
+  return Swal.fire({
+    ...BASE,
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+    ...opts,
+  });
+}
+
+/**
+ * Re-export Swal for advanced usage (showValidationMessage, etc.)
+ */
+export { Swal };

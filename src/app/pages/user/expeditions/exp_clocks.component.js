@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
@@ -8,8 +6,7 @@ import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
-import { swalLoading, swalSuccess, swalError, swalInfo } from '../../../utils/swalAdapter';
+import { swalLoading, swalSuccess, swalError, swalInfo, swalFormDialog, Swal } from '../../../utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
@@ -647,7 +644,7 @@ export default function EXP_CLOCKS(props) {
       } else {
         typeSelectHtml = `<input type="hidden" id="susp_type" value="${availableTypes[0].value}">`;
       }
-      MySwal.fire({
+      swalFormDialog({
         title: 'Nueva Suspensión de Términos',
         html: `
           <div className="row g-3">
@@ -668,9 +665,6 @@ export default function EXP_CLOCKS(props) {
             </div>
           </div>
         `,
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        cancelButtonText: 'Cancelar',
         preConfirm: () => {
           const suspType = document.getElementById('susp_type').value;
           const startDate = document.getElementById('susp_start').value;
@@ -707,7 +701,7 @@ export default function EXP_CLOCKS(props) {
       });
 
     } else if (type === 'extension') {
-      MySwal.fire({
+      swalFormDialog({
         title: 'Nueva Prórroga por Complejidad',
         html: `
           <div className="row g-3">
@@ -723,9 +717,6 @@ export default function EXP_CLOCKS(props) {
             </div>
           </div>
         `,
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        cancelButtonText: 'Cancelar',
         preConfirm: () => {
           const startDate = document.getElementById('ext_start').value;
           if (!startDate) {
