@@ -160,15 +160,15 @@ button:where(:not(.btn):not([class*="btn-"]):not(.Collapsible__trigger)) {
   color: var(--bs-body-color);
 }
 
-/* Font scales (hardcoded from fontZise3 — default scale) */
-p { font-size: 16px; }
-.app-p { font-size: 19px; }
-h1 { font-size: 32px; }
-h2 { font-size: 24px; }
-h3 { font-size: 19px; }
-h4 { font-size: 16px; }
-h5 { font-size: 14px; }
-h6 { font-size: 12px; }
+/* Font scales — tighter to match redesign density */
+p { font-size: 14px; }
+.app-p { font-size: 16px; }
+h1 { font-size: 22px; }
+h2 { font-size: 18px; }
+h3 { font-size: 15px; }
+h4 { font-size: 14px; }
+h5 { font-size: 12px; }
+h6 { font-size: 11px; }
 
 /* ── Legacy Bridge ──────────────────────────────────────────────────
    Bootstrap component overrides now consolidated in

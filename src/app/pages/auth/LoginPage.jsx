@@ -128,78 +128,79 @@ export default function LoginPage({ signin }) {
   // ── UI — Split-screen layout ────────────────────────────────────────
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-background">
       {/* Brand panel — left side (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-2/5 bg-gradient-to-br from-primary via-primary to-primary/80 items-center justify-center p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-[hsl(var(--primary))] via-[hsl(221,83%,45%)] to-[hsl(221,80%,35%)] items-center justify-center p-12 relative overflow-hidden">
         {/* Geometric background pattern */}
-        <div className="absolute inset-0 opacity-[0.06]">
-          <div className="absolute top-0 right-0 w-96 h-96 rounded-full border-2 border-white translate-x-1/3 -translate-y-1/3" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full border-2 border-white -translate-x-1/4 translate-y-1/4" />
-          <div className="absolute top-1/2 left-1/2 w-48 h-48 rounded-full border border-white -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute inset-0 opacity-[0.04]">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full border border-white translate-x-1/3 -translate-y-1/3" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full border border-white -translate-x-1/4 translate-y-1/4" />
+          <div className="absolute top-1/2 left-1/2 w-56 h-56 rounded-full border border-white/50 -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-1/4 right-1/4 w-32 h-32 rounded-full border border-white/30" />
         </div>
 
-        <div className="text-center text-primary-foreground relative z-10">
+        <div className="text-center text-white relative z-10 max-w-sm">
           {/* Institution logo */}
-          <div className="mb-8">
+          <div className="mb-10">
             {infoCud.icon ? (
               <img
                 src={infoCud.icon}
                 alt="Logo institucional"
-                className="w-28 h-28 object-contain mx-auto mb-6 drop-shadow-xl rounded-2xl bg-white/15 backdrop-blur-sm p-3"
+                className="w-32 h-32 object-contain mx-auto drop-shadow-2xl rounded-2xl bg-white/10 backdrop-blur-sm p-4"
               />
             ) : (
-              <div className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-6">
-                <span className="text-4xl font-semibold text-white">D</span>
+              <div className="w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto">
+                <span className="text-5xl font-bold text-white">D</span>
               </div>
             )}
           </div>
-          <h1 className="text-2xl font-bold tracking-tight mb-2">{infoCud.name}</h1>
-          <p className="text-primary-foreground/70 text-sm">
+          <h1 className="text-xl font-semibold tracking-tight mb-2 text-white/95">{infoCud.name}</h1>
+          <p className="text-white/50 text-sm">
             {infoCud.city}{infoCud.state ? `, ${infoCud.state}` : ''}
           </p>
           {infoCud.dir && (
-            <p className="text-primary-foreground/50 text-xs mt-4">{infoCud.dir}</p>
+            <p className="text-white/30 text-xs mt-6">{infoCud.dir}</p>
           )}
         </div>
       </div>
 
       {/* Form panel — right side */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-background">
-        <div className="w-full max-w-sm space-y-8 animate-[fadeInUp_0.4s_ease-out]">
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-[340px] space-y-8 animate-[fadeInUp_0.3s_ease-out]">
           {/* Mobile logo (visible only on small screens) */}
-          <div className="lg:hidden text-center mb-8">
+          <div className="lg:hidden text-center mb-6">
             {infoCud.icon ? (
               <img
                 src={infoCud.icon}
                 alt="Logo institucional"
-                className="w-16 h-16 object-contain mx-auto mb-4 rounded-xl bg-primary/5 p-1"
+                className="w-14 h-14 object-contain mx-auto mb-3 rounded-xl bg-primary/5 p-1"
               />
             ) : (
-              <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center mx-auto mb-3">
                 <span className="text-2xl font-semibold text-primary-foreground">D</span>
               </div>
             )}
-            <h1 className="text-lg font-semibold text-foreground">{infoCud.name}</h1>
+            <h1 className="text-base font-semibold text-foreground">{infoCud.name}</h1>
           </div>
 
           {/* Form heading */}
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">Iniciar sesión</h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h2 className="text-xl font-semibold text-foreground tracking-tight">Iniciar sesión</h2>
+            <p className="text-[13px] text-muted-foreground/70 mt-1">
               Ingrese sus credenciales para continuar
             </p>
           </div>
 
           {/* Login form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-[13px] font-medium text-foreground">
                 Correo electrónico
               </label>
               <input
                 type="email"
                 id="email"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors"
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition-all"
                 placeholder="nombre@ejemplo.com"
                 autoComplete="email"
                 onChange={(e) => {
@@ -208,14 +209,14 @@ export default function LoginPage({ signin }) {
               />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-foreground">
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-[13px] font-medium text-foreground">
                 Contraseña
               </label>
               <input
                 type="password"
                 id="password"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors"
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition-all"
                 placeholder="••••••••"
                 autoComplete="current-password"
                 onChange={(e) => {
@@ -226,7 +227,7 @@ export default function LoginPage({ signin }) {
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 w-full border-0 bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 w-full border-0 bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition-all shadow-sm"
             >
               Iniciar sesión
             </button>
@@ -239,7 +240,7 @@ export default function LoginPage({ signin }) {
           </form>
 
           {/* Footer branding */}
-          <p className="text-center text-xs text-muted-foreground pt-4">
+          <p className="text-center text-[10px] text-muted-foreground/40 pt-2">
             Powered by <span className="font-medium">Dovela</span>
           </p>
         </div>

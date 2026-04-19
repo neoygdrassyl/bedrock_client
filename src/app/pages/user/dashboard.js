@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 
 import FUNService from '../../services/fun.service';
 import PqrsMainService from '../../services/pqrs_main.service';
@@ -29,21 +30,18 @@ const CARD_COLORS = {
 };
 
 const ICON_COLORS = {
-  '/licencias': 'bg-primary/10 text-primary group-hover:bg-primary',
-  '/licencias/gestion': 'bg-primary/10 text-primary group-hover:bg-primary',
-  '/licencias/gestion-nueva': 'bg-primary/10 text-primary group-hover:bg-primary',
-  '/peticiones': 'bg-warning/10 text-warning group-hover:bg-warning',
-  '/ventanilla': 'bg-accent/10 text-accent group-hover:bg-accent',
-  '/calendario': 'bg-accent/10 text-accent group-hover:bg-accent',
-  '/normas': 'bg-primary/10 text-primary group-hover:bg-primary',
-  '/uso-suelo': 'bg-accent/10 text-accent group-hover:bg-accent',
+  '/licencias': 'bg-primary/8 text-primary',
+  '/licencias/gestion': 'bg-primary/8 text-primary',
+  '/licencias/gestion-nueva': 'bg-primary/8 text-primary',
+  '/peticiones': 'bg-warning/8 text-warning',
+  '/ventanilla': 'bg-accent/8 text-accent',
+  '/calendario': 'bg-accent/8 text-accent',
+  '/normas': 'bg-primary/8 text-primary',
+  '/uso-suelo': 'bg-accent/8 text-accent',
 };
 
-const DEFAULT_ICON_COLOR = 'bg-muted text-muted-foreground group-hover:bg-muted-foreground';
+const DEFAULT_ICON_COLOR = 'bg-muted/60 text-muted-foreground';
 
-/**
- * Formats a greeting based on time of day.
- */
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return 'Buenos días';
@@ -51,9 +49,6 @@ function getGreeting() {
   return 'Buenas noches';
 }
 
-/**
- * Format current date in Spanish.
- */
 function getFormattedDate() {
   const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -62,8 +57,8 @@ function getFormattedDate() {
 }
 
 /**
- * Dashboard — modern card grid with Lucide icons and role-based modules.
- * Uses new Spanish routes and shadcn/ui Card components.
+ * Dashboard — card grid with real-time counts, role-based modules.
+ * Visual reference: Vercel dashboard cards + Stripe data density.
  */
 function Dashboard({ breadCrums }) {
   const [counts, setCounts] = useState({});
@@ -96,7 +91,7 @@ function Dashboard({ breadCrums }) {
           '/calendario': len(results[4]),
         });
       } catch {
-        // Silently fail — counts are optional enhancement
+        // Counts are optional enhancement
       } finally {
         if (!cancelled) setLoadingCounts(false);
       }
@@ -133,17 +128,17 @@ function Dashboard({ breadCrums }) {
   ];
 
   return (
-    <div className="space-y-8 p-2 md:p-4">
-      {/* Page heading with greeting */}
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">{getGreeting()}</h1>
-        <p className="text-sm text-muted-foreground">{getFormattedDate()}</p>
+    <div className="space-y-6 max-w-6xl">
+      {/* Greeting */}
+      <div className="flex flex-col gap-0.5">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{getGreeting()}</h1>
+        <p className="text-xs text-muted-foreground/70">{getFormattedDate()}</p>
       </div>
 
       {/* Operation & Management */}
-      <section className="space-y-3">
-        <SectionHeader title="Operación y Gestión" subtitle={`${workModules.length} módulos`} />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      <section className="space-y-2.5">
+        <SectionHeader title="Operación y Gestión" count={workModules.length} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
           {workModules.map((mod) => (
             <ModuleCard key={mod.link} {...mod} count={counts[mod.link]} loadingCount={loadingCounts} />
           ))}
@@ -151,9 +146,9 @@ function Dashboard({ breadCrums }) {
       </section>
 
       {/* Utilities */}
-      <section className="space-y-3">
-        <SectionHeader title="Utilidades y Documentación" subtitle="Soporte y consulta" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      <section className="space-y-2.5">
+        <SectionHeader title="Utilidades y Documentación" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
           {utilityModules.map((mod) => (
             <ModuleCard key={mod.link} {...mod} />
           ))}
@@ -163,58 +158,52 @@ function Dashboard({ breadCrums }) {
   );
 }
 
-/**
- * Section header with title and count/subtitle badge.
- */
-function SectionHeader({ title, subtitle }) {
+function SectionHeader({ title, count }) {
   return (
-    <div className="flex items-center gap-3">
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="flex items-center gap-2.5">
+      <h2 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60">
         {title}
       </h2>
-      <div className="flex-1 border-t border-border/40" />
-      {subtitle && (
-        <span className="text-[10px] text-muted-foreground/50 font-medium">{subtitle}</span>
+      {count != null && (
+        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-normal rounded-full">
+          {count}
+        </Badge>
       )}
+      <div className="flex-1 border-t border-border/30" />
     </div>
   );
 }
 
-/**
- * Single module card with icon, title, description, and colored left border.
- * Layout is stat-ready: when `count` is provided in future, it renders prominently.
- */
 function ModuleCard({ title, icon, desc, link, count, loadingCount }) {
   const borderColor = CARD_COLORS[link] || 'border-l-border';
   const iconColor = ICON_COLORS[link] || DEFAULT_ICON_COLOR;
 
   return (
-    <Link to={link} className="no-underline">
+    <Link to={link} className="no-underline group">
       <Card className={cn(
-        'hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group border-border/60',
-        'border-l-[3px]',
+        'hover:shadow-sm hover:border-border transition-all duration-200 cursor-pointer border-border/40',
+        'border-l-2',
         borderColor
       )}>
-        <CardContent className="flex items-start gap-3.5 p-4">
+        <CardContent className="flex items-start gap-3 p-3.5">
           <div className={cn(
-            'flex items-center justify-center w-10 h-10 rounded-lg shrink-0 transition-colors duration-200',
-            'group-hover:text-white',
+            'flex items-center justify-center w-8 h-8 rounded-md shrink-0 transition-colors duration-200',
             iconColor
           )}>
-            <Icon name={icon} size={20} />
+            <Icon name={icon} size={16} />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="text-sm font-medium text-foreground leading-tight">{title}</h3>
+            <div className="flex items-start justify-between gap-1.5">
+              <h3 className="text-[13px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors">{title}</h3>
               {loadingCount ? (
-                <Skeleton className="h-5 w-8 rounded" />
+                <Skeleton className="h-5 w-7 rounded" />
               ) : count != null ? (
-                <span className="text-lg font-bold text-foreground tabular-nums leading-none">
+                <span className="text-base font-semibold text-foreground tabular-nums leading-none">
                   {count}
                 </span>
               ) : null}
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5 truncate">{desc}</p>
+            <p className="text-[11px] text-muted-foreground/60 mt-0.5 truncate">{desc}</p>
           </div>
         </CardContent>
       </Card>
