@@ -3,7 +3,10 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
-import { MDBCollapse, MDBPopover, MDBPopoverBody, MDBPopoverHeader } from '../../../components/ui';
+import { MDBCollapse } from '../../../components/ui';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 import { TabPane } from '@/components/ui/tab-pane';
 import TagInput from "../../../components/TagInput";
 import Collapsible from '../../../components/Collapsible';
@@ -1101,9 +1104,16 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 fixed: true,
                 minWidth: '80px',
                 ignoreCSV: true,
-                cell: row => <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                    {_MODULE_BTN_POP(row)}
-                </MDBPopover>
+                cell: row => <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                            <Icon name="MoreHorizontal" size={14} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-52">
+                        {_MODULE_BTN_POP(row)}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             },
             {
                 name: 'ACTUACION',
@@ -1232,10 +1242,16 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 ignoreCSV: true,
-                cell: row => row.priority > 0 ? <MDBPopover size='sm' clbtnClassName="mx-0" rounded placement='right' dismiss
-                    btnChildren={row.priority_rank} style={{ fontSize: '75%', backgroundColor: priority_colors[row.priority_rank] }}>
-                    {_PRIORITY_POP(row)}
-                </MDBPopover> : ''
+                cell: row => row.priority > 0 ? <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-6 px-1.5 text-xs tabular-nums" style={{ fontSize: '75%', backgroundColor: priority_colors[row.priority_rank] }}>
+                            {row.priority_rank}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent side="right" className="w-72">
+                        {_PRIORITY_POP(row)}
+                    </PopoverContent>
+                </Popover> : ''
             },
             /**
           {
@@ -1772,9 +1788,16 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 name: 'INFO',
                 button: true,
                 ignoreCSV: true,
-                cell: row => <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                    {_MODULE_BTN_POP({ ...row, id: row.id_sistem })}
-                </MDBPopover>
+                cell: row => <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                            <Icon name="MoreHorizontal" size={14} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-52">
+                        {_MODULE_BTN_POP({ ...row, id: row.id_sistem })}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             },
             {
                 name: 'ACTUACION',
@@ -2189,36 +2212,61 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         let _MODULE_BTN_POP = (row) => {
             const isOA = regexChecker_isOA_2(row);
             let rules = row.rules ? row.rules.split(';') : [];
-            return <MDBPopoverBody>
-                <div className="list-group list-group-flush">
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'general', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="folder-open" size={16} className="text-info" /> DETALLES</button>
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'clock', 'macro')} className="list-group-item list-group-item-action p-1 m-0 " ><Icon name="clock" size={16} className="text-secondary" /> TIEMPOS</button>
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'archive', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="archive" size={16} className="text-secondary" /> DOCUMENTOS</button>
-                    {row.state != 101 && row.state <= 200 ?
-                        <>
-                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'edit', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="folder-open" size={16} className="text-secondary" /> ACTUALIZAR</button>
-                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'check', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="check-square" size={16} className="text-warning" /> CHECKEO</button>
-                            {regexChecker_isPh(row, true) ?
-                                <>
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_ph', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="pencil-ruler" size={16} className="text-warning" />  INF. P.H.</button>
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-alt" size={16} className="text-warning" /> EXPEDICION</button>
-                                </>
-                                :
-                                <>
-                                    {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'alert', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="sign" size={16} className="text-warning" />  PUBLICIDAD</button>
-                                    </> : ''}
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_law', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="balance-scale" size={16} className="text-warning" /> INF. JURIDICO</button>
-                                    {!isOA ? <>
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="building" size={16} className="text-warning" /> INF. ARQUITECTONICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="cogs" size={16} className="text-warning" /> INF. ESTRUCTURAL</button> : ''}
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-contract" size={16} className="text-warning" /> ACTA</button>
-                                    </> : ''}
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-alt" size={16} className="text-warning" /> EXPEDICION</button>
-                                </>}
-                        </> : <></>}
-                </div>
-            </MDBPopoverBody>
+            return <>
+                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'general', 'macro')}>
+                    <Icon name="FolderOpen" size={14} className="text-primary" /> Detalles
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'clock', 'macro')}>
+                    <Icon name="Clock" size={14} className="text-muted-foreground" /> Tiempos
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'archive', 'macro')}>
+                    <Icon name="Archive" size={14} className="text-muted-foreground" /> Documentos
+                </DropdownMenuItem>
+                {row.state != 101 && row.state <= 200 ?
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'edit', 'macro')}>
+                            <Icon name="FolderOpen" size={14} className="text-muted-foreground" /> Actualizar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'check', 'macro')}>
+                            <Icon name="CheckSquare" size={14} className="text-warning" /> Checkeo
+                        </DropdownMenuItem>
+                        {regexChecker_isPh(row, true) ?
+                            <>
+                                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_ph', 'macro')}>
+                                    <Icon name="PencilRuler" size={14} className="text-warning" /> Inf. P.H.
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')}>
+                                    <Icon name="FileText" size={14} className="text-warning" /> Expedición
+                                </DropdownMenuItem>
+                            </>
+                            :
+                            <>
+                                {!isOA && rules[0] != 1 ? <>
+                                    <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'alert', 'macro')}>
+                                        <Icon name="Megaphone" size={14} className="text-warning" /> Publicidad
+                                    </DropdownMenuItem>
+                                </> : ''}
+                                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_law', 'macro')}>
+                                    <Icon name="Scale" size={14} className="text-warning" /> Inf. Jurídico
+                                </DropdownMenuItem>
+                                {!isOA ? <>
+                                    <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')}>
+                                        <Icon name="Building2" size={14} className="text-warning" /> Inf. Arquitectónico
+                                    </DropdownMenuItem>
+                                    {rules[1] != 1 ? <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')}>
+                                        <Icon name="Cog" size={14} className="text-warning" /> Inf. Estructural
+                                    </DropdownMenuItem> : ''}
+                                    <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')}>
+                                        <Icon name="FileCheck" size={14} className="text-warning" /> Acta
+                                    </DropdownMenuItem>
+                                </> : ''}
+                                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')}>
+                                    <Icon name="FileText" size={14} className="text-warning" /> Expedición
+                                </DropdownMenuItem>
+                            </>}
+                    </> : null}
+            </>;
         }
         // COMPONENT JSX
         let _COMPONENT_CHARTS = () => {
@@ -2399,25 +2447,23 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             </>
         }
         let _PRIORITY_POP = (row) => {
-            return <MDBPopoverBody>
-                <MDBPopoverHeader>INDICE DE PRIORIDAD - {row.id_public}</MDBPopoverHeader>
-                <div>
-                    <div className="row border p-1"><label>ACTAS:  {_GET_REVIEW_RECORD(row.rec_review)} {_GET_REVIEW_RECORD(row.rec_review_2)}</label></div>
-                    <div className="row border p-1"><label>Estado: {_fun_0_state(row.state, true, row)}</label></div>
-                    <div className="row border p-1"><label>Categoria: {_fun_0_type[row.type]}</label></div>
-                    <div className="row border p-1"><label>Formula F(x) = c1 + (c2 - c3) + c4 + c5 + c6</label></div>
-                    <div className="row border p-1"><label>Limite de F(x) tiende a -INF</label></div>
-                    <div className="row border p-1">
-                        <div className="row p-1"><label> c1 :<label className='fw-bold'>{row.constants[0]} </label>  (LDF o INC)</label></div>
-                        <div className="row p-1"><label> c2 :<label className='fw-bold'>{row.constants[1]} </label>  (Tiempo de Categoia)</label></div>
-                        <div className="row p-1"><label> c3 :<label className={`fw-bold ${row.constants[3] > row.constants[1] ? 'text-danger' : ''}`}>{row.constants[3]} </label>  (Tiempo usado para revision)</label></div>
-                        <div className="row p-1"><label> c4 : <label className={`fw-bold ${row.constants[2] < 0 ? 'text-danger' : ''}`}>{row.constants[2]} </label> (Tiempo restante de correccion)</label></div>
-                        <div className="row p-1"><label> c5 : <label className='fw-bold'>{row.constants[4]} </label> (Tiempo de entrada de ultimo documento)</label></div>
-                        <div className="row p-1"><label> c6 : <label className='fw-bold'>{row.constants[5]} </label> (Inidice de asignacion)</label></div>
-                    </div>
-                    <div className="row border p-1"><label className='fw-bold'>{row.constants[0]} + ( {row.constants[1]}  -  {row.constants[3]}) + {row.constants[2]} +  {row.constants[4]} +  {row.constants[5]}  = {row.priority_index}</label></div>
+            return <div className="space-y-1 text-sm">
+                <p className="font-semibold text-base mb-2">Índice de Prioridad — {row.id_public}</p>
+                <div className="border rounded p-1"><label>ACTAS:  {_GET_REVIEW_RECORD(row.rec_review)} {_GET_REVIEW_RECORD(row.rec_review_2)}</label></div>
+                <div className="border rounded p-1"><label>Estado: {_fun_0_state(row.state, true, row)}</label></div>
+                <div className="border rounded p-1"><label>Categoría: {_fun_0_type[row.type]}</label></div>
+                <div className="border rounded p-1"><label>Fórmula F(x) = c1 + (c2 - c3) + c4 + c5 + c6</label></div>
+                <div className="border rounded p-1"><label>Límite de F(x) tiende a -INF</label></div>
+                <div className="border rounded p-1 space-y-0.5">
+                    <div><label> c1 :<span className='fw-bold'>{row.constants[0]} </span>  (LDF o INC)</label></div>
+                    <div><label> c2 :<span className='fw-bold'>{row.constants[1]} </span>  (Tiempo de Categoría)</label></div>
+                    <div><label> c3 :<span className={`fw-bold ${row.constants[3] > row.constants[1] ? 'text-danger' : ''}`}>{row.constants[3]} </span>  (Tiempo usado para revisión)</label></div>
+                    <div><label> c4 : <span className={`fw-bold ${row.constants[2] < 0 ? 'text-danger' : ''}`}>{row.constants[2]} </span> (Tiempo restante de corrección)</label></div>
+                    <div><label> c5 : <span className='fw-bold'>{row.constants[4]} </span> (Tiempo de entrada de último documento)</label></div>
+                    <div><label> c6 : <span className='fw-bold'>{row.constants[5]} </span> (Índice de asignación)</label></div>
                 </div>
-            </MDBPopoverBody>
+                <div className="border rounded p-1"><label className='fw-bold'>{row.constants[0]} + ( {row.constants[1]}  -  {row.constants[3]}) + {row.constants[2]} +  {row.constants[4]} +  {row.constants[5]}  = {row.priority_index}</label></div>
+            </div>
         }
 
         // APIS & FUNCTIONS
