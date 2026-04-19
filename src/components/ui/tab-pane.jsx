@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
  * Only renders children when `show` is truthy (saves React work).
  * Keeps same prop API: <TabPane show={condition}>...</TabPane>
  */
-export function TabPane({ show, className, children, keepMounted = false, ...rest }) {
+export function TabPane({ show, className, children, keepMounted = true, ...rest }) {
   if (!show && !keepMounted) return null;
 
   return (

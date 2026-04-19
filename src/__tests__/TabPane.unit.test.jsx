@@ -8,19 +8,20 @@ describe('TabPane', () => {
     expect(screen.getByText('Content')).toBeInTheDocument();
   });
 
-  it('does not render children when show is false', () => {
+  it('keeps children mounted by default when hidden to preserve MDBTabsPane compatibility', () => {
     render(<TabPane show={false}>Hidden</TabPane>);
-    expect(screen.queryByText('Hidden')).not.toBeInTheDocument();
+    const el = screen.getByRole('tabpanel', { hidden: true });
+    expect(el).toHaveClass('hidden');
+    expect(screen.getByText('Hidden')).toBeInTheDocument();
+  });
+
+  it('can opt out of mounting hidden content when keepMounted is false', () => {
+    render(<TabPane show={false} keepMounted={false}>Unmounted</TabPane>);
+    expect(screen.queryByText('Unmounted')).not.toBeInTheDocument();
   });
 
   it('renders as tabpanel role', () => {
     render(<TabPane show={true}>Content</TabPane>);
     expect(screen.getByRole('tabpanel')).toBeInTheDocument();
-  });
-
-  it('keeps mounted when keepMounted is true but hides', () => {
-    render(<TabPane show={false} keepMounted>Kept</TabPane>);
-    const el = screen.getByRole('tabpanel', { hidden: true });
-    expect(el).toHaveClass('hidden');
   });
 });
