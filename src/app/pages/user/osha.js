@@ -1,9 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
-const MySwal = withReactContent(Swal);
 
 function OSHA({ translation, swaMsg }) {
         const HOMEPATH = '//www.curaduria1bucaramanga.com/public_docs/OTHERS/osha/';

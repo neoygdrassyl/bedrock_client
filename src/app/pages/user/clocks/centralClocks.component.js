@@ -25,6 +25,7 @@ import './gantt.css';
 import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
+import { swalLoading, swalSuccess, swalError } from '../../../utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
@@ -386,10 +387,10 @@ export default function EXP_CLOCKS(props) {
     var _CHILD = getClockVersion(findOne, version) || getClock(findOne);
     formDataClock.set('fun0Id', currentItem.id);
 
-    if (useMySwal) MySwal.fire({ title: swaMsg.title_wait, text: swaMsg.text_wait, icon: 'info', showConfirmButton: false });
+    if (useMySwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
     const onOk = () => {
-      if (useMySwal) MySwal.fire({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer, icon: 'success', confirmButtonText: swaMsg.text_btn });
+      if (useMySwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
       // SOLUCIÓN: Se mantiene una única llamada a requestUpdate para refrescar las props.
       if (triggerUpdate) {
         props.requestUpdate(currentItem.id);
@@ -397,7 +398,7 @@ export default function EXP_CLOCKS(props) {
     };
     const onErr = (e) => {
       console.error('Error guardando clock en backend:', e);
-      if (useMySwal) MySwal.fire({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning', confirmButtonText: swaMsg.text_btn });
+      if (useMySwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
     };
 
     if (_CHILD && _CHILD.id) {
@@ -491,7 +492,7 @@ export default function EXP_CLOCKS(props) {
   const addTimeControl = (type) => {
     if (type === 'suspension') {
       const availableDays = 10 - totalSuspensionDays;
-      if (availableSuspensionTypes.length === 0) return MySwal.fire({ title: 'No disponible', text: 'No hay espacios para añadir suspensiones', icon: 'warning' });
+      if (availableSuspensionTypes.length === 0) return swalError({ title: 'No disponible', text: 'No hay espacios para añadir suspensiones', icon: 'warning' });
 
       const typeSelectHtml = availableSuspensionTypes.length > 1
         ? `<div class="col-12"><label class="form-label">Ubicación</label><select id="susp_type" class="form-select">${availableSuspensionTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}</select></div>`

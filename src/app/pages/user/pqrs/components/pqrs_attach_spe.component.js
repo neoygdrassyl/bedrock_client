@@ -1,11 +1,8 @@
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import Collapsible from '../../../../components/Collapsible';
 import PQRS_PDFGEN_CONFIRM from './pqrs_genPDF_confirm.component';
 import PQRS_PDFGEN_REPLY from './pqrs_genPDF_reply.component';
 
 import dayjs from 'dayjs';
-const MySwal = withReactContent(Swal);
 function PQRS_COMPONENT_ATTACH_SPECIAL({ translation, swaMsg, globals, currentItem }) {
 
         return (

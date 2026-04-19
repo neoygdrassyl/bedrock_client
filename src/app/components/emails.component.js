@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import EmailsService from '../services/emails.service';
+import { swalLoading, swalSuccess, swalError, swalConfirm } from '../utils/swalAdapter';
 import { MDBBtn, MDBTooltip } from './ui';
 import DataTable from '@/components/data-table-bridge';
 import dayjs from 'dayjs';
@@ -9,7 +8,6 @@ import VIEWER from './viewer.component';
 import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
 const EMAIL_TPES = [
     { value: 'rad', label: 'REGISTRO de radicación' },
     { value: 'ldf', label: 'CERTIFICACIÓN de legal y debida forma' },
@@ -306,12 +304,7 @@ export default function EMAILS_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
 
@@ -353,96 +346,42 @@ export default function EMAILS_COMPONENT(props) {
             formData.set("path", path.join(';'));
         }
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         EmailsService.create(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadList()
                     setNewEmail(false)
                     setFiles([])
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
 
     function delete_email(id) {
-        MySwal.fire({
-            title: "ELIMINAR ESTE ITEM",
-            text: "¿Esta seguro de eliminar de forma permanente este item?",
-            icon: 'question',
-            confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: "question", confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 EmailsService.delete(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             loadList()
                         } else if (response.data === 'SEND') {
-                            MySwal.fire({
-                                title: "CORREO ENVIADO",
-                                text: "Este correo ya fue enviado y no puede eliminarse.",
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "CORREO ENVIADO", text: "Este correo ya fue enviado y no puede eliminarse.", icon: "warning" });
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: "ERROR AL CARGAR",
-                            text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                            icon: 'error',
-                            confirmButtonText: props.swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                     });
             }
         });

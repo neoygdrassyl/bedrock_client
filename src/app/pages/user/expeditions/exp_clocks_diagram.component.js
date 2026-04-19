@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import { swalLoading, swalSuccess, swalError } from '../../../utils/swalAdapter';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS_DIAGRAM(props) {
@@ -563,34 +561,18 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
     formDataClock.set('fun0Id', currentItem.id);
 
     if (useMySwal) {
-      MySwal.fire({
-        title: swaMsg.title_wait,
-        text: swaMsg.text_wait,
-        icon: 'info',
-        showConfirmButton: false,
-      });
+      swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
     }
 
     const onOk = () => {
       if (useMySwal) {
-        MySwal.fire({
-          title: swaMsg.publish_success_title,
-          text: swaMsg.publish_success_text,
-          footer: swaMsg.text_footer,
-          icon: 'success',
-          confirmButtonText: swaMsg.text_btn,
-        });
+        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
       }
       buildProcessList();
     }
     const onErr = () => {
       if (useMySwal) {
-        MySwal.fire({
-          title: swaMsg.generic_eror_title,
-          text: swaMsg.generic_error_text,
-          icon: 'warning',
-          confirmButtonText: swaMsg.text_btn,
-        });
+        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
       }
     }
 

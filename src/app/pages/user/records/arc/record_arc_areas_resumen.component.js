@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 
