@@ -3,11 +3,9 @@ import { useState } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add, retrieveItem }) {
     const [attachs, setAttachs] = useState(0);
 
@@ -136,30 +134,15 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
             }
             formData.set('files_class', array_form.join());
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.addAttachsClose(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                         retrieveItem(currentItem.id)
                         setAttachs(0);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
@@ -168,38 +151,16 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
         }
 
         let deteleAttach = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ITEM",
-                text: "¿Esta seguro de eliminar este item de forma permanente?",
-                icon: 'warning',
-                confirmButtonText: "ELIMINAR",
-                cancelButtonText: "CANCELAR",
-                showCancelButton: true
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ITEM", text: "¿Esta seguro de eliminar este item de forma permanente?", icon: 'warning', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     PQRS_Service.deleteAttach(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.generic_success_title,
-                                    text: swaMsg.generic_success_text,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                                 retrieveItem(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {

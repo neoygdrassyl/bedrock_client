@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 
 import PQRS_Main from '../../../services/pqrs_main.service'
@@ -8,8 +6,7 @@ import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft } from '
 
 import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
 import { Icon } from '@/components/icon';
-
-const MySwal = withReactContent(Swal);
+import { swalError } from '@/app/utils/swalAdapter';
 
 function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
     const [load, setLoad] = useState(false);
@@ -30,12 +27,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     };
 

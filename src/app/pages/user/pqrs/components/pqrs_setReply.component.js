@@ -1,13 +1,11 @@
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 
-const MySwal = withReactContent(Swal);
 function PQRS_SET_REPLY({ translation, swaMsg, globals, hardReset, currentItem, currentId, refreshList, retrieveItem: parentRetrieveItem, closeModal }) {
     const [currentItemData, setCurrentItemData] = useState(null);
     const [load, setLoad] = useState(false);
@@ -21,12 +19,7 @@ function PQRS_SET_REPLY({ translation, swaMsg, globals, hardReset, currentItem, 
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                     setLoad(false);
                 });
         };
@@ -59,22 +52,11 @@ function PQRS_SET_REPLY({ translation, swaMsg, globals, hardReset, currentItem, 
                 }
                 formData.set('solicitors_name', array_solicitor.join());
 
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 PQRS_Service.formalReply(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 parentRetrieveItem(currentItem.id);
                         refreshList();
                         if (hardReset) {
@@ -82,31 +64,17 @@ parentRetrieveItem(currentItem.id);
                             }
 
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
                     });
             } else {
-                MySwal.fire({
-                    title: "NO HAY CONSECUTIVO DE SALIDA",
-                    text: "Se debe de espeficiar primero el consecutivo de Salida.",
-                    icon: 'error',
-                });
+                swalError({ title: "NO HAY CONSECUTIVO DE SALIDA", text: "Se debe de espeficiar primero el consecutivo de Salida." });
             }
         };
 
@@ -136,12 +104,7 @@ parentRetrieveItem(currentItem.id);
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }

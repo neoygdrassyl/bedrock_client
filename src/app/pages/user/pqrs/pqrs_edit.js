@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
 import PQRS_EDIT_SOLICITORS from './components/pqrs_manage_solicitors.component';
 import PQRS_EDIT_CONTACT from './components/pqrs_manage_contact.component';
@@ -8,8 +6,7 @@ import PQRS_EDIT_FUN from './components/pqrs_manage_fun.component';
 import PQRS_EDIT_ATTACH from './components/pqrs_manage_attachs.component';
 import PQRS_EDIT_INFO from './components/pqrs_manage_info.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
-
-const MySwal = withReactContent(Swal);
+import { swalError } from '@/app/utils/swalAdapter';
 
 function PQRS_EDIT({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
@@ -27,12 +24,7 @@ function PQRS_EDIT({ translation, swaMsg, globals, translation_form, currentId, 
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este ítem, intentelo nuevamente." });
                 setLoad(false);
             });
     };

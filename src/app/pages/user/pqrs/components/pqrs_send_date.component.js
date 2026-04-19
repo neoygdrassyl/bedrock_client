@@ -1,11 +1,9 @@
 import dayjs from 'dayjs';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { Icon } from '@/components/icon';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
 
-const MySwal = withReactContent(Swal);
 export const PQRS_SEND_DATE = (props) => {
     const { currentItem, swaMsg, retrievePublish, } = props;
 
@@ -19,32 +17,16 @@ export const PQRS_SEND_DATE = (props) => {
         PQRS_Service.update_date_reply(id ?? '', form)
         .then(response => {
             if (response.data === 'OK') {
-                MySwal.fire({
-                    title: swaMsg.publish_success_title,
-                    text: swaMsg.publish_success_text,
-                    footer: swaMsg.text_footer,
-                    icon: 'success',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                 props.retrieveItem(currentItem.id);
                 props.refreshList();
                 retrievePublish()
 
             } else if (response.data === 'ERROR_DUPLICATE') {
-                MySwal.fire({
-                    title: "ERROR DE DUPLICACION",
-                    text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
             }
             else {
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             }
         })
         .catch(e => {

@@ -1,14 +1,7 @@
 import PQRS_SERVICES from '../../../../services/pqrs_main.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
-const MySwal = withReactContent(Swal);
-
-
-
-
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 export const SEEN_COMPONENT_FORM = (props) => {
     const { swaMsg, worker, retrieveItem, closeComponent, retrievePublish, currentItem, } = props;
 
@@ -45,34 +38,18 @@ export const SEEN_COMPONENT_FORM = (props) => {
         PQRS_SERVICES.updateWorker(worker.id, form)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     retrieveItem()
                     closeComponent()
                     retrievePublish()
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }

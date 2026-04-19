@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars'
 import { Icon } from '@/components/icon';
+import { swalError } from '@/app/utils/swalAdapter';
 
 const customStyles = {
     overlay: {
@@ -32,8 +31,6 @@ const customStyles = {
 
     }
 };
-const MySwal = withReactContent(Swal);
-
 export const PQRS_ACTION_REVIEW = (props) => {
     const { translation, swaMsg, globals, currentItemId } = props;
     const [currentItem, setCurrentItem] = useState(null)
@@ -48,12 +45,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
 

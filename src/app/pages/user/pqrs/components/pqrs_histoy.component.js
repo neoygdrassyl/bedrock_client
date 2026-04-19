@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import DataTable from '@/components/data-table-bridge';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
-const MySwal = withReactContent(Swal);
+import { swalError } from '@/app/utils/swalAdapter';
 export const HISTORY_PQRS_INFO = (props) => {
     const {currentItem, currentId } = props;
     const [history_pqrs_inf, setHistory_pqrs] = useState({})
@@ -19,24 +16,14 @@ export const HISTORY_PQRS_INFO = (props) => {
                 setHistory_pqrs(response.data)
             }).catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
             PQRS_Service.gethistory(validation_2)
             .then(response => {
                 setHistory_pqrs(response.data)
             }).catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
     useEffect(() => {

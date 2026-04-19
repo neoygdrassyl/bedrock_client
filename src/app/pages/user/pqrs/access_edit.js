@@ -1,12 +1,9 @@
 import './components/editorStyles.css'
 import PQRS_SERVICES from '../../../services/pqrs_main.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component'
 import { Icon } from '@/components/icon';
+import { swalError } from '@/app/utils/swalAdapter';
 let sha256 = require('js-sha256');
-
-const MySwal = withReactContent(Swal);
 
 export const ACESS_EDIT = (props) => {
 
@@ -24,12 +21,7 @@ export const ACESS_EDIT = (props) => {
                 if (response.data === 'OK') {
                     props.editMaster1()
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: 'Acceso denegado',
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: 'Acceso denegado' });
                 }
             })
     }
