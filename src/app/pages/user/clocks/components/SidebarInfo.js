@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { swalInfo, swalError } from '../../../../utils/swalAdapter';
-import withReactContent from 'sweetalert2-react-content';
 import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
 import { GanttModal } from './gantt/GanttModal';
