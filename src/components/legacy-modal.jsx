@@ -43,7 +43,6 @@ export function LegacyModal({
 
   if (!isOpen) return null;
 
-  const overlayStyle = style?.overlay ?? {};
   const contentStyle = style?.content ?? {};
 
   return (
@@ -54,10 +53,9 @@ export function LegacyModal({
       aria-label={contentLabel}
       {...rest}
     >
-      {/* Overlay */}
+      {/* Overlay — always token-based, ignores legacy inline overlay styles */}
       <div
-        className="absolute inset-0 z-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in-0 duration-200"
-        style={overlayStyle}
+        className="absolute inset-0 z-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-in fade-in-0 duration-200"
         onClick={shouldCloseOnOverlayClick ? onRequestClose : undefined}
       />
       {/* Content */}
@@ -67,11 +65,13 @@ export function LegacyModal({
           className,
         )}
         style={{
-          top: '10%',
-          left: '10%',
-          right: '10%',
-          bottom: '10%',
+          top: '2%',
+          left: '5%',
+          right: '5%',
+          bottom: '2%',
           padding: '1.5rem',
+          maxWidth: '1400px',
+          margin: '0 auto',
           ...contentStyle,
         }}
         onClick={(e) => e.stopPropagation()}
