@@ -303,7 +303,9 @@ export function FunExpedienteWorkspace({
                 Volver al detalle
               </Button>
             )}
-            <button className="btn-close" onClick={onClose} aria-label="Cerrar gestión completa" />
+            <button onClick={onClose} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar gestión completa">
+              <Icon name="X" size={16} className="text-muted-foreground" />
+            </button>
           </div>
         </div>
 

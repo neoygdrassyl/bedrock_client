@@ -201,9 +201,16 @@ export default function RECORD_DOCUMENT_VERSION(props) {
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label><Icon name="file-upload" size={16} /> SUBIR DOCUMENTO DE EVALUACIÓN: {VERSION_DESC[id6] || 'Documento de Evaluación'}</label>
-                    <button type="button" className="btn-close" onClick={() => setModal(false)} />
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="file-upload" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Subir documento de evaluación — {VERSION_DESC[id6] || 'Documento de Evaluación'}</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal(false)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
                 <hr />
 

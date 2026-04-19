@@ -137,32 +137,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
         ]
 
         // CUSTOM STYLES FOR THE MODAL
-        const customStyles = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 1050,
-            },
-            content: {
-                position: 'absolute',
-                top: '40px',
-                left: '5%',
-                right: '5%',
-                bottom: '40px',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                marginRight: 'auto',
-
-            }
-        };
+        const customStyles = {};
 
         // CREATES A NEW LICENCE
         let delete_nomenclature = (id) => {
@@ -381,9 +356,16 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3><Icon name="edit" size={16} /> ACTUALIZAR NOMENCLATURA: {currentId} </h3>
-                        <button type="button" className="btn-close" onClick={toggle} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="edit" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Actualizar nomenclatura — {currentId}</h2>
+                        </div>
+                        <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     <NOMENCLATURE_NEW
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -401,9 +383,16 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3><Icon name="plus-circle" size={16} /> NUEVA NOMENCLATURA </h3>
-                        <button type="button" className="btn-close" onClick={() => toggle_new()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="plus-circle" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Nueva nomenclatura</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_new()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     <NOMENCLATURE_NEW
                         translation={translation} swaMsg={swaMsg} globals={globals}

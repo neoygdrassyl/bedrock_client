@@ -35,6 +35,7 @@ import FUN_ASIGNS_COMPONENT from './fun_forms/components/fun_asign.component';
 // JSONS
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -744,9 +745,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
 
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-alt" size={16} /> DETALLES DE LA SOLICITUD - No. Radicación : {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-alt" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Detalles de la solicitud — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -759,8 +767,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         onDuplicateSuccess={handleDuplicateSuccess}
                     />
 
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggle()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -769,9 +777,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="check-square" size={16} /> LISTA DE CHECKEO : No. Radicación :  {currentPublic}</label>
-                        <button type="button" className="btn-close" onClick={() => toggle_c()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="check-square" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Lista de chequeo — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_c()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -784,10 +799,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_c}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_c}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -796,9 +809,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-signature" size={16} /> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_n()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-signature" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Actualización de solicitud — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_n()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -810,10 +830,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_n}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_n}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -822,9 +840,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="archive" size={16} /> GESTIÓN DOCUMENTAL - No. Radicación :  {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_d()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="archive" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Gestión documental — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_d()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -835,10 +860,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_d}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_d}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -847,9 +870,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="sign" size={16} /> AVISOS A VECINOS - No. Radicación :  {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_alert()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="sign" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Avisos a vecinos — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_alert()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -861,10 +891,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_alert}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_alert}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -873,9 +901,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="clock" size={16} /> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_clock()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="clock" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Control de tiempo de proceso — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_clock()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -886,10 +921,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_clock}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_clock}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -898,9 +931,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="building" size={16} /> INFORME ARQUITECTÓNICO - No. Radicación :  {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordArc()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="building" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Informe arquitectónico — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_recordArc()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -913,10 +953,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_recordArc}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_recordArc}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -925,9 +963,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="balance-scale" size={16} /> INFORME JURIDICO - No. Radicación :  {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordLaw()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="balance-scale" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Informe jurídico — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_recordLaw()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -939,10 +984,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_recordLaw}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_recordLaw}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -951,9 +994,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="pencil-ruler" size={16} /> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordPH()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="pencil-ruler" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Informe propiedad horizontal — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_recordPH()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -966,10 +1016,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_recordPH}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_recordPH}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -978,9 +1026,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="cogs" size={16} /> INFORME ESTRUCTURAL - No. Radicación :  {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordEng()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="cogs" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Informe estructural — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_recordEng()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -992,10 +1047,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_recordEng}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_recordEng}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -1004,9 +1057,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-contract" size={16} />ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordReview()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-contract" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Acta de observaciones / correcciones — Rad. {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_recordReview()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -1017,10 +1077,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         closeModal={toggle_recordReview}
                         NAVIGATION={navigation} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_recordReview}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_recordReview}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -1029,9 +1087,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-alt" size={16} /> EXPEDICIÓN DE LA LICENCIA:  {currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_exp()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-alt" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Expedición de la licencia — {currentPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_exp()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     {modalHeader}
 
@@ -1042,10 +1107,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         closeModal={toggle_exp}
                         NAVIGATION={navigation} />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={toggle_exp}>
-                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={toggle_exp}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
@@ -1056,9 +1119,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     className="macro-modal-content"
                     overlayClassName="macro-modal-overlay"
                 >
-                    <div className="my-1 d-flex justify-content-between">
-                        <label><Icon name="th" size={16} /> Macro tabla de seguimiento: Desde {date_start} hasta {date_end}</label>
-                        <button type="button" className="btn-close" onClick={() => toggle_macro()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="th" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Macro tabla de seguimiento — Desde {date_start} hasta {date_end}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_macro()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
 
                     <FUN_MACROTABLE translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1103,7 +1173,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-1 text-end"><button type="button" className="btn-close" onClick={() => toggle_report()} /></div>
+                        <div className="col-1 text-end"><button type="button" onClick={() => toggle_report()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar"><Icon name="X" size={16} className="text-muted-foreground" /></button></div>
                     </div>
 
                     <hr />

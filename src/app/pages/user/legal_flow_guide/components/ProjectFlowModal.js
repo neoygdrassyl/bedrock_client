@@ -47,7 +47,9 @@ function ProjectFlowModal({ show, onClose, phases, expediente }) {
                 <Icon name="project-diagram" size={16} style={{ opacity: 0.5 }} />
                 Flujo del Expediente: {expediente?.radicado || '—'}
               </h5>
-              <button type="button" className="btn-close" onClick={onClose} />
+              <button type="button" onClick={onClose} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                <Icon name="X" size={16} className="text-muted-foreground" />
+              </button>
             </div>
 
             <div className="modal-body">

@@ -121,7 +121,9 @@ function Mail({ translation, globals, breadCrums }) {
                         <Card className="w-full max-w-2xl max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
                             <div className="flex items-center justify-between p-4 border-b border-border">
                                 <h2 className="text-lg font-semibold"><Icon name="FileText" size={18} className="inline mr-2" />Detalles del Mensaje {currentItem ? currentItem.id : ''}</h2>
-                                <button type="button" className="btn-close" onClick={toggle} />
+                                <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                    <Icon name="X" size={16} className="text-muted-foreground" />
+                                </button>
                             </div>
                             <CardContent className="p-4">
                                 {currentItem ? (

@@ -98,10 +98,12 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
             <span className="font-mono font-semibold text-lg">{expediente.radicado}</span>
           </div>
           <button
-            className="btn-close"
             onClick={onClose}
+            className="rounded-md p-1 hover:bg-muted transition-colors"
             aria-label="Cerrar panel"
-          />
+          >
+            <Icon name="X" size={16} className="text-muted-foreground" />
+          </button>
         </div>
 
         {/* ── Body (scrollable) ──────────────────────────── */}

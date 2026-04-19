@@ -261,9 +261,16 @@ export default function ZONE_USE(props) {
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-2 d-flex justify-content-between">
-                    <h2 className="text-center">CONCEPTO USO DEL SUELO: {selectedIdPublic}</h2>
-                    <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="MapPin" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Concepto uso del suelo — {selectedIdPublic}</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal(!modal)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
 
                 <hr />

@@ -424,9 +424,16 @@ export default function RECORD_LAW_FUN_2(props) {
                 style={quickModalStyle}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label className="fw-bold align-middle"> <Icon name="edit" size={24} />ACTUALIZACIÓN RÁPIDA</label>
-                    <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="edit" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Actualización rápida</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal(!modal)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
 
                 <FUNN2

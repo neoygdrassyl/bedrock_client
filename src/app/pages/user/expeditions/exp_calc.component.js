@@ -468,7 +468,9 @@ export default function EXP_CALC(props) {
                         </div>
                     </div>
 
-                    <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
+                    <button type="button" onClick={() => setModal(!modal)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
                 <hr />
 
