@@ -176,11 +176,12 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     expect(screen.getByText(/Gestión de entradas/i)).toBeInTheDocument();
   });
 
-  test('3. Sección ACCIONES visible', async () => {
+  test('3. Sección de acciones visible', async () => {
     await act(async () => {
       renderSubmit();
     });
-    expect(screen.getByText('ACCIONES')).toBeInTheDocument();
+    expect(screen.getByText(/Nueva Entrada/i)).toBeInTheDocument();
+    expect(screen.getByText(/Documento CSV/i)).toBeInTheDocument();
   });
 
   test('4. Botón "NUEVA ENTRADA" presente y visible', async () => {
@@ -250,7 +251,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     expect(screen.getByText('Lista de entradas')).toBeInTheDocument();
   });
 
-  test('10. Muestra "CARGANDO INFORMACIÓN..." antes de cargar datos', async () => {
+  test('10. Muestra indicador de carga antes de cargar datos', async () => {
     const SubmitService = (await import('../app/services/submit.service')).default;
     // Make the API never resolve (simulating loading)
     SubmitService.getAll.mockReturnValueOnce(new Promise(() => {}));
@@ -259,7 +260,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
       renderSubmit();
     });
 
-    expect(screen.getByText('CARGANDO INFORMACIÓN...')).toBeInTheDocument();
+    expect(screen.getByText(/Cargando información/i)).toBeInTheDocument();
   });
 
   test('11. Click NUEVA ENTRADA abre el modal de nueva entrada', async () => {
@@ -346,7 +347,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     expect(screen.getByText('Tipo')).toBeInTheDocument();
     expect(screen.getByText('Fecha Radicación')).toBeInTheDocument();
     expect(screen.getByText('Documento')).toBeInTheDocument();
-    expect(screen.getByText('ACCIÓN')).toBeInTheDocument();
+    expect(screen.getByText('Acción')).toBeInTheDocument();
   });
 
   test('14. Campos CSV tienen valores por defecto', async () => {
