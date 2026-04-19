@@ -7,14 +7,11 @@ import { Icon } from '@/components/icon';
 import DataTable from '@/components/data-table-bridge';
 import Collapsible from '../../components/Collapsible';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { dateParser } from '../../components/customClasses/typeParse'
 
 
 import dayjs from 'dayjs';
-const MySwal = withReactContent(Swal)
-
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 function Appointments({ translation, globals, breadCrums, swaMsg }) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
@@ -203,32 +200,15 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
             AppointmentService.update(currentItem.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.scheduling_success_title,
-                            text: swaMsg.scheduling_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        })
+                        swalSuccess({ title: swaMsg.scheduling_success_title, text: swaMsg.scheduling_success_text })
                         toggle_edit();
                         retrievePublish();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.scheduling_error_title,
-                            text: swaMsg.text_error,
-                            footer: swaMsg.text_footer,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.scheduling_error_title, text: swaMsg.text_error });
                     }
                 })
                 .catch(e => {
-                    MySwal.fire({
-                        title: swaMsg.scheduling_error_title,
-                        text: swaMsg.text_error,
-                        footer: swaMsg.text_footer,
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.scheduling_error_title, text: swaMsg.text_error });
                 });
 
         }

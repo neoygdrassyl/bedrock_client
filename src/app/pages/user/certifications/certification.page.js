@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
 import { addDecimalPoints, formsParser1 } from '../../../components/customClasses/typeParse';
 import UsersService from '../../../services/users.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 
 export default function CERTIFICATE_WORKER(props) {
     const translation = props.translation
     const swaMsg = props.swaMsg
-    const MySwal = withReactContent(Swal);
     var formData = new FormData();
     var [loadTable, setLoadTable] = useState(false)
     var [data, setData] = useState([]);
@@ -131,32 +129,17 @@ export default function CERTIFICATE_WORKER(props) {
         id_number = id_number.replaceAll(',', '.')
         if (!id_number.includes('.')) id_number = addDecimalPoints(id_number)
         id_number = addDecimalPoints(id_number);
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         UsersService.getCertificateData(id_number)
             .then(response => {
-                if (response.data == "NO") return MySwal.fire({
-                    title: 'NO SE ENCONTRÓ PROFESIONAL',
-                    text: 'No hay profesional con este número de documento, verifique el numero de documento enviado.',
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (response.data == "NO") return swalError({ title: 'NO SE ENCONTRÓ PROFESIONAL', text: 'No hay profesional con este número de documento, verifique el numero de documento enviado.', icon: 'warning' });
                 setData(response.data)
-                MySwal.close()
+                swalClose()
 
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -166,34 +149,19 @@ export default function CERTIFICATE_WORKER(props) {
         id_number = id_number.replaceAll(',', '.')
         if (!id_number.includes('.')) id_number = addDecimalPoints(id_number)
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         UsersService.getCertificateDataPDF(id_number)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.close();
+                    swalClose();
                     window.open(import.meta.env.VITE_API_URL + "/pdf/certificate_data/" + "Historial Progesional " + title + ".pdf");
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }

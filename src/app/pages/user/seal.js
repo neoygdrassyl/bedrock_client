@@ -4,14 +4,10 @@ import CustomService from '../../services/custom.service'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 import { formsParser1_exlucde2, dateParser, formsParser1 } from '../../components/customClasses/typeParse'
 import dayjs from 'dayjs';
-const MySwal = withReactContent(Swal);
-
-
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function Seals({ translation, swaMsg, breadCrums }) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -41,16 +37,11 @@ function Seals({ translation, swaMsg, breadCrums }) {
     const retrieveSearch = (field, string) => {
         SealsService.getSearch(field, string)
             .then(response => {
-                MySwal.close();
+                swalClose();
                 if (response.data.length) {
                     setItem(response.data[0])
                 } else {
-                    MySwal.fire({
-                        title: "NO SE ENCONTRO SELLO",
-                        text: "Asegurese de que el sello que busca existe y cullo numero de radicacion es valido",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "NO SE ENCONTRO SELLO", text: "Asegurese de que el sello que busca existe y cullo numero de radicacion es valido" });
                 }
             })
             .catch(e => {
@@ -151,23 +142,12 @@ function Seals({ translation, swaMsg, breadCrums }) {
                 formData.set('fun0Id', fun0Id);
                 let date = document.getElementById("f_03").value;
                 formData.set('date', date)
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 if(action == "create"){
                 SealsService.create(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             document.getElementById("app-form").reset();
                             formData = new FormData();
                             refreshList();
@@ -181,13 +161,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                     SealsService.update(id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             document.getElementById("app-form").reset();
                             formData = new FormData();
                             refreshList();
@@ -198,24 +172,14 @@ function Seals({ translation, swaMsg, breadCrums }) {
                     });
                 }
             } else {
-                MySwal.fire({
-                    title: "ESTA SOLICITUD NO ES VALIDA",
-                    text: "Asegurese de que la solicitud solocitada sea valida y correcta.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ESTA SOLICITUD NO ES VALIDA", text: "Asegurese de que la solicitud solocitada sea valida y correcta." });
             }
 
         };
 
         // GENERATES AND GETS PDF SEAL
         let generate = (type) => {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             formData = new FormData();
             // DATA FROM THE PARENT
             let id_request = currentItem.fun_0.id_public;
@@ -242,12 +206,12 @@ function Seals({ translation, swaMsg, breadCrums }) {
             CustomService.generate(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
                         document.getElementById("app-form").reset();
                         formData = new FormData();
                         refreshList();
-                        MySwal.close();
+                        swalClose();
                     }
                 })
                 .catch(e => {
@@ -331,12 +295,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
             event.preventDefault();
             let field = document.getElementById("search_0").value;
             let string = document.getElementById("search_1").value;
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             retrieveSearch(field, string)
 
         }

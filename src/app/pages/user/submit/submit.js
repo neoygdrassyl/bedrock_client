@@ -4,15 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import SubmitService from '../../../services/submit.service';
 import DataTable from '@/components/data-table-bridge';
 import { dateParser } from '../../../components/customClasses/typeParse';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import SUBTMIT_MANAGE from './submit_manage'
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import dayjs from 'dayjs';
 import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 import { Icon } from '@/components/icon';
-
-const MySwal = withReactContent(Swal);
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -54,7 +51,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
         SubmitService.getSearch(field, string)
             .then(response => {
                 asignList(response.data);
-                MySwal.close();
+                swalClose();
             })
             .catch(e => {
                 console.log(e);
@@ -171,49 +168,21 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
         };
         // CREATES A NEW LICENCE
         let delete_submit = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     SubmitService.delete(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                                 refreshList();
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -222,12 +191,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
             let field = document.getElementById("submit_search_0").value;
             let string = document.getElementById("submit_search_1").value;
             if (string) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 retrieveSearch(field, string);
             } else {
                 refreshList();

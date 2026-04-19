@@ -1,14 +1,11 @@
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { useParams } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import React, { useRef } from 'react';
 import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
-const MySwal = withReactContent(Swal);
-
 export default function PROFESIONALS_PUBLIC(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
     const recaptchaRef = useRef(null);
@@ -36,16 +33,7 @@ export default function PROFESIONALS_PUBLIC(props) {
         const recaptchaValue = recaptchaRef.current.getValue();
         //if (false) {
         if (!recaptchaValue) {
-            return MySwal.fire({
-                toast: true,
-                position: 'center-center',
-                timer: 4000,
-                timerProgressBar: true,
-                title: "Información Incompleta",
-                text: "Asegurese que de usted no sea un robot <[O.O]>",
-                icon: 'warning',
-                showConfirmButton: false,
-            });
+            return swalLoading({ title: "Información Incompleta", text: "Asegurese que de usted no sea un robot <[O.O]>" });
         }
 
 
@@ -92,12 +80,7 @@ export default function PROFESIONALS_PUBLIC(props) {
         profesionalsService.updatePublic(formData)
             .then(response => {
                 if (response.data == 'OK') {
-                    MySwal.fire({
-                        title: 'HOJA DE VIDA ACTUALIZADA',
-                        text: 'La hoja de vida se ha actualizado de forma exitosa en el sistema.',
-                        icon: 'success',
-                        confirmButtonText: 'CONTINUAR',
-                    })
+                    swalSuccess({ title: 'HOJA DE VIDA ACTUALIZADA', text: 'La hoja de vida se ha actualizado de forma exitosa en el sistema.' })
                         .then(SweetAlertResult => {
                             if (SweetAlertResult.isConfirmed) window.location.href = "https://www.curaduria1bucaramanga.com/";
                         });
@@ -106,37 +89,12 @@ export default function PROFESIONALS_PUBLIC(props) {
             })
             .catch(e => {
                 if (e.response) {
-                    if (e.response.data.message == "jwt expired") MySwal.fire({
-                        title: 'LINK CADUCADO',
-                        text: 'Este link a caducado y ya no se puede actualizar la hoja de vida, solicite un nuevo link en: https://www.curaduria1bucaramanga.com/profesional',
-                        icon: 'warning',
-                        confirmButtonText: 'CONTINUAR',
-                    });
-                    else if (e.response.data.message == "jwt malformed") MySwal.fire({
-                        title: 'NO SE PUDO ACTUALIZAR',
-                        text: 'Este link a caducado y ya no se puede actualizar la hoja de vida, solicite un nuevo link en: https://www.curaduria1bucaramanga.com/profesional',
-                        icon: 'warning',
-                        confirmButtonText: 'CONTINUAR',
-                    });
-                    else if (e.response.data.message == "created") MySwal.fire({
-                        title: 'NO SE PUDO ACTUALIZAR',
-                        text: 'Esta hoja de vida ya fue actualizada anteriormente, asegúrese de que los valores sean correctos, en caso tal de que requiera actualizar otra vez esta hoja de vida comuníquese con la Curaduria 1 de Bucaramanga.',
-                        icon: 'warning',
-                        confirmButtonText: 'CONTINUAR',
-                    });
-                    else MySwal.fire({
-                        title: 'ERROR',
-                        text: 'Se han presentado errores en la acción, por favor inténtelo mas tarde.',
-                        icon: 'warning',
-                        confirmButtonText: 'CONTINUAR',
-                    });
+                    if (e.response.data.message == "jwt expired") swalError({ title: 'LINK CADUCADO', text: 'Este link a caducado y ya no se puede actualizar la hoja de vida, solicite un nuevo link en: https://www.curaduria1bucaramanga.com/profesional', icon: 'warning' });
+                    else if (e.response.data.message == "jwt malformed") swalError({ title: 'NO SE PUDO ACTUALIZAR', text: 'Este link a caducado y ya no se puede actualizar la hoja de vida, solicite un nuevo link en: https://www.curaduria1bucaramanga.com/profesional', icon: 'warning' });
+                    else if (e.response.data.message == "created") swalError({ title: 'NO SE PUDO ACTUALIZAR', text: 'Esta hoja de vida ya fue actualizada anteriormente, asegúrese de que los valores sean correctos, en caso tal de que requiera actualizar otra vez esta hoja de vida comuníquese con la Curaduria 1 de Bucaramanga.', icon: 'warning' });
+                    else swalError({ title: 'ERROR', text: 'Se han presentado errores en la acción, por favor inténtelo mas tarde.', icon: 'warning' });
                 }
-                else MySwal.fire({
-                    title: 'ERROR',
-                    text: 'Se han presentado errores en la acción, por favor inténtelo mas tarde.',
-                    icon: 'warning',
-                    confirmButtonText: 'CONTINUAR',
-                });
+                else swalError({ title: 'ERROR', text: 'Se han presentado errores en la acción, por favor inténtelo mas tarde.', icon: 'warning' });
             })
     }
 

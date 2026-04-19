@@ -1,11 +1,8 @@
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import ReCAPTCHA from "react-google-recaptcha";
 import React, { useRef } from 'react';
-
-const MySwal = withReactContent(Swal);
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function PROFESIONALS_EMAIL(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
@@ -20,41 +17,17 @@ export default function PROFESIONALS_EMAIL(props) {
         const recaptchaValue = recaptchaRef.current.getValue();
         // if (false) { 
         if (!recaptchaValue) {
-            return MySwal.fire({
-                toast: true,
-                position: 'center-center',
-                timer: 4000,
-                timerProgressBar: true,
-                title: "Información Incompleta",
-                text: "Asegurese que de usted no sea un robot <[O.O]>",
-                icon: 'warning',
-                showConfirmButton: false,
-            });
+            return swalLoading({ title: "Información Incompleta", text: "Asegurese que de usted no sea un robot <[O.O]>" });
         }
         let email = document.getElementById('email').value;
-        MySwal.fire({
-            title: 'ENVIANDO SOLICITUD',
-            text: 'Se esta procesando el formulario, esto puede tardar unos segundos',
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: 'ENVIANDO SOLICITUD', text: 'Se esta procesando el formulario, esto puede tardar unos segundos' });
         profesionalsService.sentEmail(email)
             .then(response => {
-                MySwal.fire({
-                    title: 'EMAIL ENVIADO',
-                    text: 'El formulario se proceso correctamente y un email ha sido enviado al correo proveído, este correo puede tardar unos minutos en llegar y puede llegar a su bandeja de SPAM. A partir de ahora tiene 15 minutos para actualizar la hoja de vida.',
-                    icon: 'success',
-                    confirmButtonText: 'CONTINUAR',
-                });
+                swalSuccess({ title: 'EMAIL ENVIADO', text: 'El formulario se proceso correctamente y un email ha sido enviado al correo proveído, este correo puede tardar unos minutos en llegar y puede llegar a su bandeja de SPAM. A partir de ahora tiene 15 minutos para actualizar la hoja de vida.' });
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: 'ERROR',
-                    text: 'Se han presentado errores en la acción, por favor inténtelo mas tarde.',
-                    icon: 'warning',
-                    confirmButtonText: 'CONTINUAR',
-                });
+                swalError({ title: 'ERROR', text: 'Se han presentado errores en la acción, por favor inténtelo mas tarde.', icon: 'warning' });
             })
     }
 
