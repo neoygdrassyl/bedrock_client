@@ -33,6 +33,23 @@
   --bs-border-color: hsl(var(--border));
 }
 
+/* ── Contextual background utilities (Bootstrap → tokens) ────────── */
+#main-content :where(.bg-primary)   { background-color: hsl(var(--primary)) !important; }
+#main-content :where(.bg-success)   { background-color: hsl(var(--accent)) !important; }
+#main-content :where(.bg-danger)    { background-color: hsl(var(--destructive)) !important; }
+#main-content :where(.bg-warning)   { background-color: hsl(var(--warning)) !important; }
+#main-content :where(.bg-info)      { background-color: hsl(var(--primary)) !important; }
+#main-content :where(.bg-secondary) { background-color: hsl(var(--muted)) !important; }
+#main-content :where(.bg-light)     { background-color: hsl(var(--muted)) !important; }
+#main-content :where(.bg-dark)      { background-color: hsl(var(--sidebar)) !important; }
+
+#main-content :where(.text-primary)   { color: hsl(var(--primary)) !important; }
+#main-content :where(.text-success)   { color: hsl(var(--accent)) !important; }
+#main-content :where(.text-danger)    { color: hsl(var(--destructive)) !important; }
+#main-content :where(.text-warning)   { color: hsl(var(--warning)) !important; }
+#main-content :where(.text-info)      { color: hsl(var(--primary)) !important; }
+#main-content :where(.text-muted)     { color: hsl(var(--muted-foreground)) !important; }
+
 /* ── Buttons ─────────────────────────────────────────────────────── */
 #main-content :where(.btn) {
   border-radius: 0.375rem;
@@ -940,14 +957,9 @@
 }
 .dark #main-content :where(.table) {
   --bs-table-bg: transparent;
-  color: hsl(var(--foreground));
 }
 .dark #main-content :where(.table > thead) {
   background-color: hsl(var(--muted) / 0.15);
-}
-.dark #main-content :where(.modal-content) {
-  background-color: hsl(var(--card));
-  border-color: hsl(var(--border));
 }
 .dark #main-content :where(.alert) {
   background-color: hsl(var(--muted) / 0.15);
