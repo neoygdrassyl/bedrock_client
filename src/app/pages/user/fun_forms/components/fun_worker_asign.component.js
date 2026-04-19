@@ -1,4 +1,5 @@
-import { MDBPopover, MDBPopoverBody, MDBPopoverHeader,  } from '../../../../components/ui';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import DataTable from '@/components/data-table-bridge';
@@ -397,12 +398,17 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                 }
             ))
             vrItem = [...vrItem].sort((a, b) => new Date(b.screated) - new Date(a.screated));
-            return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: 400 }}
-                btnChildren={<Icon name="file-import" size={16} />}
-                btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
-                <MDBPopoverHeader>Ventanilla Única</MDBPopoverHeader>
-                <MDBPopoverBody>{vrItem.map(value => listVR(value))}</MDBPopoverBody>
-            </MDBPopover>
+            return <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="px-2 mb-1 me-1">
+                        <Icon name="FileInput" size={16} />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent side="left" className="w-[400px]">
+                    <p className="font-semibold text-sm mb-2">Ventanilla Única</p>
+                    {vrItem.map(value => listVR(value))}
+                </PopoverContent>
+            </Popover>
         }
         let listVR = (item) => {
             var scodes = item.scodes ? item.scodes.split(',') : [];

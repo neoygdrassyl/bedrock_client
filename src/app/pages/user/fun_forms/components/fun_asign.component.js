@@ -4,7 +4,8 @@ import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBPopover, MDBPopoverBody } from '../../../../components/ui';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import TABLE_COMPONENT_EXPANDED from './table_components/table.component_expanded';
 import HeatMap from '@uiw/react-heat-map';
@@ -610,40 +611,36 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     let _MODULE_BTN_POP = (row) => {
         const isOA = regexChecker_isOA_2(row);
         let rules = row.rules ? row.rules.split(';') : [];
-        return <MDBPopoverBody>
-            <div className="list-group list-group-flush">
+        return <>
                 {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ?
-                    <>
-                        <button type="button" onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="user-clock" size={16} /> ASIGNAR</button>
-                    </> : null}
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="folder-open" size={16} className="text-info" /> DETALLES</button>
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} className="list-group-item list-group-item-action p-1 m-0 " ><Icon name="clock" size={16} className="text-secondary" /> TIEMPOS</button>
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="archive" size={16} className="text-secondary" /> DOCUMENTOS</button>
+                    <DropdownMenuItem onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }}><Icon name="UserClock" size={14} className="mr-2" /> Asignar</DropdownMenuItem>
+                    : null}
+                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'general', '')}><Icon name="FolderOpen" size={14} className="mr-2 text-primary" /> Detalles</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'clock', '')}><Icon name="Clock" size={14} className="mr-2 text-muted-foreground" /> Tiempos</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'archive', '')}><Icon name="Archive" size={14} className="mr-2 text-muted-foreground" /> Documentos</DropdownMenuItem>
                 {row.state < 101 ?
                     <>
-                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="folder-open" size={16} className="text-secondary" /> ACTUALIZAR</button>
-                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="check-square" size={16} className="text-warning" /> CHECKEO</button>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'edit', '')}><Icon name="FolderOpen" size={14} className="mr-2 text-muted-foreground" /> Actualizar</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'check', '')}><Icon name="CheckSquare" size={14} className="mr-2 text-warning" /> Checkeo</DropdownMenuItem>
                         {regexChecker_isPh(row, true) ?
                             <>
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="pencil-ruler" size={16} className="text-warning" />  INF. P.H.</button>
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-alt" size={16} className="text-warning" /> EXPEDICION</button>
+                                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')}><Icon name="PencilRuler" size={14} className="mr-2 text-warning" /> Inf. P.H.</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')}><Icon name="FileText" size={14} className="mr-2 text-warning" /> Expedición</DropdownMenuItem>
                             </>
                             :
                             <>
-                                {!isOA && rules[0] != 1 ? <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="sign" size={16} className="text-warning" />  PUBLICIDAD</button>
-                                </> : ''}
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="balance-scale" size={16} className="text-warning" /> INF. JURIDICO</button>
+                                {!isOA && rules[0] != 1 ? <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'alert', '')}><Icon name="Megaphone" size={14} className="mr-2 text-warning" /> Publicidad</DropdownMenuItem> : ''}
+                                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')}><Icon name="Scale" size={14} className="mr-2 text-warning" /> Inf. Jurídico</DropdownMenuItem>
                                 {!isOA ? <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="building" size={16} className="text-warning" /> INF. ARQUITECTONICO</button>
-                                    {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="cogs" size={16} className="text-warning" /> INF. ESTRUCTURAL</button> : ''}
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-contract" size={16} className="text-warning" /> ACTA</button>
+                                    <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')}><Icon name="Building2" size={14} className="mr-2 text-warning" /> Inf. Arquitectónico</DropdownMenuItem>
+                                    {rules[1] != 1 ? <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')}><Icon name="Cog" size={14} className="mr-2 text-warning" /> Inf. Estructural</DropdownMenuItem> : ''}
+                                    <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')}><Icon name="FileCheck" size={14} className="mr-2 text-warning" /> Acta</DropdownMenuItem>
                                 </> : ''}
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-alt" size={16} className="text-warning" /> EXPEDICION</button>
+                                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')}><Icon name="FileText" size={14} className="mr-2 text-warning" /> Expedición</DropdownMenuItem>
                             </>}
-                    </> : <></>}
-            </div>
-        </MDBPopoverBody>
+                    </> : null}
+            </>;
     }
     let _COLORS_COMPONENT = () => {
         let colorsLegends = [
@@ -710,12 +707,16 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                             <div className="d-flex flex-wrap">
                                 {worker.datas.filter(item => _filter(item)).filter(item => item.color == 'success' || item.color == 'secondary').map(btn => {
                                     return <div key={btn.id_public} className='me-1 mb-1'>
-                                            <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
-                                                outline={selectedBtn != btn.id_public}
-                                                btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
-                                                onClick={() => setSbtn(btn.id_public)}>
-                                                {_MODULE_BTN_POP(btn)}
-                                            </MDBPopover>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>
+                                                        {(btn.id_public).slice(-7)}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-52">
+                                                    {_MODULE_BTN_POP(btn)}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                 })}
                             </div>
@@ -725,12 +726,16 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(!newDocs) return '';
                                     return <div key={btn.id_public + '-newdocs'} className='me-1 mb-1'>
-                                            <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
-                                                outline={selectedBtn != btn.id_public}
-                                                btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
-                                                onClick={() => setSbtn(btn.id_public)}>
-                                                {_MODULE_BTN_POP(btn)}
-                                            </MDBPopover>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>
+                                                        {(btn.id_public).slice(-7)}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-52">
+                                                    {_MODULE_BTN_POP(btn)}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                 })}
                             </div>
@@ -740,12 +745,16 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(newDocs) return '';
                                     return <div key={btn.id_public + '-nodocs'} className='me-1 mb-1'>
-                                            <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
-                                                outline={selectedBtn != btn.id_public}
-                                                btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
-                                                onClick={() => setSbtn(btn.id_public)}>
-                                                {_MODULE_BTN_POP(btn)}
-                                            </MDBPopover>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>
+                                                        {(btn.id_public).slice(-7)}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-52">
+                                                    {_MODULE_BTN_POP(btn)}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                 })}
                             </div>
