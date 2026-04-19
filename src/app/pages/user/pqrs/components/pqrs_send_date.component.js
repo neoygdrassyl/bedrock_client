@@ -41,7 +41,7 @@ export const PQRS_SEND_DATE = (props) => {
             <div className="col-">
                 <label>Fecha envio respuesta</label>
                 <div className="input-group my-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="calendar-alt" size={16} />
                     </span>
                     <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_1" defaultValue={validations ?? dayjs().format('YYYY-MM-DD')} onBlur={crearteReply} required></input>

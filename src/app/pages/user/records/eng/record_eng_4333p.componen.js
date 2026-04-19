@@ -149,8 +149,8 @@ function RECORD_ENG_STEP_433P(props) {
         return (
             <div className="record_eng_desc container">
                 {SUBCATEGORIES[1] == '1' ? <>
-                    <legend className="my-3 px-3 text-uppercase bg-light" id="record_eng_432P">
-                        <label className="app-p lead fw-normal text-uppercase">4.3.2 Peritaje Estructural</label>
+                    <legend className="my-3 px-3 bg-light" id="record_eng_432P">
+                        <label className="app-p lead fw-normal">4.3.2 Peritaje Estructural</label>
                     </legend>
                     {COMPONENT_03()}
                 </> : ""}

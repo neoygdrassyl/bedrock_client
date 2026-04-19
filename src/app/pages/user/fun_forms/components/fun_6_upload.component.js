@@ -26,13 +26,13 @@ export default function FUN_6_UPLOAD(props) {
             _COMPONENT.push(<>
                 <div className="row">
                     <div className="col-12">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf" required />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                             <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} className="form-control" placeholder="Descripcion del documento" />
                             <DOCS_LIST idRef={i} setValues={setValues} text={'VER LISTA'} />
                         </div>
@@ -41,20 +41,20 @@ export default function FUN_6_UPLOAD(props) {
                 <div className="row d-flex justify-content-start">
                     <div className="col">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="hashtag" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={16} /></span>
                             <input type="text" className="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                         </div>
                     </div>
                     <div className="col">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="sticky-note" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="sticky-note" size={16} /></span>
                             <input type="number" className="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages" />
                         </div>
                     </div>
 
                     <div className="col-4">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Radicación</span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Radicación</span>
                             <input type="date" className="form-control" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} name="fun6_dates" />
                         </div>
                     </div>

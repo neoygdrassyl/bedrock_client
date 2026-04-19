@@ -155,7 +155,7 @@ export default function DEV_GUIDE(props) {
                     </div>
                 </div>
                 <div className="col-md-3 col-6 mb-2">
-                    <div className="card bg-info text-white">
+                    <div className="card bg-primary text-primary-foreground">
                         <div className="card-body text-center py-3">
                             <Icon name="database" size={16} className="mb-2" />
                             <h5 className="mb-0">MySQL</h5>

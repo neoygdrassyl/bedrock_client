@@ -260,7 +260,7 @@ function Home({ translation, history }) {
                 </div>
               </div>
             </div>
-            <hr className='bg-info py-0'></hr>
+            <hr className='bg-primary py-0'></hr>
             <h2 className='text-center' id='services'>Servicios <Button_navigation Iddown={'process'} Idup={null} /> </h2>
             <div className='col-lg col-mb-10 justify-content-center d-flex mx-0 px-0 ' style={{ borderRadius: '8px' }}>
               <div class="row align-items-center py-0 my-0" style={{ borderRadius: '20px', }}>
@@ -308,7 +308,7 @@ function Home({ translation, history }) {
                 </div>
               </div>
             </div>
-            <hr className='bg-info'></hr>
+            <hr className='bg-primary'></hr>
             <div class="px-0 py-0 my-0 text-center">
               <i class="fas fa-search-location fa-4x"></i>
               <h3 class="" id='process'>Consulta de Procesos {<Button_navigation Iddown={'news'} Idup={'services'} />}  </h3>
@@ -336,7 +336,7 @@ function Home({ translation, history }) {
                 <p class=""><h5>aa = los dos últimos dígitos del año del proceso, 0000 = consecutivo del proceso</h5></p>
               </div>
 
-              <hr className='bg-info'></hr>
+              <hr className='bg-primary'></hr>
               <h2 className='text-center' id='news'>Noticias importantes {<Button_navigation Iddown={'ubicacion'} Idup={'process'} />}</h2>
               <div className='col-lg col-mb-10 justify-content-center d-flex mx-0 px-0 ' style={{ backgroundColor: ' ' }}>
                 <div class="row align-items-center px-4 py-4 mx-">
@@ -448,7 +448,7 @@ function Home({ translation, history }) {
             */}
           </div>
         </div>
-        <hr className='bg-info'></hr>
+        <hr className='bg-primary'></hr>
         <h2 className='text-center' id='ubicacion'> Ubicación {<Button_navigation Iddown={null} Idup={'news'} />}</h2>
         <div class="row justify-content-center px-4 mx-4 px-4 mb-5">
           <div class="col-lg-12 justify-content-center">

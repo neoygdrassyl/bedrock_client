@@ -135,7 +135,7 @@ function RECORD_PH_LAW(props) {
                     <div className="col-6">
                         <label>Profesional</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="record_ph_worker_law_1"
@@ -145,7 +145,7 @@ function RECORD_PH_LAW(props) {
                     <div className="col-3">
                         <label>Fecha de la revisón</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="record_ph_worker_law_2" required
@@ -156,7 +156,7 @@ function RECORD_PH_LAW(props) {
                     <div className="col-3">
                         <label>Aprobado</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-control" id="record_ph_worker_law_3" defaultValue={currentRecord.check_law} >

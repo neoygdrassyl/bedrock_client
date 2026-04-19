@@ -118,7 +118,7 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
                         <div className="input-group my-1">
                             <input type="text" className="form-control" id="fun_report_data_2"
                                 defaultValue={_GET_CHILD_LAW().report_cub || cubSelected || ""} />
-                                <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                         </div>
                     </div>
                 </div>

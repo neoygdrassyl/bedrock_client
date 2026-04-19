@@ -57,8 +57,8 @@ function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, 
                 {currentItem != null ? <>
                     {load ? <>
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE LA PQRS</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE LA PQRS</label>
                             </legend>
                             <PQRS_COMPONENT_INFO
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -68,8 +68,8 @@ function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, 
                         </fieldset>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE RESPUESTAS</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE RESPUESTAS</label>
                             </legend>
                             <PQRS_COMPONENT_REPLIES_PROFESIONAL_2
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -81,8 +81,8 @@ function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, 
                         <div className="row">
                             <div className="col-6">
                                 <fieldset className="p-3">
-                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                        <label className="app-p lead fw-normal text-uppercase">CONTROL DE TIEMPOS</label>
+                                    <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                        <label className="app-p lead fw-normal">CONTROL DE TIEMPOS</label>
                                     </legend>
                                     <PQRS_COMPONENT_CLOCKS
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -93,8 +93,8 @@ function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, 
                             <div className="col-6 p-0 x-0">
                                 {currentItem.pqrs_fun ?
                                     <fieldset className="p-3">
-                                        <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                            <label className="app-p lead fw-normal text-uppercase">SOLICITUD RELACIONADA</label>
+                                        <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                            <label className="app-p lead fw-normal">SOLICITUD RELACIONADA</label>
                                         </legend>
                                         <PQRS_COMPONENT_LICENCE
                                             translation={translation} swaMsg={swaMsg} globals={globals}

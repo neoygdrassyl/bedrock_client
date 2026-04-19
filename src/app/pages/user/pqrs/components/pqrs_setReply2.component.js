@@ -280,7 +280,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     <div className="col-5">
                         <label className='text-start'>Consecutivo de Salida</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" defaultValue={currentItem.id_reply}
@@ -292,7 +292,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     <div className="col-3">
                         <label>Fecha creación documento</label>
                         <div className="input-group my-1 ">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control"

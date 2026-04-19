@@ -296,7 +296,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     <div className="col-3">
                         <label>Piso</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"r_ph_fl_1" + editSuffix} required />

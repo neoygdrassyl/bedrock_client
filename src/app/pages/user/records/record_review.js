@@ -554,7 +554,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     <div className="col-5">
                         <label>Fecha del acta de observaciones</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="record_review_2" max="2100-01-01"
@@ -564,7 +564,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     <div className="col-4">
                         <label>Resultado</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="record_review_3" defaultValue={currentRecord.check ?? 2} >
@@ -584,7 +584,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     <div className="col-5">
                         <label>Fecha del acta de Correcciones</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="record_review_4" max="2100-01-01"
@@ -594,7 +594,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     <div className="col-4">
                         <label>Resultado</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="record_review_5" defaultValue={currentRecord.check_2 ?? 2} >
@@ -617,8 +617,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     let values = array.split(';');
                     return <>
                         <div className="row">
-                            <legend className="my-2 px-3 text-uppercase bg-light" id="record_ph_2">
-                                <label className="app-p lead fw-normal text-uppercase">HISTORIAL DE REVISIONES DE ACTAS</label>
+                            <legend className="my-2 px-3 bg-light" id="record_ph_2">
+                                <label className="app-p lead fw-normal">HISTORIAL DE REVISIONES DE ACTAS</label>
                             </legend>
                         </div>
                         <div className="row">
@@ -628,7 +628,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             <div className="col-4">
                                 <label>Fecha del acta de observaciones</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" className="form-control" id="record_ph_worker_arc_2" required
@@ -638,7 +638,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             <div className="col-4">
                                 <label>Aprobado</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="check-square" size={16} />
                                     </span>
                                     <select className="form-control" id="recprd_ph_final_check" defaultValue={values[0]} >
@@ -656,7 +656,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         let _COMPONENT_NOTIFICATION_OBS = () => {
             return <>
 
-                <div className="row mx-2 bg-info text-white">
+                <div className="row mx-2 bg-primary text-primary-foreground">
                     <div className="col-3 text-center">
                         <label className="fw-bold mt-1">EVENTO</label>
                     </div>
@@ -1678,8 +1678,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         noEng={conOA() || rules[1] == 1}
                                     />
 
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_2">
-                                        <label className="app-p lead fw-normal text-uppercase">2. DECLARACIÓN DEL ACTA</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_2">
+                                        <label className="app-p lead fw-normal">2. DECLARACIÓN DEL ACTA</label>
                                     </legend>
 
                                     <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">2.1 CARTA DE RATIFICACIÓN</label>}>
@@ -1720,7 +1720,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                                     <button type="button" className="btn btn-danger my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </button>
                                                 </div>
                                             </>
-                                            : <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
+                                            : <label className="app-p lead fw-normal text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
                                                 NO SE PUEDE REALIZAR REVISIONES HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
                                     </div>
 
@@ -1744,19 +1744,19 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                     </div>
                                      * 
                                      */}
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_3">
-                                        <label className="app-p lead fw-normal text-uppercase">3. DESCARGAR ACTA</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_3">
+                                        <label className="app-p lead fw-normal">3. DESCARGAR ACTA</label>
                                     </legend>
                                     {PDF_GEN_ACTA()}
 
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_3">
-                                        <label className="app-p lead fw-normal text-uppercase">4. PROCESO DE NOTIFICACIÓN</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_3">
+                                        <label className="app-p lead fw-normal">4. PROCESO DE NOTIFICACIÓN</label>
                                     </legend>
 
                                     {_COMPONENT_NOTIFICATION_OBS()}
 
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_4">
-                                        <label className="app-p lead fw-normal text-uppercase">5. PROSEGUIR A EXPEDICIÓN</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_4">
+                                        <label className="app-p lead fw-normal">5. PROSEGUIR A EXPEDICIÓN</label>
                                     </legend>
                                     {currentItem.state > 0
                                         ?
@@ -1785,11 +1785,11 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                             </>
                                             : <div className="row">
                                                 <div className="col text-center">
-                                                    <label className="app-p lead fw-normal text-uppercase text-success">ESTA SOLICITUD YA SE ENCUENTRA EN EXPEDICIÓN</label>
+                                                    <label className="app-p lead fw-normal text-success">ESTA SOLICITUD YA SE ENCUENTRA EN EXPEDICIÓN</label>
                                                 </div>
                                             </div>
                                         :
-                                        <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIMIENTO,
+                                        <label className="app-p lead fw-normal text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIMIENTO,
                                             NO SE PUEDE PROSEGUIR HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
                                 </div>
                                 {/* {NAV_FUNA()} */}
@@ -1833,48 +1833,48 @@ const NAV_FUNA = (_CHILD) => {
             <div className="fung_nav">
                 <div className="rounded-lg border border-border bg-card">
                     <div className="p-1">
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegacion</h6>
                         </legend>
                         <br />
                         <a href="#record_review_title_1">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>1. INFORMES</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_report_jur">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>9.1 INFORME JURIDICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_repor_arc">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>9.2 INFORME ARQUITECTONICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_repor_eng">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>9.3 INFORME ESTRUCTURAL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_2">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>2. DECLARACION DEL ACTA</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_3">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3. PROCESO DE NOTIFICACIÓNL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_4">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>4. PROSEGUIR A EXPEDICION</h6>
                             </legend>
                         </a>

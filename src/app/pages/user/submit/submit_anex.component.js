@@ -223,7 +223,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                         <div className="col-6">
                             <label >Documento</label>
                             <div className="input-group mb-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="paperclip" size={16} />
                                 </span>
                                 <input type="file" className="form-control" id="file_nomen" accept="image/png, image/jpeg application/pdf" />
@@ -233,7 +233,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                         <div className="col-4">
                             <label >Consecutivo</label>
                             <div className="input-group mb-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="submit_anex_2" required
@@ -244,7 +244,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                         <div className="col-2">
                             <label ># Folios</label>
                             <div className="input-group mb-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="file" size={16} />
                                 </span>
                                 <input type="number" min="1" step="1" className="form-control" id="submit_anex_3" required

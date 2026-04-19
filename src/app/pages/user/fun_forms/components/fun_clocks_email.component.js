@@ -266,7 +266,7 @@ function FUN_CLOCKS_EMAILS(props) {
                     <div className="col-6">
                         <label>Lista de Correos (Separados por coma)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" id="fun_email_1"
@@ -277,7 +277,7 @@ function FUN_CLOCKS_EMAILS(props) {
                     <div className="col-6">
                         <label>Tipo de Correo</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <select className="form-control" id="fun_email_3" onChange={(e) => _GET_EMAIL_BODY(e.target.value)}>
@@ -300,9 +300,9 @@ function FUN_CLOCKS_EMAILS(props) {
             for (var i = 0; i < attachsForEmails; i++) {
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_foremail" accept="image/png, image/jpeg application/pdf" />
                         </div>
                     </div>
@@ -386,7 +386,7 @@ function FUN_CLOCKS_EMAILS(props) {
                                 {attachs
                                     ? <>
                                         <div className="text-end m-3">
-                                            <p className="lead text-end fw-bold text-uppercase">Anexar Documento</p>
+                                            <p className="lead text-end fw-bold">Anexar Documento</p>
                                             {attachsForEmails > 0
                                                 ? <button type="button" className="btn btn-secondary mx-3" onClick={() => this.minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                                                 : ""}

@@ -208,7 +208,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="col-4">
                     <label>Profesional</label>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="user-circle" size={16} />
                         </span>
                         <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
@@ -221,7 +221,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="col-4">
                     <label>Fecha Asignación</label>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="calendar-alt" size={16} />
                         </span>
                         <input id="pqrs_worker_1" className="form-control" type="date" required />
@@ -230,7 +230,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="col-4">
                     <label>Competencia</label>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="briefcase" size={16} />
                         </span>
                         <input className="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
@@ -430,7 +430,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <div className="col-6">
                         <label>Lista de Correos</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
@@ -439,7 +439,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <div className="col-6">
                         <label>Lista de Solicitantes</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
@@ -640,13 +640,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         for (var i = 0; i < stateadd; i++) {
             _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                 <div className="col-lg-8 col-md-8 ">
-                    <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
+                    <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                        <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                         <input type="file" className="form-control" name="files_informal" accept="application/pdf, image/png, image/jpeg" />
                     </div>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                        <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                         <input type="text" className="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                     </div>
                 </div>
@@ -759,13 +759,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         for (var i = 0; i < stateadd2; i++) {
             _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                 <div className="col-lg-8 col-md-8 ">
-                    <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
+                    <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                        <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                         <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                     </div>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                        <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                         <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                     </div>
                 </div>
@@ -805,7 +805,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 {load ? <>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>1.DOCUMENTOS SOPORTE INGRESO <Icon name="folder" size={16} /></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal"><b>1.DOCUMENTOS SOPORTE INGRESO <Icon name="folder" size={16} /></b></h2>
                         <PQRS_EDIT_ATTACH
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -817,7 +817,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <fieldset className="p-3 border border-info mb-2">
                         <div>
 
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>2. CONFIRMAR A PETICIONARIO <Icon name="check-circle" size={16} /></b></label>
+                            <label className="px-4 app-p lead fw-normal"><b>2. CONFIRMAR A PETICIONARIO <Icon name="check-circle" size={16} /></b></label>
                             <br></br>
                             <br></br>
                             <h5 className="px-2"><b>GUÍA PARA ENVIAR LA CONFIRMACIÓN POR EMAIL</b></h5>
@@ -866,7 +866,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                     <fieldset className="p-3 border border-info mb-2">
 
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>3. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <Icon name="info-circle" size={16} /> </b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal"><b>3. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <Icon name="info-circle" size={16} /> </b></h2>
 
                         <PQRS_EDIT_SOLICITORS
                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -899,7 +899,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>4. DESCRIPCIÓN DE LA SOLICITUD <Icon name="prescription-bottle" size={16} /></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal"><b>4. DESCRIPCIÓN DE LA SOLICITUD <Icon name="prescription-bottle" size={16} /></b></h2>
                         <Collapsible className='bg-warning  border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">DESCRIPCIÓN</label></>}>
                             <div className="pb-2 text-start">
                                 <PQRS_EDIT_INFO
@@ -915,7 +915,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>5. CONTROL DE TIEMPOS <Icon name="calendar-check" size={16} /></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal"><b>5. CONTROL DE TIEMPOS <Icon name="calendar-check" size={16} /></b></h2>
                         <div className='px-4'>
                             <PQRS_COMPONENT_CLOCKS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -927,7 +927,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={asignPQRS} id="app-formAsign">
 
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>6. ASIGNAR PROFESIONALES </b> <Icon name="user-plus" size={16} /></label>
+                            <label className="px-4 app-p lead fw-normal"><b>6. ASIGNAR PROFESIONALES </b> <Icon name="user-plus" size={16} /></label>
 
                             <div className="form-check ms-5">
                                 <input className="form-check-input" type="checkbox" onChange={(e) => setnewAsign(e.target.checked)} />
@@ -944,8 +944,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 </> : ""}
                         </form>
 
-                        <div className="my-2 px-3 text-uppercase bg-body-secondary" id="pqrs_info_1">
-                            <label className="app-p lead text-start fw-normal text-uppercase">PROFESIONALES ASIGNADOS</label>
+                        <div className="my-2 px-3 bg-body-secondary" id="pqrs_info_1">
+                            <label className="app-p lead text-start fw-normal">PROFESIONALES ASIGNADOS</label>
                         </div>
                         <div className="mb-2">
                             {_ASIGN_COMPOENTN()}
@@ -972,7 +972,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                     <fieldset className="p-3 border border-info mb-2">
 
-                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>7. RESPUESTA DE LOS PROFESIONALES ASIGNADOS <Icon name="comment-medical" size={16} /> </b></label>
+                        <label className="px-4 app-p lead fw-normal"><b>7. RESPUESTA DE LOS PROFESIONALES ASIGNADOS <Icon name="comment-medical" size={16} /> </b></label>
 
                         <h5 className="px-4">Instrucciones para dar respuesta a la solicitud: </h5>
                         <ul>
@@ -1000,7 +1000,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                             return <>
 
-                                <label className="px-4 app-p lead fw-normal text-uppercase"><Icon name="arrow-right" size={16} /> {+i} {value.name}</label>
+                                <label className="px-4 app-p lead fw-normal"><Icon name="arrow-right" size={16} /> {+i} {value.name}</label>
                                 <div className="text-center m-3">
                                     <JoditEditor
                                         ref={editor}
@@ -1021,7 +1021,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 {!funcion1(window.user.id, value.worker_id) ?
                                     <>
                                         <hr className="my-3" />
-                                        <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
+                                        <label className="app-p lead text-start fw-bold">ANEXAR DOCUMENTO</label>
                                         <div className="text-end m-3" >
                                             {stateadd > 0
                                                 ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
@@ -1036,7 +1036,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                             <div className="col-lg-6 col-md-6">
                                                 <input type="text" className="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
                                                 <div className="input-group mb-3">
-                                                    <span className="input-group-text bg-info text-white">
+                                                    <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={value.date_reply ?? dayjs().format('YYYY-MM-DD')} required />
@@ -1054,7 +1054,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         })}
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
-                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>8. RESPUESTA FORMAL DE LA PETICION <Icon name="envelope-open-text" size={16} /></b></label>
+                        <label className="px-4 app-p lead fw-normal"><b>8. RESPUESTA FORMAL DE LA PETICION <Icon name="envelope-open-text" size={16} /></b></label>
                         <Collapsible className='bg-warning  border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">RESPONDER PETICION</label></>}>
                             <div className='text-start'>
                                 <PQRS_SET_REPLY1
@@ -1108,7 +1108,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={lockPQRS} id="app-formReply">
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>9. CERRAR PETICIÓN <Icon name="expeditedssl" size={16} /></b></label><br></br>
+                            <label className="px-4 app-p lead fw-normal"><b>9. CERRAR PETICIÓN <Icon name="expeditedssl" size={16} /></b></label><br></br>
                             <label className="px-4"><span className="h5">GUIÁ PARA EL CIERRE DE LA PETICIÓN</span></label>
                             <ul>
                                 <li className="app-p"><strong>Asegurar envío con copia del email o guiá de envío de recibido por parte del peticionario, digitalizar y anexar.</strong></li>
@@ -1118,14 +1118,14 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 ? <table className="table table-sm table-hover table-bordered">
                                     <tbody>
                                         <tr className="bg-warning">
-                                            <th><label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTOS DE CIERRE ANEXADOS</label></th>
+                                            <th><label className="app-p lead text-start fw-normal">DOCUMENTOS DE CIERRE ANEXADOS</label></th>
                                         </tr>
                                         {_ATTACHSCLOSE_COMPONENT()}
                                     </tbody>
                                 </table>
-                                : <div className="text-start"><label className="app-p fw-bold text-uppercase text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
+                                : <div className="text-start"><label className="app-p fw-bold text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
 
-                            <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
+                            <p className="app-p lead text-end fw-bold">ANEXAR DOCUMENTO DE CIERRE</p>
                             <div className="text-end m-3">
                                 {stateadd2 > 0
                                     ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>

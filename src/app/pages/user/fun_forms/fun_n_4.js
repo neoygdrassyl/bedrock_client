@@ -114,14 +114,14 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_4">
-                    <label className="app-p lead text-center fw-normal text-uppercase">4. Linderos, Dimensiones y Áreas</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_4">
+                    <label className="app-p lead text-center fw-normal">4. Linderos, Dimensiones y Áreas</label>
                 </legend>
                 <div className="row mb-3">
                     <div className="col-4">
                         <label>4.1 Linderos</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="compass" size={16} />
                             </span>
                             <select className="form-select" required id="f_41" >
@@ -135,7 +135,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-4">
                         <label>4.2 Longitud (en m)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="ruler" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_42" />
@@ -144,7 +144,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-4">
                         <label>4.3 Colinda con </label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_43" />

@@ -7,7 +7,7 @@ function PQRS_COMPONENT_ATTACH_SPECIAL({ translation, swaMsg, globals, currentIt
 
         return (
             <div>
-                <Collapsible className="bg-success" trigger={<label className="m-2 text-uppercase">Generar Documento de Confirmación</label>}>
+                <Collapsible className="bg-success" trigger={<label className="m-2">Generar Documento de Confirmación</label>}>
                     <PQRS_PDFGEN_CONFIRM
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentItem={currentItem}
@@ -15,7 +15,7 @@ function PQRS_COMPONENT_ATTACH_SPECIAL({ translation, swaMsg, globals, currentIt
                 </Collapsible>
                 {currentItem.id_reply
                 ? <>
-                <Collapsible className="bg-success" trigger={<label className="m-2 text-uppercase">Generar Documento Oficio de Respuesta</label>}>
+                <Collapsible className="bg-success" trigger={<label className="m-2">Generar Documento Oficio de Respuesta</label>}>
                     <PQRS_PDFGEN_REPLY
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentItem={currentItem}

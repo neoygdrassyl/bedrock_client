@@ -75,13 +75,13 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
             for (var i = 0; i < attachs; i++) {
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
@@ -264,8 +264,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                 {currentItem != null ? <>
                     {load ? <>
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE LA PQRS</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE LA PQRS</label>
                             </legend>
                             <PQRS_COMPONENT_INFO
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -275,8 +275,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                         </fieldset>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE RESPUESTAS</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE RESPUESTAS</label>
                             </legend>
                             <PQRS_COMPONENT_REPLIES_PROFESIONAL_2
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -287,8 +287,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
 
                         {_checkForOutputDocs()
                             ? <>
-                                <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                    <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS ANEXADOS POR PROFESIONAL(ES)</label>
+                                <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                    <label className="app-p lead fw-normal">DOCUMENTOS ANEXADOS POR PROFESIONAL(ES)</label>
                                 </legend>
                                 <PQRS_COMPONENT_ATTACH_PROFESIONAL
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -298,16 +298,16 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                             </> : ""}
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">RESPUESTA AL PETICIONARIO</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">RESPUESTA AL PETICIONARIO</label>
                             </legend>
                             <PQRS_COMPONENT_REPLIES_TOSOLICITOR
                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                 translation_form={translation_form}
                                 currentItem={currentItem}
                             />
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">VISTO BUENO PROFESIONALES</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">VISTO BUENO PROFESIONALES</label>
                             </legend>
                             <PQRS_COMPONENT_WORKER_FEEDBACK
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -320,8 +320,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                         <div className="row p-0 x-0">
                             <div className="col-6 p-0 x-0">
                                 <fieldset className="p-3">
-                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                        <label className="app-p lead fw-normal text-uppercase">CONTROL DE TIEMPOS</label>
+                                    <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                        <label className="app-p lead fw-normal">CONTROL DE TIEMPOS</label>
                                     </legend>
                                     <PQRS_COMPONENT_CLOCKS
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -332,8 +332,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                             <div className="col-6 p-0 x-0">
                                 {currentItem.pqrs_fun ?
                                     <fieldset className="p-3">
-                                        <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                            <label className="app-p lead fw-normal text-uppercase">SOLICITUD RELACIONADA</label>
+                                        <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                            <label className="app-p lead fw-normal">SOLICITUD RELACIONADA</label>
                                         </legend>
                                         <PQRS_COMPONENT_LICENCE
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -345,8 +345,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                         </div>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE SOLICITANTE(S)</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE SOLICITANTE(S)</label>
                             </legend>
                             <PQRS_COMPONENT_SOLICITORS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -355,8 +355,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                         </fieldset>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN CONTACTO(S)</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN CONTACTO(S)</label>
                             </legend>
                             <PQRS_COMPONENT_CONTACTS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -376,7 +376,7 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                         <li className="app-p">Verifique los correos a los que se enviará el email, es posible añadir o quitar correos de la lista separándoles por coma (,)</li>
                                     </ul>
 
-                                    <Collapsible className="bg-success" trigger={<label className="m-2 text-uppercase">Generar Documento Oficio de Respuesta</label>}>
+                                    <Collapsible className="bg-success" trigger={<label className="m-2">Generar Documento Oficio de Respuesta</label>}>
                                         <PQRS_PDFGEN_REPLY
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
@@ -384,7 +384,7 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                     </Collapsible>
 
                                     {/**
-                                     *    <Collapsible className="bg-success" trigger={<label className="m-2 text-uppercase">Generar Documento Oficio de Respuesta TEST</label>}>
+                                     *    <Collapsible className="bg-success" trigger={<label className="m-2">Generar Documento Oficio de Respuesta TEST</label>}>
                                         <RTE_PQRS translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem} />
                                     </Collapsible>
@@ -413,14 +413,14 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                             ? <table className="table table-sm table-hover table-bordered">
                                                 <tbody>
                                                     <tr className="bg-warning">
-                                                        <th><label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTOS DE CIERRE ANEXADOS</label></th>
+                                                        <th><label className="app-p lead text-start fw-normal">DOCUMENTOS DE CIERRE ANEXADOS</label></th>
                                                     </tr>
                                                     {_ATTACHSCLOSE_COMPONENT()}
                                                 </tbody>
                                             </table>
-                                            : <div className="text-start"><label className="app-p fw-bold text-uppercase text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
+                                            : <div className="text-start"><label className="app-p fw-bold text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
 
-                                        <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
+                                        <p className="app-p lead text-end fw-bold">ANEXAR DOCUMENTO DE CIERRE</p>
                                         <div className="text-end m-3">
                                             {attachs > 0
                                                 ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>

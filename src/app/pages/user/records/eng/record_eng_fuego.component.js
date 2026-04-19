@@ -437,8 +437,8 @@ export const ENG_FUEGO = (props) => {
 
     return <>
         {SUBCATEGORIES[17] == 1 ? <>
-            <legend className="my-3 px-3 text-uppercase bg-light" id="record_eng_433">
-                <label className="app-p lead fw-normal text-uppercase">PROCEDIMIENTO DE DISEÑO DE RESISTENCIA AL FUEGO DE LOS ELEMENTOS ESTRUCTURALES</label>
+            <legend className="my-3 px-3 bg-light" id="record_eng_433">
+                <label className="app-p lead fw-normal">PROCEDIMIENTO DE DISEÑO DE RESISTENCIA AL FUEGO DE LOS ELEMENTOS ESTRUCTURALES</label>
             </legend>
 
             {PART_1()}

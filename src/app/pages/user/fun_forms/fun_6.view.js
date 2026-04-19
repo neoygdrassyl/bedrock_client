@@ -10,6 +10,7 @@ import FUN_6_HISTORY from './components/fun_6_history.component';
 import submitService from '../../../services/submit.service';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/components/ui/button';
 
 function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, readOnly, title, VREdit, parentLoad, updateParentLoad }) {
     const [attachs, setAttachs] = useState(0);
@@ -197,15 +198,15 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
             document.getElementById('fun6_descriptions_edit').value = values[1];
         }
         let _EDIT_COMPONENT = () => {
-            return <><h3 className="text-uppercase text-center py-3" id="fund_edit">ACTUALIZAR DOCUMENTO</h3>
+            return <><h3 className="text-center py-3" id="fund_edit">ACTUALIZAR DOCUMENTO</h3>
                 <div className="row">
                     <div className="col-12">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" id="file_fun6s_edit" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                             <input list="fun_6_docs_list" id="fun6_descriptions_edit" className="form-control" required />
                             <DOCS_LIST idRef={''} setValues={setValues_edit} text={'VER LISTA'} />
                         </div>
@@ -214,19 +215,19 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                 <div className="row d-flex justify-content-start mb-3">
                     <div className="col-3">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="hashtag" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={16} /></span>
                             <input type="text" className="form-control" id="fun6_codes_edit" />
                         </div>
                     </div>
                     <div className="col-3">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="sticky-note" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="sticky-note" size={16} /></span>
                             <input type="number" className="form-control" step="1" min="0" id="fun6_pages_edit" required />
                         </div>
                     </div>
                     <div className="col-5">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Anexo</span>
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Anexo</span>
                             <input type="date" className="form-control" max="2100-01-01" id="fun6_dates_edit" required />
                         </div>
                     </div>
@@ -351,7 +352,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                             {_EDIT_COMPONENT()}
                             <div className="row text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-lg btn-success"><Icon name="archive" size={16} /> GUARDAR CAMBIOS </button>
+                                    <Button type="submit" variant="default" size="sm"><Icon name="archive" size={14} /> Guardar cambios</Button>
                                 </div>
                             </div>
                         </form></> : ""}

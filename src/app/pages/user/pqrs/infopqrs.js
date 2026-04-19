@@ -71,7 +71,7 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
 
                         <div className="row my-4 d-flex justify-content-center">
                             <fieldset className="p-3 border border-info mb-2">
-                                <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>1. INFORMACIÓN DE LA PQRS <Icon name="info-circle" size={16} /></b></h2>
+                                <h2 className=" px-4 app-p lead fw-normal"><b>1. INFORMACIÓN DE LA PQRS <Icon name="info-circle" size={16} /></b></h2>
                                 <PQRS_COMPONENT_INFO
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     translation_form={translation_form}
@@ -82,7 +82,7 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
                             {_checkForReplies() ? <>
 
                                 <fieldset className="p-3 border border-info mb-2">
-                                    <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>2. NFORMACIÓN DE RESPUESTA(S) DE PROFESIONAL(ES) <Icon name="file-alt" size={16} /></b></h2>
+                                    <h2 className=" px-4 app-p lead fw-normal"><b>2. NFORMACIÓN DE RESPUESTA(S) DE PROFESIONAL(ES) <Icon name="file-alt" size={16} /></b></h2>
                                     <PQRS_COMPONENT_REPLIES_PROFESIONAL1
                                         translation={translation} swaMsg={swaMsg} globals={globals}
                                         currentItem={currentItem}
@@ -91,8 +91,8 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
 
                                     {_checkForOutputDocs()
                                         ? <>
-                                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                                <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS ANEXADOS POR PROFESIONAL(ES)</label>
+                                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                                <label className="app-p lead fw-normal">DOCUMENTOS ANEXADOS POR PROFESIONAL(ES)</label>
                                             </legend>
                                             <PQRS_COMPONENT_ATTACH_PROFESIONAL
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -115,7 +115,7 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
                             <div className="row p-0 x-0">
                                 <div className="col-16 p-0 x-0">
                                     <fieldset className="p-3 border border-info mb-2">
-                                    <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>3. CONTROL DE TIEMPOS  <Icon name="calendar-check" size={16} /></b></h2>
+                                    <h2 className=" px-4 app-p lead fw-normal"><b>3. CONTROL DE TIEMPOS  <Icon name="calendar-check" size={16} /></b></h2>
                                         <PQRS_COMPONENT_CLOCKS
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
@@ -125,7 +125,7 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
                                 <div className="col-16 p-0 x-0">
                                     {currentItem.pqrs_fun ?
                                         <fieldset className="p-3 border border-info mb-2">
-                                            <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>4. LA PQRS ESTÁ RELACIONADA CON ALGUNA ACTUACIÓN Y/O SOLICITUD URBANÍSTICA  <Icon name="bookmark" size={16} /></b></h2>
+                                            <h2 className=" px-4 app-p lead fw-normal"><b>4. LA PQRS ESTÁ RELACIONADA CON ALGUNA ACTUACIÓN Y/O SOLICITUD URBANÍSTICA  <Icon name="bookmark" size={16} /></b></h2>
                                             <div className='px-4'>
                                             <PQRS_COMPONENT_LICENCE
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -139,7 +139,7 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
 
 
                             <fieldset className="p-3 border border-info mb-2">
-                            <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>5. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <Icon name="bell" size={16} /> </b></h2>
+                            <h2 className=" px-4 app-p lead fw-normal"><b>5. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <Icon name="bell" size={16} /> </b></h2>
                                 <PQRS_COMPONENT_SOLICITORS
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -155,7 +155,7 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
                           
 
                             <fieldset className="p-3 border border-info mb-2">
-                            <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>6. ANEXOS <Icon name="file-medical" size={16} /> </b></h2>
+                            <h2 className=" px-4 app-p lead fw-normal"><b>6. ANEXOS <Icon name="file-medical" size={16} /> </b></h2>
                                 <PQRS_COMPONENT_ATTACHS
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -165,7 +165,7 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
                             </fieldset>
 
                             <fieldset  className="p-3 border border-info mb-2">
-                                <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>7. DOCUMENTOS DE VENTANILLA ÚNICA <Icon name="folder" size={16} /> </b></h2>
+                                <h2 className=" px-4 app-p lead fw-normal"><b>7. DOCUMENTOS DE VENTANILLA ÚNICA <Icon name="folder" size={16} /> </b></h2>
 
                                 <SUBMIT_SINGLE_VIEW
                                     translation={translation} swaMsg={swaMsg} globals={globals}

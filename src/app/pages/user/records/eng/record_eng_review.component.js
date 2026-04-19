@@ -362,7 +362,7 @@ function RECORD_ENG_REVIEW(props) {
 
             return <div className="row py-2">
                 <div className="col-12">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Observaciones</label>
                         </div>
@@ -376,7 +376,7 @@ function RECORD_ENG_REVIEW(props) {
         let _COMPONENT_DETAILS_3 = () => {
             let _CHILD = _GET_REVIEW();
             return <>
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>Notas del Ingeniero Revisor</label>
                     </div>
@@ -410,7 +410,7 @@ function RECORD_ENG_REVIEW(props) {
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 4.1.1 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
                 </div> : ''}
-                <div className="row border bg-info py-1 text-white fw-bold">
+                <div className="row border bg-primary text-primary-foreground py-1 fw-bold">
                     <div className="col">
                         <label>REVISION</label>
                     </div>
@@ -567,10 +567,10 @@ function RECORD_ENG_REVIEW(props) {
             return <>
                 <div className="row">
                     <div className="col-9 p-1">
-                        <label className="fw-bold text-uppercase">Contexto de la revision. </label>
+                        <label className="fw-bold">Contexto de la revision. </label>
                     </div>
                     <div className="col-3 p-1">
-                        <label className="fw-bold text-uppercase">Resultado</label>
+                        <label className="fw-bold">Resultado</label>
                     </div>
                     <div className="col-3 p-1"></div>
                 </div>

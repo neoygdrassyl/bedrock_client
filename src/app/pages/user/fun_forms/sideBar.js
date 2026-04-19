@@ -58,7 +58,7 @@ function SideBarContent({ itemsList }) {
 
         return (
             <div>
-                <div className="p-3 bg-info"><p className="lead fw-normal">LISTA SOLICITUDES</p></div>
+                <div className="p-3 bg-primary text-primary-foreground"><p className="lead fw-normal">LISTA SOLICITUDES</p></div>
                 <div className="px-2">
                     <p className="lead fw-normal">EN RADICACION</p>
                     {}

@@ -61,7 +61,7 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                         <div className="col-4">
                             <label>Fecha Documento</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" max="2100-01-01" className="form-control" id="pqrs_confirmation_date"
@@ -71,7 +71,7 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                         <div className="col-4">
                             <label>Consecutivo</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="pqrs_confirmation_id_public"
@@ -92,7 +92,7 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                         <div className="col-4">
                             <label>Titulo referido</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="user" size={16} />
                                 </span>
                                 <input list="titles" className="form-select" id="pqrs_confirmation_titles" />
@@ -116,7 +116,7 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                         <div className="col-12">
                             <label>Lista de Solicitantes</label>
                             <div className="input-group my-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Solicitantes"
@@ -129,7 +129,7 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                         <div className="col-12">
                             <label>Lista de Correos</label>
                             <div className="input-group my-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="envelope" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Correos"
@@ -142,7 +142,7 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                         <div className="col-12">
                             <label>Lista de Direcciones</label>
                             <div className="input-group my-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="home" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Correos"

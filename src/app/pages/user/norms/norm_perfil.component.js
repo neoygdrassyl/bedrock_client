@@ -273,7 +273,7 @@ export default function NORM_PERFIL(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 className="text-uppercase pb-2">4. INFORMACIÓN PERFILES:</h3>
+                <h3 className="pb-2">4. INFORMACIÓN PERFILES:</h3>
                 {NEW_ITEM}
                 {TABLE}
                 {EDIT_ITEM}

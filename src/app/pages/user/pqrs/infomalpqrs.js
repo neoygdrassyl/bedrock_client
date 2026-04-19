@@ -53,13 +53,13 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
             for (var i = 0; i < attachs; i++) {
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_informal" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="text" className="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
@@ -122,8 +122,8 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                     ? <>
                         {load ? <>
                             <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                    <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE LA PQRS</label>
+                                <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                    <label className="app-p lead fw-normal">INFORMACIÓN DE LA PQRS</label>
                                 </legend>
                                 <PQRS_COMPONENT_INFO
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -134,8 +134,8 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                             <div className="row">
                                 <div className="col-6">
                                     <fieldset className="p-3">
-                                        <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                            <label className="app-p lead fw-normal text-uppercase">CONTROL DE TIEMPOS</label>
+                                        <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                            <label className="app-p lead fw-normal">CONTROL DE TIEMPOS</label>
                                         </legend>
                                         <PQRS_COMPONENT_CLOCKS
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -146,8 +146,8 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                 <div className="col-6">
                                     {currentItem.pqrs_fun ?
                                         <fieldset className="p-3">
-                                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                                <label className="app-p lead fw-normal text-uppercase">SOLICITUD RELACIONADA</label>
+                                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                                <label className="app-p lead fw-normal">SOLICITUD RELACIONADA</label>
                                             </legend>
                                             <PQRS_COMPONENT_LICENCE
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -160,10 +160,10 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
 
                             <form onSubmit={informalReplyPQRS} id="app-formInformal" className="py-3">
 
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                    <label className="app-p lead fw-normal text-uppercase">RESPUESTA INFORMAL DE PETICIÓN</label>
+                                <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                    <label className="app-p lead fw-normal">RESPUESTA INFORMAL DE PETICIÓN</label>
                                 </legend>
-                                <p className="app-p">ESTA RESPUESTA SERÁ DADA COMO EL PROFESIONAL : <label className="fw-bold text-uppercase">{currentItemAsign.name}</label></p>
+                                <p className="app-p">ESTA RESPUESTA SERÁ DADA COMO EL PROFESIONAL : <label className="fw-bold">{currentItemAsign.name}</label></p>
                                 <p className="app-p">Instrucciones para dar respuesta a la solicitud: </p>
                                 <ul>
                                     <li>Escribir la respuesta en la caja de texto seguida de las instrucciones.</li>
@@ -176,7 +176,7 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                     <textarea className="form-control m-3" rows="5" maxlength="4096" id="pqrs_informal_reply"></textarea>
                                 </div>
                                 <hr className="my-3" />
-                                <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
+                                <label className="app-p lead text-start fw-bold">ANEXAR DOCUMENTO</label>
                                 <div className="text-end m-3">
                                     {attachs > 0
                                         ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
@@ -191,7 +191,7 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                     <div className="col-lg-6 col-md-6">
                                         <input type="text" className="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
                                         <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="calendar-alt" size={16} />
                                             </span>
                                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={dayjs().format('YYYY-MM-DD')} required />

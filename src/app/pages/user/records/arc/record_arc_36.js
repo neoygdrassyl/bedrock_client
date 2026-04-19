@@ -238,7 +238,7 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
 
         let _COMPONENT_CORRECTIONS = () => {
             return <div className="row">
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>Observaciones espacio publico</label>
                     </div>

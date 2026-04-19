@@ -74,7 +74,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             let isExtra = checkIfExtra(row.list_title)
             let _COMPONENT = [];
             _COMPONENT.push(<>
-                <div className="row bg-info text-white fw-bold d-flex py-2 text-center">
+                <div className="row bg-primary text-primary-foreground fw-bold d-flex py-2 text-center">
                     <div className="col-2">
                         <label>NOMENCLATURA</label>
                     </div>

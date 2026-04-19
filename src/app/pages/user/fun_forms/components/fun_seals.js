@@ -218,7 +218,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         <div className=" col-12">
                             <label>No. Radicación</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={sael_name} id="seal_1" />
@@ -227,7 +227,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                     </div>
 
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="check-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" value="Modalidad" disabled />
@@ -237,7 +237,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         <div className=" col-4">
                             <label>Consecutivo Sello</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Consecutivo Sello" id="seal_3" 
@@ -264,7 +264,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         <div className=" col-4">
                             <label>Fecha</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="seal_5" />
@@ -275,7 +275,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         <div className=" col-4">
                             <label>Planos</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="ruler-combined" size={16} />
                                 </span>
                                 <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="seal_6"
@@ -285,7 +285,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         <div className=" col-4">
                             <label>Memorias</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="database" size={16} />
                                 </span>
                                 <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="seal_7"
@@ -295,7 +295,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         <div className=" col-4">
                             <label>Estudios</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="file-invoice" size={16} />
                                 </span>
                                 <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="seal_8"
@@ -308,7 +308,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         <div className=" col">
                             <label>Aprobación personalizada</label>
                             <div className="input-group mb-3">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="ruler-combined" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Con este plano se aprueban..." id="seal_custom_text"

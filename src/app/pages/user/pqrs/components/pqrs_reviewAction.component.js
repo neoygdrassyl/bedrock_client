@@ -223,7 +223,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
         let contacts = currentItem.pqrs_contacts || [];
         return <>
             <div className="card border border-dark mb-3">
-                <div className="card-header text-uppercase">  1. DATOS PETICIONARIO</div>
+                <div className="card-header">  1. DATOS PETICIONARIO</div>
                 <div className="card-body text-dark">
                     <div className='row'>
                         <div className='col'>
@@ -263,7 +263,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
     const DESC_COMMPONENT = () => {
         return <>
             <div className="card border border-dark mb-3">
-                <div className="card-header text-uppercase">2.DESCRIPCIÓN DEL ASUNTO DE LA SOLICITUD</div>
+                <div className="card-header">2.DESCRIPCIÓN DEL ASUNTO DE LA SOLICITUD</div>
                 <div className="card-body text-dark text-justify">
                     <label className='fw-bold'>Hechos:</label>  {currentItem.content}
                 </div>
@@ -274,7 +274,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
     const STUDY_COMMPONENT = () => {
         return <>
             <div className="card border border-dark mb-3">
-                <div className="card-header text-uppercase">3. VALORACIÓN DE LA SOLICITUD Y DEFINICIÓN DE COMPETENCIA</div>
+                <div className="card-header">3. VALORACIÓN DE LA SOLICITUD Y DEFINICIÓN DE COMPETENCIA</div>
                 <div className="card-body text-dark">
                     {REW_DATA.map(rew => {
                         if (rew.title) return <>
@@ -447,7 +447,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
     const RESOLVE_COMMPONENT = () => {
         return <>
             <div className="card border border-dark mb-3">
-                <div className="card-header text-uppercase">4. CLASIFICACIÓN Y TERMINO PARA RESOLUCIÓN DE LA PQRS</div>
+                <div className="card-header">4. CLASIFICACIÓN Y TERMINO PARA RESOLUCIÓN DE LA PQRS</div>
                 <div className="card-body text-dark">
                     <div className='row'><label className='fw-bold'>Programación y control de proceso de Respuesta. Se programa para un ciclo de 10 días hábiles</label></div>
 

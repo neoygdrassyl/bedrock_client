@@ -16,43 +16,62 @@ const BASE = {
   reverseButtons: true,
 };
 
+function mergeSwalOptions(defaults, opts = {}) {
+  const merged = {
+    ...defaults,
+    ...opts,
+  };
+
+  if (defaults.customClass || opts.customClass) {
+    merged.customClass = {
+      ...(defaults.customClass ?? {}),
+      ...(opts.customClass ?? {}),
+    };
+  }
+
+  if (typeof defaults.didOpen === 'function' && typeof opts.didOpen === 'function') {
+    merged.didOpen = (...args) => {
+      defaults.didOpen(...args);
+      opts.didOpen(...args);
+    };
+  }
+
+  return merged;
+}
+
 export function swalConfirm(opts = {}) {
-  return Swal.fire({
+  return Swal.fire(mergeSwalOptions({
     ...BASE,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Confirmar',
     cancelButtonText: 'Cancelar',
-    ...opts,
-  });
+  }, opts));
 }
 
 export function swalSuccess(opts = {}) {
-  return Swal.fire({
+  return Swal.fire(mergeSwalOptions({
     ...BASE,
     icon: 'success',
     timer: 2000,
     showConfirmButton: false,
-    ...opts,
-  });
+  }, opts));
 }
 
 export function swalError(opts = {}) {
-  return Swal.fire({
+  return Swal.fire(mergeSwalOptions({
     ...BASE,
     icon: 'error',
-    ...opts,
-  });
+  }, opts));
 }
 
 export function swalLoading(opts = {}) {
-  return Swal.fire({
+  return Swal.fire(mergeSwalOptions({
     ...BASE,
     allowOutsideClick: false,
     showConfirmButton: false,
     didOpen: () => Swal.showLoading(),
-    ...opts,
-  });
+  }, opts));
 }
 
 export function swalClose() {
@@ -64,13 +83,12 @@ export function swalClose() {
  * For read-only information modals — no form inputs, just content + close button.
  */
 export function swalInfo(opts = {}) {
-  return Swal.fire({
+  return Swal.fire(mergeSwalOptions({
     ...BASE,
     icon: opts.icon ?? undefined,
     showCloseButton: true,
     confirmButtonText: 'Cerrar',
-    ...opts,
-  });
+  }, opts));
 }
 
 /**
@@ -79,13 +97,12 @@ export function swalInfo(opts = {}) {
  * Supports preConfirm, Swal.showValidationMessage, and all Swal options.
  */
 export function swalFormDialog(opts = {}) {
-  return Swal.fire({
+  return Swal.fire(mergeSwalOptions({
     ...BASE,
     showCancelButton: true,
     confirmButtonText: 'Guardar',
     cancelButtonText: 'Cancelar',
-    ...opts,
-  });
+  }, opts));
 }
 
 /**

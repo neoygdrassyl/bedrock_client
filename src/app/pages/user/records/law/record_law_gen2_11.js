@@ -342,7 +342,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Matrícula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_1" onKeyPress={(e) => _REGEX_MATRICULA(e)}
@@ -352,7 +352,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Fecha</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-times" size={16} />
 
                             </span>
@@ -363,14 +363,14 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Código Predial/Catastral (Viejo)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_3" defaultValue={f2.catastral} />
                         </div>
                         <label>Código Predial/Catastral (Nuevo 30 dígitos)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_32" defaultValue={f2.catastral_2} />
@@ -382,7 +382,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4 mt-4">
                         <label>Dirección</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_4" defaultValue={f2.direccion} />
@@ -419,7 +419,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Última anotación</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_6" />
@@ -428,7 +428,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Especificación</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_7" />
@@ -437,7 +437,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Titular Derecho Real (Separar varios con coma (,))</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_8" />
@@ -449,7 +449,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Documento Titular (Separar varios con coma (,))</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_9" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
@@ -458,7 +458,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Anotaciones Urbanas</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_10" />
@@ -467,7 +467,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Relacionar Documento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="paperclip" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_liberty_11">
@@ -486,7 +486,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Matricula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_1_edit" />
@@ -495,7 +495,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Fecha</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-times" size={16} />
 
                             </span>
@@ -506,14 +506,14 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Codigo Catastral (Viejo)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_3_edit" />
                         </div>
                         <label>Código Predial/Catastral (Nuevo 30 dígitos)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_32_edit" />
@@ -525,7 +525,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4 mt-4">
                         <label>Direccion</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_4_edit" />
@@ -562,7 +562,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Ultima anoatacion</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_6_edit" />
@@ -571,7 +571,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Especificacion</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_7_edit" />
@@ -580,7 +580,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Titilar Derecho Real (Separar varios con coma (,))</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_8_edit" />
@@ -592,7 +592,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Documento Titular (Separar varios con coma (,))</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_9_edit" />
@@ -601,7 +601,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Anotaciones Urbanas</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_liberty_10_edit" />
@@ -610,7 +610,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Relacionar Documento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="paperclip" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_liberty_11_edit">
@@ -714,7 +714,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Tipo de Documento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-invoice" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_tax_8">
@@ -731,7 +731,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>No. de Recibo</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_1" />
@@ -740,7 +740,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Fecha</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-times" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="r_lg_tax_2" require />
@@ -752,14 +752,14 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Código Predial/Catastral (Viejo)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_3" defaultValue={f2.catastral} />
                         </div>
                         <label>Código Predial/Catastral (Nuevo 30 dígitos)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_32" defaultValue={f2.catastral_2} />
@@ -768,7 +768,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Dirección</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_4" defaultValue={f2.direccion} />
@@ -777,7 +777,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-3">
                         <label>Estrato</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="number" min="1" max="6" step="1" className="form-control" id="r_lg_tax_5" defaultValue={f2.estrato} />
@@ -790,7 +790,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-6">
                         <label>Destino</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_6" />
@@ -799,7 +799,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-6">
                         <label>Relacionar Documento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="paperclip" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_tax_7">
@@ -818,7 +818,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Tipo de Documento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-invoice" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_tax_8_edit">
@@ -835,7 +835,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Nr. de Recibo</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_1_edit" />
@@ -844,7 +844,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Fecha</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-times" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="r_lg_tax_2_edit" require />
@@ -856,14 +856,14 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Codigo Predial/Catastral (Viejo)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_3_edit" />
                         </div>
                         <label>Código Predial/Catastral (Nuevo 30 dígitos)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_32_edit" />
@@ -872,7 +872,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-4">
                         <label>Direccion</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_4_edit" />
@@ -881,7 +881,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-3">
                         <label>Estrato</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="number" min="1" max="6" step="1" className="form-control" id="r_lg_tax_5_edit" />
@@ -892,7 +892,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-6">
                         <label>Destino</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id="r_lg_tax_6_edit" />
@@ -901,7 +901,7 @@ function RECORD_LAW_GEN2_11(props) {
                     <div className="col-6">
                         <label>Relacionar Documento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="paperclip" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_tax_7_edit">
@@ -1340,7 +1340,7 @@ function RECORD_LAW_GEN2_11(props) {
         }
         return (
             <div className="record_law_gen_11 container my-2">
-                <div className='row  border border-dark bg-info text-light text-center fwb-bold py-2'>
+                <div className='row  border border-dark bg-primary text-primary-foreground text-center fwb-bold py-2'>
                     <div className='col'>
                         <label>CERTIFICADOS</label>
                     </div>

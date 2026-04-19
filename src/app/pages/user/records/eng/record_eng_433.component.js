@@ -892,7 +892,7 @@ function RECORD_ENG_STEP_433(props) {
                 {SUBCATEGORIES[10] == 1 ? <>
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold text-uppercase my-2">Paso 9, Desplazamientos horizontales. Se evalúan los desplazamientos horizontales, incluyendo los efectos torsionales dela estructura, las derivas (desplazamiento entre niveles continuos), por medio de los procedimientos del (Cap. A.6), y con base en los desplazamientos obtenidos en el paso 8.</label>
+                            <label className="fw-bold my-2">Paso 9, Desplazamientos horizontales. Se evalúan los desplazamientos horizontales, incluyendo los efectos torsionales dela estructura, las derivas (desplazamiento entre niveles continuos), por medio de los procedimientos del (Cap. A.6), y con base en los desplazamientos obtenidos en el paso 8.</label>
                         </div>
                         <div className="col-2">
                             <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s433', 'check', 0) ?? 1)} name="r_e_select_s433"
@@ -931,7 +931,7 @@ function RECORD_ENG_STEP_433(props) {
 
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold text-uppercase my-2">Paso10: Verificación de las derivas. Comprobar que las derivas no excedan los límites del (Cap. A.6), si la estructura excede dichos límites,  es obligatorio rigidizarla y llevar a cabo los pasos 8, 9 y 10, hasta que cumpla.</label>
+                            <label className="fw-bold my-2">Paso10: Verificación de las derivas. Comprobar que las derivas no excedan los límites del (Cap. A.6), si la estructura excede dichos límites,  es obligatorio rigidizarla y llevar a cabo los pasos 8, 9 y 10, hasta que cumpla.</label>
                         </div>
                         <div className="col-2">
                             <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s43310', 'check', 0) ?? 1)} name="r_e_select_s43310"
@@ -944,7 +944,7 @@ function RECORD_ENG_STEP_433(props) {
                     {version === 2 ?
                         <div className="row">
                             <div className="col-10">
-                                <label className="fw-bold text-uppercase my-2">Desplazamientos horizontales. Se evalúan los desplazamientos horizontales, incluyendo los efectos torsionales dela estructura, las derivas (desplazamiento entre niveles continuos), por medio de los procedimientos del (Cap. A.6), y con base en los desplazamientos obtenidos en el paso 8.</label>
+                                <label className="fw-bold my-2">Desplazamientos horizontales. Se evalúan los desplazamientos horizontales, incluyendo los efectos torsionales dela estructura, las derivas (desplazamiento entre niveles continuos), por medio de los procedimientos del (Cap. A.6), y con base en los desplazamientos obtenidos en el paso 8.</label>
                             </div>
                             <div className="col-2">
                                 <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s43310_22', 'check', 0) ?? 1)} name="r_e_select_s43310_22"
@@ -959,7 +959,7 @@ function RECORD_ENG_STEP_433(props) {
                 {SUBCATEGORIES[12] == 1 ? <>
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold text-uppercase my-2">Paso 11, Combinación de las diferentes solicitudes. De la combinación de las diferentes solicitudes sale la obtención de las fuerzas internas de diseño de la estructura, (Cap. B.2), por el método de diseño propio de cada material estructural,  cada una de las combinaciones de carga se multiplica por un coeficiente de carga prescrito para esta combinación,  en los efectos del sismo de diseño, se tiene en cuenta la capacidad de disipación de energía lo cual se logra empleando unos efectos sísmicos reducidos de diseño, E, determinadas en el paso 7, por el coeficiente de capacidad de disipar energía,  R(E = Fs/R). </label>
+                            <label className="fw-bold my-2">Paso 11, Combinación de las diferentes solicitudes. De la combinación de las diferentes solicitudes sale la obtención de las fuerzas internas de diseño de la estructura, (Cap. B.2), por el método de diseño propio de cada material estructural,  cada una de las combinaciones de carga se multiplica por un coeficiente de carga prescrito para esta combinación,  en los efectos del sismo de diseño, se tiene en cuenta la capacidad de disipación de energía lo cual se logra empleando unos efectos sísmicos reducidos de diseño, E, determinadas en el paso 7, por el coeficiente de capacidad de disipar energía,  R(E = Fs/R). </label>
                         </div>
                         <div className="col-2">
                             <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s43311', 'check', 0) ?? 1)} name="r_e_select_s43311"
@@ -973,7 +973,7 @@ function RECORD_ENG_STEP_433(props) {
                 {SUBCATEGORIES[13] == 1 ? <>
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold text-uppercase my-2">Paso 12, Diseño de los elementos estructurales. Se lleva a cabo de acuerdo con los requisitos del sistema de resistencia sísmica y del material estructural utilizado, los materiales deben diseñarse de acuerdo con el grado de disipación de energía, prescrito en el Cap. A  según corresponda, lo cual permitirá a la estructura responder ante la ocurrencia de un sismo, en el rango inelástico de respuesta, y cumplir con los objetivos de la norma sismo resistente, este diseño debe efectuarse con los elementos más desfavorables, entre las combinaciones obtenidas en el paso 11, tal como lo prescribe el título B del reglamento.</label>
+                            <label className="fw-bold my-2">Paso 12, Diseño de los elementos estructurales. Se lleva a cabo de acuerdo con los requisitos del sistema de resistencia sísmica y del material estructural utilizado, los materiales deben diseñarse de acuerdo con el grado de disipación de energía, prescrito en el Cap. A  según corresponda, lo cual permitirá a la estructura responder ante la ocurrencia de un sismo, en el rango inelástico de respuesta, y cumplir con los objetivos de la norma sismo resistente, este diseño debe efectuarse con los elementos más desfavorables, entre las combinaciones obtenidas en el paso 11, tal como lo prescribe el título B del reglamento.</label>
                         </div>
                         <div className="col-2">
                             <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s43312', 'check', 0) ?? 1)} name="r_e_select_s43312"
@@ -1744,8 +1744,8 @@ function RECORD_ENG_STEP_433(props) {
                 {(!version && SUBCATEGORIES[14] == 1)
                     || (version === 2 && SUBCATEGORIES[15] == 1)
                     ? <>
-                        <legend className="my-3 px-3 text-uppercase bg-light" id="record_eng_433">
-                            <label className="app-p lead fw-normal text-uppercase">4.3.3 Planos Estructurales</label>
+                        <legend className="my-3 px-3 bg-light" id="record_eng_433">
+                            <label className="app-p lead fw-normal">4.3.3 Planos Estructurales</label>
                         </legend>
                         {COMPONENT_03()}
 

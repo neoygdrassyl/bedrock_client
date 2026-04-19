@@ -196,7 +196,7 @@ export default function FUN_C_CLOCKS(props) {
 
     let _BODY_COMPONENT = () => {
         return <>
-            <div className="row mx-2 bg-info text-white">
+            <div className="row mx-2 bg-primary text-primary-foreground">
                 <div className="col-3 text-center">
                     <label className="fw-bold mt-1">EVENTO</label>
                 </div>

@@ -1259,13 +1259,13 @@ export default function FUN_DAILY_COMPONENT(props) {
     const TABLE_MAIN_HEADER = () => {
         return <>
             <div className="row text-white fw-bold mx-0 px-0"  >
-                <div className="col-5 text-center m-0 p-0 border border-ligh bg-info" style={{ width: '220px' }}>
+                <div className="col-5 text-center m-0 p-0 border border-ligh bg-primary text-primary-foreground" style={{ width: '220px' }}>
                     <h5 className='m-0 p-0 text-dark'>RADICACION </h5>
                 </div>
-                <div className="col-5 text-center m-0 p-0 border border-ligh bg-info" style={{ width: '1410px' }}>
+                <div className="col-5 text-center m-0 p-0 border border-ligh bg-primary text-primary-foreground" style={{ width: '1410px' }}>
                     <h5 className='m-0 p-0 text-dark'>ACTA </h5>
                 </div>
-                <div className="col-5 text-center  m-0 p-0 border border-light bg-info" style={{ width: '1850px' }} >
+                <div className="col-5 text-center  m-0 p-0 border border-light bg-primary text-primary-foreground" style={{ width: '1850px' }} >
                     <h5 className='m-0 p-0 text-dark'>EXPEDICIÓN </h5>
                 </div>
             </div>

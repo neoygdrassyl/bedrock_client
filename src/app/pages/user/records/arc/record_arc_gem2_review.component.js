@@ -58,7 +58,7 @@ export default function RECORD_ARC_GEN_2_REVIEW(props) {
                     <input type='hidden' value={re.items.length} name={'rar_limits'} id={'rar_limit_' + re.pid} />
                     <input type='hidden' value={re.title} name={'rar_parents'} id={'rar_parent_' + re.pid} />
 
-                    <div className='row border bg-info fw-bold mx-2 text-center'>
+                    <div className='row border bg-primary text-primary-foreground fw-bold mx-2 text-center'>
                         <div className='col'><label>ITEM</label></div>
                         <div className='col-2'><label>NORMA</label></div>
                         <div className='col-2'><label>PROYECTO</label></div>

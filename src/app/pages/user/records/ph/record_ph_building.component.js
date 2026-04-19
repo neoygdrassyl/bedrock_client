@@ -103,7 +103,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     <div className="col-3">
                         <label>Predio N°</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="hashtag" size={16} />
                             </span>
                             <input type="number" className="form-control" id={"r_ph_g_1" + edit} />
@@ -112,7 +112,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     <div className="col-3">
                         <label>Área y Linderos (m2)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="ruler" size={16} />
                             </span>
                             <input type="number" step="0.01" className="form-control" id={"r_ph_g_5" + edit} />
@@ -123,7 +123,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     <div className="col-4">
                         <label>Número Predial</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"r_ph_g_2" + edit} />
@@ -132,7 +132,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     <div className="col-4">
                         <label>Matricula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"r_ph_g_3" + edit} />
@@ -141,7 +141,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     <div className="col-4">
                         <label>Nomenclatura</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"r_ph_g_4" + edit} />

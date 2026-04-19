@@ -291,90 +291,90 @@ const NAV_FUNA = (_CHILD) => {
             <div className="fung_nav">
                 <div className="rounded-lg border border-border bg-card">
                     <div className="p-1">
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
                         <br />
                         <a href="#nav_expedition_1">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>INFORMACIÓN GENERAL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_10">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>AREAS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_20">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>PAGOS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_21">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>Acto de tramite de licencia</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_22">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>Liquidación de Expensas</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_23">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>Impuestos Municipales</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_24">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>Estampilla PRO-UIS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_25">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>Deberes Urbanísticos</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_26">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>DOCUMENTOS</h6>
                             </legend>
                         </a>
 
                         <a href="#nav_expedition_28">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>Acto Administrativo / Resolución</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_27">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>CERTIFICACIÓN DE EJECUTORIA</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_29">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>Licencia</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_3">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>EXPEDICIÓN</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#nav_expedition_4">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>CERRAR SOLICITUD</h6>
                             </legend>
                         </a>

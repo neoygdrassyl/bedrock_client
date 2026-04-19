@@ -210,7 +210,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-4">
                         <label >1. Número de radicación</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_1" required
@@ -221,7 +221,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-5">
                         <label >2. Número de solicitud</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_2"
@@ -236,7 +236,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             ? <>
                                 <label >2.1 Consecutivo Pago</label>
                                 <div className="input-group mb-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="hashtag" size={16} />
                                     </span>
                                     <input type="text" className="form-control" id="submit_21" required
@@ -276,7 +276,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-12">
                         <label >3.1 Tipo</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <input list="submit_type" className="form-control" id="submit_4"
@@ -300,7 +300,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-6">
                         <label >3.2 Estado</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
@@ -309,7 +309,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-6">
                         <label >3.3 Tipo de Radicación</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className='form-select' id="submit_41" defaultValue={_CHILD.list_type}>
@@ -343,7 +343,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-6">
                         <label >4 Fecha y hora ingreso</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="submit_3" required
@@ -356,7 +356,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-6">
                         <label >5. Propietarios</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_5" maxLength={250}
@@ -369,7 +369,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-4">
                         <label >7. Funcionario que recibe</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_7" disabled
@@ -379,7 +379,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-4">
                         <label >8. Persona que entrega</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_8" maxLength={250}
@@ -389,7 +389,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     <div className="col-4">
                         <label >8.1 C.C. Persona</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_81" maxLength={250}
@@ -508,8 +508,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
             <div className="Nomenclature_new container">
                 <>
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                            <label className="app-p lead fw-normal text-uppercase text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} ENTRADA</label>
+                        <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                            <label className="app-p lead fw-normal text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} ENTRADA</label>
                         </legend>
                         <form id="form_manage_submit" onSubmit={save_submit}>
                             {COMPONENT_NEW()}
@@ -526,8 +526,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     {currentItem
                         ? <>
                             <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-uppercase text-light">LISTA DE DOCUMENTOS</label>
+                                <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                                    <label className="app-p lead fw-normal text-light">LISTA DE DOCUMENTOS</label>
                                 </legend>
 
                                 <SUBMIT_LIST
@@ -537,8 +537,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
                             </fieldset>
                             <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-uppercase text-light">DOCUMENTO</label>
+                                <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                                    <label className="app-p lead fw-normal text-light">DOCUMENTO</label>
                                 </legend>
                                 <SUBMIT_ANEX
                                     translation={translation} swaMsg={swaMsg} globals={globals}

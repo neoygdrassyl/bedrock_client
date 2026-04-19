@@ -41,32 +41,7 @@ import FUN_ASIGNS_HISTORY_COMPONENT from './fun_asign_history.component';
 import './fun_modal_shared.css';
 import { swalError } from '@/app/utils/swalAdapter';
 
-const customStylesForModal = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
-        zIndex: 1050,
-    },
-    content: {
-        position: 'absolute',
-        top: '10px',
-        left: 'var(--fun-sidebar-width)',
-        right: '15%',
-        bottom: '10px',
-        border: '1px solid #ccc',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        borderRadius: '4px',
-        outline: 'none',
-        padding: '20px',
-        marginRight: 'auto',
-
-    }
-};
+const customStylesForModal = {};
 
 export default function FUN_ASIGNS_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
@@ -935,17 +910,24 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     style={customStylesForModal}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-alt" size={16} /> ASIFNACIÓN DE PROFESIONALES:  {currenItem ? currenItem.id_public : ''} </label>
-                        <button type="button" className="btn-close" onClick={() => setModal(false)} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-alt" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Asignación de profesionales: {currenItem ? currenItem.id_public : ''}</h2>
+                        </div>
+                        <button type="button" onClick={() => setModal(false)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
 
                     {BOT_PAGE()}
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={() => setModal(false)}>
-                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><Icon name="times-circle" size={16} /> CERRAR</div>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => setModal(false)}>
+                            <Icon name="X" size={14} /> Cerrar
+                        </Button>
                     </div>
                 </Modal>
 
@@ -954,9 +936,16 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     style={customStylesForModal}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-alt" size={16} /> HISTORIAL DE ASIGNACIONES:  {currentProf ? currentProf.name : ''} </label>
-                        <button type="button" className="btn-close" onClick={() => setModalF(false)} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-alt" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Historial de asignaciones: {currentProf ? currentProf.name : ''}</h2>
+                        </div>
+                        <button type="button" onClick={() => setModalF(false)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
 
                     <FUN_ASIGNS_HISTORY_COMPONENT 
@@ -966,10 +955,10 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         swaMsg={swaMsg}
                     />
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-info" onClick={() => setModalF(false)}>
-                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><Icon name="times-circle" size={16} /> CERRAR</div>
-                        </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => setModalF(false)}>
+                            <Icon name="X" size={14} /> Cerrar
+                        </Button>
                     </div>
                 </Modal>
             </>

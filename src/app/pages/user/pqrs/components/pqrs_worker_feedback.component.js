@@ -96,7 +96,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                     <div className="col-6">
                         <label>Visto Final</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="pqrs_worker_feeback_1" required>
@@ -109,7 +109,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                     <div className="col-6">
                         <label>Fecha de Visto</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_worker_feeback_2"

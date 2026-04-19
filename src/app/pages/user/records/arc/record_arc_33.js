@@ -425,7 +425,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
         let _COMPONENT_CORRECTIONS = () => {
             let values = _GET_STEP_TYPE('s33', 'value');
             return <div className="row">
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>Observaciones generales</label>
                     </div>

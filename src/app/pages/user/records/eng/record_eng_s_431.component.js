@@ -297,7 +297,7 @@ function RECORD_ENG_STEP_431(props) {
                 <div className="row">
                     <div className="col-5">
                         <div className="input-group my-0">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Categoría Construcción (H.3.1)
                             </span>
                             <select className="form-select form-control form-control-sm" id="recprd_eng_s01_select" onChange={(e) => _SET_VALUES(e.target.value)}
@@ -311,7 +311,7 @@ function RECORD_ENG_STEP_431(props) {
                     </div>
                     <div className="col-5">
                         <div className="input-group my-0">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Segun los Niveles
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_1" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 0) ?? 'Hasta 3 niveles'} />
@@ -329,7 +329,7 @@ function RECORD_ENG_STEP_431(props) {
                 <div className="row">
                     <div className="col-5">
                         <div className="input-group my-0">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Numero de Sondeos
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_2" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 1) ?? 'Mínimo 3'} />
@@ -337,7 +337,7 @@ function RECORD_ENG_STEP_431(props) {
                     </div>
                     <div className="col-5">
                         <div className="input-group my-0">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Profundidad (h.3.2.1)
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_3" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 2) ?? 'Mínima 6 m.'} />
@@ -355,7 +355,7 @@ function RECORD_ENG_STEP_431(props) {
                 <div className="row">
                     <div className="col-5">
                         <div className="input-group my-0">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Cargas en Columna
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_4" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 3) ?? 'Menor de 800 kN'} />
@@ -363,7 +363,7 @@ function RECORD_ENG_STEP_431(props) {
                     </div>
                     <div className="col-5">
                         <div className="input-group my-0">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Supersivisíon Técnica
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_5" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 4) ?? 'No necesaria'} />
@@ -699,7 +699,7 @@ function RECORD_ENG_STEP_431(props) {
         }
         let COMPONENT_DETAIL = () => {
             return <div>
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>Resumen</label>
                     </div>
@@ -867,11 +867,11 @@ function RECORD_ENG_STEP_431(props) {
             <div className="record_eng_desc container">
                 {SUBCATEGORIES[0] == '1' ?
                     <>
-                        <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_431">
-                            <label className="app-p lead fw-normal text-uppercase">4.3.1 ESTUDIO GEOTÉCNICO</label>
+                        <legend className="my-2 px-3 bg-light" id="record_eng_431">
+                            <label className="app-p lead fw-normal">4.3.1 ESTUDIO GEOTÉCNICO</label>
                         </legend>
                         {COMPONENT_01()}
-                        <label className="app-p fw-bold text-uppercase my-2">Contenido del estudio geotécnico definitivo (H.2.2.2.1)</label>
+                        <label className="app-p fw-bold my-2">Contenido del estudio geotécnico definitivo (H.2.2.2.1)</label>
                         {COMPONENT_02()}
                     </>
                     : ""}
@@ -880,7 +880,7 @@ function RECORD_ENG_STEP_431(props) {
                 <hr />
                 {SUBCATEGORIES[0] == '1' ?
                     <>
-                        <label className="app-p fw-bold text-uppercase my-2">Resumen del estudio Geotécnico</label>
+                        <label className="app-p fw-bold my-2">Resumen del estudio Geotécnico</label>
                         {COMPONENT_DETAIL()}
                     </>
                     : ""}

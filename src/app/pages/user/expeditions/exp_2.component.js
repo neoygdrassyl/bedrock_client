@@ -392,7 +392,7 @@ function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, curr
         }
         return (
             <div className="record_ph_gen container p-3">
-                <legend className="my-2 px-3 text-uppercase bg-light" id="nav_expedition_10">
+                <legend className="my-2 px-3 bg-light" id="nav_expedition_10">
                     <label className="app-p lead fw-normal">Control para Entidades Supervisoras {_SAVING_STATE(pym)}</label>
                 </legend>
 

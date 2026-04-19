@@ -123,7 +123,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.3.1 Nombre</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Nombre" id="f_531"
@@ -133,7 +133,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.3.1 Apellido(s)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Apellido(s)" id="f_5312"
@@ -146,7 +146,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.3.2 Número de Identificación (C.C.)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Numero de Identificación" id="f_532"
@@ -156,7 +156,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.3.3 En calidad de:</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input className='form-select' list="f53_roles" id="f_533" defaultValue={_CHILD_VARS.item_533} required />
@@ -184,7 +184,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.3.4 Teléfono de Contacto</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="phone-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Teléfono" id="f_534"
@@ -194,7 +194,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.3.5 Correo Electrónico</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Correo Electrónico" id="f_535"
@@ -207,7 +207,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.3.6 Dirección para correspondencia</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Dirección para correspondencia" id="f_536"
@@ -217,7 +217,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-5">
                         <label>5.3.7 Relacionar Documento: Doc. de Identidad</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_53_doc1" defaultValue={_GET_DOC_VALUE(0)}>
@@ -240,7 +240,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-5">
                         <label>5.3.8 Poder, mandato o autorización debidamente otorgado</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_53_doc2" defaultValue={_GET_DOC_VALUE(1)}>
@@ -380,8 +380,8 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
         return (<>
             {_CHILD_530()}
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_53">
-                    <label className="app-p lead text-center fw-normal text-uppercase">5.3 Responsable de la Solicitud</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_53">
+                    <label className="app-p lead text-center fw-normal">5.3 Responsable de la Solicitud</label>
                 </legend>
                 <form id="form_fun_53_manage" onSubmit={new_53}>
                     {_CHILD_53_COMPONENT()}

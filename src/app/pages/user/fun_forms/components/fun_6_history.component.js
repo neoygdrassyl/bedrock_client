@@ -7,6 +7,7 @@ import DataTable from '@/components/data-table-bridge';
 import './fun_modal_shared.css';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/components/ui/button';
 
 function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
         const [modal, setModal] = useState(false);
@@ -35,32 +36,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                 document.getElementById('fun_6_h_3_edit').value = ITEM.state ?? '';
             }
         }, [edit]);
-        const customStylesForModal = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                zIndex: 1051,
-            },
-            content: {
-                position: 'absolute',
-                top: '15%',
-                left: 'var(--fun-sidebar-width)',
-                right: '30%',
-                bottom: '15%',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                marginRight: 'auto',
-
-            }
-        };
+        const customStylesForModal = {};
 
         let toggle = (state) => {
             if (state) retrieveItem();
@@ -124,7 +100,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     <div className="col-4">
                         <label>Detalles</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="comment-dots" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"fun_6_h_1" + edit} required />
@@ -134,7 +110,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     <div className="col-4">
                         <label>Fecha</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id={"fun_6_h_2" + edit} required />
@@ -144,7 +120,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     <div className="col-4">
                         <label>Estado Final</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id={"fun_6_h_3" + edit} required >
@@ -267,9 +243,16 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     ariaHideApp={false}
                 >
 
-                    <div className="my-4 d-flex justify-content-between">
-                        <label className="fw-bold align-middle"> <Icon name="history" size={16} /> HISTORIA DEL DOCUMENTO</label>
-                        <button type="button" className="btn-close" onClick={() => toggle()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="history" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Historia del documento</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
 
                     <div className="form-check ms-5">
@@ -301,15 +284,15 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                                         {_COMPONENT_MANAGE('_edit')}
                                         <div className="row text-center">
                                             <div className="col-12">
-                                                <button className="btn btn-lg btn-success"><Icon name="archive" size={16} /> GUARDAR CAMBIOS </button>
+                                                <Button type="submit" variant="default" size="sm"><Icon name="archive" size={14} /> Guardar cambios</Button>
                                             </div>
                                         </div>
                                     </form></> : ""}
                         </>
                         : <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>}
 
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR</button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggle()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 

@@ -128,7 +128,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.1 Nr. Radicación</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="hashtag" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_id_in" required disabled defaultValue={item.id_in} />
@@ -137,7 +137,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.2 Nr. Expedición</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="hashtag" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_id_out" defaultValue={item.id_out} />
@@ -146,7 +146,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.3 Solicitante</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="user" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_solicitor" defaultValue={item.solicitor} />
@@ -155,7 +155,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.4 Fecha</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="calendar-alt" size={16} />
                         </span>
                         <input type="date" className="form-control" max="2100-01-01" id="zone_use_date" defaultValue={item.date} />
@@ -167,7 +167,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.5 Clasificación Suelo</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="zone_use_cla_suelo" defaultValue={item.cla_suelo}>
@@ -180,7 +180,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.6 Área de actividad</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="zone_use_area_act" defaultValue={item.area_act} >
@@ -191,7 +191,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.7 Tratamiento Urbanístico</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="zone_use_trat_urb" defaultValue={item.trat_urb} >
@@ -202,7 +202,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.8 Zonif. Restricción Ocupación</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="zone_use_zon_rest" defaultValue={item.zon_rest} >
@@ -216,7 +216,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.9 Doc. Solicitud</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="calendar-alt" size={16} />
                         </span>
                         <input type="date" className="form-control" max="2100-01-01" id="zone_use_doc_1_date" defaultValue={item.doc_1_date} />
@@ -225,7 +225,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.10 Doc. Certificación de tradición</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="calendar-alt" size={16} />
                         </span>
                         <input type="date" className="form-control" max="2100-01-01" id="zone_use_doc_2_date" defaultValue={item.doc_2_date} />
@@ -234,7 +234,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-3">
                     <label >1.11 Doc. Copia Impuesto Predial</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="calendar-alt" size={16} />
                         </span>
                         <input type="date" className="form-control" max="2100-01-01" id="zone_use_doc_3_date" defaultValue={item.doc_3_date} />
@@ -251,7 +251,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-4">
                     <label >2.1 Numero Predial</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="home" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_predial" defaultValue={item.predial} />
@@ -260,7 +260,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-4">
                     <label >2.2 Dirección</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="home" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_dir" defaultValue={item.dir} />
@@ -269,7 +269,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-4">
                     <label >2.3 Barrio</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="home" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_neighbour" defaultValue={item.neighbour} />
@@ -281,7 +281,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-4">
                     <label >2.4 Área</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="cube" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_area" defaultValue={item.area} />
@@ -290,7 +290,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-4">
                     <label >2.4 Frente</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="cube" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_front" defaultValue={item.front} />
@@ -299,7 +299,7 @@ export default function ZONE_USE_COMPONENT(props) {
                 <div className="col-4">
                     <label >2.4 Fondo</label>
                     <div className="input-group mb-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="cube" size={16} />
                         </span>
                         <input type="text" className="form-control" id="zone_use_deep" defaultValue={item.deep} />
@@ -388,13 +388,13 @@ export default function ZONE_USE_COMPONENT(props) {
         <>
             {item ? <>
                 <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                    <h3 className="text-uppercase pb-2">1. INFORMACIÓN GENERAL</h3>
+                    <h3 className="pb-2">1. INFORMACIÓN GENERAL</h3>
                     {PART_1(item)}
 
-                    <h3 className="text-uppercase py-2">2. INFORMACIÓN PREDIO</h3>
+                    <h3 className="py-2">2. INFORMACIÓN PREDIO</h3>
                     {PART_2(item)}
 
-                    <h3 className="text-uppercase py-2">3. CONSULTA</h3>
+                    <h3 className="py-2">3. CONSULTA</h3>
                     <div className="row">
                         <div className="col-12">
                             <div className="input-group mb-1">
@@ -403,10 +403,10 @@ export default function ZONE_USE_COMPONENT(props) {
                         </div>
                     </div>
 
-                    <h3 className="text-uppercase py-2">4. CATEGORÍAS DE USOS Y UNIDADES DE USO PERMITIDOS</h3>
+                    <h3 className="py-2">4. CATEGORÍAS DE USOS Y UNIDADES DE USO PERMITIDOS</h3>
                     {R_4_USES(item)}
 
-                    <h3 className="text-uppercase py-2">5. CONCEPTO DE USO DEL SUELO</h3>
+                    <h3 className="py-2">5. CONCEPTO DE USO DEL SUELO</h3>
                     <div className="row">
                         <div className="col-12">
                             <div className="input-group mb-1">

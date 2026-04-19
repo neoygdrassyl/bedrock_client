@@ -220,7 +220,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                         <div className="input-group">
                             <input type="text" className="form-control" id="geng_cub_inc"
                                 defaultValue={_GET_CHILD_LAW().cub_inc || cubSelected || ""} />
-                            {edit  ? <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
+                            {edit  ? <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>

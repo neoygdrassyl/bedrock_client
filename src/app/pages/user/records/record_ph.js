@@ -186,8 +186,8 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                             ? <>
                                 <div>
 
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_ph_1">
-                                        <label className="app-p lead fw-normal text-uppercase">1. ANÁLISIS JURÍDICO</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_ph_1">
+                                        <label className="app-p lead fw-normal">1. ANÁLISIS JURÍDICO</label>
                                     </legend>
 
                                     <RECORD_LAW_DOCSCHECK
@@ -197,8 +197,8 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         currentItem={currentItem}
                                         currentVersion={currentVersion}
                                     />
-                                    <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_411">
-                                        <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS DIGITALIZADOS</label>
+                                    <legend className="my-2 px-3 bg-light" id="record_eng_411">
+                                        <label className="app-p lead fw-normal">DOCUMENTOS DIGITALIZADOS</label>
                                     </legend>
 
                                     <FUN_6_VIEW
@@ -212,8 +212,8 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         readOnly
                                     />
 
-                                    <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_411">
-                                        <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
+                                    <legend className="my-2 px-3 bg-light" id="record_eng_411">
+                                        <label className="app-p lead fw-normal">DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
                                     </legend>
 
                                     <SUBMIT_SINGLE_VIEW
@@ -233,13 +233,13 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         requestUpdate={requestUpdate}
                                         requestUpdateRecord={requestUpdateRecord} />
 
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_ph_2">
-                                        <label className="app-p lead fw-normal text-uppercase">2. ANÁLISIS ARQUITECTÓNICO</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_ph_2">
+                                        <label className="app-p lead fw-normal">2. ANÁLISIS ARQUITECTÓNICO</label>
                                     </legend>
                                     {_GLOBAL_ID == 'cb1' ?
                                         <>
-                                            <legend className="my-2 px-3 text-uppercase Collapsible" id="record_ph_21">
-                                                <label className="app-p lead fw-normal text-uppercase">2.1 INFORMACIÓN GENERAL</label>
+                                            <legend className="my-2 px-3 Collapsible" id="record_ph_21">
+                                                <label className="app-p lead fw-normal">2.1 INFORMACIÓN GENERAL</label>
                                             </legend>
                                             <RECORD_PH_BUILDING
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -259,8 +259,8 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
 
-                                            <legend className="my-2 px-3 text-uppercase Collapsible" id="record_ph_22">
-                                                <label className="app-p lead fw-normal text-uppercase">2.2 DESCRIPCIÓN DEL PROYECTO</label>
+                                            <legend className="my-2 px-3 Collapsible" id="record_ph_22">
+                                                <label className="app-p lead fw-normal">2.2 DESCRIPCIÓN DEL PROYECTO</label>
                                             </legend>
                                             <RECORD_PH_PROFESIONALS
                                                 _FUN_52={_GET_CHILD_52()}
@@ -294,8 +294,8 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
 
-                                            <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_ph_2">
-                                                <label className="app-p lead fw-normal text-uppercase">2.3 Observaciones a la planimetria revisada. Formato de revisión e información de proyectos</label>
+                                            <legend className="my-2 px-3 Collapsible text-center" id="record_ph_2">
+                                                <label className="app-p lead fw-normal">2.3 Observaciones a la planimetria revisada. Formato de revisión e información de proyectos</label>
                                             </legend>
                                             <RECORD_PH_CHECK_LIST
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -340,8 +340,8 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 requestUpdateRecord={requestUpdateRecord} />
                                         </>}
 
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_ph_3">
-                                        <label className="app-p lead fw-normal text-uppercase">3. APROBACIÓN</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_ph_3">
+                                        <label className="app-p lead fw-normal">3. APROBACIÓN</label>
                                     </legend>
 
                                     <RECORD_PH_REVIEW
@@ -396,36 +396,36 @@ const NAV_FUNA = (_CHILD) => {
             <div className="fung_nav">
                 <div className="rounded-lg border border-border bg-card">
                     <div className="p-1">
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
                         <br />
                         <a href="#record_ph_1">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>1. ANÁLISIS JURÍDICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_ph_2">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>2. ANÁLISIS ARQUITECTÓNICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_ph_21">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>2.1 INFORMACIÓN GENERAL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_ph_22">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>2.1 DESCRIPCIÓN PROYECTO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_ph_3">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3. APROBACIÓN</h6>
                             </legend>
                         </a>

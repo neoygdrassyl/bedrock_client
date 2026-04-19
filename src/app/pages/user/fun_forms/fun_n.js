@@ -69,8 +69,8 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                         <h2 className="text-center">ACTUALIZAR RADICACIÓN</h2>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase bg-success" id="fun_0">
-                                <label className="app-p lead fw-normal text-uppercase text-light">0. Metadatos de la Solicitud</label>
+                            <legend className="my-2 px-3 bg-success" id="fun_0">
+                                <label className="app-p lead fw-normal text-light">0. Metadatos de la Solicitud</label>
                             </legend>
                             <FUN_0_RECIPE
                                 translation={translation}
@@ -80,8 +80,8 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                                 currentVersion={currentVersion}
                                 requestUpdate={requestUpdate} />
 
-                            <legend className="my-2 px-3 text-uppercase bg-light" id="fun_arch">
-                                <label className="app-p lead fw-normal text-uppercase">ARCHIVO</label>
+                            <legend className="my-2 px-3 bg-light" id="fun_arch">
+                                <label className="app-p lead fw-normal">ARCHIVO</label>
                             </legend>
                             <ARCHIVE_FUN_VIEW
                                 translation={translation}
@@ -124,7 +124,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             currentVersion={currentVersion}
                             requestUpdate={requestUpdate} />
 
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
+                        <legend className="my-2 px-3 Collapsible">
                             <label>5 Titulares y profesionales responsables </label>
                         </legend>
 
@@ -182,8 +182,8 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                         : ''}
 
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase bg-danger" id="fun_pdf">
-                            <label className="app-p lead fw-normal text-uppercase text-light">DESCARGAR PDF</label>
+                        <legend className="my-2 px-3 bg-danger" id="fun_pdf">
+                            <label className="app-p lead fw-normal text-light">DESCARGAR PDF</label>
                         </legend>
                         <FUN_PDF
                             translation={translation}
@@ -206,60 +206,60 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
 //             <div className="rounded-lg border bg-card p-4 container-primary">
 //                 <div>
 
-//                     <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+//                     <legend className="px-3 pt-2 bg-light text-center">
 //                         <h6>Menu de Navegación</h6>
 //                     </legend>
 //                     <br />
 //                     <a href="#fun_0">
-//                         <legend className="px-3 text-uppercase btn-success">
+//                         <legend className="px-3 btn-success">
 //                             <h6>0. Meta datos</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_1">
-//                         <legend className="px-3 text-uppercase btn-info">
+//                         <legend className="px-3 btn-info">
 //                             <h6>1. Identificación de la Solicitud</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_2">
-//                         <legend className="px-3 text-uppercase btn-info">
+//                         <legend className="px-3 btn-info">
 //                             <h6>2. Información del Predio</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_3">
-//                         <legend className="px-3 text-uppercase btn-info">
+//                         <legend className="px-3 btn-info">
 //                             <h6>3. Información de Vecinos Colindante</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_4">
-//                         <legend className="px-3 text-uppercase btn-info">
+//                         <legend className="px-3 btn-info">
 //                             <h6>4. Linderos, Dimensiones y Áreas</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_51">
-//                         <legend className="px-3 text-uppercase btn-info">
+//                         <legend className="px-3 btn-info">
 //                             <h6>5.1 Titular(es) de la Licencia</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_52">
-//                         <legend className="px-3 text-uppercase btn-info">
+//                         <legend className="px-3 btn-info">
 //                             <h6>5.2 Profesionales Responsables</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#funn_53">
-//                         <legend className="px-3 text-uppercase btn-info">
+//                         <legend className="px-3 btn-info">
 //                             <h6>5.3 Responsable de la Solicitud</h6>
 //                         </legend>
 //                     </a>
 //                     <br />
 //                     <a href="#fun_pdf">
-//                         <legend className="px-3 text-uppercase btn-danger">
+//                         <legend className="px-3 btn-danger">
 //                             <h6>DESCARGAR PDF</h6>
 //                         </legend>
 //                     </a>

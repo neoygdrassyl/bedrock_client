@@ -23,14 +23,14 @@ function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurre
             return <div className="row">
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="map-signs" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1_edit"
                             defaultValue={_CHILD.id_public} />
                     </div>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="map-marked-alt" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2_edit"
@@ -41,7 +41,7 @@ function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurre
 
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="user" size={16} />
                         </span>
                         <select className="form-select" id="pqrs_fun_3_edit" defaultValue={_CHILD.person}>

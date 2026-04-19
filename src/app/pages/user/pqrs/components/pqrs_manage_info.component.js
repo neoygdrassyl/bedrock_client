@@ -138,7 +138,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label>Número de registro Ventanilla Única</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="pqrs_edit_info_9"
@@ -148,7 +148,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label>Número de registro de caso(histórico año 2021)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="pqrs_edit_info_1"
@@ -164,7 +164,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label>Clasificación de la Petición</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <input list="browsers" id="pqrs_edit_info_2" className="form-control" onChange={() => _SET_REPLY_TIME()}
@@ -181,7 +181,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label>Fecha de radicacion</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_edit_info_61"
@@ -198,7 +198,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label>Canal de Radicación original</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="pqrs_edit_info_3" defaultValue={_CHILD.radication_channel}>
@@ -210,7 +210,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label className='px-1'>Fecha inicio de términos  </label> <label className='px-4'></label><label className='px-4'>Fecha limite respuesta</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_edit_info_7" defaultValue={_CHILD.legal} disabled />
@@ -225,7 +225,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label>Guia de Correspondencia</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="pqrs_edit_info_10"
@@ -237,7 +237,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label>Termino legal de respuesta</label> <label className='px-3'></label> <label className='px-4'>(Con prorroga)</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="number" step="1" min="1" className="form-control"
@@ -252,7 +252,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-lg-6 col-md-6">
                         <label>Palabras Clave (Separadas por coma)</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="font" size={16} />
                             </span>
                             <input type="text" className="form-control" maxLength="200" id="pqrs_edit_info_4"
@@ -262,7 +262,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className="col-6">
                         <label>Fecha solicitud prorroga</label><label className='px-4'></label> <label className='px-4'>Fecha limite prorroga</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="" defaultValue={_CHILD.extension ? _CHILD.extension_date : ''} disabled />
@@ -295,7 +295,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <div className='col-6'>
                         <label>Fecha solicitud prorroga</label>
                         <div className="input-group mb-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="pqrs_extension_date1" defaultValue={_CHILD.extension ? _CHILD.extension_date : dayjs().format('YYYY-MM-DD')} disabled={_CHILD.extension ? false : true} />

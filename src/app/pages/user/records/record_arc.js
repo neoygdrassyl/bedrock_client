@@ -187,7 +187,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
             return <>
                 <div className='row'>
                     <div className='col-10 ms-5'>
-                        <label className='fw-bold text-uppercase'>3.2. Identificación de la Solicitud</label>
+                        <label className='fw-bold'>3.2. Identificación de la Solicitud</label>
                     </div>
                     <div className='col text-end'>
                         <div className="custom-control custom-switch">
@@ -199,7 +199,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                 </div>
                 <div className='row'>
                     <div className='col-10 ms-5'>
-                        <label className='fw-bold text-uppercase'>3.3 Descripción de la Actuación Urbanística</label>
+                        <label className='fw-bold'>3.3 Descripción de la Actuación Urbanística</label>
                     </div>
                     <div className='col'>
                         <div className="custom-control custom-switch">
@@ -213,7 +213,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                     ? <>
                         <div className='row'>
                             <div className='col-10 ms-5'>
-                                <label className='fw-bold text-uppercase'>CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO</label>
+                                <label className='fw-bold'>CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO</label>
                             </div>
                             <div className='col text-end'>
                                 <div className="custom-control custom-switch">
@@ -225,7 +225,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                         </div>
                         <div className='row'>
                             <div className='col-10 ms-5'>
-                                <label className='fw-bold text-uppercase'>INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL</label>
+                                <label className='fw-bold'>INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL</label>
                             </div>
                             <div className='col'>
                                 <div className="custom-control custom-switch">
@@ -255,7 +255,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                 })}
                 <div className='row'>
                     <div className='col-10 ms-5'>
-                        <label className='fw-bold text-uppercase'>3.8 VIABILIDAD ARQUITECTÓNICA</label>
+                        <label className='fw-bold'>3.8 VIABILIDAD ARQUITECTÓNICA</label>
                     </div>
                     <div className='col'>
                         <div className="custom-control custom-switch">
@@ -316,8 +316,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                         {currentRecord
                             ? <>
                                 <fieldset className="p-3">
-                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_31">
-                                        <label className="app-p lead fw-normal text-uppercase">3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</label>
+                                    <legend className="my-2 px-3 Collapsible" id="record_arc_31">
+                                        <label className="app-p lead fw-normal">3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</label>
                                     </legend>
                                     <RECORD_LAW_DOCSCHECK
                                         _FUN_1={_GET_CHILD_1()}
@@ -340,8 +340,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         ]}
                                     />
 
-                                    <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_411">
-                                        <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS DIGITALIZADOS</label>
+                                    <legend className="my-2 px-3 bg-light" id="record_eng_411">
+                                        <label className="app-p lead fw-normal">DOCUMENTOS DIGITALIZADOS</label>
                                     </legend>
 
                                     <FUN_6_VIEW
@@ -355,8 +355,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         readOnly
                                     />
 
-                                    <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_411">
-                                        <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
+                                    <legend className="my-2 px-3 bg-light" id="record_eng_411">
+                                        <label className="app-p lead fw-normal">DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
                                     </legend>
 
                                     <SUBMIT_SINGLE_VIEW
@@ -367,7 +367,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                 </fieldset>
                                 {_GLOBAL_ID == 'cb1' ?
                                     <fieldset className="p-3">
-                                        <legend className="my-2 px-3 text-uppercase bg-success" id="record_arc_sub">
+                                        <legend className="my-2 px-3 bg-success" id="record_arc_sub">
                                             <label className="app-p lead fw-normal text-light">CONTROL DE CONTENIDO</label>
                                         </legend>
                                         {_SUBCATEGORY_COMPONENT()}
@@ -375,8 +375,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                     : ''}
 
                                 <fieldset className="p-3">
-                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_32">
-                                        <label className="app-p lead fw-normal text-uppercase">3.2 Identificación de la Solicitud</label>
+                                    <legend className="my-2 px-3 Collapsible" id="record_arc_32">
+                                        <label className="app-p lead fw-normal">3.2 Identificación de la Solicitud</label>
                                     </legend>
                                     <RECORD_ARC_32
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -419,8 +419,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                     <>
 
                                         <fieldset className="p-3">
-                                            <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_33">
-                                                <label className="app-p lead fw-normal text-uppercase">3.3 Descripción de la Actuación Urbanística</label>
+                                            <legend className="my-2 px-3 Collapsible" id="record_arc_33">
+                                                <label className="app-p lead fw-normal">3.3 Descripción de la Actuación Urbanística</label>
                                             </legend>
                                             <RECORD_ARC_33
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -436,8 +436,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         {_GET_CHILD_1().item_1.includes("F")
                                             ? <>
                                                 <fieldset className="p-3">
-                                                    <legend className="my-2 px-3 text-uppercase bg-success" id="record_arc_extra_1">
-                                                        <label className="app-p lead fw-normal text-uppercase text-light">CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO. OBLIGATORIO</label>
+                                                    <legend className="my-2 px-3 bg-success" id="record_arc_extra_1">
+                                                        <label className="app-p lead fw-normal text-light">CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO. OBLIGATORIO</label>
                                                     </legend>
                                                     <RECORD_ARC_EXTRA_1
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -449,8 +449,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                                     />
                                                 </fieldset>
                                                 <fieldset className="p-3">
-                                                    <legend className="my-2 px-3 text-uppercase bg-success" id="record_arc_extra_2">
-                                                        <label className="app-p lead fw-normal text-uppercase text-light">INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL. -SPM- INFORME VISITA AL PREDIO</label>
+                                                    <legend className="my-2 px-3 bg-success" id="record_arc_extra_2">
+                                                        <label className="app-p lead fw-normal text-light">INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL. -SPM- INFORME VISITA AL PREDIO</label>
                                                     </legend>
                                                     <RECORD_ARC_EXTRA_2
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -466,8 +466,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         {subc[0] == '1'
                                             ? <>
                                                 <fieldset className="p-3">
-                                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_34">
-                                                        <label className="app-p lead fw-normal text-uppercase">3.4 ANÁLISIS DE LAS DETERMINANTES URBANAS DEL PREDIO</label>
+                                                    <legend className="my-2 px-3 Collapsible" id="record_arc_34">
+                                                        <label className="app-p lead fw-normal">3.4 ANÁLISIS DE LAS DETERMINANTES URBANAS DEL PREDIO</label>
                                                     </legend>
                                                     <RECORD_ARC_34
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -483,8 +483,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         {subc[1] == '1'
                                             ? <>
                                                 <fieldset className="p-3">
-                                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_35">
-                                                        <label className="app-p lead fw-normal text-uppercase">3.5 PARQUEADEROS</label>
+                                                    <legend className="my-2 px-3 Collapsible" id="record_arc_35">
+                                                        <label className="app-p lead fw-normal">3.5 PARQUEADEROS</label>
                                                     </legend>
                                                     <RECORD_ARC_35
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -500,8 +500,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         {subc[2] == '1'
                                             ? <>
                                                 <fieldset className="p-3">
-                                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_36">
-                                                        <label className="app-p lead fw-normal text-uppercase">3.6 ESPACIO PUBLICO</label>
+                                                    <legend className="my-2 px-3 Collapsible" id="record_arc_36">
+                                                        <label className="app-p lead fw-normal">3.6 ESPACIO PUBLICO</label>
                                                     </legend>
                                                     <RECORD_ARC_36
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -517,8 +517,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         {subc[3] == '1'
                                             ? <>
                                                 <fieldset className="p-3">
-                                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_37">
-                                                        <label className="app-p lead fw-normal text-uppercase">3.7 NSR10</label>
+                                                    <legend className="my-2 px-3 Collapsible" id="record_arc_37">
+                                                        <label className="app-p lead fw-normal">3.7 NSR10</label>
                                                     </legend>
                                                     <RECORD_ARC_37
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -536,8 +536,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                     :
                                     <fieldset className="p-3">
 
-                                        <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_32">
-                                            <label className="app-p lead fw-normal text-uppercase">3.2.1 Antecedentes y Descripción del Proyecto a licencias</label>
+                                        <legend className="my-2 px-3 Collapsible" id="record_arc_32">
+                                            <label className="app-p lead fw-normal">3.2.1 Antecedentes y Descripción del Proyecto a licencias</label>
                                         </legend>
 
                                         <RECORD_ARC_DESC
@@ -549,8 +549,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                             requestUpdateRecord={requestUpdateRecord}
                                             requestUpdate={requestUpdate}
                                         />
-                                        <legend className="my-2 px-3 text-uppercase Collapsible mt-5" id="record_arc_34">
-                                            <label className="app-p lead fw-normal text-uppercase">3.3 DATOS DE CONTROL</label>
+                                        <legend className="my-2 px-3 Collapsible mt-5" id="record_arc_34">
+                                            <label className="app-p lead fw-normal">3.3 DATOS DE CONTROL</label>
                                         </legend>
                                         <RECORD_ARC_CONTROL
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -563,8 +563,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                             _FUN_R={_GET_CHILD_REVIEW()}
                                         />
 
-                                        <legend className="my-2 px-3 text-uppercase Collapsible mt-5" id="record_arc_34">
-                                            <label className="app-p lead fw-normal text-uppercase">3.4 EVALUACIÓN</label>
+                                        <legend className="my-2 px-3 Collapsible mt-5" id="record_arc_34">
+                                            <label className="app-p lead fw-normal">3.4 EVALUACIÓN</label>
                                         </legend>
                                         <RECORD_ARC_GEN_REVIEW
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -589,8 +589,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                 }
 
                                 <fieldset className="p-3">
-                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_38">
-                                        <label className="app-p lead fw-normal text-uppercase">3.8 VIABILIDAD ARQUITECTÓNICA</label>
+                                    <legend className="my-2 px-3 Collapsible" id="record_arc_38">
+                                        <label className="app-p lead fw-normal">3.8 VIABILIDAD ARQUITECTÓNICA</label>
                                     </legend>
                                     <RECORD_ARC_38
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -644,24 +644,24 @@ const NAV_FUNA = (_CHILD) => {
             <div className="">
                 <div className="rounded-lg border border-border bg-card">
                     <div className="p-1">
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
                         <br />
                         <a href="#record_arc_31">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_32">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3.2 Identificación de la Solicitud</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_33">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3.3 Descripción de la Actuación</h6>
                             </legend>
                         </a>
@@ -669,44 +669,44 @@ const NAV_FUNA = (_CHILD) => {
                             ? <>
                                 <br />
                                 <a href="#record_arc_extra_1">
-                                    <legend className="px-3 text-uppercase btn-success">
+                                    <legend className="px-3 btn-success">
                                         <h6>CONSIDERACIONES DECRETO 1077</h6>
                                     </legend>
                                 </a>
                                 <br />
                                 <a href="#record_arc_extra_2">
-                                    <legend className="px-3 text-uppercase btn-success">
+                                    <legend className="px-3 btn-success">
                                         <h6>INTERVENCIÓN DE LA SECRETARIA</h6>
                                     </legend>
                                 </a>
                             </> : ""}
                         <br />
                         <a href="#record_arc_34">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3.4 ANÁLISIS DETERMINANTES URBANAS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_35">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3.5 PARQUEADEROS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_36">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3.6 ESPACIO PUBLICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_37">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3.7 NSR10</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_38">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3.8 VIABILIDAD ARQUITECTÓNICA</h6>
                             </legend>
                         </a>

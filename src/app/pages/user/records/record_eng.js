@@ -326,12 +326,12 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                         {currentRecord
                             ? <>
 
-                                <legend className="my-2 px-3 text-uppercase Collapsible text-start" id="record_eng_41">
-                                    <label className="app-p lead fw-normal text-uppercase">4.1 Revisión Documentos y profesionales requeridos para la actuación urbanística solicitada.</label>
+                                <legend className="my-2 px-3 Collapsible text-start" id="record_eng_41">
+                                    <label className="app-p lead fw-normal">4.1 Revisión Documentos y profesionales requeridos para la actuación urbanística solicitada.</label>
                                 </legend>
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_410">
-                                    <label className="app-p lead fw-normal text-uppercase">4.1.1 LISTA DE CHECKEO</label>
+                                <legend className="my-2 px-3 bg-light" id="record_eng_410">
+                                    <label className="app-p lead fw-normal">4.1.1 LISTA DE CHECKEO</label>
                                 </legend>
 
                                 <RECORD_LAW_DOCSCHECK
@@ -360,8 +360,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     ]}
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_411">
-                                    <label className="app-p lead fw-normal text-uppercase">4.1.2 DOCUMENTOS DIGITALIZADOS</label>
+                                <legend className="my-2 px-3 bg-light" id="record_eng_411">
+                                    <label className="app-p lead fw-normal">4.1.2 DOCUMENTOS DIGITALIZADOS</label>
                                 </legend>
 
                                 <FUN_6_VIEW
@@ -375,8 +375,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     readOnly
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_412">
-                                    <label className="app-p lead fw-normal text-uppercase">4.1.3 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
+                                <legend className="my-2 px-3 bg-light" id="record_eng_412">
+                                    <label className="app-p lead fw-normal">4.1.3 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
                                 </legend>
 
                                 <SUBMIT_SINGLE_VIEW
@@ -390,8 +390,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     currentVersion={currentVersion} noLaw noArc
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_430">
-                                    <label className="app-p lead fw-normal text-uppercase">4.1.4 REVISION DE PLANOS, ESTUDIOS Y MEMORIAS</label>
+                                <legend className="my-2 px-3 bg-light" id="record_eng_430">
+                                    <label className="app-p lead fw-normal">4.1.4 REVISION DE PLANOS, ESTUDIOS Y MEMORIAS</label>
                                 </legend>
 
                                 <RECORD_ENG_STEP_430
@@ -406,7 +406,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
 
                                 <div className="row border my-2 py-4 border border-warning" id="re_cc" style={{ backgroundColor: 'Gainsboro', borderWidth: '3px' }}>
                                     <div className="col-5 p-1 mt-1 text-end">
-                                        <h3 className="fw-bold text-uppercase">CATEGORIA DEL INFORME </h3>
+                                        <h3 className="fw-bold">CATEGORIA DEL INFORME </h3>
                                     </div>
                                     <div className="col-4">
                                         <select className="form-select" defaultValue={currentRecord.category ?? 0} id="r_e_select_category"
@@ -421,16 +421,16 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     </div>
                                 </div>
 
-                                <legend className="my-2 px-3 text-uppercase Collapsible text-center">
-                                    <label className="app-p lead fw-normal text-uppercase">{title[currentRecord.category] ?? 'DEBE SELECCIONAR UNA CATEGORIA'}</label>
+                                <legend className="my-2 px-3 Collapsible text-center">
+                                    <label className="app-p lead fw-normal">{title[currentRecord.category] ?? 'DEBE SELECCIONAR UNA CATEGORIA'}</label>
                                 </legend>
 
                                 {currentRecord.category != null
                                     ?
                                     <>
 
-                                        <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_42">
-                                            <label className="app-p lead fw-normal text-uppercase">4.2 DESCRIPCIÓN DEL PROYECTO</label>
+                                        <legend className="my-2 px-3 Collapsible" id="record_eng_42">
+                                            <label className="app-p lead fw-normal">4.2 DESCRIPCIÓN DEL PROYECTO</label>
                                         </legend>
                                         <RECORD_ENG_DESC
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -476,8 +476,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                         {currentRecord.category == 0
                                             ?
                                             <>
-                                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_43">
-                                                    <label className="app-p lead fw-normal text-uppercase">4.3 Revisión general</label>
+                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
+                                                    <label className="app-p lead fw-normal">4.3 Revisión general</label>
                                                 </legend>
 
                                                 <RECORD_ENG_43
@@ -496,8 +496,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             ?
                                             <>
 
-                                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_43">
-                                                    <label className="app-p lead fw-normal text-uppercase">4.3 REVISIÓN DEL PROYECTO</label>
+                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
+                                                    <label className="app-p lead fw-normal">4.3 REVISIÓN DEL PROYECTO</label>
                                                 </legend>
                                                 {PARENT_STEP_PROVIDER()}
 
@@ -559,8 +559,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                                     requestUpdateRecord={requestUpdateRecord}
                                                 />
 
-                                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_44">
-                                                    <label className="app-p lead fw-normal text-uppercase">4.4 REVISIÓN DEL PROYECTO</label>
+                                                <legend className="my-2 px-3 Collapsible" id="record_eng_44">
+                                                    <label className="app-p lead fw-normal">4.4 REVISIÓN DEL PROYECTO</label>
                                                 </legend>
                                                 <RECORD_ENG_STEP_44
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -578,8 +578,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             ?
                                             <>
 
-                                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_43">
-                                                    <label className="app-p lead fw-normal text-uppercase">4.3 REVISIÓN DEL PROYECTO</label>
+                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
+                                                    <label className="app-p lead fw-normal">4.3 REVISIÓN DEL PROYECTO</label>
                                                 </legend>
                                                 {PARENT_STEP_PROVIDER()}
 
@@ -693,8 +693,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             </>
                                             : ""}
 
-                                        <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_45">
-                                            <label className="app-p lead fw-normal text-uppercase">4.5 APROBACIÓN</label>
+                                        <legend className="my-2 px-3 Collapsible" id="record_eng_45">
+                                            <label className="app-p lead fw-normal">4.5 APROBACIÓN</label>
                                         </legend>
 
                                         <RECORD_ENG_REVIEW
@@ -751,24 +751,24 @@ const NAV_FUNA = (currentRecord) => {
             <div className="fung_nav">
                 <div className="rounded-lg border border-border bg-card">
                     <div className="p-1">
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
                         <br />
                         <a href="#record_eng_41">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>4.1 Revisión Documentos</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#re_cc">
-                            <legend className="px-3 text-uppercase btn-warning">
+                            <legend className="px-3 btn-warning">
                                 <h6>CATEGORIA DEL INFORME</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_eng_42">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>4.2 DESCRIPCIÓN DEL PROYECTO</h6>
                             </legend>
                         </a>
@@ -780,43 +780,43 @@ const NAV_FUNA = (currentRecord) => {
                                     ?
                                     <>
                                         <a href="#record_eng_43">
-                                            <legend className="px-3 text-uppercase btn-info">
+                                            <legend className="px-3 btn-info">
                                                 <h6>4.3 REVISIÓN DEL PROYECTO</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_430">
-                                            <legend className="px-3 text-uppercase btn-light">
+                                            <legend className="px-3 btn-light">
                                                 <h6>4.3.0 REVISION DE PLANOS, ESTUDIOS Y MEMORIAS</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_431">
-                                            <legend className="px-3 text-uppercase btn-light">
+                                            <legend className="px-3 btn-light">
                                                 <h6>4.3.1 ESTUDIO GEOTÉCNICO</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_432">
-                                            <legend className="px-3 text-uppercase btn-light">
+                                            <legend className="px-3 btn-light">
                                                 <h6>4.3.2 MEMORIAS DE CALCULO</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_432P">
-                                            <legend className="px-3 text-uppercase btn-light">
+                                            <legend className="px-3 btn-light">
                                                 <h6>4.3.2 Peritaje Estructural</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_433">
-                                            <legend className="px-3 text-uppercase btn-light">
+                                            <legend className="px-3 btn-light">
                                                 <h6>4.3.3 Planos Estructurales</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_44">
-                                            <legend className="px-3 text-uppercase btn-info">
+                                            <legend className="px-3 btn-info">
                                                 <h6>4.4 Revisión Proyecto</h6>
                                             </legend>
                                         </a>
@@ -827,7 +827,7 @@ const NAV_FUNA = (currentRecord) => {
                             : ""}
 
                         <a href="#record_eng_45">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>4.5 APROBACIÓN</h6>
                             </legend>
                         </a>

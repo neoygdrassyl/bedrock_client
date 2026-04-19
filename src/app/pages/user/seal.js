@@ -318,7 +318,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     <input type="hidden" id="f_0" />
                                     <input type="hidden" id="s_1" />
                                     <div className="input-group mb-3">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="hashtag" size={16} />
                                         </span>
                                         <input type="text" className="form-control" defaultValue="68001-1-" id="f_02"
@@ -327,7 +327,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     <div className="fw-normal lead"><ul>{helpText}</ul></div>
 
                                     <div className="input-group mb-1">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="check-circle" size={16} />
                                         </span>
                                         <input type="text" className="form-control" value="Modalidad" disabled />
@@ -335,7 +335,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     <textarea className="form-control mb-3" rows="3" id="f_11" ></textarea>
 
                                     <div className="input-group mb-3">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="calendar-alt" size={16} />
                                         </span>
                                         <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="f_03"
@@ -343,7 +343,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     </div>
 
                                     <div className="input-group mb-3">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="cube" size={16} />
                                         </span>
                                         <input type="number" min="1" step="0.01" className="form-control" placeholder="Area Total" id="s_4"
@@ -351,7 +351,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     </div>
 
                                     <div className="input-group mb-3">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="hashtag" size={16} />
                                         </span>
                                         <input type="text" className="form-control" placeholder="Consecutivo Sello" id="s_0"
@@ -359,17 +359,17 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     </div>
                                     <hr />
                                     <div className="input-group mb-3">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="ruler-combined" size={16} />
                                         </span>
                                         <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="blueprints"
                                             required onChange={(e) => { formData.set('blueprints', e.target.value) }} />
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="database" size={16} />
                                         </span>
                                         <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="drives"
                                             required onChange={(e) => formData.set('drives', e.target.value)} />
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="file-invoice" size={16} />
                                         </span>
                                         <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="folders"
@@ -389,7 +389,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                             <CardContent>
                                 <form onSubmit={search} id="app-form">
                                     <div className="input-group mb-3">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="info-circle" size={16} />
                                         </span>
                                         <select className="form-select" id="search_0" required>
@@ -398,7 +398,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                         </select>
                                     </div>
                                     <div className="input-group mb-3">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="comment-dots" size={16} />
                                         </span>
                                         <input type="text" className="form-control" id="search_1" required />

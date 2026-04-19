@@ -1308,7 +1308,7 @@ function RECORD_ENG_STEP_4323(props) {
         }
         let COMPONENT_STEP_MATERIALS = () => {
             return <>
-                <div className="row border border-dark bg-info mx-2 p-2 mt-5">
+                <div className="row border border-dark bg-primary text-primary-foreground mx-2 p-2 mt-5">
                     <div className="col text-center text-white">
                         <label className="fw-bold">ESPECIFICACIONES DE MATERIALES</label>
                     </div>
@@ -1619,28 +1619,28 @@ function RECORD_ENG_STEP_4323(props) {
             <div className="record_eng_desc container">
                 <hr />
                 {SUBCATEGORIES[4] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av.  Consiste en ubicar el lugar de la edificación dentro de los mapas de zonificación sísmica, (Cap. A-2), y determinar los valores de Aa y Av para determinar la amenaza sísmica, según sea (Alta, intermedia y baja). </label>
+                    <label className="app-p fw-bold my-2">Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av.  Consiste en ubicar el lugar de la edificación dentro de los mapas de zonificación sísmica, (Cap. A-2), y determinar los valores de Aa y Av para determinar la amenaza sísmica, según sea (Alta, intermedia y baja). </label>
                     <label className="app-p fw-bold my-2">Características sísmicas</label>
                     {COMPONENT_STEP_03()}
                     <hr />
                 </> : ""}
                 {SUBCATEGORIES[5] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 4: Movimiento sísmicos de diseño. Debe tomarse en cuenta, la amenaza sísmica para el lugar determinado, parámetros Aa y Av, las características de la estratificación del suelo coeficientes Fa y Fv., la importancia del edificio para la recuperación por la comunidad con posterioridad a la ocurrencia de un sismo, Coeficiente de importancia.</label>
+                    <label className="app-p fw-bold my-2">Paso 4: Movimiento sísmicos de diseño. Debe tomarse en cuenta, la amenaza sísmica para el lugar determinado, parámetros Aa y Av, las características de la estratificación del suelo coeficientes Fa y Fv., la importancia del edificio para la recuperación por la comunidad con posterioridad a la ocurrencia de un sismo, Coeficiente de importancia.</label>
                     {COMPONENT_STEP_04()}
                     <hr />
                 </> : ""}
                 {SUBCATEGORIES[6] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 5: Características de la estructuración y del material estructural empleado. </label>
+                    <label className="app-p fw-bold my-2">Paso 5: Características de la estructuración y del material estructural empleado. </label>
                     {COMPONENT_STEP_05()}
                     <hr />
                 </> : ""}
                 {SUBCATEGORIES[7] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 6, Grado de irregularidad de la estructura y procedimiento de análisis. Se realiza la revisión de los factores de irregularidad para determinar el método de análisis sísmico.</label>
+                    <label className="app-p fw-bold my-2">Paso 6, Grado de irregularidad de la estructura y procedimiento de análisis. Se realiza la revisión de los factores de irregularidad para determinar el método de análisis sísmico.</label>
                     {COMPONENT_STEP_06()}
                     <hr />
                 </> : ""}
                 {SUBCATEGORIES[8] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 7, Determinación de las fuerzas sísmicas. El valor de las fuerzas sísmicas, en base a los parámetros sísmicos del paso 4.</label>
+                    <label className="app-p fw-bold my-2">Paso 7, Determinación de las fuerzas sísmicas. El valor de las fuerzas sísmicas, en base a los parámetros sísmicos del paso 4.</label>
                     {COMPONENT_STEP_07()}
                     {COMPONENT_STEP_MATERIALS()}
                 </> : ""}

@@ -81,7 +81,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <input type="hidden" name="s_31_values" defaultValue={value31[0]} />
                 <label >3.1.1 Arquitecto Responsable</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="user" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
@@ -89,7 +89,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <label >3.1.2 Matricula Profesional</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="address-card" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
@@ -97,7 +97,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <label >3.1.3 Teléfono Contacto</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="phone-alt" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
@@ -105,7 +105,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <label >3.1.4 Email contacto</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="envelope" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
@@ -113,7 +113,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <label >3.1.5 Dirección Contacto</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="map-marked-alt" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
@@ -127,7 +127,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
             return <>
                 <label >Fecha de Inicio</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="calendar-times" size={16} />
                     </span>
                     <input type="text" className="form-control" id="r_a_31_date_1" disabled
@@ -135,7 +135,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <label >Fecha de Radicado</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="calendar-times" size={16} />
                     </span>
                     <input type="text" className="form-control" id="r_a_31_date_2" disabled
@@ -143,7 +143,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <label >Fecha de Revision: {currentVersionR}</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="calendar-times" size={16} />
                     </span>
                     <input type="text" className="form-control" id="r_a_31_date_2" disabled
@@ -151,7 +151,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <label >Fecha de Desistimiento</label>
                 <div className="input-group mb-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="calendar-times" size={16} />
                     </span>
                     <input type="text" className="form-control" id="r_a_31_date_2" disabled

@@ -1353,7 +1353,7 @@ function RECORD_ENG_SISMIC(props) {
                 className="record_eng_sismic my-2">
                 {SUBCATEGORIES[9] == 1 ? <>
                     <hr />
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 8, Análisis sísmico de la estructura. Aplicación de los movimientos sísmicos de diseño (Cap. A.3) este análisis se realiza sin ser dividido por el coeficiente de capacidad de disipación de energía, R, según los resultados del paso 6, se determinan los desplazamientos máximos de diseño y las fuerzas internas que se derivan de ellos. Desplazamiento máximo corresponde al 1% de la altura de entrepisos.</label>
+                    <label className="app-p fw-bold my-2">Paso 8, Análisis sísmico de la estructura. Aplicación de los movimientos sísmicos de diseño (Cap. A.3) este análisis se realiza sin ser dividido por el coeficiente de capacidad de disipación de energía, R, según los resultados del paso 6, se determinan los desplazamientos máximos de diseño y las fuerzas internas que se derivan de ellos. Desplazamiento máximo corresponde al 1% de la altura de entrepisos.</label>
                     {_CONCRETE_VAR()}
                     <div className="form-check ms-5">
                         <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />

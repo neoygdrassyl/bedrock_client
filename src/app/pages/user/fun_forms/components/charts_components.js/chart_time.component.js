@@ -903,7 +903,7 @@ function FUN_CHART_TIME(props) {
     let _TYPE_COMPONENT = () => {
         return <>
             <div className='row text-center mx-1 pt-3'>
-                <div className='col border bg-info'>
+                <div className='col border bg-primary text-primary-foreground'>
                     <h3><label className='fw-bold my-1 text-light'> TABLA DE LICENCIAS</label></h3>
                 </div>
             </div>
@@ -926,7 +926,7 @@ function FUN_CHART_TIME(props) {
             <div className="d-flex justify-content-center" >
                 <div style={{ width: '40%' }}>
                     <div className='row text-center mx-1 pt-3'>
-                        <div className='col border bg-info'>
+                        <div className='col border bg-primary text-primary-foreground'>
                             <h3><label className='fw-bold my-1 text-light'> TABLA DE AREAS</label></h3>
                         </div>
                     </div>
