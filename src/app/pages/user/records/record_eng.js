@@ -758,19 +758,19 @@ const NAV_FUNA = (currentRecord) => {
                         </legend>
                         <br />
                         <a href="#record_eng_41">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>4.1 Revisión Documentos</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#re_cc">
-                            <legend className="px-3 btn-warning">
+                            <legend className="px-3 rounded text-sm font-medium bg-warning text-warning-foreground">
                                 <h6>CATEGORIA DEL INFORME</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_eng_42">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>4.2 DESCRIPCIÓN DEL PROYECTO</h6>
                             </legend>
                         </a>
@@ -782,43 +782,43 @@ const NAV_FUNA = (currentRecord) => {
                                     ?
                                     <>
                                         <a href="#record_eng_43">
-                                            <legend className="px-3 btn-info">
+                                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                                 <h6>4.3 REVISIÓN DEL PROYECTO</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_430">
-                                            <legend className="px-3 btn-light">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                                 <h6>4.3.0 REVISION DE PLANOS, ESTUDIOS Y MEMORIAS</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_431">
-                                            <legend className="px-3 btn-light">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                                 <h6>4.3.1 ESTUDIO GEOTÉCNICO</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_432">
-                                            <legend className="px-3 btn-light">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                                 <h6>4.3.2 MEMORIAS DE CALCULO</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_432P">
-                                            <legend className="px-3 btn-light">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                                 <h6>4.3.2 Peritaje Estructural</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_433">
-                                            <legend className="px-3 btn-light">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                                 <h6>4.3.3 Planos Estructurales</h6>
                                             </legend>
                                         </a>
                                         <br />
                                         <a href="#record_eng_44">
-                                            <legend className="px-3 btn-info">
+                                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                                 <h6>4.4 Revisión Proyecto</h6>
                                             </legend>
                                         </a>
@@ -829,7 +829,7 @@ const NAV_FUNA = (currentRecord) => {
                             : ""}
 
                         <a href="#record_eng_45">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>4.5 APROBACIÓN</h6>
                             </legend>
                         </a>

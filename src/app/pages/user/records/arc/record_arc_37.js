@@ -1080,7 +1080,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                 </div>
                 <div className='col text-end'>
-                    <button type="button" className={`btn btn-sm ${!newImport ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setImport(!newImport)}><Icon name="table" size={16} /> IMPORTAR DE CUADRO DE AREAS</button>
+                    <Button variant={!newImport ? "outline" : "default"} size="sm" onClick={() => setImport(!newImport)}><Icon name="table" size={16} /> IMPORTAR DE CUADRO DE AREAS</Button>
                 </div>
             </div>
 

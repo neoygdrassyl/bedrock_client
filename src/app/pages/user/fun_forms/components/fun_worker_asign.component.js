@@ -230,23 +230,23 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
         let get_reportBtn = item => {
             if (regexChecker_isPh(item, true)) return <button
                     onClick={() => openModal(item, 'record_ph')}
-                    className="px-2 btn-sm btn-warning btn"
+                    size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
                 > <Icon name="pencil-ruler" size={16} />
                 </button>
 
             if (type == 'law') return <button
                     onClick={() => openModal(item, 'record_law')}
-                    className="px-2 btn-sm btn-warning btn"
+                    size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
                 > <Icon name="balance-scale" size={16} />
                 </button>
             if (type == 'arc') return <button
                     onClick={() => openModal(item, 'record_arc')}
-                    className="px-2 btn-sm btn-warning btn"
+                    size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
                 > <Icon name="building" size={16} />
                 </button>
             if (type == 'eng') return <button
                     onClick={() => openModal(item, 'record_eng')}
-                    className="px-2 btn-sm btn-warning btn"
+                    size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
                 > <Icon name="cogs" size={16} />
                 </button>
             return '';
@@ -265,13 +265,11 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                         <label className="fw-bold">SOLICITUDES SIN REVISAR: {currentItems.filter(item => item.state <= 50).length} (INFORME {type == 'law' ? 'JURIDICO' : type == 'eng' ? 'ESTRUCTURAL' : type == 'arc' ? 'ARQUITECTONICO' : ''})</label>
                     </div>
                     <div className="col text-end">
-                        <span title="Detalles"><button type="button" className="btn"
-                                color="info"
-                                size="sm"
+                        <span title="Detalles"><Button variant="ghost" size="sm"
                                 onClick={() => setLicList(!licList)}
                                 className="px-2"
                             > <Icon name="info-circle" size={16} />
-                            </button></span>
+                            </Button></span>
                     </div>
                 </div>
 
@@ -358,7 +356,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                         {listItemPopOver(row)}
                         <button
                                 onClick={() => openModal(row, 'general')}
-                                className="px-2 btn-sm btn-info btn"
+                                size="sm" className="px-2"
                             > <Icon name="folder-open" size={16} />
                             </button>
                         {get_reportBtn(row)}

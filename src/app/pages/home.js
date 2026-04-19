@@ -330,7 +330,7 @@ function Home({ translation, history }) {
                         </ul>
                       </div>
                       <input type="text" className="form-control" placeholder="ID del proceso" ref={inputSearchRef} />
-                      <button type="button" className="btn" style={{ backgroundColor: '#107ABC', color: 'white' }} onClick={() => _CHECK_STATUS()}>BUSCAR</button>
+                      <Button onClick={() => _CHECK_STATUS()}>BUSCAR</Button>
                     </div>
                   </div>
                 </div>

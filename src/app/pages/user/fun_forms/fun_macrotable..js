@@ -2418,7 +2418,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                         </div>
                         <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => _UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
                         <div className="input-group-prepend">
-                            <button type="button" className={`btn ${state.includeEx ? "btn-outline-secondary" : "btn-secondary"}`} onClick={(e) => changeList(!state.includeEx)}><Icon name="database" size={16} /> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</button>
+                            <Button variant={state.includeEx ? "outline" : "secondary"} size="sm" onClick={(e) => changeList(!state.includeEx)}><Icon name="database" size={16} /> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</Button>
                         </div>
                     </div>
                 </div>

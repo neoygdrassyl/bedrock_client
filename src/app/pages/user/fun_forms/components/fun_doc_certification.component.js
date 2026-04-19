@@ -441,7 +441,7 @@ export default function FUN_CERTIFICATION(props) {
         <>
             <div className='row'>
                 <div className='col'>
-                    <button type="button" className={`btn btn-sm rounded-pill ${!newItem ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setNewItem(!newItem)}><Icon name="plus" size={16} /> NUEVA CERTIFICACIÓN</button>
+                    <Button variant={!newItem ? "outline" : "default"} size="sm" onClick={() => setNewItem(!newItem)}><Icon name="plus" size={16} /> NUEVA CERTIFICACIÓN</Button>
                 </div>
             </div>
             {newItem ? <>

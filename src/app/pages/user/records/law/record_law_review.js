@@ -345,8 +345,8 @@ function RECORD_LAW_EVALUATION(props) {
                                 }
                             </div>
                             <div className="col-1">
-                                {allowReview ? <button type="button" className={`btn btn-sm ${!dynState['REW' + i] ? "btn-outline-secondary" : "btn-secondary"}`}
-                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></button>
+                                {allowReview ? <Button variant={!dynState['REW' + i] ? "outline" : "default"} size="sm"
+                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></Button>
                                     : ''}
                                 {dynState['REW' + i]
                                     ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>

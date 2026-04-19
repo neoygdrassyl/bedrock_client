@@ -1,6 +1,7 @@
 
 import dayjs from 'dayjs';
 import { useState, useEffect, useRef, memo } from 'react';
+import { Button } from '@/components/ui/button';
 
 import {
     ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -588,12 +589,12 @@ function FUN_CHART_MACRO_GRANTT(props) {
                 </div>
                 <div className='col-3 text-end'>
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <button type="button" className={`btn btn-sm ${bt_scope != 0 ? "btn-outline-primary" : "btn-primary"}`}
-                            onClick={() => { setBt_scope(0) }}>OPTIMO</button>
-                        <button type="button" className={`btn btn-sm ${bt_scope != 1 ? "btn-outline-primary" : "btn-primary"}`}
-                            onClick={() => { setBt_scope(1) }}>PROMEDIO</button>
-                        <button type="button" className={`btn btn-sm ${bt_scope != 2 ? "btn-outline-primary" : "btn-primary"}`}
-                            onClick={() => { setBt_scope(2) }}>LIMITE</button>
+                        <Button variant={bt_scope != 0 ? "outline" : "default"} size="sm"
+                            onClick={() => { setBt_scope(0) }}>OPTIMO</Button>
+                        <Button variant={bt_scope != 1 ? "outline" : "default"} size="sm"
+                            onClick={() => { setBt_scope(1) }}>PROMEDIO</Button>
+                        <Button variant={bt_scope != 2 ? "outline" : "default"} size="sm"
+                            onClick={() => { setBt_scope(2) }}>LIMITE</Button>
                     </div>
                 </div>
             </div>

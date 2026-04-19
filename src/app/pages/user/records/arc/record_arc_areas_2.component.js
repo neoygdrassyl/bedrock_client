@@ -1054,8 +1054,8 @@ export default function RECORD_ARC_AREAS_2(props) {
             <div className='row'>
                 <div className='col-8'>
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <button type="button" className={`btn btn-sm ${!openConfig ? "btn-outline-primary" : "btn-primary"}`}
-                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</button>
+                        <Button variant={!openConfig ? "outline" : "default"} size="sm"
+                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</Button>
                         <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</Button>
                         <Button variant="outline" size="sm" onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</Button>
                     </div>

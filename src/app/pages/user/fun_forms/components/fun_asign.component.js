@@ -470,10 +470,10 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     const iconsComponent = () => {
         return (
             <div className="input-group mt-1">
-                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterState ? "btn-outline-dark" : "btn-dark"}`} onClick={() => { setFilterState(!filterState); }}><Icon name="check-square" size={16} /></button>
-                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterLaw ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><Icon name="balance-scale" size={16} /></button>
-                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterArc ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <Icon name="building" size={16} /></button>
-                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterEng ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><Icon name="cogs" size={16} /> </button>
+                <Button variant={!filterState ? "outline" : "default"} size="sm" onClick={() => { setFilterState(!filterState); }}><Icon name="check-square" size={16} /></Button>
+                <Button variant={!filterLaw ? "outline" : "default"} size="sm" onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><Icon name="balance-scale" size={16} /></Button>
+                <Button variant={!filterArc ? "outline" : "default"} size="sm" onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <Icon name="building" size={16} /></Button>
+                <Button variant={!filterEng ? "outline" : "default"} size="sm" onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><Icon name="cogs" size={16} /> </Button>
                 {currenItem != null ?
                     <Button variant="destructive" size="sm" className="m-0 px-2" onClick={() => { setCurrentItem(null); setSbtn(null) }}><Icon name="times" size={16} /> </Button>
                     : ''}
@@ -504,8 +504,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 return <>
                     <div className="row mb-1">
                         <div className='col'>
-                            <button type="button" className={`btn btn-sm rounded-pill w-100 ${!isSelected ? "btn-outline-secondary" : ""}`} style={{ backgroundColor: isSelected ? worker.color : 'whitesmoke', color: 'black', borderColor: "white" }}
-                                onClick={() => setWorkerChecked(worker.name)} >{worker.icon} {worker.name} ({worker.datas.length})</button>
+                            <Button variant="outline" size="sm" className={`rounded-full w-100 ${isSelected ? "" : "border-muted"}`} style={{ backgroundColor: isSelected ? worker.color : 'whitesmoke', color: 'black', borderColor: "white" }}
+                                onClick={() => setWorkerChecked(worker.name)} >{worker.icon} {worker.name} ({worker.datas.length})</Button>
                         </div>
                     </div>
                 </>

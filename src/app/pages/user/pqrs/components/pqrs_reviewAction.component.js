@@ -6,8 +6,6 @@ import { infoCud } from '../../../../components/jsons/vars'
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import { swalError } from '@/app/utils/swalAdapter';
-
-const customStyles = {};
 export const PQRS_ACTION_REVIEW = (props) => {
     const { translation, swaMsg, globals, currentItemId } = props;
     const [currentItem, setCurrentItem] = useState(null)
@@ -481,7 +479,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
             <Modal contentLabel="REVIEW ACTION"
                 isOpen={review_modal}
-                style={customStyles}
+               
                 ariaHideApp={false}
             >
                 {currentItem ? <>

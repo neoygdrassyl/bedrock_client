@@ -646,8 +646,8 @@ function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className='row text-center my-1'>
-                <div className='col fw-bold'> VALIDOS: {valid}  <button type="button" className={`btn btn-sm ${!!seeValid1 ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setSeeValid1(!seeValid1)} >
-                    <Icon name="eye" size={16} /></button></div>
+                <div className='col fw-bold'> VALIDOS: {valid}  <Button variant={!!seeValid1 ? "outline" : "default"} size="sm" onClick={() => setSeeValid1(!seeValid1)} >
+                    <Icon name="eye" size={16} /></Button></div>
             </div>
             {seeValid1 ?
                 <div className='row text-center my-1'>

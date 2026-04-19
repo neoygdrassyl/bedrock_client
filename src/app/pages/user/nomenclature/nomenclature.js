@@ -138,8 +138,6 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
         ]
 
         // CUSTOM STYLES FOR THE MODAL
-        const customStyles = {};
-
         // CREATES A NEW LICENCE
         let delete_nomenclature = (id) => {
             swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
@@ -354,7 +352,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
 
                 <Modal contentLabel="VIEW/EDIT"
                     isOpen={modal}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
@@ -381,7 +379,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
 
                 <Modal contentLabel="NEW VIEW"
                     isOpen={newModal}
-                    style={customStyles}
+                   
                     ariaHideApp={false}
                 >
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">

@@ -469,8 +469,8 @@ function RECORD_ENG_REVIEW(props) {
                                     }
                                 </div>
                                 <div className="col-1">
-                                    {allowReview ? <button type="button" className={`btn btn-sm ${!rewStates['REW' + i] ? "btn-outline-secondary" : "btn-secondary"}`}
-                                        onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></button>
+                                    {allowReview ? <Button variant={!rewStates['REW' + i] ? "outline" : "default"} size="sm"
+                                        onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></Button>
                                         : ''}
                                     {rewStates['REW' + i]
                                         ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>

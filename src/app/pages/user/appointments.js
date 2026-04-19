@@ -145,8 +145,6 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 ,
             },
         ]
-        const customStyles = {};
-
         let app_edit = (e) => {
             e.preventDefault();
             var formData = new FormData();

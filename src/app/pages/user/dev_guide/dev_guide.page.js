@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Markdown from 'markdown-to-jsx';
 import { useLocation } from "react-router-dom"
+import { Button } from '@/components/ui/button';
 
 import DevIndexList from './guide/dev_index'
 import guide_dev_01 from './guide/guide_dev_01.md'
@@ -86,14 +87,15 @@ export default function DEV_GUIDE(props) {
         return (
             <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
                 {sections.map(section => (
-                    <button
+                    <Button
                         key={section.num}
-                        className={`btn ${activeSection === section.num ? 'btn-primary' : 'btn-outline-primary'} btn-sm`}
+                        variant={activeSection === section.num ? "default" : "outline"}
+                        size="sm"
                         onClick={() => CHANGE_CONTENT(section.md, '', section.num)}
                     >
                         <i className={`fas ${section.icon} me-1`}></i>
                         {section.label}
-                    </button>
+                    </Button>
                 ))}
             </div>
         );

@@ -239,7 +239,7 @@ export default function FUN_CLOCK_EVENTS(props) {
     }
 
     return <>
-        <button type="button" className={`btn btn-sm rounded-pill ${!newEvent ? "btn-outline-success" : "btn-success"}`} onClick={() => setNewEvent(!newEvent)}><Icon name="plus-circle" size={16} /> NUEVO</button>
+        <Button variant={!newEvent ? "outline" : "default"} size="sm" onClick={() => setNewEvent(!newEvent)}><Icon name="plus-circle" size={16} /> NUEVO</Button>
         {newEvent ? _COMPONENET_NEW() : ''}
 
         <DATATABLE

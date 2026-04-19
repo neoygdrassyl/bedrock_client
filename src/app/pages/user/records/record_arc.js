@@ -651,19 +651,19 @@ const NAV_FUNA = (_CHILD) => {
                         </legend>
                         <br />
                         <a href="#record_arc_31">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_32">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3.2 Identificación de la Solicitud</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_33">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3.3 Descripción de la Actuación</h6>
                             </legend>
                         </a>
@@ -671,44 +671,44 @@ const NAV_FUNA = (_CHILD) => {
                             ? <>
                                 <br />
                                 <a href="#record_arc_extra_1">
-                                    <legend className="px-3 btn-success">
+                                    <legend className="px-3 rounded text-sm font-medium bg-accent text-accent-foreground">
                                         <h6>CONSIDERACIONES DECRETO 1077</h6>
                                     </legend>
                                 </a>
                                 <br />
                                 <a href="#record_arc_extra_2">
-                                    <legend className="px-3 btn-success">
+                                    <legend className="px-3 rounded text-sm font-medium bg-accent text-accent-foreground">
                                         <h6>INTERVENCIÓN DE LA SECRETARIA</h6>
                                     </legend>
                                 </a>
                             </> : ""}
                         <br />
                         <a href="#record_arc_34">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3.4 ANÁLISIS DETERMINANTES URBANAS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_35">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3.5 PARQUEADEROS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_36">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3.6 ESPACIO PUBLICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_37">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3.7 NSR10</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_arc_38">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3.8 VIABILIDAD ARQUITECTÓNICA</h6>
                             </legend>
                         </a>

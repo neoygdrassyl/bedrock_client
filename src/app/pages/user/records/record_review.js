@@ -1839,43 +1839,43 @@ const NAV_FUNA = (_CHILD) => {
                         </legend>
                         <br />
                         <a href="#record_review_title_1">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>1. INFORMES</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_report_jur">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>9.1 INFORME JURIDICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_repor_arc">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>9.2 INFORME ARQUITECTONICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_repor_eng">
-                            <legend className="px-3 btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>9.3 INFORME ESTRUCTURAL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_2">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>2. DECLARACION DEL ACTA</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_3">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3. PROCESO DE NOTIFICACIÓNL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_4">
-                            <legend className="px-3 btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>4. PROSEGUIR A EXPEDICION</h6>
                             </legend>
                         </a>
