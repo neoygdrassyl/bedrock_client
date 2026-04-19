@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
 import SubmitService from '../../../services/submit.service';
 import { dateParser } from '../../../components/customClasses/typeParse';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import Collapsible from '../../../components/Collapsible';
 import DataTable from '@/components/data-table-bridge';
 
 
-const MySwal = withReactContent(Swal);
 
 function SUBMIT_SINGLE_VIEW({ translation, swaMsg, globals, id_related, setVRList }) {
     const [load, setLoad] = useState(false);

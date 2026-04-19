@@ -1,8 +1,5 @@
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import { dateParser_yearsPassed } from '../../../../components/customClasses/typeParse';
-const MySwal = withReactContent(Swal);
 
 function RECORD_LAW_PROFESIONALS(props) {
         const { translation, swaMsg, globals, _FUN_1, _FUN_52 } = props;

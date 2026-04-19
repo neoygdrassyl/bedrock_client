@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 import { Icon } from '@/components/icon';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
 
 export default function ARCHIVE_FUN_VIEW(props) {
     const { translation, swaMsg, globals, currentItem } = props;

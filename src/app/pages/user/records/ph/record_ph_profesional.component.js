@@ -1,8 +1,5 @@
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import VIZUALIZER from '../../../../components/vizualizer.component';
-const MySwal = withReactContent(Swal);
 
 function RECORD_PH_PROFESIONALS(props) {
         const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentRecord } = props;
