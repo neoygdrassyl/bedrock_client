@@ -43,16 +43,16 @@ export class FunPage {
     this.noDataMessage = page.locator('text=NO HAY SOLICITUDES').first();
     this.loadingMessage = page.locator('text=CARGANDO...').first();
     this.processingDialog = page.getByRole('dialog', { name: /Procesando Formulario/i });
-    this.searchResultsHeading = page.locator('text=RESULTADO DE LA BUSQUEDA');
+    this.searchResultsHeading = page.locator('h3', { hasText: /Resultado de la B[uú]squeda/i });
 
     // --- Tab navigation (MDBTabs) ---
     this.tabs = {
-      radicacion: page.locator('label', { hasText: /Radicaci/i }).first(),
-      evaluacion: page.locator('label', { hasText: /Evaluaci/i }).first(),
-      expedicion: page.locator('label', { hasText: /EXPEDICI/i }).first(),
-      otrasActuaciones: page.locator('label', { hasText: /OTRAS ACTUACIONES/i }).first(),
-      desistimiento: page.locator('label', { hasText: /Desistimiento/i }).first(),
-      archivadas: page.locator('label', { hasText: /ARCHIVADAS/i }).first(),
+      radicacion: page.getByRole('tab', { name: /Radicaci/i }).first(),
+      evaluacion: page.getByRole('tab', { name: /Evaluaci/i }).first(),
+      expedicion: page.getByRole('tab', { name: /Expedici/i }).first(),
+      otrasActuaciones: page.getByRole('tab', { name: /Otras Actuaciones/i }).first(),
+      desistimiento: page.getByRole('tab', { name: /Desistimiento/i }).first(),
+      archivadas: page.getByRole('tab', { name: /Archivadas/i }).first(),
     };
   }
 
@@ -134,7 +134,7 @@ export class FunPage {
     await actionToggle.click();
 
     // Click the specific action in the popover
-    const actionButton = this.page.locator('.fun-action-menu button', { hasText: action });
+    const actionButton = this.page.locator('.fun-action-menu [role="menuitem"]', { hasText: action });
     await actionButton.click();
     await this.page.waitForLoadState('networkidle');
   }

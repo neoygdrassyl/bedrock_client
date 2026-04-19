@@ -185,7 +185,7 @@ export function DataTableBridge({
 
       <div
         className={cn(
-          'rounded-md border border-border overflow-auto',
+          'rdt_Table rounded-md border border-border overflow-auto',
           fixedHeader && 'overflow-y-auto'
         )}
         style={fixedHeader ? { maxHeight: fixedHeaderScrollHeight || '400px' } : undefined}
@@ -194,7 +194,7 @@ export function DataTableBridge({
           {!noTableHead && (
             <TableHeader className="bg-muted/50 sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <TableRow key={headerGroup.id} className="rdt_TableHeadRow">
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
@@ -243,6 +243,7 @@ export function DataTableBridge({
                   <TableRow
                     key={row.id}
                     className={cn(
+                      'rdt_TableRow',
                       onRowClicked && 'cursor-pointer',
                       highlightOnHover && 'hover:bg-muted/50',
                       striped && rowIdx % 2 === 1 && 'bg-muted/30',
@@ -283,7 +284,11 @@ export function DataTableBridge({
                     <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
                       <svg className="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
                     </div>
-                    <p className="text-sm text-muted-foreground">{typeof noDataComponent === 'string' ? noDataComponent : 'No hay registros'}</p>
+                    {typeof noDataComponent === 'string' ? (
+                      <p className="text-sm text-muted-foreground">{noDataComponent}</p>
+                    ) : (
+                      noDataComponent
+                    )}
                   </div>
                 </TableCell>
               </TableRow>
@@ -293,7 +298,7 @@ export function DataTableBridge({
       </div>
 
       {pagination && !progressPending && (
-        <div className="flex items-center justify-between text-sm pt-1">
+        <div className="rdt_Pagination flex items-center justify-between text-sm pt-1">
           <span className="text-muted-foreground text-xs">
             {table.getFilteredRowModel().rows.length} registros
             {' · '}

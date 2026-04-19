@@ -87,6 +87,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
             list_complete: [],
             list_search: [],
+            hasSearchResult: false,
             list_started: [],
             list_incomplete: [],
             list_legal: [],
@@ -204,6 +205,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             .then(response => {
                 setState({
                     list_search: response.data,
+                    hasSearchResult: true,
                     isLoadedSearch: false,
                 });
                 //asignList(response.data);
@@ -1142,11 +1144,11 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon" className="fun-action-toggle h-8 w-8">
                             <Icon name="MoreVertical" size={16} />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuContent align="end" className="fun-action-menu w-56">
                         <DropdownMenuLabel className="flex items-center gap-2">
                             <Icon name="Eye" size={14} /> Consulta
                         </DropdownMenuLabel>
@@ -1311,6 +1313,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 refreshList();
                 setState({
                     list_search: [],
+                    hasSearchResult: false,
                     isLoadedSearch: false,
                 })
             }
@@ -1361,6 +1364,10 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         return (
             
             <div className="space-y-6">
+                <div className="space-y-1 text-center md:text-left max-w-4xl mx-auto">
+                    <h1 className="text-2xl font-bold tracking-tight">RADICACIÓN DE SOLICITUDES</h1>
+                    <p className="text-sm text-muted-foreground">Gestione la radicación, consulta y seguimiento de licencias urbanísticas.</p>
+                </div>
                 <FUN_WORKER_ASIGN translation={translation} globals={globals}
                     type={"law"}
                     openModal={openModal} />
@@ -1456,7 +1463,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 </div>
 
                 {/* ── Search results ─────────────────────────────── */}
-                {list_search.length > 0 && (
+                {state.hasSearchResult && (
                     <div>
                         <h3 className="text-base font-semibold text-center mb-3 flex items-center justify-center gap-2">
                             <Icon name="SearchCheck" size={18} className="text-primary" />

@@ -110,7 +110,7 @@ test.describe('E2E: Radicacion de Proyecto', () => {
     await funPage.search('68001', '1');
 
     // The search result section heading should appear if there are results
-    const searchHeading = authenticatedPage.locator('text=RESULTADO DE LA BUSQUEDA');
+    const searchHeading = authenticatedPage.locator('h3', { hasText: /Resultado de la B[uú]squeda/i });
     const noResults = authenticatedPage.locator('text=NO HAY SOLICITUDES');
 
     // Either we get results or a "no results" message

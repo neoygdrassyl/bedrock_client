@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
-import { Item } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 import DataTable from '@/components/data-table-bridge';
 import Norms_Service from "../../../services/norm.service"

@@ -35,6 +35,8 @@ function cssNoop() {
 export default defineConfig({
   plugins: [cssNoop(), jsxInJs(), react()],
 
+  assetsInclude: ['**/*.md'],
+
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
