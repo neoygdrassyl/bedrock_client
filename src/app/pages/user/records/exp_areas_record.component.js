@@ -45,7 +45,7 @@ export default function EXP_AREAS_RECORD(props) {
                 <div className="col">
                     <label>Area</label>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="cube" size={16} />
                         </span>
                         <input type="number" min="0" step="0.01" className="form-control" id={"expedition_area_1" + edit} />
@@ -55,7 +55,7 @@ export default function EXP_AREAS_RECORD(props) {
                 <div className="col">
                     <label>Unidades</label>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="cube" size={16} />
                         </span>
                         <input type="number" min="0" step="1" className="form-control" id={"expedition_area_5" + edit} />
@@ -65,7 +65,7 @@ export default function EXP_AREAS_RECORD(props) {
                 <div className="col">
                     <label>Uso</label>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="home" size={16} />
                         </span>
                         <input list="exp_uses_datalist" className="form-select" id={"expedition_area_3" + edit} autoComplete="off" />
@@ -84,7 +84,7 @@ export default function EXP_AREAS_RECORD(props) {
                 <div className="col">
                     <label>Modalidad</label>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" id={"expedition_area_4" + edit} />

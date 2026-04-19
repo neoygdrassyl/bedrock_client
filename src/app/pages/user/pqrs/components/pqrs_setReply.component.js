@@ -116,7 +116,7 @@ parentRetrieveItem(currentItem.id);
                         <div className="col-6">
                             <label className='text-start'>consecutivo de Salida</label>
                             <div className="input-group my-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={currentItem.id_reply}
@@ -128,7 +128,7 @@ parentRetrieveItem(currentItem.id);
                         <div className="col-6">
                             <label>Fecha de Respuesta</label>
                             <div className="input-group my-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="date" max="2100-01-01" className="form-control"

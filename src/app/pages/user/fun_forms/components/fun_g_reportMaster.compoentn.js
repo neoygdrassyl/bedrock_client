@@ -100,8 +100,8 @@ function FUN_G_REPORT_MASTER({ translation, swaMsg, globals, currentItem, curren
         return (
             <div className="fun_g_mix">
 
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="fung_report_master">
-                    <label className="app-p lead text-center fw-normal text-uppercase">10. ACTA <Icon name="file-contract" size={16} className="me-2" /></label>
+                <legend className="my-2 px-3 Collapsible" id="fung_report_master">
+                    <label className="app-p lead text-center fw-normal">10. ACTA <Icon name="file-contract" size={16} className="me-2" /></label>
                 </legend>
 
                 {_COMPONENT_REPORT_MASTER()}

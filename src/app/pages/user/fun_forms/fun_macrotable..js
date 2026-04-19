@@ -2251,11 +2251,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             return <div>
                 <div className="row my-1">
                     <div className="col text-center">
-                        <label className="app-p fw-bold text-uppercase"> GRAFICAS DE SOLICITUDES ({state.data_macro_filter.length})</label>
+                        <label className="app-p fw-bold"> GRAFICAS DE SOLICITUDES ({state.data_macro_filter.length})</label>
                     </div>
                 </div>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
+                <Collapsible className="bg-primary/10 py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
                         <Icon name="chart-bar" size={16} /> GRAFICAS GENERALES
                     </label>
@@ -2303,7 +2303,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
+                <Collapsible className="bg-primary/10 py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
                         <Icon name="chart-bar" size={16} /> GRAFICA DE ASIGNACION
                     </label>
@@ -2332,7 +2332,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
+                <Collapsible className="bg-primary/10 py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
                         <Icon name="chart-bar" size={16} /> GRAFICAS DE EVALUACION
                     </label>
@@ -2378,7 +2378,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
+                <Collapsible className="bg-primary/10 py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
                         <Icon name="chart-bar" size={16} /> GRAFICA DE LICENCIAS EXPEDIDAS
                     </label>

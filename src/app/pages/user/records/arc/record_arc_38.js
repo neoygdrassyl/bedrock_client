@@ -300,7 +300,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
 
             return <>
                 <div className="row py-3">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Observaciones totales</label>
                         </div>
@@ -340,7 +340,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
 
             return <>
                 <div className="row py-3">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Observaciones totales</label>
                         </div>
@@ -355,7 +355,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
 
             return <>
                 <div className="row">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Observaciones finales del Proyecto</label>
                         </div>
@@ -389,7 +389,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 3.1 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
                 </div> : ''}
-                <div className="row border bg-info py-1 text-white fw-bold">
+                <div className="row border bg-primary text-primary-foreground py-1 fw-bold">
                     <div className="col">
                         <label>REVISION</label>
                     </div>

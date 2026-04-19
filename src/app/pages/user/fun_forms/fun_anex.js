@@ -40,8 +40,8 @@ export default function FUN_ANEX(props) {
         let VAR = _CHILD_VARS.anex1 ? _CHILD_VARS.anex1.split(';') : [];
 
         return <>
-            <legend className="my-2 px-3 text-uppercase bg-light" id="funn_1_a1">
-                <label className="app-p lead fw-normal text-uppercase">1. TIPO DE USO</label>
+            <legend className="my-2 px-3 bg-light" id="funn_1_a1">
+                <label className="app-p lead fw-normal">1. TIPO DE USO</label>
             </legend>
             <div className='row mx-3'>
                 <div className='col'>
@@ -96,7 +96,7 @@ export default function FUN_ANEX(props) {
                 </div></div>
                 <div className='col-6'>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -108,8 +108,8 @@ export default function FUN_ANEX(props) {
     }
     let _CHILD_A2 = () => {
         return <>
-            <legend className="my-2 px-3 text-uppercase bg-light" id="funn_1_a2">
-                <label className="app-p lead fw-normal text-uppercase">2. REGLAMENTACIÓN DE CONSTRUCCIÓN SOSTENIBLE</label>
+            <legend className="my-2 px-3 bg-light" id="funn_1_a2">
+                <label className="app-p lead fw-normal">2. REGLAMENTACIÓN DE CONSTRUCCIÓN SOSTENIBLE</label>
             </legend>
             <div className='row text-center my-2'>
                 <label className='fw-bold'>2.1 DECLARACIÓN SOBRE MEDIDAS DE AHORRO EN ENERGIA</label>
@@ -204,7 +204,7 @@ export default function FUN_ANEX(props) {
                 </div>
                 <div className="form-check">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -262,7 +262,7 @@ export default function FUN_ANEX(props) {
                 </div>
                 <div className="form-check">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -320,7 +320,7 @@ export default function FUN_ANEX(props) {
                 </div>
                 <div className="form-check">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -378,7 +378,7 @@ export default function FUN_ANEX(props) {
                 </div>
                 <div className="form-check">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -436,7 +436,7 @@ export default function FUN_ANEX(props) {
                 </div>
                 <div className="form-check">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -538,7 +538,7 @@ export default function FUN_ANEX(props) {
                 </div>
                 <div className="form-check">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -607,7 +607,7 @@ export default function FUN_ANEX(props) {
                 </div>
                 <div className="form-check">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -657,8 +657,8 @@ export default function FUN_ANEX(props) {
         let _CHILD_VARS = _GET_CHILD_1();
         let VAR = _CHILD_VARS.anex3 ? _CHILD_VARS.anex3.split(';') : [];
         return <>
-            <legend className="my-2 px-3 text-uppercase bg-light" id="funn_1_a3">
-                <label className="app-p lead fw-normal text-uppercase">3. ÁREA DEL PROYECTO</label>
+            <legend className="my-2 px-3 bg-light" id="funn_1_a3">
+                <label className="app-p lead fw-normal">3. ÁREA DEL PROYECTO</label>
             </legend>
             <div className='row mx-3'>
                 <div className="form-group row">
@@ -845,8 +845,8 @@ export default function FUN_ANEX(props) {
 
     return (
         <fieldset className="p-3">
-            <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_a">
-                <label className="app-p lead fw-normal text-uppercase">ANEXO DE CONSTRUCCIÓN SOSTENIBLE</label>
+            <legend className="my-2 px-3 Collapsible" id="funn_a">
+                <label className="app-p lead fw-normal">ANEXO DE CONSTRUCCIÓN SOSTENIBLE</label>
             </legend>
 
             {_CHILD_A1()}

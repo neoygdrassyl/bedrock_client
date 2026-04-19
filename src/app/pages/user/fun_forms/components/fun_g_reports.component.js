@@ -348,54 +348,54 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
         let _TABLE = () => {
             let data = _TABLE_INFO();
             const HEAD = <div className="row text-light">
-                <div className="col-2 border bg-info text-center">
-                    <label className="fw-bold text-uppercase">INFORME</label>
+                <div className="col-2 border bg-primary text-primary-foreground text-center">
+                    <label className="fw-bold">INFORME</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">REVISOR</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">REVISOR</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">REVISIÓN</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">REVISIÓN</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">ASIGNACIÓN</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">ASIGNACIÓN</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">REVISION</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">REVISION</label>
                 </div>
-                <div className="col-1 border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">RES.</label>
+                <div className="col-1 border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">RES.</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">INFORMAR</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">INFORMAR</label>
                 </div>
             </div>
 
             const BODY = data.map((value, i) => {
                 return <div className="row" key={i}>
                     <div className="col-2 border text-center">
-                        <h5 className="text-uppercase">{value.icon} {value.type}</h5>
+                        <h5 className="">{value.icon} {value.type}</h5>
                     </div>
                     <div className="col border text-center">
-                        <h5 className="text-uppercase fw-normal">{value.asign ||value.worker }</h5>
+                        <h5 className="fw-normal">{value.asign ||value.worker }</h5>
                     </div>
                     <div className="col border text-center">
                         <h5 className="fw-normal">{value.process}</h5>
                     </div>
                     <div className="col border text-center">
-                        <label className="text-uppercase">{value.asign_date}</label>
+                        <label className="">{value.asign_date}</label>
                     </div>
                     <div className="col border text-center">
-                        <label className="text-uppercase">{value.date}</label>
+                        <label className="">{value.date}</label>
                     </div>
                     <div className="col-1 border text-center">
-                        <label className="text-uppercase">{value.class == 'eng' ?
+                        <label className="">{value.class == 'eng' ?
                             _GET_REVIEW_ENG(value.review)
                             : _GET_REVIEW(value.review)}
                         </label>
                     </div>
                     <div className="col border text-center">
-                        <label className="text-uppercase">{value.inform}</label>
+                        <label className="">{value.inform}</label>
                     </div>
                 </div>
             })
@@ -409,8 +409,8 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
         return (
             <div className="fun_g_mix">
 
-                <legend className={`my-2 px-3 text-uppercase Collapsible text-white ${textAlign ?? ''}`} id={id}>
-                    <label className="app-p lead text-center fw-normal text-uppercase">{nomenclature} INFORMES</label>
+                <legend className={`my-2 px-3 Collapsible text-white ${textAlign ?? ''}`} id={id}>
+                    <label className="app-p lead text-center fw-normal">{nomenclature} INFORMES</label>
                 </legend>
 
                 {_TABLE()}

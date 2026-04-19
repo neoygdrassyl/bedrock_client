@@ -103,7 +103,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
             <div className="row">
                 <div className="col-12">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                        <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                         <input type="file" className="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
                     </div>
                     <div className="input-group">

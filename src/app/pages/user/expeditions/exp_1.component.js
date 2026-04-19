@@ -256,7 +256,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
             //console.log(vrsRelated)
             return <>
                 <div className="card border border-dark mb-3">
-                    <div className="card-header text-uppercase">Expensas Fijas</div>
+                    <div className="card-header">Expensas Fijas</div>
                     <div className="card-body text-dark">
                         <div className="row">
                             <div className="col">
@@ -289,7 +289,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
                 {!isPH() ? <>
                     <div className="card border border-dark mb-3">
-                        <div className="card-header text-uppercase">Expensas variables</div>
+                        <div className="card-header">Expensas variables</div>
                         <div className="card-body text-dark">
                             <div className="row">
                                 <div className="col">
@@ -318,7 +318,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     </div>
 
                     <div className="card border border-dark mb-3">
-                        <div className="card-header text-uppercase">Acto de tramite de licencia</div>
+                        <div className="card-header">Acto de tramite de licencia</div>
                         <div className="card-body text-dark">
                             <div className="row">
                                 <div className="col-3">
@@ -364,7 +364,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                 {!conOA() && _GLOBAL_ID === 'cb1' && !isPH() ? <>
 
                     <div className="card border border-dark mb-3">
-                        <div className="card-header text-uppercase">Impuestos, tasas y estampillas</div>
+                        <div className="card-header">Impuestos, tasas y estampillas</div>
                         <div className="card-body text-dark">
                             <div className="row">
                                 <div className="col">
@@ -407,7 +407,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     </div>
 
                     <div className="card border border-dark mb-3">
-                        <div className="card-header text-uppercase">Impuestos Municipales</div>
+                        <div className="card-header">Impuestos Municipales</div>
                         <div className="card-body text-dark">
                             <div className="row">
                                 <div className="col">
@@ -428,7 +428,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                 </> : ''}
 
                 <div className="card border border-dark mb-3">
-                    <div className="card-header text-uppercase">Estampilla PRO-UIS (SI ESTRATO {'>'} 2)</div>
+                    <div className="card-header">Estampilla PRO-UIS (SI ESTRATO {'>'} 2)</div>
                     <div className="card-body text-dark">
                         <div className="row">
                             <div className="col">
@@ -473,7 +473,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     <>
 
                         <div className="card border border-dark mb-3">
-                            <div className="card-header text-uppercase">Deberes Urbanísticos (SI ESTRATO {'>'} 2)</div>
+                            <div className="card-header">Deberes Urbanísticos (SI ESTRATO {'>'} 2)</div>
                             <div className="card-body text-dark">
 
                                 <div className="row">
@@ -542,7 +542,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
                 {_GLOBAL_ID === 'cp1' ? <>
                     <div className="card border border-dark mb-3">
-                        <div className="card-header text-uppercase">Delineación Urbana</div>
+                        <div className="card-header">Delineación Urbana</div>
                         <div className="card-body text-dark">
                             <div className="row">
 
@@ -741,7 +741,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
         }
         return (
             <div className="record_ph_gen container p-3">
-                <legend className="my-2 px-2 text-uppercase Collapsible text-center" id="nav_expedition_1">
+                <legend className="my-2 px-2 Collapsible text-center" id="nav_expedition_1">
                     <label className="app-p lead fw-normal">INFORMACIÓN GENERAL</label>
                 </legend>
                 <form id="form_expedition" onSubmit={save_exp}>

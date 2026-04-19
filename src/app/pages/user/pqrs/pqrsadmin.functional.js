@@ -846,7 +846,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     <h1 className="text-center my-4">GESTIÓN DE PQRS Y SOLICITUDES</h1>
                     <hr />
                     <div className="row">
-                        <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
+                        <h2 className="text-center pb-2">ACCIONES</h2>
                         <div className="col-md-4">
                             <div className="rounded-lg border bg-card p-4 bg-card mb-3">
                                 <div>
@@ -864,7 +864,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                     <h4 className="text-center font-semibold mb-3">CONSULTAR PQRS</h4>
                                     <form onSubmit={search} id="app-form">
                                         <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="info-circle" size={16} />
                                             </span>
                                             <select className="form-select" id="search_0" required>
@@ -877,7 +877,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                             </select>
                                         </div>
                                         <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="comment-dots" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="search_1" />
@@ -895,14 +895,14 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                     <h4 className="text-center font-semibold mb-3">MACRO TABLA</h4>
                                     <form onSubmit={loadMacro} id="fun_form_macro_table_pqrs">
                                         <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="calendar-alt" size={16} />
                                             </span>
                                             <input type="date" className="form-control" id="load_macro_date_1" required
                                                 defaultValue={dayjs().subtract(6, 'months').format('YYYY-MM-DD')} />
                                         </div>
                                         <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="calendar-alt" size={16} />
                                             </span>
                                             <input type="date" className="form-control" id="load_macro_date_2" required
@@ -921,7 +921,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 <div className="row d-flex justify-content-center">
                     <div className="col-11">
                         {isloadedSearch ? (<>
-                            <h2 className="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} className="" height="75px" alt="..." /></h2>
+                            <h2 className="text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} className="" height="75px" alt="..." /></h2>
 
                             <DataTable
                                 title="TABLA DE BÚSQUEDA"

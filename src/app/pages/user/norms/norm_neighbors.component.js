@@ -278,7 +278,7 @@ export default function NORM_NEIGHBORS(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 className="text-uppercase pb-2">3. INFORMACIÓN VECINOS:</h3>
+                <h3 className="pb-2">3. INFORMACIÓN VECINOS:</h3>
                 {NEW_ITEM}
                 {TABLE}
                 {EDIT_ITEM}

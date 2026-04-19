@@ -118,21 +118,21 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
             var _CLOCK = _GET_CHILD_CLOCK();
             var _COMPONENT = [];
             _COMPONENT.push(<>
-                <div className="row text-center text-uppercase text-white ms-0">
-                    <div className="col-3 border bg-info">
+                <div className="row text-center text-white ms-0">
+                    <div className="col-3 border bg-primary text-primary-foreground">
                         <label className="fw-bold  ">Control de Proceso</label>
                     </div>
-                    <div className="col-5 border bg-info">
+                    <div className="col-5 border bg-primary text-primary-foreground">
                         <label className="fw-bold">Observaciones</label>
                     </div>
-                    <div className="col-2 border bg-info">
+                    <div className="col-2 border bg-primary text-primary-foreground">
                         <label className="fw-bold">Fehca en Proceso</label>
                     </div>
-                    <div className="col-2 border bg-info">
+                    <div className="col-2 border bg-primary text-primary-foreground">
                         <label className="fw-bold">Fecha Limite</label>
                     </div>
                 </div>
-                <div className="row text-center text-uppercase text-dark ms-0 mb-1">
+                <div className="row text-center text-dark ms-0 mb-1">
                     <div className="col bg-light">
                         <label className="fw-bold">Eventos principales</label>
                     </div>
@@ -188,7 +188,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
             // SECONDARY EVENTS
 
             _COMPONENT.push(<>
-                <div className="row text-center text-uppercase text-dark ms-0 mb-1">
+                <div className="row text-center text-dark ms-0 mb-1">
                     <div className="col bg-light">
                         <label className="fw-bold">Eventos Secundarios</label>
                     </div>
@@ -275,7 +275,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
             // CLOSE PROCESS
 
             _COMPONENT.push(<>
-                <div className="row text-center text-uppercase text-dark ms-0 mb-1">
+                <div className="row text-center text-dark ms-0 mb-1">
                     <div className="col bg-light">
                         <label className="fw-bold">Procesos de Desistimientos</label>
                     </div>

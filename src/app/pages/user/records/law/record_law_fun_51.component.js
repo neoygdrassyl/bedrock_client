@@ -107,13 +107,13 @@ export default function RECORD_LAW_FUN_51(props) {
     // ************************** JSX COMPONENTS *********************** // 
     let COMPONENT = () => {
         return <>
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>5.1. TITULARES DE LA LICENCIA</label>
                 </div>
             </div>
 
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>DATOS FORMULARIO</label>
                 </div>
@@ -299,14 +299,14 @@ export default function RECORD_LAW_FUN_51(props) {
         let isLegalPerson = item.type == 'PERSONA JURIDICA';
         return <>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_51">
-                    <label className="app-p lead text-center fw-normal text-uppercase">5.1 Titular(es) de la Licencia</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_51">
+                    <label className="app-p lead text-center fw-normal">5.1 Titular(es) de la Licencia</label>
                 </legend>
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0 Tipo de Persona</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <select className='form-select' id="f_51_type" defaultValue={item.type}
@@ -332,7 +332,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.0.1 Nombre y Apellidos (Representante Legal)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_51_rep_name" disabled={!isLegalPerson} defaultValue={item.rep_name} />
@@ -341,7 +341,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.0.2 Cédula (Representante Legal)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_51_rep_idnumber" disabled={!isLegalPerson} defaultValue={item.rep_id_number}
@@ -354,7 +354,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.1 Nombre</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5111" defaultValue={item.name} />
@@ -363,7 +363,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.1 Apellido(s)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5112" defaultValue={item.surname} />
@@ -375,7 +375,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.2 CC o NIT</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_512" defaultValue={item.id_number}
@@ -385,7 +385,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.3 Correo Electrónico</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_513" defaultValue={item.email} />
@@ -396,7 +396,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.4 Teléfono de Contacto</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="phone-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_514" defaultValue={item.nunber} />
@@ -405,7 +405,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.5 Tipo de Titular</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="phone-alt" size={16} />
                             </span>
                             <select className='form-select' id="f_515" defaultValue={item.role}>
@@ -425,7 +425,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.6 Relacionar Documento: Documento de Identidad</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_51_doc1" defaultValue={docs[0]}>
@@ -438,7 +438,7 @@ export default function RECORD_LAW_FUN_51(props) {
                     <div className="col-6">
                         <label>5.1.7 Relacionar Documento: Certificado de Existencia y Representación Legal </label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_51_doc2" disabled={!isLegalPerson} defaultValue={docs[1]}>

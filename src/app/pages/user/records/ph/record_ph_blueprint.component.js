@@ -174,7 +174,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     <div className="col-3">
                         <label>ID Plano</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"r_ph_bl_1" + edit} />
@@ -183,7 +183,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     <div className="col-3">
                         <label>Sótano / Piso</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"r_ph_bl_2" + edit} />
@@ -192,7 +192,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     <div className="col-3">
                         <label>Área total Construida m2</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="ruler" size={16} />
                             </span>
                             <input type="number" min="0" step="0.01" className="form-control" id={"r_ph_bl_3" + edit} />

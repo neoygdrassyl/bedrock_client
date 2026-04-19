@@ -113,7 +113,7 @@ function SHORT_INFO({ translation, swaMsg, globals, currentItem, currentVersion 
         // COMPONENTS JSX
         let _COMPONENT = () => {
             return <>
-                <div className='row py-1 text-center border border-dark bg-info text-light'>
+                <div className='row py-1 text-center border border-dark bg-primary text-primary-foreground'>
                     <div className='col'>Responsable de la solicitud</div>
                 </div>
                 <div className='row py-1 text-center border border-dark'>
@@ -136,7 +136,7 @@ function SHORT_INFO({ translation, swaMsg, globals, currentItem, currentVersion 
                     <div className='col'>Correo: </div>
                     <div className='col fw-bold'> {_GET_CHILD_53().item_535} </div>
                 </div>
-                <div className='row py-1 text-center border border-dark border-dark bg-info text-light'>
+                <div className='row py-1 text-center border border-dark border-dark bg-primary text-primary-foreground'>
                     <div className='col'>Titulares de Actuación</div>
                 </div>
                 <div className='row py-1 text-center border border-dark'>
@@ -151,7 +151,7 @@ function SHORT_INFO({ translation, swaMsg, globals, currentItem, currentVersion 
                         <div className='col'>{value.role} </div>
                     </div>
                 </>)}
-                <div className='row py-1 text-center border border-dark border-dark bg-info text-light'>
+                <div className='row py-1 text-center border border-dark border-dark bg-primary text-primary-foreground'>
                     <div className='col'>Informacion General</div>
                 </div>
                 <div className='row py-1 text-center border border-dark'>

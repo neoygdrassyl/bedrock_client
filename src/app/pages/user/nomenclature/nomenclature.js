@@ -281,7 +281,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         <h1 className="text-center my-4">GESTIÓN DE NOMENCLATURAS</h1>
                         <hr />
 
-                        <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
+                        <h2 className="text-center pb-2">ACCIONES</h2>
                         <div className="row">
                             <div className="col-4">
                                 <div className="text-center py-4 mt-3">
@@ -293,7 +293,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                     <div>
                                         <h4 className="text-center font-semibold mb-3">CONSULTAR NOMENCLATURA</h4>
                                         <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="info-circle" size={16} />
                                             </span>
                                             <select className="form-select" id="nomen_search_0" required>
@@ -306,7 +306,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                             </select>
                                         </div>
                                         <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="comment-dots" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="nomen_search_1" placeholder="Buscar..." />
@@ -323,14 +323,14 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                         <h4 className="text-center font-semibold mb-3">GENERAR EXCEL</h4>
                                         <form onSubmit={get_cvs} id="fun_form_nomenclature_cvs_gen">
                                             <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
+                                                <span className="input-group-text bg-primary text-primary-foreground">
                                                     <Icon name="calendar-alt" size={16} />
                                                 </span>
                                                 <input type="date" className="form-control" id="nomenclature_cvs_gen_1" required
                                                     defaultValue={dayjs().subtract(8, 'days').format('YYYY-MM-DD')} />
                                             </div>
                                             <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
+                                                <span className="input-group-text bg-primary text-primary-foreground">
                                                     <Icon name="calendar-alt" size={16} />
                                                 </span>
                                                 <input type="date" className="form-control" id="nomenclature_cvs_gen_2" required
@@ -349,7 +349,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
 
                 <div className="row d-flex justify-content-center">
                     <div className="col-10">
-                        <h2 className="text-uppercase text-center pb-2">Lista de Nomenclaturas</h2>
+                        <h2 className="text-center pb-2">Lista de Nomenclaturas</h2>
                         <div className="text-center">
                             {isLoaded ? (
                                 <DataTable

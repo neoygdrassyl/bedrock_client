@@ -597,7 +597,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         openModal={openModal} />
 
                     <div className="row">
-                        <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
+                        <h2 className="text-center pb-2">ACCIONES</h2>
                         <div className="col-md-6">
                             <div className="rounded-lg border bg-card p-4 bg-card mb-3">
                                 <div>
@@ -606,7 +606,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                         <div className='row'>
                                             <div className='col'>
                                                 <div className="input-group">
-                                                    <span className="input-group-text bg-info text-white">
+                                                    <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_1" required
@@ -615,7 +615,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                             </div>
                                             <div className='col'>
                                                 <div className="input-group">
-                                                    <span className="input-group-text bg-info text-white">
+                                                    <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_2" required
@@ -639,7 +639,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                         <div className='row'>
                                             <div className='col'>
                                                 <div className="input-group">
-                                                    <span className="input-group-text bg-info text-white">
+                                                    <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_1_s" required
@@ -648,7 +648,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                             </div>
                                             <div className='col'>
                                                 <div className="input-group">
-                                                    <span className="input-group-text bg-info text-white">
+                                                    <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_2_s" required

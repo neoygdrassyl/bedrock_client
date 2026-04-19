@@ -230,8 +230,8 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                         {currentRecord
                             ? <>
 
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_law_gen">
-                                    <label className="app-p lead fw-normal text-uppercase">I. CONTROL DEL DEBIDO PROCESO DE LA SOLICITUD</label>
+                                <legend className="my-2 px-3 Collapsible" id="record_law_gen">
+                                    <label className="app-p lead fw-normal">I. CONTROL DEL DEBIDO PROCESO DE LA SOLICITUD</label>
                                 </legend>
                                 {
                                     /**
@@ -249,12 +249,12 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     currentVersion={currentVersion}
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_law_gen_2">
-                                    <label className="app-p lead fw-normal text-uppercase">II. Observaciones Jurídicas</label>
+                                <legend className="my-2 px-3 Collapsible" id="record_law_gen_2">
+                                    <label className="app-p lead fw-normal">II. Observaciones Jurídicas</label>
                                 </legend>
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_21">
-                                    <label className="app-p lead fw-normal text-uppercase">2.1 TIPO DE SOLICITUD</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_21">
+                                    <label className="app-p lead fw-normal">2.1 TIPO DE SOLICITUD</label>
                                 </legend>
                                 <RECORD_ARC_32 translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -289,8 +289,8 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     AIM={"Estructural"}
                                     readOnly />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_22">
-                                    <label className="app-p lead fw-normal text-uppercase">2.2 Inventario de Información Aportada</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_22">
+                                    <label className="app-p lead fw-normal">2.2 Inventario de Información Aportada</label>
                                 </legend>
 
                                 <RECORD_LAW_DOCSCHECK
@@ -302,8 +302,8 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     requestUpdate={requestUpdate}
                                     docsScope={'law'} />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_23">
-                                    <label className="app-p lead fw-normal text-uppercase">2.3 DOCUMENTOS DIGITALIZADOS</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_23">
+                                    <label className="app-p lead fw-normal">2.3 DOCUMENTOS DIGITALIZADOS</label>
                                 </legend>
 
                                 <FUN_6_VIEW
@@ -317,16 +317,16 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     readOnly
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_24">
-                                    <label className="app-p lead fw-normal text-uppercase">2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_24">
+                                    <label className="app-p lead fw-normal">2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
                                 </legend>
                                 <SUBMIT_SINGLE_VIEW
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     id_related={currentItem.id_public}
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_25">
-                                    <label className="app-p lead fw-normal text-uppercase">2.5 Formulario Único Nacional</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_25">
+                                    <label className="app-p lead fw-normal">2.5 Formulario Único Nacional</label>
                                 </legend>
 
                                 <RECORD_LAW_STEP_1
@@ -405,8 +405,8 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     quickModalStyle={quickModalStyle}
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_26">
-                                    <label className="app-p lead fw-normal text-uppercase">2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_26">
+                                    <label className="app-p lead fw-normal">2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</label>
                                 </legend>
 
                                 <div className="row border my-2 py-4 border border-warning bg-body-secondary" style={{ borderWidth: '3px' }}>
@@ -433,8 +433,8 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     />
                                 </> : ''}
 
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_law_gen_3">
-                                    <label className="app-p lead fw-normal text-uppercase">III. Viabilidad Jurídica</label>
+                                <legend className="my-2 px-3 Collapsible" id="record_law_gen_3">
+                                    <label className="app-p lead fw-normal">III. Viabilidad Jurídica</label>
                                 </legend>
                                 <RECORD_LAW_EVALUATION
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -494,58 +494,58 @@ const NAV_FUNA = (_CHILD) => {
             <div className="fung_nav">
                 <div className="rounded-lg border border-border bg-card">
                     <div className="p-1">
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
                         <br />
                         <a href="#record_law_gen">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>I. CONTROL DEL DEBIDO PROCESO DE LA SOLICITUD</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_gen_2">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>II. Observaciones Jurídicas</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_21">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>2.1 TIPO DE SOLICITUD</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_22">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>2.2 Inventario de Información Aportada</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_23">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>2.3 DOCUMENTOS DIGITALIZADOS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_24">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_25">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>2.5 Formulario Único Nacional</h6>
                             </legend>
                         </a>
                         <a href="#record_law_26">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 btn-light">
                                 <h6>2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</h6>
                             </legend>
                         </a>
                         <a href="#record_law_gen_3">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>III. Viabilidad Jurídica</h6>
                             </legend>
                         </a>

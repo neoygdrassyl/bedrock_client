@@ -8,7 +8,15 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-import { swalConfirm, swalSuccess, swalError, swalLoading, swalClose } from '@/app/utils/swalAdapter';
+import {
+  swalConfirm,
+  swalSuccess,
+  swalError,
+  swalLoading,
+  swalClose,
+  swalInfo,
+  swalFormDialog,
+} from '@/app/utils/swalAdapter';
 import Swal from 'sweetalert2';
 
 describe('swalAdapter', () => {
@@ -58,6 +66,46 @@ describe('swalAdapter', () => {
         title: 'Cargando...',
         allowOutsideClick: false,
         showConfirmButton: false,
+      })
+    );
+  });
+
+  it('swalInfo preserves themed button classes when callers add customClass overrides', async () => {
+    await swalInfo({
+      title: 'Detalle',
+      customClass: {
+        popup: 'phase-detail-modal-popup',
+        htmlContainer: 'phase-detail-modal-container',
+      },
+    });
+
+    expect(Swal.fire).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customClass: expect.objectContaining({
+          popup: 'phase-detail-modal-popup',
+          htmlContainer: 'phase-detail-modal-container',
+          confirmButton: 'swal2-confirm-themed',
+          cancelButton: 'swal2-cancel-themed',
+        }),
+      })
+    );
+  });
+
+  it('swalFormDialog keeps theme classes when pages provide popup-specific customClass', async () => {
+    await swalFormDialog({
+      title: 'Programar tiempos',
+      customClass: {
+        popup: 'schedule-modal-popup',
+      },
+    });
+
+    expect(Swal.fire).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customClass: expect.objectContaining({
+          popup: 'schedule-modal-popup',
+          confirmButton: 'swal2-confirm-themed',
+          cancelButton: 'swal2-cancel-themed',
+        }),
       })
     );
   });

@@ -69,13 +69,13 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
             _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                 <div className="col-6">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                        <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                         <input type="text" className="form-control" id={"file_name" + _edit} placeholder="Nombre documento (nombre o corta descripcion)" required />
                     </div>
                 </div>
                 <div className="col-6 ">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                        <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                         <input type="file" className="form-control" id={"file" + _edit} accept="image/png, image/jpeg application/pdf" required={_edit ? false: true} />
                     </div>
                     {_edit

@@ -173,7 +173,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.1 Nombre</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5211" />
@@ -182,7 +182,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.1 Apellido(s)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5212" />
@@ -194,7 +194,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.2 Cédula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_522" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
@@ -203,7 +203,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.3 Correo Electrónico</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_523" />
@@ -215,7 +215,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-12">
                         <label>5.2.5 Rol que Desempeña (Puede seleccionar multiples usando la tecla ctrl)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-graduate" size={16} />
                             </span>
                             <select className="form-select" id="f_525">
@@ -238,7 +238,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.4 Teléfono de Contacto</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="phone-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_524" />
@@ -247,7 +247,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.6 No. Matrícula Profesional</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-contract" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_526" />
@@ -259,7 +259,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.7 Fecha expedición Matrícula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id="f_527" onChange={() => _GET_YEARS_EXPERIENCE('')} />
@@ -268,7 +268,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.8 ¿Sancionado?</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="f_5210">
@@ -283,11 +283,11 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.9 Tiempo de Experiencia (Años y meses)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Años:
                             </span>
                             <input type="number" step="1" min="0" id="f_529" placeholder="Años" className="form-control" />
-                            <span className="input-group-text bg-info text-white ms-1">
+                            <span className="input-group-text bg-primary text-primary-foreground ms-1">
                                 Meses:
                             </span>
                             <input type="number" step="1" min="0" id="f_529m" placeholder="Meses" className="form-control" />
@@ -296,7 +296,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.10 Supervisión técnica</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="eye" size={16} />
                             </span>
                             <select className="form-select" id="f_528">
@@ -314,7 +314,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.1 Relacionar Documento: Hoja de Vida</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_114" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
@@ -327,7 +327,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.2 Relacionar Documento: Documento de Identidad</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_111" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
@@ -340,7 +340,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.3 Relacionar Documento: Matricula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_112" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
@@ -353,7 +353,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.4 Relacionar Documento: Vigencia Matricular</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_113" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
@@ -366,7 +366,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.5 Relacionar Documento: Estudios de postgrado</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_115" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
@@ -379,7 +379,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.6 Relacionar Documento: Certificados</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_116" defaultValue={_GLOBAL_ID === 'cp1' ? "0" : "-1"}>
@@ -399,7 +399,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.1 Nombre</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5211_edit" />
@@ -408,7 +408,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.1 Apellido(s)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5212_edit" />
@@ -420,7 +420,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.2 Cédula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_522_edit" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
@@ -429,7 +429,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.3 Correo Eletrónico</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_523_edit" />
@@ -441,7 +441,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-12">
                         <label>5.2.5 Rol que Desempeña (Puede seleccionar multiples usando la tecla ctrl)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-graduate" size={16} />
                             </span>
                             <select className="form-select" id="f_525_edit">
@@ -464,7 +464,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.4 Teléfono de Contacto</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="phone-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_524_edit" />
@@ -473,7 +473,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.6 No. Matricula Profesional</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-contract" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_526_edit" />
@@ -485,7 +485,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.7 Fecha expedición Matrícula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id="f_527_edit" onChange={() => _GET_YEARS_EXPERIENCE('_edit')} />
@@ -494,7 +494,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.8 ¿Sancionado?</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="f_5210_edit">
@@ -509,11 +509,11 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.9 Tiempo de Experiencia (Años y meses)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Años:
                             </span>
                             <input type="number" step="1" min="0" id="f_529_edit" placeholder="Años" className="form-control" />
-                            <span className="input-group-text bg-info text-white ms-1">
+                            <span className="input-group-text bg-primary text-primary-foreground ms-1">
                                 Meses:
                             </span>
                             <input type="number" step="1" min="0" id="f_529m_edit" placeholder="Meses" className="form-control" />
@@ -522,7 +522,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.10 Supervisión técnica</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="eye" size={16} />
                             </span>
                             <select className="form-select" id="f_528_edit">
@@ -540,7 +540,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.1 Hoja de Vida</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_114_edit">
@@ -553,7 +553,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.2 Relacionar Documento: Documento de Identidad</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_111_edit">
@@ -566,7 +566,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.3 Relacionar Documento: Matrícula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_112_edit">
@@ -579,7 +579,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.4 Relacionar Documento: Vigencia Matricular</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_113_edit">
@@ -592,7 +592,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.5 Relacionar Documento: Estudios de postgrado</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_115_edit">
@@ -605,7 +605,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     <div className="col-6">
                         <label>5.2.11.6 Relacionar Documento: Certificados</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_116_edit">
@@ -1050,8 +1050,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_52">
-                    <label className="app-p lead text-center fw-normal text-uppercase">5.2 Profesionales Responsables</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_52">
+                    <label className="app-p lead text-center fw-normal">5.2 Profesionales Responsables</label>
                 </legend>
 
                 <div className="form-check ms-5">

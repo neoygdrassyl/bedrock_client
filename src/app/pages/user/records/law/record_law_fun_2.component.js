@@ -98,13 +98,13 @@ export default function RECORD_LAW_FUN_2(props) {
         let values = _GET_STEP_TYPE('s24', 'value');
         let checks = _GET_STEP_TYPE('s24', 'check');
         return <>
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>2. INFORMACIÓN SOBRE EL PREDIO</label> {_EDIT_BTN()}
                 </div>
             </div>
 
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>DATOS FORMULARIO</label>
                 </div>

@@ -3,6 +3,7 @@ import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import './fun_modal_shared.css';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 
 export default function FUN_MACROTABLE_FILTERLIST(props) {
     const { idRef, text } = props;
@@ -10,32 +11,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
     var [modalId, setModalId] = useState(null)
     var [collapsables, setCollapsables] = useState({})
 
-    const customStylesForModal = {
-        overlay: {
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            zIndex: 1050,
-        },
-        content: {
-            position: 'absolute',
-            top: '8%',
-            left: 'var(--fun-sidebar-width)',
-            right: '25%',
-            bottom: '8%',
-            border: '1px solid #ccc',
-            overflow: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            borderRadius: '4px',
-            outline: 'none',
-            padding: '20px',
-            marginRight: 'auto',
-
-        }
-    };
+    const customStylesForModal = {};
 
     const data = [
         {
@@ -333,14 +309,21 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
                 ariaHideApp={false}
             >
 
-                <div className="my-4 d-flex justify-content-between">
-                    <label><Icon name="th-list" size={16} /> LISTA DE FILTROS</label>
-                    <button type="button" className="btn-close" onClick={toggle} />
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="th-list" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Lista de filtros</h2>
+                    </div>
+                    <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
                 {_COMPONENT_LIST()}
 
-                <div className="text-end py-1 mt-2">
-                    <button type="button" className="btn btn-lg btn-info" onClick={() => setModal(false)}><Icon name="times-circle" size={16} /> CERRAR</button>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModal(false)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
 

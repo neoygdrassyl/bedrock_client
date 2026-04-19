@@ -25,7 +25,7 @@ export default function RECORDS_BINNACLE(props) {
     let _COMPONENT = () => {
 
         return <>
-            <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+            <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                 <div className='col'>
                     <label>Bitácora - {AIM ?? ''}</label>
                 </div>

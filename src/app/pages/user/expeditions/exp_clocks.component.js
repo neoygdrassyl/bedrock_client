@@ -590,7 +590,7 @@ export default function EXP_CLOCKS(props) {
                     </span>
                   )}
                   {extension.exists && (
-                    <span className="badge bg-info text-dark">
+                    <span className="badge bg-secondary">
                       <Icon name="clock" size={16} className="me-1" />
                       Prórroga: {extension.days} d
                     </span>
@@ -976,7 +976,7 @@ export default function EXP_CLOCKS(props) {
             <div className="exp-section" style={{ '--cat': cat.color }}>
               <div className="d-flex align-items-center mb-1">
                 <i className={`fas ${cat.icon} me-2`}></i>
-                <strong className="text-uppercase">{value.title}</strong>
+                <strong className="">{value.title}</strong>
               </div>
             </div>
           ) : (

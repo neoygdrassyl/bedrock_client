@@ -58,7 +58,7 @@ export const SEEN_COMPONENT_FORM = (props) => {
             <div className="col-6">
                 <label>VISTO BUENO</label>
                 <div className="input-group my-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="envelope" size={16} />
                     </span>
                     <select className="form-control" id="pqrs_visto_worker_1" defaultValue={worker.feedback}>
@@ -70,7 +70,7 @@ export const SEEN_COMPONENT_FORM = (props) => {
             <div className="col-6">
                 <label>FECHA CONFIRMACION</label>
                 <div className="input-group my-1">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="calendar-alt" size={16} />
                     </span>
                     <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_2" defaultValue={worker.feedback_date ?? dayjs().format('YYYY-MM-DD')} required></input>

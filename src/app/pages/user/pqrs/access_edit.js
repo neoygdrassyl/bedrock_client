@@ -40,7 +40,7 @@ export const ACESS_EDIT = (props) => {
                     <div className="col">
                         <label>Contraseña</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="key" size={16} />
                             </span>
                             <input type='password' className='form-control' id='user_password' required></input>

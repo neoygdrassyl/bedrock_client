@@ -31,6 +31,7 @@ import FUN_D_ABDICATE from './fun_doc_abdicate.component';
 import FUN_D_CONTROL_2 from './fun_d_control.component_2';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/components/ui/button';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translation, globals, currentVersion }) {
@@ -127,14 +128,14 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                 return <>
                     <div className="row">
                         <div className="col-12">
-                            <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
+                            <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                                 <input type="file" className="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf"
                                     required onChange={(e) => readPDF(e.target.files[0], i)} />
                             </div>
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
+                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
                                 <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} className="form-control" placeholder="Descripcion del documento" />
                                 <DOCS_LIST idRef={i} setValues={setValues} text={'VER LISTA'} />
                             </div>
@@ -143,20 +144,20 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     <div className="row d-flex justify-content-start">
                         <div className="col">
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><Icon name="hashtag" size={16} /></span>
+                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={16} /></span>
                                 <input type="text" className="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                             </div>
                         </div>
                         <div className="col">
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><Icon name="sticky-note" size={16} /></span>
+                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="sticky-note" size={16} /></span>
                                 <input type="number" className="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages"
                                     id={'fun6_page_' + i} />
                             </div>
                         </div>
                         <div className="col-4">
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Radicación</span>
+                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Radicación</span>
                                 <input type="date" className="form-control" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} name="fun6_dates" />
                             </div>
                         </div>
@@ -259,12 +260,12 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
         let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
         return (
             <div>
-                <legend className="my-2 px-3 text-uppercase Collapsible">
-                    <label className="app-p lead fw-normal text-uppercase" id="fund_1">1 GESTIÓN DOCUMENTAL</label>
+                <legend className="my-2 px-3 Collapsible">
+                    <label className="app-p lead fw-normal" id="fund_1">1 GESTIÓN DOCUMENTAL</label>
                 </legend>
 
-                <legend className="my-2 px-3 text-uppercase">
-                    <label className="app-p lead fw-normal text-uppercase" id="fund_11">1.1 DOCUMENTOS DIGITALIZADOS</label>
+                <legend className="my-2 px-3">
+                    <label className="app-p lead fw-normal" id="fund_11">1.1 DOCUMENTOS DIGITALIZADOS</label>
                 </legend>
                 {currentItem != null ? <>
 
@@ -279,10 +280,10 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         VREdit
                     />
 
-                    <legend className="my-2 px-3 text-uppercase">
+                    <legend className="my-2 px-3">
                         <div className='row my-2'>
                             <div className='col'> 
-                                <label className="app-p lead fw-normal text-uppercase" id="fund_12">1.2 DOCUMENTOS DE VENTANILLA ÚNICA</label>
+                                <label className="app-p lead fw-normal" id="fund_12">1.2 DOCUMENTOS DE VENTANILLA ÚNICA</label>
                             </div>
                             <div className='col text-end'>
                                 <button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
@@ -299,8 +300,8 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     />
 
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead fw-normal text-uppercase" id="fund_2">2. ANEXAR DOCUMENTOS</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead fw-normal" id="fund_2">2. ANEXAR DOCUMENTOS</label>
                         </legend>
                         <p className="app-p">GUÍA PARA ANEXAR DOCUMENTOS</p>
                         <ul>
@@ -313,9 +314,9 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             <div className="col text-end m-3">
 
                                 {attachs > 0
-                                    ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                                    ? <Button type="button" variant="outline" size="sm" className="mx-2" onClick={() => minusAttach()}><Icon name="minus-circle" size={14} /> Remover último</Button>
                                     : ""}
-                                <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
+                                <Button type="button" variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={14} /> Añadir</Button>
                             </div>
                         </div>
 
@@ -332,8 +333,8 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     </fieldset>
 
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fund_3">
-                            <label className="app-p lead fw-normal text-uppercase">3. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
+                        <legend className="my-2 px-3 Collapsible" id="fund_3">
+                            <label className="app-p lead fw-normal">3. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
                         </legend>
                         <FUN_CHECKLIST_N
                             translation={translation}
@@ -346,10 +347,10 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         />
                     </fieldset>
 
-                    <h3 className="text-uppercase text-center py-3" id="fund_4">4. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
+                    <h3 className="text-center py-3" id="fund_4">4. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
 
                     <div id="fund_pdf">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">PDF Formulario Único Nacional</label>}>
+                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">PDF Formulario Único Nacional</label>}>
                             <div className='text-start'>
                                 <FUN_PDF
                                     translation={translation}
@@ -364,7 +365,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     </div>
 
                     <div id="fund_pdf2">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">PDF Lista de Chekeo</label>}>
+                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">PDF Lista de Chekeo</label>}>
                             <div className='text-start'>
                                 <FUN_PDF_CHECK
                                     translation={translation}
@@ -377,7 +378,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         </Collapsible>
                     </div>
                     <div id="fund_212">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">Documento de recordatorio incompleto</label>}>
+                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Documento de recordatorio incompleto</label>}>
                             <div className='text-start'>
                                 <FUN_DOC_CONFIRM_INCOMPLETE
                                     translation={translation}
@@ -393,7 +394,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     {currentItem.state >= 5
                         ? <>
                             <div id="fund_21">
-                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">Documento de Confirmación Legal y Debida Forma</label>}>
+                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Documento de Confirmación Legal y Debida Forma</label>}>
                                     <div className='text-start'>
                                         <FUN_DOC_CONFIRMLEGAL
                                             translation={translation}
@@ -409,7 +410,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             </div>
                             {rules[0] != 1 || conOA() ?
                                 <div id="fund_sign">
-                                    <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">Valla</label>}>
+                                    <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Valla</label>}>
                                         <div className='text-start'>
                                             <FUN_SIGN_PDF
                                                 translation={translation}
@@ -429,7 +430,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
 
                     {_GLOBAL_ID == "cb1" ?
                         <div id="fund_seal">
-                            <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">Sello</label>}>
+                            <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Sello</label>}>
                                 <div className='text-start'>
                                     <FUN_SEAL
                                         translation={translation}
@@ -445,7 +446,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
 
                     {rules[0] != 1 || conOA() ?
                         <div id="fund_22">
-                            <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">DOCUMENTOS DE CITACIÓN A VECINOS</label>}>
+                            <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">DOCUMENTOS DE CITACIÓN A VECINOS</label>}>
                                 <div className='text-start'>
                                     <FUN_ALERT_NEIGHBOUR
                                         translation={translation}
@@ -462,7 +463,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     {currentItem.state >= 5
                         ? <>
                             <div id="fund_doc_control">
-                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">HOJA DE CONTROL DOCUMENTAL</label>}>
+                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">HOJA DE CONTROL DOCUMENTAL</label>}>
                                     <div className='text-start'>
                                         <FUN_D_CONTROL
                                             translation={translation}
@@ -477,7 +478,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             </div>
 
                             <div id="fund_doc_control">
-                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">HOJA DE CONTROL DE INVENTARIO</label>}>
+                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">HOJA DE CONTROL DE INVENTARIO</label>}>
                                     <div className='text-start'>
                                         <FUN_D_CONTROL_2
                                             translation={translation}
@@ -494,7 +495,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         : ""}
 
                     <div id="fund_doc_not_abdicate">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">Notificación Licencia - Renuncia de terminos</label>}>
+                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Notificación Licencia - Renuncia de terminos</label>}>
                             <div className='text-start'>
                                 <FUN_D_ABDICATE
                                     translation={translation}
@@ -508,9 +509,9 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         </Collapsible>
                     </div>
 
-                    <h3 className="text-uppercase text-center py-3" id="fund_5">5. CONTROL DE DOCUMENTACIÓN ESPECIAL </h3>
+                    <h3 className="text-center py-3" id="fund_5">5. CONTROL DE DOCUMENTACIÓN ESPECIAL </h3>
                     <div id="fund_23" >
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">CONTROL DE DOCUMENTO DE RECONOCIMIENTO</label>}>
+                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">CONTROL DE DOCUMENTO DE RECONOCIMIENTO</label>}>
                             <div className='text-start'>
                                 <FUN_REPORT_DATA_EDIT
                                     translation={translation}
@@ -526,7 +527,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     <div id="fund_23" >
                         <Collapsible className='bg-light border border-info'
                             openedClassName='bg-light border border-info'
-                            trigger={<label className="fw-normal text-info text-uppercase">CERTIFICACIONES</label>}>
+                            trigger={<label className="fw-normal text-info">CERTIFICACIONES</label>}>
                             <div className='text-start'>
                                 <FUN_CERTIFICATION
                                     translation={translation}

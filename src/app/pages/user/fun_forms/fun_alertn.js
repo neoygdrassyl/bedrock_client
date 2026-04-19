@@ -355,7 +355,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                             <div className="input-group my-1">
                                 <input type="text" className="form-control" id="alert_id_cub"
                                     defaultValue={_CHILD.id_cub || cubSelected || ""} />
-                                   <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                   <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                             </div>
                         </div>
                     </div>
@@ -510,7 +510,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                 }
 
                 return <React.Fragment key={value.id || value.id_publico || index}> {/* FIX: Added key prop */}
-                    <div className="row border mx-2 py-1 bg-info mt-2">
+                    <div className="row border mx-2 py-1 bg-primary text-primary-foreground mt-2">
                         <div className="col text-center text-white">
                             <label className="fw-bold">{value.id_publico}</label>
                         </div>
@@ -789,10 +789,10 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             <div>
                 {currentItem != null ? <>
                     <FUN6DATALIST />
-                    <h2 className="text-uppercase text-center py-2" id="fund_1">PUBLICIDAD</h2>
+                    <h2 className="text-center py-2" id="fund_1">PUBLICIDAD</h2>
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_alert_1">
-                            <label className="app-p lead fw-normal text-uppercase">1. VALLA O AVISO</label>
+                        <legend className="my-2 px-3 Collapsible" id="fun_alert_1">
+                            <label className="app-p lead fw-normal">1. VALLA O AVISO</label>
                         </legend>
                         <form onSubmit={uploadSign} id="app-form_sign">
                             <div className="row mb-3">
@@ -847,8 +847,8 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                             : ""}
                     </fieldset>
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_alert_2">
-                            <label className="app-p lead fw-normal text-uppercase">2. COMUNICACIÓN A VECINOS</label>
+                        <legend className="my-2 px-3 Collapsible" id="fun_alert_2">
+                            <label className="app-p lead fw-normal">2. COMUNICACIÓN A VECINOS</label>
                         </legend>
                         <FUN_3_G_VIEW
                             _FUN_3={_SET_CHILD_3()}
@@ -865,7 +865,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                     <div className="col-6">
                                         <label >Dirección del Predio</label>
                                         <div className="input-group my-1">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="map-marked-alt" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="alert_3_1" />
@@ -874,7 +874,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                     <div className="col-6">
                                         <label>Dirección de correspondencia</label>
                                         <div className="input-group my-1">
-                                            <span className="input-group-text bg-info text-white">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
                                                 <Icon name="map-marked-alt" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="alert_3_2" />
@@ -889,7 +889,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                             </form>
                             </> : ""}
 
-                        <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_21">2.1 GENERAR DOCUMENTOS DE CITACIÓN</label>
+                        <label className="app-p lead fw-normal my-3" id="fun_alert_21">2.1 GENERAR DOCUMENTOS DE CITACIÓN</label>
                         <FUN_ALERT_NEIGHBOUR
                             translation={translation}
                             swaMsg={swaMsg}
@@ -900,7 +900,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                             setVr={(item) => setVr(item)}
                         />
 
-                        <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>
+                        <label className="app-p lead fw-normal my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>
                         {_CONFIRM_COMPONENT()}
 
                     </fieldset>
@@ -908,8 +908,8 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                     {pqrsxfun.length
                         ? <>
                             <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_alert_2">
-                                    <label className="app-p lead fw-normal text-uppercase">3. PETICIONES RELACIONADAS</label>
+                                <legend className="my-2 px-3 Collapsible" id="fun_alert_2">
+                                    <label className="app-p lead fw-normal">3. PETICIONES RELACIONADAS</label>
                                 </legend>
                                 {_COMPONENT_FUNXPQRS()}
                             </fieldset>
@@ -944,30 +944,30 @@ const NAV_FUNA = () => {
         <div className="btn-navpqrs">
             <div className="rounded-lg border bg-card p-4 container-primary">
                 <div>
-                    <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                    <legend className="px-3 pt-2 bg-light text-center">
                         <h6>Menu de Navegacion</h6>
                     </legend>
                     <br />
                     <a href="#fun_alert_1">
-                        <legend className="px-3 text-uppercase btn-info">
+                        <legend className="px-3 btn-info">
                             <h6>1. VALLA O AVISO</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_2">
-                        <legend className="px-3 text-uppercase btn-info">
+                        <legend className="px-3 btn-info">
                             <h6>2. COMUNICACION A VECINOS</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_21">
-                        <legend className="px-3 text-uppercase btn-info">
+                        <legend className="px-3 btn-info">
                             <h6>2.1 GENERAR DOCUMENTOS DE CITACION</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_22">
-                        <legend className="px-3 text-uppercase btn-info">
+                        <legend className="px-3 btn-info">
                             <h6>2.2 CONFIRMACIÓN DE AVISOS</h6>
                         </legend>
                     </a>

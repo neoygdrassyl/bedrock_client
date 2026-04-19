@@ -31,28 +31,41 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
     const [showDuplicate, setShowDuplicate] = useState(false);
 
     useEffect(() => {
-        retrieveItem(currentId);
-    }, []);
+        let cancelled = false;
+        setLoad(false);
+        setCurrentItem(null);
+        setPqrsxfun(false);
+        retrieveItem(currentId, { isCancelled: () => cancelled });
+        return () => {
+            cancelled = true;
+        };
+    }, [currentId]);
 
-    const retrieveItem = (id) => {
+    const retrieveItem = (id, options = {}) => {
+        const isCancelled = options.isCancelled || (() => false);
         FUN_SERVICE.get(id)
             .then(response => {
+                if (isCancelled()) return;
                 setCurrentItem(response.data);
                 setLoad(true);
-                retrievePQRSxFUN(response.data.id_public);
+                retrievePQRSxFUN(response.data.id_public, { isCancelled });
             })
             .catch(e => {
+                if (isCancelled()) return;
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     };
 
-    const retrievePQRSxFUN = (id_public) => {
+    const retrievePQRSxFUN = (id_public, options = {}) => {
+        const isCancelled = options.isCancelled || (() => false);
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
+                if (isCancelled()) return;
                 setPqrsxfun(response.data);
             })
             .catch(e => {
+                if (isCancelled()) return;
                 console.log(e);
             });
     };
@@ -417,25 +430,25 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 <div className="row">
                     <div className="col-6">
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Barrio o Urbanización
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_261} disabled />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Comuna
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_263} disabled />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Estrato
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_267} disabled />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Manzana No.
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_268} disabled />
@@ -444,25 +457,25 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
 
                     <div className="col-6">
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Vereda
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_262} disabled />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Sector
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_264} disabled />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Corregimiento
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_265} disabled />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Lote No.
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_266} disabled />
@@ -806,7 +819,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 }
             }
             return <>
-                <legend className="my-2 px-3 text-uppercase bg-light" id="fung_c1"><h4 className="mt-2">C.1 IDENTIFICACIÓN DEL ENCARGADO DE LA REVISION</h4></legend>
+                <legend className="my-2 px-3 bg-light" id="fung_c1"><h4 className="mt-2">C.1 IDENTIFICACIÓN DEL ENCARGADO DE LA REVISION</h4></legend>
                 <div className="row">
                     <div className="col-6">
                         <label>Nombre Encargado de Revision</label>
@@ -827,7 +840,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     </div>
                 </div>
 
-                <legend className="my-2 px-3 text-uppercase bg-light" id="fung_c2"><h4 className="mt-2">C.2 CONDICIÓN DE LA RADICACIÓN</h4></legend>
+                <legend className="my-2 px-3 bg-light" id="fung_c2"><h4 className="mt-2">C.2 CONDICIÓN DE LA RADICACIÓN</h4></legend>
                 <div className="row  mb-3">
                     <div className="col-6">
                         <div className="form-check">
@@ -910,12 +923,12 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 {currentItem != null ? <>
                     <h2 className="text-center">RESUMEN DE LA SOLICITUD</h2>
                     <fieldset className="p-3" id="fung_0">
-                        <legend className="my-2 px-3 text-uppercase bg-success">
-                            <label className="app-p lead fw-normal text-uppercase text-light">0. Metadatos de la Solicitud</label>
+                        <legend className="my-2 px-3 bg-success">
+                            <label className="app-p lead fw-normal text-light">0. Metadatos de la Solicitud</label>
                         </legend>
                         {_SET_CHILD_0()}
-                        <legend className="my-2 px-3 text-uppercase bg-light" id="fun_arch">
-                            <label className="app-p lead fw-normal text-uppercase">ARCHIVO</label>
+                        <legend className="my-2 px-3 bg-light" id="fun_arch">
+                            <label className="app-p lead fw-normal">ARCHIVO</label>
                         </legend>
                         <ARCHIVE_FUN_VIEW
                             translation={translation}
@@ -925,20 +938,20 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         />
                     </fieldset>
                     <fieldset className="p-3" id="fung_1">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead fw-normal text-uppercase">1. Identificación de la Solicitud</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead fw-normal">1. Identificación de la Solicitud</label>
                         </legend>
                         {_SET_CHILD_1()}
                     </fieldset>
                     <fieldset className="p-3" id="fung_2">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">2. Información del Predio</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">2. Información del Predio</label>
                         </legend>
                         {_SET_CHILD_2()}
                     </fieldset>
                     <fieldset className="p-3" id="fung_3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead fw-normal text-uppercase">3. Información de Vecinos Colindantes</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead fw-normal">3. Información de Vecinos Colindantes</label>
                         </legend>
                         <FUN_3_G_VIEW
                             _FUN_3={_SET_CHILD_3()}
@@ -946,17 +959,17 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         />
                     </fieldset>
                     <fieldset className="p-3" id="fung_4">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">4. Linderos, Dimensiones y Áreas</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">4. Linderos, Dimensiones y Áreas</label>
                         </legend>
                         {_SET_CHILD_4()}
                     </fieldset>
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
+                    <legend className="my-2 px-3 Collapsible" id="fun_pdf">
                         <label>5 Titulares y profesionales responsables </label>
                     </legend>
                     <fieldset className="p-3" id="fung_51">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">5.1 Titular(es) de la Licencia</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">5.1 Titular(es) de la Licencia</label>
                         </legend>
                         {_SET_CHILD_51()}
                         <div className="border p-2 m-2">
@@ -966,8 +979,8 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         </div>
                     </fieldset>
                     <fieldset className="p-3" id="fung_52">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">5.2 Profesionales Responsables</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">5.2 Profesionales Responsables</label>
                         </legend>
                         {_SET_CHILD_52()}
                         <div className="border p-2 m-2">
@@ -980,15 +993,15 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         </div>
                     </fieldset>
                     <fieldset className="p-3" id="fung_53">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">5.3 Responsable de la Solicitud</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">5.3 Responsable de la Solicitud</label>
                         </legend>
                         {_SET_CHILD_53()}
                     </fieldset>
 
                     <fieldset className="p-3" id="fung_c">
-                        <legend className="my-2 px-3 text-uppercase bg-success text-white">
-                            <label className="app-p lead text-center fw-normal text-uppercase">Lista de Checkeo</label>
+                        <legend className="my-2 px-3 bg-success text-white">
+                            <label className="app-p lead text-center fw-normal">Lista de Checkeo</label>
                         </legend>
                         {_SET_CHILD_C()}
                         <FUN_CHECKLIST_N

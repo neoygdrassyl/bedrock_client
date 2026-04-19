@@ -109,7 +109,7 @@ export const PQRS_ID_CONFIRM = (props) => {
         <div className="text-center">
             <label className="mt-0 center-text"> {infoCud.serials.end}</label>
             <div className="input-group my-1">
-                <span className="input-group-text bg-info text-white">
+                <span className="input-group-text bg-primary text-primary-foreground">
                     <Icon name="hashtag" size={16} />
                 </span>
                 <input type="text" className="form-control" defaultValue={currentItem.id_confirm}

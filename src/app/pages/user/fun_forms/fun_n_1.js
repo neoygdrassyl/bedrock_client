@@ -155,7 +155,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     </label>
                 </div>
                 <div className="input-group my-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otras Actuaciones, ¿Cual?"
@@ -351,7 +351,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     </label>
                 </div>
                 <div className="input-group my-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -512,7 +512,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     </label>
                 </div>
                 <div className="input-group my-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otro clima, ¿Cual?" id="f_102_o"
@@ -760,8 +760,8 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         return (<>
             {_CHILD_0()}
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_1">
-                    <label className="app-p lead fw-normal text-uppercase">1. Identificación de la Solicitud</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_1">
+                    <label className="app-p lead fw-normal">1. Identificación de la Solicitud</label>
                 </legend>
                 <div className="row mb-3">
                     <div className="col-6">

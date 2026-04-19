@@ -294,7 +294,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             }
             return <>
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="func_1"><h4 className="mt-2">1. Identificación de la Solicitud</h4></legend>
+                    <legend className="my-2 px-3 Collapsible" id="func_1"><h4 className="mt-2">1. Identificación de la Solicitud</h4></legend>
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>1.1 Tipo de Solicitud</label>
@@ -356,7 +356,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
 
             return <>
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="func_2"><h4 className="mt-2">2. IDENTIFICACIÓN DEL SOLICITANTE</h4></legend>
+                    <legend className="my-2 px-3 Collapsible" id="func_2"><h4 className="mt-2">2. IDENTIFICACIÓN DEL SOLICITANTE</h4></legend>
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>Nombres</label>
@@ -420,7 +420,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
 
             return <> <input type="hidden" id="f_c0" defaultValue={_CHILD_VARS.item_c0} />
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="func_3"><h4 className="mt-2">3. IDENTIFICACIÓN DEL ENCARGADO DE LA REVISIÓN</h4></legend>
+                    <legend className="my-2 px-3 Collapsible" id="func_3"><h4 className="mt-2">3. IDENTIFICACIÓN DEL ENCARGADO DE LA REVISIÓN</h4></legend>
                     <div className="row">
                         <div className="col-6">
                             <label>Nombre Encargado de Revisión</label>
@@ -442,7 +442,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                 </fieldset>
 
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="func_4"><h4 className="mt-2">4. CONDICIÓN DE LA RADICACIÓN</h4></legend>
+                    <legend className="my-2 px-3 Collapsible" id="func_4"><h4 className="mt-2">4. CONDICIÓN DE LA RADICACIÓN</h4></legend>
                     <div className="row  mb-3">
                         <div className="col-6">
                             <label>Estado de la radicación</label>
@@ -751,8 +751,8 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                     </form>
 
                     <fieldset className="p-3">
-                        <legend className='my-2 px-3 text-uppercase Collapsible' id="func_5">
-                            <label className="app-p lead fw-normal text-uppercase">5. CONTROL DE LYDF</label>
+                        <legend className='my-2 px-3 Collapsible' id="func_5">
+                            <label className="app-p lead fw-normal">5. CONTROL DE LYDF</label>
                         </legend>
 
                         <FUN_C_CLOCKS
@@ -790,7 +790,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                             </div>
                         </Collapsible>
                     </fieldset>
-                    <h3 className="text-uppercase text-center py-3" id="func_6">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</h3>
+                    <h3 className="text-center py-3" id="func_6">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</h3>
                     <FUN_CHECKLIST_N
                         translation={translation}
                         swaMsg={swaMsg}
@@ -800,8 +800,8 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         requestUpdate={requestUpdate}
                     />
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase bg-danger" id="func_pdf">
-                            <label className="app-p lead fw-normal text-uppercase text-light">DESCARGAR PDF</label>
+                        <legend className="my-2 px-3 bg-danger" id="func_pdf">
+                            <label className="app-p lead fw-normal text-light">DESCARGAR PDF</label>
                         </legend>
                         <FUN_PDF_CHECK
                             translation={translation}
@@ -841,48 +841,48 @@ const NAV_FUNC = (state) => {
             <div className="fung_nav">
                 <div className="rounded-lg border bg-card p-4 container-primary">
                     <div>
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegacion</h6>
                         </legend>
                         <br />
                         <a href="#func_1">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>1. Identificacion de la Solicitud</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_2">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>2. IDENTIFICACION DEL SOLICITANTE</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_3">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>3. ENCARGADO DE LA REVISION</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_4">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>4. CONDICION DE LA RADICACION</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_5">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>5. Generar Documento de Confirmacion</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_6">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 btn-info">
                                 <h6>6. LISTA DE CHEQUEO DE DOCUMENTOS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#func_pdf" >
-                            <legend className="px-3 text-uppercase btn-danger">
+                            <legend className="px-3 btn-danger">
                                 <h6>DESCARGAR PDF</h6>
                             </legend>
                         </a>

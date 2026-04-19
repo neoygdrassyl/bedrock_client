@@ -145,7 +145,7 @@ export default function NORMS(props) {
                 <div className='row'>
                     <div className='col-12'>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <span className="flex items-center gap-1"><Icon name="hashtag" size={16} /> <label>Radicación: </label></span>
                             </span>
                             <input type="text" className="form-control" defaultValue={""} id="id_in" required />
@@ -168,7 +168,7 @@ export default function NORMS(props) {
                 <div className='row'>
                     <div className='col-12'>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <span className="flex items-center gap-1"><Icon name="search" size={16} /> <label>Buscar</label></span>
                             </span>
                             <input type="text" className="form-control" defaultValue={""} id="search" />
@@ -252,7 +252,7 @@ export default function NORMS(props) {
                         {/* <div className="col-md-4"></div> */}
                     </div>
 
-                    <h2 className="text-uppercase text-center pb-2">LISTADO DE NORMAS</h2>
+                    <h2 className="text-center pb-2">LISTADO DE NORMAS</h2>
 
                     {TABLE}
                 </div>
@@ -264,7 +264,7 @@ export default function NORMS(props) {
                 ariaHideApp={false}
             >
                 <div className="my-2 d-flex justify-content-between">
-                    <h2 className="text-uppercase text-center">NORMA URBANA: {selectedIdPublic}</h2>
+                    <h2 className="text-center">NORMA URBANA: {selectedIdPublic}</h2>
                     <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
                 </div>
 

@@ -316,7 +316,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
 
         return (
             <div className="expedition_areas my-2">
-                <legend className="my-2 px-3 text-uppercase bg-light" id="nav_expedition_10">
+                <legend className="my-2 px-3 bg-light" id="nav_expedition_10">
                     <label className="app-p lead fw-normal">Áreas Y Unidades</label>
                 </legend>
                 {currentRecordArc ?

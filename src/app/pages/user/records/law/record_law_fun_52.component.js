@@ -212,13 +212,13 @@ export default function RECORD_LAW_FUN_52(props) {
         };
         original_f52 = [...original_f52].sort((a, b) => fl[a.role] - fl[b.role]);
         return <>
-            <div className='row  border bg-info text-light text-center fwb-bold py-1 '>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1 '>
                 <div className='col'>
                     <label>5.2. PROFESIONALES RESPONSABLES:</label>
                 </div>
             </div>
 
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>DATOS FORMULARIO</label>
                 </div>
@@ -458,8 +458,8 @@ export default function RECORD_LAW_FUN_52(props) {
 
         return <>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_52">
-                    <label className="app-p lead text-center fw-normal text-uppercase">5.2 Profesionales Responsables</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_52">
+                    <label className="app-p lead text-center fw-normal">5.2 Profesionales Responsables</label>
                 </legend>
 
                 {_COMPY_COMPONENT('')}
@@ -468,7 +468,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.1 Nombre</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5211" defaultValue={item.name} />
@@ -477,7 +477,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.1 Apellido(s)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5212" defaultValue={item.surname} />
@@ -489,7 +489,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.2 Cédula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_522" defaultValue={item.id_number}
@@ -499,7 +499,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.3 Correo Electrónico</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_523" defaultValue={item.email} />
@@ -511,7 +511,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-12">
                         <label>5.2.5 Rol que Desempeña (Puede seleccionar multiples usando la tecla ctrl)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-graduate" size={16} />
                             </span>
                             <select className="form-select" id="f_525" defaultValue={item.role}>
@@ -534,7 +534,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.4 Teléfono de Contacto</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="phone-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_524" defaultValue={item.number} />
@@ -543,7 +543,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.6 No. Matrícula Profesional</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-contract" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_526" defaultValue={item.registration} />
@@ -555,7 +555,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.7 Fecha expedición Matrícula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id="f_527" defaultValue={item.registration_date}
@@ -565,7 +565,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.8 ¿Sancionado?</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="f_5210" defaultValue={item.sanction}>
@@ -580,11 +580,11 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.9 Tiempo de Experiencia (Años y meses)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Años:
                             </span>
                             <input type="number" step="1" min="0" id="f_529" placeholder="Años" className="form-control" defaultValue={experience_y} />
-                            <span className="input-group-text bg-info text-white ms-1">
+                            <span className="input-group-text bg-primary text-primary-foreground ms-1">
                                 Meses:
                             </span>
                             <input type="number" step="1" min="0" id="f_529m" placeholder="Meses" className="form-control" defaultValue={experience_months_left} />
@@ -593,7 +593,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.10 Supervisión técnica</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="eye" size={16} />
                             </span>
                             <select className="form-select" id="f_528" defaultValue={item.supervision}>
@@ -612,7 +612,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.11.1 Hoja de Vida</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_114" defaultValue={docs[3]}>
@@ -625,7 +625,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.11.2 Relacionar Documento: Documento de Identidad</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_111" defaultValue={docs[0]}>
@@ -638,7 +638,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.11.3 Relacionar Documento: Matricula</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_112" defaultValue={docs[1]}>
@@ -651,7 +651,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.11.4 Relacionar Documento: Vigencia Matricular</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_113" defaultValue={docs[2]}>
@@ -664,7 +664,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <div className="col-6">
                         <label>5.2.11.5 Relacionar Documento: Estudios de postgrado</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_115" defaultValue={docs[4]}>
@@ -677,7 +677,7 @@ export default function RECORD_LAW_FUN_52(props) {
                      <div className="col-6">
                         <label>5.2.11.6 Relacionar Documento: Certificados</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_116" defaultValue={docs[5]}>

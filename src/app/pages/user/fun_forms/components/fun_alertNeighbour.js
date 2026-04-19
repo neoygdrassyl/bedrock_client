@@ -214,7 +214,7 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                         <div className="input-group">
                             <input type="text" className="form-control" id="gen_alert_address"
                                 defaultValue={_CHILD_2.item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("gen_alert_address", _CHILD_2)}>DIRECCIÓN COMPLETA</button>
+                            <button className='inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors' type='button' onClick={() => _ADDRESS_SET_FULL("gen_alert_address", _CHILD_2)}>DIRECCIÓN COMPLETA</button>
                         </div>
                     </div>
                     <div className="col-6">

@@ -318,7 +318,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                     </label>
                 </div>
                 <div className="input-group my-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otras Actuaciones, ¿Cual?"
@@ -511,7 +511,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                     </label>
                 </div>
                 <div className="input-group my-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -658,7 +658,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                     </label>
                 </div>
                 <div className="input-group my-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                         <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otro clima, ¿Cual?" id="f_102_o"

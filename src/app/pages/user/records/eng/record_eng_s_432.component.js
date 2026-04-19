@@ -560,7 +560,7 @@ function RECORD_ENG_STEP_432(props) {
         }
         let COMPONENT_ELEMENTS = () => {
             return <>
-                <div className="row text-center bg-info text-white mt-3">
+                <div className="row text-center bg-primary text-primary-foreground mt-3">
                     <div className="col-4 border border-dark ">
                         <label className="fw-bold">ELEMENTOS</label>
                     </div>
@@ -654,7 +654,7 @@ function RECORD_ENG_STEP_432(props) {
         }
         let COMPONENT_LOADOUTS = () => {
             return <>
-                <div className="row border-dark border bg-info text-center text-white">
+                <div className="row border-dark border bg-primary text-primary-foreground text-center">
                     <label className="fw-bold my-2">ANÁLISIS DE CARGAS</label>
                 </div>
                 <div className="row">
@@ -1271,13 +1271,13 @@ function RECORD_ENG_STEP_432(props) {
         return (
             <div className="record_eng_desc container">
 
-                <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_432">
-                    <label className="app-p lead fw-normal text-uppercase">4.3.2 MEMORIAS DE CALCULO</label>
+                <legend className="my-2 px-3 bg-light" id="record_eng_432">
+                    <label className="app-p lead fw-normal">4.3.2 MEMORIAS DE CALCULO</label>
                 </legend>
                 {SUBCATEGORIES[2] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 1: Pre dimensionamiento y coordinación con otros profesionales.</label>
+                    <label className="app-p fw-bold my-2">Paso 1: Pre dimensionamiento y coordinación con otros profesionales.</label>
                     {COMPONENT_01()}
-                    <label className="app-p fw-bold text-uppercase my-2">PREDIMENSIONAMIENTO</label>
+                    <label className="app-p fw-bold my-2">PREDIMENSIONAMIENTO</label>
                     {COMPONENT_PREDIMENTIONAL()}
                     {COMPONENT_ELEMENTS()}
                 </> : ""}
@@ -1285,7 +1285,7 @@ function RECORD_ENG_STEP_432(props) {
                 <hr />
 
                 {SUBCATEGORIES[3] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 2: Evaluación de las solicitudes definitivas: Se revisan las cargas presentadas en la edificacion debido a los pesos propios de la estructura y los tipos de uso de la misma, con los requisitos del Título B del reglamento.</label>
+                    <label className="app-p fw-bold my-2">Paso 2: Evaluación de las solicitudes definitivas: Se revisan las cargas presentadas en la edificacion debido a los pesos propios de la estructura y los tipos de uso de la misma, con los requisitos del Título B del reglamento.</label>
                     {COMPONENT_LOADOUTS()}
                 </> : ""}
 

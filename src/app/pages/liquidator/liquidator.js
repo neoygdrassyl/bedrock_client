@@ -368,36 +368,36 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
       <table className="table table-bordered table-sm table-hover text-start">
         <tbody>
           <tr className="bg-light text-center">
-            <td><h4 className="text-justify fw-normal text-uppercase"></h4></td>
-            <td><h4 className="text-justify fw-normal text-uppercase">$</h4></td>
-            <td><h4 className="text-justify fw-normal text-uppercase">{values[version].units}</h4></td>
-            <td><h4 className="text-justify fw-normal text-uppercase">Excepción</h4></td>
+            <td><h4 className="text-justify fw-normal"></h4></td>
+            <td><h4 className="text-justify fw-normal">$</h4></td>
+            <td><h4 className="text-justify fw-normal">{values[version].units}</h4></td>
+            <td><h4 className="text-justify fw-normal">Excepción</h4></td>
           </tr>
           <tr>
             <td><h4 className="text-justify fw-bold">
               {version == '2021' ? 'SMMLV' :
                 version >= '2022' ? 'UVT' : ''}</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">{getExpenses_m(1)}</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">{getExpenses_m(1)}</h4></td>
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">
               {version == '2021' ? '%100' :
                 version >= '2022' ? '1' : ''}</h4></td>
-            <td className="bg-light text-center" ><h4 className="text-justify fw-normal text-uppercase"></h4></td>
+            <td className="bg-light text-center" ><h4 className="text-justify fw-normal"></h4></td>
           </tr>
           <tr>
             <td><h4 className="text-justify fw-bold">Cargo fijo “Cf”</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">{getExpenses_m(version == '2021' ? 0.4 : version >= '2022' ? 10.01 : 0)}</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">{getExpenses_m(version == '2021' ? 0.4 : version >= '2022' ? 10.01 : 0)}</h4></td>
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">
               {version == '2021' ? '%40' :
                 version >= '2022' ? '10.01' : ''}</h4></td>
-            <td className="bg-light text-center" ><h4 className="text-justify fw-normal text-uppercase">50% Sólo Adecuación</h4></td>
+            <td className="bg-light text-center" ><h4 className="text-justify fw-normal">50% Sólo Adecuación</h4></td>
           </tr>
           <tr>
             <td><h4 className="text-justify fw-bold">Cargo variable “Cv”</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">{getExpenses_m(version == '2021' ? 0.8 : version >= '2022' ? 20.02 : 0)}</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">{getExpenses_m(version == '2021' ? 0.8 : version >= '2022' ? 20.02 : 0)}</h4></td>
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">
               {version == '2021' ? '%80' :
                 version >= '2022' ? '20.02' : ''}</h4></td>
-            <td className="bg-light text-center" ><h4 className="text-justify fw-normal text-uppercase"></h4></td>
+            <td className="bg-light text-center" ><h4 className="text-justify fw-normal"></h4></td>
           </tr>
         </tbody>
       </table>
@@ -555,19 +555,19 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb mb-0 p-0 ms-0">
               <li className="breadcrumb-item">
-                <Link to={'/home'}><Icon name="home" size={16} /> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                <Link to={'/home'}><Icon name="home" size={16} /> <label className="">{breadCrums.bc_01}</label></Link>
               </li>
               <li className="breadcrumb-item">
-                <Link to={'/dashboard'}><Icon name="bookmark" size={16} /> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                <Link to={'/dashboard'}><Icon name="bookmark" size={16} /> <label className="">{breadCrums.bc_u1}</label></Link>
               </li>
-              <li className="breadcrumb-item active"><Icon name="calculator" size={16} />  <label className="text-uppercase">{breadCrums.bc_u11}</label></li>
+              <li className="breadcrumb-item active"><Icon name="calculator" size={16} />  <label className="">{breadCrums.bc_u11}</label></li>
             </ol>
           </nav>
         </div>
 
         <div className="row py-4 d-flex justify-content-center">
           <div className="col-lg-10">
-            <h2 class="text-uppercase text-center pb-2" id='title'>{translation.title} {<Button_navigation Iddown={'title2'} Idup={null} />}</h2>
+            <h2 class="text-center pb-2" id='title'>{translation.title} {<Button_navigation Iddown={'title2'} Idup={null} />}</h2>
             <hr />
             {useSelector
               ? <div class="form-group my-2 col-4">
@@ -590,7 +590,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
               {_note_1}
             </div>}
 
-            <div className='row border border-dark bg-info py-2 text-center text-light app-p'>
+            <div className='row border border-dark bg-primary text-primary-foreground py-2 text-center app-p'>
               <div className='col' id='title3'> MODELO N°1: LICENCIAS QUE AUTORIZAN OBRAS {<Button_navigation Iddown={'title4'} Idup={'title2'} />}</div>
             </div>
             <div className="card bg-card my-3">
@@ -602,7 +602,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                     <form onSubmit={handleSubmit} id="app-form">
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white">
+                        <span class="input-group-text bg-primary text-primary-foreground">
                           <i class="fas fa-home"></i>
                         </span>
                         <select class="form-select" id="project-liquidator" required onChange={e => setType(e.target.value)}>
@@ -617,7 +617,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                       </div>
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white" >
+                        <span class="input-group-text bg-primary text-primary-foreground" >
                           <i class="fas fa-tasks"></i>
                         </span>
                         <select class="form-select" id="select_type" required >
@@ -638,7 +638,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                       </div>
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white" >
+                        <span class="input-group-text bg-primary text-primary-foreground" >
                           <i class="fas fa-home"></i>
                         </span>
                         <select class="form-select" id="use-liquidator" required
@@ -650,7 +650,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                       </div>
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white">
+                        <span class="input-group-text bg-primary text-primary-foreground">
                           <i class="fas fa-home"></i>
                         </span>
                         <select class="form-select" id="social-liquidator" required>
@@ -662,7 +662,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                       </div>
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white" >
+                        <span class="input-group-text bg-primary text-primary-foreground" >
                           <i class="fas fa-dollar-sign"></i>
                         </span>
                         <select class="form-select" id="strata-liquidator" required>
@@ -678,7 +678,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white">
+                        <span class="input-group-text bg-primary text-primary-foreground">
                           <i class="fas fa-cube"></i>
                         </span>
                         <input type="number" class="form-control" placeholder={translation.form_area} id="area-liquidator" min="0.01" step="0.01" />
@@ -727,7 +727,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                 </div>
               </div>
             </div>
-            <h2 class="text-uppercase text-center my-3" id='title4'>Tabla de Liquidacion  {<Button_navigation Iddown={'title5'} Idup={'title3'} />}</h2>
+            <h2 class="text-center my-3" id='title4'>Tabla de Liquidacion  {<Button_navigation Iddown={'title5'} Idup={'title3'} />}</h2>
             {table.length > 0
               ? <>
                 {_TABLE_INFO()}
@@ -753,7 +753,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
             </div>}
 
-            <div className='row border border-dark bg-info py-2 text-center text-light app-p my-3'>
+            <div className='row border border-dark bg-primary text-primary-foreground py-2 text-center app-p my-3'>
               <div className='col' id='title5'>MODELO N° 2 LICENCIAS QUE NO AUTORIZA OBRAS  {<Button_navigation Iddown={null} Idup={'title4'} />}</div>
             </div>
 
@@ -764,27 +764,27 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
               <tbody>
                 {model2Table.map(value => {
                   if (value.list) return <><tr className="bg-warning">
-                    <td colSpan="2"><h4 className="text-justify fw-normal text-uppercase" >{value.title}</h4></td>
+                    <td colSpan="2"><h4 className="text-justify fw-normal" >{value.title}</h4></td>
                     {console.log(value.Ids == undefined ? 'Id_1' : value.Ids)}
-                    <td><h4 className="text-justify fw-normal text-uppercase">Expensas</h4></td>
-                    <td><h4 className="text-justify fw-normal text-uppercase">IVA</h4></td>
-                    <td><h4 className="text-justify fw-normal text-uppercase">Total</h4></td>
+                    <td><h4 className="text-justify fw-normal">Expensas</h4></td>
+                    <td><h4 className="text-justify fw-normal">IVA</h4></td>
+                    <td><h4 className="text-justify fw-normal">Total</h4></td>
                   </tr>
                     {value.list.map(valuel => {
                       if (valuel.const[version]) return <tr>
                         <td><h4 className="text-justify fw-normal">{valuel.name}</h4></td>
-                        <td><h4 className="text-justify fw-normal text-uppercase">
+                        <td><h4 className="text-justify fw-normal">
                           {valuel.const[version][1]
                             ? `(${valuel.const[version][2]}) ${valuel.const[version][1]}`
                             : `(${valuel.const[version][0]}) ${values[version].units} `
                           }</h4></td>
-                        <td className='bg-info text-light'><h4 className="text-justify fw-normal text-uppercase">$ {getExpenses_m(valuel.const[version][0])}</h4></td>
-                        <td className='bg-info text-light'><h4 className="text-justify fw-normal text-uppercase">$ {getIva_m(valuel.const[version][0])}</h4></td>
-                        <td className='bg-info text-light'><h4 className="text-justify fw-normal text-uppercase">$ {getTotal_m(valuel.const[version][0])}</h4></td>
+                        <td className='bg-primary text-primary-foreground'><h4 className="text-justify fw-normal">$ {getExpenses_m(valuel.const[version][0])}</h4></td>
+                        <td className='bg-primary text-primary-foreground'><h4 className="text-justify fw-normal">$ {getIva_m(valuel.const[version][0])}</h4></td>
+                        <td className='bg-primary text-primary-foreground'><h4 className="text-justify fw-normal">$ {getTotal_m(valuel.const[version][0])}</h4></td>
                       </tr>
                     })} </>
                   else return <tr className="bg-light">
-                    <td colSpan="5"><h4 className="text-justify fw-normal text-uppercase">{value.title}</h4></td>
+                    <td colSpan="5"><h4 className="text-justify fw-normal">{value.title}</h4></td>
                   </tr>
                 })}
 

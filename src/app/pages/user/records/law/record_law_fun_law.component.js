@@ -123,13 +123,13 @@ export default function RECORD_LAW_FUN_LAW(props) {
     let COMPONENT = () => {
         let values = _GET_STEP_TYPE('flaw', 'check');
         return <>
-            <div className='row  border border-dark bg-info text-light text-center fwb-bold py-2'>
+            <div className='row  border border-dark bg-primary text-primary-foreground text-center fwb-bold py-2'>
                 <div className='col'>
                     <label>Valla informativa</label>
                 </div>
             </div>
 
-            <div className='row  border border-dark bg-info text-light text-center fwb-bold py-2'>
+            <div className='row  border border-dark bg-primary text-primary-foreground text-center fwb-bold py-2'>
                 <div className='col'>
                     <label>DATOS FORMULARIO</label>
                 </div>
@@ -226,7 +226,7 @@ export default function RECORD_LAW_FUN_LAW(props) {
     let _COMPOENTN_DETAIL = () => {
         let values = _GET_STEP_TYPE('flaw', 'value');
         return <>
-            <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+            <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                 <div className='col'>
                     <label>OBSERVACIONES ACCIONES DE PUBLICIDAD DE PROCESO</label>
                 </div>
@@ -350,7 +350,7 @@ export default function RECORD_LAW_FUN_LAW(props) {
     return (
         <div>
             {COMPONENT()}
-            <div className='row  border border-dark bg-info text-light text-center fwb-bold py-2'>
+            <div className='row  border border-dark bg-primary text-primary-foreground text-center fwb-bold py-2'>
                 <div className='col'>
                     <label>Vecinos colindantes</label>
                 </div>

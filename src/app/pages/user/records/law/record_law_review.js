@@ -219,7 +219,7 @@ function RECORD_LAW_EVALUATION(props) {
             let _CHILD = _GET_CHILD_REVIEW();
 
             return <>
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>OBSERVACIONES FINALES ADICIONALES</label>
                     </div>
@@ -248,7 +248,7 @@ function RECORD_LAW_EVALUATION(props) {
 
             if (_RESUME) _RESUME = _RESUME.join('\n\n')
             return <>
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>OBSERVACIONES TOTALES</label>
                     </div>
@@ -284,7 +284,7 @@ function RECORD_LAW_EVALUATION(props) {
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 2.2 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
                 </div> : ''}
-                <div className="row border bg-info py-1 text-white fw-bold">
+                <div className="row border bg-primary text-primary-foreground py-1 fw-bold">
                     <div className="col">
                         <label>REVISION</label>
                     </div>

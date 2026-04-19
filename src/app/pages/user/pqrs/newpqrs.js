@@ -48,19 +48,19 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
             var _COMPONENT = [];
             for (var i = 0; i < solicitors; i++) {
                 _COMPONENT.push(<div className="row">
-                    <label className="app-p lead text-start fw-normal text-uppercase">SOLICITANTE N° {i + 1}</label>
+                    <label className="app-p lead text-start fw-normal">SOLICITANTE N° {i + 1}</label>
 
                     <div className="col-lg-6 col-md-6">
                         <label className="m-0">Nombre:</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Nombre Completo" name="pqrs_sol_1" />
                         </div>
                         <label className="m-0">Tipo de persona:</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <select className="form-select" name="pqrs_sol_2">
@@ -74,7 +74,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                     <div className="col-lg-6 col-md-6">
                         <label className='m-0'>Tipo de documento: </label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
                             <select className="form-select" name="pqrs_sol_4">
@@ -89,7 +89,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className='m-0'>Número de documento: </label>
                         <div className="input-group my-1">
 
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Numero de Documento" name="pqrs_sol_3" />
@@ -104,23 +104,23 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
             var _COMPONENT = [];
             for (var i = 0; i < contacts; i++) {
                 _COMPONENT.push(<div className="row">
-                    <label className="app-p lead text-start fw-normal text-uppercase">DATOS PARA NOTIFICACIÓN N° {i + 1}</label>
+                    <label className="app-p lead text-start fw-normal">DATOS PARA NOTIFICACIÓN N° {i + 1}</label>
                     <div className="col-lg-6 col-md-6">
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-signs" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Direccion Fisica" name="pqrs_con_1" />
                         </div>
 
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Barrio" name="pqrs_con_2" />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="phone-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Numero de Contacto" name="pqrs_con_3" />
@@ -132,20 +132,20 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                     </div>
                     <div className="col-lg-6 col-md-6">
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="globe-americas" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Departamento" name="pqrs_con_4" />
                         </div>
 
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="globe-americas" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Municipio" name="pqrs_con_5" />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Correo Electronico" name="pqrs_con_6" />
@@ -161,13 +161,13 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
             for (var i = 0; i < attachs; i++) {
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="text" className="form-control" name="files_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
@@ -418,7 +418,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
             <div>
                 <form onSubmit={generatePQRS} id="app-formNew" enctype="multipart/form-data">
                     <div className="row my-4 d-flex justify-content-center">
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.1 IDENTIFICACIÓN DEL PETICIONARIO</label>
+                        <label className="app-p lead text-start fw-bold">1.1 IDENTIFICACIÓN DEL PETICIONARIO</label>
                         <div className="text-end m-3">
 
                             {(solicitors && contacts)  > 1
@@ -430,7 +430,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         {_SOLICITORS_COMPONENT()}
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACIÓN</label>
+                        <label className="app-p lead text-start fw-bold">1.2 DATOS PARA NOTIFICACIÓN</label>
                         <div className="text-end m-3">
                             {/* {contacts > 1
                                 ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusContact()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
@@ -440,7 +440,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         {_CONTACTS_COMPONENT()}
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.3 CASOS DE ACTUACIONES Y LICENCIAS</label>
+                        <label className="app-p lead text-start fw-bold">1.3 CASOS DE ACTUACIONES Y LICENCIAS</label>
                         <div className="form-check my-3 px-5">
                             <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => toggleLicense()} />
                             <p className="form-check-label text-start" >¿Esta es una solicitud relacionada con una actuación urbanistica o licencia?</p>
@@ -449,13 +449,13 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             ? <div className="row">
                                 <div className="col-lg-6 col-md-6">
                                     <div className="input-group my-1">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="map-signs" size={16} />
                                         </span>
                                         <input type="text" className="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1" />
                                     </div>
                                     <div className="input-group my-1">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="map-marked-alt" size={16} />
                                         </span>
                                         <input type="text" className="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2" />
@@ -465,7 +465,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
 
                                 <div className="col-lg-6 col-md-6">
                                     <div className="input-group my-1">
-                                        <span className="input-group-text bg-info text-white">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
                                             <Icon name="user" size={16} />
                                         </span>
                                         <select className="form-select" id="pqrs_fun_3">
@@ -481,13 +481,13 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             : ""}
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.4 DESCRIPCIÓN DE LA SOLICITUD</label>
+                        <label className="app-p lead text-start fw-bold">1.4 DESCRIPCIÓN DE LA SOLICITUD</label>
 
                         <div className="row">
                             <div className="col-lg-6 col-md-6">
                                 <label>Número de registro Ventanilla Única</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="hashtag" size={16} />
                                     </span>
                                     <input type="text" className="form-control" id="pqrs_mas_6" />
@@ -496,7 +496,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <div className="col-lg-6 col-md-6">
                                 <label>Número de registro de caso(histórico año 2021)</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="hashtag" size={16} />
                                     </span>
                                     <input type="text" className="form-control" id="pqrs_mas_1" />
@@ -511,7 +511,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <div className="col-lg-6 col-md-6">
                                 <label>Clasificación de la Petición</label>
                                 <div className="input-group mb-3">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="check-square" size={16} />
                                     </span>
                                     <input list="browsers" id="pqrs_mas_2" className="form-control" onChange={() => _SET_REPLY_TIME()}
@@ -533,7 +533,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <div className="col-lg-6 col-md-6">
                                 <label>Canal de radicación original</label>
                                 <div className="input-group mb-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="check-square" size={16} />
                                     </span>
                                     <select className="form-select" id="pqrs_mas_3">
@@ -545,7 +545,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <div className="col-lg-6 col-md-6">
                                 <label>Palabras Clave (Separadas por coma)</label>
                                 <div className="input-group mb-3">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="font" size={16} />
                                     </span>
                                     <input type="text" className="form-control" maxLength="200" id="pqrs_mas_5" />
@@ -558,7 +558,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <div className="col-lg-6 col-md-6">
                                 <label> Fecha de radicación</label>
                                 <div className="input-group mb-3">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_time_1" required
@@ -570,7 +570,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <div className="col-lg-6 col-md-6">
                                 <label>Fecha inicio de términos</label>
                                 <div className="input-group mb-3">
-                                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                                    <span className="input-group-text bg-primary text-primary-foreground" id="type-pqrs">
                                         <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_time_2" disabled required />
@@ -582,7 +582,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <div className="col-lg-6 col-md-6">
                                 <label>Termino legal de respuesta </label>
                                 <div className="input-group mb-3">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="number" step="1" min="1" className="form-control"
@@ -599,7 +599,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         </div>
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.5 DOCUMENTOS ANEXOS</label>
+                        <label className="app-p lead text-start fw-bold">1.5 DOCUMENTOS ANEXOS</label>
                         <div className="text-end m-3">
                             {attachs > 0
                                 ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
@@ -608,11 +608,11 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         </div>
                         {_ATTACHS_COMPONENT()}
                         <hr className="my-3" />
-                        <label className="app-p lead text-start fw-bold text-uppercase m-3">1.6 INFORMACIÓN DEL PROFESIONAL</label>
+                        <label className="app-p lead text-start fw-bold m-3">1.6 INFORMACIÓN DEL PROFESIONAL</label>
                         <div className="col-lg-6 col-md-6">
                             <input type="text" className="form-control" placeholder="Profesional que Generar esta Solicitud" disabled />
                             <div className="input-group mb-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={window.user.name + " " + window.user.surname} id="pqrs_mas_worker_creator" disabled />
@@ -621,7 +621,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <div className="col-lg-6 col-md-6">
                             <input type="text" className="form-control" placeholder="Fecha en la cual se genera esta Solicitud" disabled />
                             <div className="input-group mb-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" className="form-control" defaultValue={dayjs().format('YYYY-MM-DD')} disabled />

@@ -199,7 +199,7 @@ export default function EXP_LIC(props) {
     }
     return (
         <div>
-            <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="nav_expedition_4">
+            <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_4">
                 <label className="app-p lead fw-normal">CERRAR SOLICITUD</label>
             </legend>
             {_GET_CLOCK_STATE(99).date_start

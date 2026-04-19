@@ -253,7 +253,7 @@ export default function NORM_ELEMENT(props) {
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
                 <div className='border p-2'>
-                    <h4 className="text-uppercase pb-2">ELEMENTOS: {perfil.perfil}</h4>
+                    <h4 className="pb-2">ELEMENTOS: {perfil.perfil}</h4>
                     {NEW_ITEM}
                     {TABLE}
                     {EDIT_ITEM}

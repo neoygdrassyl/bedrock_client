@@ -5,35 +5,11 @@ import { LegacyModal as Modal } from '@/components/legacy-modal';
 import ListJson from '../../../../components/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 
 function DOCS_LIST({ idRef, text, setValues }) {
         const [modalSearchList, setModalSearchList] = useState(false);
-        const customStylesForModal = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                zIndex: 1050,
-            },
-            content: {
-                position: 'absolute',
-                top: '15%',
-                left: 'var(--fun-sidebar-width)',
-                right: '30%',
-                bottom: '15%',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                marginRight: 'auto',
-
-            }
-        };
+        const customStylesForModal = {};
         let _GET_DOCS_DATA = () => {
             let data = [];
             for (var item in ListJson) {
@@ -75,16 +51,23 @@ function DOCS_LIST({ idRef, text, setValues }) {
         }
         return (
             <div>
-                <button type="button" className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><Icon name="th-list" size={16} /> {text}</button>
+                <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" id={idRef} onClick={(e) => toggle(e.target.id)}><Icon name="th-list" size={16} /> {text}</button>
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modalSearchList}
                     style={customStylesForModal}
                     ariaHideApp={false}
                 >
 
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="th-list" size={16} /> CODIGOS TIPOLOGIA DOCUMENTAL</label>
-                        <button type="button" className="btn-close" onClick={toggle} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="th-list" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Códigos tipología documental</h2>
+                        </div>
+                        <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     <DataTable
                         striped
@@ -97,8 +80,8 @@ function DOCS_LIST({ idRef, text, setValues }) {
                         highlightOnHover
                         noDataComponent="No hay datos"
                     />
-                    <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><Icon name="times-circle" size={16} /> CERRAR</button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => setModalSearchList(false)}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 

@@ -120,20 +120,20 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
             _COMPONENT.push(<div className="row">
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="map-signs" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Direccion Fisica" id={"pqrs_con_edit_1" + _edit} />
                     </div>
 
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="map-marked-alt" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Barrio" id={"pqrs_con_edit_2" + _edit} />
                     </div>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="phone-alt" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Numero de Contacto" id={"pqrs_con_edit_3" + _edit} />
@@ -145,20 +145,20 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                 </div>
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="globe-americas" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Departamenteo" id={"pqrs_con_edit_4" + _edit} />
                     </div>
 
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="globe-americas" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Municipio" id={"pqrs_con_edit_5" + _edit} />
                     </div>
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="envelope" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Correo Electronico" id={"pqrs_con_edit_6" + _edit} />
@@ -171,7 +171,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                             <div className="col-6">
                                 <label>¿se confirmó recepción de la solicitud?</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="comment-dots" size={16} />
                                     </span>
                                     <select className="form-select" id="pqrs_con_edit_101">
@@ -185,7 +185,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                             <div className="col-6">
                                 <label>Fecha de evento</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_con_edit_102" />
@@ -201,7 +201,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                             <div className="col-6">
                                 <label>¿Fue posible notificar extesion?</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="comment-dots" size={16} />
                                     </span>
                                     <select className="form-select" id="pqrs_con_edit_8">
@@ -215,7 +215,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                             <div className="col-6">
                                 <label>Fecha de evento</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_con_edit_9" />
@@ -230,7 +230,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                             <div className="col-6">
                                 <label>Se confirmó el oficio de respuesta?</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="comment-dots" size={16} />
                                     </span>
                                     <select className="form-select" id="pqrs_con_edit_111">
@@ -244,7 +244,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                             <div className="col-6">
                                 <label>Fecha de evento</label>
                                 <div className="input-group my-1">
-                                    <span className="input-group-text bg-info text-white">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
                                         <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_con_edit_112" />

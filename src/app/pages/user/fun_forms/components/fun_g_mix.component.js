@@ -124,20 +124,20 @@ function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }
         return (
             <div className="fun_g_mix">
                 <fieldset className="p-3" id="fung_mix">
-                    <legend className="my-2 px-3 text-uppercase Collapsible text-white">
-                        <label className="app-p lead text-center fw-normal text-uppercase">8. DATOS VARIOS</label>
+                    <legend className="my-2 px-3 Collapsible text-white">
+                        <label className="app-p lead text-center fw-normal">8. DATOS VARIOS</label>
                     </legend>
 
-                    <legend className="my-2 px-3 text-uppercase bg-light" id="fung_mix_sign">
-                        <label className="app-p lead text-center fw-normal text-uppercase">8.1 PUBLICIDAD</label>
+                    <legend className="my-2 px-3 bg-light" id="fung_mix_sign">
+                        <label className="app-p lead text-center fw-normal">8.1 PUBLICIDAD</label>
                     </legend>
                     {rules[0] != 1 ?
                         _COMPONENT_SIGN()
                         : <label className="fw-bold text-danger">NO APLICA</label>
                     }
 
-                    <legend className="my-2 px-3 text-uppercase bg-light" id="fung_mix_report">
-                        <label className="app-p lead text-center fw-normal text-uppercase">8.2 REPORTE DE PLANEACION</label>
+                    <legend className="my-2 px-3 bg-light" id="fung_mix_report">
+                        <label className="app-p lead text-center fw-normal">8.2 REPORTE DE PLANEACION</label>
                     </legend>
                     {_SET_CHILD_1().item_1.includes('F')
                         ? <>

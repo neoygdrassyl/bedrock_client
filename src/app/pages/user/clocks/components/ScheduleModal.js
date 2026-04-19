@@ -286,7 +286,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
               <div className="col-md-4">
                  <div className={`card text-center py-2 ${scheduledCount > 0 ? 'border-success bg-success-subtle' : 'bg-light'}`}>
                     <h3 className="m-0 fw-bold">{scheduledCount}</h3>
-                    <small className="text-muted text-uppercase">Tiempos Programados</small>
+                    <small className="text-muted">Tiempos Programados</small>
                  </div>
               </div>
           </div>

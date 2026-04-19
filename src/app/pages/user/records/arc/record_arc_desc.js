@@ -67,7 +67,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
             let values = _GET_STEP_TYPE('s33', 'value');
             return <>
                 <div className="row">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Antecedentes del proyecto</label>
                         </div>
@@ -79,7 +79,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
                 </div>
 
                 <div className="row">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Descripción del proyecto radicado</label>
                         </div>
@@ -88,7 +88,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
                 </div>
 
                 <div className="row">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Descripción del proyecto Arquitectónica</label>
                         </div>

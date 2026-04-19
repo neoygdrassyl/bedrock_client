@@ -640,7 +640,7 @@ const restoreDocs = useCallback(() => {
                             >
                                 <table className="table table-sm table-hover table-bordered align-middle mb-0">
                                 <thead
-                                    className="bg-light text-uppercase small"
+                                    className="bg-light small"
                                     style={{ position: "sticky", top: 0, zIndex: 1 }}
                                 >
                                     <tr>
@@ -925,7 +925,7 @@ const restoreDocs = useCallback(() => {
                                 >
                                 <table className="table table-sm table-hover table-bordered align-middle mb-0">
                                     <thead
-                                    className="bg-light text-uppercase small"
+                                    className="bg-light small"
                                     style={{ position: "sticky", top: 0, zIndex: 1 }}
                                     >
                                     <tr>

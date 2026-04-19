@@ -112,7 +112,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label >2.2 No. Matrícula Inmobiliaria</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_22"
@@ -122,7 +122,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label>2.3.1 Identificación Catastral (Viejo)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="No. Catastral" id="f_23"
@@ -130,7 +130,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         </div>
                         <label>2.3.2 Identificación Catastral (Nuevo, 30 dígitos)</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="No. Catastral nuevo" id="f_232"
@@ -180,7 +180,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             </label>
                         </div>
                         <div className="input-group my-3">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="question-circle" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
@@ -194,25 +194,25 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <div className="row mb-3">
                     <div className="col-6">
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Barrio o Urbanzación
                             </span>
                             <input type="text" className="form-control" id="f_261" defaultValue={_CHILD_VARS.item_261} />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Comuna
                             </span>
                             <input type="text" className="form-control" id="f_263" defaultValue={_CHILD_VARS.item_263} />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Estrato
                             </span>
                             <input type="number" min="1" max="6" step="1" className="form-control" id="f_267" defaultValue={_CHILD_VARS.item_267} />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Manzana No.
                             </span>
                             <input type="text" className="form-control" id="f_268" defaultValue={_CHILD_VARS.item_268} />
@@ -220,25 +220,25 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     </div>
                     <div className="col-6">
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Vereda
                             </span>
                             <input type="text" className="form-control" id="f_262" defaultValue={_CHILD_VARS.item_262} />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Sector
                             </span>
                             <input type="text" className="form-control" id="f_264" defaultValue={_CHILD_VARS.item_264} />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Corregimiento
                             </span>
                             <input type="text" className="form-control" id="f_265" defaultValue={_CHILD_VARS.item_265} />
                         </div>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />&nbsp;Lote No.
                             </span>
                             <input type="text" className="form-control" id="f_266" defaultValue={_CHILD_VARS.item_266} />
@@ -358,8 +358,8 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         return (<>
             {_CHILD_20()}
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_2">
-                    <label className="app-p lead text-center fw-normal text-uppercase">2. Información del Predio</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_2">
+                    <label className="app-p lead text-center fw-normal">2. Información del Predio</label>
                 </legend>
                 {_CHILD_2_COMPONENT()}
                 <div className="row mb-3 text-center">

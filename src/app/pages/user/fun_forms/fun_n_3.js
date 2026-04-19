@@ -220,7 +220,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label >3.1 Dirección del Predio</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_31" />
@@ -229,7 +229,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label>3.2 Dirección de correspondencia</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_32" />
@@ -240,7 +240,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label >3.3 ¿Se declaró parte? Nombre</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_33a" />
@@ -249,7 +249,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label>3.3 ¿Se declaró parte? No. de CUB</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_33b" />
@@ -264,7 +264,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label >3.1 Dirección del Predio</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_31_edit" />
@@ -273,7 +273,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label>3.2 Dirección de correspondencia</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_32_edit" />
@@ -284,7 +284,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label >3.3 ¿Se declaró parte? Nombre</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_33a_edit" />
@@ -293,7 +293,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <label>3.3 ¿Se declaró parte? No. Radicación</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_33b_edit" />
@@ -394,8 +394,8 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_3">
-                    <label className="app-p lead text-center fw-normal text-uppercase">3. Información de Vecinos Colindantes</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_3">
+                    <label className="app-p lead text-center fw-normal">3. Información de Vecinos Colindantes</label>
                 </legend>
                 <div className="form-check ms-5">
                     <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />

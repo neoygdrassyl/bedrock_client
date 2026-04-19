@@ -536,8 +536,8 @@ export const ENG_MANPOSTERIA = (props) => {
 
     return <>
         {SUBCATEGORIES[16] == 1 ? <>
-            <legend className="my-3 px-3 text-uppercase bg-light" id="record_eng_433">
-                <label className="app-p lead fw-normal text-uppercase">Edificaciones de Mamposterías Titulo E</label>
+            <legend className="my-3 px-3 bg-light" id="record_eng_433">
+                <label className="app-p lead fw-normal">Edificaciones de Mamposterías Titulo E</label>
             </legend>
 
             {COMPONENT_0()}

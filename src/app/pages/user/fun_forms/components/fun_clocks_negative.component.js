@@ -416,7 +416,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="btn btn-info" ><Icon name="times-circle" size={16} /> CANCELAR PROCESO </button>
+                            <button className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors" ><Icon name="times-circle" size={16} /> CANCELAR PROCESO </button>
                         </div>
                     </div>
                 </form>
@@ -430,7 +430,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     <div className="col">
                         <label>Evento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <input type="text" className="form-control" disabled
@@ -440,7 +440,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     <div className="col">
                         <label>Resultado evento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
                             <select className='form-select' id={"f_clock_next_1_" + state} defaultValue={data.resolver_sattus} >
@@ -454,7 +454,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     <div className="col">
                         <label>Fecha Evento</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id={"f_clock_next_2_" + state}
@@ -464,7 +464,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     <div className="col">
                         <label>Soporte: Relacionar Documento </label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id={"f_clock_next_3_" + state} defaultValue={data.resolver_id6}>
@@ -894,15 +894,15 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     <>
                         {currentItem.state == -1 ?
                             <>
-                                <legend className="my-2 px-3 text-uppercase Collapsible text-white" id="new_process">
-                                    <label className="app-p lead text-center fw-normal text-uppercase">CANCELAR PROCESO DE DESISTIMIENTO</label>
+                                <legend className="my-2 px-3 Collapsible text-white" id="new_process">
+                                    <label className="app-p lead text-center fw-normal">CANCELAR PROCESO DE DESISTIMIENTO</label>
                                 </legend>
                                 {_CANCEL_PROCESS()}
                             </>
                             : ""}
 
-                        <legend className="my-2 px-3 text-uppercase bg-danger text-white" id="new_process">
-                            <label className="app-p lead text-center fw-normal text-uppercase">NUEVO PROCESO DE DESESTIMIENTO</label>
+                        <legend className="my-2 px-3 bg-danger text-white" id="new_process">
+                            <label className="app-p lead text-center fw-normal">NUEVO PROCESO DE DESESTIMIENTO</label>
                         </legend>
                         {_NEW_PROCESS()}
                     </>
@@ -1018,8 +1018,8 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 </div>
 
                 {currentItem.state < -100 ? <>
-                    <legend className="my-2 px-3 text-uppercase bg-light" id="new_process">
-                        <label className="app-p lead text-center fw-normal text-uppercase">ASISTENTE DE CORREOS</label>
+                    <legend className="my-2 px-3 bg-light" id="new_process">
+                        <label className="app-p lead text-center fw-normal">ASISTENTE DE CORREOS</label>
                     </legend>
                     <FUN_CLOCKS_EMAILS
                         translation={translation} swaMsg={swaMsg}

@@ -129,21 +129,21 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                          
                     </div>
                     <div className="col-6">
-                        <input type="text" className="form-control me-1 text-uppercase" id="fun_doc_control_3" disabled
+                        <input type="text" className="form-control me-1" id="fun_doc_control_3" disabled
                             defaultValue={''} />
                     </div>
                 </div>
 
                 {_SERIE.length > 1 || _SUBSERIE.length > 1
                     ? <div className="row my-2">
-                        <label className="text-danger fw-bold text-uppercase">AMBIGÜEDAD DE SERIES O SUBSERIES ENCONTRADA</label><br />
+                        <label className="text-danger fw-bold">AMBIGÜEDAD DE SERIES O SUBSERIES ENCONTRADA</label><br />
                         <label className="fw-bold">El sistema ha detectado varias series o varias subseries validas para esta solicitud</label>
                     </div>
                     : ""}
 
                 {_SERIE.length == 0 || _SUBSERIE.length == 0
                     ? <div className="row my-2">
-                        <label className="text-danger fw-bold text-uppercase">SERIE O SUBSERIE NO ENCONTRADA</label><br />
+                        <label className="text-danger fw-bold">SERIE O SUBSERIE NO ENCONTRADA</label><br />
                         <label className="fw-bold">El sistema no ha podido identificar una serie o subserie, revise la modalidad de la solicitud.</label>
                     </div>
                     : ""}

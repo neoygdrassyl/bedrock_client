@@ -430,7 +430,7 @@ export default function ARCHIVE_X_FUN(props) {
                     requestUpdate={() => loadLists()}
                 />
                 <hr />
-                <label className="app-p lead fw-normal text-uppercase">ANEXAR DOCUMENTOS</label>
+                <label className="app-p lead fw-normal">ANEXAR DOCUMENTOS</label>
 
                 <FUN_6_UPLOAD
                     translation={translation}

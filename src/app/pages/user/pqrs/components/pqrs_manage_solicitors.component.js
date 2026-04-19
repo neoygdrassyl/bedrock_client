@@ -79,14 +79,14 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
             _COMPONENT.push(<div className="row">
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="user" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Nombre Completo" id={"pqrs_edit_solicitor_1"+_edit} />
                     </div>
 
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="user" size={16} />
                         </span>
                         <select className="form-select" id={"pqrs_edit_solicitor_2"+_edit}>
@@ -99,14 +99,14 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                 </div>
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="id-card" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Numero de Documento" id={"pqrs_edit_solicitor_3"+_edit} />
                     </div>
 
                     <div className="input-group my-1">
-                        <span className="input-group-text bg-info text-white">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="id-card" size={16} />
                         </span>
                         <select className="form-select" id={"pqrs_edit_solicitor_4"+_edit}>

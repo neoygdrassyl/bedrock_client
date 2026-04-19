@@ -329,7 +329,7 @@ export default function NORM_PREDIOS(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 className="text-uppercase pb-2">2. INFORMACIÓN PREDIO(S):</h3>
+                <h3 className="pb-2">2. INFORMACIÓN PREDIO(S):</h3>
                 {NEW_ITEM}
                 {TABLE}
                 {EDIT_ITEM}

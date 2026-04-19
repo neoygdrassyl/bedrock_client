@@ -1659,8 +1659,8 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
 
         return (
             <div>
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="fung_c3">
-                    <label className="app-p lead text-center fw-normal text-uppercase">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
+                <legend className="my-2 px-3 Collapsible" id="fung_c3">
+                    <label className="app-p lead text-center fw-normal">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
                 </legend>
                 {_SET_610()}
                 {_SET_620()}
@@ -1670,8 +1670,8 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 {_SET_660()}
                 {_SET_670()}
                 {_SET_680()}
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="fung_c4">
-                    <label className="app-p lead text-center fw-normal text-uppercase">7. GESTIÓN DOCUMENTAL</label>
+                <legend className="my-2 px-3 Collapsible" id="fung_c4">
+                    <label className="app-p lead text-center fw-normal">7. GESTIÓN DOCUMENTAL</label>
                 </legend>
                 {_CHILD_6_LIST()}
             </div>

@@ -2435,7 +2435,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
         }
         return (
             <div className="record_ph_gen container">
-                <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="nav_expedition_20">
+                <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_20">
                     <label className="app-p lead fw-normal">PAGOS</label>
                 </legend>
 
@@ -2583,7 +2583,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </>
                     : ''}
 
-                <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="nav_expedition_26">
+                <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_26">
                     <label className="app-p lead fw-normal">DOCUMENTOS</label>
                 </legend>
 

@@ -71,14 +71,16 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
   }, []);
 
   // Centralized dashboard fetch
-  const fetchDashboard = useCallback(() => {
+  const fetchDashboard = useCallback((options = {}) => {
+    const isStale = options.isStale || (() => false);
+
     setDashLoading(true);
     setDashError(null);
 
     const sortField = dashSorting[0]?.id || 'fecha_radicacion';
     const sortOrder = dashSorting[0]?.desc !== undefined ? (dashSorting[0].desc ? 'DESC' : 'ASC') : 'DESC';
 
-    FunManageDashboardService.getExpedientes({
+    return FunManageDashboardService.getExpedientes({
       page: dashPage,
       limit: PAGE_SIZE,
       fase: dashboardFilter.fase || undefined,
@@ -90,6 +92,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
       order: sortOrder,
     })
       .then(res => {
+        if (isStale()) return;
         const body = res.data;
         setDashKpis(body.kpis || null);
         setDashData(Array.isArray(body.data) ? body.data : []);
@@ -98,6 +101,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
         setDashLoading(false);
       })
       .catch(() => {
+        if (isStale()) return;
         setDashError('No se pudo cargar el dashboard.');
         setDashLoading(false);
       });
@@ -114,7 +118,11 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
 
   // Fetch on any change
   useEffect(() => {
-    fetchDashboard();
+    let cancelled = false;
+    fetchDashboard({ isStale: () => cancelled });
+    return () => {
+      cancelled = true;
+    };
   }, [fetchDashboard]);
 
   // =========================================================================
@@ -243,7 +251,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
               >
                 <div className="d-flex flex-wrap align-items-center justify-content-between mb-3">
                   <h6
-                    className="text-uppercase text-muted mb-0"
+                    className="text-muted mb-0"
                     style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
                   >
                     <Icon name="table" size={16} className="me-2" />Vista de Gestión
@@ -278,7 +286,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                 data-testid="scatter-section"
               >
                 <h6
-                  className="text-uppercase text-muted mb-2"
+                  className="text-muted mb-2"
                   style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
                 >
                   <Icon name="circle-nodes" size={16} className="me-2" />Tiempo por Categoría
@@ -293,7 +301,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                 data-testid="phase-section"
               >
                 <h6
-                  className="text-uppercase text-muted mb-2"
+                  className="text-muted mb-2"
                   style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
                 >
                   <Icon name="chart-bar" size={16} className="me-2" />Distribución de Fases

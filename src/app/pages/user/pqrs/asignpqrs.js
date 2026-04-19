@@ -118,7 +118,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     <div className="col-4">
                         <label>Profesional</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-circle" size={16} />
                             </span>
                             <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
@@ -131,7 +131,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     <div className="col-4">
                         <label>Fecha Asignación</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input id="pqrs_worker_1" className="form-control" type="date" required />
@@ -140,7 +140,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     <div className="col-4">
                         <label>Competencia</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="briefcase" size={16} />
                             </span>
                             <input className="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
@@ -215,7 +215,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         <div className="col-6">
                             <label>Lista de Correos</label>
                             <div className="input-group my-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="envelope" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
@@ -224,7 +224,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         <div className="col-6">
                             <label>Lista de Solicitantes</label>
                             <div className="input-group my-1">
-                                <span className="input-group-text bg-info text-white">
+                                <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
@@ -350,8 +350,8 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                 {currentItem != null ? <>
                     {load ? <>
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE SOLICITANTE(S)</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE SOLICITANTE(S)</label>
                             </legend>
                             <PQRS_COMPONENT_SOLICITORS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -360,8 +360,8 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         </fieldset>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACION DE SOLICITANTE(S)</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACION DE SOLICITANTE(S)</label>
                             </legend>
                             <PQRS_COMPONENT_CONTACTS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -371,7 +371,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
 
                         <fieldset className="p-3">
                             <form onSubmit={asignPQRS} id="app-formAsign">
-                                <h2 className="text-uppercase text-center pb-2">ASIGNAR PROFESIONALES</h2>
+                                <h2 className="text-center pb-2">ASIGNAR PROFESIONALES</h2>
                                 <div className="form-check ms-5">
                                     <input className="form-check-input" type="checkbox" onChange={(e) => setAsign(e.target.checked)} />
                                     <label className="form-check-label" htmlFor="flexCheckDefault">
@@ -387,8 +387,8 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                                     </> : ""}
                             </form>
 
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead text-start fw-normal text-uppercase">PROFESIONALES ASIGNADOS</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead text-start fw-normal">PROFESIONALES ASIGNADOS</label>
                             </legend>
                             <div className="mb-2">
                                 {_ASIGN_COMPOENTN()}
@@ -408,7 +408,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
 
                         </fieldset>
 
-                        <h2 className="text-uppercase text-center pb-2">CONFIRMAR A PETICIONRIO</h2>
+                        <h2 className="text-center pb-2">CONFIRMAR A PETICIONRIO</h2>
                         <p className="app-p">GUIA PARA ENVIAR LA CONFIRMACION POR EMAIL</p>
                         <ul>
                             <li className="app-p">Escriba el cuerpo del email.</li>

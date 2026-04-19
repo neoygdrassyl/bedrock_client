@@ -264,7 +264,7 @@ function CLOCKS_CONTROL(props) {
 
             return (
                 <div className="row" key={key}>
-                    <div className="col border"><label className="fw-bold text-uppercase">{value.icon} {value.name ?? clock.name ?? ''}</label></div>
+                    <div className="col border"><label className="fw-bold">{value.icon} {value.name ?? clock.name ?? ''}</label></div>
                     {!hideLimit && 
                     <div className="col-2 border py-1 text-center">
                         {limit_clock 
@@ -385,31 +385,31 @@ function CLOCKS_CONTROL(props) {
         
         const HEAD = (
             <div className="row text-light">
-                <div className="col border bg-info text-center"><label className="fw-bold text-uppercase">Control Proceso</label></div>
-                <div className="col-2 border bg-info py-1 text-center"><label className="fw-bold text-uppercase">Fecha límite términos y plazos</label></div>
-                <div className="col-2 border bg-info py-1 text-center"><label className="fw-bold text-uppercase">Fecha ejecución proceso</label></div>
-                <div className="col border bg-info text-center"><label className="fw-bold text-uppercase">Observaciones</label></div>
+                <div className="col border bg-primary text-primary-foreground text-center"><label className="fw-bold">Control Proceso</label></div>
+                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center"><label className="fw-bold">Fecha límite términos y plazos</label></div>
+                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center"><label className="fw-bold">Fecha ejecución proceso</label></div>
+                <div className="col border bg-primary text-primary-foreground text-center"><label className="fw-bold">Observaciones</label></div>
             </div>
         );
 
         const HEAD_SECONDARY_TITLE = (
             <div className="row text-light mt-3">
-                <div className="col border bg-info text-center">
-                    <label className="fw-bold text-uppercase">EVENTOS SECUNDARIOS</label>
+                <div className="col border bg-primary text-primary-foreground text-center">
+                    <label className="fw-bold">EVENTOS SECUNDARIOS</label>
                 </div>
             </div>
         );
 
         const HEAD_SECONDARY_HEADER = (
             <div className="row text-light">
-                <div className="col border bg-info text-center">
-                    <label className="fw-bold text-uppercase">Control Proceso términos y plazos</label>
+                <div className="col border bg-primary text-primary-foreground text-center">
+                    <label className="fw-bold">Control Proceso términos y plazos</label>
                 </div>
-                <div className="col-2 border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">Fecha ejecución proceso</label>
+                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">Fecha ejecución proceso</label>
                 </div>
-                <div className="col border bg-info text-center">
-                    <label className="fw-bold text-uppercase">Observaciones</label>
+                <div className="col border bg-primary text-primary-foreground text-center">
+                    <label className="fw-bold">Observaciones</label>
                 </div>
             </div>
         );
@@ -476,8 +476,8 @@ function CLOCKS_CONTROL(props) {
                         )}
                         {activeTab === 'desistimientos' && (
                             <>
-                                <legend className="my-3 px-3 text-uppercase bg-danger">
-                                    <label className="app-p lead text-center fw-normal text-uppercase text-light">CONTROL DE PROCESOS DE DESISTIMIENTOS</label>
+                                <legend className="my-3 px-3 bg-danger">
+                                    <label className="app-p lead text-center fw-normal text-light">CONTROL DE PROCESOS DE DESISTIMIENTOS</label>
                                 </legend>
                                 <FUN_CLOCKS_NEGATIVE
                                     {...props}

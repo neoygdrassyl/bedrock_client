@@ -98,7 +98,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >1. Número de Radicación</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_1" required
@@ -109,7 +109,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >2. Tipo de Nomenclatura</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <select className="form-select" required id="nomen_2"
@@ -123,7 +123,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >3. Número de Nomenclaturas</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="number" className="form-control" id="nomen_11" step="1" nim="1"
@@ -135,7 +135,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >4. Número de VR</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_vr" defaultValue={_CHILD.vr} />
@@ -144,7 +144,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >5. Número de OA</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_oa" defaultValue={_CHILD.oa} />
@@ -158,7 +158,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >6.1 Nombre Solicitante</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_31"
@@ -168,7 +168,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >6.2 Apellido(s) Solicitante</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_32"
@@ -178,7 +178,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >7. Documento Solicitante</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_4"
@@ -191,7 +191,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >8. Dirección Predio</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_5"
@@ -201,7 +201,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >9.1 Tipo localizacion</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <select className="form-select" required id="nomen_16_1"
@@ -215,7 +215,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >9.2 Barrio</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_16"
@@ -228,7 +228,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-6">
                         <label >10. Número Predial/Catastral</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_6"
@@ -238,7 +238,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-6">
                         <label >11. Número de Matrícula</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_7"
@@ -291,7 +291,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >13.1. Fecha Radicación</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-check" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id="nomen_8"
@@ -301,7 +301,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >13.2 Fecha Expedición</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-times" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id="nomen_9"
@@ -313,7 +313,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >14.1. Número de Recibo Curaduría</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="money-check-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_12"
@@ -323,7 +323,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >14.2 Fecha de Recibo Curaduría</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id="nomen_13"
@@ -335,7 +335,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >15.1. Número de Recibo Municipal</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="money-check-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="nomen_14"
@@ -345,7 +345,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     <div className="col-4">
                         <label >15.2 Fecha de Recibo Municipal</label>
                         <div className="input-group mb-1">
-                            <span className="input-group-text bg-info text-white">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id="nomen_15"
@@ -481,8 +481,8 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
         return (
             <div className="Nomenclature_new container">
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                        <label className="app-p lead fw-normal text-uppercase text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} NOMENCLATURA</label>
+                    <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                        <label className="app-p lead fw-normal text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} NOMENCLATURA</label>
                     </legend>
                     <form id="form_new_nomen" onSubmit={save_nomenclature}>
                         {COMPONENT_NEW()}
@@ -498,8 +498,8 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 </fieldset>
                 {currentItem
                     ? <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                            <label className="app-p lead fw-normal text-uppercase text-light">DOCUMENTO</label>
+                        <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                            <label className="app-p lead fw-normal text-light">DOCUMENTO</label>
                         </legend>
                         <NOMENCLATURE_ANEX
                             translation={translation} swaMsg={swaMsg} globals={globals}

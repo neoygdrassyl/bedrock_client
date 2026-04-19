@@ -97,13 +97,13 @@ export default function RECORD_LAW_FUN_1(props) {
         let FUNModel = currentItem.model
         return <>
 
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>1. IDENTIFICACION DE LA SOLICITUD</label> {_EDIT_BTN()}
                 </div>
             </div>
 
-            <div className='row  border  bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border  bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>DATOS FORMULARIO</label>
                 </div>

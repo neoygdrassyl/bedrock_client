@@ -439,7 +439,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
       const subHeaderComponentMemo = () => {
         return (
           <div className="input-group mb-2">
-            <span className="input-group-text bg-info text-white">
+            <span className="input-group-text bg-primary text-primary-foreground">
               <Icon name="search" size={16} />
             </span>
             <input type='text' className='form-control' placeholder='Busqueda...' onChange={(e) => setFilterStates(prev => ({ ...prev, [ID]: e.target.value }))} />
@@ -492,14 +492,14 @@ function Publish({ translation, swaMsg, breadCrums }) {
                 <div className="col-md-6">
                   <label>Identificador público</label><br />
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                       <Icon name="file-signature" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="ID Documento" required id="publish_1" />
                   </div>
                   <label>Tipo de documento</label><br />
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                    <span className="input-group-text bg-primary text-primary-foreground" id="type-pqrs">
                       <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" id="publish_2" required onChange={(e) => handleChange(e)}>
@@ -515,7 +515,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   </div>
                   <label>Estado documento</label><br />
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                    <span className="input-group-text bg-primary text-primary-foreground" id="type-pqrs">
                       <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" id="publish_4" >
@@ -524,7 +524,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   </div>
                   <label>Fecha</label><br />
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                       <Icon name="file-signature" size={16} />
                     </span>
                     <input type="date" className="form-control" required id="publish_date" />
@@ -533,12 +533,12 @@ function Publish({ translation, swaMsg, breadCrums }) {
                 <div className="col-md-6">
                   <label>Documento a subir</label><br />
                   <div className="input-group my-2">
-                    <label className="input-group-text bg-info  text-white" htmlFor="file"><Icon name="paperclip" size={16} /></label>
+                    <label className="input-group-text bg-primary text-primary-foreground" htmlFor="file"><Icon name="paperclip" size={16} /></label>
                     <input type="file" className="form-control" id="file" accept="application/pdf" required />
                   </div>
                   <label>Tipo de actuación</label>
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                    <span className="input-group-text bg-primary text-primary-foreground" id="type-pqrs">
                       <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" required id="publish_3">
@@ -566,7 +566,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   </div>
                   <label>Modalidad y/o detalle</label>
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                       <Icon name="file-signature" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Detalles de la publicacion..." id="publish_5" />
@@ -596,14 +596,14 @@ function Publish({ translation, swaMsg, breadCrums }) {
                 <div className="col-md-6">
                   <label>Id publico</label><br />
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                       <Icon name="file-signature" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="ID Documento" defaultValue={_ITEM.id_publico} required id="edit_id" disabled />
                   </div>
                   <label>Tipo de documento</label><br />
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                    <span className="input-group-text bg-primary text-primary-foreground" id="type-pqrs">
                       <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" id="type_edit" defaultValue={_ITEM.type} required onChange={(e) => handleChange(e)}>
@@ -620,7 +620,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   </div>
                   <label>Estado documento</label><br />
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                    <span className="input-group-text bg-primary text-primary-foreground" id="type-pqrs">
                       <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" id="estate_edit" defaultValue={_ITEM.subtype} >
@@ -637,12 +637,12 @@ function Publish({ translation, swaMsg, breadCrums }) {
                 <div className="col-md-6">
                   <label>Fecha</label><br />
                   <div className="input-group my-2">
-                    <label className="input-group-text bg-info  text-white" htmlFor="date"><Icon name="paperclip" size={16} /></label>
+                    <label className="input-group-text bg-primary text-primary-foreground" htmlFor="date"><Icon name="paperclip" size={16} /></label>
                     <input type="date" className="form-control" id="date_edit" defaultValue={_ITEM.date} required />
                   </div>
                   <label>Tipo de actuacion</label>
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                    <span className="input-group-text bg-primary text-primary-foreground" id="type-pqrs">
                       <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" defaultValue={_ITEM.detail} required id="detail_edit">
@@ -670,7 +670,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   </div>
                   <label>Modalidad y/o detalle</label>
                   <div className="input-group mb-3">
-                    <span className="input-group-text bg-info text-white">
+                    <span className="input-group-text bg-primary text-primary-foreground">
                       <Icon name="file-signature" size={16} />
                     </span>
                     <input type="text" className="form-control" defaultValue={_ITEM.subdetail}  id="sub_edit" />
