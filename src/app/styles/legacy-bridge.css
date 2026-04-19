@@ -769,6 +769,100 @@
   min-height: 40px;
 }
 
+/* ── Form-select & form-floating polish ────────────────────────────── */
+#main-content :where(.form-select) {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 14px 10px;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+#main-content :where(.form-select:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+#main-content :where(.form-floating > .form-control,
+                       .form-floating > .form-select) {
+  height: calc(3rem + 2px);
+  padding: 1rem 0.75rem;
+}
+#main-content :where(.form-floating > label) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.75rem;
+  pointer-events: none;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* ── Spinners (loading indicators) ─────────────────────────────────── */
+#main-content :where(.spinner-border) {
+  color: hsl(var(--primary));
+}
+#main-content :where(.spinner-border-sm) {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ── Offcanvas/Collapse ────────────────────────────────────────────── */
+#main-content :where(.offcanvas) {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-color: hsl(var(--border));
+}
+#main-content :where(.offcanvas-header) {
+  border-bottom: 1px solid hsl(var(--border));
+}
+#main-content :where(.offcanvas-backdrop) {
+  background-color: hsl(var(--foreground) / 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* ── Placeholder text ──────────────────────────────────────────────── */
+#main-content :where(.form-control::placeholder,
+                       .form-select::placeholder) {
+  color: hsl(var(--muted-foreground) / 0.5);
+  font-size: 0.8125rem;
+}
+
+/* ── Form validation states ────────────────────────────────────────── */
+#main-content :where(.is-invalid) {
+  border-color: hsl(var(--destructive)) !important;
+}
+#main-content :where(.is-valid) {
+  border-color: hsl(var(--accent)) !important;
+}
+#main-content :where(.invalid-feedback) {
+  color: hsl(var(--destructive));
+  font-size: 0.75rem;
+}
+#main-content :where(.valid-feedback) {
+  color: hsl(var(--accent));
+  font-size: 0.75rem;
+}
+
+/* ── Disabled form controls ────────────────────────────────────────── */
+#main-content :where(.form-control:disabled,
+                       .form-select:disabled,
+                       .form-check-input:disabled) {
+  background-color: hsl(var(--muted) / 0.5);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Close button refinement ───────────────────────────────────────── */
+#main-content :where(.btn-close) {
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+#main-content :where(.btn-close:hover) {
+  opacity: 0.8;
+}
+
 /* ── Global polish ─────────────────────────────────────────────────── */
 
 /* Smooth scroll for main content area */
@@ -826,4 +920,36 @@
 }
 .dark #main-content :where(.card-header) {
   background-color: hsl(var(--muted) / 0.2);
+}
+
+/* Dark mode: form controls */
+.dark #main-content :where(.form-control,
+                             .form-select) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.form-control:focus,
+                             .form-select:focus) {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.15);
+}
+.dark #main-content :where(.input-group-text) {
+  background-color: hsl(var(--muted) / 0.3);
+  border-color: hsl(var(--border));
+}
+.dark #main-content :where(.table) {
+  --bs-table-bg: transparent;
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.table > thead) {
+  background-color: hsl(var(--muted) / 0.15);
+}
+.dark #main-content :where(.modal-content) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+.dark #main-content :where(.alert) {
+  background-color: hsl(var(--muted) / 0.15);
+  border-color: hsl(var(--border) / 0.5);
 }
