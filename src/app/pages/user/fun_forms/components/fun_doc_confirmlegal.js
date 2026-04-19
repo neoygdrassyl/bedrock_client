@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import { formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../components/customClasses/typeParse'
 import FUNService from '../../../../services/fun.service'
 import SubmitService from '../../../../services/submit.service'
@@ -805,11 +806,11 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
 
                     {edit ?
                         <div className="col">
-                            <button className="btn btn-success my-3"><Icon name="share-square" size={16} /> GUARDAR DATOS</button>
+                            <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR DATOS</Button>
                         </div>
                         : ''}
                     <div className="col">
-                        <button type="button" className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
                     </div>
                 </div>
             </form>

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 import { 
@@ -249,14 +250,11 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
         
         <td className="align-middle text-center">
           {hasSchedule ? (
-            <button
-              type="button"
-              className="btn btn-sm btn-icon btn-outline-danger border-0"
-              onClick={() => handleDelete(clockState)}
+            <Button variant="outline" size="sm" className="text-destructive border-destructive btn-icon border-0" onClick={() => handleDelete(clockState)}
               title="Eliminar programación"
             >
               <Icon name="trash-alt" size={16} />
-            </button>
+            </Button>
           ) : (
              <span className="text-muted small"><Icon name="circle" size={16} style={{fontSize: '5px'}} /></span> 
           )}

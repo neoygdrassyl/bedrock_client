@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
@@ -929,7 +930,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button className="btn btn-danger my-3" onClick={() => getPdfForm()}><Icon name="file-pdf" size={16} /> DESCARGAR FORMULARIO</button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => getPdfForm()}><Icon name="file-pdf" size={16} /> DESCARGAR FORMULARIO</Button>
                     </div>
                 </div>
             </div>

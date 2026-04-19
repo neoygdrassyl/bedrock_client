@@ -364,9 +364,9 @@ function Home({ translation, history }) {
                   <i class="far fa-list-alt fa-4x"></i>
                   <h3 className="display-6 fw-bold">Listado de Publicaciones</h3>
                   <p className="lead">Encuentre todas las publicaciones expedidas por la Curaduría</p>
-                  <Link to={'/administrative'}><button type="button" className="btn btn-secondary">
+                  <Link to={'/administrative'}><Button variant="outline" size="sm">
                     <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Ver Listado</h4>
-                  </button></Link>
+                  </Button></Link>
                 </div>
                 <div className="col-md-4">
                   <Icon name="file-invoice" size={16} />
@@ -380,9 +380,9 @@ function Home({ translation, history }) {
                   <i class="fas fa-calculator fa-4x"></i>
                   <h3 className="display-6 fw-bold">Calculadora de liquidación</h3>
                   <p className="lead">Determine un valor posible de su liquidación aquí</p>
-                  <Link to={'/liquidator'}><button type="button" className="btn btn-success">
+                  <Link to={'/liquidator'}><Button size="sm">
                     <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Calculadora</h4>
-                  </button>
+                  </Button>
                   </Link>
                 </div>
               </div> */}

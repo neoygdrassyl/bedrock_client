@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../components/customClasses/funCustomArrays';
 import { getJSON } from '../../../components/customClasses/typeParse';
@@ -856,7 +857,7 @@ export default function FUN_ANEX(props) {
             <div className="row mb-3 text-center">
                 <hr />
                 <div className="col">
-                    <button type="button" className="btn btn-success my-3" onClick={() => manage_a()}><Icon name="file-alt" size={16} /> ACTUALIZAR </button>
+                    <Button size="sm" className="my-3" onClick={() => manage_a()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>
                 </div>
             </div>
         </fieldset>

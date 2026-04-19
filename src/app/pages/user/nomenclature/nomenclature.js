@@ -128,11 +128,11 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 button: true,
                 minWidth: '100px',
                 cell: row => <>
-                        <button title="Ver detalles" onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <Icon name="folder-open" size={16} /></button>
+ <Button size="sm" className="m-0 p-2" title="Ver detalles" onClick={() => toggle(row)} >
+                            <Icon name="folder-open" size={16} /></Button>
 
-                        <button title="Eliminar" onClick={() => delete_nomenclature(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                            <Icon name="trash-alt" size={16} /></button>
+ <Button variant="destructive" size="sm" className="m-0 p-2" title="Eliminar" onClick={() => delete_nomenclature(row.id)} >
+                            <Icon name="trash-alt" size={16} /></Button>
                 </>,
             },
         ]
@@ -261,7 +261,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         <div className="row">
                             <div className="col-4">
                                 <div className="text-center py-4 mt-3">
-                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><Icon name="plus-circle" size={16} /> CREAR NOMENCLATURA </button>
+                                    <Button size="sm" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><Icon name="plus-circle" size={16} /> CREAR NOMENCLATURA </Button>
                                 </div>
                             </div>
                             <div className="col-4">
@@ -288,7 +288,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                             <input type="text" className="form-control" id="nomen_search_1" placeholder="Buscar..." />
                                         </div>
                                         <div className="text-center py-2">
-                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><Icon name="search-plus" size={16} /> CONSULTAR </button>
+                                            <Button variant="outline" size="sm" onClick={() => search()}><Icon name="search-plus" size={16} /> CONSULTAR </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -313,7 +313,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                                     defaultValue={dayjs().format('YYYY-MM-DD')} />
                                             </div>
                                             <div className="text-center py-2">
-                                                <button className="btn btn-success"><Icon name="file-excel" size={16} /> DESCARGAR </button>
+                                                <Button size="sm"><Icon name="file-excel" size={16} /> DESCARGAR </Button>
                                             </div>
                                         </form>
                                     </div>

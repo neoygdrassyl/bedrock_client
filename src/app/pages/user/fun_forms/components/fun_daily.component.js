@@ -916,7 +916,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 <input type='text' className='form-control' placeholder='Busqueda...' id="ti-search"
                     onChange={(e) => setFilter(e.target.value)} defaultValue={filter} />
                 {filter ?
-                    <button type="button" className="btn btn-danger btn-sm" onClick={() => { setFilter(''); document.getElementById('ti-search').value = '' }}><Icon name="times" size={16} /> </button>
+                    <Button variant="destructive" size="sm" onClick={() => { setFilter(''); document.getElementById('ti-search').value = '' }}><Icon name="times" size={16} /> </Button>
                     : ''}
 
             </div>
@@ -930,7 +930,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
-                <button type="button" className="btn btn-primary" onClick={() => {
+                <Button size="sm" onClick={() => {
                     setData([]);
                     setLoad(false);
 
@@ -938,7 +938,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                     setDatac(createDefaultData());
                     setExpandedTableSections(new Set());
                     //retrieveMacro();
-                }}>CARGAR</button>
+                }}>CARGAR</Button>
             </div>
         );
     }
@@ -1009,9 +1009,9 @@ export default function FUN_DAILY_COMPONENT(props) {
             return (
                 <div className="d-flex flex-column align-items-start gap-2">
                     <span className="small text-muted">Contenido diferido para reducir la carga inicial.</span>
-                    <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => expandTableSection(sectionKey)}>
+                    <Button variant="outline" size="sm" onClick={() => expandTableSection(sectionKey)}>
                         Ver {datas.length} solicitudes
-                    </button>
+                    </Button>
                 </div>
             );
         }

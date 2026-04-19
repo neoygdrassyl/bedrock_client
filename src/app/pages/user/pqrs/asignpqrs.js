@@ -186,10 +186,10 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <button title="Desasignar Profesional" className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
-                                <Icon name="user-minus" size={16} /></button>
-                        <button title="Enviar Correo" className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setWorker(row)}>
-                                <Icon name="paper-plane" size={16} /></button>
+                        <Button variant="destructive" size="sm" className="mx-0 px-2" title="Desasignar Profesional" onClick={() => removeAsign(row.id)}>
+                                <Icon name="user-minus" size={16} /></Button>
+                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 mx-0 px-2" title="Enviar Correo" onClick={() => setWorker(row)}>
+                                <Icon name="paper-plane" size={16} /></Button>
                     </>,
                 },
             ]
@@ -239,7 +239,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                                <td><button type="button" className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><Icon name="cloud-download-alt" size={16} /></button></td>
+                                <td><Button variant="destructive" size="sm" onClick={() => request_dpfConfirmation()}><Icon name="cloud-download-alt" size={16} /></Button></td>
                             </tr>
                         </tbody>
                     </table>

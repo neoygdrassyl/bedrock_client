@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { infoCud } from '../../../components/jsons/vars';
 import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';
@@ -386,8 +387,8 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <button type="button" className="btn btn-outline-primary btn-sm my-1" onClick={() => COPY_TO_DOM('cur_fix')}><Icon name="copy" size={16} /> COPIAR CARGO FIJO</button>
-                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => COPY_TO_DOM('cur_var')}><Icon name="copy" size={16} /> COPIAR CARGO VARIABLE</button>
+                    <Button variant="outline" size="sm" className="my-1" onClick={() => COPY_TO_DOM('cur_fix')}><Icon name="copy" size={16} /> COPIAR CARGO FIJO</Button>
+                    <Button variant="outline" size="sm" onClick={() => COPY_TO_DOM('cur_var')}><Icon name="copy" size={16} /> COPIAR CARGO VARIABLE</Button>
                 </div>
             </div>
             <hr />
@@ -441,7 +442,7 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => COPY_TO_DOM('other')}><Icon name="copy" size={16} /> COPIAR</button>
+                    <Button variant="outline" size="sm" onClick={() => COPY_TO_DOM('other')}><Icon name="copy" size={16} /> COPIAR</Button>
                 </div>
             </div>
         </>
@@ -449,7 +450,7 @@ export default function EXP_CALC(props) {
 
     return (
         <>
-            <button type="button" className="btn btn-primary btn-sm" onClick={() => setModal(!modal)}><Icon name="calculator" size={16} /> {compact ? '' : 'CALCULADORA'}</button>
+            <Button size="sm" onClick={() => setModal(!modal)}><Icon name="calculator" size={16} /> {compact ? '' : 'CALCULADORA'}</Button>
 
             <Modal contentLabel="EXP CALC"
                 isOpen={modal}
@@ -479,7 +480,7 @@ export default function EXP_CALC(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <button type="button" className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> CERRAR</button>
+                    <Button size="sm" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> CERRAR</Button>
                 </div>
             </Modal>
         </>

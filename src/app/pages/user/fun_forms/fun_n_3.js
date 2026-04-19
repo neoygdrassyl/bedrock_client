@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
 import DataTable from '@/components/data-table-bridge';
 
@@ -197,10 +198,10 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                            <Icon name="edit" size={16} /></button></span>
-                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_3(row.id)}>
-                            <Icon name="trash-alt" size={16} /></button></span>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}>
+                            <Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_3(row.id)}>
+                            <Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -409,7 +410,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             {_COMPONENT_NEW_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
@@ -422,7 +423,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             {_COMPONENT_EDIT_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                             </div>
                         </form>

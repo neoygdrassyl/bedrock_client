@@ -36,8 +36,8 @@ function DOCS_LIST({ idRef, text, setValues }) {
             {
                 name: 'ACCION',
                 button: true,
-                cell: row => <button title="Copiar informacion" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => _COPY_INFO(row)}>
-                        <Icon name="copy" size={16} /></button>,
+                cell: row => <Button size="sm" className="m-0 p-2" title="Copiar informacion" onClick={() => _COPY_INFO(row)}>
+                        <Icon name="copy" size={16} /></Button>,
             }
         ]
         const docsData = _GET_DOCS_DATA();

@@ -69,12 +69,12 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                     minWidth: '150px',
                     cell: row => <>
                         {row.worker_id == window.user.id || window.user.roleId == 1
-                            ? <button title="Dar visto" onClick={() => setFeedback(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                    <Icon name="check-square" size={24} /></button>
+ ? <Button variant="outline" size="sm" className="m-0 p-2" title="Dar visto" onClick={() => setFeedback(row)} >
+                                    <Icon name="check-square" size={24} /></Button>
                             : ""}
                         {window.user.roleId == 5 || window.user.roleId == 1 || window.user.roleId == 2
-                            ? <button title="Enviar Correo" onClick={() => setWorker(row)} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
-                                    <Icon name="paper-plane" size={24} /></button>
+ ? <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 m-0 p-2" title="Enviar Correo" onClick={() => setWorker(row)} >
+                                    <Icon name="paper-plane" size={24} /></Button>
                             : ""}
                     </>,
                 },

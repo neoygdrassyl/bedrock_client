@@ -293,9 +293,9 @@ function Publish({ translation, swaMsg, breadCrums }) {
         button: true,
         minWidth: '170px',
         cell: row => <>
-          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { toggleManage(); setEdit(row); }}><Icon name="edit" size={16} /></button>
+          <Button variant="outline" size="sm" className="m-0 px-2" onClick={() => { toggleManage(); setEdit(row); }}><Icon name="edit" size={16} /></Button>
           <div className='px-1'>
-            <button className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => handleDelete(row)}><Icon name="trash" size={16} /></button>
+            <Button variant="destructive" size="sm" className="m-0 px-2" onClick={() => handleDelete(row)}><Icon name="trash" size={16} /></Button>
           </div>
           <div className='px-0'></div>
           <a className="btn btn-sm btn-danger px-1" target="_blank"
@@ -453,7 +453,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
     let COLLAPSIBLE_JSX = (title, data, ID) => {
       return <>
         <Collapsible trigger={<><label className="mx-2"> {title} ({data.length})</label>
-          <button className="btn btn-primary btn-sm"><Icon name="plus" size={16} /> Ver Lista</button></>}>
+          <Button size="sm"><Icon name="plus" size={16} /> Ver Lista</Button></>}>
           {LIISTS(data, ID)}
         </Collapsible>
       </>
@@ -653,7 +653,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   </div>
                 </div>
                 <div className="text-center py-1 mt-1">
-                  <button className="btn btn-sm btn-success"> Enviar </button>
+                  <Button size="sm"> Enviar </Button>
                 </div>
               </div>
             </form>

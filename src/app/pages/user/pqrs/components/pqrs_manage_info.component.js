@@ -395,9 +395,9 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     <h4 className=""><b>4.1 PRORROGA</b></h4>
                     {_EXTENSION_COMPONENT()}
                     <div className="text-center">
-                        <button className="btn btn-sm btn-success my-3">
+                        <Button size="sm" className="my-3">
                             <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                        </button>
+                        </Button>
                     </div>
                 </form>
                 {email

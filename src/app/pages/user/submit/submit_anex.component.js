@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 // SERVICES
 import Submit_Service from '../../../services/submit.service'
 import funService from '../../../services/fun.service';
@@ -202,7 +203,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
             <div className="nomenclature_anex container">
                 <label className="fw-bold my-2">GENERAR DOCUMENTO</label>
                 <div className="col-3">
-                    <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
+                    <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                 </div>
                 <hr className="my-3" />
                 <label className="fw-bold my-2">ANEXAR DOCUMENTO</label>
@@ -256,7 +257,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                     <div className="row mb-3 text-center">
 
                         <div className="col-12">
-                            <button className="btn btn-success my-3"><Icon name="edit" size={16} /> ANEXAR DOCUMENTO </button>
+                            <Button size="sm" className="my-3"><Icon name="edit" size={16} /> ANEXAR DOCUMENTO </Button>
                         </div>
                     </div>
 

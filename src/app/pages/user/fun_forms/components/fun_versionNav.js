@@ -1,4 +1,5 @@
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 
 function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD, NAVIGATION_VERSION }) {
         return (<>
@@ -12,7 +13,7 @@ function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD
                                         {ON
                                             ? <>
                                                 {currentVersion > 1
-                                                    ? <button type="button" className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("minus")}><Icon name="chevron-circle-left" size={16} /></button>
+                                                    ? <Button size="sm" className="p-1" onClick={() => NAVIGATION_VERSION("minus")}><Icon name="chevron-circle-left" size={16} /></Button>
                                                     : <a className="btn btn-sm btn-light p-1"><Icon name="chevron-circle-left" size={16} /></a>}
                                             </> : ""}
 
@@ -21,7 +22,7 @@ function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD
                                             ? <>
                                                 {currentVersion >= currentItem.version
                                                     ? <a className="btn btn-sm light-info p-1"><Icon name="chevron-circle-right" size={16} /></a>
-                                                    : <button type="button" className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("plus")}><Icon name="chevron-circle-right" size={16} /></button>}
+                                                    : <Button size="sm" className="p-1" onClick={() => NAVIGATION_VERSION("plus")}><Icon name="chevron-circle-right" size={16} /></Button>}
                                             </> : ""}
                                     </div>
                                 </div>

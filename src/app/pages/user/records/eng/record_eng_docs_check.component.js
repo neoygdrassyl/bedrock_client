@@ -1,4 +1,5 @@
 import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import CodesJson from '../../../../components/jsons/fun6DocsList.json';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
@@ -181,7 +182,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
                     {COMPONENT_DOCS_CHECK(_DOCS)}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <button className="btn btn-success my-3" ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
+                            <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
                         </div>
                     </div>
                 </form>

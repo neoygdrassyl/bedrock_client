@@ -165,7 +165,7 @@ export default function ARCHIVE_X_FUN(props) {
                     </div>
                     <div className='row my-2'>
                         <div className='col text-end'>
-                            <button type="button" className="btn btn-primary btn-sm" onClick={() => addxList()}><Icon name="plus-circle" size={16} /> AÑADIR ITEM</button>
+                            <Button size="sm" onClick={() => addxList()}><Icon name="plus-circle" size={16} /> AÑADIR ITEM</Button>
                         </div>
                     </div>
                 </>
@@ -205,7 +205,7 @@ export default function ARCHIVE_X_FUN(props) {
             </div>
             <div className='row my-2'>
                 <div className='col text-end'>
-                    <button type="button" className="btn btn-primary btn-sm" onClick={() => UpdateXList(row)}><Icon name="edit" size={16} /> ACTUALIZAR ITEM</button>
+                    <Button size="sm" onClick={() => UpdateXList(row)}><Icon name="edit" size={16} /> ACTUALIZAR ITEM</Button>
                 </div>
             </div>
         </>
@@ -238,9 +238,9 @@ export default function ARCHIVE_X_FUN(props) {
                         <label>Folios: <label className='fw-bold'>{it.pages}</label></label>
                     </div>
                     <div className='col-2 border text-center'>
-                        <span title="Administrar documentos item"><button type="button" className="btn btn-primary btn-sm px-1 py-1" onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><Icon name="cloud-upload-alt" size={16} /></button></span>
-                        <span title="Actualizar item de esta caja"><button type="button" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><Icon name="edit" size={16} /></button></span>
-                        <span title="Eliminar item de esta caja"><button type="button" className="btn btn-danger btn-sm px-1 py-1" onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><Icon name="trash-alt" size={16} /></button></span>
+                        <span title="Administrar documentos item"><Button size="sm" className="px-1 py-1" onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><Icon name="cloud-upload-alt" size={16} /></Button></span>
+                        <span title="Actualizar item de esta caja"><Button variant="outline" size="sm" className="px-1 py-1" onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar item de esta caja"><Button variant="destructive" size="sm" className="px-1 py-1" onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><Icon name="trash-alt" size={16} /></Button></span>
 
                     </div>
                 </div>

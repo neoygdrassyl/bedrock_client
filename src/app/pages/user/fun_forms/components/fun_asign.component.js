@@ -457,13 +457,13 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
-                <button type="button" className="btn btn-primary" onClick={() => {
+                <Button size="sm" onClick={() => {
                     setData([]);
                     setLoad(false);
 
                     setLoad2(false);
                     setDataW([]);
-                }}>CARGAR</button>
+                }}>CARGAR</Button>
             </div>
         );
     }
@@ -475,7 +475,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 <button type="button" className={`m-0 px-2 btn btn-sm ${!filterArc ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <Icon name="building" size={16} /></button>
                 <button type="button" className={`m-0 px-2 btn btn-sm ${!filterEng ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><Icon name="cogs" size={16} /> </button>
                 {currenItem != null ?
-                    <button type="button" className="m-0 px-2 btn btn-danger btn-sm" onClick={() => { setCurrentItem(null); setSbtn(null) }}><Icon name="times" size={16} /> </button>
+                    <Button variant="destructive" size="sm" className="m-0 px-2" onClick={() => { setCurrentItem(null); setSbtn(null) }}><Icon name="times" size={16} /> </Button>
                     : ''}
             </div>
         );
@@ -656,7 +656,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         <li className={classList} style={{ backgroundColor: worker.color, }}>
                             <div className='row'>
                                 <div className='col'>
-                                    {worker.icon} {worker.name} ({worker.datas.filter(item => _filter(item)).length}) {worker.icon ? <button type="button" className="btn btn-primary btn-sm rounded-pill" onClick={() => {setModalF(true); setCurrentProf({name: worker.name, type: wType, id: worker.id})}} >Ver historial</button>: null}
+                                    {worker.icon} {worker.name} ({worker.datas.filter(item => _filter(item)).length}) {worker.icon ? <Button size="sm" className="rounded-pill" onClick={() => {setModalF(true); setCurrentProf({name: worker.name, type: wType, id: worker.id})}} >Ver historial</Button>: null}
                                 </div>
                             </div>
                         </li>

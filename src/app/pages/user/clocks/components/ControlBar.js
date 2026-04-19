@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 
 export const ControlBar = ({ timeTravel, onClose }) => {
@@ -11,23 +12,17 @@ export const ControlBar = ({ timeTravel, onClose }) => {
         <div className="time-travel-controls">
           {/* <span className="control-label"><Icon name="magic" size={16} className="me-2" />Emulador</span> */}
           
-          <button 
-            type="button" 
-            className="btn btn-outline-secondary btn-sm" 
-            title="Retroceder 5 días"
+          <Button variant="outline" size="sm" title="Retroceder 5 días"
             onClick={() => onDateShift(-5)}
           >
             <Icon name="chevron-left" size={16} className="me-1" />-5d
-          </button>
+          </Button>
 
-          <button 
-            type="button" 
-            className="btn btn-outline-secondary btn-sm" 
-            title="Retroceder 1 días"
+          <Button variant="outline" size="sm" title="Retroceder 1 días"
             onClick={() => onDateShift(-1)}
           >
             <Icon name="chevron-left" size={16} className="me-1" />-1d
-          </button>
+          </Button>
           
           <input 
             type="date" 
@@ -36,23 +31,17 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             onChange={(e) => onDateChange(e.target.value)}
           />
 
-          <button 
-            type="button" 
-            className="btn btn-outline-secondary btn-sm" 
-            title="Avanzar 1 días"
+          <Button variant="outline" size="sm" title="Avanzar 1 días"
             onClick={() => onDateShift(1)}
           >
             <Icon name="chevron-right" size={16} className="me-1" />+1d
-          </button>
+          </Button>
           
-          <button 
-            type="button" 
-            className="btn btn-outline-secondary btn-sm" 
-            title="Avanzar 5 días"
+          <Button variant="outline" size="sm" title="Avanzar 5 días"
             onClick={() => onDateShift(5)}
           >
             +5d<Icon name="chevron-right" size={16} className="ms-1" />
-          </button>
+          </Button>
           
           <button 
             type="button" 
@@ -66,14 +55,10 @@ export const ControlBar = ({ timeTravel, onClose }) => {
         </div>
         <div className="actions">
             {onClose && (
-              <button 
-                  type="button" 
-                  className="btn btn-sm btn-outline-danger border-0"
-                  onClick={onClose}
-                  title="Ocultar barra de tiempo"
-              >
+              <Button variant="outline" size="sm" className="text-destructive border-destructive border-0" onClick={onClose}
+                  title="Ocultar barra de tiempo">
                   <Icon name="times" size={16} />
-              </button>
+              </Button>
             )}
         </div>
       </div>

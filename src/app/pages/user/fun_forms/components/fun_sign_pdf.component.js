@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import writtenNumber from 'written-number';
 import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { formsParser1, getJSON, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
@@ -341,7 +342,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                     <div className="row">
                         <div className="Col-12">
                             <div className="text-center py-4 mt-3">
-                                <button className="btn btn-danger"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
+                                <Button variant="destructive" size="sm"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                             </div>
                         </div>
                     </div>

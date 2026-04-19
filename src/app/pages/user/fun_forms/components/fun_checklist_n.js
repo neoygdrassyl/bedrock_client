@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import FUNService from '../../../../services/fun.service'
 
@@ -655,7 +656,7 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
                     ''
                     : <div className="row text-center">
                         <div className="col-12">
-                            <button type="button" className="btn btn-success my-3" onClick={() => setCheckList()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</button>
+                            <Button size="sm" className="my-3" onClick={() => setCheckList()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</Button>
                         </div>
                     </div>}
 

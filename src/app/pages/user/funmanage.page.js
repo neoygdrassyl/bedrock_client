@@ -626,7 +626,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                         </div>
 
                                         <div className="text-center">
-                                            <button className="btn btn-danger mt-1"><Icon name="th" size={16} /> CARGAR </button>
+                                            <Button variant="destructive" size="sm" className="mt-1"><Icon name="th" size={16} /> CARGAR </Button>
                                         </div>
                                     </form>
                                 </div>
@@ -658,7 +658,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                             </div>
                                         </div>
                                         <div className="text-center">
-                                            <button className="btn btn-primary mt-1"><Icon name="file-alt" size={16} /> CARGAR </button>
+                                            <Button size="sm" className="mt-1"><Icon name="file-alt" size={16} /> CARGAR </Button>
                                         </div>
                                     </form>
                                 </div>

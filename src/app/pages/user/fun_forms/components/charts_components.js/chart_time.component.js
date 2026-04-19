@@ -1,5 +1,6 @@
 
 import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import { useEffect, useState, memo } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 import { dateParser_dateDiff, formsParser1, formsParser1_exlucde2, regexChecker_isOA } from '../../../../../components/customClasses/typeParse';
@@ -481,12 +482,12 @@ function FUN_CHART_TIME(props) {
                 </div>
 
                 <div className='col-2 text-center'>
-                    <button type="button" className="btn btn-outline-primary rounded-pill" onClick={() => {
+                    <Button variant="outline" size="sm" className="rounded-pill" onClick={() => {
                         SetFilterId([document.getElementById("ids_1").value, document.getElementById("ids_2").value]);
                         SetFilterD([document.getElementById("d_1").value, document.getElementById("d_2").value]);
                         SetDate_1(document.getElementById("date_1").value);
                         SetDate_2(document.getElementById("date_2").value);
-                    }}>FILTRAR</button>
+                    }}>FILTRAR</Button>
                 </div>
 
             </div>
@@ -664,8 +665,8 @@ function FUN_CHART_TIME(props) {
             {datano.length > 0 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div className='fw-bold'> NO VALIDOS: {datano.length} <button type="button" className="btn btn-primary btn-sm" outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
-                            <Icon name="eye" size={16} /></button></div>
+                        <div className='fw-bold'> NO VALIDOS: {datano.length} <Button size="sm" outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
+                            <Icon name="eye" size={16} /></Button></div>
                         {seeNotValid1 ?
                             <div className="d-flex flex-wrap">
                                 {(Array.isArray(datano) ? datano : []).map(value => <div className="input-group-prepend border border-primary">
@@ -865,8 +866,8 @@ function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className='row text-center my-1'>
-                <div className='col fw-bold'> VALIDOS: {valid2} <button type="button" className="btn btn-primary btn-sm" outline={!seeValid2} onClick={() => setSeeValid2(!seeValid2)} >
-                    <Icon name="eye" size={16} /></button></div>
+                <div className='col fw-bold'> VALIDOS: {valid2} <Button size="sm" outline={!seeValid2} onClick={() => setSeeValid2(!seeValid2)} >
+                    <Icon name="eye" size={16} /></Button></div>
             </div>
             {seeValid2 ?
                 <div className='row text-center my-1'>
@@ -884,8 +885,8 @@ function FUN_CHART_TIME(props) {
             {datano2.length > 0 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div className='fw-bold'> NO VALIDOS: {datano2.length} <button type="button" className="btn btn-primary btn-sm" outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
-                            <Icon name="eye" size={16} /></button></div>
+                        <div className='fw-bold'> NO VALIDOS: {datano2.length} <Button size="sm" outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
+                            <Icon name="eye" size={16} /></Button></div>
                         {seeNotValid2 ?
                             <div className="d-flex flex-wrap">
                                 {(Array.isArray(datano2) ? datano2 : []).map(value => <div className="input-group-prepend border border-primary">

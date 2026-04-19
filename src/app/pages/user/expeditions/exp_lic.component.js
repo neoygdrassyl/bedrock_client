@@ -1,4 +1,5 @@
 import FUN_SERVICE from '../../../services/fun.service';
+import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -43,7 +44,7 @@ export default function EXP_LIC(props) {
                         </div>
                         <div className="col border py-1 text-center">
                             {currentItem.state < 100 ?
-                                <button className='btn btn-danger' onClick={() => close()}><Icon name="unlock-alt" size={16} /> FINALIZAR PROCESO</button>
+                                <Button variant="destructive" size="sm" onClick={() => close()}><Icon name="unlock-alt" size={16} /> FINALIZAR PROCESO</Button>
                                 : ''}
                         </div>
                     </div>
@@ -60,7 +61,7 @@ export default function EXP_LIC(props) {
                             </div>
                             <div className="col border py-1 text-center">
                                 {currentItem.state == 100 ?
-                                    <button className='btn btn-primary' ><Icon name="file-archive" size={16} /> ARCHIVAR SOLICITUD</button>
+                                    <Button size="sm"><Icon name="file-archive" size={16} /> ARCHIVAR SOLICITUD</Button>
                                     : ''}
 
                             </div>

@@ -1,5 +1,6 @@
 
 import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import FunService from '../../../../services/fun.service';
 import DOCS_LIST from './docs_list.component';
@@ -139,9 +140,9 @@ export default function FUN_6_UPLOAD(props) {
                 <div className="col text-end m-2">
 
                     {attachs > 0
-                        ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => setAttachs(attachs - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                        ? <Button variant="outline" size="sm" className="mx-3" onClick={() => setAttachs(attachs - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                         : ""}
-                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => setAttachs(attachs + 1)}><Icon name="plus-circle" size={16} /> AÑADIR </button>
+                    <Button variant="outline" size="sm" onClick={() => setAttachs(attachs + 1)}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                 </div>
             </div>
 
@@ -151,7 +152,7 @@ export default function FUN_6_UPLOAD(props) {
                 {attachs > 0
                     ? <div className="row text-center my-2">
                         <div className="col-12">
-                            <button className="btn btn-success btn-sm"><Icon name="file-alt" size={16} /> AÑADIR {attachs} DOCUMENTO(S)</button>
+                            <Button size="sm"><Icon name="file-alt" size={16} /> AÑADIR {attachs} DOCUMENTO(S)</Button>
                         </div>
                     </div> : ""}
             </form>

@@ -138,7 +138,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 ignoreCSV: true,
                 cell: row => <>
                     {dayjs().diff(row.date, 'days') <= 0
-                        ? <button className="btn btn-secondary btn-sm me-1" onClick={() => setItem_edit(row)}><Icon name="edit" size={16} /></button>
+                        ? <Button variant="outline" size="sm" className="me-1" onClick={() => setItem_edit(row)}><Icon name="edit" size={16} /></Button>
                         : ""}
                     <Button variant="ghost" size="sm" onClick={() => setItemFn(row)}><Icon name="info-circle" size={16} /></Button>
                 </>

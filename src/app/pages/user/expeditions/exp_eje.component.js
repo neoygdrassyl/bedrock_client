@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import { Button } from '@/components/ui/button';
 import SubmitService from '../../../services/submit.service';
 import Collapsible from '../../../components/Collapsible';
 
@@ -460,14 +461,14 @@ export default function EXP_EJEC(props) {
             <hr />
             <div className="row text-center">
                 <div className="col">
-                    <button type="button" className="btn btn-success my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
+                    <Button size="sm" className="my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                 </div>
                 <div className="col">
                     {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
-                        <button type="button" className="btn btn-primary btn my-3" onClick={() => pd_eje(true)}>
+                        <Button size="sm" className="my-3" onClick={() => pd_eje(true)}>
                             <Icon name="edit" size={16} className="me-2" />
                             Editar PDF
-                        </button>
+                        </Button>
                     )}
                 </div>
             </div>

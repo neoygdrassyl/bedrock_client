@@ -1,5 +1,6 @@
 
 import FUN_SERVICE from '../../../../services/fun.service';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
@@ -342,7 +343,7 @@ export default function FUN_D_ABDICATE(props) {
             <div className='border p-2'>
                 {_COMPONENT()}
                 <div className='text-center my-2'>
-                    <button type="button" className="btn btn-danger my-3" onClick={(e) => get_pdf(e)}><Icon name="file-pdf" size={16} /> GENERAR PDF</button>
+                    <Button variant="destructive" size="sm" className="my-3" onClick={(e) => get_pdf(e)}><Icon name="file-pdf" size={16} /> GENERAR PDF</Button>
                 </div>
             </div>
         </>

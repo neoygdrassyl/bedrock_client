@@ -1,5 +1,6 @@
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
+import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -90,8 +91,8 @@ export default function ARCHIVE_MANAGE(props) {
             <div className='row my-3'>
                 <div className='col text-end'>
                     {currentItem ?
-                        <button type="button" className="btn btn-sm btn-success" onClick={() => update()}><Icon name="edit" size={16} /> ACTUALIZAR</button>
-                        : <button type="button" className="btn btn-sm btn-success" onClick={() => create()}><Icon name="plus-circle" size={16} /> CREAR</button>}
+                        <Button size="sm" onClick={() => update()}><Icon name="edit" size={16} /> ACTUALIZAR</Button>
+                        : <Button size="sm" onClick={() => create()}><Icon name="plus-circle" size={16} /> CREAR</Button>}
                 </div>
             </div>
         </>

@@ -749,7 +749,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     {_COMPONENT_GENERAL()}
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3"><Icon name="check-square" size={16} /> GUARDAR CAMBIOS </button>
+                            <Button size="sm" className="my-3"><Icon name="check-square" size={16} /> GUARDAR CAMBIOS </Button>
                         </div>
                     </div>
                 </form>

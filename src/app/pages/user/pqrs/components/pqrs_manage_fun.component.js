@@ -1,4 +1,5 @@
 import PQRS_Service from '../../../../services/pqrs_main.service';
+import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -113,9 +114,9 @@ function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurre
                 <form id="form_pqrs_edit_fun_edit" onSubmit={manage_item}>
                     {_FUN_COMPONENT()}
                     <div className="text-center">
-                        <button className="btn btn-sm btn-success my-3">
+                        <Button size="sm" className="my-3">
                             <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

@@ -1,4 +1,5 @@
 import './components/editorStyles.css'
+import { Button } from '@/components/ui/button';
 import PQRS_SERVICES from '../../../services/pqrs_main.service'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component'
 import { Icon } from '@/components/icon';
@@ -48,7 +49,7 @@ export const ACESS_EDIT = (props) => {
                     </div>
                 </div>
                 <div className='text-center py-3'>
-                    <button type="button" className="btn btn-sm btn-info" onClick={access}>ACCEDER <Icon name="sign-in-alt" size={16} /></button>
+                    <Button size="sm" onClick={access}>ACCEDER <Icon name="sign-in-alt" size={16} /></Button>
                 </div>
             </div>
         </fieldset>

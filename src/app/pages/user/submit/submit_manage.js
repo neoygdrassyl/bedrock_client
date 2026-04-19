@@ -227,8 +227,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             </span>
                             <input type="text" className="form-control" id="submit_2"
                                 defaultValue={_CHILD.id_related} />
-                            <button type="button" className="btn btn-warning shadow-none"
-                                onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</button>
+                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
                         </div>
                         {verifyMSG}
                     </div>
@@ -517,8 +516,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
                                     {currentItem
-                                        ? <button className="btn btn-success my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
-                                        : <button className="btn btn-success my-3"><Icon name="plus-circle" size={16} /> CREAR </button>}
+                                        ? <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                                        : <Button size="sm" className="my-3"><Icon name="plus-circle" size={16} /> CREAR </Button>}
 
                                 </div>
                             </div>

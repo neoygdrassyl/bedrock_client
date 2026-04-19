@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../../../components/vizualizer.component';
@@ -57,7 +58,7 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                     minWidth: '150px',
                     cell: row => <>
                         <VIZUALIZER url={row.name} apipath={row.path.includes('input') ? '/files/pqrsa/' : '/files/pqrs/'} />
-                        {add ? <button type="button" className="btn btn-sm btn-danger mx-1 p-2" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></button> : ''}
+                        {add ? <Button variant="destructive" size="sm" className="mx-1 p-2" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></Button> : ''}
                     </>,
                 },
             ]
@@ -98,11 +99,11 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
             return <div>
                 <p className="lead text-end fw-bold">ANEXAR DOCUMENTO</p>
                 <div className="text-end m-3">
-                    {attachs > 0 ? <button type="button" className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><Icon name="paperclip" size={16} /> ANEXAR {attachs} DOCUMENTOS </button> : ""}
+                    {attachs > 0 ? <Button size="sm" onClick={() => addAttachsClose()}><Icon name="paperclip" size={16} /> ANEXAR {attachs} DOCUMENTOS </Button> : ""}
                     {attachs > 0
-                        ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                        ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                         : ""}
-                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
+                    <Button variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                 </div>
                 {_COMPONENT}
 

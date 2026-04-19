@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import EXP_CALC from '../expeditions/exp_calc.component';
@@ -137,8 +138,8 @@ export default function EXP_AREAS_RECORD(props) {
                 button: true,
                 maxWidth: '50px',
                 cell: row => <>
-                    <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></button></span>
-                    <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></button></span>
+                    <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
+                    <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                 </>
             },
         ]
@@ -280,7 +281,7 @@ export default function EXP_AREAS_RECORD(props) {
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <button type="button" className="btn btn-primary" onClick={() => new_expedition()}>CREAR CUADRO DE AREAS</button>
+                            <Button size="sm" onClick={() => new_expedition()}>CREAR CUADRO DE AREAS</Button>
                         </div>
                     </div>
 
@@ -298,7 +299,7 @@ export default function EXP_AREAS_RECORD(props) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col">
-                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                     </div>
                                 </div>
                             </form>
@@ -312,7 +313,7 @@ export default function EXP_AREAS_RECORD(props) {
                                 {_COMPONENT_MANAGE('_edit')}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                     </div>
                                 </div>
                             </form>

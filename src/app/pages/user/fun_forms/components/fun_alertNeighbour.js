@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import FUNService from '../../../../services/fun.service'
 import dayjs from 'dayjs';
 import { formsParser1, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
@@ -276,13 +277,13 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 </div>
                 <div className="row text-center">
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(false)}><Icon name="file-download" size={16} /> GENERAR CARTA</button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_nconfirm(false)}><Icon name="file-download" size={16} /> GENERAR CARTA</Button>
                     </div>
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(true)}><Icon name="file-download" size={16} /> GENERAR CARTA Y LISTA</button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_nconfirm(true)}><Icon name="file-download" size={16} /> GENERAR CARTA Y LISTA</Button>
                     </div>
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_npublish()}><Icon name="file-download" size={16} /> GENERAR PUBLICACIÓN</button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_npublish()}><Icon name="file-download" size={16} /> GENERAR PUBLICACIÓN</Button>
                     </div>
                 </div>
             </>

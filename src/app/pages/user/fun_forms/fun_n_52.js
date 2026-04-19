@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import HTMLDatalist from '../../../components/HTMLDatalist';
 import FUNService from '../../../services/fun.service'
 import DataTable from '@/components/data-table-bridge';
@@ -720,7 +721,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span 
                                 role="button" 
                                 tabIndex={0} 
-                                className="btn btn-secondary btn-sm  m-0 p-2 shadow-none" 
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground m-0 p-2" 
                                 onClick={() => setEdit(row)}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEdit(row); }}
                                 style={{cursor: 'pointer'}}>
@@ -730,7 +731,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span 
                                 role="button" 
                                 tabIndex={0} 
-                                className="btn btn-danger btn-sm  m-0 p-2 shadow-none" 
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 m-0 p-2" 
                                 onClick={() => delete_52(row.id)}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') delete_52(row.id); }}
                                 style={{cursor: 'pointer'}}>
@@ -1066,7 +1067,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             {_COMPONENT_NEW()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
@@ -1088,9 +1089,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                         <h3 className="my-3 text-center">Actualizar Profesional</h3>
                         {_COMPONENT_EDIT()}
                         <div className="text-center">
-                            <button className="btn btn-success my-3">
+                            <Button size="sm" className="my-3">
                                 <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                            </button>
+                            </Button>
                         </div>
                     </form>
                     : ""}

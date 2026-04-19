@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useState, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import Norms_Service from "../../../services/norm.service"
 import { ELEMENTS } from './norm.vars'
@@ -431,7 +432,7 @@ export default function NORM_RESUME(props) {
                 <h3 className="pb-2">5. RESUMEN DE INFORMACIÓN:</h3>
                 {RESUME}
                 <div className='row text-center'>
-                    <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><Icon name="file-pdf" size={16} /> GENERAR PDF </button></div>
+ <div className='col'><Button variant="destructive" size="sm" className="my-1" onClick={() => gen_pdf()} type='submit'><Icon name="file-pdf" size={16} /> GENERAR PDF </Button></div>
                 </div>
                 <hr />
             </Suspense>

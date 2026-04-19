@@ -286,8 +286,8 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                                 <label className="app-p lead fw-normal" id="fund_12">1.2 DOCUMENTOS DE VENTANILLA ÚNICA</label>
                             </div>
                             <div className='col text-end'>
-                                <button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
-                                <Icon name="file-csv" size={16} /> DESCARGAR CSV</button>
+                                <Button variant="outline" size="sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
+                                <Icon name="file-csv" size={16} /> DESCARGAR CSV</Button>
                             </div>
                         </div>
 

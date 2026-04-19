@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { Spreadsheet } from "react-spreadsheet";
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
@@ -837,10 +838,8 @@ export default function RECORD_ARC_AREAS(props) {
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
                         <button type="button" className={`btn btn-sm ${!openConfig ? "btn-outline-primary" : "btn-primary"}`}
                             onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</button>
-                        <button type="button" className="btn btn-outline-primary btn-sm"
-                            onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</button>
-                        <button type="button" className="btn btn-outline-success btn-sm"
-                            onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</button>
+                        <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</Button>
+                        <Button variant="outline" size="sm" onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</Button>
                     </div>
                     <div>
                         {saving === 0 ?
@@ -856,8 +855,7 @@ export default function RECORD_ARC_AREAS(props) {
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area" />
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area_end" />
-                        <button type="button" className="btn btn-outline-danger btn-sm"
-                            onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</button>
+                        <Button variant="outline" size="sm" className="text-destructive border-destructive" onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</Button>
                     </div>
                 </div>
             </div>
@@ -990,7 +988,7 @@ export default function RECORD_ARC_AREAS(props) {
                             </div>
                         </div>
                         <div className='col-3'>
-                            <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => _NEW_BD()}>CREAR</button>
+                            <Button variant="outline" size="sm" onClick={() => _NEW_BD()}>CREAR</Button>
                         </div>
                         <div className='col'>
                             <div className="form-check">

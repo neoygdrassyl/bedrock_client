@@ -884,7 +884,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                 </div>
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-warning my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                     </div>
                                 </div>
                             </form>

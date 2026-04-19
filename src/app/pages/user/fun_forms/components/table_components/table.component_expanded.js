@@ -1,4 +1,5 @@
 import TagInput from '../../../../../components/TagInput';
+import { Button } from '@/components/ui/button';
 import React, { useEffect, useState } from 'react';
 import FUN_SERVICE from '../../../../../services/fun.service';
 import USER_SERVICE from '../../../../../services/users.service';
@@ -357,11 +358,11 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
         return <>
             <div className='row text-center py-1'>
                 <div className='col'>
-                    <button className='btn btn-sm btn-info' onClick={() => {
+                    <Button size="sm" onClick={() => {
                         if (state == 11) setncl(!ncl);
                         if (state == 12) setnce(!nce);
                         if (state == 13) setnca(!nca);
-                    }}><label><Icon name="plus-circle" size={16} /> NUEVA</label></button>
+                    }}><label><Icon name="plus-circle" size={16} /> NUEVA</label></Button>
                 </div>
                 <div className='col-4'>
                     {(state == 11 && ncl) || (state == 12 && nce) || (state == 13 && nca) ?
@@ -376,21 +377,21 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                 </div>
                 <div className='col'>
                     {(state == 11 && ncl) || (state == 12 && nce) || (state == 13 && nca) ?
-                        <button className='btn btn-sm btn-success' onClick={() => {
+                        <Button size="sm" onClick={() => {
                             var date = document.getElementById('asign_date_' + state).value;
                             if (!date) return;
                             save_clock(state, date)
-                        }}><label><Icon name="life-ring" size={16} /> ASIGNAR</label></button>
+                        }}><label><Icon name="life-ring" size={16} /> ASIGNAR</label></Button>
                         : ''}
 
                 </div>
                 <div className='col'>
                     {(state == 11 && ncl) || (state == 12 && nce) || (state == 13 && nca) ?
-                        <button className='btn btn-sm btn-danger' onClick={() => {
+                        <Button variant="destructive" size="sm" onClick={() => {
                             if (state == 11) setncl(false);
                             if (state == 12) setnce(false);
                             if (state == 13) setnca(false);
-                        }}><label><Icon name="times-circle" size={16} /> CANCELAR</label></button>
+                        }}><label><Icon name="times-circle" size={16} /> CANCELAR</label></Button>
                         : ''}
 
                 </div>

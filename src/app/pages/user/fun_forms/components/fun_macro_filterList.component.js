@@ -302,7 +302,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
     }
     return (
         <div>
-            <button type="button" className="btn btn-primary shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><Icon name="th-list" size={16} /> {text}</button>
+            <Button size="sm" id={idRef} onClick={(e) => toggle(e.target.id)}><Icon name="th-list" size={16} /> {text}</Button>
             <Modal contentLabel="GENERAL VIEW FUN"
                 isOpen={modal}
                 style={customStylesForModal}

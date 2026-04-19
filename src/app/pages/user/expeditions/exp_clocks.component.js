@@ -489,10 +489,10 @@ export default function EXP_CLOCKS(props) {
           {/* Acciones */}
           <div className="actions d-flex gap-2 flex-wrap align-items-center">
             {!isDesisted && canAddSusp && (
-              <button type="button" className="btn btn-warning btn-sm" onClick={() => addTimeControl('suspension')}>
+              <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => addTimeControl('suspension')}>
                 <Icon name="pause" size={16} className="me-2" />
                 Añadir Suspensión
-              </button>
+              </Button>
             )}
             {!isDesisted && canAddExt && (
               <Button size="sm" onClick={() => addTimeControl('extension')}>
@@ -501,9 +501,9 @@ export default function EXP_CLOCKS(props) {
               </Button>
             )}
             {!isFull && (
-              <button type="button" className="btn btn-sm btn-light ms-1 exp-full-btn" title="Pantalla completa" onClick={() => setIsFull(true)}>
+              <Button variant="ghost" size="sm" className="ms-1 exp-full-btn" title="Pantalla completa" onClick={() => setIsFull(true)}>
                 <Icon name="expand" size={16} />
-              </button>
+              </Button>
             )}
           </div>
 
@@ -513,9 +513,9 @@ export default function EXP_CLOCKS(props) {
               <div className="text-danger">
                 <Icon name="ban" size={16} className="me-1" />
                 Proceso desistido
-                <button type="button" className="btn btn-link btn-sm p-0 ms-2 align-baseline" onClick={showDesistModal}>
+                <Button variant="link" size="sm" className="p-0 ms-2 align-baseline" onClick={showDesistModal}>
                   Ver motivo
-                </button>
+                </Button>
               </div>
             ) : (
               <>
@@ -560,7 +560,7 @@ export default function EXP_CLOCKS(props) {
                     Curaduría: No iniciado
                     <button
                       type="button"
-                      className="btn btn-link btn-sm p-0 ms-2 align-baseline"
+                      className="inline-flex items-center text-sm text-primary underline-offset-4 hover:underline p-0 ms-2 align-baseline"
                       onClick={handleShowCuraduriaDetails}
                     >
                       Más info
@@ -572,7 +572,7 @@ export default function EXP_CLOCKS(props) {
                     Curaduría: {curDetails.paused ? 'Pausado' : `${curDetails.remaining} días restantes`}
                     <button
                       type="button"
-                      className="btn btn-link btn-sm p-0 ms-2 align-baseline"
+                      className="inline-flex items-center text-sm text-primary underline-offset-4 hover:underline p-0 ms-2 align-baseline"
                       onClick={handleShowCuraduriaDetails}
                     >
                       Ver detalle
@@ -780,9 +780,9 @@ export default function EXP_CLOCKS(props) {
           <div className="exp-fullscreen-inner">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <h6 className="m-0">Reloj del Proceso</h6>
-              <button className="btn btn-sm btn-light" onClick={() => setIsFull(false)}>
+              <Button variant="ghost" size="sm" onClick={() => setIsFull(false)}>
                 <Icon name="compress" size={16} /> Cerrar
-              </button>
+              </Button>
             </div>
             <ControlBar />
             <div className="card exp-card mb-0">

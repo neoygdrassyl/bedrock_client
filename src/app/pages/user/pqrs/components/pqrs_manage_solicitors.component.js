@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import DataTable from '@/components/data-table-bridge';
 import { Icon } from '@/components/icon';
@@ -56,10 +57,10 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <button title="Modificar item" onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <Icon name="edit" size={16} /></button>
-                        <button title="Eliminar item" onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <Icon name="trash-alt" size={16} /></button>
+ <Button variant="outline" size="sm" className="m-0 p-2" title="Modificar item" onClick={() => setEdit(row)} >
+                                <Icon name="edit" size={16} /></Button>
+ <Button variant="destructive" size="sm" className="m-0 p-2" title="Eliminar item" onClick={() => delete_item(row.id)} >
+                                <Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
@@ -217,9 +218,9 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                     ? <form id="form_pqrs_edit_solicitor_new" onSubmit={new_item}>
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
-                            <button className="btn btn-sm btn-success my-3">
+                            <Button size="sm" className="my-3">
                                 <Icon name="share-square" size={16} /> AÑADIR ITEM
-                            </button>
+                            </Button>
                         </div>
                     </form>
                     : ""}
@@ -231,9 +232,9 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                         </div>
                         {_COMPONENT_MANAGE("_edit")}
                         <div className="text-center">
-                            <button className="btn btn-sm btn-success my-3">
+                            <Button size="sm" className="my-3">
                                 <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                            </button>
+                            </Button>
                         </div>
                     </form>
                     : ""}

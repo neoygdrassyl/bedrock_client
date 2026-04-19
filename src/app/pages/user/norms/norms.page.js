@@ -155,7 +155,7 @@ export default function NORMS(props) {
                 </div>
 
                 <div className="text-center">
-                    <button className="btn btn btn-success my-1"><Icon name="folder-plus" size={16} /> CREAR </button>
+                    <Button size="sm" className="my-1"><Icon name="folder-plus" size={16} /> CREAR </Button>
                 </div>
             </form>
         </div>
@@ -178,7 +178,7 @@ export default function NORMS(props) {
                 </div>
 
                 <div className="text-center">
-                    <button className="btn btn btn-secondary my-1"><Icon name="search" size={16} /> BUSCAR </button>
+                    <Button variant="outline" size="sm" className="my-1"><Icon name="search" size={16} /> BUSCAR </Button>
                 </div>
             </form>
         </div>
@@ -207,13 +207,13 @@ export default function NORMS(props) {
             center: true,
             minWidth: '80px',
             cell: row => <>
-                <button type="button" title="Modificar Item" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => {
+                <Button variant="outline" size="sm" className="m-0 p-1" title="Modificar Item" onClick={() => {
                         setSelectedId(row.id);
                         setSelectedIdPublic(row.id_in);
                         setModal(!modal);
-                    }}><Icon name="edit" size={16} /></button>
+                    }}><Icon name="edit" size={16} /></Button>
                 {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
-                    <button type="button" title="Eliminar Item" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></button>
+                    <Button variant="destructive" size="sm" className="m-0 p-1" title="Eliminar Item" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button>
                     : null}
             </>,
         },

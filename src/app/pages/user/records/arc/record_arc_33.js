@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -229,8 +230,8 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                     minWidth: '120px',
                     cell: row => {
                         return <>
-                            <button type="button" onClick={() => setEditBlueprint(row)} className="btn btn-sm btn-secondary px-2 me-1"><Icon name="edit" size={16} /></button>
-                            <button type="button" onClick={() => delete_33_area(row.id, 'blueprint')} className="btn btn-sm btn-danger px-2"><Icon name="trash-alt" size={16} /></button>
+ <Button variant="outline" size="sm" className="px-2 me-1" onClick={() => setEditBlueprint(row)} ><Icon name="edit" size={16} /></Button>
+ <Button variant="destructive" size="sm" className="px-2" onClick={() => delete_33_area(row.id, 'blueprint')} ><Icon name="trash-alt" size={16} /></Button>
                         </>
                     },
                 },
@@ -973,9 +974,9 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         ? <form id="form_ra_33_blueprint" onSubmit={new_ra_33_blueprint}>
                             {_COMPONENT_3()}
                             <div className="text-center">
-                                <button className="btn btn-success my-3">
+                                <Button size="sm" className="my-3">
                                     <Icon name="share-square" size={16} /> AÑADIR PLANO
-                                </button>
+                                </Button>
                             </div>
                         </form>
                         : ""}
@@ -985,9 +986,9 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                             <h3 className="my-3 text-center">Actualizar Plano</h3>
                             {_COMPONENT_3('_edit')}
                             <div className="text-center">
-                                <button className="btn btn-success my-3">
+                                <Button size="sm" className="my-3">
                                     <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                                </button>
+                                </Button>
                             </div>
                         </form>
                         : ""}

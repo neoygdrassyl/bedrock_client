@@ -1,4 +1,5 @@
 import FUNService from '../../../services/fun.service'
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
@@ -40,7 +41,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {
                     name: 'ACCIÓN',
                     button: true,
-                    cell: row => <button type="button" className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><Icon name="trash-alt" size={16} /></button>
+                    cell: row => <Button variant="destructive" size="sm" onClick={() => delete_4(row.id)}><Icon name="trash-alt" size={16} /></Button>
                 },
             ]
             return <DataTable
@@ -153,7 +154,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button type="button" className="btn btn-success my-3" onClick={() => new_4()}><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                        <Button size="sm" className="my-3" onClick={() => new_4()}><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                     </div>
                 </div>
                 {_CHILD_4_LIST()}

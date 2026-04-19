@@ -1,5 +1,6 @@
 
 import FUN_SERVICE from '../../../../services/fun.service';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
@@ -377,10 +378,10 @@ export default function FUN_D_CONTROL_2(props) {
             <div className="row my-2">
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button type="button" className="btn btn-success my-3" onClick={() => save_fun_r()} ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
+                        <Button size="sm" className="my-3" onClick={() => save_fun_r()} ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                     <div className="col">
-                        <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                     </div>
                 </div>
             </div>

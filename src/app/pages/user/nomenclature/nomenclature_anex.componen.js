@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
 import dayjs from 'dayjs';
@@ -166,7 +167,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                         </div>
                     </div>
                 </div>
-                <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
+                <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                 <hr className="my-3" />
                 <label className="fw-bold my-2">ANEXAR DOCUMENTO</label>
                 <br />
@@ -219,7 +220,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                     <div className="row mb-3 text-center">
 
                         <div className="col-12">
-                            <button className="btn btn-success my-3"><Icon name="edit" size={16} /> ANEXAR DOCUMENTO </button>
+                            <Button size="sm" className="my-3"><Icon name="edit" size={16} /> ANEXAR DOCUMENTO </Button>
                         </div>
                     </div>
 

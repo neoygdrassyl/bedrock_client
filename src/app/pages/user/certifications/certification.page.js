@@ -202,8 +202,8 @@ export default function CERTIFICATE_WORKER(props) {
                         </div>
 
                         <div className='my-2'>
-                            <button type="button" className="btn btn-outline-danger btn-sm mx-1" onClick={() => generatePDF()}><Icon name="file-pdf" size={16} /> Generar PDF</button>
-                            <button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVS(data, 'HISTORIAL DEL PRFESIONAL ' + title) }}><Icon name="file-csv" size={16} /> Descargar CSV</button>
+                            <Button variant="outline" size="sm" className="text-destructive border-destructive mx-1" onClick={() => generatePDF()}><Icon name="file-pdf" size={16} /> Generar PDF</Button>
+                            <Button variant="outline" size="sm" onClick={() => { generateCVS(data, 'HISTORIAL DEL PRFESIONAL ' + title) }}><Icon name="file-csv" size={16} /> Descargar CSV</Button>
                         </div>
 
                         <div className='row text-center border border-black py-2' style={{ backgroundColor: 'lightgray' }}>

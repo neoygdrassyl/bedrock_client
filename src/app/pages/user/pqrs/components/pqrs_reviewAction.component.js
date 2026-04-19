@@ -415,7 +415,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
             <div className='row text-center my-3'>
                 <div className='col'>
-                    <button type="button" className="btn btn-outline-success btn-sm rounded-pill" onClick={() => NEW_STEP_JSON(-1)}>NUEVO OFICIO</button>
+                    <Button variant="outline" size="sm" className="rounded-pill" onClick={() => NEW_STEP_JSON(-1)}>NUEVO OFICIO</Button>
                 </div>
             </div>
         </>
@@ -476,9 +476,8 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     return (
         <div className="">
-            <button title="Control administrativo" className="btn btn-sm btn-warning m-0 px-2 shadow-none"
-                    onClick={() => loadData(currentItemId)}>
-                    <Icon name="clipboard-check" size={16} /></button>
+            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 m-0 px-2" title="Control administrativo" onClick={() => loadData(currentItemId)}>
+                    <Icon name="clipboard-check" size={16} /></Button>
 
             <Modal contentLabel="REVIEW ACTION"
                 isOpen={review_modal}

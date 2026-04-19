@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import dayjs from 'dayjs';
 import FUNService from '../../../services/fun.service';
@@ -130,12 +131,12 @@ export default function RECORD_DOCUMENT_VERSION(props) {
             </div>
 
             <div className="text-end py-2">
-                <button className="btn btn-sm btn-primary" type='submit'><Icon name="times-circle" size={16} /> SUBIR</button>
+                <Button size="sm" type='submit'><Icon name="times-circle" size={16} /> SUBIR</Button>
             </div>
         </form>
     }
 
-    let BTN_DOWN = <button type="button" className="btn btn-primary btn-sm ms-1"><Icon name="download" size={16} /></button>
+    let BTN_DOWN = <Button size="sm" className="ms-1"><Icon name="download" size={16} /></Button>
     let BTN_VIEW = (API, params) => <VIEWER API={API} params={params} ></VIEWER>
     // ******************* APIS ******************* //
     let addDocument = (e) => {
@@ -193,7 +194,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
     }
     return (
         <>
-            {!_FIND_6_ID_REPLACE(id6) ? <button type="button" className="btn btn-danger btn-sm ms-1" onClick={() => setModal(true)}><Icon name="upload" size={16} /></button> : null}
+            {!_FIND_6_ID_REPLACE(id6) ? <Button variant="destructive" size="sm" className="ms-1" onClick={() => setModal(true)}><Icon name="upload" size={16} /></Button> : null}
             {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(getF6Document, [_FIND_6_ID_REPLACE(id6)]) : null}
 
             <Modal contentLabel="UPLOAD RECORD DOC"
@@ -218,7 +219,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <button type="button" className="btn btn-sm btn-info" onClick={() => setModal(false)}><Icon name="times-circle" size={16} /> CERRAR</button>
+                    <Button size="sm" onClick={() => setModal(false)}><Icon name="times-circle" size={16} /> CERRAR</Button>
                 </div>
             </Modal>
         </>

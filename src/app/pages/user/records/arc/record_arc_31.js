@@ -1,5 +1,6 @@
 
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
+import { Button } from '@/components/ui/button';
 
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
@@ -246,9 +247,9 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                         {_SELECT_PROFESIONAL()}
                         {_COMPONENT()}
                         <div className="text-center">
-                            <button type="button" className="btn btn-success my-3" onClick={() => save_ra_31()}>
+                            <Button size="sm" className="my-3" onClick={() => save_ra_31()}>
                                 <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                            </button>
+                            </Button>
                         </div>
                     </div>
                     <div className="col-6">

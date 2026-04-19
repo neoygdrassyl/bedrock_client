@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Button } from '@/components/ui/button';
 import MermaidDiagram from '../../../../components/MermaidDiagram.component';
 import { generateProjectFlowMermaid } from '../utils/mermaidProjectFlow';
 import { Icon } from '@/components/icon';
@@ -85,9 +86,9 @@ function ProjectFlowModal({ show, onClose, phases, expediente }) {
             </div>
 
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onClose}>
+              <Button variant="outline" size="sm" onClick={onClose}>
                 Cerrar
-              </button>
+              </Button>
             </div>
           </div>
         </div>

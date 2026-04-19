@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 import VIEWER from '../../../components/viewer.component';
 import VIZUALIZER from '../../../components/vizualizer.component';
@@ -214,8 +215,8 @@ export default function PROFESIONALS_MANAGE(props) {
             <form onSubmit={manage} enctype="multipart/form-data">
                 {load == 1 ? FORM_COMPONENT() : ''}
                 <div className="text-start py-2">
-                    {id ? <button className="btn btn-sm btn-success" type='submit'><Icon name="edit" size={16} />  GUARDAR</button>
-                        : <button className="btn btn-sm btn-success" type='submit'><Icon name="plus-circle" size={16} /> CREAR</button>}
+                    {id ? <Button size="sm" type='submit'><Icon name="edit" size={16} />  GUARDAR</Button>
+                        : <Button size="sm" type='submit'><Icon name="plus-circle" size={16} /> CREAR</Button>}
                 </div>
             </form>
 

@@ -247,8 +247,8 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         <label className="fw-bold">Listas Totales: {currentItem.sub_lists.length}</label>
                     </div>
                     <div className="text-end col-6">
-                        <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => setIsNew(true)}>
-                            <Icon name="plus-circle" size={16} /> NUEVA LISTA </button>
+                        <Button variant="outline" size="sm" className="mx-3" onClick={() => setIsNew(true)}>
+                            <Icon name="plus-circle" size={16} /> NUEVA LISTA </Button>
                     </div>
                 </div>
             </>
@@ -271,10 +271,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     wrap: false,
                     minWidth: '100px',
                     cell: row => <>
-                        <button title="Guardar Cambios" onClick={() => save_list(row.id)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <Icon name="save" size={16} /></button>
-                        <button title="Eliminar" onClick={() => delete_list(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                                <Icon name="trash-alt" size={16} /></button>
+ <Button variant="outline" size="sm" className="m-0 p-2" title="Guardar Cambios" onClick={() => save_list(row.id)} >
+                                <Icon name="save" size={16} /></Button>
+ <Button variant="destructive" size="sm" className="m-0 p-2" title="Eliminar" onClick={() => delete_list(row.id)} >
+                                <Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
@@ -309,8 +309,8 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     <div className="text-end col-6 my-3">
                         <Button variant="outline" size="sm" className="my-3 me-2" onClick={() => setIsNew(false)}>
                             <Icon name="times-circle" size={16} />  CANCELAR </Button>
-                        <button type="button" className="btn btn-success my-3" onClick={() => new_list()}>
-                            <Icon name="edit" size={16} /> GUARDAR LISTA </button>
+                        <Button size="sm" className="my-3" onClick={() => new_list()}>
+                            <Icon name="edit" size={16} /> GUARDAR LISTA </Button>
                     </div>
                 </div></>)
 
@@ -415,11 +415,11 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     </div>
                     <div className="col-6 text-end">
                         {extra_items > 0
-                            ? <button type="button" className="btn btn-sm btn-secondary my-3 me-1" onClick={() => setExtraItems(extra_items - 1)}>
-                                <Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                            ? <Button variant="outline" size="sm" className="my-3 me-1" onClick={() => setExtraItems(extra_items - 1)}>
+                                <Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                             : ""}
-                        <button type="button" className="btn btn-sm btn-secondary my-3" onClick={() => setExtraItems(extra_items + 1)}>
-                            <Icon name="plus-circle" size={16} /> AÑADIR ITEM </button>
+                        <Button variant="outline" size="sm" className="my-3" onClick={() => setExtraItems(extra_items + 1)}>
+                            <Icon name="plus-circle" size={16} /> AÑADIR ITEM </Button>
                     </div>
                 </div>
             </>)

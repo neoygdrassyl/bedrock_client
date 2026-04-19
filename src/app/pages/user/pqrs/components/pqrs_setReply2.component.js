@@ -322,12 +322,12 @@ export const PQRS_SET_REPLY1 = (props) => {
                     <div className="row justify-content-center">
                         <div className="col-3">
                             <div className="text-center m-3">
-                                <button type="button" className="btn btn-sm btn-info" onClick={funcion5}><Icon name="exchange-alt" size={16} /> CARGAR INFORMACIÓN</button>
+                                <Button size="sm" onClick={funcion5}><Icon name="exchange-alt" size={16} /> CARGAR INFORMACIÓN</Button>
                             </div>
                         </div>
                         <div className="col-3">
                             <div className="text-center m-3">
-                                <button className="btn btn-sm btn-success" ><Icon name="edit" size={16} /> GUARDAR RESPUESTA </button>
+                                <Button size="sm"><Icon name="edit" size={16} /> GUARDAR RESPUESTA </Button>
                             </div>
                         </div>
                     </div>
