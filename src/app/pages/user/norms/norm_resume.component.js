@@ -1,13 +1,11 @@
 import { Suspense, useEffect, useState, useCallback } from 'react';
 import Icon from '@/components/icon';
 import Norms_Service from "../../../services/norm.service"
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { ELEMENTS } from './norm.vars'
 import UU from "../../../components/jsons/UU.json"
 import FICHA_NORM_JSON from "../../../components/jsons/FICHA_NORM_1.json"
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 const default_Item = {
     id: false,
     id_in: null,
@@ -54,12 +52,7 @@ export default function NORM_RESUME(props) {
             })
             .catch(e => {
                 console.error(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     function loadData_predios() {
@@ -69,12 +62,7 @@ export default function NORM_RESUME(props) {
             })
             .catch(e => {
                 console.error(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     function loadData_perfiles() {
@@ -84,12 +72,7 @@ export default function NORM_RESUME(props) {
             })
             .catch(e => {
                 console.error(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     // ***************************  DATA GETTER *********************** //
@@ -103,12 +86,7 @@ export default function NORM_RESUME(props) {
                 })
                 .catch(e => {
                     console.error(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -122,34 +100,19 @@ export default function NORM_RESUME(props) {
         if (!FICHA) FICHA = {}
 
         formData.set('ficha', JSON.stringify(FICHA));
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         Norms_Service.gen_pdf(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.close();
+                    swalClose();
                     window.open(import.meta.env.VITE_API_URL + "/pdf/norm/" + "NORMA URBANA " + (item_general.id_out ?? item_general.id_in ?? '') + ".pdf");
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 

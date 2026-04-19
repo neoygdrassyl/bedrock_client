@@ -11,11 +11,8 @@ import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import TABLE_COMPONENT_EXPANDED from '../fun_forms/components/table_components/table.component_expanded';
 import USER_SERVICE from '../../../services/users.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { Icon } from '@/components/icon';
-
-const MySwal = withReactContent(Swal);
+import { swalError } from '@/app/utils/swalAdapter';
 
 function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSubtmitRows, openModal, listIncomplete }) {
     const [currentItems, setCurrentItems] = useState([]);
@@ -59,12 +56,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }, [swaMsg]);
 
@@ -75,12 +67,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
             });
     }, [swaMsg]);
 

@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { Link } from "react-router-dom";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
@@ -14,8 +12,7 @@ import { dateParser } from '../../../components/customClasses/typeParse'
 import NOMENCLATURE_NEW from './new_nomenclature';
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
-
-const MySwal = withReactContent(Swal);
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -50,7 +47,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
         Nomenclature_Service.getSearch(field, string)
             .then(response => {
                 asignList(response.data);
-                MySwal.close();
+                swalClose();
             })
             .catch(e => {
                 console.log(e);
@@ -169,49 +166,21 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
 
         // CREATES A NEW LICENCE
         let delete_nomenclature = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     Nomenclature_Service.delete(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                                 refreshList();
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -221,12 +190,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
             let field = document.getElementById("nomen_search_0").value;
             let string = document.getElementById("nomen_search_1").value;
             if (string) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 retrieveSearch(field, string);
             } else {
                 refreshList();
@@ -247,34 +211,19 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
             setDateStart(date_start);
             setDateEnd(date_end);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             Nomenclature_Service.getExcellData(date_start, date_end)
                 .then(response => {
                     if (response.data.length) {
                         gen_cvs(response.data)
                     } else {
-                        MySwal.fire({
-                            title: "NO SE ENCONTRÓ INFORMACIÓN",
-                            text: `Para las fechas ${date_start} y ${date_end} no se encontró información, verifique las fechas de búsqueda.`,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "NO SE ENCONTRÓ INFORMACIÓN", text: `Para las fechas ${date_start} y ${date_end} no se encontró información, verifique las fechas de búsqueda.`, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -320,7 +269,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
             link.setAttribute("href", csvUrl);
             link.setAttribute("download", `REPORTE DE NOMENCLATURAS ${date_start} - ${date_end}.csv`);
             document.body.appendChild(link); // Required for FF
-            MySwal.close()
+            swalClose()
             link.click();
         }
         return (

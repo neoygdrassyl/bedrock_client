@@ -1,7 +1,4 @@
 import { useCallback } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
 import dayjs from 'dayjs';
@@ -9,8 +6,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 
 import { cities } from '../../../components/jsons/vars';
 import { Icon } from '@/components/icon';
-
-const MySwal = withReactContent(Swal);
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshList, refreshItem }) {
         var formData = new FormData();
@@ -53,12 +49,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
             let pages = document.getElementById("nomen_anex_3").value;
             formData.set('pages', pages);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             manageDoc();
         }
@@ -68,59 +59,29 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                 Nomenclature_Service.update_anex(_GET_DOC().id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                             refreshItem(currentItem.id);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             } else {
                 Nomenclature_Service.create_anex(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                             refreshItem(currentItem.id);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
 
@@ -155,34 +116,19 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
             formData.set('vr', currentItem.vr);
             formData.set('oa', currentItem.oa);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             Nomenclature_Service.gen_doc_nomenclature(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/pdf/nomenclaure/" + "Nomenclature " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }

@@ -3,8 +3,6 @@ import PublishService from '../../services/publish.service'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 import Collapsible from '../../components/Collapsible';
 import { PUBLISH_TYPE_ARRAY } from '../../components/vars.global'
@@ -13,6 +11,7 @@ import publishService from '../../services/publish.service';
 
 
 import dayjs from 'dayjs';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 
 function Publish({ translation, swaMsg, breadCrums }) {
@@ -331,7 +330,6 @@ function Publish({ translation, swaMsg, breadCrums }) {
       }
     };
 
-    const MySwal = withReactContent(Swal);
     var formData = new FormData();
 
     let handleSubmit = (event) => {
@@ -356,23 +354,12 @@ function Publish({ translation, swaMsg, breadCrums }) {
         formData.append('file', attach, "publish_" + type_string + "_" + attach.name);
       }
 
-      MySwal.fire({
-        title: swaMsg.title_wait,
-        text: swaMsg.text_wait,
-        icon: 'info',
-        showConfirmButton: false,
-      });
+      swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
       PublishService.create(formData)
         .then(response => {
           if (response.data === 'OK') {
-            MySwal.fire({
-              title: swaMsg.publish_success_title,
-              text: swaMsg.publish_success_text,
-              footer: swaMsg.text_footer,
-              icon: 'success',
-              confirmButtonText: swaMsg.text_btn,
-            });
+            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
             document.getElementById("app-form").reset();
             formData = new FormData();
             formData.set('type', 0);
@@ -402,23 +389,12 @@ function Publish({ translation, swaMsg, breadCrums }) {
       formData.set('subdetail', subdetail);
       //formData.set('publish', true)
 
-      MySwal.fire({
-        title: swaMsg.title_wait,
-        text: swaMsg.text_wait,
-        icon: 'info',
-        showConfirmButton: false,
-      });
+      swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
       PublishService.update(edit.id, formData)
         .then(response => {
           if (response.data === 'OK') {
-            MySwal.fire({
-              title: swaMsg.publish_success_title,
-              text: swaMsg.publish_success_text,
-              footer: swaMsg.text_footer,
-              icon: 'success',
-              confirmButtonText: swaMsg.text_btn,
-            });
+            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
             document.getElementById("app-form").reset();
             formData = new FormData();
             formData.set('type', 0);
@@ -436,50 +412,22 @@ function Publish({ translation, swaMsg, breadCrums }) {
 
     const handleDelete = (row) => {
 
-      MySwal.fire({
-        title: "ELIMINAR ESTE ITEM",
-        text: "¿Esta seguro de eliminar de forma permanente este item?",
-        icon: 'question',
-        confirmButtonText: "ELIMINAR",
-        showCancelButton: true,
-        cancelButtonText: "CANCELAR"
-      }).then(SweetAlertResult => {
+      swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
         if (SweetAlertResult.isConfirmed) {
-          MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-          });
+          swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
           publishService.delete(row.id)
             .then(response => {
               if (response.data === 'OK') {
-                MySwal.fire({
-                  title: swaMsg.publish_success_title,
-                  text: swaMsg.publish_success_text,
-                  footer: swaMsg.text_footer,
-                  icon: 'success',
-                  confirmButtonText: swaMsg.text_btn,
-                });
+                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                 refreshList();
                 setEdit(false);
               } else {
-                MySwal.fire({
-                  title: swaMsg.generic_eror_title,
-                  text: swaMsg.generic_error_text,
-                  icon: 'warning',
-                  confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
               }
             })
             .catch(e => {
               console.log(e);
-              MySwal.fire({
-                title: swaMsg.generic_eror_title,
-                text: swaMsg.generic_error_text,
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-              });
+              swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
         }
       });

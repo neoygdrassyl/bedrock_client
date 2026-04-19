@@ -4,9 +4,8 @@ import { Link } from "react-router-dom";
 import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import PROFESIONALS_MANAGE from './manage.component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const customStylesForModal = {
   overlay: {
@@ -34,8 +33,6 @@ const customStylesForModal = {
 
   }
 };
-const MySwal = withReactContent(Swal);
-
 export default function PROFESIONALS(props) {
   const { translation, swaMsg, globals, breadCrums } = props;
 
@@ -216,50 +213,22 @@ export default function PROFESIONALS(props) {
       })
   }
   function eliminate(id) {
-    MySwal.fire({
-      title: "ELIMINAR ESTE ITEM",
-      text: "¿Esta seguro de eliminar de forma permanente este item?",
-      icon: 'question',
-      confirmButtonText: "ELIMINAR",
-      showCancelButton: true,
-      cancelButtonText: "CANCELAR"
-    }).then(SweetAlertResult => {
+    swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
       if (SweetAlertResult.isConfirmed) {
-        MySwal.fire({
-          title: swaMsg.title_wait,
-          text: swaMsg.text_wait,
-          icon: 'info',
-          showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         profesionalsService.delete(id)
           .then(response => {
             if (response.data === 'OK') {
-              MySwal.fire({
-                title: swaMsg.publish_success_title,
-                text: swaMsg.publish_success_text,
-                footer: swaMsg.text_footer,
-                icon: 'success',
-                confirmButtonText: swaMsg.text_btn,
-              });
+              swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
               setLoad(0);
             }
             else {
-              MySwal.fire({
-                title: swaMsg.generic_eror_title,
-                text: swaMsg.generic_error_text,
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-              });
+              swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             }
           })
           .catch(e => {
             console.log(e);
-            MySwal.fire({
-              title: swaMsg.generic_eror_title,
-              text: swaMsg.generic_error_text,
-              icon: 'warning',
-              confirmButtonText: swaMsg.text_btn,
-            });
+            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
           });
       }
     });
