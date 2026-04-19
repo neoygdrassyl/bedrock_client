@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -14,7 +13,7 @@ import EXP_RES_2 from './exp_res_2.component';
 import dayjs from "dayjs";
 import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
+
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_RES(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
@@ -210,12 +209,7 @@ export default function EXP_RES(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente." });
             });
 
     }
@@ -271,12 +265,7 @@ export default function EXP_RES(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente." });
             });
 
     }
@@ -3758,31 +3747,21 @@ export default function EXP_RES(props) {
         formData.set('record_eje', document.getElementById('exp_pdf_reso_record_version').value);
         formData.set('id', currentItem.id);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         EXPEDITION_SERVICE.gen_doc_res(formData)
             .then(response => {
                 console.log('✅ Respuesta exitosa:', response.data);
                 if (response.data.status === 'OK') {
                     if (editDocument) {
                         setResDocData(response.data); 
-                        MySwal.close();
+                        swalClose();
                     } else {
-                        MySwal.close();
+                        swalClose();
                         window.open(import.meta.env.VITE_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
                     }
                 } else {
                     console.warn('⚠️ Status no es OK:', response.data);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: response.data.message || swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
@@ -3804,14 +3783,12 @@ export default function EXP_RES(props) {
                     errorMessage = e.message;
                 }
                 
-                MySwal.fire({
+                swalError({
                     title: swaMsg.generic_eror_title,
                     html: `
                         <p>${errorMessage}</p>
                         ${e.response?.data?.details ? `<pre style="text-align: left; font-size: 12px; max-height: 200px; overflow: auto;">${JSON.stringify(e.response.data.details, null, 2)}</pre>` : ''}
                     `,
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
                 });
             });
 
@@ -4009,50 +3986,24 @@ export default function EXP_RES(props) {
         manage_exp();
     }
     let manage_exp = () => {
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         EXPEDITION_SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 
                     props.requestUpdateRecord(currentItem.id);
                     props.requestUpdate(currentItem.id);
                 } else if (response.data === 'ERROR_DUPLICATE') {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     return (
