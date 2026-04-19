@@ -9,7 +9,7 @@ import DOCS_LIST from './components/docs_list.component';
 import FUN_6_HISTORY from './components/fun_6_history.component';
 import submitService from '../../../services/submit.service';
 import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, readOnly, title, VREdit, parentLoad, updateParentLoad }) {
     const [attachs, setAttachs] = useState(0);
@@ -254,13 +254,11 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
         }
         let delete_6 = (id) => {
             formData = new FormData();
-            MySwal.fire({
+            swalConfirm({
                 title: "ELIMINAR ESTE ITEM",
                 text: "¿Esta seguro de eliminar de forma permanente este item?",
                 icon: 'question',
                 confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });

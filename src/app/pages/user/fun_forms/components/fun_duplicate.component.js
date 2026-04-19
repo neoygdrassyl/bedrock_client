@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import FUNService from '../../../../services/fun.service';
 import { Icon } from '@/components/icon';
-import { swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading } from '@/app/utils/swalAdapter';
 
 
 // Options grouped for UI display
@@ -102,16 +102,12 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
         }
 
         // Confirm before duplicating
-        MySwal.fire({
+        swalConfirm({
             title: '¿Duplicar proyecto?',
             html: `<p>Se creará un nuevo proyecto con ID público: <strong>${newIdPublic}</strong></p>
                    <p>Basado en: <strong>${currentItem.id_public}</strong></p>`,
             icon: 'question',
-            showCancelButton: true,
             confirmButtonText: 'Sí, duplicar',
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
         }).then((result) => {
             if (result.isConfirmed) {
                 executeDuplicate();
@@ -145,7 +141,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                         })
                         .join('');
 
-                    MySwal.fire({
+                    swalConfirm({
                         title: '¡Proyecto duplicado exitosamente!',
                         html: `
                             <p>Nuevo ID público: <strong>${data.new_id_public}</strong></p>
@@ -154,7 +150,6 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                         `,
                         icon: 'success',
                         confirmButtonText: 'Ir al nuevo proyecto',
-                        showCancelButton: true,
                         cancelButtonText: 'Cerrar',
                     }).then((result) => {
                         if (result.isConfirmed && onDuplicateSuccess) {
