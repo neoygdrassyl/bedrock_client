@@ -1,11 +1,8 @@
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
 
 import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
-const MySwal = withReactContent(Swal);
 const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion }) => {
 
         let _SET_CHILD = () => {

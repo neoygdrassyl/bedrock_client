@@ -1,14 +1,12 @@
 import { useCallback } from 'react';
 import Icon from '@/components/icon';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { cities, domains, states } from '../../../../components/jsons/vars';
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
     let _GET_CHILD_1 = () => {
@@ -152,20 +150,9 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         // NOTE: Direct DOM queries (document.getElementById) are kept for this PDF generator
         // to handle the uncontrolled inputs without adding excessive state management overhead for these specific fields.
         let model = currentItem.model
-        if (!model) return MySwal.fire({
-            title: 'SOLICITUD SIN MODELO',
-            text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
-            icon: 'error',
-            showConfirmButton: true,
-            confirmButtonText: 'CONTINUAR',
-        });
+        if (!model) return swalError({ title: 'SOLICITUD SIN MODELO', text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.' });
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         var formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
         if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
         else if (Number(model) >= 2022 && Number(model) <= 2025) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
@@ -2128,7 +2115,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         var pdfBytes = await pdfDoc.save();
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'FORMULARIO UNICO NACIONAL ' + currentItem.id_public + '.pdf');
-        MySwal.close();
+        swalClose();
 
         /* USE THIS TO DEBUG OR CHECK THE IDS OF THE FIELDS
           const fields = form.getFields()

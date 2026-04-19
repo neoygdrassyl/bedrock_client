@@ -1,14 +1,12 @@
 
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
 import USERS_Service from '../../../../services/users.service';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
-const MySwal = withReactContent(Swal);
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function FUN_CLOCKS_EMAILS(props) {
     const [users_list, setUsers_list] = useState([]);
     const [attachsForEmails, setAttachsForEmails] = useState(0);
@@ -23,12 +21,7 @@ function FUN_CLOCKS_EMAILS(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                 setLoad(false);
             });
     }
@@ -349,12 +342,7 @@ function FUN_CLOCKS_EMAILS(props) {
                 }
             }
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             let email_type = document.getElementById('fun_email_3').value;
 
@@ -368,44 +356,23 @@ function FUN_CLOCKS_EMAILS(props) {
         let email_manage = (_state) => {
             let OngoingProcess = _GET_ONGOING_PROCESS();
             let _clock = _GET_CLOCK_STATE_VERSION(_state, OngoingProcess);
-            if (_clock) MySwal.fire({
-                title: "ESTA ACCION HA SE REALIZÓ",
-                text: "Este paso del proceso de desistimiento ya se ha realizado posteriormente, repetir el paso nuevamente no actualizará ningnu valor.",
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-            });
+            if (_clock) swalError({ title: "ESTA ACCION HA SE REALIZÓ", text: "Este paso del proceso de desistimiento ya se ha realizado posteriormente, repetir el paso nuevamente no actualizará ningnu valor." });
 
             FUN_SERVICE.sendEmailNegative_6(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         if (!_clock) props.processCheck(_state);
                         props.refreshCurrentItem(currentItem.id);
                         setAttachsForEmails(0);
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
         return (

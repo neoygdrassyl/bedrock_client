@@ -1,14 +1,12 @@
 import { useCallback } from 'react';
 import Icon from '@/components/icon';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { cities, domains, domains_number } from '../../../../components/jsons/vars';
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
 
@@ -220,21 +218,10 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
     };
     const getPdfForm = async () => {
         let swaMsg = swaMsg;
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         let model = currentItem.model
-        if (!model) return MySwal.fire({
-            title: 'SOLICITUD SIN MODELO',
-            text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
-            icon: 'error',
-            showConfirmButton: true,
-            confirmButtonText: 'CONTINUAR',
-        });
+        if (!model) return swalError({ title: 'SOLICITUD SIN MODELO', text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.' });
 
         let m_2022 = Number(model) >= 2022
         // m_2022 = false
@@ -908,7 +895,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         var pdfBytes = await pdfDoc.save();
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'FORMULARIO DE REVISION GENERAL' + currentItem.id_public + '.pdf');
-        MySwal.close();
+        swalClose();
 
         /* USE THIS TO DEBUG OR CHECK THE IDS OF THE FIELDS
           const fields = form.getFields()
