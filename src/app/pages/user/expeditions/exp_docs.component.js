@@ -5,7 +5,7 @@ import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDR
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../components/jsons/vars';
-import { MDBCollapse } from '../../../components/ui';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import dayjs from 'dayjs';
@@ -2611,7 +2611,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     onClick={() => setShowCollapse_expedition_21(!showCollapse_expedition_21)}>
                     <label className="app-p lead fw-normal text-info">Acto de tramite de licencia</label>
                 </button>
-                <MDBCollapse show={showCollapse_expedition_21}>
+                <UiCollapsible open={showCollapse_expedition_21}><CollapsibleContent>
                     <fieldset className="p-3">
                         <form id="form_expedition_1" onSubmit={pdf_gen_1}>
                             {_COMPONENT_DOC_1()}
@@ -2622,7 +2622,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             </div>
                         </form>
                     </fieldset>
-                </MDBCollapse>
+                </CollapsibleContent></UiCollapsible>
 
                 {_GLOBAL_ID === 'cp1' ?
                     <>
@@ -2630,7 +2630,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
                             <label className="app-p lead fw-normal text-info">Liquidación de Expensas</label>
                         </button>
-                        <MDBCollapse show={showCollapse_expedition_27}>
+                        <UiCollapsible open={showCollapse_expedition_27}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_7}>
                                     {_COMPONENT_DOC_7()}
@@ -2641,7 +2641,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     </div>
                                 </form>
                             </fieldset>
-                        </MDBCollapse>
+                        </CollapsibleContent></UiCollapsible>
                     </>
                     : ''}
 
@@ -2650,7 +2650,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
                         <label className="app-p lead fw-normal text-info">Liquidacion de Expensas</label>
                     </button>
-                    <MDBCollapse show={showCollapse_expedition_22}>
+                    <UiCollapsible open={showCollapse_expedition_22}><CollapsibleContent>
                         <fieldset className="p-3">
                             <form id="form_expedition_2" onSubmit={pdf_gen_2}>
                                 {_COMPONENT_DOC_2()}
@@ -2661,7 +2661,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 </div>
                             </form>
                         </fieldset>
-                    </MDBCollapse>
+                    </CollapsibleContent></UiCollapsible>
                 </> : null}
 
                 {!conOA() && _GLOBAL_ID === 'cb1' ? <>
@@ -2669,7 +2669,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
                         <label className="app-p lead fw-normal text-info">Impuestos Municipales</label>
                     </button>
-                    <MDBCollapse show={showCollapse_expedition_23}>
+                    <UiCollapsible open={showCollapse_expedition_23}><CollapsibleContent>
 
                         <fieldset className="p-3">
                             <form id="form_expedition_3" onSubmit={pdf_gen_3}>
@@ -2681,14 +2681,14 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 </div>
                             </form>
                         </fieldset>
-                    </MDBCollapse>
+                    </CollapsibleContent></UiCollapsible>
                 </> : null}
 
                 <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_24"
                     onClick={() => setShowCollapse_expedition_24(!showCollapse_expedition_24)}>
                     <label className="app-p lead fw-normal text-info">Estampilla PRO-UIS</label>
                 </button>
-                <MDBCollapse show={showCollapse_expedition_24}>
+                <UiCollapsible open={showCollapse_expedition_24}><CollapsibleContent>
                     <fieldset className="p-3">
                         <form id="form_expedition_4" onSubmit={pdf_gen_4}>
                             {_COMPONENT_DOC_4()}
@@ -2699,7 +2699,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             </div>
                         </form>
                     </fieldset>
-                </MDBCollapse>
+                </CollapsibleContent></UiCollapsible>
 
                 {_GET_CHILD_2().item_267 > 2 && _GLOBAL_ID === 'cb1'
                     ? <>
@@ -2707,7 +2707,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
                             <label className="app-p lead fw-normal text-info">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</label>
                         </button>
-                        <MDBCollapse show={showCollapse_expedition_25}>
+                        <UiCollapsible open={showCollapse_expedition_25}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_5}>
                                     {_COMPONENT_DOC_5()}
@@ -2718,7 +2718,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     </div>
                                 </form>
                             </fieldset>
-                        </MDBCollapse>
+                        </CollapsibleContent></UiCollapsible>
 
                     </>
                     : ""}
@@ -2729,7 +2729,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
                             <label className="app-p lead fw-normal text-info">Impuesto Delineación Urbana</label>
                         </button>
-                        <MDBCollapse show={showCollapse_expedition_26}>
+                        <UiCollapsible open={showCollapse_expedition_26}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_6}>
                                     {_COMPONENT_DOC_6()}
@@ -2740,7 +2740,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     </div>
                                 </form>
                             </fieldset>
-                        </MDBCollapse>
+                        </CollapsibleContent></UiCollapsible>
                     </>
                     : ''}
 
