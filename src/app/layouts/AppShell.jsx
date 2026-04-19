@@ -26,9 +26,9 @@ export function AppShell({ user, onLogout, children }) {
       location.pathname === item.route ||
       location.pathname.startsWith(item.route + '/') ||
       item.children?.some((child) => location.pathname === child.route)
-  ) || navItems[0];
+  ) || null;
 
-  const [activeRailId, setActiveRailId] = useState(activeItem?.id || 'dashboard');
+  const [activeRailId, setActiveRailId] = useState(activeItem?.id ?? null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try { return localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true'; }
     catch { return false; }
@@ -36,10 +36,11 @@ export function AppShell({ user, onLogout, children }) {
 
   // Sync activeRailId when route changes externally (e.g. browser back/forward)
   useEffect(() => {
-    if (activeItem && activeItem.id !== activeRailId) {
-      setActiveRailId(activeItem.id);
+    const nextActiveId = activeItem?.id ?? null;
+    if (nextActiveId !== activeRailId) {
+      setActiveRailId(nextActiveId);
     }
-  }, [activeItem?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeItem?.id, activeRailId]);
 
   const toggleSidebar = useCallback(() => {
     setSidebarCollapsed((prev) => {
@@ -61,7 +62,7 @@ export function AppShell({ user, onLogout, children }) {
     return () => window.removeEventListener('keydown', handler);
   }, [toggleSidebar]);
 
-  const selectedItem = navItems.find((item) => item.id === activeRailId);
+  const selectedItem = navItems.find((item) => item.id === activeRailId) || null;
   const panelItems = selectedItem?.children || [];
 
   const handleRailSelect = useCallback(

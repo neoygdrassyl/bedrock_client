@@ -1,4 +1,4 @@
-import { useState, useMemo, Fragment } from 'react';
+import { useState, useMemo, Fragment, useId } from 'react';
 import {
   flexRender,
   getCoreRowModel,
@@ -70,6 +70,11 @@ export function DataTableBridge({
     return [];
   });
   const [expanded, setExpanded] = useState({});
+  const [paginationState, setPaginationState] = useState({
+    pageIndex: 0,
+    pageSize: paginationPerPage,
+  });
+  const rowsPerPageId = useId();
 
   // Convert react-data-table-component columns → tanstack columns
   const tanstackColumns = useMemo(() => {
@@ -148,13 +153,19 @@ export function DataTableBridge({
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    ...(pagination && { getPaginationRowModel: getPaginationRowModel() }),
+    ...(pagination && {
+      getPaginationRowModel: getPaginationRowModel(),
+      onPaginationChange: setPaginationState,
+    }),
     ...(expandableRows && {
       getExpandedRowModel: getExpandedRowModel(),
       onExpandedChange: setExpanded,
     }),
-    state: { sorting, expanded },
-    initialState: { pagination: { pageSize: paginationPerPage } },
+    state: {
+      sorting,
+      expanded,
+      ...(pagination && { pagination: paginationState }),
+    },
   });
 
   // Conditional row style resolver
@@ -173,6 +184,10 @@ export function DataTableBridge({
   };
 
   const cellPadding = dense ? 'py-1 px-2 text-xs' : 'py-2 px-3 text-sm';
+  const rowsPerPageOptions = Array.isArray(paginationRowsPerPageOptions) && paginationRowsPerPageOptions.length
+    ? paginationRowsPerPageOptions
+    : [paginationPerPage];
+  const rowsPerPageText = paginationComponentOptions?.rowsPerPageText || 'Filas por página:';
 
   return (
     <div className={cn('space-y-2', className)}>
@@ -192,7 +207,7 @@ export function DataTableBridge({
       >
         <Table>
           {!noTableHead && (
-            <TableHeader className="bg-muted/50 sticky top-0 z-10">
+            <TableHeader className="rdt_TableHead bg-muted/50 sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="rdt_TableHeadRow">
                   {headerGroup.headers.map((header) => (
@@ -255,7 +270,7 @@ export function DataTableBridge({
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className={cn(cellPadding, 'align-middle')}
+                        className={cn('rdt_TableCell', cellPadding, 'align-middle')}
                         style={cell.column.columnDef.size ? { width: cell.column.columnDef.size } : undefined}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -298,7 +313,28 @@ export function DataTableBridge({
       </div>
 
       {pagination && !progressPending && (
-        <div className="rdt_Pagination flex items-center justify-between text-sm pt-1">
+        <div className="rdt_Pagination flex flex-wrap items-center justify-between gap-2 text-sm pt-1">
+          <div className="flex items-center gap-2">
+            <label htmlFor={rowsPerPageId} className="text-xs text-muted-foreground">
+              {rowsPerPageText}
+            </label>
+            <select
+              id={rowsPerPageId}
+              aria-label={rowsPerPageText}
+              className="h-7 rounded-md border border-border bg-background px-2 text-xs text-foreground"
+              value={String(table.getState().pagination.pageSize)}
+              onChange={(event) => {
+                setPaginationState({
+                  pageIndex: 0,
+                  pageSize: Number(event.target.value),
+                });
+              }}
+            >
+              {rowsPerPageOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </div>
           <span className="text-muted-foreground text-xs">
             {table.getFilteredRowModel().rows.length} registros
             {' · '}
@@ -308,7 +344,6 @@ export function DataTableBridge({
             <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
               <ChevronLeft className="h-3.5 w-3.5" />
             </Button>
-            {/* Page number indicators */}
             {table.getPageCount() <= 7 ? (
               Array.from({ length: table.getPageCount() }, (_, i) => (
                 <Button

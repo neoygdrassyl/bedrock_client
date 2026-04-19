@@ -128,6 +128,24 @@ function RoutesWithBoundary({ children }) {
   return <RouteErrorBoundary pathname={location.pathname}>{children}</RouteErrorBoundary>;
 }
 
+function ShellAwarePublicRoute({ children }) {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  if (!auth.user) {
+    return children;
+  }
+
+  return (
+    <AppShell
+      user={auth.user}
+      onLogout={() => auth.signout(() => navigate('/login'))}
+    >
+      {children}
+    </AppShell>
+  );
+}
+
 // ── Main App ────────────────────────────────────────────────────────
 
 export default function App() {
@@ -156,24 +174,32 @@ export default function App() {
                     <Route path="/home" element={<Navigate to="/login" replace />} />
 
                     <Route path="/normas" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <NORMS translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
-                      </Suspense>
+                      <ShellAwarePublicRoute>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <NORMS translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                        </Suspense>
+                      </ShellAwarePublicRoute>
                     } />
                     <Route path="/certificados" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <CERTIFICATE_WORKER translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
-                      </Suspense>
+                      <ShellAwarePublicRoute>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <CERTIFICATE_WORKER translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                        </Suspense>
+                      </ShellAwarePublicRoute>
                     } />
                     <Route path="/uso-suelo" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <ZONE_USE translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
-                      </Suspense>
+                      <ShellAwarePublicRoute>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <ZONE_USE translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                        </Suspense>
+                      </ShellAwarePublicRoute>
                     } />
                     <Route path="/dev-guide" element={
-                      <Suspense fallback={<LoadingFallback />}>
-                        <DEV_GUIDE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
-                      </Suspense>
+                      <ShellAwarePublicRoute>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <DEV_GUIDE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
+                        </Suspense>
+                      </ShellAwarePublicRoute>
                     } />
 
                     {/* ── Legacy route redirects ────────────────────── */}

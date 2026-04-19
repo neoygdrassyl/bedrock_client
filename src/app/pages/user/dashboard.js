@@ -77,7 +77,9 @@ function Dashboard({ breadCrums }) {
         ]);
         if (cancelled) return;
         const len = (r) => r.status === 'fulfilled' && Array.isArray(r.value?.data) ? r.value.data.length : null;
-        const funData = results[0].status === 'fulfilled' ? results[0].value?.data : [];
+        const funData = results[0].status === 'fulfilled' && Array.isArray(results[0].value?.data)
+          ? results[0].value.data
+          : null;
         const activeFun = Array.isArray(funData) ? funData.filter(f => f.state > 0 && f.state < 100).length : null;
         const pendingFun = Array.isArray(funData) ? funData.filter(f => f.state == 1 || f.state == -1).length : null;
 
@@ -139,9 +141,18 @@ function Dashboard({ breadCrums }) {
       <section className="space-y-2.5">
         <SectionHeader title="Operación y Gestión" count={workModules.length} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
-          {workModules.map((mod) => (
-            <ModuleCard key={mod.link} {...mod} count={counts[mod.link]} loadingCount={loadingCounts} />
-          ))}
+          {workModules.map((mod) => {
+            const hasCount = Object.prototype.hasOwnProperty.call(counts, mod.link);
+            return (
+              <ModuleCard
+                key={mod.link}
+                {...mod}
+                count={counts[mod.link]}
+                hasCount={hasCount}
+                loadingCount={loadingCounts}
+              />
+            );
+          })}
         </div>
       </section>
 
@@ -174,7 +185,7 @@ function SectionHeader({ title, count }) {
   );
 }
 
-function ModuleCard({ title, icon, desc, link, count, loadingCount }) {
+function ModuleCard({ title, icon, desc, link, count, hasCount = false, loadingCount }) {
   const borderColor = CARD_COLORS[link] || 'border-l-border';
   const iconColor = ICON_COLORS[link] || DEFAULT_ICON_COLOR;
 
@@ -195,15 +206,18 @@ function ModuleCard({ title, icon, desc, link, count, loadingCount }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-1.5">
               <h3 className="text-[13px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors duration-150">{title}</h3>
-              {loadingCount ? (
+              {loadingCount && hasCount ? (
                 <Skeleton className="h-5 w-7 rounded" />
-              ) : count != null ? (
+              ) : hasCount && count != null ? (
                 <span className="text-base font-semibold text-foreground tabular-nums leading-none">
                   {count}
                 </span>
               ) : null}
             </div>
             <p className="text-[11px] text-muted-foreground/60 mt-0.5 truncate">{desc}</p>
+            {!loadingCount && hasCount && count == null ? (
+              <p className="text-[10px] text-warning mt-1">Conteo no disponible</p>
+            ) : null}
           </div>
         </CardContent>
       </Card>
