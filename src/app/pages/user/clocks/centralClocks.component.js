@@ -25,7 +25,7 @@ import './gantt.css';
 import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
-import { swalLoading, swalSuccess, swalError } from '../../../utils/swalAdapter';
+import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose } from '../../../utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
@@ -409,15 +409,10 @@ export default function EXP_CLOCKS(props) {
   };
 
   const delete_clock = (value) => {
-    MySwal.fire({
+    swalConfirm({
       title: '¿Estás seguro?',
       text: `Se eliminará la fecha del evento "${value.name}". Esta acción no se puede deshacer.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
         const formDataClock = new FormData();
@@ -642,12 +637,9 @@ export default function EXP_CLOCKS(props) {
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         const payload = buildSchedulePayload(result.value, currentItem);
-        MySwal.fire({
+        swalLoading({
           title: 'Guardando...',
           text: 'Por favor espera mientras guardamos la programación',
-          icon: 'info',
-          showConfirmButton: false,
-          allowOutsideClick: false
         });
         const formData = new FormData();
         formData.append('scheduleConfig', JSON.stringify(payload));
@@ -657,15 +649,9 @@ export default function EXP_CLOCKS(props) {
               saveScheduleConfig(payload);
               setRefreshTrigger(prev => prev + 1);
               const scheduledCount = Object.keys(result.value).length;
-              MySwal.fire({
+              swalSuccess({
                 title: 'Programación Guardada',
-                html: `<div class="text-start">
-                    <p><i class="fas fa-check-circle text-success me-2"></i><strong>${scheduledCount}</strong> tiempo${scheduledCount !== 1 ? 's' : ''} programado${scheduledCount !== 1 ? 's' : ''}</p>
-                    <p class="text-muted small mb-0">La columna "Límite Programado" mostrará las fechas calculadas.</p>
-                  </div>`,
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
+                text: `${scheduledCount} tiempo${scheduledCount !== 1 ? 's' : ''} programado${scheduledCount !== 1 ? 's' : ''}. La columna "Límite Programado" mostrará las fechas calculadas.`,
               });
             } else {
               throw new Error('Respuesta inesperada del servidor');
@@ -673,23 +659,16 @@ export default function EXP_CLOCKS(props) {
           })
           .catch(error => {
             console.error('Error guardando programación:', error);
-            MySwal.fire({
+            swalError({
               title: 'Error al Guardar',
               text: 'No se pudo guardar la programación. Por favor intenta nuevamente.',
-              icon: 'error',
-              confirmButtonText: 'OK'
             });
           });
       } else if (result.isDenied) {
-        MySwal.fire({
+        swalConfirm({
           title: '¿Estás seguro?',
           text: 'Se eliminará toda la programación de tiempos para este expediente.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#6c757d',
           confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
         }).then((confirmResult) => {
           if (confirmResult.isConfirmed) {
             const formData = new FormData();
@@ -700,20 +679,16 @@ export default function EXP_CLOCKS(props) {
                 clearScheduleConfig();
                 setRefreshTrigger(prev => prev + 1);
 
-                MySwal.fire({
+                swalSuccess({
                   title: 'Programación Eliminada',
                   text: 'Se ha eliminado la configuración de programación del proceso.',
-                  icon: 'info',
-                  timer: 2000,
-                  showConfirmButton: false
                 });
               })
               .catch(error => {
                 console.error('Error eliminando programación:', error);
-                MySwal.fire({
+                swalError({
                   title: 'Error',
                   text: 'No se pudo eliminar la programación.',
-                  icon: 'error'
                 });
               });
           }
