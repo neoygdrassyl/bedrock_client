@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
 import FUN_SERVICE from '../../../services/fun.service';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import RECORD_LAW_SERVICE from '../../../services/record_law.service';
@@ -16,8 +13,7 @@ import EXP_CLOCKS from './exp_clocks.component';
 import EXP_LIC from './exp_lic.component';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
-
-const MySwal = withReactContent(Swal);
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
 function EXPEDITION(props) {
     const { currentId, currentVersion, swaMsg, translation, globals, closeModal: closeModalProp, requesRefresh, NAVIGATION } = props;
@@ -59,12 +55,7 @@ function EXPEDITION(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     };
 
@@ -83,12 +74,7 @@ function EXPEDITION(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     };
 
@@ -183,31 +169,15 @@ function EXPEDITION(props) {
             EXPEDITION_SERVICE.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdateRecord(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
