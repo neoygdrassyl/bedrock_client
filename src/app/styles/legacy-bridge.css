@@ -444,12 +444,27 @@
 }
 
 /* ── Fieldsets (Enhanced v14) ────────────────────────────────────── */
+/* ── Fieldset hierarchy (v20) ─────────────────── */
 #main-content :where(fieldset) {
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   padding: 0.75rem;
   margin-bottom: 0.75rem;
   background-color: hsl(var(--card) / 0.5);
+}
+/* Nested fieldset — subtler border, no extra bg */
+#main-content :where(fieldset fieldset) {
+  border-color: hsl(var(--border) / 0.5);
+  background-color: transparent;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+/* 3rd level — minimal, only left-border accent */
+#main-content :where(fieldset fieldset fieldset) {
+  border: none;
+  border-left: 2px solid hsl(var(--primary) / 0.15);
+  border-radius: 0;
+  padding: 0.375rem 0.375rem 0.375rem 0.75rem;
 }
 
 #main-content :where(legend) {
@@ -462,6 +477,19 @@
   width: auto;
   border-radius: calc(var(--radius) - 2px);
   line-height: 1.5;
+}
+/* Nested legend — smaller, muted */
+#main-content :where(fieldset fieldset legend) {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+/* 3rd level legend — inline label style */
+#main-content :where(fieldset fieldset fieldset legend) {
+  font-size: 0.625rem;
+  color: hsl(var(--muted-foreground) / 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* ── Modals (react-modal still in use) ───────────────────────────── */
@@ -890,6 +918,13 @@
 .dark #main-content :where(fieldset) {
   background-color: hsl(var(--card) / 0.3);
   border-color: hsl(var(--border));
+}
+.dark #main-content :where(fieldset fieldset) {
+  border-color: hsl(var(--border) / 0.3);
+  background-color: transparent;
+}
+.dark #main-content :where(fieldset fieldset fieldset) {
+  border-left-color: hsl(var(--primary) / 0.1);
 }
 
 .dark #main-content :where(.pagination .page-link) {
@@ -1439,4 +1474,104 @@
 /* Dropdown fade */
 #main-content :where(.dropdown-menu.show) {
   animation: bridgeFadeIn 0.15s ease-out;
+}
+
+/* ======================================================================
+   v20 — Section spacing & row density normalization
+   ====================================================================== */
+
+/* Tighter row gutters for Bootstrap grid rows */
+#main-content :where(.row) {
+  --bs-gutter-x: 0.75rem;
+  --bs-gutter-y: 0.5rem;
+}
+
+/* mb-3 normalization — reduce to 0.5rem for density */
+#main-content :where(.mb-3) {
+  margin-bottom: 0.5rem !important;
+}
+#main-content :where(.mb-4) {
+  margin-bottom: 0.75rem !important;
+}
+#main-content :where(.mb-5) {
+  margin-bottom: 1rem !important;
+}
+#main-content :where(.mt-3) {
+  margin-top: 0.5rem !important;
+}
+#main-content :where(.mt-4) {
+  margin-top: 0.75rem !important;
+}
+#main-content :where(.my-2) {
+  margin-top: 0.375rem !important;
+  margin-bottom: 0.375rem !important;
+}
+#main-content :where(.my-3) {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* p-3 normalization — tighter */
+#main-content :where(.p-3) {
+  padding: 0.5rem !important;
+}
+#main-content :where(.p-4) {
+  padding: 0.75rem !important;
+}
+
+/* Horizontal rules — subtle */
+#main-content :where(hr) {
+  border-color: hsl(var(--border));
+  opacity: 0.5;
+  margin: 0.5rem 0;
+}
+.dark #main-content :where(hr) {
+  border-color: hsl(var(--border));
+  opacity: 0.3;
+}
+
+/* Row highlight for even/odd density on non-striped tables */
+#main-content :where(.table:not(.table-striped) tbody tr:nth-child(even)) {
+  background-color: hsl(var(--muted) / 0.15);
+}
+.dark #main-content :where(.table:not(.table-striped) tbody tr:nth-child(even)) {
+  background-color: hsl(var(--muted) / 0.08);
+}
+
+/* Container-primary section cards */
+#main-content :where(.container-primary) {
+  background-color: hsl(var(--primary) / 0.04);
+  border: 1px solid hsl(var(--primary) / 0.1);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+.dark #main-content :where(.container-primary) {
+  background-color: hsl(var(--primary) / 0.06);
+  border-color: hsl(var(--primary) / 0.08);
+}
+
+/* Input-group density tightening */
+#main-content :where(.input-group) {
+  margin-bottom: 0.25rem;
+}
+#main-content :where(.input-group-text) {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Form labels density */
+#main-content :where(label:not(.form-check-label):not(.btn)) {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.125rem;
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(label:not(.form-check-label):not(.btn)) {
+  color: hsl(var(--foreground) / 0.9);
+}
+
+/* Small text + muted helper text */
+#main-content :where(small, .form-text) {
+  font-size: 0.6875rem;
+  color: hsl(var(--muted-foreground));
 }
