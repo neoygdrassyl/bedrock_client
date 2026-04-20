@@ -41,14 +41,53 @@ const SVG_ICONS = {
 };
 
 /**
+ * Reverse lookup: Lucide component name → FA key in SVG_ICONS.
+ * Allows getIconSvg() to accept either naming convention.
+ */
+const LUCIDE_TO_FA = {
+  'Building':         'fa-building',
+  'User':             'fa-user',
+  'Users':            'fa-users',
+  'UserCheck':        'fa-user-tie',
+  'UserClock':        'fa-user-clock',
+  'HourglassIcon':    'fa-hourglass-half',
+  'Hourglass':        'fa-hourglass-half',
+  'Play':             'fa-play-circle',
+  'PauseCircle':      'fa-pause-circle',
+  'CheckCircle':      'fa-check-circle',
+  'Check':            'fa-check',
+  'XCircle':          'fa-times-circle',
+  'Mail':             'fa-envelope',
+  'AlertTriangle':    'fa-exclamation-triangle',
+  'AlertCircle':      'fa-exclamation-circle',
+  'Gavel':            'fa-gavel',
+  'FileSignature':    'fa-file-signature',
+  'FileText':         'fa-file-invoice',
+  'CalendarCheck':    'fa-calendar-check',
+  'CalendarX':        'fa-calendar-times',
+  'Calendar':         'fa-calendar-alt',
+  'Clock':            'fa-clock',
+  'Pause':            'fa-pause',
+  'Layers':           'fa-layer-group',
+  'ArrowDown':        'fa-arrow-down',
+  'PieChart':         'fa-chart-pie',
+  'Circle':           'fa-circle',
+  'MessageSquare':    'fa-comment-alt',
+  'Info':             'fa-info-circle',
+  'ListTodo':         'fa-tasks',
+  'Network':          'fa-project-diagram',
+};
+
+/**
  * Returns an inline SVG string for use in template literals.
- * @param {string} faName - FontAwesome name (e.g., 'fa-gavel') or Lucide name
+ * @param {string} name - FontAwesome name (e.g., 'fa-gavel') or Lucide name (e.g., 'Gavel')
  * @param {number} [size=14] - Icon size in pixels
  * @param {string} [className=''] - Additional CSS class
  * @returns {string} Inline SVG markup
  */
-export function getIconSvg(faName, size = 14, className = '') {
-  const paths = SVG_ICONS[faName];
+export function getIconSvg(name, size = 14, className = '') {
+  const resolvedKey = LUCIDE_TO_FA[name] || name;
+  const paths = SVG_ICONS[resolvedKey];
   if (!paths) {
     return `<span class="inline-icon-placeholder ${className}" style="width:${size}px;height:${size}px;display:inline-block"></span>`;
   }
