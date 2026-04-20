@@ -42,7 +42,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {
                     name: <label>ACCIÓN</label>,
                     button: true,
-                    cell: row => <MDBBtn className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                    cell: row => <MDBBtn className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
                 },
             ]
             return <DataTable
@@ -166,11 +166,11 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <div className="row mb-3">
                     <div className="col-4">
                         <label>4.1 Linderos</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-compass"></i>
+                        <div className="input-group mb-3">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-compass"></i>
                             </span>
-                            <select class="form-select" required id="f_41" >
+                            <select className="form-select" required id="f_41" >
                                 <option>NORTE</option>
                                 <option>SUR</option>
                                 <option>ORIENTE</option>
@@ -180,26 +180,26 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     </div>
                     <div className="col-4">
                         <label>4.2 Longitud (en m)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-ruler"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-ruler"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_42" />
+                            <input type="text" className="form-control" id="f_42" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>4.3 Colinda con </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-home"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_43" />
+                            <input type="text" className="form-control" id="f_43" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_4()}><i class="far fa-file-alt"></i> AÑADIR ITEM </MDBBtn>
+                        <MDBBtn className="btn btn-success my-3" onClick={() => new_4()}><i className="far fa-file-alt"></i> AÑADIR ITEM </MDBBtn>
                     </div>
                 </div>
                 {_CHILD_4_LIST()}

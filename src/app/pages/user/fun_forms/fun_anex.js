@@ -46,34 +46,34 @@ export default function FUN_ANEX(props) {
             </legend>
             <div className='row mx-3'>
                 <div className='col'>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="A" name="fun_1_a1"
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="A" name="fun_1_a1"
                             defaultChecked={VAR[0] == 'A'} />
-                        <label class="form-check-label">
+                        <label className="form-check-label">
                             A. Vivienda
                         </label>
                     </div>
                 </div>
                 <div className='col'>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="B" name="fun_1_a1"
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="B" name="fun_1_a1"
                             defaultChecked={VAR[1] == 'B'} />
-                        <label class="form-check-label">
+                        <label className="form-check-label">
                             B. Comercio y/o Servicios
                         </label>
                     </div>
                 </div>
-                <div className='col'>  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="fun_1_a1"
+                <div className='col'>  <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="fun_1_a1"
                         defaultChecked={VAR[2] == 'C'} />
-                    <label class="form-check-label" >
+                    <label className="form-check-label" >
                         C. Institucional
                     </label>
                 </div></div>
-                <div className='col'> <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="fun_1_a1"
+                <div className='col'> <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="fun_1_a1"
                         defaultChecked={VAR[3] == 'D'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         D. Industrial
                     </label>
                 </div></div>
@@ -81,26 +81,26 @@ export default function FUN_ANEX(props) {
             </div>
 
             <div className='row mx-3'>
-                <div className='col'> <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="fun_1_a1"
+                <div className='col'> <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="fun_1_a1"
                         defaultChecked={VAR[4] == 'E'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         E. Educación
                     </label>
                 </div></div>
-                <div className='col'><div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="F" name="fun_1_a1"
+                <div className='col'><div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="F" name="fun_1_a1"
                         defaultChecked={VAR[5] == 'F'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         F. Salud
                     </label>
                 </div></div>
                 <div className='col-6'>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                        <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a1" defaultValue={VAR[6] || ''} />
                     </div>
                 </div></div>
@@ -169,47 +169,47 @@ export default function FUN_ANEX(props) {
                 <label>2.1.1 Medidas Pasivas</label>
             </div>
             <div className='row mx-3'>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="fun_1_a211"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="fun_1_a211"
                         defaultChecked={VAR[0] == 'A'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         A. Cubierta Verde
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="fun_1_a211"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="fun_1_a211"
                         defaultChecked={VAR[1] == 'B'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         B. Elementos de protección Solar
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="fun_1_a211"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="fun_1_a211"
                         defaultChecked={VAR[2] == 'C'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         C. Vidrios de protección Solar
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="fun_1_a211"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="fun_1_a211"
                         defaultChecked={VAR[3] == 'D'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         D. Cubierta de protección solar
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="fun_1_a211"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="fun_1_a211"
                         defaultChecked={VAR[4] == 'E'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         E. Pared de protección solar
                     </label>
                 </div>
-                <div class="form-check">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                <div className="form-check">
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                        <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a211" defaultValue={VAR[5] ?? ''} />
                     </div>
                 </div>
@@ -227,47 +227,47 @@ export default function FUN_ANEX(props) {
                 <label>2.1.2 Medidas Activa</label>
             </div>
             <div className='row mx-3'>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="fun_1_a212"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="fun_1_a212"
                         defaultChecked={VAR[0] == 'A'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         A. Iluminación eficiente
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="fun_1_a212"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="fun_1_a212"
                         defaultChecked={VAR[1] == 'B'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         B. Equipos e aire acondicionados eficientes
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="fun_1_a212"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="fun_1_a212"
                         defaultChecked={VAR[2] == 'C'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         C. Agua caliente solar
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="fun_1_a212"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="fun_1_a212"
                         defaultChecked={VAR[3] == 'D'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         D. Controles de iluminación
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="fun_1_a212"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="fun_1_a212"
                         defaultChecked={VAR[4] == 'E'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         E. Variedades de velocidad para bombas
                     </label>
                 </div>
-                <div class="form-check">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                <div className="form-check">
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                        <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a212" defaultValue={VAR[5] || ''} />
                     </div>
                 </div>
@@ -285,47 +285,47 @@ export default function FUN_ANEX(props) {
                 <label>2.2 Materialidad muro externos</label>
             </div>
             <div className='row mx-3'>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="fun_1_a22"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="fun_1_a22"
                         defaultChecked={VAR[0] == 'A'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         A. Ladrillo portante
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="fun_1_a22"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="fun_1_a22"
                         defaultChecked={VAR[1] == 'B'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         B. Ladrillo común
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="fun_1_a22"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="fun_1_a22"
                         defaultChecked={VAR[2] == 'C'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         C. Muro de concreto vaciado en obra
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="fun_1_a22"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="fun_1_a22"
                         defaultChecked={VAR[3] == 'D'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         D. Muro en superboard
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="fun_1_a22"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="fun_1_a22"
                         defaultChecked={VAR[4] == 'E'} />
-                    <label class="form-check-label" >
+                    <label className="form-check-label" >
                         E. Muro cortina en aluminio
                     </label>
                 </div>
-                <div class="form-check">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                <div className="form-check">
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                        <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a22" defaultValue={VAR[5] ?? ''} />
                     </div>
                 </div>
@@ -343,47 +343,47 @@ export default function FUN_ANEX(props) {
                 <label>2.3 Materialidad muro interno</label>
             </div>
             <div className='row mx-3'>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="fun_1_a23"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="fun_1_a23"
                         defaultChecked={VAR[0] == 'A'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         A. Ladrillo numero 4 o similar
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="fun_1_a23"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="fun_1_a23"
                         defaultChecked={VAR[1] == 'B'} />
-                    <label class="form-check-label" >
+                    <label className="form-check-label" >
                         B. Drywall
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="fun_1_a23"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="fun_1_a23"
                         defaultChecked={VAR[2] == 'C'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         C. Ladrillo común
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="fun_1_a23"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="fun_1_a23"
                         defaultChecked={VAR[3] == 'D'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         D. Muro de concreto vaciado en obra
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="fun_1_a23"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="fun_1_a23"
                         defaultChecked={VAR[4] == 'E'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         E. Mampostería de bloque de concreto
                     </label>
                 </div>
-                <div class="form-check">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                <div className="form-check">
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                        <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a23" defaultValue={VAR[5] ?? ''} />
                     </div>
                 </div>
@@ -401,47 +401,47 @@ export default function FUN_ANEX(props) {
                 <label>2.4 Materialidad de cubierta</label>
             </div>
             <div className='row mx-3'>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="fun_1_a24"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="fun_1_a24"
                         defaultChecked={VAR[0] == 'A'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         A. Cubierta de concreto vaciado en obra
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="fun_1_a24"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="fun_1_a24"
                         defaultChecked={VAR[1] == 'B'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         B. Panel tipo sándwich de aluminio
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="fun_1_a24"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="fun_1_a24"
                         defaultChecked={VAR[2] == 'C'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         C. Tejas de arcilla
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="fun_1_a24"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="fun_1_a24"
                         defaultChecked={VAR[3] == 'D'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         D. Metálica
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="fun_1_a24"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="fun_1_a24"
                         defaultChecked={VAR[4] == 'E'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         E. Fibrocemento
                     </label>
                 </div>
-                <div class="form-check">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                <div className="form-check">
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                        <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a24" defaultValue={VAR[5] ?? ''} />
                     </div>
                 </div>
@@ -460,34 +460,34 @@ export default function FUN_ANEX(props) {
             </div>
             <div className='row mx-3'>
                 <label>Rango( 0% - 100%)</label>
-                <div class="form-group row form-control-sm">
-                    <label class="col-sm-3 col-form-label">Norte</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control form-control-sm" name="fun_1_a25" defaultValue={VAR[0]} />
+                <div className="form-group row form-control-sm">
+                    <label className="col-sm-3 col-form-label">Norte</label>
+                    <div className="col-sm-7">
+                        <input type="text" className="form-control form-control-sm" name="fun_1_a25" defaultValue={VAR[0]} />
                     </div>
                 </div>
-                <div class="form-group row form-control-sm">
-                    <label class="col-sm-3 col-form-label">Sur</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control form-control-sm" name="fun_1_a25"  defaultValue={VAR[1]} />
+                <div className="form-group row form-control-sm">
+                    <label className="col-sm-3 col-form-label">Sur</label>
+                    <div className="col-sm-7">
+                        <input type="text" className="form-control form-control-sm" name="fun_1_a25"  defaultValue={VAR[1]} />
                     </div>
                 </div>
-                <div class="form-group row form-control-sm">
-                    <label class="col-sm-3 col-form-label">Oriente</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control form-control-sm" name="fun_1_a25"   defaultValue={VAR[2]}/>
+                <div className="form-group row form-control-sm">
+                    <label className="col-sm-3 col-form-label">Oriente</label>
+                    <div className="col-sm-7">
+                        <input type="text" className="form-control form-control-sm" name="fun_1_a25"   defaultValue={VAR[2]}/>
                     </div>
                 </div>
-                <div class="form-group row form-control-sm">
-                    <label class="col-sm-3 col-form-label">Occidente</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control form-control-sm" name="fun_1_a25"  defaultValue={VAR[3]} />
+                <div className="form-group row form-control-sm">
+                    <label className="col-sm-3 col-form-label">Occidente</label>
+                    <div className="col-sm-7">
+                        <input type="text" className="form-control form-control-sm" name="fun_1_a25"  defaultValue={VAR[3]} />
                     </div>
                 </div>
-                <div class="form-group row form-control-sm">
-                    <label class="col-sm-4 col-form-label">Altura piso a techo (m)</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control form-control-sm" name="fun_1_a25"   defaultValue={VAR[4]}/>
+                <div className="form-group row form-control-sm">
+                    <label className="col-sm-4 col-form-label">Altura piso a techo (m)</label>
+                    <div className="col-sm-6">
+                        <input type="text" className="form-control form-control-sm" name="fun_1_a25"   defaultValue={VAR[4]}/>
                     </div>
                 </div>
             </div>
@@ -503,47 +503,47 @@ export default function FUN_ANEX(props) {
                 <label>2.6 Declaración sobre medidas de ahorro en agua</label>
             </div>
             <div className='row mx-3'>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="fun_1_a26"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="fun_1_a26"
                         defaultChecked={VAR[0] == 'A'} />
-                    <label class="form-check-label" >
+                    <label className="form-check-label" >
                         A. Sanitarios de bajo consumo
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="fun_1_a26"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="fun_1_a26"
                         defaultChecked={VAR[1] == 'B'} />
-                    <label class="form-check-label" >
+                    <label className="form-check-label" >
                         B. Lavamanos de bajo consumo
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="fun_1_a26"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="fun_1_a26"
                         defaultChecked={VAR[2] == 'C'} />
-                    <label class="form-check-label" >
+                    <label className="form-check-label" >
                         C. Duchas de consumo
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="fun_1_a26"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="fun_1_a26"
                         defaultChecked={VAR[3] == 'D'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         D. Orinales de bajo consumo
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="fun_1_a26"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="fun_1_a26"
                         defaultChecked={VAR[4] == 'E'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         E. Recolección de agua lluvia
                     </label>
                 </div>
-                <div class="form-check">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                <div className="form-check">
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                        <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a26" defaultValue={VAR[5] ?? ''} />
                     </div>
                 </div>
@@ -562,57 +562,57 @@ export default function FUN_ANEX(props) {
             </div>
             <h5 className='fw-normal'>Señales la zona climática asignada de acuerdo al Anexo  de la Res. 549 de 2015</h5>
             <div className='row mx-3'>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="fun_1_a27"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="fun_1_a27"
                         defaultChecked={VAR[0] == 'A'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         A. Frio
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="fun_1_a27"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="fun_1_a27"
                         defaultChecked={VAR[1] == 'B'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         B. Templado
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="fun_1_a27"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="fun_1_a27"
                         defaultChecked={VAR[2] == 'C'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         C. Cálido seco
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="fun_1_a27"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="fun_1_a27"
                         defaultChecked={VAR[3] == 'D'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         D. Cálido húmedo
                     </label>
                 </div>
             </div>
             <h5 className='fw-normal'>¿Su predio se encuentra en una zona climática distinta a la que le fue asignada?</h5>
             <div className='row mx-3'>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="fun_1_a27"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="fun_1_a27"
                         defaultChecked={VAR[4] == 'E'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         E. Si
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="F" name="fun_1_a27"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="F" name="fun_1_a27"
                         defaultChecked={VAR[5] == 'F'} />
-                    <label class="form-check-label">
+                    <label className="form-check-label">
                         F. No
                     </label>
                 </div>
-                <div class="form-check">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                <div className="form-check">
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                        <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a27" defaultValue={VAR[6] ?? ''} />
                     </div>
                 </div>
@@ -628,10 +628,10 @@ export default function FUN_ANEX(props) {
                 <label>2.8 Ahorro de esperado de agua</label>
             </div>
             <div className='row mx-3'>
-                <div class="form-group row">
-                    <h5 class="col-sm-8 col-form-label fw-normal">Indique el ahorro que actualmente busca el proyecto en manera de agua</h5>
-                    <div class="col-sm-4">
-                        <input type="text" class="form-control form-control-sm" name="fun_1_a28" defaultValue={VAR}/>
+                <div className="form-group row">
+                    <h5 className="col-sm-8 col-form-label fw-normal">Indique el ahorro que actualmente busca el proyecto en manera de agua</h5>
+                    <div className="col-sm-4">
+                        <input type="text" className="form-control form-control-sm" name="fun_1_a28" defaultValue={VAR}/>
                     </div>
                 </div>
             </div>
@@ -646,10 +646,10 @@ export default function FUN_ANEX(props) {
                 <label>2.9 Ahorro esperado en energía</label>
             </div>
             <div className='row mx-3'>
-                <div class="form-group row">
-                    <h5 class="col-sm-8 col-form-label fw-normal">Indique el ahorro que actualmente busca el proyecto en manera de energía</h5>
-                    <div class="col-sm-4">
-                        <input type="text" class="form-control form-control-sm" name="fun_1_a29"  defaultValue={VAR}/>
+                <div className="form-group row">
+                    <h5 className="col-sm-8 col-form-label fw-normal">Indique el ahorro que actualmente busca el proyecto en manera de energía</h5>
+                    <div className="col-sm-4">
+                        <input type="text" className="form-control form-control-sm" name="fun_1_a29"  defaultValue={VAR}/>
                     </div>
                 </div>
             </div>
@@ -663,30 +663,30 @@ export default function FUN_ANEX(props) {
                 <label className="app-p lead fw-normal text-uppercase">3. ÁREA DEL PROYECTO</label>
             </legend>
             <div className='row mx-3'>
-                <div class="form-group row">
-                    <label class="col-sm-8 col-form-label">Área neta de urbanismo y paisajismo (si aplica)</label>
-                    <div class="col-sm-3">
-                        <input type="number"  step={0.01} class="form-control" name="fun_1_a3" defaultValue={VAR[0]}/>
+                <div className="form-group row">
+                    <label className="col-sm-8 col-form-label">Área neta de urbanismo y paisajismo (si aplica)</label>
+                    <div className="col-sm-3">
+                        <input type="number"  step={0.01} className="form-control" name="fun_1_a3" defaultValue={VAR[0]}/>
                     </div>
-                    <label class="col-sm-1 col-form-label">m2</label>
+                    <label className="col-sm-1 col-form-label">m2</label>
                 </div>
             </div>
             <div className='row mx-3'>
-                <div class="form-group row">
-                    <label class="col-sm-8 col-form-label">Área neta de zonas comunes (si aplica)</label>
-                    <div class="col-sm-3">
-                        <input type="number" step={0.01} class="form-control" name="fun_1_a3" defaultValue={VAR[1]} />
+                <div className="form-group row">
+                    <label className="col-sm-8 col-form-label">Área neta de zonas comunes (si aplica)</label>
+                    <div className="col-sm-3">
+                        <input type="number" step={0.01} className="form-control" name="fun_1_a3" defaultValue={VAR[1]} />
                     </div>
-                    <label class="col-sm-1 col-form-label">m2</label>
+                    <label className="col-sm-1 col-form-label">m2</label>
                 </div>
             </div>
             <div className='row mx-3'>
-                <div class="form-group row">
-                    <label class="col-sm-8 col-form-label">Área neta de parqueaderos (si aplica)</label>
-                    <div class="col-sm-3">
-                        <input type="number" step={0.01} class="form-control" name="fun_1_a3" defaultValue={VAR[2]}/>
+                <div className="form-group row">
+                    <label className="col-sm-8 col-form-label">Área neta de parqueaderos (si aplica)</label>
+                    <div className="col-sm-3">
+                        <input type="number" step={0.01} className="form-control" name="fun_1_a3" defaultValue={VAR[2]}/>
                     </div>
-                    <label class="col-sm-1 col-form-label">m2</label>
+                    <label className="col-sm-1 col-form-label">m2</label>
                 </div>
             </div>
         </>
@@ -888,7 +888,7 @@ export default function FUN_ANEX(props) {
             <div className="row mb-3 text-center">
                 <hr />
                 <div className="col">
-                    <MDBBtn className="btn btn-success my-3" onClick={() => manage_a()}><i class="far fa-file-alt"></i> ACTUALIZAR </MDBBtn>
+                    <MDBBtn className="btn btn-success my-3" onClick={() => manage_a()}><i className="far fa-file-alt"></i> ACTUALIZAR </MDBBtn>
                 </div>
             </div>
         </fieldset>

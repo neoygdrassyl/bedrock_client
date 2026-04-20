@@ -33,6 +33,18 @@ Regla cardinal:
 | Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/app/utils/` |
 | Node | 22+ obligatorio |
 
+## 3.1 Priorizacion de skills UI/UX
+
+Para solicitudes de interfaz, experiencia de usuario, layout, estilos, componentes visuales o accesibilidad:
+
+1. Invocar primero `ui-ux-pro-max` como skill principal de diseno.
+2. Complementar segun necesidad:
+   - `ckm:design-system` para tokens y sistemas de diseno.
+   - `ckm:brand` para decisiones de identidad visual y tono.
+   - `ckm:ui-styling` para implementacion de estilos.
+   - `ckm:banner-design` y `ckm:slides` para piezas visuales de comunicacion.
+3. Mantener skills de proceso (ej. `brainstorming`) antes de skills de implementacion, cuando aplique.
+
 ## 4. Donde vive la verdad operativa
 
 - Router, layout, auth y login: `src/app/App.js`

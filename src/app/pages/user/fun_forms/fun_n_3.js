@@ -84,7 +84,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico:
                         <a target="_blank"
                             href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            <i className="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
                 }
@@ -92,7 +92,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio:
                         <a target="_blank"
                             href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            <i className="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
                 }
@@ -100,7 +100,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web:
                         <a target="_blank"
                             href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            <i className="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
                 }
@@ -108,7 +108,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico:
                         <a target="_blank"
                             href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            <i className="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                     </>);
                 }
             }
@@ -200,11 +200,11 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                         <MDBBtn className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                            <i class="far fa-edit fa-2x"></i></MDBBtn>
+                            <i className="far fa-edit fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                         <MDBBtn className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_3(row.id)}>
-                            <i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                            <i className="far fa-trash-alt fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                     </>
                 },
@@ -224,40 +224,40 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >3.1 Dirección del Predio</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_31" />
+                            <input type="text" className="form-control" id="f_31" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>3.2 Dirección de correspondencia</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_32" />
+                            <input type="text" className="form-control" id="f_32" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >3.3 ¿Se declaró parte? Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_33a" />
+                            <input type="text" className="form-control" id="f_33a" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>3.3 ¿Se declaró parte? No. de CUB</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_33b" />
+                            <input type="text" className="form-control" id="f_33b" />
                         </div>
                     </div>
                 </div>
@@ -268,40 +268,40 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >3.1 Dirección del Predio</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_31_edit" />
+                            <input type="text" className="form-control" id="f_31_edit" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>3.2 Dirección de correspondencia</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_32_edit" />
+                            <input type="text" className="form-control" id="f_32_edit" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >3.3 ¿Se declaró parte? Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_33a_edit" />
+                            <input type="text" className="form-control" id="f_33a_edit" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>3.3 ¿Se declaró parte? No. Radicación</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_33b_edit" />
+                            <input type="text" className="form-control" id="f_33b_edit" />
                         </div>
                     </div>
                 </div>
@@ -467,9 +467,9 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_3">
                     <label className="app-p lead text-center fw-normal text-uppercase">3. Información de Vecinos Colindantes</label>
                 </legend>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Vecino Colidante
                     </label>
                 </div>
@@ -479,7 +479,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             {_COMPONENT_NEW_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3"><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <button className="btn btn-success my-3"><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                 </div>
                             </div>
                         </form>
@@ -492,7 +492,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             {_COMPONENT_EDIT_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                                 </div>
                             </div>
                         </form>

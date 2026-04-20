@@ -568,15 +568,15 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" type="radio" name={value} value="1"
+                            <input className="form-check-input" type="radio" name={value} value="1"
                                 defaultChecked={_CHECK_INDEXVALUE(value, 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" type="radio" name={value} value="0"
+                            <input className="form-check-input" type="radio" name={value} value="0"
                                 defaultChecked={_CHECK_INDEXVALUE(value, 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" type="radio" name={value} value="2"
+                            <input className="form-check-input" type="radio" name={value} value="2"
                                 defaultChecked={_CHECK_INDEXVALUE(value, 2)} />
                         </div>
                     </div>
@@ -693,7 +693,7 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
                     ''
                     : <div className="row text-center">
                         <div className="col-12">
-                            <MDBBtn className="btn btn-success my-3" onClick={() => setCheckList()}><i class="far fa-share-square"></i> GUARDAR CAMBIOS</MDBBtn>
+                            <MDBBtn className="btn btn-success my-3" onClick={() => setCheckList()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS</MDBBtn>
                         </div>
                     </div>}
 

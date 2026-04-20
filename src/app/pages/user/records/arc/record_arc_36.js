@@ -299,7 +299,7 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                             <label>{con.p}</label>
                         </div>
                         <div className='col'>
-                            <label>{con.e && con.e != undefined ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger"></i>}</label>
+                            <label>{con.e && con.e != undefined ? <i className="fas fa-check text-success"></i> : <i className="fas fa-times text-danger"></i>}</label>
                         </div>
                     </div>
                 })}
@@ -309,9 +309,9 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
 
                 <div className='row py-3 border' style={{ backgroundColor: 'gainsboro' }}>
                     <div className='col text-center fw-bold'>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="s36_useduty_check" defaultChecked={_CHECK == 1 ? true : false} onChange={() => save_ra_36()} />
-                            <label class="form-check-label">USAR DEBERES URBANÍSTICOS</label>
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" id="s36_useduty_check" defaultChecked={_CHECK == 1 ? true : false} onChange={() => save_ra_36()} />
+                            <label className="form-check-label">USAR DEBERES URBANÍSTICOS</label>
                         </div>
                     </div>
                 </div>

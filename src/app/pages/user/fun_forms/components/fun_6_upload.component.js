@@ -1,5 +1,5 @@
 import { MDBBtn } from '../../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -29,35 +29,35 @@ export default function FUN_6_UPLOAD(props) {
                 <div className="row">
                     <div className="col-12">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf" required />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                            <input type="file" className="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf" required />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                            <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} class="form-control" placeholder="Descripcion del documento" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                            <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} className="form-control" placeholder="Descripcion del documento" />
                             <DOCS_LIST idRef={i} setValues={setValues} text={'VER LISTA'} />
                         </div>
                     </div>
                 </div>
                 <div className="row d-flex justify-content-start">
                     <div className="col">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-hashtag"></i></span>
-                            <input type="text" class="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="fas fa-hashtag"></i></span>
+                            <input type="text" className="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="far fa-sticky-note"></i></span>
-                            <input type="number" class="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="far fa-sticky-note"></i></span>
+                            <input type="number" className="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages" />
                         </div>
                     </div>
 
                     <div className="col-4">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
-                            <input type="date" class="form-control" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} name="fun6_dates" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
+                            <input type="date" className="form-control" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} name="fun6_dates" />
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@ export default function FUN_6_UPLOAD(props) {
         let formData = new FormData();
         formData.set('fun0Id', currentItem.id);
 
-        let _creationYear = moment(currentItem.createdAt).format('YY');
+        let _creationYear = dayjs(currentItem.createdAt).format('YY');
         let _folder = currentItem.id_public;
 
         // GET DATA OF ATTACHS
@@ -162,9 +162,9 @@ export default function FUN_6_UPLOAD(props) {
                 <div className="col text-end m-2">
 
                     {attachs > 0
-                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => setAttachs(attachs - 1)}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => setAttachs(attachs - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                         : ""}
-                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => setAttachs(attachs + 1)}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => setAttachs(attachs + 1)}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                 </div>
             </div>
 
@@ -174,7 +174,7 @@ export default function FUN_6_UPLOAD(props) {
                 {attachs > 0
                     ? <div className="row text-center my-2">
                         <div className="col-12">
-                            <button className="btn btn-success btn-sm"><i class="far fa-file-alt"></i> AÑADIR {attachs} DOCUMENTO(S)</button>
+                            <button className="btn btn-success btn-sm"><i className="far fa-file-alt"></i> AÑADIR {attachs} DOCUMENTO(S)</button>
                         </div>
                     </div> : ""}
             </form>

@@ -23,29 +23,29 @@ function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurre
             var _CHILD = _GET_FUN()
             return <div className="row">
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-map-signs"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-map-signs"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1_edit"
+                        <input type="text" className="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1_edit"
                             defaultValue={_CHILD.id_public} />
                     </div>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-map-marked-alt"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-map-marked-alt"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2_edit"
+                        <input type="text" className="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2_edit"
                             defaultValue={_CHILD.catastral} />
                     </div>
 
                 </div>
 
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-user"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-user"></i>
                         </span>
-                        <select class="form-select" id="pqrs_fun_3_edit" defaultValue={_CHILD.person}>
+                        <select className="form-select" id="pqrs_fun_3_edit" defaultValue={_CHILD.person}>
                             <option>TITULAR DE LA ACTUACIÓN</option>
                             <option>INSTITUCIÓN DE CONTROL</option>
                             <option>VECINO COLINDANTE</option>
@@ -152,7 +152,7 @@ function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurre
                     {_FUN_COMPONENT()}
                     <div className="text-center">
                         <button className="btn btn-sm btn-success my-3">
-                            <i class="far fa-share-square"></i> GUARDAR CAMBIOS
+                            <i className="far fa-share-square"></i> GUARDAR CAMBIOS
                         </button>
                     </div>
                 </form>

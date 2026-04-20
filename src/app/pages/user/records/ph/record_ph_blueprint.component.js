@@ -156,10 +156,10 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}><i class="far fa-edit fa-2x"></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                     </>
                 },
@@ -179,29 +179,29 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-1">
                     <div className="col-3">
                         <label>ID Plano</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id={"r_ph_bl_1" + edit} />
+                            <input type="text" className="form-control" id={"r_ph_bl_1" + edit} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Sótano / Piso</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-home"></i>
                             </span>
-                            <input type="text" class="form-control" id={"r_ph_bl_2" + edit} />
+                            <input type="text" className="form-control" id={"r_ph_bl_2" + edit} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Área total Construida m2</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-ruler"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-ruler"></i>
                             </span>
-                            <input type="number" min="0" step="0.01" class="form-control" id={"r_ph_bl_3" + edit} />
+                            <input type="number" min="0" step="0.01" className="form-control" id={"r_ph_bl_3" + edit} />
                         </div>
                     </div>
                 </div>
@@ -209,38 +209,38 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     <label className="fw-bold">Número de unidades privadas</label>
                     <div className="col">
                         <label>Viviendas/ Apartamentos</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Locales / Lockers</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Parcelas / Lotes</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Parqueos</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Oficinas</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Bodegas</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                 </div>
@@ -249,14 +249,14 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     <label className="fw-bold">Bienes comunes (Espacios)</label>
                     <div className="col-3">
                         <label>Número Parqueos</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Descripción otros bienes (espacios)</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id={"r_ph_bl_5" + edit} />
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id={"r_ph_bl_5" + edit} />
                         </div>
                     </div>
                 </div>
@@ -490,9 +490,9 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
             <div className="record_law_gen_11 container my-2">
                 <label className="app-p lead fw-bold">RELACIÓN DE PLANOS PRESENTADOS</label>
 
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Nuevo Plano
                     </label>
                 </div>
@@ -502,7 +502,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                             {_COMPONENT_MANAGE()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                 </div>
                             </div>
                         </form>
@@ -517,7 +517,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                             {_COMPONENT_MANAGE('_edit')}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                                 </div>
                             </div>
                         </form>

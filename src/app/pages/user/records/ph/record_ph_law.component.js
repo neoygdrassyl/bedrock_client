@@ -6,7 +6,7 @@ import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import VIZUALIZER from '../../../../components/vizualizer.component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import RECORD_LAW_PDF from '../law/record_law_pdf';
 
 const MySwal = withReactContent(Swal);
@@ -94,7 +94,7 @@ function RECORD_PH_LAW(props) {
             let _COMPONENT = [];
             for (var i = 0; i < _checks.length; i++) {
                 let index = _DOCS.indexOf(_checks[i]);
-                _COMPONENT.push(<li class="list-group-item">
+                _COMPONENT.push(<li className="list-group-item">
                     <div className="row mb-2">
                         <lavel> {index > -1
                             ? <>{_GET_VALUE_BADGE(_VALUE[index])} - {FUN6JSON[_DOCS[index]]}</>
@@ -138,32 +138,32 @@ function RECORD_PH_LAW(props) {
                     <input type="hidden" id="record_ph_worker_law_0" defaultValue={currentRecord.worker_law_id ? currentRecord.worker_law_id : window.user.id} />
                     <div className="col-6">
                         <label>Profesional</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="record_ph_worker_law_1"
+                            <input type="text" className="form-control" id="record_ph_worker_law_1"
                                 defaultValue={currentRecord.worker_law_name ? currentRecord.worker_law_name : window.user.name + " " + window.user.surname} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Fecha de la revisón</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" class="form-control" id="record_ph_worker_law_2" required
-                                defaultValue={currentRecord.date_law_review ? currentRecord.date_law_review : moment().format('YYYY-MM-DD')} />
+                            <input type="date" className="form-control" id="record_ph_worker_law_2" required
+                                defaultValue={currentRecord.date_law_review ? currentRecord.date_law_review : dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 
                     <div className="col-3">
                         <label>Aprobado</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
-                            <select class="form-control" id="record_ph_worker_law_3" defaultValue={currentRecord.check_law} >
+                            <select className="form-control" id="record_ph_worker_law_3" defaultValue={currentRecord.check_law} >
                                 <option value="0" className="text-danger">NO</option>
                                 <option value="1" className="text-success">SI</option>
                             </select>
@@ -296,7 +296,7 @@ function RECORD_PH_LAW(props) {
                     <div className="row mb-3 text-center">
 
                         <div className="col">
-                            <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                 </form>

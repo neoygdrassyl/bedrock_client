@@ -43,12 +43,12 @@ export default function GUIDE_USER(props) {
             <div className="col-12 d-flex justify-content-start p-0">
                 <MDBBreadcrumb className="mb-0 p-0 ms-0">
                     <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                        <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                     </MDBBreadcrumbItem>
                     <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                        <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                     </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i class="fas fa-atlas"></i>  <label className="text-uppercase">MANUAL DEL USUARIO</label></MDBBreadcrumbItem>
+                    <MDBBreadcrumbItem active><i className="fas fa-atlas"></i>  <label className="text-uppercase">MANUAL DEL USUARIO</label></MDBBreadcrumbItem>
                 </MDBBreadcrumb>
             </div>
             <div className="row mb-4 d-flex justify-content-center">

@@ -3,7 +3,7 @@ import { addDecimalPoints, formsParser1 } from '../../../components/customClasse
 import UsersService from '../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ export default function CERTIFICATE_WORKER(props) {
             setNumber(data[0].id_number);
             setRegistration(data[0].registration);
             var rad = document.getElementById('id_number').value
-            setId(moment(`20${rad[0]}${rad[1]}-${rad[3]}${rad[4]}-${rad[5]}${rad[6]}`))
+            setId(dayjs(`20${rad[0]}${rad[1]}-${rad[3]}${rad[4]}-${rad[5]}${rad[6]}`))
             setLoadTable(true);
         }
         if (data.length == 0) setLoadTable(false)
@@ -203,12 +203,12 @@ export default function CERTIFICATE_WORKER(props) {
             <div className="col-12 d-flex justify-content-start p-0">
                 <MDBBreadcrumb className="mb-0 p-0 ms-0">
                     <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">INICIO</label></Link>
+                        <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">INICIO</label></Link>
                     </MDBBreadcrumbItem>
                     <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">PANEL DE CONTROL</label></Link>
+                        <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">PANEL DE CONTROL</label></Link>
                     </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i class="fas fa-address-book"></i> <label className="text-uppercase">HISTORIAL PROFESIONALES</label></MDBBreadcrumbItem>
+                    <MDBBreadcrumbItem active><i className="fas fa-address-book"></i> <label className="text-uppercase">HISTORIAL PROFESIONALES</label></MDBBreadcrumbItem>
                 </MDBBreadcrumb>
             </div>
 
@@ -217,14 +217,14 @@ export default function CERTIFICATE_WORKER(props) {
                     <h2 className="text-center my-2">CONSULTA DE HISTORIAL DE PROFESIONALES</h2>
                     <div className="d-flex justify-content-center">
                         <div className="bg-card w-50">
-                            <div class="card-body">
+                            <div className="card-body">
                                 <form onSubmit={handleSubmit}>
-                                    <div class="mb-3">
-                                        <label class="form-label">{translation.str_id}</label>
-                                        <input type="text" class="form-control" id="id_number" onChange={(e) => setNumber(e.target.value)}/>
+                                    <div className="mb-3">
+                                        <label className="form-label">{translation.str_id}</label>
+                                        <input type="text" className="form-control" id="id_number" onChange={(e) => setNumber(e.target.value)}/>
                                     </div>
                                     <div className="text-center mb-2">
-                                        <button type="submit" class="btn btn-info ">{translation.str_btn3}</button>
+                                        <button type="submit" className="btn btn-info ">{translation.str_btn3}</button>
                                     </div>
                                 </form>
                             </div>
@@ -241,9 +241,9 @@ export default function CERTIFICATE_WORKER(props) {
 
                         <div className='my-2'>
                             <MDBBtn outline className='mx-1' color='danger' size="sm" onClick={() => generatePDF()}>
-                                <i class="far fa-file-pdf"></i> GENERAR PDF</MDBBtn>
+                                <i className="far fa-file-pdf"></i> GENERAR PDF</MDBBtn>
                             <MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(data, 'HISTORIAL DEL PRFESIONAL ' + title) }}>
-                                <i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
+                                <i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
                         </div>
 
                         <div className='row text-center border border-black py-2' style={{ backgroundColor: 'lightgray' }}>

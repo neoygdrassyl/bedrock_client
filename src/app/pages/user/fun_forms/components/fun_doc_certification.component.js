@@ -9,7 +9,7 @@ import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, states } from '../../../../components/jsons/vars';
 
 
@@ -128,19 +128,19 @@ export default function FUN_CERTIFICATION(props) {
             <div className='row mb-2'>
                 <div className="col">
                     <label>Fecha del documento</label>
-                    <input type="date" class="form-control" max='2100-01-01' id="genc_date_doc" required
-                        defaultValue={moment().format('YYYY-MM-DD')} />
+                    <input type="date" className="form-control" max='2100-01-01' id="genc_date_doc" required
+                        defaultValue={dayjs().format('YYYY-MM-DD')} />
                 </div>
 
                 <div className="col">
                     <label>Número de Radicación</label>
-                    <input type="text" class="form-control" id="genc_id_public" disabled
+                    <input type="text" className="form-control" id="genc_id_public" disabled
                         defaultValue={currentItem.id_public} />
                 </div>
                 <div className="col">
                     <label>Estado Proyecto</label>
-                    <div class="input-group">
-                        <select class="form-select" id={"genc_state"}>
+                    <div className="input-group">
+                        <select className="form-select" id={"genc_state"}>
                             <option>ESTUDIOS Y TRAMITES</option>
                             <option>OTORGADA</option>
                             <option>DESISTIDA</option>
@@ -151,16 +151,16 @@ export default function FUN_CERTIFICATION(props) {
                 </div>
                 <div className="col">
                     <label>Ciudad</label>
-                    <div class="input-group">
-                        <select class="form-select" id={"genc_city"}>
+                    <div className="input-group">
+                        <select className="form-select" id={"genc_city"}>
                             {cities}
                         </select>
                     </div>
                 </div>
                 <div className="col">
                     <label>Departamento</label>
-                    <div class="input-group">
-                        <select class="form-select" id={"genc_county"}>
+                    <div className="input-group">
+                        <select className="form-select" id={"genc_county"}>
                             {states}
                         </select>
                     </div>
@@ -169,25 +169,25 @@ export default function FUN_CERTIFICATION(props) {
             <div className='row mb-2'>
                 <div className="col">
                     <label>Responsable</label>
-                    <input type="text" class="form-control" id="genc_name"
+                    <input type="text" className="form-control" id="genc_name"
                         defaultValue={_CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                 </div>
                 <div className="col">
                     <label>Documento</label>
-                    <input type="text" class="form-control" id="genc_id_number"
+                    <input type="text" className="form-control" id="genc_id_number"
                         defaultValue={_CHILD_53.item_532} />
                 </div>
                 <div className="col">
                     <label>Dirección Responsable</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="genc_address"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="genc_address"
                             defaultValue={_CHILD_53.item_536} />
                     </div>
                 </div>
                 <div className="col">
                     <label>En Calidad:</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="genc_role"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="genc_role"
                             defaultValue={_CHILD_53.item_533} />
                     </div>
                 </div>
@@ -195,25 +195,25 @@ export default function FUN_CERTIFICATION(props) {
             <div className='row mb-2'>
                 <div className="col-12">
                     <label>Modalidad</label>
-                    <input type="text" class="form-control" id="genc_type"
+                    <input type="text" className="form-control" id="genc_type"
                         defaultValue={formsParser1(_CHILD_1)} />
                 </div>
                 <div className="col">
                     <label>Dirección Predio</label>
-                    <input type="text" class="form-control" id="genc_address2"
+                    <input type="text" className="form-control" id="genc_address2"
                         defaultValue={_CHILD_2.item_211} />
                 </div>
                 <div className="col">
                     <label>Matricula</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="genc_matricula"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="genc_matricula"
                             defaultValue={_CHILD_2.item_22} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Predial</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="genc_predial"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="genc_predial"
                             defaultValue={_CHILD_2.item_23} />
                     </div>
                 </div>
@@ -239,7 +239,7 @@ export default function FUN_CERTIFICATION(props) {
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <h6 className='fw-normal'>{moment(row.createdAt).format('YYYY-MM-DD HH:mm')}</h6>
+            cell: row => <h6 className='fw-normal'>{dayjs(row.createdAt).format('YYYY-MM-DD HH:mm')}</h6>
 
         },
         {
@@ -247,7 +247,7 @@ export default function FUN_CERTIFICATION(props) {
             center: true,
             maxWidth: '80px',
             cell: row => <MDBBtn onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
-            color="danger" size="sm" className='m-0 p-1 px-2'><i class="fas fa-file-download"></i></MDBBtn>
+            color="danger" size="sm" className='m-0 p-1 px-2'><i className="fas fa-file-download"></i></MDBBtn>
 
         },
     ]
@@ -264,7 +264,7 @@ export default function FUN_CERTIFICATION(props) {
                     </div>
                     <div className='row'>
                         <div className='col'><label>Fecha y hora creación: </label></div>
-                        <div className='col'><label className='fw-bold'>{moment(data.createdAt).format('YYYY-MM-DD HH:mm')}</label></div>
+                        <div className='col'><label className='fw-bold'>{dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}</label></div>
                     </div>
                     <div className='row'>
                         <div className='col'><label>Fecha documento: </label></div>
@@ -328,7 +328,7 @@ export default function FUN_CERTIFICATION(props) {
 
     let _ARCHIVE_LIST_COMPONENT = () => {
         return <DataTable
-            title={<>LISTADO DE CERTIFICACIONES  <i class="fas fa-file-signature"></i></>}
+            title={<>LISTADO DE CERTIFICACIONES  <i className="fas fa-file-signature"></i></>}
 
             pagination
             paginationPerPage={20}
@@ -487,14 +487,14 @@ export default function FUN_CERTIFICATION(props) {
         <>
             <div className='row'>
                 <div className='col'>
-                    <MDBBtn outline={!newItem} size='sm' rounded onClick={() => setNewItem(!newItem)}><i class="fas fa-plus"></i> NUEVA CERTIFICACIÓN</MDBBtn>
+                    <MDBBtn outline={!newItem} size='sm' rounded onClick={() => setNewItem(!newItem)}><i className="fas fa-plus"></i> NUEVA CERTIFICACIÓN</MDBBtn>
                 </div>
             </div>
             {newItem ? <>
                 <div className='border p-2'>
                     {_COMPONENT_NEW()}
                     <div className='text-center my-2'>
-                        <MDBBtn size='sm' rounded onClick={() => createCert()} color="success"><i class="fas fa-plus"></i> CREAR</MDBBtn>
+                        <MDBBtn size='sm' rounded onClick={() => createCert()} color="success"><i className="fas fa-plus"></i> CREAR</MDBBtn>
                     </div>
                 </div>
             </> : ''}

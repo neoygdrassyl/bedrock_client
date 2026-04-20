@@ -20,41 +20,41 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
             let rules = row.rules ? row.rules.split(';') : [];
 
             if (row.id_payment && row.clock_payment) _COMPONENT.push(<MDBTooltip title='EXPENSAS FIJA PAGADAS' tag='a'  >
-                <i class={`fas fa-dollar-sign ${size} `} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                <i className={`fas fa-dollar-sign ${size} `} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
             else if (!row.id_payment && !row.clock_payment) _COMPONENT.push(<MDBTooltip title='FALTA DECLARAR PAGO DE EXPENSAS FIJAS' tag='a' >
-                <i class={`fas fa-dollar-sign ${size} `} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                <i className={`fas fa-dollar-sign ${size} `} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
             else if (row.id_payment || row.clock_payment) _COMPONENT.push(<MDBTooltip title='EXPENSAS FIJA PAGADAS - FALTAN DETALLES' tag='a' >
-                <i class={`fas fa-dollar-sign ${size} `} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
+                <i className={`fas fa-dollar-sign ${size} `} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
 
             if (row.state <= -100) _COMPONENT.push(<MDBTooltip title='EN DESISTIMIENTO' tag='a' >
-                <i class={`far fa-window-close ${size} `} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                <i className={`far fa-window-close ${size} `} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
             if (row.state == -1) _COMPONENT.push(<MDBTooltip title='INCOMPLETO' tag='a' >
-                <i class={`far fa-check-square ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                <i className={`far fa-check-square ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
             if (row.state == 1) _COMPONENT.push(<MDBTooltip title='EN REVISION' tag='a' >
-                <i class={`far fa-check-square ${size} `} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                <i className={`far fa-check-square ${size} `} style={{ fontSize: fontSize }}></i></MDBTooltip>)
             if (row.state >= 5 && row.clock_date) _COMPONENT.push(<MDBTooltip title='EN LYDF' tag='a'>
-                <i class={`far fa-check-square ${size} `} style={{ color: 'Green', fontSize: fontSize }} ></i></MDBTooltip>)
+                <i className={`far fa-check-square ${size} `} style={{ color: 'Green', fontSize: fontSize }} ></i></MDBTooltip>)
             if (row.state >= 5 && !row.clock_date) _COMPONENT.push(<MDBTooltip title='FALTA DECLARAR LYDF' tag='a'>
-                <i class={`far fa-check-square ${size} `} style={{ color: 'Gold', fontSize: fontSize }} ></i></MDBTooltip>)
+                <i className={`far fa-check-square ${size} `} style={{ color: 'Gold', fontSize: fontSize }} ></i></MDBTooltip>)
 
             if (!regexChecker_isPh(row, true) && !isOA && rules[0] != 1) {
                 if (row.neighbours == 0) _COMPONENT.push(<MDBTooltip title='VECINOS SIN DEFINIR' tag='a' >
-                    <i class={`far fa-user ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`far fa-user ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
                 if (row.neighbours > 0 && row.neighbours > row.alerted) _COMPONENT.push(<MDBTooltip title='FALTAN VECINOS POR CITAR' tag='a' >
-                    <i class={`far fa-user ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`far fa-user ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
                 if (row.neighbours > 0 && row.neighbours == row.alerted) _COMPONENT.push(<MDBTooltip title='TODOS LOS VECINOS CITADOS' tag='a' >
-                    <i class={`far fa-user ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`far fa-user ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
 
                 if (row.sign) {
                     let sign = [];
                     sign = row.sign.split(',')
 
                     if (sign[1] != undefined) _COMPONENT.push(<MDBTooltip title='VALLA RADICADA' tag='a' >
-                        <i class={`fas fa-sign ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`fas fa-sign ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                     else _COMPONENT.push(<MDBTooltip title='VALLA SIN RADICAR' tag='a' >
-                        <i class={`fas fa-sign ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`fas fa-sign ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
                 } else _COMPONENT.push(<MDBTooltip title='VALLA SIN RADICAR' tag='a' >
-                    <i class={`fas fa-sign ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-sign ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
             }
 
             let report_data = _GET_LAW_REPORT_DATA_ICON(row);
@@ -62,31 +62,31 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
                 if (row.report_data) {
                     let report_data_array = row.report_data.split(',')
                     if (row.report_cub && report_data_array[5]) _COMPONENT.push(<MDBTooltip title='REPORTE PLANEACION ENVIADO Y RESPONDIDO' tag='a' >
-                        <i class={`fas fa-clipboard-list ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`fas fa-clipboard-list ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                     else if (row.report_cub && !report_data_array[5]) _COMPONENT.push(<MDBTooltip title='REPORTE PLANEACION ENVIADO PERO NO RESPONDIDO' tag='a' >
-                        <i class={`fas fa-clipboard-list ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`fas fa-clipboard-list ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
                 }
                 else {
                     _COMPONENT.push(<MDBTooltip title='FALTA REPORTE PLANEACION' tag='a' >
-                        <i class={`fas fa-clipboard-list ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`fas fa-clipboard-list ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
                 }
             }
 
             if (_GLOBAL_ID == "cb1") {
                 if (row.seal) _COMPONENT.push(<MDBTooltip title='SELLO CREADO' tag='a' >
-                    <i class={`fab fa-wpforms ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fab fa-wpforms ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                 else _COMPONENT.push(<MDBTooltip title='SELLO NO CREADO' tag='a' >
-                    <i class={`fab fa-wpforms ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fab fa-wpforms ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
             }
 
 
             if (regexChecker_isPh(row, true)) {
                 if (row.ph_review == null) _COMPONENT.push(<MDBTooltip title='FALTA REVISION' tag='a' >
-                    <i class={`fas fa-pencil-ruler ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-pencil-ruler ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
                 if (row.ph_review == 0) _COMPONENT.push(<MDBTooltip title='DECLARADO NO VIABLE' tag='a' >
-                    <i class={`fas fa-pencil-ruler ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-pencil-ruler ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
                 if (row.ph_review == 1) _COMPONENT.push(<MDBTooltip title='DECLARADO VIABLE' tag='a' >
-                    <i class={`fas fa-pencil-ruler ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-pencil-ruler ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
 
             } else {
 
@@ -95,11 +95,11 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
                 let last_law_rew = law_rew.findLast(r => r == "0" || r == "1");
 
                 if (last_law_rew == undefined) _COMPONENT.push(<MDBTooltip title='FALTA REVISION JURIDICA' tag='a' >
-                    <i class={`fas fa-balance-scale ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-balance-scale ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
                 if (last_law_rew == 0) _COMPONENT.push(<MDBTooltip title='JURIDICO DECLARADO NO VIABLE' tag='a' >
-                    <i class={`fas fa-balance-scale ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-balance-scale ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
                 if (last_law_rew == 1) _COMPONENT.push(<MDBTooltip title='JURIDICO DECLARADO VIABLE' tag='a' >
-                    <i class={`fas fa-balance-scale ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-balance-scale ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
 
                 if (!isOA) {
                     let arc_rew = row.clock_arc_rew ?? row.arc_review ?? '';
@@ -107,11 +107,11 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
                     let last_arc_rew = arc_rew.findLast(r => r == "0" || r == "1");
 
                     if (last_arc_rew == undefined) _COMPONENT.push(<MDBTooltip title='FALTA REVISION ARQUITECTONICA' tag='a' >
-                        <i class={`far fa-building ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`far fa-building ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
                     if (last_arc_rew == 0) _COMPONENT.push(<MDBTooltip title='ARQUITECTONICA DECLARADO NO VIABLE' tag='a' >
-                        <i class={`far fa-building ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`far fa-building ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
                     if (last_arc_rew == 1) _COMPONENT.push(<MDBTooltip title='ARQUITECTONICA DECLARADO VIABLE' tag='a' >
-                        <i class={`far fa-building ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`far fa-building ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
 
                     if (rules[1] != 1) {
                         let eng_rew = row.clock_eng_rew ? row.clock_eng_rew : row.eng_review + ',' + row.eng_review_2;
@@ -120,30 +120,30 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
                         eng_rew.map(r => last_eng_rew = String(r).split(','));
 
                         if (last_eng_rew[0] == undefined && last_eng_rew[1] == undefined) _COMPONENT.push(<MDBTooltip title='FALTA REVISION INGENIERIA' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
                         if (last_eng_rew[0] == null && last_eng_rew[1] == null) _COMPONENT.push(<MDBTooltip title='FALTA REVISION INGENIERIA' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
                         if (last_eng_rew[0] == 'null' && last_eng_rew[1] == 'null') _COMPONENT.push(<MDBTooltip title='FALTA REVISION INGENIERIA' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
                         if (last_eng_rew[0] == 0 && last_eng_rew[1] == 0) _COMPONENT.push(<MDBTooltip title='INGENIERIA DECLARADO NO VIABLE' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
                         if (last_eng_rew[0] == 0 && last_eng_rew[1] == 2) _COMPONENT.push(<MDBTooltip title='INGENIERIA DECLARADO NO VIABLE' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ color: 'Crimson', fontSize: fontSize }}></i></MDBTooltip>)
                         if (last_eng_rew[0] == 1 && last_eng_rew[1] == 1) _COMPONENT.push(<MDBTooltip title='INGENIERIA DECLARADO VIABLE' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                         if (last_eng_rew[0] == 1 && last_eng_rew[1] == 2) _COMPONENT.push(<MDBTooltip title='INGENIERIA DECLARADO VIABLE' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                         if (last_eng_rew[0] == 1 && last_eng_rew[1] == 0) _COMPONENT.push(<MDBTooltip title='INGENIERIA DECLARADO VIABLE Y NO VIABLE' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
                         if (last_eng_rew[0] == 0 && last_eng_rew[1] == 1) _COMPONENT.push(<MDBTooltip title='INGENIERIA DECLARADO VIABLE Y NO VIABLE' tag='a' >
-                            <i class={`fas fa-cogs ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
+                            <i className={`fas fa-cogs ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
                     }
                     if (row.rec_review == null && row.rec_review_2 == null) _COMPONENT.push(<MDBTooltip title='FALTA ACTA' tag='a' >
-                        <i class={`fas fa-file-contract ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`fas fa-file-contract ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
                     else if ((row.rec_review == 0) && (row.rec_review_2 != 1 && row.rec_review_2 != 0)) _COMPONENT.push(<MDBTooltip title='FALTA ACTA DE CORRECCIONES' tag='a' >
-                        <i class={`fas fa-file-contract ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`fas fa-file-contract ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
                     else if (row.rec_review == 1 || row.rec_review_2 == 1) _COMPONENT.push(<MDBTooltip title='CON ACTA EXPEDIDA' tag='a' >
-                        <i class={`fas fa-file-contract ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i className={`fas fa-file-contract ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
 
                 }
 
@@ -167,13 +167,13 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
                 */
 
                 if (stepCount == 0) _COMPONENT.push(<MDBTooltip title='EXPEDICION: FALTA INFORMACION' tag='a' >
-                    <i class={`fas fa-file-invoice ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-file-invoice ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
 
                 if (stepCount > 0 && stepCount < 2) _COMPONENT.push(<MDBTooltip title={expSteps} tag='a' >
-                    <i class={`fas fa-file-invoice ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-file-invoice ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
 
                 if (stepCount >= 2) _COMPONENT.push(<MDBTooltip title={expSteps} tag='a' >
-                    <i class={`fas fa-file-invoice ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i className={`fas fa-file-invoice ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
 
             }
 

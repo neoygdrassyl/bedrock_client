@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -80,7 +80,7 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
       const st = _GET_CLOCK_STATE(element);
       const date = st ? st.date_start : null;
       if (!newDate && date) newDate = date;
-      else if (date && moment(date).isAfter(newDate)) newDate = date;
+      else if (date && dayjs(date).isAfter(newDate)) newDate = date;
     });
     return newDate;
   }

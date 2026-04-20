@@ -3,7 +3,7 @@ import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MA
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { MDBBtn } from '../../../components/ui';
@@ -160,29 +160,29 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha del documento</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="gena2_date_doc" required
-                            defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_doc" required
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>Número de Radicación</label>
-                        <input type="text" class="form-control mb-3" id="gena2_id_public" disabled
+                        <input type="text" className="form-control mb-3" id="gena2_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
                     <div></div>
                     <div className="col">
                         <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="gena_cub_act2"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="gena_cub_act2"
                                 defaultValue={_GET_CHILD_LAW().cub_act2 || cubSelected || ""} />
-                                {edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
+                                {edit ? <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
 
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected1" defaultValue={vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected1" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -197,37 +197,37 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha limite (fecha not. + 30 d hab.)</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="gena2_date_limit" required
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_limit" required
                             defaultValue={_JSON.date_limit || dateParser_finalDate(clock, 30)} />
                     </div>
                     <div className="col">
                         <label>Fecha limite + extension (fecha not. + 30 d + 15 d)</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="gena2_date_limit_2" required
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_limit_2" required
                             defaultValue={_JSON.date_limit_2 || dateParser_finalDate(clock, 45)} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
                         <label>Ciudad</label>
-                        <input type="text" class="form-control mb-3" id="gena2_city"
+                        <input type="text" className="form-control mb-3" id="gena2_city"
                             defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
                     </div>
                     <div className="col">
                         <label>Responsable</label>
-                        <input type="text" class="form-control mb-3" id="gena2_name"
+                        <input type="text" className="form-control mb-3" id="gena2_name"
                             defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col">
                         <label>Dirección</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="gena2_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="gena2_address"
                                 defaultValue={_JSON.address || _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Email</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="gena2_email"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="gena2_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
                         </div>
                     </div>
@@ -475,11 +475,11 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
                 <div className="row text-center">
                     {edit ?
                         <div className="col">
-                            <button className="btn btn-success my-3"><i class="fas fa-share-square"></i> GUARDAR DATOS</button>
+                            <button className="btn btn-success my-3"><i className="fas fa-share-square"></i> GUARDAR DATOS</button>
                         </div>
                         : ''}
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i class="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
+                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
                     </div>
                 </div>
             </form>

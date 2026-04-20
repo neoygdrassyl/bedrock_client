@@ -8,7 +8,7 @@ import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoC
 import { MDBBtn, MDBCollapse } from '../../../components/ui';
 import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import EXP_RES from './exp._res.component';
 import EXP_ACT_DESIST from './exp_act_desist.component';
 import EXP_RES_2 from './exp_res_2.component';
@@ -315,13 +315,13 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     {tn == 4 ?
                         <>
                          <div className="col-4">
-                                <div class="input-group my-1">
+                                <div className="input-group my-1">
                                     <label>Fecha Comunicación: </label>
                                 </div>
                             </div>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
+                                <div className="input-group my-1">
+                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
                                 </div>
                             </div>
                         </>
@@ -335,27 +335,27 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Fecha Acto de tramite de licencia</label>
-                        <input type="date" class="form-control" id="expedition_doc_1_1" max="2100-01-01"
+                        <input type="date" className="form-control" id="expedition_doc_1_1" max="2100-01-01"
                             defaultValue={currentRecord.date ?? ''} />
                     </div>
                     <div className="col">
                         <label className="mt-1">Consecutivo Acto de tramite de licencia</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_1_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_1_2" disabled
                                 value={currentRecord.cub1 ?? ''} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_1_3" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_1_3" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Ciudad</label>
-                        <div class="input-group">
-                            <select class="form-select me-1" id={"expedition_doc_1_8"}>
+                        <div className="input-group">
+                            <select className="form-select me-1" id={"expedition_doc_1_8"}>
                                 {cities}
                             </select>
                         </div>
@@ -368,31 +368,31 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     <div className="col">
                         <label className="mt-2">Titular(es)</label>
                         <div className="col">
-                            <textarea class="form-control" id="expedition_doc_1_4" disabled readOnly >
+                            <textarea className="form-control" id="expedition_doc_1_4" disabled readOnly >
                                 {_names}
                             </textarea>
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Responsable</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_1_5" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_1_5" disabled
                                 value={_GET_CHILD_53().item_536} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_1_6"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_1_6"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
                         </div>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_1_7" disabled
+                        <input type="text" className="form-control" id="expedition_doc_1_7" disabled
                             value={formsParser1(_GET_CHILD_1())} />
                     </div>
                 </div>
@@ -410,22 +410,22 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_2_descs" disabled
+                                <input type="text" className="form-control" name="expedition_doc_2_descs" disabled
                                     value={_areas[i].desc} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_2_uses" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_2_uses" disabled
                                         value={_areas[i].use} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_2_areas" disabled
+                                <input type="text" className="form-control" name="expedition_doc_2_areas" disabled
                                     value={_areas[i].area} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_2_charges" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_2_charges" disabled
                                         value={addDecimalPoints(_areas[i].charge ?? 0)} readOnly />
                                 </div>
                             </div>
@@ -440,13 +440,13 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_2_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_2_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -455,28 +455,28 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinación</label>
-                        <input type="text" class="form-control" id="expedition_doc_2_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_2_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -493,15 +493,15 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_2_7" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_2_7" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_2_8" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_2_8" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -524,36 +524,36 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 {_COMPONENT}
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             value={'SUBTOTAL'} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_11" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_11" disabled
                                 value={addDecimalPoints(sum)} readOnly />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             value={`IVA (${IVA * 100}%)`} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_10" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_10" disabled
                                 value={addDecimalPoints(Math.round(sum * IVA))} readOnly />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             value={'TOTAL EXPENSAS'} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_9" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_9" disabled
                                 value={addDecimalPoints(Math.round(sum * (1 + IVA)))} readOnly />
                         </div>
                     </div>
@@ -599,18 +599,18 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_3_descs" disabled
+                                <input type="text" className="form-control" name="expedition_doc_3_descs" disabled
                                     value={_areas[i].desc} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_3_uses" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_3_uses" disabled
                                         value={_areas[i].use} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_3_areas" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_3_areas" disabled
                                         value={_areas[i].area} readOnly />
                                 </div>
                             </div>
@@ -638,13 +638,13 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_3_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -653,28 +653,28 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinación</label>
-                        <input type="text" class="form-control" id="expedition_doc_3_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -690,15 +690,15 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 </div>
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_3_7" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_3_7" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_3_8" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_3_8" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -720,22 +720,22 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col-4">
                         <label className="mt-1">Tratamiento</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_10" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_10" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').type ?? ''} readOnly />
                         </div>
                     </div>
                     <div className="col-4">
                         <label className="mt-1">Zona</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_21" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_21" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').zone ? zonesVar[_GET_EXPEDITION_JSON('tmp').zone] : ''} readOnly />
                         </div>
                     </div>
                     <div className="col-4">
                         <label className="mt-1">Eje</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_22" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_22" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').axis ? axisVar[_GET_EXPEDITION_JSON('tmp').axis] : ''} readOnly />
                         </div>
                     </div>
@@ -755,60 +755,60 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 </div>
                 <div className="row">
                     <div className="col-3">
-                        <input type="text" class="form-control" id="expedition_doc_3_11" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_11" disabled
                             defaultValue={'002'} />
                     </div>
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_3_12" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_12" disabled
                             defaultValue={"Impuesto de Delineación y Urbanismo"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_13" onBlur={(e) => _ADD_TOTAL(e.target.value)}
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_13" onBlur={(e) => _ADD_TOTAL(e.target.value)}
                                 defaultValue={addDecimalPoints(value_deli)} />
                         </div>
                     </div>
                 </div>
                 <div className="row mt-1">
                     <div className="col-3">
-                        <input type="text" class="form-control" id="expedition_doc_3_14" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_14" disabled
                             defaultValue={'007'} />
                     </div>
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_3_15" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_15" disabled
                             defaultValue={"Impuesto de Uso y Escavación del subsuelo"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_16" onBlur={(e) => _ADD_TOTAL(e.target.value)}
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_16" onBlur={(e) => _ADD_TOTAL(e.target.value)}
                                 defaultValue={addDecimalPoints(value_uso)} />
                         </div>
                     </div>
                 </div>
                 <div className="row mt-1">
                     <div className="col-3">
-                        <input type="text" class="form-control" id="expedition_doc_3_17" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_17" disabled
                             defaultValue={'601'} />
                     </div>
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_3_18" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_18" disabled
                             defaultValue={"Fonto de Embellecimiento Urbano"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_19" onBlur={(e) => _ADD_TOTAL(e.target.value)}
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_19" onBlur={(e) => _ADD_TOTAL(e.target.value)}
                                 defaultValue={addDecimalPoints(value_emb)} />
                         </div>
                     </div>
                 </div>
                 <div className="row mt-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             value={'TOTAL IMPUESTOS'} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_20"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_20"
                                 defaultValue={addDecimalPoints(value_total)} />
                         </div>
                     </div>
@@ -823,13 +823,13 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_4_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_4_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicacion</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -838,28 +838,28 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinacion</label>
-                        <input type="text" class="form-control" id="expedition_doc_4_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_4_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Direccion Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -876,15 +876,15 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_4_7" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_4_7" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_4_8" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_4_8" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -892,29 +892,29 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col-3">
                         <label className="mt-2">Área intervención</label>
-                        <input type="text" class="form-control" id="expedition_doc_4_9" disabled
+                        <input type="text" className="form-control" id="expedition_doc_4_9" disabled
                             value={_GET_EXPEDITION_JSON('tmp').uis ?? ''} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Valor Estampilla PRO-UIS</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_10" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_10" disabled
                                 value={addDecimalPoints(puisst)} readOnly />
                         </div>
                     </div>
                     <div className="col-4">
                         <label className="mt-1">Valor Extra</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_11" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_11" disabled
                                 value={addDecimalPoints(_GET_EXPEDITION_JSON('taxes').id_payment_2_p + '%' ?? '')} readOnly />
-                            <input type="text" class="form-control" id="expedition_doc_4_12" disabled
+                            <input type="text" className="form-control" id="expedition_doc_4_12" disabled
                                 value={addDecimalPoints(puisp.toFixed(0))} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Total</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_13" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_13" disabled
                                 value={addDecimalPoints(puist.toFixed(0))} readOnly />
                         </div>
                     </div>
@@ -940,20 +940,20 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Fecha Deber Urbanistico</label>
-                        <input type="date" class="form-control" id="expedition_doc_5_1" max="2100-01-01"
+                        <input type="date" className="form-control" id="expedition_doc_5_1" max="2100-01-01"
                             defaultValue={currentRecord.date2 ?? ''} />
                     </div>
                     <div className="col">
                         <label className="mt-1">Consecutivo Deber Urbanistico</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_2" disabled
                                 value={currentRecord.cub2 ?? ''} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Ciudad</label>
-                        <div class="input-group">
-                            <select class="form-select me-1" id={"expedition_doc_5_26"}>
+                        <div className="input-group">
+                            <select className="form-select me-1" id={"expedition_doc_5_26"}>
                                 {cities}
                             </select>
                         </div>
@@ -963,13 +963,13 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_5_3" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicacion</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_4" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -978,28 +978,28 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinacion</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_6" disabled
+                        <input type="text" className="form-control" id="expedition_doc_5_6" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_7" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_7" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Direccion Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_8"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_8"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_9" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_9" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -1008,15 +1008,15 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col-3">
                         <label className="mt-1">Matricula</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_5" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_5" disabled
                                 value={_GET_CHILD_2().item_22} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Tratamiento</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_26" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_26" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').type ?? ''} readOnly />
                         </div>
                     </div>
@@ -1033,15 +1033,15 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_5_10" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_5_10" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_5_11" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_5_11" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -1049,22 +1049,22 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">Unidades Vivienda</label>
-                        <input type="number" class="form-control" id="expedition_doc_5_12" disabled readOnly
+                        <input type="number" className="form-control" id="expedition_doc_5_12" disabled readOnly
                             value={_GET_EXPEDITION_JSON('duty').units ?? ''} />
                     </div>
                     <div className="col">
                         <label className="mt-1">Áreas uso Comercio</label>
-                        <input type="number" class="form-control" id="expedition_doc_5_13" disabled readOnly
+                        <input type="number" className="form-control" id="expedition_doc_5_13" disabled readOnly
                             value={_GET_EXPEDITION_JSON('duty').comerce ?? ''} />
                     </div>
                     <div className="col">
                         <label className="mt-1">Valor m2 (COP)</label>
-                        <input type="number" class="form-control" id="expedition_doc_5_14" disabled readOnly
+                        <input type="number" className="form-control" id="expedition_doc_5_14" disabled readOnly
                             value={addDecimalPoints(_GET_EXPEDITION_JSON('duty').charge) ?? 0} />
                     </div>
                     <div className="col-2">
                         <label className="mt-1">ZGU</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_15" disabled readOnly
+                        <input type="text" className="form-control" id="expedition_doc_5_15" disabled readOnly
                             value={_GET_EXPEDITION_JSON('duty').zgu ?? ''} />
                     </div>
                 </div>
@@ -1074,22 +1074,22 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="my-2 fw-bold">Liquidación de Proyectos de Vivienda (Unidades {'>'} 0)</label>
                         <div className="col-2">
                             <label className="mt-1">m2 por Viv.</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_16" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_16" disabled readOnly
                                 value={nV} />
                         </div>
                         <div className="col-2">
                             <label className="mt-1">Numero</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_17" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_17" disabled readOnly
                                 value={uV} />
                         </div>
                         <div className="col-2">
                             <label className="mt-1">Valor (COP)</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_18" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_18" disabled readOnly
                                 value={addDecimalPoints(charge)} />
                         </div>
                         <div className="col">
                             <label className="mt-1">Total (COP)</label>
-                            <input type="text" class="form-control" id="expedition_doc_5_19" disabled readOnly
+                            <input type="text" className="form-control" id="expedition_doc_5_19" disabled readOnly
                                 value={addDecimalPoints(total1)} />
                         </div>
                     </div>
@@ -1101,22 +1101,22 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="my-2 fw-bold">Liquidación para uso de comercio, servicio, industrial, dotacional (Áreas uso Comercio {'>'} 0)</label>
                         <div className="col-2">
                             <label className="mt-1">6 m2 * 100m2</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_20" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_20" disabled readOnly
                                 value={'0.06'} />
                         </div>
                         <div className="col-2">
                             <label className="mt-1">m2</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_21" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_21" disabled readOnly
                                 value={mC} />
                         </div>
                         <div className="col-2">
                             <label className="mt-1">Valor (COP)</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_22" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_22" disabled readOnly
                                 value={addDecimalPoints(charge)} />
                         </div>
                         <div className="col">
                             <label className="mt-1">Total (COP)</label>
-                            <input type="text" class="form-control" id="expedition_doc_5_23" disabled readOnly
+                            <input type="text" className="form-control" id="expedition_doc_5_23" disabled readOnly
                                 value={addDecimalPoints(total2)} />
                         </div>
                     </div>
@@ -1127,12 +1127,12 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">Total (Letras)</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_24" disabled readOnly
+                        <input type="text" className="form-control" id="expedition_doc_5_24" disabled readOnly
                             value={writtenNumber(total).toUpperCase() + ' MCTE'} />
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Total (COP) (Numeros)</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_25" disabled readOnly
+                        <input type="text" className="form-control" id="expedition_doc_5_25" disabled readOnly
                             value={addDecimalPoints(total)} />
                     </div>
                 </div>
@@ -1212,30 +1212,30 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_6_descs" disabled
+                                <input type="text" className="form-control" name="expedition_doc_6_descs" disabled
                                     value={_areas[i].desc} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_6_uses" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_6_uses" disabled
                                         value={_areas[i].use} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_6_charges" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_6_charges" disabled
                                         value={_areas[i].charge} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_6_areas" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_6_areas" disabled
                                         value={addDecimalPoints(_areas[i].area)} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_6_sums" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_6_sums" disabled
                                         value={addDecimalPoints(axc)} readOnly />
                                 </div>
                             </div>
@@ -1250,13 +1250,13 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_6_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_6_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -1265,22 +1265,22 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinación</label>
-                        <input type="text" class="form-control" id="expedition_doc_6_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_6_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
 
                     <div className="col-6">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -1288,16 +1288,16 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
 
                     <div className="col">
                         <label className="mt-1">Matricula</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_mat" value={_GET_CHILD_2().item_22} readOnly />
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_mat" value={_GET_CHILD_2().item_22} readOnly />
                         </div>
                     </div>
 
@@ -1313,15 +1313,15 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_6_7" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_6_7" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_6_8" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_6_8" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -1332,8 +1332,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     <div className="row">
                         <div className="col-4">
                             <label className="mt-1">Área del predio</label>
-                            <div class="input-group">
-                                <input type="number" step={0.01} class="form-control" id="expedition_doc_6_area" defaultValue="0.00" />
+                            <div className="input-group">
+                                <input type="number" step={0.01} className="form-control" id="expedition_doc_6_area" defaultValue="0.00" />
                             </div>
                         </div>
 
@@ -1361,12 +1361,12 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_6_12" disabled
+                        <input type="text" className="form-control" id="expedition_doc_6_12" disabled
                             defaultValue={"Total"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_13" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_13" disabled
                                 value={addDecimalPoints(_totalArea())} readOnly />
                         </div>
                     </div>
@@ -1395,22 +1395,22 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_7_descs" disabled
+                                <input type="text" className="form-control" name="expedition_doc_7_descs" disabled
                                     value={_areas[i].desc} readOnly />
                             </div>
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_7_uses" disabled
+                                <input type="text" className="form-control" name="expedition_doc_7_uses" disabled
                                     value={_areas[i].use} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_7_areas" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_7_areas" disabled
                                         value={_areas[i].area} readOnly />
                                 </div>
                             </div>
                             <div className="col-3">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_7_sums" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_7_sums" disabled
                                         value={addDecimalPoints(axc)} readOnly />
                                 </div>
                             </div>
@@ -1425,13 +1425,13 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_7_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_7_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -1442,28 +1442,28 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinación</label>
-                        <input type="text" class="form-control" id="expedition_doc_7_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_7_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -1480,13 +1480,13 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_7_7" disabled
+                        <input type="text" className="form-control" id="expedition_doc_7_7" disabled
                             value={fun_51_p.name + ' ' + fun_51_p.surname} readOnly />
                     </div>
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_7_8" disabled
+                        <input type="text" className="form-control" id="expedition_doc_7_8" disabled
                             value={fun_51_p.id_number} readOnly />
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -1510,12 +1510,12 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row mb-1 ">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Ajuste cargo Fijo"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_12" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_12" disabled
                                 value={addDecimalPoints(taxes.id_payment_fix ?? 0)} readOnly />
                         </div>
                     </div>
@@ -1523,12 +1523,12 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Total expensas"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_9" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_9" disabled
                                 value={addDecimalPoints(_totalArea())} readOnly />
                         </div>
                     </div>
@@ -1536,12 +1536,12 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Sub Total"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_13" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_13" disabled
                                 value={addDecimalPoints(Number(taxes.id_payment_fix ?? 0) + Number(_totalArea()))} readOnly />
                         </div>
                     </div>
@@ -1549,24 +1549,24 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Iva"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_10" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_10" disabled
                                 value={addDecimalPoints((_totalArea() * IVA).toFixed(0))} readOnly />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1 ">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Total"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_11" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_11" disabled
                                 value={addDecimalPoints(
                                     (
                                         Number(taxes.id_payment_fix ?? 0) +
@@ -1588,28 +1588,28 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha del documento</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="exodfb_date_doc" required
-                            defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="exodfb_date_doc" required
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
 
                     <div className="col">
                         <label>Número de Radicación</label>
-                        <input type="text" class="form-control mb-3" id="exodfb_id_public" disabled
+                        <input type="text" className="form-control mb-3" id="exodfb_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
                     <div></div>
                     <div className="col">
                         <label className="mt-1"> {infoCud.serials.end} Carta Citación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="exodfb_cub3_exp"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="exodfb_cub3_exp"
                                 defaultValue={currentRecord.cub3 || cubSelected || ""} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
+                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected33" defaultValue={vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected33" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -1623,37 +1623,37 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row mb-3">
                     <div className="col">
                         <label>Ciudad</label>
-                        <input type="text" class="form-control mb-3" id="exodfb_city"
+                        <input type="text" className="form-control mb-3" id="exodfb_city"
                             defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
                     </div>
                     <div className="col">
                         <label>Número de Resolución</label>
-                        <input type="text" class="form-control mb-3" id="exodfb_res_public" disabled
+                        <input type="text" className="form-control mb-3" id="exodfb_res_public" disabled
                             defaultValue={currentRecord.id_public} />
                     </div>
                     <div className="col">
                         <label>Fecha de Resolución</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="exodfb_date_res" disabled
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="exodfb_date_res" disabled
                             defaultValue={RES_JSON.date || ''} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
                         <label>Responsable</label>
-                        <input type="text" class="form-control mb-3" id="exodfb_name"
+                        <input type="text" className="form-control mb-3" id="exodfb_name"
                             defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col">
                         <label>Dirección</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="exodfb_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="exodfb_address"
                                 defaultValue={_JSON.address || _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Email</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="exodfb_email"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="exodfb_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
                         </div>
                     </div>
@@ -1681,29 +1681,29 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_eje_type"
+                        <input type="text" className="form-control" id="expedition_eje_type"
                             defaultValue={type} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">Fecha Vigencia</label>
-                        <div class="input-group">
-                            <input type="date" class="form-control" id="expedition_eje_date"
+                        <div className="input-group">
+                            <input type="date" className="form-control" id="expedition_eje_date"
                                 defaultValue={reso_vig_date_dv} required />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Consecutivo</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" disabled id="expedition_eje_id_res"
+                        <div className="input-group">
+                            <input type="text" className="form-control" disabled id="expedition_eje_id_res"
                                 value={currentRecord.id_public} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Vigencia Tiempo</label>
-                        <div class="input-group my-1">
-                            <select class="form-select" id="expedition_eje_vign" defaultValue={reso_vig_n_dv}>
+                        <div className="input-group my-1">
+                            <select className="form-select" id="expedition_eje_vign" defaultValue={reso_vig_n_dv}>
                                 <option value={0}>SIN VIGENCIA</option>
                                 <option value={12}>DOCE (12) MESES</option>
                                 <option value={24}>VEINTE Y CUATRO (24) MESES</option>
@@ -1717,23 +1717,23 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">POT</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_eje_pot" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_eje_pot" disabled
                                 value={reso_pot_dv} />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Estado</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_eje_state" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_eje_state" disabled
                                 value={'EJECUTORIADA'} readOnly />
 
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1"># Radicacion</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_eje_id_public" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_eje_id_public" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -1742,7 +1742,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row my-2">
                     <label>Parrafo 1</label>
                     <div className="col text-start">
-                        <select class="form-select me-1" id={"expedition_eje_p1"} defaultValue={reso_vig_p1_dv}>
+                        <select className="form-select me-1" id={"expedition_eje_p1"} defaultValue={reso_vig_p1_dv}>
                             <option value={1}>al haber concluido los términos de ley sin haberse interpuesto ningún recurso</option>
                             <option value={2} >al haber renunciado expresamente a los términos de ley para interponer los recursos</option>
                             <option value={3} >NO USAR</option>
@@ -1753,7 +1753,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row my-2">
                     <label>Vigencia</label>
                     <div className="col text-start">
-                        <select class="form-select me-1" id={"expedition_eje_vig"} defaultValue={reso_vig_vp_dv}>
+                        <select className="form-select me-1" id={"expedition_eje_vig"} defaultValue={reso_vig_vp_dv}>
                             <option value={1}>Conceder con fundamento en los articulos 2.2.6.1.4.1 y 2.2.6.4.2.5 del decreto 1077 de 2015.</option>
                             <option value={2}>La modificación de licencia vigente no amplía la vigencia establecida en la licencia de construcción inicial objeto de modificación.</option>
                         </select>
@@ -1770,26 +1770,26 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </div>
                     <div className="row mb-1">
                         <div className="col-2">
-                            <div class="form-check form-check-inline mt-5">
+                            <div className="form-check form-check-inline mt-5">
                                 <label> 1. Antecedentes</label>
-                                <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[0] == 1 ? true : false} name="eje_pdf_arts_cb" />
+                                <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[0] == 1 ? true : false} name="eje_pdf_arts_cb" />
                             </div>
                         </div>
                         <div className="col">
-                            <textarea class="form-control" id="eje_pdf_art_4_1_dv" rows={'3'} defaultValue={art_4_1_dv}></textarea>
+                            <textarea className="form-control" id="eje_pdf_art_4_1_dv" rows={'3'} defaultValue={art_4_1_dv}></textarea>
                         </div>
                     </div>
 
                     <div className="row mb-1">
                         <div className="col-2">
-                            <div class="form-check form-check-inline mt-5">
+                            <div className="form-check form-check-inline mt-5">
                                 <label> 2. Descripción</label>
-                                <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[1] == 1 ? true : false} name="eje_pdf_arts_cb" />
+                                <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[1] == 1 ? true : false} name="eje_pdf_arts_cb" />
                             </div>
                         </div>
 
                         <div className="col">
-                            <textarea class="form-control" id="eje_pdf_art_4_2_dv" rows={'4'} defaultValue={art_4_2_dv}></textarea>
+                            <textarea className="form-control" id="eje_pdf_art_4_2_dv" rows={'4'} defaultValue={art_4_2_dv}></textarea>
                         </div>
                     </div>
                 </div>
@@ -1798,8 +1798,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row mb-2">
                     <div className="col">
                         <label>Alineción firma curador</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"eje_pdf_reso_1"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"eje_pdf_reso_1"}>
                                 <option value={'center'}>CENTRO</option>
                                 <option value={'left'}>IZQUIERDA</option>
                                 <option value={'right'}>DERECHA</option>
@@ -1810,8 +1810,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                     <div className="col">
                         <label>Logo</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"eje_pdf_reso_logo"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"eje_pdf_reso_logo"}>
                                 <option value={'no'}>SIN LOGO</option>
                                 <option value={'left'}>IZQUIERDA</option>
                                 <option value={'left2'}>IZQUIERDA ENTRESALTO</option>
@@ -1826,78 +1826,78 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row mb-2 text-center">
 
                     <div className="col ">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Superior (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="eje_maring_top" defaultValue={2.5} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Superior (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="eje_maring_top" defaultValue={2.5} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Inferior (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="eje_maring_bot" defaultValue={2.5} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Inferior (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="eje_maring_bot" defaultValue={2.5} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Izquierdo (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="eje_maring_left" defaultValue={1.7} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Izquierdo (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="eje_maring_left" defaultValue={1.7} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Derecho (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="eje_maring_right" defaultValue={1.7} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Derecho (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="eje_maring_right" defaultValue={1.7} />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-2">
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_simple" />
-                            <label class="form-check-label">Usar nombre revisor</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_simple" />
+                            <label className="form-check-label">Usar nombre revisor</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_signs" />
-                            <label class="form-check-label">Usar firma profesionales</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_signs" />
+                            <label className="form-check-label">Usar firma profesionales</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_pagesi" />
-                            <label class="form-check-label">Usar pie de pagina</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_pagesi" />
+                            <label className="form-check-label">Usar pie de pagina</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_pagesn" defaultChecked="true" />
-                            <label class="form-check-label">Usar paginación</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_pagesn" defaultChecked="true" />
+                            <label className="form-check-label">Usar paginación</label>
                         </div>
                     </div>
                 </div>
                 <div className="row m-3">
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_pagesx" defaultChecked={false} />
-                            <label class="form-check-label">Paginacion Arriba</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_pagesx" defaultChecked={false} />
+                            <label className="form-check-label">Paginacion Arriba</label>
                         </div>
                     </div>
                 </div>
                 <hr />
                 <div className="row text-center">
                     <div className="col">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+                        <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => pd_eje()}><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                        <MDBBtn className="btn btn-danger my-3" onClick={() => pd_eje()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
                     </div>
                 </div>
             </>
@@ -2634,7 +2634,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             {_COMPONENT_DOC_1()}
                             <div className="row text-center">
                                 <div className="col">
-                                    <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                    <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                                 </div>
                             </div>
                         </form>
@@ -2653,7 +2653,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     {_COMPONENT_DOC_7()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                                         </div>
                                     </div>
                                 </form>
@@ -2674,7 +2674,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 {_COMPONENT_DOC_2()}
                                 <div className="row text-center">
                                     <div className="col">
-                                        <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                        <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                                     </div>
                                 </div>
                             </form>
@@ -2694,7 +2694,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 {_COMPONENT_DOC_3()}
                                 <div className="row text-center">
                                     <div className="col">
-                                        <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                        <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                                     </div>
                                 </div>
                             </form>
@@ -2713,7 +2713,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             {_COMPONENT_DOC_4()}
                             <div className="row text-center">
                                 <div className="col">
-                                    <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                    <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                                 </div>
                             </div>
                         </form>
@@ -2732,7 +2732,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     {_COMPONENT_DOC_5()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                                         </div>
                                     </div>
                                 </form>
@@ -2756,7 +2756,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     {_COMPONENT_DOC_6()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                                         </div>
                                     </div>
                                 </form>
@@ -2789,10 +2789,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         {_COMPOENEN_DOC_FINAL_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <button className="btn btn-success my-3"><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success my-3"><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                             </div>
                             <div className="col">
-                                <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_final_not()}><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                                <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_final_not()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
                             </div>
                         </div>
                     </form>

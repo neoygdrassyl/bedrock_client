@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -105,11 +106,10 @@ export default function FUN_DAILY_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
     const TYPE_TIME = { 'iv': 45, 'iii': 35, 'ii': 25, 'i': 20, 'oa': 15 }
     const MySwal = withReactContent(Swal);
-    const moment = require('moment');
     const defaultData = createDefaultData();
     const VRDI = VR_DOCUMENTS_OF_INTEREST;
-    var [id1, setId1] = useState(`${nomens}${moment().subtract(1, 'year').format('YY')}-0000`);
-    var [id2, setId2] = useState(`${nomens}${moment().format('YY')}-9999`);
+    var [id1, setId1] = useState(`${nomens}${dayjs().subtract(1, 'year').format('YY')}-0000`);
+    var [id2, setId2] = useState(`${nomens}${dayjs().format('YY')}-9999`);
     var [data, setData] = useState([])
     var [datac, setDatac] = useState(defaultData)
     var [load, setLoad] = useState(false)
@@ -308,7 +308,7 @@ export default function FUN_DAILY_COMPONENT(props) {
             if (con3 && lastAi == lastRi) {
                 row.vrdocs.map(vr => {
                     if (conAsist) return;
-                    let condDate = moment(lastRD).isBefore(vr.date)
+                    let condDate = dayjs(lastRD).isBefore(vr.date)
                     if (condDate) {
                         conAsist = vr.codes.some(code => docsInerest.includes(',' + code + ','))
                     }
@@ -359,7 +359,7 @@ export default function FUN_DAILY_COMPONENT(props) {
             if (con3 && lastAi == lastRi) {
                 row.vrdocs.map(vr => {
                     if (conAsist) return;
-                    let condDate = moment(lastRD).isBefore(vr.date)
+                    let condDate = dayjs(lastRD).isBefore(vr.date)
                     if (condDate) {
                         conAsist = vr.codes.some(code => docsInerest.includes(code))
                     }
@@ -410,7 +410,7 @@ export default function FUN_DAILY_COMPONENT(props) {
             if (con3 && lastAi == lastRi) {
                 row.vrdocs.map(vr => {
                     if (conAsist) return;
-                    let condDate = moment(lastRD).isBefore(vr.date)
+                    let condDate = dayjs(lastRD).isBefore(vr.date)
                     if (condDate) {
                         conAsist = vr.codes.some(code => docsInerest.includes(code))
                     }
@@ -683,7 +683,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 let lastVR = { date: row.clock_payment || row.clock_date, codes: [], type: 0 };
 
                 (row.vrdocs || []).map(doc => {
-                    if (moment(doc.date).isSameOrAfter(lastVR.date)) lastVR = doc;
+                    if (dayjs(doc.date).isSameOrAfter(lastVR.date)) lastVR = doc;
                 })
 
 
@@ -754,11 +754,11 @@ export default function FUN_DAILY_COMPONENT(props) {
                 let timeEva1 = dateParser_dateDiff(row.clock_record_p1, row.clock_date);
 
                 let limit_timeEva2 = dateParser_finalDate(row.clock_corrections, (limit_part_1 - timeEva1));
-                //let timeEva2 = dateParser_dateDiff(row.clock_corrections, row.clock_pay2 || moment().format('YYYY-MM-DD'));
+                //let timeEva2 = dateParser_dateDiff(row.clock_corrections, row.clock_pay2 || dayjs().format('YYYY-MM-DD'));
 
-                let dayEva = dateParser_timeLeft(row.clock_not_1 || row.clock_not_2 || row.clock_record_p1 || row.clock_date || row.clock_payment, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                let dayEva = dateParser_timeLeft(row.clock_not_1 || row.clock_not_2 || row.clock_record_p1 || row.clock_date || row.clock_payment, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
                 //let limitDate = dateParser_finalDate(row.clock_not_1 || row.clock_not_2, clock_ext ? 45 : 30)
-                let dayEva2 = dateParser_timeLeft(limit_timeEva2, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                let dayEva2 = dateParser_timeLeft(limit_timeEva2, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
 
 
                 //let con8 = rowCon.cor
@@ -773,7 +773,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                     /** pay2 */
                     rowCon = _con_pay2(row);
                     if ((row.clock_pay_not_1 || row.clock_pay_not_2) && !row.clock_pay_69) {
-                        let paymentTime = dateParser_dateDiff(row.clock_pay_not_1 ?? row.clock_pay_not_2, moment().format('YYYY-MM-DD'));
+                        let paymentTime = dateParser_dateDiff(row.clock_pay_not_1 ?? row.clock_pay_not_2, dayjs().format('YYYY-MM-DD'));
                         let _color = 30 - paymentTime >= 10 ? 'primary' : 30 - paymentTime > 0 ? 'warning' : 'danger'
                         if (paymentTime <= 30) _datac.pay2.push({ ...row, color: _color, contextTest: 30 - paymentTime })
                         /** neg 2 -  4 */
@@ -806,7 +806,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                     /** rsc */
                     let conRsc = row.clock_resource
                     let conRscOut = row.clock_resource_solve
-                    let daysRsc = moment().diff(conRsc, 'days');
+                    let daysRsc = dayjs().diff(conRsc, 'days');
                     if (conClockRes && conRes && resNot && conRsc && daysRsc <= 60 && !conRscOut) _datac.rsc.push({ ...row })
                     if (conClockRes && conRes && resNot && conRsc && daysRsc > 60 && !conRscOut) _datac.rsc.push({ ...row, color: 'warning' })
 
@@ -828,7 +828,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 if (row.state < -100) _datac.neg.push({ ...row, color: 'danger' }) /** neg */
 
                 if (row.state == 1 || row.state == -1) {
-                    let days_rad = conOA ? dateParser_dateDiff(dateParser_finalDate(row.clock_prorroga, -30), moment().format('YYYY-MM-DD'), true) : (30 - dateParser_timePassed(row.clock_payment));
+                    let days_rad = conOA ? dateParser_dateDiff(dateParser_finalDate(row.clock_prorroga, -30), dayjs().format('YYYY-MM-DD'), true) : (30 - dateParser_timePassed(row.clock_payment));
                     /** inc */
                     let color = !row.clock_payment ? 'danger' : days_rad < 0 ? 'danger' : days_rad < 10 ? 'warning' : 'primary';
                     if (conOA) color = !row.clock_prorroga ? 'danger' : days_rad < 0 ? 'danger' : days_rad < 10 ? 'warning' : 'primary';
@@ -935,14 +935,14 @@ export default function FUN_DAILY_COMPONENT(props) {
     // ******************************* JSX ***************************** // 
     const subHeaderComponentMemo = () => {
         return (
-            <div class="input-group mb-2">
-                <span class="input-group-text bg-light">
-                    <i class="fas fa-search"></i>
+            <div className="input-group mb-2">
+                <span className="input-group-text bg-light">
+                    <i className="fas fa-search"></i>
                 </span>
                 <input type='text' className='form-control' placeholder='Busqueda...' id="ti-search"
                     onChange={(e) => setFilter(e.target.value)} defaultValue={filter} />
                 {filter ?
-                    <MDBBtn link color="danger" size="sm" onClick={() => { setFilter(''); document.getElementById('ti-search').value = '' }}><i class="fas fa-times"></i> </MDBBtn>
+                    <MDBBtn link color="danger" size="sm" onClick={() => { setFilter(''); document.getElementById('ti-search').value = '' }}><i className="fas fa-times"></i> </MDBBtn>
                     : ''}
 
             </div>
@@ -950,9 +950,9 @@ export default function FUN_DAILY_COMPONENT(props) {
     }
     const idHeaderComponent = () => {
         return (
-            <div class="input-group mb-2">
-                <span class="input-group-text bg-light">
-                    <i class="fas fa-hashtag"></i>
+            <div className="input-group mb-2">
+                <span className="input-group-text bg-light">
+                    <i className="fas fa-hashtag"></i>
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
@@ -987,36 +987,36 @@ export default function FUN_DAILY_COMPONENT(props) {
         return <MDBPopoverBody>
             <>
                 {row.priority_index ?
-                    <div class="list-group list-group-flush">
+                    <div className="list-group list-group-flush">
                         <label>INDICE DE PRIORIDAD: {row.priority_index}</label>
                     </div>
                     : ' '}
 
-                <div class="list-group list-group-flush">
-                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
+                <div className="list-group list-group-flush">
+                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-info" ></i> DETALLES</button>
+                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} className="list-group-item list-group-item-action p-1 m-0 " ><i className="far fa-clock text-secondary" ></i> TIEMPOS</button>
+                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
                     {row.state < 101 ?
                         <>
-                            <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                            <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
+                            <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
+                            <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-check-square text-warning" ></i> CHECKEO</button>
                             {regexChecker_isPh(row, true) ?
                                 <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>
                                 :
                                 <>
                                     {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
+                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
                                     {!isOA ? <>
-                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
+                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
+                                        {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
+                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-file-contract text-warning" ></i> ACTA</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>}
                         </> : <></>}
                 </div>

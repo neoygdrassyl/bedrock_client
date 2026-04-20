@@ -4,7 +4,7 @@ import FUNService from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import CubXVrDataService from '../../../../services/cubXvr.service'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { MDBBtn } from '../../../../components/ui';
@@ -211,29 +211,29 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.1 Fecha del documento</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="geni_date_doc" required
-                            defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date_doc" required
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
 
                     <div className="col">
                         <label>5.2 Número de Radicación</label>
-                        <input type="text" class="form-control mb-3" id="geni_id_public" disabled
+                        <input type="text" className="form-control mb-3" id="geni_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
 
                     <div className="col">
                         <label className="mt-1">5.3 {infoCud.serials.end} Carta Incompleto</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geng_cub_inc"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geng_cub_inc"
                                 defaultValue={_GET_CHILD_LAW().cub_inc || cubSelected || ""} />
-                            {edit  ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
+                            {edit  ? <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
-                            <div class="input-group">
-                                <select class="form-select" id="vr_selected1" defaultValue={vrSelected || ""}>
+                            <div className="input-group">
+                                <select className="form-select" id="vr_selected1" defaultValue={vrSelected || ""}>
                                     <option disabled value=''>Seleccione una opción</option>
                                     {vrsRelated.map((value, key) => (
                                         <option key={value.id} value={value.id_public}>
@@ -250,37 +250,37 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.4 Ciudad</label>
-                        <input type="text" class="form-control mb-3" id="geni_city"
+                        <input type="text" className="form-control mb-3" id="geni_city"
                             defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
                     </div>
                     <div className="col">
                         <label>5.5. Fecha Radicación</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="geni_date" required
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date" required
                             defaultValue={_JSON.date || _GET_CLOCK_STATE(3).date_start} />
                     </div>
                     <div className="col">
                         <label>5.6. Fecha Limite</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="geni_date_limit" required
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date_limit" required
                             defaultValue={_JSON.date_limit || dateParser_finalDate(_GET_CLOCK_STATE(3).date_start, 30)} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.7 Responsable</label>
-                        <input type="text" class="form-control mb-3" id="geni_name"
+                        <input type="text" className="form-control mb-3" id="geni_name"
                             defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col">
                         <label>5.8 Dirección</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geni_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geni_address"
                                 defaultValue={_JSON.address || _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
                         <label>5.9 Email</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geni_email"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geni_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
                         </div>
                     </div>
@@ -288,11 +288,11 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.10 Tipo de Solicitud</label>
-                        <textarea rows="3" class="form-control mb-3" id="geni_type" defaultValue={_JSON.type || formsParser1(_CHILD_1)}></textarea>
+                        <textarea rows="3" className="form-control mb-3" id="geni_type" defaultValue={_JSON.type || formsParser1(_CHILD_1)}></textarea>
                     </div>
                     <div className="col">
                         <label>5.11 Documentos faltantes</label>
-                        <textarea rows="3" class="form-control mb-3" id="geni_missing" defaultValue={_JSON.missing || _MISSING}></textarea>
+                        <textarea rows="3" className="form-control mb-3" id="geni_missing" defaultValue={_JSON.missing || _MISSING}></textarea>
                     </div>
                 </div>
             </>
@@ -544,11 +544,11 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                 <div className="row text-center">
                     {edit ?
                         <div className="col">
-                            <button className="btn btn-success my-3"><i class="fas fa-share-square"></i> GUARDAR DATOS</button>
+                            <button className="btn btn-success my-3"><i className="fas fa-share-square"></i> GUARDAR DATOS</button>
                         </div>
                         : ''}
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i class="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
+                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
                     </div>
                 </div>
             </form>

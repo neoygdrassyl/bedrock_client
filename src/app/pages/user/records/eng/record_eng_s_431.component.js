@@ -299,11 +299,11 @@ function RECORD_ENG_STEP_431(props) {
             return <>
                 <div className="row">
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-info text-white">
                                 Categoría Construcción (H.3.1)
                             </span>
-                            <select class="form-select form-control form-control-sm" id="recprd_eng_s01_select" onChange={(e) => _SET_VALUES(e.target.value)}
+                            <select className="form-select form-control form-control-sm" id="recprd_eng_s01_select" onChange={(e) => _SET_VALUES(e.target.value)}
                                 defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 5) ?? 'BAJA'} onBlur={(e) => manage_step_01(e)}>
                                 <option>BAJA</option>
                                 <option>MEDIA</option>
@@ -313,8 +313,8 @@ function RECORD_ENG_STEP_431(props) {
                         </div>
                     </div>
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-info text-white">
                                 Segun los Niveles
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_1" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 0) ?? 'Hasta 3 niveles'} />
@@ -331,16 +331,16 @@ function RECORD_ENG_STEP_431(props) {
                 </div>
                 <div className="row">
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-info text-white">
                                 Numero de Sondeos
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_2" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 1) ?? 'Mínimo 3'} />
                         </div>
                     </div>
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-info text-white">
                                 Profundidad (h.3.2.1)
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_3" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 2) ?? 'Mínima 6 m.'} />
@@ -357,16 +357,16 @@ function RECORD_ENG_STEP_431(props) {
                 </div>
                 <div className="row">
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-info text-white">
                                 Cargas en Columna
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_4" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 3) ?? 'Menor de 800 kN'} />
                         </div>
                     </div>
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-info text-white">
                                 Supersivisíon Técnica
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_5" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 4) ?? 'No necesaria'} />
@@ -388,7 +388,7 @@ function RECORD_ENG_STEP_431(props) {
                 {H2221().map((value, i) => (
                     <div className="row border my-0">
                         <div className="col-10">
-                            <div class="input-group my-0">
+                            <div className="input-group my-0">
                                 <label>{value}</label>
                             </div>
                         </div>

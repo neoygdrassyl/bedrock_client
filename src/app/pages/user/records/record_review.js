@@ -13,7 +13,7 @@ import { dateParser_finalDate, dateParser_timeLeft, regexChecker_isOA_2, _MANAGE
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FunService from '../../../services/fun.service';
 import { cities, domains_number, infoCud } from '../../../components/jsons/vars';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { handleArchCheck, handleEnghCheck, handleLAWhCheck } from '../../../components/customClasses/pdfCheckHandler';
 import RECORD_DOC_LETTER from './record_letter.component';
 import RECORD_DOC_LETTER_2 from './record_letter_2.component';
@@ -189,7 +189,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
 
         mergedPdf.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        mergedPdf.setCreationDate(moment().toDate());
+        mergedPdf.setCreationDate(dayjs().toDate());
         mergedPdf.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         mergedPdf.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'juridico']);
         mergedPdf.setLanguage('es-co');
@@ -462,8 +462,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
         let get_clockExistIcon = (state) => {
             var _CHILD = _GET_CLOCK_STATE(state);
-            if (_CHILD) return <i class="far fa-check-circle text-success"></i>
-            return <i class="far fa-dot-circle"></i>
+            if (_CHILD) return <i className="far fa-check-circle text-success"></i>
+            return <i className="far fa-dot-circle"></i>
         }
         let pro = () => {
             return _GET_CLOCK_STATE(34).date_start ?? false;
@@ -531,13 +531,13 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     {tn == 2 || tn == 3 ?
                         <>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="text" class="form-control" id="type_not_name" placeholder='Sujeto Notificación' />
+                                <div className="input-group my-1">
+                                    <input type="text" className="form-control" id="type_not_name" placeholder='Sujeto Notificación' />
                                 </div>
                             </div>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="text" class="form-control" id="type_not_email" placeholder='Correo Notificación' />
+                                <div className="input-group my-1">
+                                    <input type="text" className="form-control" id="type_not_email" placeholder='Correo Notificación' />
                                 </div>
                             </div>
                         </>
@@ -545,13 +545,13 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     {tn == 4 ?
                         <>
                          <div className="col-4">
-                                <div class="input-group my-1">
+                                <div className="input-group my-1">
                                     <label>Fecha Comunicación: </label>
                                 </div>
                             </div>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
+                                <div className="input-group my-1">
+                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
                                 </div>
                             </div>
                         </>
@@ -578,21 +578,21 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     </div>
                     <div className="col-5">
                         <label>Fecha del acta de observaciones</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" class="form-control" id="record_review_2" max="2100-01-01"
+                            <input type="date" className="form-control" id="record_review_2" max="2100-01-01"
                                 defaultValue={currentRecord.date ?? ''} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Resultado</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
-                            <select class="form-select" id="record_review_3" defaultValue={currentRecord.check ?? 2} >
+                            <select className="form-select" id="record_review_3" defaultValue={currentRecord.check ?? 2} >
                                 <option value="0" className="text-danger">TIENE OBSERVACIONES</option>
                                 <option value="1" className="text-success">CUMPLE CON TODO</option>
                                 <option value="2" className="text-warning">SIN REVISAR</option>
@@ -608,21 +608,21 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     </div>
                     <div className="col-5">
                         <label>Fecha del acta de Correcciones</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" class="form-control" id="record_review_4" max="2100-01-01"
+                            <input type="date" className="form-control" id="record_review_4" max="2100-01-01"
                                 defaultValue={currentRecord.date_2 ?? ''} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Resultado</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
-                            <select class="form-select" id="record_review_5" defaultValue={currentRecord.check_2 ?? 2} >
+                            <select className="form-select" id="record_review_5" defaultValue={currentRecord.check_2 ?? 2} >
                                 <option value="0" className="text-danger">NO CUMPLE (NEGADO)</option>
                                 <option value="1" className="text-success">CUMPLE CON TODO (APROBADO)</option>
                                 <option value="2" className="text-warning">SIN REVISAR</option>
@@ -652,21 +652,21 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             </div>
                             <div className="col-4">
                                 <label>Fecha del acta de observaciones</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-info text-white">
+                                        <i className="far fa-calendar-alt"></i>
                                     </span>
-                                    <input type="date" class="form-control" id="record_ph_worker_arc_2" required
+                                    <input type="date" className="form-control" id="record_ph_worker_arc_2" required
                                         defaultValue={values[1]} />
                                 </div>
                             </div>
                             <div className="col-4">
                                 <label>Aprobado</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-check-square"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-info text-white">
+                                        <i className="far fa-check-square"></i>
                                     </span>
-                                    <select class="form-control" id="recprd_ph_final_check" defaultValue={values[0]} >
+                                    <select className="form-control" id="recprd_ph_final_check" defaultValue={values[0]} >
                                         <option value="0" className="text-danger">NO</option>
                                         <option value="1" className="text-success">SI</option>
                                     </select>
@@ -743,7 +743,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         </div>
                         <div className="col border py-1">
                             {value.state ?
-                                <input type="date" class="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
+                                <input type="date" className="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
                                     defaultValue={_GET_CLOCK_STATE(value.state).date_start ?? ''} onBlur={(e) => save_clock2(value, i)} />
                                 : ''}
                         </div>
@@ -863,24 +863,24 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 <div className="row mb-3">
                     <div className="col">
                         <label>Autoridad Competente</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"func_pdf_0_1"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"func_pdf_0_1"}>
                                 {domains_number}
                             </select>
                         </div>
                     </div>
                     <div className="col">
                         <label>Ciudad</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"func_pdf_0_2"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"func_pdf_0_2"}>
                                 {cities}
                             </select>
                         </div>
                     </div>
                     <div className="col">
                         <label>Acta</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"record_version"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"record_version"}>
                                 <option value={1}>OBSERVACIONES</option>
                                 <option value={2}>CORRECCIONES</option>
                             </select>
@@ -888,9 +888,9 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     </div>
                     <div className="col">
                         <label>Fecha expedición</label>
-                        <div class="input-group my-1">
-                            <input type="date" max="2100-01-01" class="form-control me-1" id="record_date"
-                                defaultValue={moment().format('YYYY-MM-DD')} />
+                        <div className="input-group my-1">
+                            <input type="date" max="2100-01-01" className="form-control me-1" id="record_date"
+                                defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                 </div>
@@ -903,90 +903,90 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     <div className="col-1"> <label className='fw-bold'>PEND.</label> </div>
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i class="fas fa-balance-scale"></i> JUR.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><i className="fas fa-balance-scale"></i> JUR.</label> </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
-                            <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('law', reviews_law, e.target.value)}>
+                        <div className="input-group input-group-sm">
+                            <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('law', reviews_law, e.target.value)}>
                                 {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                             </select>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_worker_name_law"} disabled defaultValue={reviews_law[0].worker} />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_check_law"} disabled defaultValue={reviews_law[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_date_law"} disabled defaultValue={reviews_law[0].date} />
                         </div>
                     </div>
                     <div className="col-1 d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_law_pending" />
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_law_pending" />
                         </div>
                     </div>
 
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i class="far fa-building"></i>  ARQ.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><i className="far fa-building"></i>  ARQ.</label> </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
-                            <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('arc', reviews_arc, e.target.value)}>
+                        <div className="input-group input-group-sm">
+                            <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('arc', reviews_arc, e.target.value)}>
                                 {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                             </select>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_worker_name_arc"} disabled defaultValue={reviews_arc[0].worker} />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_check_arc"} disabled defaultValue={reviews_arc[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_date_arc"} disabled defaultValue={reviews_arc[0].date} />
                         </div>
                     </div>
                     <div className="col-1 d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_arc_pending" />
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_arc_pending" />
                         </div>
                     </div>
 
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i class="fas fa-cogs"></i> EST.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><i className="fas fa-cogs"></i> EST.</label> </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
-                            <select class="form-select me-1" id={"record_pdf_version_eng"} onChange={(e) => _CHANGE_VALUES_ENG(reviews_eng, e.target.value)}>
+                        <div className="input-group input-group-sm">
+                            <select className="form-select me-1" id={"record_pdf_version_eng"} onChange={(e) => _CHANGE_VALUES_ENG(reviews_eng, e.target.value)}>
                                 {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                             </select>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_worker_name_eng"} disabled defaultValue={reviews_eng[0].worker} />
                         </div>
                     </div>
                     <div className="col"></div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_date_eng"} disabled defaultValue={reviews_eng[0].date} />
                         </div>
                     </div>
                     <div className="col-1 d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_eng_pending" />
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_eng_pending" />
                         </div>
                     </div>
                 </div>
@@ -1023,40 +1023,40 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                 <div className="row my-3">
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_simple" />
-                            <label class="form-check-label" for="exampleCheck1">Acta simple</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_simple" />
+                            <label className="form-check-label" htmlFor="exampleCheck1">Acta simple</label>
                         </div>
                     </div>
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_footer" defaultChecked={'true'} />
-                            <label class="form-check-label" for="exampleCheck1" >Usar Pie de pagina</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_footer" defaultChecked={'true'} />
+                            <label className="form-check-label" htmlFor="exampleCheck1" >Usar Pie de pagina</label>
                         </div>
                     </div>
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_pagination" />
-                            <label class="form-check-label" for="exampleCheck1">Usar Paginación</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_pagination" />
+                            <label className="form-check-label" htmlFor="exampleCheck1">Usar Paginación</label>
                         </div>
                     </div>
                 </div>
 
                 <div className="row my-3">
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_eng_diagnostic" />
-                            <label class="form-check-label" for="exampleCheck1">Diagnostico NSR-10</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_eng_diagnostic" />
+                            <label className="form-check-label" htmlFor="exampleCheck1">Diagnostico NSR-10</label>
                         </div>
                     </div>
                 </div>
 
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-danger me-1 btn-sm" onClick={() => creae_pdf()}> <i class="far fa-file-pdf"></i> DESCARGAR ACTA</button>
+                        <button className="btn btn-danger me-1 btn-sm" onClick={() => creae_pdf()}> <i className="far fa-file-pdf"></i> DESCARGAR ACTA</button>
                     </div>
                     <div className="col text-center">
-                        <button className="btn btn-danger btn-sm" onClick={() => CREATE_PDF_CHECK()}> <i class="far fa-file-pdf"></i> DESCARGAR CHEKEO</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => CREATE_PDF_CHECK()}> <i className="far fa-file-pdf"></i> DESCARGAR CHEKEO</button>
                     </div>
                 </div>
             </>
@@ -1068,16 +1068,16 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     </div>
                     <div className="col-5">
                         <label className="mt-2">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="rev_cub"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="rev_cub"
                                 defaultValue={cubSelected || currentRecord.id_public || ""} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
+                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected11" defaultValue={vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected11" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -1936,7 +1936,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentItem.state > -5
                                             ? <>
                                                 <div className="col">
-                                                    <MDBBtn className="btn btn-danger my-3" onClick={() => review()}><i class="far fa-check-square"></i> REALIZAR REVISIÓN </MDBBtn>
+                                                    <MDBBtn className="btn btn-danger my-3" onClick={() => review()}><i className="far fa-check-square"></i> REALIZAR REVISIÓN </MDBBtn>
                                                 </div>
                                             </>
                                             : <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
@@ -1956,7 +1956,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentRecord.check == 0
                                             ? <>
                                                 <div className="col text-center">
-                                                    <MDBBtn className="btn btn-secondary my-3" onClick={() => new_version()} ><i class="fas fa-plus-circle"></i> NUEVA REVISION</MDBBtn>
+                                                    <MDBBtn className="btn btn-secondary my-3" onClick={() => new_version()} ><i className="fas fa-plus-circle"></i> NUEVA REVISION</MDBBtn>
                                                 </div>
                                                 <div className="col">
                                                     <label>Genera una nueva version de esta solicitud, guardando la información anterior.</label>
@@ -1994,14 +1994,14 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                                             <label className="fw-bold mt-1">Fecha de evento:</label>
                                                         </div>
                                                         <div className="col">
-                                                            <input type="date" class="form-control" id="record_review_next" max="2100-01-01"
+                                                            <input type="date" className="form-control" id="record_review_next" max="2100-01-01"
                                                                 defaultValue={_GET_CLOCK_STATE(51).date_start ?? ''} required />
                                                         </div>
                                                     </div>
                                                     <div className="row">
                                                         <div className="col text-center">
 
-                                                            <button className="btn btn-danger my-3"><i class="far fa-check-square"></i> PROSEGUIR A EXPEDICIÓN </button>
+                                                            <button className="btn btn-danger my-3"><i className="far fa-check-square"></i> PROSEGUIR A EXPEDICIÓN </button>
                                                         </div>
                                                     </div>
                                                 </form>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service';
 import Swal from 'sweetalert2'
@@ -70,7 +71,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
 
     const MySwal = withReactContent(Swal);
-    const moment = require('moment');
     const Colors = ['#ffc38f', '#ff8f93', '#c38fff', '#8f93ff', '#8ffffb', '#8fffc3', '#cbf071', '#fffb8f']
     const matrixLoad = {
         'i': { law: 1, arc: 2, eng: 2 },
@@ -85,8 +85,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     const LoadTypeShort = { 'i': 'I', 'ii': 'II', 'iii': 'III', 'iv': 'IV', 'oa': 'OA', '0': 'III' }
 
 
-    var [id1, setId1] = useState(`${nomens}${moment().subtract(1, 'year').format('YY')}-0000`);
-    var [id2, setId2] = useState(`${nomens}${moment().format('YY')}-9999`);
+    var [id1, setId1] = useState(`${nomens}${dayjs().subtract(1, 'year').format('YY')}-0000`);
+    var [id2, setId2] = useState(`${nomens}${dayjs().format('YY')}-9999`);
     var [data, setData] = useState([])
     var [dataW, setDataW] = useState([])
     var [dataHM, setDataHM] = useState([])
@@ -337,11 +337,11 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             let id_eng = value.asign_eng_worker_id;
 
             let conChecks = [
-                { name: con_law, type: 'law', icon: <i class="fas fa-balance-scale"></i>, id: id_law},
-                { name: con_law_ph, type: 'law', icon: <i class="fas fa-balance-scale"></i>, id:  id_law_ph},
-                { name: con_arc, type: 'arc', icon: <i class="far fa-building "></i>, id: id_arc },
-                { name: con_arc_ph, type: 'arc', icon: <i class="far fa-building"></i>, id: id_arc_ph },
-                { name: con_eng, type: 'eng', icon: <i class="fas fa-cogs"></i>, id: id_eng },
+                { name: con_law, type: 'law', icon: <i className="fas fa-balance-scale"></i>, id: id_law},
+                { name: con_law_ph, type: 'law', icon: <i className="fas fa-balance-scale"></i>, id:  id_law_ph},
+                { name: con_arc, type: 'arc', icon: <i className="far fa-building "></i>, id: id_arc },
+                { name: con_arc_ph, type: 'arc', icon: <i className="far fa-building"></i>, id: id_arc_ph },
+                { name: con_eng, type: 'eng', icon: <i className="fas fa-cogs"></i>, id: id_eng },
             ]
 
             conChecks.map(names => {
@@ -471,7 +471,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         newDoc = vrDocs.some(vr => {
             let codes = vr.codes ? vr.codes : [];
 
-            let con_1 = dateReview[wType] ? moment(vr.date).isSameOrAfter(dateReview[wType]) : false;
+            let con_1 = dateReview[wType] ? dayjs(vr.date).isSameOrAfter(dateReview[wType]) : false;
             let con_2 = codes.some(doc => requiredDocs.includes(doc))
 
             return con_1 && con_2;
@@ -483,9 +483,9 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     // ******************************* JSX ***************************** // 
     const subHeaderComponentMemo = () => {
         return (
-            <div class="input-group mb-2">
-                <span class="input-group-text bg-light">
-                    <i class="fas fa-search"></i>
+            <div className="input-group mb-2">
+                <span className="input-group-text bg-light">
+                    <i className="fas fa-search"></i>
                 </span>
                 <input type='text' className='form-control' placeholder='Busqueda...'
                     onChange={(e) => setFilter(e.target.value)} defaultValue={filter} />
@@ -494,9 +494,9 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     }
     const idHeaderComponent = () => {
         return (
-            <div class="input-group mb-2">
-                <span class="input-group-text bg-light">
-                    <i class="fas fa-hashtag"></i>
+            <div className="input-group mb-2">
+                <span className="input-group-text bg-light">
+                    <i className="fas fa-hashtag"></i>
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
@@ -512,13 +512,13 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     }
     const iconsComponent = () => {
         return (
-            <div class="input-group mt-1">
-                <MDBBtn link className='m-0 px-2' outline={!filterState} color="dark" size="sm" onClick={() => { setFilterState(!filterState); }}><i class="fas fa-check-square"></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterLaw} size="sm" onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><i class="fas fa-balance-scale"></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterArc} size="sm" onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <i class="far fa-building "></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterEng} size="sm" onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><i class="fas fa-cogs"></i> </MDBBtn>
+            <div className="input-group mt-1">
+                <MDBBtn link className='m-0 px-2' outline={!filterState} color="dark" size="sm" onClick={() => { setFilterState(!filterState); }}><i className="fas fa-check-square"></i></MDBBtn>
+                <MDBBtn link className='m-0 px-2' outline={!filterLaw} size="sm" onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><i className="fas fa-balance-scale"></i></MDBBtn>
+                <MDBBtn link className='m-0 px-2' outline={!filterArc} size="sm" onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <i className="far fa-building "></i></MDBBtn>
+                <MDBBtn link className='m-0 px-2' outline={!filterEng} size="sm" onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><i className="fas fa-cogs"></i> </MDBBtn>
                 {currenItem != null ?
-                    <MDBBtn link className='m-0 px-2' color="danger" size="sm" onClick={() => { setCurrentItem(null); setSbtn(null) }}><i class="fas fa-times"></i> </MDBBtn>
+                    <MDBBtn link className='m-0 px-2' color="danger" size="sm" onClick={() => { setCurrentItem(null); setSbtn(null) }}><i className="fas fa-times"></i> </MDBBtn>
                     : ''}
             </div>
         );
@@ -554,11 +554,11 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 </>
             })}
             {/**
-             *  <ul class="list-group">
-                <li class='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
+             *  <ul className="list-group">
+                <li className='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
                     <label>MATRIZ DE CARGA PROFESIONAL</label>
                 </li>
-                <li class='list-group-item my-0 py-1'>
+                <li className='list-group-item my-0 py-1'>
                     <table className='table table-sm'>
                         <thead>
                             <tr>
@@ -602,7 +602,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         </tbody>
                     </table>
                 </li>
-                <li class='list-group-item my-0 py-1' >
+                <li className='list-group-item my-0 py-1' >
                     <h5 className='fw-normal'>CARGA DIARIA POR PROFESIONAL = {dailyLoad}</h5>
                 </li>
             </ul>
@@ -613,35 +613,35 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         const isOA = regexChecker_isOA_2(row);
         let rules = row.rules ? row.rules.split(';') : [];
         return <MDBPopoverBody>
-            <div class="list-group list-group-flush">
+            <div className="list-group list-group-flush">
                 {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ?
                     <>
-                        <button type="button" onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-user-clock"></i> ASIGNAR</button>
+                        <button type="button" onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-user-clock"></i> ASIGNAR</button>
                     </> : null}
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
+                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-info" ></i> DETALLES</button>
+                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} className="list-group-item list-group-item-action p-1 m-0 " ><i className="far fa-clock text-secondary" ></i> TIEMPOS</button>
+                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
                 {row.state < 101 ?
                     <>
-                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
+                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
+                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-check-square text-warning" ></i> CHECKEO</button>
                         {regexChecker_isPh(row, true) ?
                             <>
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                             </>
                             :
                             <>
                                 {!isOA && rules[0] != 1 ? <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
                                 </> : ''}
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
                                 {!isOA ? <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                    {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
+                                    {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-file-contract text-warning" ></i> ACTA</button>
                                 </> : ''}
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                             </>}
                     </> : <></>}
             </div>
@@ -658,8 +658,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
         ]
         return <>
-            <ul class="list-group">
-                <li class='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
+            <ul className="list-group">
+                <li className='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
                     <div className='row'>
                         <div className='col'>
                             COLORES
@@ -667,10 +667,10 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     </div>
                 </li>
             </ul>
-            <ul class="list-group">
+            <ul className="list-group">
                 {colorsLegends.map((value, i) => {
                     return <React.Fragment key={i}>
-                        <li class='list-group-item my-0 py-0'>
+                        <li className='list-group-item my-0 py-0'>
                             <div className='row'>
                                 <div className='col'>
                                     <h5 className='fw-normal'>
@@ -687,7 +687,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     let LISTS_COMPONENT = () => {
 
         return <>
-            <ul class="list-group">
+            <ul className="list-group">
                 {dataW.map((cb, i) => {
                     let worker = cb;
                     let wType = worker.type;
@@ -700,16 +700,16 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     if (!isSelected) return;
                     let classList = 'list-group-item my-0 py-1';
                     return <React.Fragment key={i}>
-                        <li class={classList} style={{ backgroundColor: worker.color, }}>
+                        <li className={classList} style={{ backgroundColor: worker.color, }}>
                             <div className='row'>
                                 <div className='col'>
                                     {worker.icon} {worker.name} ({worker.datas.filter(item => _filter(item)).length}) {worker.icon ? <MDBBtn rounded size='sm' onClick={() => {setModalF(true); setCurrentProf({name: worker.name, type: wType, id: worker.id})}} >Ver historial</MDBBtn>: null}
                                 </div>
                             </div>
                         </li>
-                        <li class='list-group-item my-0 py-1'>
+                        <li className='list-group-item my-0 py-1'>
                             <b>Revisando:</b>
-                            <div class="d-flex flex-wrap">
+                            <div className="d-flex flex-wrap">
                                 {worker.datas.filter(item => _filter(item)).filter(item => item.color == 'success' || item.color == 'secondary').map(btn => {
                                     return <div key={btn.id_public} className='me-1 mb-1'>
                                             <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
@@ -722,7 +722,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                 })}
                             </div>
                             <b>No Viable (<label className="text-success">Nuevos Documentos</label>)</b>
-                            <div class="d-flex flex-wrap">
+                            <div className="d-flex flex-wrap">
                                 {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map(btn => {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(!newDocs) return '';
@@ -737,7 +737,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                 })}
                             </div>
                             <b>No Viable (Sin documentos nuevos)</b>
-                            <div class="d-flex flex-wrap">
+                            <div className="d-flex flex-wrap">
                                 {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map(btn => {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(newDocs) return '';
@@ -760,7 +760,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
     let CALENDAR = () => {
         function getTodoList(_date) {
-            const date = moment(_date).format('YYYY-MM-DD');
+            const date = dayjs(_date).format('YYYY-MM-DD');
 
             let dates = [];
 
@@ -795,8 +795,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
         function renderCell(date) {
             const list = getTodoList(date);
-            const dateFormat = moment(date).format('YYYY-MM-DD');
-            const dayOff = moment(date).weekday();
+            const dateFormat = dayjs(date).format('YYYY-MM-DD');
+            const dayOff = dayjs(date).day();
             const dayOffTag = <Tag color="blue">FESTIVO</Tag>;
             const holyDays = require('../../../../components/jsons/holydaysmoment.json');
             const isDayOff = dayOff === 0 || dayOff === 6 || holyDays.holidays.includes(dateFormat);
@@ -947,7 +947,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {currenItem ? currenItem.id_public : ''} </label>
+                        <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {currenItem ? currenItem.id_public : ''} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
                     </div>
 
@@ -955,7 +955,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={() => setModal(false)}>
-                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i class="fas fa-times-circle"></i> CERRAR</div>
+                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i className="fas fa-times-circle"></i> CERRAR</div>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -966,7 +966,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> HISTORIAL DE ASIGNACIONES:  {currentProf ? currentProf.name : ''} </label>
+                        <label><i className="far fa-file-alt"></i> HISTORIAL DE ASIGNACIONES:  {currentProf ? currentProf.name : ''} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => setModalF(false)}></MDBBtn>
                     </div>
 
@@ -979,7 +979,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={() => setModalF(false)}>
-                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i class="fas fa-times-circle"></i> CERRAR</div>
+                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i className="fas fa-times-circle"></i> CERRAR</div>
                         </MDBBtn>
                     </div>
                 </Modal>

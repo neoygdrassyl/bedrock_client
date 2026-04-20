@@ -4,8 +4,7 @@ import JoditEditor from "jodit-pro-react";
 import { MDBBtn } from '../../../../components/ui';
 import { infoCud } from '../../../../components/jsons/vars';
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-const moment = require('moment');
-const momentB = require('moment-business-days');
+import dayjs from 'dayjs';
 
 
 export const FUN_REPORT_DATA_JODIT = (props) => {
@@ -163,7 +162,7 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
         <p style="text-align: center; line-height: 0.5;">
             <strong style="font-size: 18px;">${infoCud.title} ${infoCud.dir}</strong></p>
         <br />
-        <p style="text-align: left; line-height: 0.5; margin-left: 100px;">${infoCud.city}, ${dateParser(_GET_LAW_REPORT_DATA()[2] || moment().format('YYYY-MM-DD'))}</p>
+        <p style="text-align: left; line-height: 0.5; margin-left: 100px;">${infoCud.city}, ${dateParser(_GET_LAW_REPORT_DATA()[2] || dayjs().format('YYYY-MM-DD'))}</p>
         <br />
         <p style="text-align: left; line-height: 0.5; margin-left: 100px;"><strong>${_GET_CHILD_LAW().report_cub}</strong></p>
         <br />
@@ -246,7 +245,7 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
             config={config()}
             tabIndex={1} // tabIndex of textarea
             onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
-            class="form-control mb-3"
+            className="form-control mb-3"
             rows="5"
             maxlength="409675"
 

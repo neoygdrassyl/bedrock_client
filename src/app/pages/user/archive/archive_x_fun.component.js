@@ -78,9 +78,9 @@ export default function ARCHIVE_X_FUN(props) {
             <div className="row">
                 <div className="col">
                     <label>Añadir licencia {searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-primary text-white">
-                            <i class="fas fa-search"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-white">
+                            <i className="fas fa-search"></i>
                         </span>
                         <HTMLDatalist
                             name={"lic"}
@@ -122,52 +122,52 @@ export default function ARCHIVE_X_FUN(props) {
                     <hr />
                     <div className='row'>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Serie: <label className='fw-bold'>{_SERIE}</label></label>
+                            <label htmlFor="exampleFormControlInput1">Serie: <label className='fw-bold'>{_SERIE}</label></label>
                         </div>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Subserie: <label className='fw-bold'>{_SUBSERIE}</label></label>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='col'>
-                            <label for="exampleFormControlInput1">Modalidad:</label> <label className='fw-bold'>{formsParser1(_CHILD)}</label>
+                            <label htmlFor="exampleFormControlInput1">Subserie: <label className='fw-bold'>{_SUBSERIE}</label></label>
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Dirección: <label className='fw-bold'>{_CHILD.direccion}</label></label>
-                        </div>
-                        <div className='col'>
-                            <label for="exampleFormControlInput1">Predial: <label className='fw-bold'>{_CHILD.catastral}</label></label>
+                            <label htmlFor="exampleFormControlInput1">Modalidad:</label> <label className='fw-bold'>{formsParser1(_CHILD)}</label>
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Carpeta</label>
-                            <input type="number" step={1} defaultValue={currentLic ? currentLic.box : ''} class="form-control" id="achr_4" />
+                            <label htmlFor="exampleFormControlInput1">Dirección: <label className='fw-bold'>{_CHILD.direccion}</label></label>
                         </div>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Folios</label>
-                            <input type="number" step={1} defaultValue={currentLic ? currentLic.row : ''} class="form-control" id="achr_5" />
+                            <label htmlFor="exampleFormControlInput1">Predial: <label className='fw-bold'>{_CHILD.catastral}</label></label>
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Fecha Inicio</label>
-                            <input type="date" defaultValue={currentLic ? currentLic.clocks_start : ''} class="form-control" id="achr_6" />
+                            <label htmlFor="exampleFormControlInput1">Carpeta</label>
+                            <input type="number" step={1} defaultValue={currentLic ? currentLic.box : ''} className="form-control" id="achr_4" />
                         </div>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Fecha Final</label>
-                            <input type="date" defaultValue={currentLic ? currentLic.clocks_end : ''} class="form-control" id="achr_7" />
+                            <label htmlFor="exampleFormControlInput1">Folios</label>
+                            <input type="number" step={1} defaultValue={currentLic ? currentLic.row : ''} className="form-control" id="achr_5" />
+                        </div>
+                    </div>
+                    <div className='row'>
+                        <div className='col'>
+                            <label htmlFor="exampleFormControlInput1">Fecha Inicio</label>
+                            <input type="date" defaultValue={currentLic ? currentLic.clocks_start : ''} className="form-control" id="achr_6" />
                         </div>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">N° Resolución</label>
-                            <input type="text" defaultValue={currentLic ? currentLic.exp_id : ''} class="form-control" id="achr_8" />
+                            <label htmlFor="exampleFormControlInput1">Fecha Final</label>
+                            <input type="date" defaultValue={currentLic ? currentLic.clocks_end : ''} className="form-control" id="achr_7" />
+                        </div>
+                        <div className='col'>
+                            <label htmlFor="exampleFormControlInput1">N° Resolución</label>
+                            <input type="text" defaultValue={currentLic ? currentLic.exp_id : ''} className="form-control" id="achr_8" />
                         </div>
                     </div>
                     <div className='row my-2'>
                         <div className='col text-end'>
-                            <MDBBtn size='sm' color='primary' onClick={() => addxList()}><i class="fas fa-plus-circle"></i> AÑADIR ITEM</MDBBtn>
+                            <MDBBtn size='sm' color='primary' onClick={() => addxList()}><i className="fas fa-plus-circle"></i> AÑADIR ITEM</MDBBtn>
                         </div>
                     </div>
                 </>
@@ -183,31 +183,31 @@ export default function ARCHIVE_X_FUN(props) {
         let exp_id = getJSON(row.json, 'exp_id');
         return <><div className='row'>
             <div className='col'>
-                <label for="exampleFormControlInput1">Carpeta</label>
-                <input type="number" step={1} defaultValue={row.folder} class="form-control" id="achr_4_edit" />
+                <label htmlFor="exampleFormControlInput1">Carpeta</label>
+                <input type="number" step={1} defaultValue={row.folder} className="form-control" id="achr_4_edit" />
             </div>
             <div className='col'>
-                <label for="exampleFormControlInput1">Carpeta</label>
-                <input type="number" step={1} defaultValue={row.pages} class="form-control" id="achr_5_edit" />
+                <label htmlFor="exampleFormControlInput1">Carpeta</label>
+                <input type="number" step={1} defaultValue={row.pages} className="form-control" id="achr_5_edit" />
             </div>
         </div>
             <div className='row'>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Fecha Inicio</label>
-                    <input type="date" defaultValue={clocks_start} class="form-control" id="achr_6_edit" />
+                    <label htmlFor="exampleFormControlInput1">Fecha Inicio</label>
+                    <input type="date" defaultValue={clocks_start} className="form-control" id="achr_6_edit" />
                 </div>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Fecha Final</label>
-                    <input type="date" defaultValue={clocks_end} class="form-control" id="achr_7_edit" />
+                    <label htmlFor="exampleFormControlInput1">Fecha Final</label>
+                    <input type="date" defaultValue={clocks_end} className="form-control" id="achr_7_edit" />
                 </div>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">N° Resolución</label>
-                    <input type="text" defaultValue={exp_id != false ? exp_id : ''} class="form-control" id="achr_8_edit" />
+                    <label htmlFor="exampleFormControlInput1">N° Resolución</label>
+                    <input type="text" defaultValue={exp_id != false ? exp_id : ''} className="form-control" id="achr_8_edit" />
                 </div>
             </div>
             <div className='row my-2'>
                 <div className='col text-end'>
-                    <MDBBtn size='sm' color='primary' onClick={() => UpdateXList(row)}><i class="far fa-edit"></i> ACTUALIZAR ITEM</MDBBtn>
+                    <MDBBtn size='sm' color='primary' onClick={() => UpdateXList(row)}><i className="far fa-edit"></i> ACTUALIZAR ITEM</MDBBtn>
                 </div>
             </div>
         </>
@@ -241,13 +241,13 @@ export default function ARCHIVE_X_FUN(props) {
                     </div>
                     <div className='col-2 border text-center'>
                         <MDBTooltip title='Administrar documentos item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='primary' size='sm' className='px-1 py-1' onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><i class="fas fa-cloud-upload-alt"></i></MDBBtn>
+                            <MDBBtn color='primary' size='sm' className='px-1 py-1' onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><i className="fas fa-cloud-upload-alt"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Actualizar item de esta caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><i class="far fa-edit"></i></MDBBtn>
+                            <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><i className="far fa-edit"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar item de esta caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><i class="far fa-trash-alt"></i></MDBBtn>
+                            <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><i className="far fa-trash-alt"></i></MDBBtn>
                         </MDBTooltip>
 
 
@@ -477,7 +477,7 @@ export default function ARCHIVE_X_FUN(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
+                    <label><i className="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
                     <MDBBtn className='btn-close' color='none' onClick={() => setModal_d(!modal_d)}></MDBBtn>
                 </div>
                 <hr />
@@ -510,7 +510,7 @@ export default function ARCHIVE_X_FUN(props) {
                 <hr />
                 <div className="text-end">
                     <MDBBtn color='info' size='sm' onClick={() => setModal_d(!modal_d)}>
-                        <label ><i class="fas fa-times-circle"></i> CERRAR</label>
+                        <label ><i className="fas fa-times-circle"></i> CERRAR</label>
                     </MDBBtn>
                 </div>
             </ReactModal>

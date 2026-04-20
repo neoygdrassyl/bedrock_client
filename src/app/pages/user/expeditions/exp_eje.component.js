@@ -202,7 +202,7 @@ export default function EXP_EJEC(props) {
             <div className="row">
                 <div className="col">
                     <label className="mt-2">ACTO</label>
-                    <div class="input-group">
+                    <div className="input-group">
                         <select className="form-select" id="expedition_doc_eje_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model_exec(e.target.value)}}>
                             {models.map(model => {
                                 if (model.omit) return ''
@@ -261,7 +261,7 @@ export default function EXP_EJEC(props) {
             <div className="row">
                 <div className="col">
                     <label className="mt-2">Modalidad</label>
-                    <input type="text" class="form-control" id="expedition_eje_type"
+                    <input type="text" className="form-control" id="expedition_eje_type"
                         defaultValue={type} />
                 </div>
             </div>
@@ -312,29 +312,29 @@ export default function EXP_EJEC(props) {
                 
                 <div className="col">
                     <label className="mt-1">Consecutivo</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" disabled id="expedition_eje_id_res"
+                    <div className="input-group">
+                        <input type="text" className="form-control" disabled id="expedition_eje_id_res"
                             value={currentRecord.id_public} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">POT</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_eje_pot" disabled
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_eje_pot" disabled
                             value={reso_pot_dv} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">Estado</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_eje_state" disabled
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_eje_state" disabled
                             value={'EJECUTORIA'} readOnly />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1"># Radicacion</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_eje_id_public" disabled
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_eje_id_public" disabled
                             value={currentItem.id_public} readOnly />
                     </div>
                 </div>
@@ -462,7 +462,7 @@ export default function EXP_EJEC(props) {
             <hr />
             <div className="row text-center">
                 <div className="col">
-                    <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+                    <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
                 </div>
                 <div className="col">
                     {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (

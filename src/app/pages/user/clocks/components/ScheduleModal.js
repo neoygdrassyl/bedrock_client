@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { 
   getReferenceDate, 
   calculateScheduledDateFromDays, 
@@ -141,7 +141,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
     if (legalLimits && legalLimits[clockValue.state]) {
       const limitData = legalLimits[clockValue.state];
       if (limitData.limitDate) {
-        return moment(limitData.limitDate).format('DD/MM/YYYY');
+        return dayjs(limitData.limitDate).format('DD/MM/YYYY');
       }
     }
     return '';
@@ -216,7 +216,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
             </div>
             {refDate && displayDate && daysValue && (
                 <div className="conversion-hint mt-1 text-start">
-                 <i className="fas fa-arrow-right me-1"></i> {moment(displayDate).format('DD/MM/YYYY')}
+                 <i className="fas fa-arrow-right me-1"></i> {dayjs(displayDate).format('DD/MM/YYYY')}
                 </div>
             )}
         </td>

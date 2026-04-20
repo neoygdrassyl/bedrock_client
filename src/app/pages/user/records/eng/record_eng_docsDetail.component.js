@@ -132,7 +132,7 @@ function RECORD_ENG_DOCS_DESC(props) {
                     {COMPONENT_DESC()}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <button className="btn btn-success my-3" ><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3" ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                 </form>

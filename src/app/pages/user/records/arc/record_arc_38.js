@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import FUN_SERVICE from '../../../../services/fun.service'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { MDBBtn, MDBTypography } from '../../../../components/ui';
@@ -119,7 +119,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'estructural', 'ingenieria']);
         pdfDoc.setLanguage('es-co');
@@ -439,7 +439,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                             </div>
                             <div className="col-3 text-center">
                                 {rewState['REW' + i]
-                                    ? <input type="text" class="form-control me-1" id={"r_a_38_2_" + i}
+                                    ? <input type="text" className="form-control me-1" id={"r_a_38_2_" + i}
                                         defaultValue={iworker} disabled />
                                     : <label>{iworker}</label>
                                 }
@@ -458,18 +458,18 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                             </div>
                             <div className="col text-center">
                                 {rewState['REW' + i]
-                                    ? <input type="date" class="form-control form-control-sm" id={"r_a_38_4_" + i} max="2100-01-01"
+                                    ? <input type="date" className="form-control form-control-sm" id={"r_a_38_4_" + i} max="2100-01-01"
                                         defaultValue={idate} />
                                     : <label>{idate ?? ''}</label>
                                 }
                             </div>
                             <div className="col-1">
                                 {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={rewState['REW' + i]}
-                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i class="far fa-edit"></i></MDBBtn>
+                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></MDBBtn>
                                     : ''}
                                 {rewState['REW' + i]
                                     ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                        onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
+                                        onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></MDBBtn>
                                     : ""
                                 }
                                 {true ?
@@ -532,24 +532,24 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                     <div className="row mb-3">
                         <div className="col">
                             <label>Autoridad Competente</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_1"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_1"}>
                                     {domains_number}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Ciudad</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_2"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_2"}>
                                     {cities}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Acta</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_version"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_version"}>
                                     <option value={1}>OBSERVACIONES</option>
                                     <option value={2}>CORRECCIONES</option>
                                 </select>
@@ -557,8 +557,8 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                         </div>
                         <div className="col">
                             <label>Cabecera</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_header"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_header"}>
                                     <option value={1}>USAR CABECERA</option>
                                     <option value={0}>NO USAR CABECERA</option>
                                 </select>
@@ -568,44 +568,44 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                     <div className="row mb-3">
                         <div className="col">
                             <label>Revision</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
                                     {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Profesional</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_worker_name"} disabled defaultValue={reviews[0].worker} />
                             </div>
                         </div>
                         <div className="col">
                             <label>Resultado</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_check"} disabled defaultValue={reviews[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
                             </div>
                         </div>
                         <div className="col">
                             <label>Fecha</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_date"} disabled defaultValue={reviews[0].date} />
                             </div>
                         </div>
                         <div className="col-2">
                             <br />
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="record_arc_pending" />
-                                <label class="form-check-label" for="exampleCheck1">Pendiente</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="record_arc_pending" />
+                                <label className="form-check-label" htmlFor="exampleCheck1">Pendiente</label>
                             </div>
                         </div>
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col">
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i class="far fa-file-pdf"></i> DESCARGAR INFORME</button>
+                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i className="far fa-file-pdf"></i> DESCARGAR INFORME</button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i class="far fa-check-square"></i> DESCARGAR CHECKEO</button>
+                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i className="far fa-check-square"></i> DESCARGAR CHECKEO</button>
                         </div>
                     </div>
                 </div>
@@ -1115,7 +1115,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
             for (let i = 0; i < currentItem.version; i++) {
                 _COMPONENT.push(<option value={i + 1}>Revision {i + 1}</option>)
             }
-            return <select class="form-select" id="record_version">{_COMPONENT}</select>
+            return <select className="form-select" id="record_version">{_COMPONENT}</select>
         }
         return (
             <div className="record_arc_32 container">

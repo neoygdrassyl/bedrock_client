@@ -1123,7 +1123,7 @@ const restoreDocs = useCallback(() => {
                 { canSave ?
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3" onClick={save_exp_res}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3" onClick={save_exp_res}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                     : ''}
@@ -1260,7 +1260,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
     <hr />
     <div className="row text-center">
         <div className="col">
-            <MDBBtn className="btn btn-success my-3" onClick={save_exp_res}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+            <MDBBtn className="btn btn-success my-3" onClick={save_exp_res}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
         </div>
         <div className="col">
             {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
@@ -1288,7 +1288,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
             <div className="row">
                 <div className="col">
                     <label className="mt-2">ACTO</label>
-                    <div class="input-group">
+                    <div className="input-group">
                         <select className="form-select" id="expedition_doc_res_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model(e.target.value)}}>
                             {models.map(model => {
                                 if (model.omit) return ''

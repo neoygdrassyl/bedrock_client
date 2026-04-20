@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useContext, createContext, useState } from "react";
+import React, { useContext, createContext, useState, Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,44 +10,15 @@ import {
   Link,
 } from "react-router-dom";
 
-// PQRS
-import PQRSADMIN from './pages/user/pqrs/pqrsadmin'
-
-
-// Pages -> Liquidator
-import Liquidator from './pages/liquidator/liquidator'
-
-
-// Atuh and Login
-//import Login from './pages/user/login'
+// Auth and Login
 import CustomsDataService from "./services/custom.service";
 import DataSerive from './services/data.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-
-// Users and APP
-import Dashboard from './pages/user/dashboard'
-import Publish from './pages/user/publish'
-import Seals from './pages/user/seal'
-import Appointments from './pages/user/appointments'
-import Mail from './pages/user/mail'
-import FUN from './pages/user/fun'
-import OSHA from './pages/user/osha'
-import NOMENCLATURE from './pages/user/nomenclature/nomenclature';
-import SUBMIT from './pages/user/submit/submit';
-import ARCHIVE from './pages/user/archive/archive.page';
-import DICTIONARY from './pages/user/dictionary.page';
-import FUN_MANAGE from './pages/user/funmanage.page';
-import FUN_MANAGE_NEW from './pages/user/funmanage_new.page';
-
-// Components
+// Shell components (always loaded — visible on every page)
 import Footer from './components/footer'
-//import Title from './components/title'
 import Navbar1 from './components/navbar'
-import BtnStart from './components/btnStart'
-import BtnChat from './components/btnChat'
-import BtnAccesibiity from './components/btnAccesibility'
 
 // Translations Services
 import { useTranslation } from "react-i18next";
@@ -64,16 +35,48 @@ import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import ReCAPTCHA from 'react-google-recaptcha';
 import { Nav, Navbar } from 'rsuite';
-import PROFESIONALS from './pages/user/profesionals/profesionals.page';
-import GUIDE_USER from './pages/user/guide_user/guide_user.page';
-import DEV_GUIDE from './pages/user/dev_guide/dev_guide.page';
 import { infoCud } from './components/jsons/vars';
-import NORMS from './pages/user/norms/norms.page';
-import CERTIFICATE_WORKER from './pages/user/certifications/certification.page';
-import ZONE_USE from './pages/user/zone_use/zone_use.page';
+
+// ── Lazy-loaded page components (code-split per route) ──────────────
+const PQRSADMIN = lazy(() => import('./pages/user/pqrs/pqrsadmin'));
+const Liquidator = lazy(() => import('./pages/liquidator/liquidator'));
+const Dashboard = lazy(() => import('./pages/user/dashboard'));
+const Publish = lazy(() => import('./pages/user/publish'));
+const Seals = lazy(() => import('./pages/user/seal'));
+const Appointments = lazy(() => import('./pages/user/appointments'));
+const Mail = lazy(() => import('./pages/user/mail'));
+const FUN = lazy(() => import('./pages/user/fun'));
+const OSHA = lazy(() => import('./pages/user/osha'));
+const NOMENCLATURE = lazy(() => import('./pages/user/nomenclature/nomenclature'));
+const SUBMIT = lazy(() => import('./pages/user/submit/submit'));
+const ARCHIVE = lazy(() => import('./pages/user/archive/archive.page'));
+const DICTIONARY = lazy(() => import('./pages/user/dictionary.page'));
+const FUN_MANAGE = lazy(() => import('./pages/user/funmanage.page'));
+const FUN_MANAGE_NEW = lazy(() => import('./pages/user/funmanage_new.page'));
+const PROFESIONALS = lazy(() => import('./pages/user/profesionals/profesionals.page'));
+const GUIDE_USER = lazy(() => import('./pages/user/guide_user/guide_user.page'));
+const DEV_GUIDE = lazy(() => import('./pages/user/dev_guide/dev_guide.page'));
+const NORMS = lazy(() => import('./pages/user/norms/norms.page'));
+const CERTIFICATE_WORKER = lazy(() => import('./pages/user/certifications/certification.page'));
+const ZONE_USE = lazy(() => import('./pages/user/zone_use/zone_use.page'));
+import LEGAL_FLOW_GUIDE from './pages/user/legal_flow_guide/LegalFlowGuide.page';
 
 
 const MySwal = withReactContent(Swal);
+
+// ── Loading fallback for Suspense ───────────────────────────────────
+function LoadingFallback() {
+  return (
+    <div className="d-flex justify-content-center align-items-center py-5" style={{ minHeight: '40vh' }}>
+      <div className="text-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+        <p className="mt-2 text-muted">Cargando módulo...</p>
+      </div>
+    </div>
+  );
+}
 
 class RouteErrorBoundary extends React.Component {
   constructor(props) {
@@ -164,6 +167,7 @@ export default function App() {
                         {/* <div className="sticky-top" style={{ zIndex: 2000 }}>
                           <Navbar1 authBtn={<AuthButton />} />
                         </div> */}
+                        <Suspense fallback={<LoadingFallback />}>
                         <RoutesWithBoundary>
                         <Routes>
 
@@ -257,6 +261,11 @@ export default function App() {
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
                               />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/legal-flow-guide' element={
+                            <PrivateRoute>
+                              <LEGAL_FLOW_GUIDE />
                             </PrivateRoute>
                           } />
                           <Route path='/pqrsadmin' element={
@@ -405,6 +414,7 @@ export default function App() {
                           <Route path='*' element={<LoginPage />} />
                         </Routes>
                         </RoutesWithBoundary>
+                        </Suspense>
                       </div>
                     </div>
                 </main>
@@ -554,7 +564,7 @@ function LoginPage() {
   const navigate = useNavigate();
   let auth = useAuth();
   const recaptchaRef = React.useRef(null);
-  var formData = new FormData();
+  const credentialsRef = React.useRef({ email: "", password: "" });
 
   let { from } = { from: { pathname: "/dashboard" } };
 
@@ -572,7 +582,7 @@ function LoginPage() {
     };
 
     recaptchaRef.current.execute().then(response => {
-      CustomsDataService.appLogin(formData)
+      CustomsDataService.appLoginCompatible(credentialsRef.current)
         .then(response => {
           let userInfo = {};
 
@@ -590,6 +600,20 @@ function LoginPage() {
             userInfo.name_short = u.name + ' ' + u.surname;
             userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
             DataSerive.saveToken(response.data.token);
+            DataSerive.setUser(userInfo);
+            login();
+          } else if (Array.isArray(response.data) && response.data.length === 1) {
+            const u = response.data[0];
+            userInfo.name = u.name;
+            userInfo.surname = u.surname;
+            userInfo.role = u.role?.name;
+            userInfo.role_short = u.role?.short;
+            userInfo.roleDesc = u.role?.desc;
+            userInfo.active = u.active;
+            userInfo.roleId = u.roleId;
+            userInfo.id = u.id;
+            userInfo.name_short = u.name + ' ' + u.surname;
+            userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
             DataSerive.setUser(userInfo);
             login();
           } else {
@@ -653,12 +677,12 @@ function LoginPage() {
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label text-black">{t('login.str_user')}</label>
                     <input type="email" className="form-control" id="email"
-                      onChange={(e) => formData.set('email', e.target.value)} />
+                      onChange={(e) => { credentialsRef.current.email = e.target.value; }} />
                   </div>
                   <div className="mb-3">
                     <label htmlFor="password" className="form-label text-black">{t('login.str_pass')}</label>
                     <input type="password" className="form-control" id="password"
-                      onChange={(e) => formData.set('password', e.target.value)} />
+                      onChange={(e) => { credentialsRef.current.password = e.target.value; }} />
                   </div>
                   <div className="text-center pt-4 mt-3">
                     <button type="submit" className="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>

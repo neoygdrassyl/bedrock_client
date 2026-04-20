@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -83,7 +83,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'estructural', 'ingenieria']);
         pdfDoc.setLanguage('es-co');
@@ -164,8 +164,8 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${concecutive}`
                             document.getElementById('f_02_ph').value = new_id;
-                        } else document.getElementById('f_02_ph').value = "OA" + moment().format('YY') + "-0001";
-                    } else document.getElementById('f_02_ph').value = "OA" + moment().format('YY') + "-0001";
+                        } else document.getElementById('f_02_ph').value = "OA" + dayjs().format('YY') + "-0001";
+                    } else document.getElementById('f_02_ph').value = "OA" + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
@@ -246,31 +246,31 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <input type="hidden" id="record_ph_worker_arc_0" defaultValue={currentRecord.worker_arc_id ? currentRecord.worker_arc_id : window.user.id} />
                     <div className="col-6">
                         <label>Profesional</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="record_ph_worker_arc_1"
+                            <input type="text" className="form-control" id="record_ph_worker_arc_1"
                                 defaultValue={currentRecord.worker_arc_name ? currentRecord.worker_arc_name : window.user.name + " " + window.user.surname} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Fecha de la revisón</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" class="form-control" id="record_ph_worker_arc_2" required
-                                defaultValue={currentRecord.date_arc_review ? currentRecord.date_arc_review : moment().format('YYYY-MM-DD')} />
+                            <input type="date" className="form-control" id="record_ph_worker_arc_2" required
+                                defaultValue={currentRecord.date_arc_review ? currentRecord.date_arc_review : dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Aprobado</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
-                            <select class="form-control" id="recprd_ph_final_check" defaultValue={currentRecord.check} >
+                            <select className="form-control" id="recprd_ph_final_check" defaultValue={currentRecord.check} >
                                 <option value="0" className="text-danger">NO</option>
                                 <option value="1" className="text-success">SI</option>
                             </select>
@@ -289,7 +289,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         675 de 2001.</p>
                     <p>b. El presente visto bueno se expide de acuerdo con los planos de propiedad horizontal presentando con la  solicitud, los cuales
                         corresponden a los planos arquitectónicos aprobados en: </p>
-                    <input type="text" class="form-control" id="review_ph_detail_3" defaultValue={_CHILD} />
+                    <input type="text" className="form-control" id="review_ph_detail_3" defaultValue={_CHILD} />
                 </div>
             </div>
         }
@@ -310,7 +310,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 <div className="row py-2">
                     <div className="col-3">
                         <label>Área del predio</label>
-                        <input type="number" step={0.01} class="form-control" id="review_ph_detail_area" defaultValue={_VALUES[0]} />
+                        <input type="number" step={0.01} className="form-control" id="review_ph_detail_area" defaultValue={_VALUES[0]} />
                     </div>
                     <div className="col-12">
                         <label>Actos administrativos que anteceden y/o licencia(s) de gestión</label>
@@ -365,58 +365,58 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha del documento</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="phnot_date_doc" required
-                            defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="phnot_date_doc" required
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
 
                     <div className="col">
                         <label>Consecutivo de Entrada</label>
-                        <input type="text" class="form-control mb-3" id="phnot_id_public" disabled
+                        <input type="text" className="form-control mb-3" id="phnot_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
                     <div className="col">
                         <label> {infoCud.serials.end} Carta Citación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="phnot_cub"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="phnot_cub"
                                 defaultValue={currentRecord.cub || ''} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('phnot_cub')}>GENERAR</button>
+                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('phnot_cub')}>GENERAR</button>
                         </div>
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
                         <label>Ciudad</label>
-                        <input type="text" class="form-control mb-3" id="phnot_city"
+                        <input type="text" className="form-control mb-3" id="phnot_city"
                             defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
                     </div>
                     <div className="col">
                         <label>Consecutivo de Salida</label>
-                        <input type="text" class="form-control mb-3" id="phnot_res_public" disabled
+                        <input type="text" className="form-control mb-3" id="phnot_res_public" disabled
                             defaultValue={currentRecord.id_public} />
                     </div>
                     <div className="col">
                         <label>Fecha de Revision</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="phnot_date_res" disabled
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="phnot_date_res" disabled
                             defaultValue={_JSON.date || currentRecord.date_arc_review} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
                         <label>Responsable</label>
-                        <input type="text" class="form-control mb-3" id="phnot_name"
+                        <input type="text" className="form-control mb-3" id="phnot_name"
                             defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col">
                         <label>Dirección</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="phnot_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="phnot_address"
                                 defaultValue={_JSON.address || _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Email</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="phnot_email"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="phnot_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
                         </div>
                     </div>
@@ -430,31 +430,31 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 <div className="row">
                     <div className="col-4">
                         <label>Fecha entrega</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-calendar-alt"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-calendar-alt"></i>
                             </span>
-                            <input type="date" class="form-control" id="ph_not_det_1"
+                            <input type="date" className="form-control" id="ph_not_det_1"
                                 defaultValue={_VALUES[0]} onBlur={() => save_not_data()} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Persona que recibe</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="ph_not_det_2"
+                            <input type="text" className="form-control" id="ph_not_det_2"
                                 defaultValue={_VALUES[1]} onBlur={() => save_not_data()} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Documento que recibe</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-id-card"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-id-card"></i>
                             </span>
-                            <input type="text" class="form-control" id="ph_not_det_3"
+                            <input type="text" className="form-control" id="ph_not_det_3"
                                 defaultValue={_VALUES[2]} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e); save_not_data(); }} />
                         </div>
                     </div>
@@ -467,23 +467,23 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 <div className="row">
                     <div className="col-4">
                         <label>Entrada</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_01_ph"
+                            <input type="text" className="form-control" id="f_01_ph"
                                 defaultValue={currentItem.id_public} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Salida</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_02_ph"
+                            <input type="text" className="form-control" id="f_02_ph"
                                 defaultValue={currentRecord.id_public} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_OA()}>GENERAR</button>
+                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_OA()}>GENERAR</button>
                         </div>
                     </div>
                 </div>
@@ -494,24 +494,24 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
                     <div className="col">
                         <label>Autoridad Competente</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"exp_pdf_reso_1"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"exp_pdf_reso_1"}>
                                 {domains_number}
                             </select>
                         </div>
                     </div>
                     <div className="col">
                         <label>Ciudad</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"exp_pdf_reso_2"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"exp_pdf_reso_2"}>
                                 {cities}
                             </select>
                         </div>
                     </div>
                     <div className="col">
                         <label>Vigencia</label>
-                        <div class="input-group my-1">
-                            <select class="form-select" id="exp_pdf_reso_record_version" defaultValue={_VALUE[3] || 0}>
+                        <div className="input-group my-1">
+                            <select className="form-select" id="exp_pdf_reso_record_version" defaultValue={_VALUE[3] || 0}>
                                 <option value={0}>NO USAR EJECUTORIA Y FECHA</option>
                                 <option value={1}>NO USAR FECHA</option>
                                 <option>DOCE (12) MESES</option>
@@ -523,8 +523,8 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     </div>
                     <div className="col">
                         <label>Logo</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"exp_pdf_reso_logo"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"exp_pdf_reso_logo"}>
                                 <option value={'no'}>SIN LOGO</option>
                                 <option value={'left'}>IZQUIERDA</option>
                                 <option value={'left2'}>IZQUIERDA ENTRESALTO</option>
@@ -539,32 +539,32 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
                     {/**
                      *  <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_simple" />
-                            <label class="form-check-label">Usar nombre revisor</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_simple" />
+                            <label className="form-check-label">Usar nombre revisor</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_signs" />
-                            <label class="form-check-label">Usar firma profesionales</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_signs" />
+                            <label className="form-check-label">Usar firma profesionales</label>
                         </div>
                     </div>
                      * 
                      */}
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_pagesi" />
-                            <label class="form-check-label">Usar pie de pagina</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_pagesi" />
+                            <label className="form-check-label">Usar pie de pagina</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_pagesn" defaultChecked="true" />
-                            <label class="form-check-label">Usar paginación</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_pagesn" defaultChecked="true" />
+                            <label className="form-check-label">Usar paginación</label>
                         </div>
                     </div>
                 </div>
@@ -572,43 +572,43 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 <div className="row mb-2 text-center">
 
                     <div className="col ">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Superior (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_top" defaultValue={2.5} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Superior (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_top" defaultValue={2.5} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Inferior (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_bot" defaultValue={2.5} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Inferior (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_bot" defaultValue={2.5} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Izquierdo (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_left" defaultValue={1.7} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Izquierdo (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_left" defaultValue={1.7} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Derecho (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.7} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Derecho (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_right" defaultValue={1.7} />
                         </div>
                     </div>
                 </div>
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()} ><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                        <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()} ><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => CREATE_PDF_CHECK()} ><i class="far fa-file-pdf"></i> GENERAR CHECKEO </MDBBtn>
+                        <MDBBtn className="btn btn-danger my-3" onClick={() => CREATE_PDF_CHECK()} ><i className="far fa-file-pdf"></i> GENERAR CHECKEO </MDBBtn>
                     </div>
                 </div>
             </>
@@ -812,7 +812,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
             let date_arc_review = document.getElementById("record_ph_worker_arc_2").value;
             formData.set('date_arc_review', date_arc_review);
-            let date = date_arc_review ?? moment().format('YYYY-MM-DD');
+            let date = date_arc_review ?? dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "ARCHIVACIÓN");
@@ -828,7 +828,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             let state = 100 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
 
             let worker = window.user.name + " " + window.user.surname;
-            let date = moment().format('YYYY-MM-DD');
+            let date = dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "CERRADA");
@@ -1564,17 +1564,17 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             {currentItem.state > -5
                                 ? <>
                                     <div className="col">
-                                        <MDBBtn className="btn btn-danger my-3" onClick={() => review()}><i class="far fa-check-square"></i> REALIZAR REVISIÓN </MDBBtn>
+                                        <MDBBtn className="btn btn-danger my-3" onClick={() => review()}><i className="far fa-check-square"></i> REALIZAR REVISIÓN </MDBBtn>
                                     </div>
 
                                     {!_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <MDBBtn className="btn btn-primary my-3" onClick={() => close()} ><i class="far fa-file-archive"></i> CERRAR</MDBBtn>
+                                            <MDBBtn className="btn btn-primary my-3" onClick={() => close()} ><i className="far fa-file-archive"></i> CERRAR</MDBBtn>
                                         </div>
                                         : ""}
                                     {_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <MDBBtn className="btn btn-primary my-3" onClick={() => archive()} ><i class="far fa-file-archive"></i> ARCHIVAR</MDBBtn>
+                                            <MDBBtn className="btn btn-primary my-3" onClick={() => archive()} ><i className="far fa-file-archive"></i> ARCHIVAR</MDBBtn>
                                         </div>
                                         : ""}
                                 </>
@@ -1593,10 +1593,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         {_COMPONENTN_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <button className="btn btn-success my-3"><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success my-3"><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                             </div>
                             <div className="col">
-                                <MDBBtn className="btn btn-danger my-3" onClick={() => pdfnot_gen()}><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                                <MDBBtn className="btn btn-danger my-3" onClick={() => pdfnot_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
                             </div>
                         </div>
                     </form>

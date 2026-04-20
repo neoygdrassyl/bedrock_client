@@ -114,10 +114,10 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                         <label className="fw-bold ms-4">Series Documental:</label>
                     </div>
                     <div className="col-3">
-                        <input class="form-control me-1" id="fun_doc_control_0" defaultValue={_SERIE[0]}  disabled />
+                        <input className="form-control me-1" id="fun_doc_control_0" defaultValue={_SERIE[0]}  disabled />
                     </div>
                     <div className="col-6">
-                        <input type="text" class="form-control me-1" id="fun_doc_control_1" disabled defaultValue={''} />
+                        <input type="text" className="form-control me-1" id="fun_doc_control_1" disabled defaultValue={''} />
                     </div>
                 </div>
 
@@ -126,11 +126,11 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                         <label className="fw-bold ms-4">Subseries Documental:</label>
                     </div>
                     <div className="col-3">
-                        <input class="form-control me-1" id="fun_doc_control_2" defaultValue={_SUBSERIE[0]}  disabled  />
+                        <input className="form-control me-1" id="fun_doc_control_2" defaultValue={_SUBSERIE[0]}  disabled  />
                          
                     </div>
                     <div className="col-6">
-                        <input type="text" class="form-control me-1 text-uppercase" id="fun_doc_control_3" disabled
+                        <input type="text" className="form-control me-1 text-uppercase" id="fun_doc_control_3" disabled
                             defaultValue={''} />
                     </div>
                 </div>
@@ -154,14 +154,14 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                         <form id="form_manage_ph_gen" onSubmit={save_fun_r}>
                             <div className="row mb-3 text-center">
                                 <div className="col">
-                                    <button className="btn btn-success my-3" ><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success my-3" ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
                                 </div>
                                 <div className="col">
-                                    <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                                    <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
                                 </div>
                             </div>
-                            <ul class="list-group mx-2">
-                                <li class="list-group-item">
+                            <ul className="list-group mx-2">
+                                <li className="list-group-item">
                                     <div className="row">
                                         <div className="col-1 text-center"><label className="fw-bold">N° Orden</label></div>
                                         <div className="col text-center"><label className="fw-bold">Nombre Tipologia Documental</label></div>
@@ -192,7 +192,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                 let DOCS_COUNT = 1;
                 for (var ITEM in _LIST_2) {
                     _RETURN_COMPONENT.push(<>
-                        <li class="list-group-item">
+                        <li className="list-group-item">
                             <div className="row">
                                 <div className="col">
                                     <label className="fw-bold" name="title_doc">{ITEM}</label>
@@ -207,7 +207,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                     DOCS_COUNT += _LIST_2[ITEM].length;
                 }
                 _RETURN_COMPONENT.push(<>
-                    <li class="list-group-item">
+                    <li className="list-group-item">
                         <div className="row">
                             <div className="col-1 text-center">
 
@@ -241,7 +241,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                 let docName = Codes[array[i].n];
                 let docCode = array[i].n;
                 _COMPONENT.push(<>
-                    <li class="list-group-item">
+                    <li className="list-group-item">
                         <div className="row">
                             <div className="col-1 text-center">
                                 <label className="fw-bold" name="number_doc">{i + _DOCS_COUNT}</label>
@@ -257,7 +257,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                                     defaultValue={currentPages} />
                             </div>
                             <div className="col-2 text-center">
-                                <select class="form-select" name="select_doc" id={"select_doc_" + cId}
+                                <select className="form-select" name="select_doc" id={"select_doc_" + cId}
                                     defaultValue={_GET_FUNR_CHECK_CONTROL(cId) ?? _GET_FUNR_CODE(array[i].i) ?? 2}>
                                     <option value="2">N/A</option>
                                     <option value="1">SI</option>

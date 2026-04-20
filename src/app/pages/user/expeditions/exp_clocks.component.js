@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -89,7 +89,7 @@ export default function EXP_CLOCKS(props) {
       end: endClock,
       days: startClock?.date_start && endClock?.date_start
         ? dateParser_dateDiff(startClock.date_start, endClock.date_start)
-        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, moment().format('YYYY-MM-DD')) : 0)
+        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, dayjs().format('YYYY-MM-DD')) : 0)
     };
   }
 
@@ -102,7 +102,7 @@ export default function EXP_CLOCKS(props) {
       end: endClock,
       days: startClock?.date_start && endClock?.date_start
         ? dateParser_dateDiff(startClock.date_start, endClock.date_start)
-        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, moment().format('YYYY-MM-DD')) : 0)
+        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, dayjs().format('YYYY-MM-DD')) : 0)
     };
   }
 
@@ -192,7 +192,7 @@ export default function EXP_CLOCKS(props) {
         remaining: baseTotal,   // aún no corre
         reference: null,
         from: 'NOT_STARTED',
-        today: moment().format('YYYY-MM-DD'),
+        today: dayjs().format('YYYY-MM-DD'),
         suspensions: totalSuspensionDays,
         extension: extensionDays,
         preActaUsed: 0,
@@ -215,12 +215,12 @@ export default function EXP_CLOCKS(props) {
     if (corrTime)                    firstEventCandidates.push({ date: corrTime,                 type: 'CORR_35' });
 
     const validFirsts = firstEventCandidates.filter(c =>
-      c.date && (moment(c.date).isAfter(ldfTime) || moment(c.date).isSame(ldfTime))
+      c.date && (dayjs(c.date).isAfter(ldfTime) || dayjs(c.date).isSame(ldfTime))
     );
 
     let firstEvent = null;
     if (validFirsts.length) {
-      validFirsts.sort((a, b) => (moment(a.date).isBefore(b.date) ? -1 : 1));
+      validFirsts.sort((a, b) => (dayjs(a.date).isBefore(b.date) ? -1 : 1));
       firstEvent = validFirsts[0];
     }
 
@@ -248,7 +248,7 @@ export default function EXP_CLOCKS(props) {
           remaining: remainingPaused,
           reference: null,
           from: 'PAUSED',
-          today: moment().format('YYYY-MM-DD'),
+          today: dayjs().format('YYYY-MM-DD'),
           suspensions: totalSuspensionDays,
           extension: extensionDays,
           preActaUsed,
@@ -266,7 +266,7 @@ export default function EXP_CLOCKS(props) {
         remaining: baseTotal,
         reference: null,
         from: 'NOT_STARTED',
-        today: moment().format('YYYY-MM-DD'),
+        today: dayjs().format('YYYY-MM-DD'),
         suspensions: totalSuspensionDays,
         extension: extensionDays,
         preActaUsed: 0,
@@ -279,20 +279,20 @@ export default function EXP_CLOCKS(props) {
       };
     }
 
-    candidates.sort((a, b) => (moment(a.date).isAfter(b.date) ? -1 : 1));
+    candidates.sort((a, b) => (dayjs(a.date).isAfter(b.date) ? -1 : 1));
     const lastRef = candidates[0];
 
     // Suspensión activa posterior a la referencia => congelar en su inicio
-    let effectiveToday = moment().format('YYYY-MM-DD');
+    let effectiveToday = dayjs().format('YYYY-MM-DD');
     if (acta1Time) {
       if (postSusp.exists && !postSusp.end?.date_start && postSusp.start?.date_start) {
-        if (moment(postSusp.start.date_start).isAfter(lastRef.date)) {
+        if (dayjs(postSusp.start.date_start).isAfter(lastRef.date)) {
           effectiveToday = postSusp.start.date_start;
         }
       }
     } else {
       if (preSusp.exists && !preSusp.end?.date_start && preSusp.start?.date_start) {
-        if (moment(preSusp.start.date_start).isAfter(lastRef.date)) {
+        if (dayjs(preSusp.start.date_start).isAfter(lastRef.date)) {
           effectiveToday = preSusp.start.date_start;
         }
       }
@@ -337,7 +337,7 @@ export default function EXP_CLOCKS(props) {
       const st = _GET_CLOCK_STATE(element);
       const date = st ? st.date_start : null;
       if (!newDate && date) newDate = date;
-      else if (date && moment(date).isAfter(newDate)) newDate = date;
+      else if (date && dayjs(date).isAfter(newDate)) newDate = date;
     });
     return newDate;
   }
@@ -395,7 +395,7 @@ export default function EXP_CLOCKS(props) {
 
     const showDesistModal = () => {
       const reason = getDesistReason();
-      const ordered = [...desistEvents].sort((a, b) => (moment(a.date_start).isAfter(b.date_start) ? -1 : 1));
+      const ordered = [...desistEvents].sort((a, b) => (dayjs(a.date_start).isAfter(b.date_start) ? -1 : 1));
       const rows = ordered.map(e => {
         const lbl = NegativePRocessTitle?.[String(e.version)] || `Estado ${e.state}`;
         return `<tr>
@@ -408,10 +408,10 @@ export default function EXP_CLOCKS(props) {
       MySwal.fire({
         title: 'Detalle de desistimiento',
         html: `
-          <div class="text-start">
-            ${reason ? `<div class="mb-2"><strong>Motivo principal:</strong> ${reason}</div>` : ''}
-            <div class="table-responsive">
-              <table class="table table-sm">
+          <div className="text-start">
+            ${reason ? `<div className="mb-2"><strong>Motivo principal:</strong> ${reason}</div>` : ''}
+            <div className="table-responsive">
+              <table className="table table-sm">
                 <thead>
                   <tr>
                     <th>Motivo/Estado</th>
@@ -422,7 +422,7 @@ export default function EXP_CLOCKS(props) {
                 <tbody>${rows}</tbody>
               </table>
             </div>
-            <div class="small text-muted">Las acciones y métricas de tiempo se ocultan mientras el proceso esté desistido.</div>
+            <div className="small text-muted">Las acciones y métricas de tiempo se ocultan mientras el proceso esté desistido.</div>
           </div>
         `,
         icon: 'info',
@@ -445,11 +445,11 @@ export default function EXP_CLOCKS(props) {
     const handleShowCuraduriaDetails = () => {
       if (curDetails == null) return;
 
-      let stateChip = '<span class="badge bg-secondary">Sin estado</span>';
-      if (notStarted) stateChip = '<span class="badge bg-secondary">No iniciado</span>';
-      else if (paused) stateChip = '<span class="badge bg-warning text-dark">Pausado</span>';
-      else if (expired) stateChip = '<span class="badge bg-danger">Vencido</span>';
-      else if (inCourse) stateChip = '<span class="badge bg-primary">En curso</span>';
+      let stateChip = '<span className="badge bg-secondary">Sin estado</span>';
+      if (notStarted) stateChip = '<span className="badge bg-secondary">No iniciado</span>';
+      else if (paused) stateChip = '<span className="badge bg-warning text-dark">Pausado</span>';
+      else if (expired) stateChip = '<span className="badge bg-danger">Vencido</span>';
+      else if (inCourse) stateChip = '<span className="badge bg-primary">En curso</span>';
 
       const remainingClass = curDetails.remaining < 0 ? 'text-danger' : 'text-success';
       const fromText = FROM_LABEL[curDetails.from] || curDetails.from || '-';
@@ -457,25 +457,25 @@ export default function EXP_CLOCKS(props) {
       MySwal.fire({
         title: 'Detalle de Curaduría',
         html: `
-          <div class="text-start">
-            <div class="mb-2">${stateChip}</div>
-            <div class="row g-2">
-              <div class="col-12">
+          <div className="text-start">
+            <div className="mb-2">${stateChip}</div>
+            <div className="row g-2">
+              <div className="col-12">
                 <strong>Referencia:</strong> ${fromText}
-                <div class="small text-muted">Fecha referencia: ${curDetails.reference || '-'}</div>
+                <div className="small text-muted">Fecha referencia: ${curDetails.reference || '-'}</div>
               </div>
-              <div class="col-12">
+              <div className="col-12">
                 <strong>Fecha de corte:</strong> ${curDetails.today || '-'}
-                <div class="small text-muted">Cálculo relativo a hoy (días hábiles)</div>
+                <div className="small text-muted">Cálculo relativo a hoy (días hábiles)</div>
               </div>
-              <hr class="my-2" />
-              <div class="col-6"><strong>Base:</strong> ${curDetails.total - curDetails.suspensions - curDetails.extension}</div>
-              <div class="col-6"><strong>Usados pre-Acta (5→30):</strong> ${curDetails.preActaUsed ?? 0}</div>
-              <div class="col-6"><strong>Usados desde ref.:</strong> ${Math.max((curDetails.used ?? 0) - (curDetails.preActaUsed ?? 0), 0)}</div>
-              <div class="col-6"><strong>Suspensiones:</strong> ${curDetails.suspensions}</div>
-              <div class="col-6"><strong>Prórroga:</strong> ${curDetails.extension}</div>
-              <div class="col-6"><strong>Total:</strong> ${curDetails.total}</div>
-              <div class="col-6"><strong>Restantes:</strong> <span class="${remainingClass}">${curDetails.remaining}</span></div>
+              <hr className="my-2" />
+              <div className="col-6"><strong>Base:</strong> ${curDetails.total - curDetails.suspensions - curDetails.extension}</div>
+              <div className="col-6"><strong>Usados pre-Acta (5→30):</strong> ${curDetails.preActaUsed ?? 0}</div>
+              <div className="col-6"><strong>Usados desde ref.:</strong> ${Math.max((curDetails.used ?? 0) - (curDetails.preActaUsed ?? 0), 0)}</div>
+              <div className="col-6"><strong>Suspensiones:</strong> ${curDetails.suspensions}</div>
+              <div className="col-6"><strong>Prórroga:</strong> ${curDetails.extension}</div>
+              <div className="col-6"><strong>Total:</strong> ${curDetails.total}</div>
+              <div className="col-6"><strong>Restantes:</strong> <span className="${remainingClass}">${curDetails.remaining}</span></div>
             </div>
           </div>
         `,
@@ -613,7 +613,7 @@ export default function EXP_CLOCKS(props) {
     MySwal.fire({
       title: `Suspensión ${typeText}`,
       html: `
-        <div class="text-start">
+        <div className="text-start">
           <p><strong>Ubicación:</strong> ${typeText}</p>
           <p><strong>Fecha de Inicio:</strong> ${suspensionData.start?.date_start || 'No definida'}</p>
           <p><strong>Fecha de Fin:</strong> ${suspensionData.end?.date_start || 'Pendiente por definir'}</p>
@@ -638,9 +638,9 @@ export default function EXP_CLOCKS(props) {
       let typeSelectHtml = '';
       if (availableTypes.length > 1) {
         typeSelectHtml = `
-          <div class="col-12">
-            <label class="form-label">Ubicación de la Suspensión</label>
-            <select id="susp_type" class="form-select">
+          <div className="col-12">
+            <label className="form-label">Ubicación de la Suspensión</label>
+            <select id="susp_type" className="form-select">
               ${availableTypes.map(type => `<option value="${type.value}">${type.label}</option>`).join('')}
             </select>
           </div>
@@ -651,21 +651,21 @@ export default function EXP_CLOCKS(props) {
       MySwal.fire({
         title: 'Nueva Suspensión de Términos',
         html: `
-          <div class="row g-3">
-            <div class="col-12">
-              <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
+          <div className="row g-3">
+            <div className="col-12">
+              <div className="alert alert-info">
+                <i className="fas fa-info-circle me-2"></i>
                 Días disponibles para suspensión: <strong>${availableDays}</strong>
               </div>
             </div>
             ${typeSelectHtml}
-            <div class="col-12">
-              <label class="form-label">Fecha de Inicio</label>
-              <input type="date" id="susp_start" class="form-control"/>
+            <div className="col-12">
+              <label className="form-label">Fecha de Inicio</label>
+              <input type="date" id="susp_start" className="form-control"/>
             </div>
-            <div class="col-12">
-              <label class="form-label">Información Adicional</label>
-              <textarea id="susp_info" class="form-control" rows="3" placeholder="Detalles sobre la suspensión..."></textarea>
+            <div className="col-12">
+              <label className="form-label">Información Adicional</label>
+              <textarea id="susp_info" className="form-control" rows="3" placeholder="Detalles sobre la suspensión..."></textarea>
             </div>
           </div>
         `,
@@ -711,16 +711,16 @@ export default function EXP_CLOCKS(props) {
       MySwal.fire({
         title: 'Nueva Prórroga por Complejidad',
         html: `
-          <div class="row g-3">
-            <div class="col-12">
-              <div class="alert alert-info">
-                <i class="fas fa-clock me-2"></i>
+          <div className="row g-3">
+            <div className="col-12">
+              <div className="alert alert-info">
+                <i className="fas fa-clock me-2"></i>
                 La prórroga por complejidad otorga <strong>22 días hábiles</strong> adicionales
               </div>
             </div>
-            <div class="col-12">
-              <label class="form-label">Fecha de Inicio</label>
-              <input type="date" id="ext_start" class="form-control"/>
+            <div className="col-12">
+              <label className="form-label">Fecha de Inicio</label>
+              <input type="date" id="ext_start" className="form-control"/>
             </div>
           </div>
         `,
@@ -902,7 +902,7 @@ export default function EXP_CLOCKS(props) {
         if (pre?.start?.date_start) startCandidates.push({ date: pre.start.date_start, kind: 'SUSP_PRE_START' });
 
         const pickMostRecent = (arr) => {
-          const sorted = [...arr].sort((a, b) => (moment(a.date).isAfter(b.date) ? -1 : 1));
+          const sorted = [...arr].sort((a, b) => (dayjs(a.date).isAfter(b.date) ? -1 : 1));
           return sorted[0];
         };
 
@@ -920,7 +920,7 @@ export default function EXP_CLOCKS(props) {
         }
 
         // Días de prórroga aplicables si ya inició antes de la Acta 1
-        const extDays = (ext?.exists && ext.start?.date_start && moment(ext.start.date_start).isSameOrAfter(ldf)) ? ext.days : 0;
+        const extDays = (ext?.exists && ext.start?.date_start && dayjs(ext.start.date_start).isSameOrAfter(ldf)) ? ext.days : 0;
 
         let remainingDays = baseDays - usedBeforeBase + extDays;
         if (remainingDays < 0) remainingDays = 0;
@@ -943,7 +943,7 @@ export default function EXP_CLOCKS(props) {
 
         const pre = _GET_SUSPENSION_PRE_ACTA();
         const post = _GET_SUSPENSION_POST_ACTA();
-        const today = moment().format('YYYY-MM-DD');
+        const today = dayjs().format('YYYY-MM-DD');
 
         const otherUsed = isEndPre
           ? (post?.start?.date_start && post?.end?.date_start ? post.days : 0)

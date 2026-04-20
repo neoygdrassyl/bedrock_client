@@ -8,31 +8,31 @@ const BtnAccesibility = ({ theme, font, toggleTheme, changeFontsizePlus, changeF
         <div className="btn-accesibility">
             <MDBCard background='light' border='dark'>
                 <MDBCardBody className="p-1">
-                <a onClick={toggleTheme}>
-                        <span class="fa-stack fa-1x">
-                          <i class="fas fa-square fa-stack-2x text-info"></i>
-                          <i class="fas fa-adjust fa-stack-1x fa-inverse"></i>
+                <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} onClick={toggleTheme}>
+                        <span className="fa-stack fa-1x">
+                          <i className="fas fa-square fa-stack-2x text-info"></i>
+                          <i className="fas fa-adjust fa-stack-1x fa-inverse"></i>
                         </span>
-                      </a>
+                      </button>
                       <br />
-                      <a onClick={changeFontsizePlus}>
-                        <span class="fa-stack fa-1x">
-                          <i class="fas fa-square fa-stack-2x text-info"></i>
-                          <i class="fas fa-plus fa-stack-1x fa-inverse"></i>
+                      <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} onClick={changeFontsizePlus}>
+                        <span className="fa-stack fa-1x">
+                          <i className="fas fa-square fa-stack-2x text-info"></i>
+                          <i className="fas fa-plus fa-stack-1x fa-inverse"></i>
                         </span>
-                      </a>
+                      </button>
                       <br />
-                      <a onClick={changeFontsizeMinus}>
-                        <span class="fa-stack fa-1x">
-                          <i class="fas fa-square fa-stack-2x text-info"></i>
-                          <i class="fas fa-minus fa-stack-1x fa-inverse"></i>
+                      <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} onClick={changeFontsizeMinus}>
+                        <span className="fa-stack fa-1x">
+                          <i className="fas fa-square fa-stack-2x text-info"></i>
+                          <i className="fas fa-minus fa-stack-1x fa-inverse"></i>
                         </span>
-                      </a>
+                      </button>
                       <br />
                       <Link to="/inclusivity">
-                        <span class="fa-stack fa-1x">
-                          <i class="fas fa-square fa-stack-2x text-info"></i>
-                          <i class="fas fa-sign-language fa-stack-1x fa-inverse"></i>
+                        <span className="fa-stack fa-1x">
+                          <i className="fas fa-square fa-stack-2x text-info"></i>
+                          <i className="fas fa-sign-language fa-stack-1x fa-inverse"></i>
                         </span>
                       </Link>
                 </MDBCardBody>

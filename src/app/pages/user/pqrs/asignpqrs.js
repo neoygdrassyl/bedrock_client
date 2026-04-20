@@ -13,7 +13,7 @@ import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_PDFGEN_CONFIRM from './components/pqrs_genPDF_confirm.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
@@ -112,8 +112,8 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
             return false;
         }
         let _GET_DOC_BODY = () => {
-            return `Me permito comunicarle que el ${dateParser(moment(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
-            a las ${moment(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
+            return `Me permito comunicarle que el ${dateParser(dayjs(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
+            a las ${dayjs(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
             solicitud con el número ${currentItem.id_publico}. A partir de este momento, la Curaduría Urbana Estudiará
             su peticion y en el termino de ${currentItem.pqrs_time.time} días hábiles le dará respuesta de manera clara, precisa y
             de fondo. No obstante de requerir un mayor término para lograr este cometido la Curaduría
@@ -129,11 +129,11 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     <input type="hidden" id="pqrs_worker_0" defaultValue={_GET_USERS()[0].id} />
                     <div className="col-4">
                         <label>Profesional</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user-circle"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user-circle"></i>
                             </span>
-                            <select class="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
+                            <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
                                 {_array_workers_names.map(function (name) {
                                     return <option>{name}</option>;
                                 })}
@@ -142,20 +142,20 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     </div>
                     <div className="col-4">
                         <label>Fecha Asignación</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input id="pqrs_worker_1" class="form-control" type="date" required />
+                            <input id="pqrs_worker_1" className="form-control" type="date" required />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Competencia</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-briefcase"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-briefcase"></i>
                             </span>
-                            <input class="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
+                            <input className="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
                         </div>
                     </div>
                 </div>
@@ -199,11 +199,11 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     cell: row => <>
                         <MDBTooltip title='Desasignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                             <button className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
-                                <i class="fas fa-user-minus fa-2x"></i></button>
+                                <i className="fas fa-user-minus fa-2x"></i></button>
                         </MDBTooltip>
                         <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                             <button className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setWorker(row)}>
-                                <i class="far fa-paper-plane fa-2x"></i></button>
+                                <i className="far fa-paper-plane fa-2x"></i></button>
                         </MDBTooltip>
                     </>,
                 },
@@ -230,31 +230,31 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     <div className="row">
                         <div className="col-6">
                             <label>Lista de Correos</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-envelope"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-envelope"></i>
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
+                                <input type="text" className="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
                             </div>
                         </div>
                         <div className="col-6">
                             <label>Lista de Solicitantes</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-user"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-user"></i>
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
+                                <input type="text" className="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
                             </div>
                         </div>
                     </div>
                     <label>Cuerpo del Documento</label>
-                    <textarea class="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
+                    <textarea className="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
                         defaultValue={_GET_DOC_BODY()}></textarea>
                     <table className="table table-sm table-hover table-bordered">
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                                <td><MDBBtn className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i class="fas fa-cloud-download-alt fa-2x"></i></MDBBtn></td>
+                                <td><MDBBtn className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i className="fas fa-cloud-download-alt fa-2x"></i></MDBBtn></td>
                             </tr>
                         </tbody>
                     </table>
@@ -443,10 +443,10 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
 
                         <fieldset className="p-3">
                             <form onSubmit={asignPQRS} id="app-formAsign">
-                                <h2 class="text-uppercase text-center pb-2">ASIGNAR PROFESIONALES</h2>
-                                <div class="form-check ms-5">
-                                    <input class="form-check-input" type="checkbox" onChange={(e) => setAsign(e.target.checked)} />
-                                    <label class="form-check-label" for="flexCheckDefault">
+                                <h2 className="text-uppercase text-center pb-2">ASIGNAR PROFESIONALES</h2>
+                                <div className="form-check ms-5">
+                                    <input className="form-check-input" type="checkbox" onChange={(e) => setAsign(e.target.checked)} />
+                                    <label className="form-check-label" htmlFor="flexCheckDefault">
                                         Asignar Profesional
                                     </label>
                                 </div>
@@ -454,7 +454,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                                     ? <>
                                         {_WORKERS_COMPONENT()}
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-warning"><i class="fas fa-user-plus"></i> ASIGNAR </button>
+                                            <button className="btn btn-lg btn-warning"><i className="fas fa-user-plus"></i> ASIGNAR </button>
                                         </div>
                                     </> : ""}
                             </form>
@@ -467,7 +467,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                             </div>
                             {worker
                                 ? <>
-                                    <label class="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
+                                    <label className="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
                                     <PQRS_WORKERS_EMAILS
                                         translation={translation} swaMsg={swaMsg} globals={globals}
                                         currentItem={currentItem}
@@ -481,7 +481,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
 
                         </fieldset>
 
-                        <h2 class="text-uppercase text-center pb-2">CONFIRMAR A PETICIONRIO</h2>
+                        <h2 className="text-uppercase text-center pb-2">CONFIRMAR A PETICIONRIO</h2>
                         <p className="app-p">GUIA PARA ENVIAR LA CONFIRMACION POR EMAIL</p>
                         <ul>
                             <li className="app-p">Escriba el cuerpo del email.</li>

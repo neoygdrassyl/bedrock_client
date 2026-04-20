@@ -4,7 +4,7 @@ import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import Collapsible from '../../../../components/Collapsible';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import FUN6DATALIST from './fun_6_datalist';
 
 import FUN_DOC_CONFIRMLEGAL from './fun_doc_confirmlegal';
@@ -87,10 +87,10 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
     }, [item]);
 
     const addAttach = () => {
-        setAttachs(attachs + 1)
+        setAttachs(prev => prev + 1)
     }
     const minusAttach = () => {
-        setAttachs(attachs - 1)
+        setAttachs(prev => prev - 1)
     }
 
     const readPDF = async (file, i) => {
@@ -134,36 +134,36 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     <div className="row">
                         <div className="col-12">
                             <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                                <input type="file" class="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf"
+                            <div className="input-group">
+                                <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                                <input type="file" className="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf"
                                     required onChange={(e) => readPDF(e.target.files[0], i)} />
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                                <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} class="form-control" placeholder="Descripcion del documento" />
+                            <div className="input-group">
+                                <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                                <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} className="form-control" placeholder="Descripcion del documento" />
                                 <DOCS_LIST idRef={i} setValues={setValues} text={'VER LISTA'} />
                             </div>
                         </div>
                     </div>
                     <div className="row d-flex justify-content-start">
                         <div className="col">
-                            <div class="input-group">
-                                <span class="input-group-text bg-info text-white"><i class="fas fa-hashtag"></i></span>
-                                <input type="text" class="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
+                            <div className="input-group">
+                                <span className="input-group-text bg-info text-white"><i className="fas fa-hashtag"></i></span>
+                                <input type="text" className="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                             </div>
                         </div>
                         <div className="col">
-                            <div class="input-group">
-                                <span class="input-group-text bg-info text-white"><i class="far fa-sticky-note"></i></span>
-                                <input type="number" class="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages"
+                            <div className="input-group">
+                                <span className="input-group-text bg-info text-white"><i className="far fa-sticky-note"></i></span>
+                                <input type="number" className="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages"
                                     id={'fun6_page_' + i} />
                             </div>
                         </div>
                         <div className="col-4">
-                            <div class="input-group">
-                                <span class="input-group-text bg-info text-white"><i class="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
-                                <input type="date" class="form-control" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} name="fun6_dates" />
+                            <div className="input-group">
+                                <span className="input-group-text bg-info text-white"><i className="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
+                                <input type="date" className="form-control" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} name="fun6_dates" />
                             </div>
                         </div>
                     </div>
@@ -175,7 +175,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
             formData = new FormData();
             formData.set('fun0Id', currentItem.id);
 
-            let _creationYear = moment(currentItem.createdAt).format('YY');
+            let _creationYear = dayjs(currentItem.createdAt).format('YY');
             let _folder = currentItem.id_public;
 
             // GET DATA OF ATTACHS
@@ -312,7 +312,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             </div>
                             <div className='col text-end'>
                                 <MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
-                                <i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
+                                <i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
                             </div>
                         </div>
 
@@ -339,9 +339,9 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             <div className="col text-end m-3">
 
                                 {attachs > 0
-                                    ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                    ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                     : ""}
-                                <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                             </div>
                         </div>
 
@@ -351,7 +351,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             {attachs > 0
                                 ? <div className="row text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-warning btn-lg my-3"><i class="far fa-file-alt"></i> AÑADIR {attachs} DOCUMENTO(S)</button>
+                                        <button className="btn btn-warning btn-lg my-3"><i className="far fa-file-alt"></i> AÑADIR {attachs} DOCUMENTO(S)</button>
                                     </div>
                                 </div> : ""}
                         </form>
@@ -372,7 +372,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         />
                     </fieldset>
 
-                    <h3 class="text-uppercase text-center py-3" id="fund_4">4. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
+                    <h3 className="text-uppercase text-center py-3" id="fund_4">4. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
 
                     <div id="fund_pdf">
                         <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">PDF Formulario Único Nacional</label>}>
@@ -534,7 +534,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         </Collapsible>
                     </div>
 
-                    <h3 class="text-uppercase text-center py-3" id="fund_5">5. CONTROL DE DOCUMENTACIÓN ESPECIAL </h3>
+                    <h3 className="text-uppercase text-center py-3" id="fund_5">5. CONTROL DE DOCUMENTACIÓN ESPECIAL </h3>
                     <div id="fund_23" >
                         <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">CONTROL DE DOCUMENTO DE RECONOCIMIENTO</label>}>
                             <div className='text-start'>

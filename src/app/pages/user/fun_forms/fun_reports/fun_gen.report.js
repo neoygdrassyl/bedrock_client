@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Spreadsheet from "react-spreadsheet";
@@ -33,7 +34,7 @@ export default function FUN_REPORT_GEN(props) {
         C: "Cálido seco",
         D: "Cálido húmedo",
     };
-    const moment = require('moment');
+
 
     var [localData, setDataLocal] = useState([]);
 
@@ -273,7 +274,7 @@ export default function FUN_REPORT_GEN(props) {
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
         p_desc = p_desc.replaceAll(';', ",");
         return [
-            { value: isPH ? moment(v.clock_license_ph).format('MM-YYYY') : moment(v.clock_license).format('MM-YYYY') }, //  Mes y Año De Aprobacion
+            { value: isPH ? dayjs(v.clock_license_ph).format('MM-YYYY') : dayjs(v.clock_license).format('MM-YYYY') }, //  Mes y Año De Aprobacion
             { value: isPH ? v.id_public_ph : v.id_public },  //  Numero De Licencia de Cnstruccion
             { value: formsParser1(v, true) },  //  Tipo De Licencia
             { value: _FUN_2_PARSER(v.tramite, true) },  //  Objeto De Tramite
@@ -719,7 +720,7 @@ export default function FUN_REPORT_GEN(props) {
         var use = _FUN_6_PARSER(_CHILD_1.usos, true);
         var st = v.estrato - 1
         var Q = taxes.id_payment_0_area || false;
-        var year = moment(v.pay_date).format('YYYY')
+        var year = dayjs(v.pay_date).format('YYYY')
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
 
@@ -1036,7 +1037,7 @@ export default function FUN_REPORT_GEN(props) {
         var use = _FUN_6_PARSER(_CHILD_1.usos, true);
         var st = v.estrato - 1
         var Q = taxes.id_payment_0_area || false;
-        var year = moment(v.pay_date).format('YYYY')
+        var year = dayjs(v.pay_date).format('YYYY')
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
 
@@ -1227,7 +1228,7 @@ export default function FUN_REPORT_GEN(props) {
         var use = _FUN_6_PARSER(_CHILD_1.usos, true);
         var st = v.estrato - 1
         var Q = taxes.id_payment_0_area || false;
-        var year = moment(v.pay_date).format('YYYY')
+        var year = dayjs(v.pay_date).format('YYYY')
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
         var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
@@ -1464,34 +1465,34 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.matricula }, // MATRICULA INMOBILIARIA
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // PROPIETARIO Y/O TITULAR DE LA LICENCIA
             { value: infoCud.pot }, // RESOLUCIONES Y/O ACUERDOS DEL POT
-            { value: v.clock_payment ? moment(v.clock_payment).format('YYYYMMDD') : '' }, // FECHA DE RADICADO SOLICITUD LICENCIA // yyyymmdd
+            { value: v.clock_payment ? dayjs(v.clock_payment).format('YYYYMMDD') : '' }, // FECHA DE RADICADO SOLICITUD LICENCIA // yyyymmdd
             {
                 value: isPH ?
-                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
-                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+                    (v.clock_license_ph ? dayjs(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? dayjs(v.clock_res_date).format('YYYYMMDD') : '')
             }, // FECHA DEE EXPEDICIÓN DE LA LICENCIA // YYYYMMDD
             { value: vig != 0 && vig != 1 ? vig : "" }, // FECHA DE VIGENCIA DE LA LICENCIA // YYYYMMDD
             { value: '' }, // No FOLIOS LICENCIA
             { value: isPH ? v.id_public_ph : v.exp_id }, // ACTO ADMINISTRATIVO DE LA LICENCIA - No
             {
                 value: isPH ?
-                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
-                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+                    (v.clock_license_ph ? dayjs(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? dayjs(v.clock_res_date).format('YYYYMMDD') : '')
             }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FECHA // YYYYMMDD
             { value: '' }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FOLIOS
             {
                 value: isPH ?
-                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
-                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+                    (v.clock_license_ph ? dayjs(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? dayjs(v.clock_res_date).format('YYYYMMDD') : '')
             }, // LICENCIA EJECUTORIADA - No
             {
                 value: isPH ?
-                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
-                    (v.clock_license ? moment(v.clock_license).format('YYYYMMDD') : '')
+                    (v.clock_license_ph ? dayjs(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_license ? dayjs(v.clock_license).format('YYYYMMDD') : '')
             }, // LICENCIA EJECUTORIADA - FECHA // YYYYMMDD
             { value: '' }, // LICENCIA EJECUTORIADA - FOLIOS
             { value: exp_steps.norm }, // NORMA URBANA - No
-            { value: exp_steps.date_norm ? moment(exp_steps.date_norm).format('YYYYMMDD') : '' }, // NORMA URBANA - FECHA EXPEDICIÓN // YYYYMMDD
+            { value: exp_steps.date_norm ? dayjs(exp_steps.date_norm).format('YYYYMMDD') : '' }, // NORMA URBANA - FECHA EXPEDICIÓN // YYYYMMDD
             { value: exp_steps.n_norm }, // NORMA URBANA - FOLIOS
             { value: worker_arc }, // RESPONSABLES - ARQUITECTO
             { value: worker_eng }, // RESPONSABLES - INGENIERO
@@ -1855,19 +1856,19 @@ export default function FUN_REPORT_GEN(props) {
     // ******************************* JSX ***************************** // 
     let _LIST_NEW = () => {
         var list = [];
-        data.sort((a, b) => new Date(b.clock_payment) - new Date(a.clock_payment));
+        const sortedData = [...data].sort((a, b) => new Date(b.clock_payment) - new Date(a.clock_payment));
 
-        data.map(value => {
-            var condition = moment(value.clock_payment).isBetween(date_i, date_f);
+        sortedData.map(value => {
+            var condition = dayjs(value.clock_payment).isBetween(date_i, date_f);
             if (condition) list.push(value);
         })
 
         return <>
             <h4 className='fw-bold'>NUEVAS SOLICITUDES: {list.length}</h4>
-            <div class="d-flex flex-wrap">
-                {list.map(value => <div class="input-group-prepend border border-primary">
-                    <div class="input-group-text">
-                        <label>{(value.id_public).slice(-7)} - {moment(value.clock_payment).format('MM-DD')}</label></div>
+            <div className="d-flex flex-wrap">
+                {list.map(value => <div className="input-group-prepend border border-primary">
+                    <div className="input-group-text">
+                        <label>{(value.id_public).slice(-7)} - {dayjs(value.clock_payment).format('MM-DD')}</label></div>
                 </div>)}
             </div>
         </>
@@ -1878,21 +1879,21 @@ export default function FUN_REPORT_GEN(props) {
         _data.sort((a, b) => new Date(b.clock_license || b.clock_archive) - new Date(a.clock_license || a.clock_archive));
 
         _data.map(value => {
-            var condition = moment(value.clock_license).isBetween(date_i, date_f);
-            var condition2 = moment(value.clock_archive).isBetween(date_i, date_f);
-            var condition3 = moment(value.clock_license_2).isBetween(date_i, date_f);
+            var condition = dayjs(value.clock_license).isBetween(date_i, date_f);
+            var condition2 = dayjs(value.clock_archive).isBetween(date_i, date_f);
+            var condition3 = dayjs(value.clock_license_2).isBetween(date_i, date_f);
             if (condition || condition3) list.push(value);
         })
 
         return <>
             <h4 className='fw-bold'>SOLICITUDES EXPEDIDAS : {list.length}</h4>
-            <div class="d-flex flex-wrap">
+            <div className="d-flex flex-wrap">
                 {list.map(value => {
                     let _CHILD_1 = { tipo: value.tipo, tramite: value.tramite, m_urb: value.m_urb, m_sub: value.m_sub, m_lic: value.m_lic };
                     let isPH = regexChecker_isPh(_CHILD_1, true);
 
-                    return <div class="input-group-prepend border border-success">
-                        <div class="input-group-text">
+                    return <div className="input-group-prepend border border-success">
+                        <div className="input-group-text">
                             <label>{isPH ? value.id_public_ph : (value.id_public ?? '').slice(-7)}</label></div>
                     </div>
                 }

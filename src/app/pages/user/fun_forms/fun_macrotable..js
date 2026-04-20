@@ -112,7 +112,7 @@ const _fun_0_type_days_matrix = {
     'oa': { 'law': 1, 'arc': 1, 'eng': 0 },
     '0': { 'law': 1, 'arc': 1, 'eng': 0 },
 }
-const moment = require('moment');
+import dayjs from 'dayjs';
 function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilter, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
     const tagRef = useRef(null);
     const [state, setState] = useReducer(
@@ -812,7 +812,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0])) condition = true;
                             }
                             if (splitCon[0] && splitCon[1]) {
-                                if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0]) && splitCon[1] == moment(_FULL_LIST[i].clock_resolution, 'YYYY-MM-DD').format('YY', true)) condition = true;
+                                if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0]) && splitCon[1] == dayjs(_FULL_LIST[i].clock_resolution, 'YYYY-MM-DD').format('YY', true)) condition = true;
                             }
 
                         }
@@ -834,8 +834,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                         let date1 = fiterBody[2];
                         let date2 = fiterBody[3];
                         let case_1 = date1 && (date2 == undefined);
-                        let case_2 = moment(date2, 'YYYY-MM-DD', true).isValid() && moment(date2, 'YYYY-MM-DD', true).isValid();
-                        let case_3 = moment(date2, 'YYYY-MM-DD', true).isValid() && !isNaN(date2);
+                        let case_2 = dayjs(date2, 'YYYY-MM-DD', true).isValid() && dayjs(date2, 'YYYY-MM-DD', true).isValid();
+                        let case_3 = dayjs(date2, 'YYYY-MM-DD', true).isValid() && !isNaN(date2);
                         let case_4 = date1[0] == '-' && (date1[1] == 'd' || date1[1] == 'w' || date1[1] == 'm' || date1[1] == 'y');
 
                         let dates;
@@ -852,11 +852,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 if (date.includes(date1)) meetCondition = true;
                             }
                             if (case_2) {
-                                if (moment(date).isBetween(date1, date2, undefined, '[]')) meetCondition = true;
+                                if (dayjs(date).isBetween(date1, date2, undefined, '[]')) meetCondition = true;
                             }
                             if (case_3) {
                                 let finalDate = dateParser_finalDate(date1, date2)
-                                if (moment(date).isBetween(date1, finalDate, undefined, '[]')) meetCondition = true;
+                                if (dayjs(date).isBetween(date1, finalDate, undefined, '[]')) meetCondition = true;
                             }
                             if (case_4) {
                                 let numberT = date1.substring(2, date1.length)
@@ -864,24 +864,24 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 else numberT = Number(numberT);
 
                                 if (!isNaN(numberT)) {
-                                    let today = moment();
+                                    let today = dayjs();
                                     let lastDate;
                                     if (date1[1] == 'd') {
                                         lastDate = today.subtract(numberT, "days");
                                     }
                                     if (date1[1] == 'w') {
                                         lastDate = today.subtract(numberT, "week");
-                                        lastDate.startOf('isoWeek');
+                                        lastDate = lastDate.startOf('isoWeek');
                                     }
                                     if (date1[1] == 'm') {
                                         lastDate = today.subtract(numberT, "month");
-                                        lastDate.startOf('month');
+                                        lastDate = lastDate.startOf('month');
                                     }
                                     if (date1[1] == 'y') {
                                         lastDate = today.subtract(numberT, "year");
-                                        lastDate.startOf('year');
+                                        lastDate = lastDate.startOf('year');
                                     }
-                                    if (moment(date).isBetween(lastDate, moment(), undefined, '[]')) meetCondition = true;
+                                    if (dayjs(date).isBetween(lastDate, dayjs(), undefined, '[]')) meetCondition = true;
                                 }
                             }
                         })
@@ -1161,7 +1161,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cvsCB: row => row.state == 1 || row.state == -1 ? dateParser_finalDate(row.clock_payment, 30) : '-',
                 cell: row => row.state == 1 || row.state == -1 ?
                     <label>{dateParser_finalDate(row.clock_payment, 30)}</label>
-                    : <i class="fas fa-minus"></i>
+                    : <i className="fas fa-minus"></i>
             },
             {
                 name: <label className="text-center">DIAS LyDF</label>,
@@ -1177,7 +1177,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     <label>{dateParser_timePassed(row.clock_payment) > 30 ?
                         <label className='text-danger'>{dateParser_timePassed(row.clock_payment)}</label>
                         : <label>{dateParser_timePassed(row.clock_payment)}</label>} / 30</label>
-                    : <i class="fas fa-minus"></i>
+                    : <i className="fas fa-minus"></i>
             },
             {
                 name: <label className="fw-bold text-primary text-center">LYDF</label>,
@@ -1197,7 +1197,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => row.clock_record_p1 == null ? <>
                     <label>{dateParser_finalDate(row.clock_date, _fun_0_type_time[row.type] ?? 45)}</label>
                     {ci(row)}</>
-                    : <i class="fas fa-minus"></i>
+                    : <i className="fas fa-minus"></i>
             },
             {
                 name: <label className="text-center">T. ACTA</label>,
@@ -1268,8 +1268,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              cellStyle: CellStylesJUR,
              center: true,
              minWidth: '70px',
-             cell: row => <div class="form-check">
-                 <input class="form-check-input" type="checkbox" defaultChecked={state['asign_jur_' + row.id]} onChange={(e) => setState({ ['asign_jur_' + row.id]: e.target.checked })} />
+             cell: row => <div className="form-check">
+                 <input className="form-check-input" type="checkbox" defaultChecked={state['asign_jur_' + row.id]} onChange={(e) => setState({ ['asign_jur_' + row.id]: e.target.checked })} />
              </div>
          },
          {
@@ -1307,9 +1307,9 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ?
                  _GET_ASIGN_DATE(row.asign_law_date, 11, row)
-                     ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                     ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                      : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
-                 : dateParser_finalDate(moment(row.asign_ph_law_date).isSameOrAfter(row.clock_date, 'day') >= 0 ? row.asign_ph_law_date : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                 : dateParser_finalDate(dayjs(row.asign_ph_law_date).isSameOrAfter(row.clock_date, 'day') >= 0 ? row.asign_ph_law_date : row.clock_date, _fun_0_type_days[row.type] ?? 5)
              } {!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''
                  : row.asign_ph_law_date && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''}
@@ -1331,7 +1331,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
               name: <label>DIAS</label>,
               selector: row => dateParser_dateDiff(
                   !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_date : row.ph_date_law,
-                  !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
+                  !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
                   , true),
               sortable: true,
               filterable: true,
@@ -1343,7 +1343,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
               cell: row => {
                   let diff = dateParser_dateDiff(
                       !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_date : row.ph_date_law,
-                      !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
+                      !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
                       , true)
                   return <>
                       <label> <label className={diff < 0 ? 'text-success fw-bold' : diff > (_fun_0_type_days[row.type] ?? 5) ? 'text-danger' : ''}>{diff}</label>
@@ -1377,8 +1377,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             cellStyle: CellStylesARQ,
                             center: true,
                             minWidth: '70px',
-                            cell: row => <div class="form-check">
-                                <input class="form-check-input" type="checkbox" defaultChecked={state['asign_arc_' + row.id]} onChange={(e) => setState({ ['asign_arc_' + row.id]: e.target.checked })} />
+                            cell: row => <div className="form-check">
+                                <input className="form-check-input" type="checkbox" defaultChecked={state['asign_arc_' + row.id]} onChange={(e) => setState({ ['asign_arc_' + row.id]: e.target.checked })} />
                             </div>
                         },
                         {
@@ -1417,7 +1417,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                                 ?
                                 _GET_ASIGN_DATE(row.asign_arc_date, 13, row)
-                                    ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                                    ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                                     : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
                                 : dateParser_finalDate(row.asign_ph_arc_date, _fun_0_type_days[row.type] ?? 5)
                             }  {!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
@@ -1441,7 +1441,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 name: <label>DIAS</label>,
                 selector: row => dateParser_dateDiff(
                     !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_date : row.ph_date_arc,
-                    !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
+                    !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
                     , true),
                 sortable: true,
                 filterable: true,
@@ -1453,7 +1453,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => {
                     let diff = dateParser_dateDiff(
                         !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_date : row.ph_date_arc,
-                        !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
+                        !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
                         , true)
                     return <>
                         <label> <label className={diff < 0 ? 'text-success fw-bold' : diff > (_fun_0_type_days[row.type] ?? 5) ? 'text-danger' : ''}>{diff} </label>
@@ -1507,8 +1507,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             cellStyle: CellStylesENG,
             center: true,
             minWidth: '70px',
-            cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? <div class="form-check">
-                <input class="form-check-input" type="checkbox" defaultChecked={state['asign_eng_' + row.id]} onChange={(e) => setState({ ['asign_eng_' + row.id]: e.target.checked })} />
+            cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? <div className="form-check">
+                <input className="form-check-input" type="checkbox" defaultChecked={state['asign_eng_' + row.id]} onChange={(e) => setState({ ['asign_eng_' + row.id]: e.target.checked })} />
             </div> : ""
         },
         {
@@ -1545,7 +1545,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                 ? <label>{
                     _GET_ASIGN_DATE(row.asign_eng_date, 12, row)
-                        ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_eng_date, 12, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_eng_date, 12, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                        ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_eng_date, 12, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_eng_date, 12, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                         : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
                 }
                     {_GET_ASIGN_DATE(row.asign_eng_date, 12, row) && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''}</label>
@@ -1959,10 +1959,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         //DATA CONVERTERS
         let _GET_REVIEW = (_REVIEW, _REVIEW_CLOCK, REVIEWS, _SIMPLE) => {
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-                '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+                '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
+                '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
+                '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
+                '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
 
@@ -1986,10 +1986,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         }
         let _GET_REVIEW_RECORD = (_REVIEW, _SIMPLE) => {
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-                '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+                '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
+                '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
+                '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
+                '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
             return _SIMPLE ? res_simple[_REVIEW] ?? res_simple['-1'] : res[_REVIEW] ?? res['-1']
@@ -1997,10 +1997,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         let GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS, _SIMPLE) => {
             let revies = _REVIEW ?? [-1, -1]
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle"></i></label>,
-                '0': <label className="fw-bold text-danger  me-1"><i class="far fa-times-circle"></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle"></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle"></i></label>,
+                '-1': <label className=" me-1"><i className="far fa-dot-circle"></i></label>,
+                '0': <label className="fw-bold text-danger  me-1"><i className="far fa-times-circle"></i></label>,
+                '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle"></i></label>,
+                '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle"></i></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
             if (REVIEWS) {
@@ -2195,31 +2195,31 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             const isOA = regexChecker_isOA_2(row);
             let rules = row.rules ? row.rules.split(';') : [];
             return <MDBPopoverBody>
-                <div class="list-group list-group-flush">
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'general', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'clock', 'macro')} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'archive', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
+                <div className="list-group list-group-flush">
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'general', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-info" ></i> DETALLES</button>
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'clock', 'macro')} className="list-group-item list-group-item-action p-1 m-0 " ><i className="far fa-clock text-secondary" ></i> TIEMPOS</button>
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'archive', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
                     {row.state != 101 && row.state <= 200 ?
                         <>
-                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'edit', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'check', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
+                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'edit', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
+                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'check', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-check-square text-warning" ></i> CHECKEO</button>
                             {regexChecker_isPh(row, true) ?
                                 <>
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_ph', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_ph', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>
                                 :
                                 <>
                                     {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'alert', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'alert', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_law', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_law', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
                                     {!isOA ? <>
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
+                                        {rules[1] != 1 ? <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-file-contract text-warning" ></i> ACTA</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>}
                         </> : <></>}
                 </div>
@@ -2236,7 +2236,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i class="far fa-chart-bar"></i> GRAFICAS GENERALES
+                        <i className="far fa-chart-bar"></i> GRAFICAS GENERALES
                     </label>
                 </MDBBtn>}>
                     <div>
@@ -2284,7 +2284,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i class="far fa-chart-bar"></i> GRAFICA DE ASIGNACION
+                        <i className="far fa-chart-bar"></i> GRAFICA DE ASIGNACION
                     </label>
                 </MDBBtn>}>
                     <div>
@@ -2313,7 +2313,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i class="far fa-chart-bar"></i> GRAFICAS DE EVALUACION
+                        <i className="far fa-chart-bar"></i> GRAFICAS DE EVALUACION
                     </label>
                 </MDBBtn>}>
                     <div>
@@ -2359,7 +2359,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i class="far fa-chart-bar"></i> GRAFICA DE LICENCIAS EXPEDIDAS
+                        <i className="far fa-chart-bar"></i> GRAFICA DE LICENCIAS EXPEDIDAS
                     </label>
                 </MDBBtn>}>
                     <div>
@@ -2388,16 +2388,16 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     />
                 </div>
                 <div className="row">
-                    <div class="input-group my-1">
-                        <div class="input-group-text" style={{ backgroundColor: "lightGray" }}>
+                    <div className="input-group my-1">
+                        <div className="input-group-text" style={{ backgroundColor: "lightGray" }}>
                             <label>{`Numero de Solicitudes Filtradas: ${state.data_macro_filter.length}`} </label>
                         </div>
-                        <div class="input-group-prepend">
-                            <button className="btn btn-secondary" onClick={() => _FILTER_LIST([])}><i class="far fa-window-close"></i> LIMPIAR FILTROS</button>
+                        <div className="input-group-prepend">
+                            <button className="btn btn-secondary" onClick={() => _FILTER_LIST([])}><i className="far fa-window-close"></i> LIMPIAR FILTROS</button>
                         </div>
                         <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => _UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
-                        <div class="input-group-prepend">
-                            <MDBBtn color='secondary' outline={state.includeEx} onClick={(e) => changeList(!state.includeEx)}><i class="fas fa-database"></i> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</MDBBtn>
+                        <div className="input-group-prepend">
+                            <MDBBtn color='secondary' outline={state.includeEx} onClick={(e) => changeList(!state.includeEx)}><i className="fas fa-database"></i> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</MDBBtn>
                         </div>
                     </div>
                 </div>
@@ -2407,20 +2407,20 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             return <MDBPopoverBody>
                 <MDBPopoverHeader>INDICE DE PRIORIDAD - {row.id_public}</MDBPopoverHeader>
                 <div>
-                    <div class="row border p-1"><label>ACTAS:  {_GET_REVIEW_RECORD(row.rec_review)} {_GET_REVIEW_RECORD(row.rec_review_2)}</label></div>
-                    <div class="row border p-1"><label>Estado: {_fun_0_state(row.state, true, row)}</label></div>
-                    <div class="row border p-1"><label>Categoria: {_fun_0_type[row.type]}</label></div>
-                    <div class="row border p-1"><label>Formula F(x) = c1 + (c2 - c3) + c4 + c5 + c6</label></div>
-                    <div class="row border p-1"><label>Limite de F(x) tiende a -INF</label></div>
-                    <div class="row border p-1">
-                        <div class="row p-1"><label> c1 :<label className='fw-bold'>{row.constants[0]} </label>  (LDF o INC)</label></div>
-                        <div class="row p-1"><label> c2 :<label className='fw-bold'>{row.constants[1]} </label>  (Tiempo de Categoia)</label></div>
-                        <div class="row p-1"><label> c3 :<label className={`fw-bold ${row.constants[3] > row.constants[1] ? 'text-danger' : ''}`}>{row.constants[3]} </label>  (Tiempo usado para revision)</label></div>
-                        <div class="row p-1"><label> c4 : <label className={`fw-bold ${row.constants[2] < 0 ? 'text-danger' : ''}`}>{row.constants[2]} </label> (Tiempo restante de correccion)</label></div>
-                        <div class="row p-1"><label> c5 : <label className='fw-bold'>{row.constants[4]} </label> (Tiempo de entrada de ultimo documento)</label></div>
-                        <div class="row p-1"><label> c6 : <label className='fw-bold'>{row.constants[5]} </label> (Inidice de asignacion)</label></div>
+                    <div className="row border p-1"><label>ACTAS:  {_GET_REVIEW_RECORD(row.rec_review)} {_GET_REVIEW_RECORD(row.rec_review_2)}</label></div>
+                    <div className="row border p-1"><label>Estado: {_fun_0_state(row.state, true, row)}</label></div>
+                    <div className="row border p-1"><label>Categoria: {_fun_0_type[row.type]}</label></div>
+                    <div className="row border p-1"><label>Formula F(x) = c1 + (c2 - c3) + c4 + c5 + c6</label></div>
+                    <div className="row border p-1"><label>Limite de F(x) tiende a -INF</label></div>
+                    <div className="row border p-1">
+                        <div className="row p-1"><label> c1 :<label className='fw-bold'>{row.constants[0]} </label>  (LDF o INC)</label></div>
+                        <div className="row p-1"><label> c2 :<label className='fw-bold'>{row.constants[1]} </label>  (Tiempo de Categoia)</label></div>
+                        <div className="row p-1"><label> c3 :<label className={`fw-bold ${row.constants[3] > row.constants[1] ? 'text-danger' : ''}`}>{row.constants[3]} </label>  (Tiempo usado para revision)</label></div>
+                        <div className="row p-1"><label> c4 : <label className={`fw-bold ${row.constants[2] < 0 ? 'text-danger' : ''}`}>{row.constants[2]} </label> (Tiempo restante de correccion)</label></div>
+                        <div className="row p-1"><label> c5 : <label className='fw-bold'>{row.constants[4]} </label> (Tiempo de entrada de ultimo documento)</label></div>
+                        <div className="row p-1"><label> c6 : <label className='fw-bold'>{row.constants[5]} </label> (Inidice de asignacion)</label></div>
                     </div>
-                    <div class="row border p-1"><label className='fw-bold'>{row.constants[0]} + ( {row.constants[1]}  -  {row.constants[3]}) + {row.constants[2]} +  {row.constants[4]} +  {row.constants[5]}  = {row.priority_index}</label></div>
+                    <div className="row border p-1"><label className='fw-bold'>{row.constants[0]} + ( {row.constants[1]}  -  {row.constants[3]}) + {row.constants[2]} +  {row.constants[4]} +  {row.constants[5]}  = {row.priority_index}</label></div>
                 </div>
             </MDBPopoverBody>
         }
@@ -2430,13 +2430,13 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
         let _GET_OLDEST_DATE = (DATES, inTime) => {
             let dates = DATES ? DATES.split(';') : [];
-            let oldestDate = moment();
+            let oldestDate = dayjs();
             dates.forEach((element) => {
-                if (!moment(element).isSameOrAfter(oldestDate)) {
+                if (!dayjs(element).isSameOrAfter(oldestDate)) {
                     oldestDate = element;
                 }
             });
-            if (inTime) return dateParser_timePassed(moment(oldestDate).format('YYYY-MM-DD'))
+            if (inTime) return dateParser_timePassed(dayjs(oldestDate).format('YYYY-MM-DD'))
             else return oldestDate;
 
         }
@@ -2830,10 +2830,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                 className="data-table-component"
                                 title={
-                                    <div class="d-flex justify-content-between">
+                                    <div className="d-flex justify-content-between">
                                         <div><h5>LICENCIAS URBANISTICAS</h5></div>
                                         <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(state.data_macro_filter) }}
-                                        ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                        ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
                                     </div>
                                 }
                                 dense
@@ -2874,10 +2874,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 className="data-table-component"
                                 dense
                                 title={
-                                    <div class="d-flex justify-content-between">
+                                    <div className="d-flex justify-content-between">
                                         <div><h5>OTRAS ACTUACIONES</h5></div>
                                         <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
-                                        ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                        ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
                                     </div>
                                 }
                                 progressPending={!load}
@@ -2902,11 +2902,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     <MDBTabsPane show={state.fillActive === '-1'}>
                         <div className="row">
                             <div className="col-2">
-                                <div class="input-group mb-3">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" type="checkbox" onChange={(e) => _SHOW_NEGATIVE(e.target.checked)} />
+                                <div className="input-group mb-3">
+                                    <div className="input-group-text">
+                                        <input className="form-check-input mt-0" type="checkbox" onChange={(e) => _SHOW_NEGATIVE(e.target.checked)} />
                                     </div>
-                                    <input type="text" class="form-control" disabled value="Mostrar Finalizados" />
+                                    <input type="text" className="form-control" disabled value="Mostrar Finalizados" />
                                 </div>
                             </div>
                         </div>
@@ -2926,10 +2926,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                     paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                     className="data-table-component"
                                     title={
-                                        <div class="d-flex justify-content-between">
+                                        <div className="d-flex justify-content-between">
                                             <div><h5>DESISTIDOS / DESISTENDO</h5></div>
                                             <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
-                                            ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                            ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
                                         </div>
                                     }
                                     dense

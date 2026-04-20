@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -121,7 +121,7 @@ parentRetrieveItem(currentItem.id);
                         if (concecutive < 1000) concecutive = "0" + concecutive
                         if (concecutive < 100) concecutive = "0" + concecutive
                         if (concecutive < 10) concecutive = "0" + concecutive
-                        new_id = res1+(moment().format('YY')).split('-')[0] + "-" + concecutive
+                        new_id = res1+(dayjs().format('YY')).split('-')[0] + "-" + concecutive
                         document.getElementById('pqrs_master_idreply').value = new_id;
                     } else {
                         concecutive = new_id.split('-')[1];
@@ -151,24 +151,24 @@ parentRetrieveItem(currentItem.id);
                     <div className="row">
                         <div className="col-6">
                             <label className='text-start'>consecutivo de Salida</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
                                 </span>
-                                <input type="text" class="form-control" defaultValue={currentItem.id_reply}
+                                <input type="text" className="form-control" defaultValue={currentItem.id_reply}
                                     id="pqrs_master_idreply" require />
-                                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                             </div>
                         </div>
 
                         <div className="col-6">
                             <label>Fecha de Respuesta</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
                                 </span>
-                                <input type="date" max="2100-01-01" class="form-control"
-                                    defaultValue={currentItem.pqrs_time ? currentItem.pqrs_time.reply_formal : moment().format('YYYY-MM-DD')}
+                                <input type="date" max="2100-01-01" className="form-control"
+                                    defaultValue={currentItem.pqrs_time ? currentItem.pqrs_time.reply_formal : dayjs().format('YYYY-MM-DD')}
                                     id="pqrs_reply_time_formalReply" require />
                             </div>
                         </div>
@@ -176,9 +176,9 @@ parentRetrieveItem(currentItem.id);
                     </div>
 
                     <label>Respuesta de Oficio (Máximo 4000 Caracteres)</label>
-                    <textarea class="form-control mb-3" rows="5" maxlength="4096" id="pqrs_info_reply" defaultValue={currentItem.pqrs_info ? currentItem.pqrs_info.reply : ''}></textarea>
+                    <textarea className="form-control mb-3" rows="5" maxlength="4096" id="pqrs_info_reply" defaultValue={currentItem.pqrs_info ? currentItem.pqrs_info.reply : ''}></textarea>
                     <div className="text-center m-3">
-                        <button className="btn btn-sm btn-success my-2" ><i class="fas fa-edit"></i> GUARDAR RESPUESTA </button>
+                        <button className="btn btn-sm btn-success my-2" ><i className="fas fa-edit"></i> GUARDAR RESPUESTA </button>
                     </div>
                 </form>
             </div>

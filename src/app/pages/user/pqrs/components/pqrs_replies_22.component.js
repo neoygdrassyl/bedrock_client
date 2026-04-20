@@ -79,7 +79,7 @@ export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
                             tabIndex={1} // tabIndex of textarea
                             onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                             onChange={newContent => { }}
-                            class="form-control mb-3"
+                            className="form-control mb-3"
                             rows="5"
                             maxlength="409675"
                         />

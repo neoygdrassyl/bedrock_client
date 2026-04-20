@@ -5,7 +5,7 @@ import {
 import DataTable from 'react-data-table-component';
 import { Link } from "react-router-dom";
 import Collapsible from '../../components/Collapsible';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { infoCud } from '../../components/jsons/vars';
 import { Button_navigation } from '../../components/button.component';
 

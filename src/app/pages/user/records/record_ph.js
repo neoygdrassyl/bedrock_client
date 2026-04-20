@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -32,7 +32,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
     const [loaded, setLoaded] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
 
-    const setItem_RecordArc = () => {
+    const setItem_RecordArc = useCallback(() => {
         RECORD_PH_SERVICE.getRecord(currentId)
             .then(response => {
                 if (response.data.length < 1) {
@@ -54,7 +54,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
-    };
+    }, [currentId, swaMsg]);
 
     const requestUpdateRecord = (id) => {
         RECORD_PH_SERVICE.getRecord(id)
@@ -77,7 +77,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
         requesRefresh();
     };
 
-    const retrieveItem = (id) => {
+    const retrieveItem = useCallback((id) => {
         FUN_SERVICE.get(id)
             .then(response => {
                 setCurrentItem(response.data);
@@ -91,7 +91,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
-    };
+    }, [swaMsg]);
 
     const navigation_version = (STEP) => {
         switch (STEP) {
@@ -107,7 +107,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
     useEffect(() => {
         setItem_RecordArc();
         retrieveItem(currentId);
-    }, []);
+    }, [currentId, setItem_RecordArc, retrieveItem]);
 
         var formData = new FormData();
 

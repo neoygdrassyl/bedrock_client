@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import './index.css';
+import './app/utils/dayjs.config'; // dayjs plugins + locale (must load before any component)
 import './app/components/jsons/global-id';
 import App from './app/App';
 

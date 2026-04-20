@@ -4,7 +4,7 @@ import Collapsible from '../../../../components/Collapsible';
 import PQRS_PDFGEN_CONFIRM from './pqrs_genPDF_confirm.component';
 import PQRS_PDFGEN_REPLY from './pqrs_genPDF_reply.component';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 function PQRS_COMPONENT_ATTACH_SPECIAL({ translation, swaMsg, globals, currentItem }) {
 

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';
 import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {
@@ -32,7 +32,7 @@ const customStylesForModal = {
 
     }
 };
-const CURRENT_YEAR = moment().format('YYYY')
+const CURRENT_YEAR = dayjs().format('YYYY')
 const SMMV = get_SMMV(CURRENT_YEAR);
 const UVT = get_UVT(CURRENT_YEAR);
 
@@ -373,7 +373,7 @@ export default function EXP_CALC(props) {
                         <option value={5}>6</option>
                     </select>
                     <input type="number" step={0.01} min={0} onChange={e => CALCULATE_VALUE_CUR()}
-                        class="form-control form-control-sm my-1" id="exp_calc_area" placeholder='Área total' />
+                        className="form-control form-control-sm my-1" id="exp_calc_area" placeholder='Área total' />
                 </div>
 
                 <div className='col-6'>
@@ -387,8 +387,8 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <MDBBtn size='sm' className='my-1' outline onClick={() => COPY_TO_DOM('cur_fix')}><i class="far fa-copy"></i> COPIAR CARGO FIJO</MDBBtn>
-                    <MDBBtn size='sm' outline onClick={() => COPY_TO_DOM('cur_var')}><i class="far fa-copy"></i> COPIAR CARGO VARIABLE</MDBBtn>
+                    <MDBBtn size='sm' className='my-1' outline onClick={() => COPY_TO_DOM('cur_fix')}><i className="far fa-copy"></i> COPIAR CARGO FIJO</MDBBtn>
+                    <MDBBtn size='sm' outline onClick={() => COPY_TO_DOM('cur_var')}><i className="far fa-copy"></i> COPIAR CARGO VARIABLE</MDBBtn>
                 </div>
             </div>
             <hr />
@@ -421,13 +421,13 @@ export default function EXP_CALC(props) {
                         <option disabled selected>Seleccione uso...</option>
                     </select>
                     <input type="number" step={0.01} min={0} onChange={e => CALCULATE_VALUE_OTHER()}
-                        class="form-control form-control-sm my-1" id="exp_calc_area" placeholder='Área total' />
+                        className="form-control form-control-sm my-1" id="exp_calc_area" placeholder='Área total' />
 
-                    <div class="input-group input-group-sm my-1">
+                    <div className="input-group input-group-sm my-1">
                         <input type="text" step={1} min={0} max={100} defaultValue={100} onChange={e => CALCULATE_VALUE_OTHER()}
-                            class="form-control form-control-sm" id="exp_calc_perc" placeholder='Cobro %' />
-                        <div class="input-group-append">
-                            <span class="input-group-text" id="basic-addon2">%</span>
+                            className="form-control form-control-sm" id="exp_calc_perc" placeholder='Cobro %' />
+                        <div className="input-group-append">
+                            <span className="input-group-text" id="basic-addon2">%</span>
                         </div>
                     </div>
 
@@ -442,7 +442,7 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <MDBBtn size='sm' outline onClick={() => COPY_TO_DOM('other')}><i class="far fa-copy"></i> COPIAR</MDBBtn>
+                    <MDBBtn size='sm' outline onClick={() => COPY_TO_DOM('other')}><i className="far fa-copy"></i> COPIAR</MDBBtn>
                 </div>
             </div>
         </>
@@ -451,7 +451,7 @@ export default function EXP_CALC(props) {
 
     return (
         <>
-            <MDBBtn size='sm' onClick={() => setModal(!modal)}><i class="fas fa-calculator"></i> {compact ? '' : 'CALCULADORA'}</MDBBtn>
+            <MDBBtn size='sm' onClick={() => setModal(!modal)}><i className="fas fa-calculator"></i> {compact ? '' : 'CALCULADORA'}</MDBBtn>
 
             <Modal contentLabel="EXP CALC"
                 isOpen={modal}
@@ -460,8 +460,8 @@ export default function EXP_CALC(props) {
             >
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
-                        <div class="input-group">
-                            <label className=''><i class="fas fa-calculator"></i> CALCULADORA DE LIQUIDACIONES</label>
+                        <div className="input-group">
+                            <label className=''><i className="fas fa-calculator"></i> CALCULADORA DE LIQUIDACIONES</label>
                             <select className="form-select form-select-sm ms-2 border-primary"
                                 onChange={(e) => setMode(e.target.value)}>
                                 <option value={'cur'}>CURADURIA</option>
@@ -480,7 +480,7 @@ export default function EXP_CALC(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                 </div>
             </Modal>
         </>

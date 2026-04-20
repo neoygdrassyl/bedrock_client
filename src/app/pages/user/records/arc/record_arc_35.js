@@ -325,23 +325,23 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                 <div className="row">
                     <div className="col-3 p-1">
                         <label>Área diferente a vivienda</label>
-                        <div class="input-group">
-                            <input type="number" min="0" step="0.01" class="form-control me-1" name="s_35_values"
+                        <div className="input-group">
+                            <input type="number" min="0" step="0.01" className="form-control me-1" name="s_35_values"
                                 defaultValue={value35[0]} onBlur={() => save_ra_35()} />
                         </div>
                     </div>
                     <div className="col-2 p-1">
                         <label>N° de viviendas</label>
 
-                        <div class="input-group">
-                            <input type="number" min="0" step="1" class="form-control me-1" name="s_35_values_2"
+                        <div className="input-group">
+                            <input type="number" min="0" step="1" className="form-control me-1" name="s_35_values_2"
                                 defaultValue={value35[2] || UV} onBlur={() => save_ra_35()} />
                         </div>
                     </div>
                     <div className="col-2 p-1">
                         <label>Estrato</label>
-                        <div class="input-group">
-                            <input type="number" min="0" step="0.01" class="form-control me-1" disabled
+                        <div className="input-group">
+                            <input type="number" min="0" step="0.01" className="form-control me-1" disabled
                                 defaultValue={_GET_CHILD_2().item_267} />
                         </div>
                     </div>
@@ -355,7 +355,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     <input type="hidden" id="r_a_34_" />
                     <div className="col p-1">
                         <label>Uso</label>
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-control" id={"r_a_35_parking_1" + edit} required
                                 onChange={(e) => _SET_OPTIONS_TYPE(e.target.value, 0, edit)}>
                                 <option value="" disabled selected>Seleccione un uso</option>
@@ -365,13 +365,13 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                     <div className="col-1 p-1">
                         <label>Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" disabled defaultValue={_GET_CHILD_2().item_267} />
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" disabled defaultValue={_GET_CHILD_2().item_267} />
                         </div>
                     </div>
                     <div className="col-2 p-1">
                         <label>Tipo</label>
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-control" id={"r_a_35_parking_3" + edit} required
                                 onChange={(e) => _SET_OPTIONS_RELACION(e.target.value, e.target.selectedIndex, edit)}>
                                 <option value="" disabled selected>Seleccione un uso</option>
@@ -380,25 +380,25 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                     <div className="col-2 p-1">
                         <label>Relación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id={"r_a_35_parking_2" + edit} disabled />
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id={"r_a_35_parking_2" + edit} disabled />
                         </div>
                     </div>
                     <div className="col-1 p-1">
                         <label>Norma</label>
-                        <div class="input-group">
-                            <input type="number" min="0" step="1" class="form-control me-1" id={"r_a_35_parking_4" + edit} />
+                        <div className="input-group">
+                            <input type="number" min="0" step="1" className="form-control me-1" id={"r_a_35_parking_4" + edit} />
                         </div>
                     </div>
                     <div className="col-1 p-1">
                         <label>Proyecto</label>
-                        <div class="input-group">
-                            <input type="number" min="0" step="1" class="form-control me-1" id={"r_a_35_parking_5" + edit} />
+                        <div className="input-group">
+                            <input type="number" min="0" step="1" className="form-control me-1" id={"r_a_35_parking_5" + edit} />
                         </div>
                     </div>
                     <div className="col-1 p-1">
                         <label>U. Uso</label>
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-control" id={"r_a_35_parking_6" + edit}>
                                 <option value="" disabled selected>Seleccione un uso</option>
                             </select>
@@ -483,7 +483,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     button: true,
                     center: true,
                     minWidth: '140px',
-                    cell: row => <div class="input-group input-group-sm"><select
+                    cell: row => <div className="input-group input-group-sm"><select
                         className={_GET_SELECT_COLOR_VALUE(row.check)} defaultValue={row.check ? _GET_EVALUATION(row.norm, row.project, true): 0}
                         onChange={(e) => setCheck_35_parking(row.id, e.target.value)}>
                         <option value="0" className="text-danger">NO CUMPLE</option>0
@@ -497,8 +497,8 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     button: true,
                     center: true,
                     cell: row =>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_35_parking(row)} />
+                        <div className="form-check form-switch">
+                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_35_parking(row)} />
                         </div>
                 },
                  * 
@@ -510,10 +510,10 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     minWidth: '110px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditParking(row)}><i class="far fa-edit "></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditParking(row)}><i className="far fa-edit "></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_parking(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                            <MDBBtn className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_parking(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
                         </MDBTooltip>
                     </>,
                 },
@@ -560,45 +560,45 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <div className="row">
                     <div className="col-2">
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id="r_a_35_location_1" />
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id="r_a_35_location_1" />
                         </div>
                     </div>
                     <div className="col-10">
                         <div className="row">
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions"
                                         defaultValue="0" required />
                                 </div>
                             </div>
@@ -638,45 +638,45 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
                 <div className="row">
                     <div className="col-2">
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id="r_a_35_location_1_edit" />
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id="r_a_35_location_1_edit" />
                         </div>
                     </div>
                     <div className="col-10">
                         <div className="row">
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions_edit"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions_edit"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions_edit"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions_edit"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions_edit"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions_edit"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions_edit"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions_edit"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions_edit"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions_edit"
                                         defaultValue="0" required />
                                 </div>
                             </div>
                             <div className="col-2 px-0">
-                                <div class="input-group">
-                                    <input type="number" min="0" step="1" class="form-control me-1" name="r_a_35_parking_dientions_edit"
+                                <div className="input-group">
+                                    <input type="number" min="0" step="1" className="form-control me-1" name="r_a_35_parking_dientions_edit"
                                         defaultValue="0" required />
                                 </div>
                             </div>
@@ -752,7 +752,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     button: true,
                     center: true,
                     minWidth: '140px',
-                    cell: row => <div class="input-group input-group-sm"><select
+                    cell: row => <div className="input-group input-group-sm"><select
                         className={_GET_SELECT_COLOR_VALUE(row.check)} defaultValue={row.check}
                         onChange={(e) => setCheck_35_location(row.id, e.target.value)}>
                         <option value="0" className="text-danger">NO CUMPLE</option>
@@ -766,8 +766,8 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     button: true,
                     center: true,
                     cell: row =>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_35_location(row)} />
+                        <div className="form-check form-switch">
+                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_35_location(row)} />
                         </div>
                 },
                  */
@@ -779,10 +779,10 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditLocation(row)}><i class="far fa-edit"></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditLocation(row)}><i className="far fa-edit"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_location(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                            <MDBBtn className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_location(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
                         </MDBTooltip>
                     </>,
                 },
@@ -968,7 +968,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                                                             </select>
                                                         </>
                                                         : <>
-                                                            <input type="text" class="form-control form-control-sm" name="s_35_values_n" id={"s_35_values_n_" + it.v}
+                                                            <input type="text" className="form-control form-control-sm" name="s_35_values_n" id={"s_35_values_n_" + it.v}
                                                                 defaultValue={value35[it.v]} onBlur={() => save_ra_35(false)} />
                                                         </>}
                                                 </div>
@@ -1550,9 +1550,9 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                 <h3 className="py-3" >3.5.1 Cupos en Sitio</h3>
                 {_COMPONENT_0()}
 
-                <div class="form-check ms-5 my-3">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setNewParking(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5 my-3">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setNewParking(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Nuevo Parqueadero
                     </label>
                 </div>
@@ -1562,7 +1562,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_1('')}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> AÑADIR PARQUEADERO
+                                <i className="far fa-share-square"></i> AÑADIR PARQUEADERO
                             </button>
                         </div>
                     </form>
@@ -1574,16 +1574,16 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_1('_edit')}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </form>
                     : ""}
 
                 <h3 className="py-3" >3.5.2 Cuadro de Localizacion de Parqueadero de dimensiones libres de estructuras</h3>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setNewLocation(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setNewLocation(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Nueva localizacion de parqueadero
                     </label>
                 </div>
@@ -1593,7 +1593,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_2()}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> AÑADIR LOCALIZACION
+                                <i className="far fa-share-square"></i> AÑADIR LOCALIZACION
                             </button>
                         </div>
                     </form>
@@ -1605,7 +1605,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_2_EDIT()}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </form>

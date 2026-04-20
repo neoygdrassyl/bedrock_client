@@ -271,19 +271,19 @@ export default function RECORD_ARC_37(props) {
 
             <div className='row border'>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i class="fas fa-asterisk"></i> GRUPO</h5>
+                    <h5 className='fw-bold'><i className="fas fa-asterisk"></i> GRUPO</h5>
                 </div>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i class="fas fa-asterisk"></i><i class="fas fa-asterisk"></i> SUBGRUPO</h5>
+                    <h5 className='fw-bold'><i className="fas fa-asterisk"></i><i className="fas fa-asterisk"></i> SUBGRUPO</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-cube"></i> ÁREA NETA</h5>
+                    <h5 className='fw-bold'><i className="fas fa-cube"></i> ÁREA NETA</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-male"></i> INDICE</h5>
+                    <h5 className='fw-bold'><i className="fas fa-male"></i> INDICE</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-male"></i> OCUPACIÓN REAL</h5>
+                    <h5 className='fw-bold'><i className="fas fa-male"></i> OCUPACIÓN REAL</h5>
                 </div>
                 <div className='col-1'></div>
 
@@ -349,7 +349,7 @@ export default function RECORD_ARC_37(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <MDBBtn color="danger" rounded outline size='sm' className='px-2' onClick={() => del_grp_37(data.id)}> <i class="fas fa-minus text-danger"></i></MDBBtn>
+                                <MDBBtn color="danger" rounded outline size='sm' className='px-2' onClick={() => del_grp_37(data.id)}> <i className="fas fa-minus text-danger"></i></MDBBtn>
                             }
                         </div>
                     </div>
@@ -382,7 +382,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <MDBBtn color="success" rounded outline size='sm' className='px-2' onClick={() => add_grp_37(data.id)}> <i class="fas fa-plus text-success"></i></MDBBtn> : ''}
+                            <MDBBtn color="success" rounded outline size='sm' className='px-2' onClick={() => add_grp_37(data.id)}> <i className="fas fa-plus text-success"></i></MDBBtn> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -390,7 +390,7 @@ export default function RECORD_ARC_37(props) {
 
     let _COMPONENTN_IMPORT = () => {
         let areas = _GET_CHILD_33_AREAS();
-        areas.sort((a, b) => array_sort(a, b));
+        areas = [...areas].sort((a, b) => array_sort(a, b));
         return <>
             <div className='row'>
                 <div className='col-1'></div>
@@ -404,9 +404,9 @@ export default function RECORD_ARC_37(props) {
             {areas.map((area, i) => {
                 return <div className='row'>
 
-                    <div className='col-1 text-end'> <input class="form-check-input" type="checkbox" defaultChecked={true} name="import_checks" /> </div>
+                    <div className='col-1 text-end'> <input className="form-check-input" type="checkbox" defaultChecked={true} name="import_checks" /> </div>
                     <div className='col border'>
-                        <input type="text" class="form-control form-control-sm" name={'import_name'} defaultValue={area.floor} />
+                        <input type="text" className="form-control form-control-sm" name={'import_name'} defaultValue={area.floor} />
                     </div>
                     <div className='col border'><select className="form-select form-select-sm" name="import_main_group"
                         onChange={(e) => _SET_SUBGROUP_IMPORT(e.target.value, i)}>
@@ -416,16 +416,16 @@ export default function RECORD_ARC_37(props) {
                         {GROUPS.map(g => <option>{g.name}</option>)}
                     </select></div>
                     <div className='col border'>
-                        <input type="number" min={0} class="form-control form-control-sm" name={'import_anet'} defaultValue={_GET_NET_INDEX(area.build, area.destroy, area.historic_areas)} />
+                        <input type="number" min={0} className="form-control form-control-sm" name={'import_anet'} defaultValue={_GET_NET_INDEX(area.build, area.destroy, area.historic_areas)} />
                     </div>
-                    <div className='col border'><input type="number" min={0} class="form-control form-control-sm" name={'import_index'} /></div>
-                    <div className='col border'><input type="number" min={0} class="form-control form-control-sm" name={'import_real'} /></div>
+                    <div className='col border'><input type="number" min={0} className="form-control form-control-sm" name={'import_index'} /></div>
+                    <div className='col border'><input type="number" min={0} className="form-control form-control-sm" name={'import_real'} /></div>
                 </div>
             })}
             <div className='row my-2'>
                 <div className='col-1'></div>
                 <div className='col text-center'>
-                    <MDBBtn size='sm' color='success' onClick={() => import_37()}><i class="fas fa-file-upload"></i> IMPORTAR</MDBBtn>
+                    <MDBBtn size='sm' color='success' onClick={() => import_37()}><i className="fas fa-file-upload"></i> IMPORTAR</MDBBtn>
                 </div>
             </div>
         </>
@@ -601,8 +601,8 @@ export default function RECORD_ARC_37(props) {
                 center: true,
                 minWidth: '110px',
                 cell: row => <>
-                    <MDBBtn className="btn btn-secondary btn-sm px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><i class="far fa-edit"></i></MDBBtn>
-                    <MDBBtn className="btn btn-danger btn-sm px-2" onClick={() => delete_37(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                    <MDBBtn className="btn btn-secondary btn-sm px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><i className="far fa-edit"></i></MDBBtn>
+                    <MDBBtn className="btn btn-danger btn-sm px-2" onClick={() => delete_37(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
                 </>,
             },
         ]
@@ -610,7 +610,7 @@ export default function RECORD_ARC_37(props) {
             noDataComponent="No hay Items"
             striped="true"
             columns={columns}
-            data={_LIST.sort((a, b) => array_sort(a, b))}
+            data={[..._LIST].sort((a, b) => array_sort(a, b))}
             highlightOnHover
             className="data-table-component"
             noHeader
@@ -625,7 +625,7 @@ export default function RECORD_ARC_37(props) {
                 <input type="hidden" id="r_a_34_" />
                 <div className="col-2 p-1">
                     <label>Espacio</label>
-                    <input type="text" class="form-control form-control-sm" id={"r_a_37_1" + edit}
+                    <input type="text" className="form-control form-control-sm" id={"r_a_37_1" + edit}
                         defaultValue={_edit37.name ?? ''} />
                 </div>
                 {_edit37 ? '' : <>
@@ -645,7 +645,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className="col p-1">
                         <label>Área neta</label>
-                        <input type="number" step={0.01} min={0} class="form-control form-control-sm" id={"r_a_37_5" + edit}
+                        <input type="number" step={0.01} min={0} className="form-control form-control-sm" id={"r_a_37_5" + edit}
                             defaultValue={''} />
                     </div>
                     <div className="col-2 p-1">
@@ -658,7 +658,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className="col p-1">
                         <label>Ocupación real</label>
-                        <input type="number" min={0} class="form-control form-control-sm" id={"r_a_37_6" + edit}
+                        <input type="number" min={0} className="form-control form-control-sm" id={"r_a_37_6" + edit}
                             defaultValue={''} />
                     </div>
                 </>}
@@ -1235,15 +1235,15 @@ export default function RECORD_ARC_37(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <div class="form-check ms-5 my-2">
-                        <input class="form-check-input" type="checkbox" onChange={(e) => setNew(e.target.checked)} />
-                        <label class="form-check-label" for="flexCheckDefault">
+                    <div className="form-check ms-5 my-2">
+                        <input className="form-check-input" type="checkbox" onChange={(e) => setNew(e.target.checked)} />
+                        <label className="form-check-label" htmlFor="flexCheckDefault">
                             Añadir nuevo elemento
                         </label>
                     </div>
                 </div>
                 <div className='col text-end'>
-                    <MDBBtn size='sm' outline={!newImport} onClick={() => setImport(!newImport)}><i class="fas fa-table"></i> IMPORTAR DE CUADRO DE AREAS</MDBBtn>
+                    <MDBBtn size='sm' outline={!newImport} onClick={() => setImport(!newImport)}><i className="fas fa-table"></i> IMPORTAR DE CUADRO DE AREAS</MDBBtn>
                 </div>
             </div>
 
@@ -1252,7 +1252,7 @@ export default function RECORD_ARC_37(props) {
                     {_COMPONENT_37('', false)}
                     <div className="text-center">
                         <button className="btn btn-success btn-sm my-2">
-                            <i class="far fa-share-square"></i> AÑADIR ELEMENTOS
+                            <i className="far fa-share-square"></i> AÑADIR ELEMENTOS
                         </button>
                     </div>
                 </form>
@@ -1265,7 +1265,7 @@ export default function RECORD_ARC_37(props) {
                     {_COMPONENT_37('_edit', edit37)}
                     <div className="text-center">
                         <button className="btn btn-success btn-sm  my-2">
-                            <i class="far fa-share-square"></i> GUARDAR CAMBIOS
+                            <i className="far fa-share-square"></i> GUARDAR CAMBIOS
                         </button>
                     </div>
                 </form>

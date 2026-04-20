@@ -44,7 +44,7 @@ export default function EXP_LIC(props) {
                         </div>
                         <div className="col border py-1 text-center">
                             {currentItem.state < 100 ?
-                                <button className='btn btn-danger' onClick={() => close()}><i class="fas fa-unlock-alt"></i> FINALIZAR PROCESO</button>
+                                <button className='btn btn-danger' onClick={() => close()}><i className="fas fa-unlock-alt"></i> FINALIZAR PROCESO</button>
                                 : ''}
                         </div>
                     </div>
@@ -55,13 +55,13 @@ export default function EXP_LIC(props) {
                             </div>
                             <div className="col border py-1">
                                 {currentItem.state == 100 ?
-                                    <input type="date" class="form-control" id={'clock_arch_date'} max="2100-01-01" required
+                                    <input type="date" className="form-control" id={'clock_arch_date'} max="2100-01-01" required
                                         defaultValue={_GET_CLOCK_STATE(101).date_start ?? ''} />
                                     : ''}
                             </div>
                             <div className="col border py-1 text-center">
                                 {currentItem.state == 100 ?
-                                    <button className='btn btn-primary' ><i class="far fa-file-archive"></i> ARCHIVAR SOLICITUD</button>
+                                    <button className='btn btn-primary' ><i className="far fa-file-archive"></i> ARCHIVAR SOLICITUD</button>
                                     : ''}
 
                             </div>

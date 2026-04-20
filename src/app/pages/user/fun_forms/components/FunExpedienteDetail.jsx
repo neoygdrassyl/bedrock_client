@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import ProjectFlowModal from '../../legal_flow_guide/components/ProjectFlowModal';
 
 // ── Status visual config ─────────────────────────────────────────────────────
 const STATUS_META = {
@@ -10,8 +11,51 @@ const STATUS_META = {
   VENCIDO:             { label: 'Vencido',             bg: '#fecaca', color: '#7f1d1d', barColor: '#dc2626', icon: 'fas fa-times-circle' },
 };
 
+// ── Phase derivation for flow diagram ────────────────────────────────────────
+const STANDARD_PHASES = [
+  { phaseId: 'RAD',     label: 'Radicación LDF',              responsible: 'solicitante' },
+  { phaseId: 'EST',     label: 'Estudio y Observaciones',     responsible: 'curaduria' },
+  { phaseId: 'NOT_OBS', label: 'Notificación Observaciones',  responsible: 'curaduria' },
+  { phaseId: 'CORR',    label: 'Correcciones del Solicitante', responsible: 'solicitante' },
+  { phaseId: 'VIA',     label: 'Revisión y Viabilidad',       responsible: 'curaduria' },
+  { phaseId: 'NOT_VIA', label: 'Notificación Viabilidad',     responsible: 'curaduria' },
+  { phaseId: 'PAG',     label: 'Liquidación y Pagos',         responsible: 'solicitante' },
+  { phaseId: 'RES',     label: 'Generación de Resolución',    responsible: 'curaduria' },
+  { phaseId: 'NOT_RES', label: 'Notificación Resolución',     responsible: 'curaduria' },
+  { phaseId: 'EJEC',    label: 'Ejecutoria y Recurso',        responsible: 'curaduria' },
+  { phaseId: 'ENT',     label: 'Entrega de Licencia',         responsible: 'curaduria' },
+];
+
+/**
+ * Derives a simplified phases array from the dashboard BFF expediente.
+ * Only the active phase has accurate day data; completed phases show 0.
+ */
+function derivePhasesFromExpediente(exp) {
+  if (!exp?.fase_actual) return [];
+  const currentId = exp.fase_actual;
+
+  // For desist/completed/unknown states, show single-node diagram
+  if (currentId.startsWith('DESIST_') || currentId === 'COMPLETADO' || currentId === 'SIN_INICIAR') {
+    return [{ phaseId: currentId, label: exp.fase_label, status: 'activo', daysUsed: exp.dias_habiles_usados, daysLimit: exp.dias_habiles_limite, responsible: (exp.responsable || '').toLowerCase().includes('curad') ? 'curaduria' : 'solicitante' }];
+  }
+
+  const idx = STANDARD_PHASES.findIndex(p => p.phaseId === currentId);
+  if (idx < 0) return [];
+
+  return STANDARD_PHASES.slice(0, idx + 2).map((p, i) => ({
+    phaseId: p.phaseId,
+    label: p.label,
+    responsible: p.responsible,
+    status: i < idx ? 'completado' : i === idx ? 'activo' : 'pendiente',
+    daysUsed: i === idx ? (exp.dias_habiles_usados ?? 0) : 0,
+    daysLimit: i === idx ? (exp.dias_habiles_limite ?? 0) : null,
+  }));
+}
+
 // ── Componente principal ─────────────────────────────────────────────────────
 export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
+  const [showFlowModal, setShowFlowModal] = useState(false);
+
   if (!expediente) return null;
 
   const s = STATUS_META[expediente.status] || STATUS_META.EN_TERMINO;
@@ -318,6 +362,14 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
           className="px-4 py-3 d-flex gap-2 justify-content-end"
           style={{ borderTop: '1px solid #e2e8f0', flexShrink: 0 }}
         >
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFlowModal(true)}
+          >
+            <i className="fas fa-project-diagram me-1"></i>
+            Ver flujo
+          </Button>
           {onOpenWorkspace && (
             <Button size="sm" onClick={() => onOpenWorkspace(expediente)}>
               <i className="fas fa-expand-alt me-1"></i>
@@ -329,6 +381,14 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
           </Button>
         </div>
       </div>
+
+      {/* ── Modal flujo del expediente ────────────────── */}
+      <ProjectFlowModal
+        show={showFlowModal}
+        onClose={() => setShowFlowModal(false)}
+        phases={derivePhasesFromExpediente(expediente)}
+        expediente={expediente}
+      />
 
       {/* Keyframe animation (injected once) */}
       <style>{`

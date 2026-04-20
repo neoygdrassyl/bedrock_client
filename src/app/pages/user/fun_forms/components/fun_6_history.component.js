@@ -102,11 +102,11 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                             <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                                <i class="far fa-edit fa-2x "></i></MDBBtn>
+                                <i className="far fa-edit fa-2x "></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                             <MDBBtn className="btn btn-danger btn-sm  m-0 p-2 shadow-none" onClick={() => delete_6_h(row.id)}>
-                                <i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                                <i className="far fa-trash-alt fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                     </>
                 },
@@ -133,29 +133,29 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                 <div className="row">
                     <div className="col-4">
                         <label>Detalles</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-comment-dots"></i>
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-comment-dots"></i>
                             </span>
-                            <input type="text" class="form-control" id={"fun_6_h_1" + edit} required />
+                            <input type="text" className="form-control" id={"fun_6_h_1" + edit} required />
                         </div>
                     </div>
 
                     <div className="col-4">
                         <label>Fecha</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id={"fun_6_h_2" + edit} required />
+                            <input type="date" max="2100-01-01" className="form-control" id={"fun_6_h_2" + edit} required />
                         </div>
                     </div>
 
                     <div className="col-4">
                         <label>Estado Final</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
                             <select className="form-select" id={"fun_6_h_3" + edit} required >
                                 <option value="0">EN ARCHIVO</option>
@@ -345,13 +345,13 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
 
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label className="fw-bold align-middle"> <i class="fas fa-history fa-2x"></i> HISTORIA DEL DOCUMENTO</label>
+                        <label className="fw-bold align-middle"> <i className="fas fa-history fa-2x"></i> HISTORIA DEL DOCUMENTO</label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle()}></MDBBtn>
                     </div>
 
-                    <div class="form-check ms-5">
-                        <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                        <label class="form-check-label" for="flexCheckDefault">
+                    <div className="form-check ms-5">
+                        <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                        <label className="form-check-label" htmlFor="flexCheckDefault">
                             Nueva entrada
                         </label>
                     </div>
@@ -361,7 +361,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                     </div>
                                 </div>
                             </form>
@@ -379,7 +379,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                                         {_COMPONENT_MANAGE('_edit')}
                                         <div className="row text-center">
                                             <div className="col-12">
-                                                <button className="btn btn-lg btn-success"><i class="fas fa-archive"></i> GUARDAR CAMBIOS </button>
+                                                <button className="btn btn-lg btn-success"><i className="fas fa-archive"></i> GUARDAR CAMBIOS </button>
                                             </div>
                                         </div>
                                     </form></> : ""}
@@ -388,7 +388,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
 
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                        <MDBBtn className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                     </div>
                 </Modal>
 

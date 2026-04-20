@@ -3,7 +3,7 @@ import FUNService from '../../../services/fun.service'
 import { MDBBtn, MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import FUN6DATALIST from './components/fun_6_datalist';
 import FUN_VERSION_NAV from './components/fun_versionNav';
@@ -343,7 +343,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                     <div className="row mb-3">
                         <div className="col-4">
                             <label>2.2.1 Vecino Colindante</label>
-                            <select class="form-select" required id="alert_id_3"
+                            <select className="form-select" required id="alert_id_3"
                                 onChange={(e) => _SET_OBJECT(e.target.value)} >
                                 {_CHILD_3_SELECT_ID()}
                             </select>
@@ -355,7 +355,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>2.2.2 Relacionar documento: Carta</label>
-                            <select class="form-select" required id="alert_id6_cub"
+                            <select className="form-select" required id="alert_id6_cub"
                                 defaultValue={_CHILD.id6_cub} >
                                 <option value="0">SIN DOCUMENTO</option>
                                 <option value="-1">APORTADO FÍSICAMENTE</option>
@@ -364,10 +364,10 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                         </div>
                         <div className="col-4">
                             <label>2.2.3 Consecutivo de Salida</label>
-                            <div class="input-group my-1">
-                                <input type="text" class="form-control" id="alert_id_cub"
+                            <div className="input-group my-1">
+                                <input type="text" className="form-control" id="alert_id_cub"
                                     defaultValue={_CHILD.id_cub || cubSelected || ""} />
-                                   <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                   <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                             </div>
                         </div>
                     </div>
@@ -375,7 +375,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>2.2.4 Relacionar documento: Guía de confirmación</label>
-                            <select class="form-select" required id="alert_address_id"
+                            <select className="form-select" required id="alert_address_id"
                                 defaultValue={_CHILD.id6}>
                                 <option value="0">SIN DOCUMENTO</option>
                                 <option value="-1">APORTADO FÍSICAMENTE</option>
@@ -384,52 +384,52 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                         </div>
                         <div className="col-3">
                             <label>2.2.5 Guía de Confirmación</label>
-                            <input type="text" class="form-control mb-3" id="alert_id_alert"
+                            <input type="text" className="form-control mb-3" id="alert_id_alert"
                                 defaultValue={_CHILD.id_alerted != -1 ? _CHILD.id_alerted : ""} />
                         </div>
                         <div className="col-3">
                             <label>2.2.6 Fecha de Confirmación</label>
-                            <input type="date" class="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
-                                defaultValue={_CHILD.alerted ?? moment().format('YYYY-MM-DD')} />
+                            <input type="date" className="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
+                                defaultValue={_CHILD.alerted ?? dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 
-                    <div class="form-check my-3 px-5">
-                        <input class="form-check-input" type="checkbox" id="confirm_cb" onChange={(e) => setCb0(e.target.checked)}
+                    <div className="form-check my-3 px-5">
+                        <input className="form-check-input" type="checkbox" id="confirm_cb" onChange={(e) => setCb0(e.target.checked)}
                         />
-                        <p class="form-check-label text-start" > NO FUE POSIBLE CITAR (Se negó a recibir - no reside - no se encontró dirección - otra)</p>
+                        <p className="form-check-label text-start" > NO FUE POSIBLE CITAR (Se negó a recibir - no reside - no se encontró dirección - otra)</p>
                     </div>
                     {cb0
                         ? <>
-                            <div class="form-check my-3 px-5">
-                                <input class="form-check-input" type="checkbox" id="confirm_cb_2" onChange={(e) => setCb(e.target.checked)} />
-                                <p class="form-check-label text-start" > Se realizó publicación en:</p>
+                            <div className="form-check my-3 px-5">
+                                <input className="form-check-input" type="checkbox" id="confirm_cb_2" onChange={(e) => setCb(e.target.checked)} />
+                                <p className="form-check-label text-start" > Se realizó publicación en:</p>
                             </div>
                             {cb
                                 ? <>
                                     <div className="row">
                                         <div className="col-3">
-                                            <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb1'} onChange={(e) => setCb1(e.target.checked)} />
-                                                <label class="form-check-label text-start" > Periódico</label>
+                                            <div className="form-check ms-3 px-5">
+                                                <input className="form-check-input" type="checkbox" id={'cb1'} onChange={(e) => setCb1(e.target.checked)} />
+                                                <label className="form-check-label text-start" > Periódico</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
-                                            <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb2'} onChange={(e) => setCb2(e.target.checked)} />
-                                                <label class="form-check-label text-start" > Radio</label>
+                                            <div className="form-check ms-3 px-5">
+                                                <input className="form-check-input" type="checkbox" id={'cb2'} onChange={(e) => setCb2(e.target.checked)} />
+                                                <label className="form-check-label text-start" > Radio</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
-                                            <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb3'} onChange={(e) => setCb3(e.target.checked)} />
-                                                <label class="form-check-label text-start" >Pagina Web</label>
+                                            <div className="form-check ms-3 px-5">
+                                                <input className="form-check-input" type="checkbox" id={'cb3'} onChange={(e) => setCb3(e.target.checked)} />
+                                                <label className="form-check-label text-start" >Pagina Web</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
-                                            <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb4'} onChange={(e) => setCb4(e.target.checked)} />
-                                                <label class="form-check-label text-start" > Físico</label>
+                                            <div className="form-check ms-3 px-5">
+                                                <input className="form-check-input" type="checkbox" id={'cb4'} onChange={(e) => setCb4(e.target.checked)} />
+                                                <label className="form-check-label text-start" > Físico</label>
                                             </div>
                                         </div>
                                     </div>
@@ -440,9 +440,9 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                                 ? <>
                                                     <label>Fecha Periódico</label>
                                                     <input type="hidden" readOnly value="ALERT_1" name="neighbbour_inforalert_name" />
-                                                    <input type="date" class="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb1_nd" />
+                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb1_nd" />
                                                     <label>Soporte Periódico</label>
-                                                    <select class="form-select" name="neighbbour_inforalert_id6" id="cb1_ni"  >
+                                                    <select className="form-select" name="neighbbour_inforalert_id6" id="cb1_ni"  >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
                                                         <option value="0">SIN DOCUMENTO</option>
                                                         {_CHILD_6_SELECT()}
@@ -454,9 +454,9 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                                 ? <>
                                                     <label>Fecha Radio</label>
                                                     <input type="hidden" readOnly value="ALERT_2" name="neighbbour_inforalert_name" />
-                                                    <input type="date" class="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb2_nd" />
+                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb2_nd" />
                                                     <label>Soporte Radio</label>
-                                                    <select class="form-select" name="neighbbour_inforalert_id6" id="cb2_ni" >
+                                                    <select className="form-select" name="neighbbour_inforalert_id6" id="cb2_ni" >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
                                                         <option value="0">SIN DOCUMENTO</option>
                                                         {_CHILD_6_SELECT()}
@@ -468,9 +468,9 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                                 ? <>
                                                     <label>Fecha Pagina Web</label>
                                                     <input type="hidden" readOnly value="ALERT_3" name="neighbbour_inforalert_name" />
-                                                    <input type="date" class="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb3_nd" />
+                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb3_nd" />
                                                     <label>Soporte Pagina Web</label>
-                                                    <select class="form-select" name="neighbbour_inforalert_id6" id="cb3_ni"  >
+                                                    <select className="form-select" name="neighbbour_inforalert_id6" id="cb3_ni"  >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
                                                         <option value="0">SIN DOCUMENTO</option>
                                                         {_CHILD_6_SELECT()}
@@ -482,9 +482,9 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                                 ? <>
                                                     <label>Fecha Físico</label>
                                                     <input type="hidden" readOnly value="ALERT_4" name="neighbbour_inforalert_name" />
-                                                    <input type="date" class="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb4_nd" />
+                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb4_nd" />
                                                     <label>Soporte Físico</label>
-                                                    <select class="form-select" name="neighbbour_inforalert_id6" id="cb4_ni" >
+                                                    <select className="form-select" name="neighbbour_inforalert_id6" id="cb4_ni" >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
                                                         <option value="0">SIN DOCUMENTO</option>
                                                         {_CHILD_6_SELECT()}
@@ -498,7 +498,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                     <div className="row text-center">
                         <div className="col-12">
-                            <MDBBtn className="btn btn-warning btn-lg my-3" onClick={() => alertAddress()}><i class="far fa-check-square"></i> CONFIRMAR</MDBBtn>
+                            <MDBBtn className="btn btn-warning btn-lg my-3" onClick={() => alertAddress()}><i className="far fa-check-square"></i> CONFIRMAR</MDBBtn>
                         </div>
                     </div>
                 </form>
@@ -599,7 +599,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                 <label>{contacts.phones[index]}</label>
                             </div>
                             <div className="col-2 text-center">
-                                <label>{contacts.notfies[index] ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger"></i>}</label>
+                                <label>{contacts.notfies[index] ? <i className="fas fa-check text-success"></i> : <i className="fas fa-times text-danger"></i>}</label>
                             </div>
                         </div>
                     })}
@@ -890,7 +890,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             <div>
                 {currentItem != null ? <>
                     <FUN6DATALIST />
-                    <h2 class="text-uppercase text-center py-2" id="fund_1">PUBLICIDAD</h2>
+                    <h2 className="text-uppercase text-center py-2" id="fund_1">PUBLICIDAD</h2>
                     <fieldset className="p-3">
                         <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_alert_1">
                             <label className="app-p lead fw-normal text-uppercase">1. VALLA O AVISO</label>
@@ -899,7 +899,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                             <div className="row mb-3">
                                 <div className="col-7">
                                     <label>1.1 Foto de Valla o aviso</label>
-                                    <select class="form-select" required id="alert_sign_select" defaultValue={_GET_SIGN()[0]} >
+                                    <select className="form-select" required id="alert_sign_select" defaultValue={_GET_SIGN()[0]} >
                                         <option value="-1">APORTADO FISICAMENTE</option>
                                         <option value="0">SIN DOCUMENTO</option>
                                         {_CHILD_6_SELECT()}
@@ -907,7 +907,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                 </div>
                                 <div className="col-4">
                                     <label>1.2. Fecha de Radicación</label>
-                                    <input type="date" class="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
+                                    <input type="date" className="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
                                         required />
                                 </div>
                                 <div className="col-1">
@@ -927,14 +927,14 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                             <div className="row text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-warning btn-lg my-3" id="btn-review" ><i class="far fa-file-alt"></i> ANEXAR AVISO</button>
+                                    <button className="btn btn-warning btn-lg my-3" id="btn-review" ><i className="far fa-file-alt"></i> ANEXAR AVISO</button>
                                 </div>
                             </div>
                         </form>
 
-                        <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={(e) => setSignPdf(e.target.checked)} />
-                            <p class="form-check-label text-start" >Generar PDF de la Valla.</p>
+                        <div className="form-check my-3 px-5">
+                            <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={(e) => setSignPdf(e.target.checked)} />
+                            <p className="form-check-label text-start" >Generar PDF de la Valla.</p>
                         </div>
 
                         {sign_pdf
@@ -957,35 +957,35 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                         />
 
 
-                        <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => setNewNeighbour(!new_neighbour)} />
-                            <p class="form-check-label text-start" >Añadir nuevos vecinos a esta solicitud.</p>
+                        <div className="form-check my-3 px-5">
+                            <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => setNewNeighbour(!new_neighbour)} />
+                            <p className="form-check-label text-start" >Añadir nuevos vecinos a esta solicitud.</p>
                         </div>
                         {new_neighbour
                             ? <> <form onSubmit={new_3} id="app-form_neighbour">
                                 <div className="row mb-3">
                                     <div className="col-6">
                                         <label >Dirección del Predio</label>
-                                        <div class="input-group my-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-map-marked-alt"></i>
+                                        <div className="input-group my-1">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="fas fa-map-marked-alt"></i>
                                             </span>
-                                            <input type="text" class="form-control" id="alert_3_1" />
+                                            <input type="text" className="form-control" id="alert_3_1" />
                                         </div>
                                     </div>
                                     <div className="col-6">
                                         <label>Dirección de correspondencia</label>
-                                        <div class="input-group my-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-map-marked-alt"></i>
+                                        <div className="input-group my-1">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="fas fa-map-marked-alt"></i>
                                             </span>
-                                            <input type="text" class="form-control" id="alert_3_2" />
+                                            <input type="text" className="form-control" id="alert_3_2" />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-warning my-3"><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <button className="btn btn-warning my-3"><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                     </div>
                                 </div>
                             </form>

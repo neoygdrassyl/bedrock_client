@@ -15,7 +15,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 import Collapsible from '../../../components/Collapsible';
 import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import submitService from '../../../services/submit.service';
 import { GEM_CODE_LIST } from '../../../components/customClasses/typeParse';
 
@@ -246,7 +246,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             let last_date = false;
             VRDocs.map(vr => {
                 if(vr.type != 1) return
-                if (last_date && moment(vr.date).isAfter(last_date)) last_date = vr.date;
+                if (last_date && dayjs(vr.date).isAfter(last_date)) last_date = vr.date;
                 if (!last_date) last_date = vr.date;
             })
             return last_date;
@@ -304,27 +304,27 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>1.1 Tipo de Solicitud</label>
-                            <textarea class="form-control" rows="3" defaultValue={_CHILD_VARS.item_1} disabled></textarea>
+                            <textarea className="form-control" rows="3" defaultValue={_CHILD_VARS.item_1} disabled></textarea>
                         </div>
                         <div className="col-6">
                             <label>1.2 Objeto del Tramite</label>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_2} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_2} disabled />
                         </div>
                     </div>
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>1.3 Modalidad Licencia de Urbanización</label>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_3} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_3} disabled />
                         </div>
                         <div className="col-6">
                             <label>1.4 Modalidad Licencia de Subdivisión</label>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_4} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_4} disabled />
                         </div>
                     </div>
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>1.5 Modalidad Licencia de Construcción</label>
-                            <textarea class="form-control" rows="3" defaultValue={_CHILD_VARS.item_5} disabled></textarea>
+                            <textarea className="form-control" rows="3" defaultValue={_CHILD_VARS.item_5} disabled></textarea>
                         </div>
                         <div className="col-6">
 
@@ -366,24 +366,24 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>Nombres</label>
-                            <input type="text" class="form-control" id="c_531" disabled
+                            <input type="text" className="form-control" id="c_531" disabled
                                 defaultValue={_CHILD_VARS.item_5311 + " " + _CHILD_VARS.item_5312} />
                         </div>
                         <div className="col-6 ">
                             <label>Número de Contacto</label>
-                            <input type="text" class="form-control" id="c_536" disabled
+                            <input type="text" className="form-control" id="c_536" disabled
                                 defaultValue={_CHILD_VARS.item_534} />
                         </div>
                     </div>
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>Dirección de Correspondencia</label>
-                            <input type="text" class="form-control" id="c_534" disabled
+                            <input type="text" className="form-control" id="c_534" disabled
                                 defaultValue={_CHILD_VARS.item_536} />
                         </div>
                         <div className="col-6">
                             <label>Correo Electrónico</label>
-                            <input type="text" class="form-control" id="c_535" disabled
+                            <input type="text" className="form-control" id="c_535" disabled
                                 defaultValue={_CHILD_VARS.item_535} />
                         </div>
                     </div>
@@ -430,18 +430,18 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                     <div className="row">
                         <div className="col-6">
                             <label>Nombre Encargado de Revisión</label>
-                            <input class="form-control mb-3" id="c_31" defaultValue={_CHILD_VARS.item_c1} />
+                            <input className="form-control mb-3" id="c_31" defaultValue={_CHILD_VARS.item_c1} />
                         </div>
                         <div className="col-6">
                             <label>No. Radicación</label>
-                            <input type="text" class="form-control mb-3" id="c_33" disabled
+                            <input type="text" className="form-control mb-3" id="c_33" disabled
                                 defaultValue={currentItem.id_public} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-6">
                             <label>Fecha de Revisión</label>
-                            <input type="date" class="form-control mb-3" max='2100-01-01' id="c_32"
+                            <input type="date" className="form-control mb-3" max='2100-01-01' id="c_32"
                                 defaultValue={_CHILD_VARS.item_c6} />
                         </div>
                     </div>
@@ -452,17 +452,17 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                     <div className="row  mb-3">
                         <div className="col-6">
                             <label>Estado de la radicación</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" value="1" name="c_41" required disabled={!ALLOW_REVIEW}
+                            <div className="form-check">
+                                <input className="form-check-input" type="radio" value="1" name="c_41" required disabled={!ALLOW_REVIEW}
                                     defaultChecked={_CHILD_VARS.item_c3 == '1' ? true : false} />
-                                <label class="form-check-label" for="flexCheckDefault">
+                                <label className="form-check-label" htmlFor="flexCheckDefault">
                                     RADICACIÓN EN LEGAL Y DEBIDA FORMA
                                 </label>
                             </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" value="0" name="c_41"
+                            <div className="form-check mb-2">
+                                <input className="form-check-input" type="radio" value="0" name="c_41"
                                     defaultChecked={_CHILD_VARS.item_c3 == '0' ? true : false} />
-                                <label class="form-check-label" for="flexCheckChecked">
+                                <label className="form-check-label" htmlFor="flexCheckChecked">
                                     RADICACIÓN INCOMPLETA
                                 </label>
                             </div>
@@ -473,24 +473,24 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         </div>
                         <div className="col-6">
                             <label>Solicitante</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" value="A" name="c_42"
+                            <div className="form-check">
+                                <input className="form-check-input" type="radio" value="A" name="c_42"
                                     defaultChecked={_CHILD_VARS.item_c8 == 'A' ? true : false} />
-                                <label class="form-check-label" for="flexCheckDefault">
+                                <label className="form-check-label" htmlFor="flexCheckDefault">
                                     TITULAR
                                 </label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" value="B" name="c_42"
+                            <div className="form-check">
+                                <input className="form-check-input" type="radio" value="B" name="c_42"
                                     defaultChecked={_CHILD_VARS.item_c8 == 'B' ? true : false} />
-                                <label class="form-check-label" for="flexCheckChecked">
+                                <label className="form-check-label" htmlFor="flexCheckChecked">
                                     APODERADO
                                 </label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" value="C" name="c_42"
+                            <div className="form-check">
+                                <input className="form-check-input" type="radio" value="C" name="c_42"
                                     defaultChecked={_CHILD_VARS.item_c8 == 'C' ? true : false} />
-                                <label class="form-check-label" for="flexCheckChecked">
+                                <label className="form-check-label" htmlFor="flexCheckChecked">
                                     MANDATARIO
                                 </label>
                             </div>
@@ -499,29 +499,29 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                     <div className="row">
                         <div className="col-6">
                             <label>Nombre</label>
-                            <input type="text" class="form-control mb-3" id="c_43"
+                            <input type="text" className="form-control mb-3" id="c_43"
                                 defaultValue={_CHILD_VARS.item_c5} />
                         </div>
                         <div className="col-6">
                             <label>Fecha Incompleto</label>
-                            <input type="date" class="form-control mb-3" id="c_44" max='2100-01-01'
+                            <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01'
                                 defaultValue={_CHILD_VARS.item_c2} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-6">
                             <label>CC/NIT</label>
-                            <input type="text" class="form-control mb-3" id="c_45" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
+                            <input type="text" className="form-control mb-3" id="c_45" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
                                 defaultValue={_CHILD_VARS.item_c7} />
                         </div>
                         <div className="col-6">
                             <label>Fecha Legal y Debida Forma</label>
-                            <input type="date" class="form-control mb-3" id="c_47" max='2100-01-01'
+                            <input type="date" className="form-control mb-3" id="c_47" max='2100-01-01'
                                 defaultValue={LYDF_DATE} />
                         </div>
                         <div className="col-12">
                             <label>Observaciones (Max 2000 Caracteres)</label>
-                            <textarea class="form-control mb-3" rows="3" id="c_46" maxLength="2000"
+                            <textarea className="form-control mb-3" rows="3" id="c_46" maxLength="2000"
                                 defaultValue={_CHILD_VARS.item_c4}></textarea>
                         </div>
                     </div>
@@ -844,10 +844,10 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         {_SET_CHILD_C_C()}
                         <div className="row text-center my-2">
                             <div className="col">
-                                <button className="btn btn-success btn-sm"><i class="far fa-share-square"></i> GUARDAR CAMBIOS</button>
+                                <button className="btn btn-success btn-sm"><i className="far fa-share-square"></i> GUARDAR CAMBIOS</button>
                             </div>
                             <div className="col">
-                                <MDBBtn className="btn btn-primary btn-sm" onClick={() => _SET_MISSING_FUN_R()}><i class="fas fa-tasks"></i> CARGAR FALTANTES</MDBBtn>
+                                <MDBBtn className="btn btn-primary btn-sm" onClick={() => _SET_MISSING_FUN_R()}><i className="fas fa-tasks"></i> CARGAR FALTANTES</MDBBtn>
                             </div>
                         </div>
 
@@ -893,7 +893,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                             </div>
                         </Collapsible>
                     </fieldset>
-                    <h3 class="text-uppercase text-center py-3" id="func_6">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</h3>
+                    <h3 className="text-uppercase text-center py-3" id="func_6">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</h3>
                     <FUN_CHECKLIST_N
                         translation={translation}
                         swaMsg={swaMsg}

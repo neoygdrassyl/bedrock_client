@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import USERS_Service from '../../../../services/users.service';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker, email_types, retrieveItem, closeComponent }) {
     const [usersList, setUsersList] = useState([]);
@@ -135,21 +135,21 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
                 <div className="row">
                     <div className="col-6">
                         <label>Correo del Profesional</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" id="pqrs_email_notify_worker_1" disabled required />
-                            <button type="submit" class="btn btn-warning shadow-none">ENVIAR CORREO</button>
+                            <input type="text" className="form-control" id="pqrs_email_notify_worker_1" disabled required />
+                            <button type="submit" className="btn btn-warning shadow-none">ENVIAR CORREO</button>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Tipo de Correo</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <select class="form-control" id="pqrs_email_notify_worker_3" onChange={(e) => _GET_EMAIL_BODY_WORKER_NOTIFY(e.target.value)}>
+                            <select className="form-control" id="pqrs_email_notify_worker_3" onChange={(e) => _GET_EMAIL_BODY_WORKER_NOTIFY(e.target.value)}>
                                 {_GET_EMAIL_TYPES()}
                             </select>
                         </div>
@@ -158,7 +158,7 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
                 <div className="row">
                     <div className="col">
                         <label>Cuerpo del Email (Modifique este texto debidamente)</label>
-                        <textarea class="form-control mb-3" rows="3" id="pqrs_email_notify_worker_2"></textarea>
+                        <textarea className="form-control mb-3" rows="3" id="pqrs_email_notify_worker_2"></textarea>
                     </div>
                 </div>
 
@@ -170,9 +170,9 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_foremail" accept="image/png, image/jpeg application/pdf" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <input type="file" className="form-control" name="files_foremail" accept="image/png, image/jpeg application/pdf" />
                         </div>
                     </div>
                 </div>)
@@ -187,7 +187,7 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
             formData = new FormData();
 
             formData.set('id', worker.id);
-            formData.set('sent_email_notify', moment().format('YYYY-MM-DD'));
+            formData.set('sent_email_notify', dayjs().format('YYYY-MM-DD'));
 
             let email_list = document.getElementById("pqrs_email_notify_worker_1").value;
             formData.set('email_list', email_list);
@@ -253,9 +253,9 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
                                         <div className="text-end m-3">
                                             <p className="text-end fw-bold text-uppercase">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <MDBBtn className="btn btn-secondary mx-3" onClick={() => minusAttachEmail()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <MDBBtn className="btn btn-secondary mx-3" onClick={() => minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                                 : ""}
-                                            <MDBBtn className="btn btn-secondary" onClick={() => addAttachEmail()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <MDBBtn className="btn btn-secondary" onClick={() => addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

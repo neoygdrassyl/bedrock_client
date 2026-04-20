@@ -327,7 +327,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         let currentfloorNumber = (_floor || '').replace(/^\D+/g, '');
 
         let areas = _GET_CHILD_33_AREAS();
-        areas.sort((a, b) => array_sort(a, b));
+        areas = [...areas].sort((a, b) => array_sort(a, b));
 
         let new_areas = areas.filter(item => {
             let floor = item.floor ? item.floor : ' ';
@@ -349,7 +349,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         });
         let floor_index = -1;
         let sum = 0;
-        if (con) new_areas.reverse();
+        if (con) new_areas = [...new_areas].reverse();
 
         new_areas.map((item, i) => { if (_floor === item.floor) floor_index = i; })
         if (floor_index != -1) {
@@ -565,7 +565,7 @@ export default function RECORD_ARC_AREAS_2(props) {
 
         // SORTS THE ARRAYS AND PROCESS TO FILL THE VALUES OF THE SPREADSHEET
         setHeader(_header);
-        var newData = _AREAS.sort((a, b) => array_sort(a, b));
+        var newData = [..._AREAS].sort((a, b) => array_sort(a, b));
         let cells = (v, i) => {
             return _cells.map((c, j) => {
                 return {
@@ -1066,7 +1066,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         return <>
             <div className='row'>
                 <div className='col-8'>
-                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
                         <MDBBtn color='primary' outline={!openConfig} size='sm'
                             onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</MDBBtn>
                         <MDBBtn color='primary' outline size='sm'
@@ -1085,7 +1085,7 @@ export default function RECORD_ARC_AREAS_2(props) {
 
                 </div>
                 <div className='col text-end'>
-                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area" />
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area_end" />
                         <MDBBtn color='danger' outline size='sm'
@@ -1152,10 +1152,10 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <label className='mx-2 fw-bold'>Usar Áreas Modalidad:</label>
                             {type_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="type_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="type_cb"
                                             defaultChecked={child_1_cb[i]} onChange={() => manage_step(false, 'f1')} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -1164,10 +1164,10 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <label className='mx-2 fw-bold'>Usar Áreas descontadas:</label>
                             {destory_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="destroy_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="destroy_cb"
                                             defaultChecked={destroy_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -1176,10 +1176,10 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <label className='mx-2  fw-bold'>Usar Unidades nuevas:</label>
                             {units_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="units_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="units_cb"
                                             defaultChecked={units_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -1188,10 +1188,10 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <label className='mx-2  fw-bold'>Usar Áreas nuevas:</label>
                             {units_a_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="units_a_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="units_a_cb"
                                             defaultChecked={units_a_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -1200,25 +1200,25 @@ export default function RECORD_ARC_AREAS_2(props) {
                     <div className='row'>
                         <label className='mx-2 mt-2 fw-bold'>Crear edificio:</label>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Pis.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Pis.</div>
                                 </div>
                                 <input type='number' step={1} min={0} defaultValue={1} className="text-end form-control" id="create_b_fl" />
                             </div>
                         </div>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Smt.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Smt.</div>
                                 </div>
                                 <input type='number' step={1} min={0} max={1} defaultValue={0} className="text-end form-control" id="create_b_ss" />
                             </div>
                         </div>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Sót.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Sót.</div>
                                 </div>
                                 <input type='number' step={1} min={0} defaultValue={0} className="text-end form-control" id="create_b_st" />
                             </div>
@@ -1227,23 +1227,23 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <MDBBtn color='primary' outline size='sm' onClick={() => _NEW_BD()}>CREAR</MDBBtn>
                         </div>
                         <div className='col'>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="cb_level_rule" onChange={() => manage_step()} defaultChecked={LEVEL_RULE[0] === '1'} />
-                                <label class="form-check-label fw-bold" for="cb_level_rule">Usar entre pisos</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="cb_level_rule" onChange={() => manage_step()} defaultChecked={LEVEL_RULE[0] === '1'} />
+                                <label className="form-check-label fw-bold" htmlFor="cb_level_rule">Usar entre pisos</label>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div className="form-group row">
                         <label className="col-sm-2 col-form-label">Tipo</label>
-                        <div class="col-sm-4">
+                        <div className="col-sm-4">
                             <input type="text" className="form-control" id="r_a_34_a-1" defaultValue={json34.tipo}  onBlur={() => manage_ra_34()} />
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col pt-3'>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="cb_level_complete" onChange={() => update_category(false)} defaultChecked={tb_ok === '1'} />
-                                <label class="form-check-label fw-bold" for="cb_level_complete">Marcar tabla de áreas como completa</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="cb_level_complete" onChange={() => update_category(false)} defaultChecked={tb_ok === '1'} />
+                                <label className="form-check-label fw-bold" htmlFor="cb_level_complete">Marcar tabla de áreas como completa</label>
                             </div>
                         </div>
                     </div>
@@ -1604,7 +1604,7 @@ export default function RECORD_ARC_AREAS_2(props) {
             if (index === -1) {
                 value.push('F');
             }
-            value.sort()
+            value = [...value].sort()
         }
         formData.set('tipo', value.join(','));
         save_fun_1(formData, false)

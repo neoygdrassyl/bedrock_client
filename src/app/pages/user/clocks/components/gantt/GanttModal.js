@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { GanttChart } from './GanttChart';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { sumarDiasHabiles } from '../../hooks/useClocksManager';
 
 // Panel de detalle (Muestra información específica al hacer click en una fase)
@@ -69,12 +69,12 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
 
         <div className="gantt-detail-row">
           <span className="gantt-detail-label">Inicio</span>
-          <span>{startDate ? moment(startDate).format('DD MMM YYYY') : '—'}</span>
+          <span>{startDate ? dayjs(startDate).format('DD MMM YYYY') : '—'}</span>
         </div>
 
         <div className="gantt-detail-row">
           <span className="gantt-detail-label">Fin</span>
-          <span>{endDate ? moment(endDate).format('DD MMM YYYY') : '—'}</span>
+          <span>{endDate ? dayjs(endDate).format('DD MMM YYYY') : '—'}</span>
         </div>
 
         <div className="gantt-detail-row">
@@ -268,7 +268,7 @@ export const GanttModal = ({
                  <div className="gantt-header-stats">
                      <div className="gantt-stat-item">
                          <span className="gantt-stat-label">Entrega Estimada:</span>
-                         <span className="gantt-stat-value">{moment(projectedFinishData.date).format('DD MMM YYYY')}</span>
+                         <span className="gantt-stat-value">{dayjs(projectedFinishData.date).format('DD MMM YYYY')}</span>
                      </div>
                      <div className="gantt-stat-item">
                          <span className="gantt-stat-label">Duración Proyectada:</span>

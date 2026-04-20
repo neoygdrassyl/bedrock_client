@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
 import { GanttModal } from './gantt/GanttModal';
 
@@ -29,10 +29,10 @@ const escapeHtml = (s) => {
     .replaceAll("'", '&#039;');
 };
 
-const formatShortDate = (d) => (d ? moment(d).format('DD MMM YY') : '—');
+const formatShortDate = (d) => (d ? dayjs(d).format('DD MMM YY') : '—');
 
 const getResolvedStatus = (status, remainingDays, endDate, limitDate) => {
-  if (status === 'COMPLETADO' && limitDate && endDate && moment(endDate).isAfter(limitDate, 'day')) {
+  if (status === 'COMPLETADO' && limitDate && endDate && dayjs(endDate).isAfter(limitDate, 'day')) {
     return STATUS_MAP.VENCIDO;
   }
   if (status === 'ACTIVO' && remainingDays < 0) return STATUS_MAP.VENCIDO;
@@ -334,7 +334,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
       const diasLDFActa1 = ldfDate && acta1Date ? calcularDiasHabiles(ldfDate, acta1Date, true) : 'N/A';
       const diasActa1Corr = acta1Date && corrDate ? calcularDiasHabiles(acta1Date, corrDate, true) : 'N/A';
       
-      const fmt = (d) => (d ? moment(d).format('YYYY-MM-DD') : '—');
+      const fmt = (d) => (d ? dayjs(d).format('YYYY-MM-DD') : '—');
 
       MySwal.fire({
           title: 'Diagnóstico de Fases y Tiempos',
@@ -514,9 +514,9 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           </div>
 
           ${actor.taskDescription ? `
-            <div class="pdm-block">
-              <div class="pdm-block-title"><i class="fas fa-tasks"></i> Actividad</div>
-              <div class="pdm-block-body">${escapeHtml(actor.taskDescription)}</div>
+            <div className="pdm-block">
+              <div className="pdm-block-title"><i className="fas fa-tasks"></i> Actividad</div>
+              <div className="pdm-block-body">${escapeHtml(actor.taskDescription)}</div>
             </div>
           ` : ''}
 
@@ -616,16 +616,16 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           </div>
 
           ${phase.daysContext ? `
-            <div class="pdm-block">
-              <div class="pdm-block-title"><i class="fas fa-calculator"></i> Contexto (F4)</div>
-              <div class="pdm-block-body">
-                <div class="pdm-inline">
+            <div className="pdm-block">
+              <div className="pdm-block-title"><i className="fas fa-calculator"></i> Contexto (F4)</div>
+              <div className="pdm-block-body">
+                <div className="pdm-inline">
                   <span>Total Curaduría:</span> <b>${escapeHtml(phase.daysContext.totalCuraduria)} días</b>
                 </div>
-                <div class="pdm-inline">
+                <div className="pdm-inline">
                   <span>Usados en Fase 1:</span> <b>${escapeHtml(phase.daysContext.usedInPhase1)} días</b>
                 </div>
-                <div class="pdm-inline">
+                <div className="pdm-inline">
                   <span>Disponibles para Fase 4:</span> <b>${escapeHtml(phase.daysContext.availableForPhase4)} días</b>
                 </div>
               </div>
@@ -633,9 +633,9 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           ` : ''}
 
           ${actorsForModal.length ? `
-            <div class="pdm-block">
-              <div class="pdm-block-title"><i class="fas fa-users"></i> Actores</div>
-              <div class="pdm-actors">
+            <div className="pdm-block">
+              <div className="pdm-block-title"><i className="fas fa-users"></i> Actores</div>
+              <div className="pdm-actors">
                 ${actorsForModal
                   .map((a) => {
                     const t = (Number(a.totalDays) || 0) + (Number(a.extraDays) || 0);
@@ -663,7 +663,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                   })
                   .join('')}
               </div>
-              <div class="pdm-note">Tip: para ver el actor desde la tarjeta, haz click directamente en el actor.</div>
+              <div className="pdm-note">Tip: para ver el actor desde la tarjeta, haz click directamente en el actor.</div>
             </div>
           ` : ''}
         </div>

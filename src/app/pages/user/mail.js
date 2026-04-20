@@ -14,7 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import Collapsible from '../../components/Collapsible';
-const moment = require('moment');
+import dayjs from 'dayjs';
 
 function Mail({ translation, globals, breadCrums }) {
     const [error, setError] = useState(null);
@@ -77,7 +77,7 @@ function Mail({ translation, globals, breadCrums }) {
                 selector: row => row.createdAt,
                 sortable: true,
                 filterable: true,
-                cell: row => <p className="pt-3">{moment(row.createdAt).format("DD-MM-YYYY")}</p>
+                cell: row => <p className="pt-3">{dayjs(row.createdAt).format("DD-MM-YYYY")}</p>
             },
             {
                 name: <h3>ASUNTO</h3>,
@@ -88,7 +88,7 @@ function Mail({ translation, globals, breadCrums }) {
                 name: <h3>ACCIÓN</h3>,
                 button: true,
                 cell: row =>
-                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><i class="fas fa-file-alt"></i> Ver</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><i className="fas fa-file-alt"></i> Ver</button>
                 ,
             },
         ]
@@ -99,12 +99,12 @@ function Mail({ translation, globals, breadCrums }) {
                 <div className="col-12 d-flex justify-content-start p-0">
                     <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                         </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u6}</label></MDBBreadcrumbItem>
+                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u6}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
                 </div>
                 <div className="row mb-4 d-flex justify-content-center">
@@ -140,7 +140,7 @@ function Mail({ translation, globals, breadCrums }) {
                     <MDBModalDialog size="lg">
                         <MDBModalContent className="container-primary">
                             <MDBModalHeader>
-                                <MDBModalTitle><h2 className="text-center"><i class="far fa-file-alt"></i> DETALLES DEL MENSAJE {currentItem ? currentItem.id : ''} </h2></MDBModalTitle>
+                                <MDBModalTitle><h2 className="text-center"><i className="far fa-file-alt"></i> DETALLES DEL MENSAJE {currentItem ? currentItem.id : ''} </h2></MDBModalTitle>
                                 <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                             </MDBModalHeader>
                             <MDBModalBody>
@@ -164,7 +164,7 @@ function Mail({ translation, globals, breadCrums }) {
                                                             </tr>
                                                             <tr>
                                                                 <td><label>Fecha de Expedicion</label></td>
-                                                                <td><label className="fw-bold">{moment(currentItem.createdAt).format("DD-MM-YYYY HH:mm")}</label></td>
+                                                                <td><label className="fw-bold">{dayjs(currentItem.createdAt).format("DD-MM-YYYY HH:mm")}</label></td>
                                                             </tr>
                                                             <tr>
                                                                 <td><label>Email de Contacto</label></td>
@@ -194,7 +194,7 @@ function Mail({ translation, globals, breadCrums }) {
                             </MDBModalBody>
                             <MDBModalFooter>
                                 <MDBBtn color='info' onClick={toggle}>
-                                    <h4 className="pt-2"><i class="fas fa-times-circle"></i> Cerrar</h4>
+                                    <h4 className="pt-2"><i className="fas fa-times-circle"></i> Cerrar</h4>
                                 </MDBBtn>
                             </MDBModalFooter>
                         </MDBModalContent>

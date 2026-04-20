@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useRef, useLayoutEffect } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { sumarDiasHabiles, calcularDiasHabiles } from '../../hooks/useClocksManager';
 import { calculateScheduledLimitForDisplay } from '../../utils/scheduleUtils';
 
@@ -41,7 +41,7 @@ export const GanttChart = ({
   const SAFE_RENDER_LIMIT = 250; 
 
   const systemToday = useMemo(() => {
-      return manager?.systemDate ? moment(manager.systemDate).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
+      return manager?.systemDate ? dayjs(manager.systemDate).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD');
   }, [manager]);
 
   useLayoutEffect(() => {
@@ -149,7 +149,7 @@ export const GanttChart = ({
       let phaseMilestone = null;
       if (status === 'COMPLETADO' && endDate) {
           // CORRECCIÓN: Optimización para evitar calcular si está muy lejos
-          if (moment(endDate).diff(moment(radDate), 'years') < 2) {
+          if (dayjs(endDate).diff(dayjs(radDate), 'years') < 2) {
              const offset = calcularDiasHabiles(radDate, endDate, false);
              phaseMilestone = {
                  title: phase.title,
@@ -169,7 +169,7 @@ export const GanttChart = ({
               if (u > t) overdue = u - t;
           } else if (pStartDate) {
               const limitDate = sumarDiasHabiles(pStartDate, t);
-              if (moment(systemToday).isAfter(limitDate)) overdue = calcularDiasHabiles(limitDate, systemToday);
+              if (dayjs(systemToday).isAfter(limitDate)) overdue = calcularDiasHabiles(limitDate, systemToday);
           }
           return Math.max(0, overdue);
       };
@@ -185,11 +185,11 @@ export const GanttChart = ({
         const susEndDate = relevantSuspension.end?.date_start;
         
         // CORRECCIÓN: Validar rangos de fechas antes de calcular
-        if(moment(susStartDate).isSameOrAfter(radDate) && moment(susStartDate).diff(moment(radDate), 'years') < 2) {
+        if(dayjs(susStartDate).isSameOrAfter(radDate) && dayjs(susStartDate).diff(dayjs(radDate), 'years') < 2) {
             const startOffset = calcularDiasHabiles(radDate, susStartDate, false);
             let duration = 0;
             if (susEndDate) duration = calcularDiasHabiles(susStartDate, susEndDate, true);
-            else if (moment(systemToday).isAfter(susStartDate)) duration = calcularDiasHabiles(susStartDate, systemToday, true);
+            else if (dayjs(systemToday).isAfter(susStartDate)) duration = calcularDiasHabiles(susStartDate, systemToday, true);
 
             suspensionInfo = {
                 startOffset,
@@ -207,12 +207,12 @@ export const GanttChart = ({
           let phaseContextLabel = "";
           
           if (id === 'phase1') {
-              if (!splitDateForExtension || moment(extDate).isBefore(splitDateForExtension)) {
+              if (!splitDateForExtension || dayjs(extDate).isBefore(splitDateForExtension)) {
                   assignToThisPhase = true;
                   phaseContextLabel = "Fase 1 (Pre-Acta)";
               }
           } else if (['phase4', 'phase4_desist'].includes(id)) {
-              if (splitDateForExtension && moment(extDate).isSameOrAfter(splitDateForExtension)) {
+              if (splitDateForExtension && dayjs(extDate).isSameOrAfter(splitDateForExtension)) {
                   assignToThisPhase = true;
                   phaseContextLabel = "Fase 4 (Post-Acta)";
               }
@@ -269,10 +269,10 @@ export const GanttChart = ({
                   const scheduledInfo = calculateScheduledLimitForDisplay(state, clockDef || { state, allowSchedule: true }, manager.getClock(state), scheduleConfig, manager.getClock, manager.getClockVersion, manager);
                   
                   if (scheduledInfo && scheduledInfo.limitDate) {
-                      const limitMoment = moment(scheduledInfo.limitDate);
-                      const startMoment = moment(startDate);
+                      const limitMoment = dayjs(scheduledInfo.limitDate);
+                      const startMoment = dayjs(startDate);
                       if (endDate) {
-                          const endMoment = moment(endDate);
+                          const endMoment = dayjs(endDate);
                           if (limitMoment.isSameOrAfter(startMoment) && limitMoment.isSameOrBefore(endMoment)) {
                               shouldInclude = true;
                           }
@@ -386,7 +386,7 @@ export const GanttChart = ({
     // dado que sumarDiasHabiles también puede ser lento.
     // Asumiremos que para el renderizado del eje X, si es muy largo, podemos simplificar.
     
-    let currentDateCursor = moment(radDate);
+    let currentDateCursor = dayjs(radDate);
     const dayLimit = maxDays;
 
     for (let i = 0; i <= dayLimit; i += 1) {
@@ -411,9 +411,9 @@ export const GanttChart = ({
     let elapsedDays = 0;
     if (radDate && systemToday) {
         // CORRECCIÓN: Si el offset es demasiado grande, no lo calculamos para evitar cuelgues
-        const diffYears = moment(systemToday).diff(moment(radDate), 'years');
+        const diffYears = dayjs(systemToday).diff(dayjs(radDate), 'years');
         if (diffYears < 2) {
-            if (moment(systemToday).isSameOrAfter(radDate)) {
+            if (dayjs(systemToday).isSameOrAfter(radDate)) {
                 todayOffset = calcularDiasHabiles(radDate, systemToday, false);
                 elapsedDays = todayOffset;
             }
@@ -491,7 +491,7 @@ export const GanttChart = ({
             <div>
                 <strong style={{color: '#fcc419'}}>Programación</strong><br/>
                 <strong>{marker.label}</strong><br/>
-                Fecha: {moment(marker.date).format('DD/MM/YYYY')}<br/>
+                Fecha: {dayjs(marker.date).format('DD/MM/YYYY')}<br/>
                 {marker.offsetDays} días desde inicio fase
             </div>
         );
@@ -531,8 +531,8 @@ export const GanttChart = ({
     const dateLimit = phaseStartDate ? sumarDiasHabiles(phaseStartDate, rowInfo.actorTotal) : null;
     const dateActual = phaseStartDate ? sumarDiasHabiles(phaseStartDate, rowInfo.actorUsed) : null;
     
-    const tooltipTrack = ( <div> <strong>Límite Legal</strong><br/> Días: {rowInfo.actorTotal}<br/> Fecha: {dateLimit ? moment(dateLimit).format('DD/MM/YYYY') : '--'} </div> );
-    const tooltipFill = ( <div> <strong>{rowInfo.label || 'Progreso'}</strong><br/> Estado: {rowInfo.status}<br/> Días usados: {rowInfo.actorUsed}<br/> Fecha Corte: {dateActual ? moment(dateActual).format('DD/MM/YYYY') : '--'} </div> );
+    const tooltipTrack = ( <div> <strong>Límite Legal</strong><br/> Días: {rowInfo.actorTotal}<br/> Fecha: {dateLimit ? dayjs(dateLimit).format('DD/MM/YYYY') : '--'} </div> );
+    const tooltipFill = ( <div> <strong>{rowInfo.label || 'Progreso'}</strong><br/> Estado: {rowInfo.status}<br/> Días usados: {rowInfo.actorUsed}<br/> Fecha Corte: {dateActual ? dayjs(dateActual).format('DD/MM/YYYY') : '--'} </div> );
     const tooltipError = hasError ? ( <div> <strong style={{color: '#ff6b6b'}}>Retraso Legal / Exceso</strong><br/> Días extra: {rowInfo.overdueDays}<br/> Total acumulado: {rowInfo.actorUsed} días </div> ) : null;
     
     const tooltipScheduledError = hasScheduledError ? (
@@ -546,7 +546,7 @@ export const GanttChart = ({
     let suspensionCutout = null;
     if (phase.suspensionInfo && rowInfo.actorTotal > 0 && phase.startDate) {
         // Validación de fechas extremas para cutout
-        if (moment(phase.startDate).diff(moment(radDate), 'years') < 2) {
+        if (dayjs(phase.startDate).diff(dayjs(radDate), 'years') < 2) {
             const susStartOffsetFromPhaseStart = calcularDiasHabiles(phase.startDate, sumarDiasHabiles(radDate, phase.suspensionInfo.startOffset), false);
             const leftPct = (susStartOffsetFromPhaseStart / rowInfo.actorTotal) * 100;
             const widthPct = (phase.suspensionInfo.duration / rowInfo.actorTotal) * 100;
@@ -568,7 +568,7 @@ export const GanttChart = ({
                 <strong style={{color: '#66d9e8'}}>PRÓRROGA</strong><br/>
                 Ubicación: <strong>{phase.extensionInfo.phaseContext}</strong><br/>
                 Días adicionales: {extDays}<br/>
-                Inicio: {moment(phase.extensionInfo.date).format('DD/MM/YYYY')}
+                Inicio: {dayjs(phase.extensionInfo.date).format('DD/MM/YYYY')}
             </div>
         );
 
@@ -629,7 +629,7 @@ export const GanttChart = ({
       <>
         <div className="gantt-suspension-track">
           <div className="gantt-suspension-bar" style={{ left: `${leftPx}px`, width: `${widthPx}px` }} onMouseMove={(e) => handleMouseMove(e, tooltipContent)} onMouseLeave={handleMouseLeave} >
-            {!compactMode && <strong class="gantt-extension-label">SUSPENSIÓN</strong>}
+            {!compactMode && <strong className="gantt-extension-label">SUSPENSIÓN</strong>}
           </div>
         </div>
         <div className="gantt-suspension-guideline" style={{ left: `${leftPx}px` }} />
@@ -656,7 +656,7 @@ export const GanttChart = ({
             <div className="gantt-row-milestone-line"></div>
             <div className={`gantt-row-milestone-card ${positionClass} ${alignmentClass}`}>
                 <strong>{title}</strong>
-                <span className="milestone-date">{moment(date).format('DD/MM/YY')}</span>
+                <span className="milestone-date">{dayjs(date).format('DD/MM/YY')}</span>
                 <span className="milestone-duration">{duration} días</span>
             </div>
         </div>
@@ -675,10 +675,10 @@ export const GanttChart = ({
         <div className="gantt-chart-column" ref={headerScrollRef}>
           <div className="gantt-header-timeline" style={{ width: `${totalWidthPx}px` }}>
             {ganttData.dateColumns.map((col) => (
-              <div key={`mk-${col.day}`} className={`gantt-timeline-marker ${col.isMajor ? 'major' : 'minor'}`} style={{ left: `${col.position * scaleFactor}px` }} onMouseMove={(e) => col.date && handleMouseMove(e, <div><strong>Día Hábil: {col.day}</strong><br/>Fecha: {moment(col.date).format('DD/MM/YYYY')}</div>)} onMouseLeave={handleMouseLeave} >
+              <div key={`mk-${col.day}`} className={`gantt-timeline-marker ${col.isMajor ? 'major' : 'minor'}`} style={{ left: `${col.position * scaleFactor}px` }} onMouseMove={(e) => col.date && handleMouseMove(e, <div><strong>Día Hábil: {col.day}</strong><br/>Fecha: {dayjs(col.date).format('DD/MM/YYYY')}</div>)} onMouseLeave={handleMouseLeave} >
                 <div className={`gantt-timeline-tick ${col.isMajor ? '' : 'minor-tick'}`} />
                 {col.isMajor && ( <span className="gantt-timeline-label"> {compactMode ? `${col.day}` : `Día ${col.day}`} </span> )}
-                {!compactMode && col.isMajor && col.date && ( <span className="gantt-header-date-label"> {moment(col.date).format('DD/MM')} </span> )}
+                {!compactMode && col.isMajor && col.date && ( <span className="gantt-header-date-label"> {dayjs(col.date).format('DD/MM')} </span> )}
               </div>
             ))}
             
@@ -733,7 +733,7 @@ export const GanttChart = ({
                         <div className={`gantt-today-card ${ganttData.todaySeverity}`}>
                             <div className="today-header">
                                 <strong>HOY</strong>
-                                <span>{moment(systemToday).format('DD MMM')}</span>
+                                <span>{dayjs(systemToday).format('DD MMM')}</span>
                             </div>
                             <div className="today-stat">
                                 {ganttData.elapsedDays} días transcurridos

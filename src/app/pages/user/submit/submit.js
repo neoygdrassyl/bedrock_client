@@ -8,7 +8,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import SUBTMIT_MANAGE from './submit_manage'
 import Modal from 'react-modal';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 
 const MySwal = withReactContent(Swal);
@@ -125,8 +125,8 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 center: true,
                 minWidth: '60px',
                 cell: row => <label>{row.sub_doc
-                    ? <i class="text-success fas fa-check fa-2x"></i>
-                    : <i class="text-danger fas fa-times fa-2x"></i>}</label>
+                    ? <i className="text-success fas fa-check fa-2x"></i>
+                    : <i className="text-danger fas fa-times fa-2x"></i>}</label>
             },
             {
                 name: <label>ACCIÓN</label>,
@@ -135,11 +135,11 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 cell: row => <>
                     <MDBTooltip title='Ver detalles' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                         <button onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <i class="far fa-folder-open fa-2x" ></i></button></MDBTooltip>
+                            <i className="far fa-folder-open fa-2x" ></i></button></MDBTooltip>
 
                     <MDBTooltip title='Eliminar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                         <button onClick={() => delete_submit(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                            <i class="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
+                            <i className="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
                 </>,
             },
         ]
@@ -328,12 +328,12 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 <div className="col-12 d-flex justify-content-start p-0">
                     <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                         </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u10}</label></MDBBreadcrumbItem>
+                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u10}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
                 </div >
 
@@ -341,23 +341,23 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     <div className="col-10">
                         <h1 className="text-center my-4">VENTANILLA ÚNICA</h1>
                         <hr />
-                        <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
+                        <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
 
                         <div className="row">
                             <div className="col-4">
-                                <div class="text-center py-4 mt-3">
-                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><i class="fas fa-plus-circle"></i> NUEVA ENTRADA </button>
+                                <div className="text-center py-4 mt-3">
+                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><i className="fas fa-plus-circle"></i> NUEVA ENTRADA </button>
                                 </div>
                             </div>
                             <div className="col-4">
                                 <MDBCard className="bg-card mb-3">
                                     <MDBCardBody>
                                         <MDBCardTitle className="text-center"> <h4>CONSULTAR</h4></MDBCardTitle>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-info-circle"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="fas fa-info-circle"></i>
                                             </span>
-                                            <select class="form-select" id="submit_search_0" required>
+                                            <select className="form-select" id="submit_search_0" required>
                                                 <option value="1">Número de radicado VR</option>
                                                 <option value="2">Número de Licencia / Solicitud</option>
                                                 <option value="3">Propietario</option>
@@ -365,14 +365,14 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                                 <option value="5">C.C Persona que Entrega</option>
                                             </select>
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-comment-dots"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="far fa-comment-dots"></i>
                                             </span>
-                                            <input type="text" class="form-control" id="submit_search_1" placeholder="Buscar..." />
+                                            <input type="text" className="form-control" id="submit_search_1" placeholder="Buscar..." />
                                         </div>
                                         <div className="text-center py-2">
-                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><i class="fas fa-search-plus"></i> CONSULTAR </button>
+                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><i className="fas fa-search-plus"></i> CONSULTAR </button>
                                         </div>
                                     </MDBCardBody>
                                 </MDBCard>
@@ -381,22 +381,22 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                 <MDBCard className="bg-card mb-3">
                                     <MDBCardBody>
                                         <MDBCardTitle className="text-center"> <h4>DOCUMENTO CSV</h4></MDBCardTitle>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-hashtag"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="fas fa-hashtag"></i>
                                             </span>
-                                            <input type="text" class="form-control" id="csv_limit_1" placeholder="Limite inferior"
-                                                defaultValue={`VR${moment().format('YY')}-0001`} />
+                                            <input type="text" className="form-control" id="csv_limit_1" placeholder="Limite inferior"
+                                                defaultValue={`VR${dayjs().format('YY')}-0001`} />
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-hashtag"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="fas fa-hashtag"></i>
                                             </span>
-                                            <input type="text" class="form-control" id="csv_limit_2" placeholder="Limite superior"
-                                                defaultValue={`VR${moment().format('YY')}-9999`} />
+                                            <input type="text" className="form-control" id="csv_limit_2" placeholder="Limite superior"
+                                                defaultValue={`VR${dayjs().format('YY')}-9999`} />
                                         </div>
                                         <div className="text-center py-2">
-                                            <button type="button" className="btn btn-success shadow-none" onClick={() => generateCVS()}><i class="fas fa-table"></i> GENERAR CSV </button>
+                                            <button type="button" className="btn btn-success shadow-none" onClick={() => generateCVS()}><i className="fas fa-table"></i> GENERAR CSV </button>
                                         </div>
                                     </MDBCardBody>
                                 </MDBCard>
@@ -406,7 +406,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     </div >
                     <div className="row d-flex justify-content-center">
                         <div className="col-12">
-                            <h2 class="text-uppercase text-center pb-2">Lista de entradas</h2>
+                            <h2 className="text-uppercase text-center pb-2">Lista de entradas</h2>
                             <div className="text-center">
                                 {isLoaded ? (
                                     <DataTable
@@ -442,7 +442,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i class="far fa-edit"></i> ACTUALIZAR ENTRADA: {currentIdPublic} </h3>
+                        <h3><i className="far fa-edit"></i> ACTUALIZAR ENTRADA: {currentIdPublic} </h3>
                         <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                     </div>
                     <SUBTMIT_MANAGE
@@ -453,7 +453,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         edit />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -463,7 +463,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i class="fas fa-plus-circle"></i> NUEVA ENTRADA </h3>
+                        <h3><i className="fas fa-plus-circle"></i> NUEVA ENTRADA </h3>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_new()}></MDBBtn>
                     </div>
                     <SUBTMIT_MANAGE
@@ -471,7 +471,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         refreshList={refreshList}
                         closeModal={toggle_new} />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 

@@ -87,9 +87,9 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
             let pTime = get_PQRS_TIME();
             let ext = currentItem.pqrs_law ? currentItem.pqrs_law.extension ? 2 : 1 : 1;
             return <>            
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-3">
+                <div className="container">
+                    <div className="row align-items-center">
+                        <div className="col-3">
 
                             <div className="col">
                                 <lavel>Fecha inicio de terminos</lavel>
@@ -123,7 +123,7 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
 
 
                         </div>
-                        <div class="col-3">
+                        <div className="col-3">
                             <div className="col">
                                 <label className="fw-bold">{dateParser(pTime.legal)}</label>
                             </div>
@@ -155,7 +155,7 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
                                 </>}
                           
                         </div>
-                        <div class="col-6">
+                        <div className="col-6">
                             {SHOW_NOTIFICATIONS()}
                         </div>
                     </div>

@@ -994,8 +994,8 @@ function RECORD_ENG_STEP_433(props) {
         let COMPONENT_02 = () => {
             return <>
                 {SUBCATEGORIES[13] == 1 ? <>
-                    <ul class="list-group my-0 py-0">
-                        <li class="list-group-item py-0">
+                    <ul className="list-group my-0 py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de elementos estructurales</label>
@@ -1010,7 +1010,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de cimentación</label>
@@ -1025,7 +1025,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de placas de entrepiso</label>
@@ -1040,7 +1040,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de escaleras</label>
@@ -1055,7 +1055,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de muros</label>
@@ -1070,7 +1070,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de tanques</label>
@@ -1085,7 +1085,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de estructuras metálicas</label>
@@ -1100,7 +1100,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de otros diseños</label>
@@ -1121,8 +1121,8 @@ function RECORD_ENG_STEP_433(props) {
         }
         let COMPONENT_03 = () => {
             return <>
-                <ul class="list-group my-0 py-0">
-                    <li class="list-group-item py-0">
+                <ul className="list-group my-0 py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Coherencia técnica con los planos arquitectónicos</label>
@@ -1137,7 +1137,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Coherencia con las memorias de cálculo</label>
@@ -1152,7 +1152,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Especificaciones de materiales</label>
@@ -1167,7 +1167,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Plantas de cimentación, entrepisos y cubierta</label>
@@ -1182,7 +1182,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Detalle de losas de entrepiso</label>
@@ -1197,7 +1197,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de cimentación</label>
@@ -1212,7 +1212,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de columnas y muros</label>
@@ -1227,7 +1227,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de vigas</label>
@@ -1242,7 +1242,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de viguetas</label>
@@ -1257,7 +1257,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Detalles de cubierta (elementos de cubierta, conexiones)</label>
@@ -1272,7 +1272,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de escaleras</label>
@@ -1287,7 +1287,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Detalle y refuerzo de tanques</label>
@@ -1302,7 +1302,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Detalle y refuerzo estructuras de contención</label>
@@ -1317,7 +1317,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseños de elementos no estructurales</label>
@@ -1332,7 +1332,7 @@ function RECORD_ENG_STEP_433(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Firma del ingeniero geotecnista en plano de cimentación (H.1.1.2.1)</label>
@@ -1348,7 +1348,7 @@ function RECORD_ENG_STEP_433(props) {
                         </div>
                     </li>
                     {version === 2 ? <>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Firma del profesional responsable en cada documento entregado</label>
@@ -1363,7 +1363,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Firma del revisor independiente en todo lo relacionado con el componente estructural</label>
@@ -1378,7 +1378,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Firma del director de obra en planos y memorias de elementos no estructurales (A.1.3.6.5)</label>
@@ -1393,7 +1393,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Firma del director de obra en el informe de demolición</label>

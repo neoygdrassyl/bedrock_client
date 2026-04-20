@@ -1,7 +1,7 @@
 import React from 'react';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import './helpers/mockExternals';
 import { defaultProps, setWindowUser } from './helpers/renderHelpers';
@@ -99,7 +99,7 @@ vi.mock('../app/pages/user/clocks/components/ToolsMenu', () => ({
 
 import EXP_CLOCKS from '../app/pages/user/clocks/centralClocks.component';
 
-const TODAY = moment().format('YYYY-MM-DD');
+const TODAY = dayjs().format('YYYY-MM-DD');
 
 const baseCurrentItem = {
   id: 1,

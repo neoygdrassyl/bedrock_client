@@ -122,7 +122,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
     useEffect(() => {
         setItem_RecordArc();
         retrieveItem(currentId);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [currentId, setItem_RecordArc, retrieveItem]);
 
         var formData = new FormData();
         let subc = currentRecord ? currentRecord.subcategory ? currentRecord.subcategory.split(',') : [0, 0, 0, 0] : [0, 0, 0, 0]
@@ -203,9 +203,9 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                         <label className='fw-bold text-uppercase'>3.2. Identificación de la Solicitud</label>
                     </div>
                     <div className='col text-end'>
-                        <div class="custom-control custom-switch">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" checked readOnly disabled />
+                        <div className="custom-control custom-switch">
+                            <div className="form-check form-switch">
+                                <input className="form-check-input" type="checkbox" checked readOnly disabled />
                             </div>
                         </div>
                     </div>
@@ -215,9 +215,9 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                         <label className='fw-bold text-uppercase'>3.3 Descripción de la Actuación Urbanística</label>
                     </div>
                     <div className='col'>
-                        <div class="custom-control custom-switch">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" checked readOnly disabled />
+                        <div className="custom-control custom-switch">
+                            <div className="form-check form-switch">
+                                <input className="form-check-input" type="checkbox" checked readOnly disabled />
                             </div>
                         </div>
                     </div>
@@ -229,9 +229,9 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                 <label className='fw-bold text-uppercase'>CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO</label>
                             </div>
                             <div className='col text-end'>
-                                <div class="custom-control custom-switch">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" checked readOnly disabled />
+                                <div className="custom-control custom-switch">
+                                    <div className="form-check form-switch">
+                                        <input className="form-check-input" type="checkbox" checked readOnly disabled />
                                     </div>
                                 </div>
                             </div>
@@ -241,9 +241,9 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                 <label className='fw-bold text-uppercase'>INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL</label>
                             </div>
                             <div className='col'>
-                                <div class="custom-control custom-switch">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" checked readOnly disabled />
+                                <div className="custom-control custom-switch">
+                                    <div className="form-check form-switch">
+                                        <input className="form-check-input" type="checkbox" checked readOnly disabled />
                                     </div>
                                 </div>
                             </div>
@@ -256,9 +256,9 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                 <label className='fw-bold'>3.{i + 4}. {itemm.desc}</label>
                             </div>
                             <div className='col text-end'>
-                                <div class="custom-control custom-switch">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" defaultChecked={itemm.v == '1' ? true : false}
+                                <div className="custom-control custom-switch">
+                                    <div className="form-check form-switch">
+                                        <input className="form-check-input" type="checkbox" defaultChecked={itemm.v == '1' ? true : false}
                                             name={'sc_checbox'} onChange={() => update_subcategory(false)} />
                                     </div>
                                 </div>
@@ -271,9 +271,9 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                         <label className='fw-bold text-uppercase'>3.8 VIABILIDAD ARQUITECTÓNICA</label>
                     </div>
                     <div className='col'>
-                        <div class="custom-control custom-switch">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" checked readOnly disabled />
+                        <div className="custom-control custom-switch">
+                            <div className="form-check form-switch">
+                                <input className="form-check-input" type="checkbox" checked readOnly disabled />
                             </div>
                         </div>
                     </div>

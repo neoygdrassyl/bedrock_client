@@ -126,23 +126,23 @@ export default function ARCHIVE_MANAGE(props) {
         <>
             <div className='row'>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Caja N°</label>
-                    <input type="number" step={1} defaultValue={currentItem ? currentItem.box : ''} class="form-control" id="achr_3" />
+                    <label htmlFor="exampleFormControlInput1">Caja N°</label>
+                    <input type="number" step={1} defaultValue={currentItem ? currentItem.box : ''} className="form-control" id="achr_3" />
                 </div>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Entrepaño</label>
-                    <input type="number" step={1} defaultValue={currentItem ? currentItem.row : ''} class="form-control" id="achr_2" />
+                    <label htmlFor="exampleFormControlInput1">Entrepaño</label>
+                    <input type="number" step={1} defaultValue={currentItem ? currentItem.row : ''} className="form-control" id="achr_2" />
                 </div>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Estante</label>
-                    <input type="number" step={1} defaultValue={currentItem ? currentItem.column : ''} class="form-control" id="achr_1" />
+                    <label htmlFor="exampleFormControlInput1">Estante</label>
+                    <input type="number" step={1} defaultValue={currentItem ? currentItem.column : ''} className="form-control" id="achr_1" />
                 </div>
             </div>
             <div className='row my-3'>
                 <div className='col text-end'>
                     {currentItem ?
-                        <MDBBtn className="btn btn-sm btn-success" onClick={() => update()}><i class="far fa-edit"></i> ACTUALIZAR</MDBBtn>
-                        : <MDBBtn className="btn btn-sm btn-success" onClick={() => create()}><i class="fas fa-plus-circle"></i> CREAR</MDBBtn>}
+                        <MDBBtn className="btn btn-sm btn-success" onClick={() => update()}><i className="far fa-edit"></i> ACTUALIZAR</MDBBtn>
+                        : <MDBBtn className="btn btn-sm btn-success" onClick={() => create()}><i className="fas fa-plus-circle"></i> CREAR</MDBBtn>}
                 </div>
             </div>
         </>

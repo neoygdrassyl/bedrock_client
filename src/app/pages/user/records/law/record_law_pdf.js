@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleLAWhCheck } from '../../../../components/customClasses/pdfCheckHandler';
 const MySwal = withReactContent(Swal);
@@ -153,7 +153,7 @@ function RECORD_LAW_PDF(props) {
 
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'juridico']);
         pdfDoc.setLanguage('es-co');
@@ -420,24 +420,24 @@ function RECORD_LAW_PDF(props) {
                     <div className="row mb-3" hidden={noReport}>
                         <div className="col">
                             <label>Autoridad Competente</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_1"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_1"}>
                                     {domains_number}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Ciudad</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_2"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_2"}>
                                     {cities}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Acta</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_version"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_version"}>
                                     <option value={1}>OBSERVACIONES</option>
                                     <option value={2}>CORRECCIONES</option>
                                 </select>
@@ -445,8 +445,8 @@ function RECORD_LAW_PDF(props) {
                         </div>
                         <div className="col">
                             <label>Cabecera</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_header"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_header"}>
                                     <option value={1}>USAR CABECERA</option>
                                     <option value={0}>NO USAR CABECERA</option>
                                 </select>
@@ -456,44 +456,44 @@ function RECORD_LAW_PDF(props) {
                     <div className="row mb-3" hidden={noReport}>
                         <div className="col">
                             <label>Revision</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
                                     {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Profesional</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_worker_name"} disabled defaultValue={reviews[0].worker} />
                             </div>
                         </div>
                         <div className="col">
                             <label>Resultado</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_check"} disabled defaultValue={reviews[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
                             </div>
                         </div>
                         <div className="col">
                             <label>Fecha</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_date"} disabled defaultValue={reviews[0].date} />
                             </div>
                         </div>
                         <div className="col-2">
                             <br />
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="record_law_pending" />
-                                <label class="form-check-label" for="exampleCheck1">Pendiente</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="record_law_pending" />
+                                <label className="form-check-label" htmlFor="exampleCheck1">Pendiente</label>
                             </div>
                         </div>
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col" hidden={noReport}>
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i class="far fa-file-pdf"></i> DESCARGAR INFORME</button>
+                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i className="far fa-file-pdf"></i> DESCARGAR INFORME</button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i class="far fa-check-square"></i> DESCARGAR CHECKEO</button>
+                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i className="far fa-check-square"></i> DESCARGAR CHECKEO</button>
                         </div>
                     </div>
                 </div>

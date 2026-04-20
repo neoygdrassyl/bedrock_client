@@ -21,7 +21,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { dateParser } from '../../components/customClasses/typeParse'
 
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal)
 
 function Appointments({ translation, globals, breadCrums, swaMsg }) {
@@ -54,14 +54,14 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 let list_2 = [];
                 let list_3 = [];
                 response.data.map((item, i) => {
-                    let today = moment().format("YYYY-MM-DD")
-                    if (moment(today).diff(item.date, 'days') < 0) {
+                    let today = dayjs().format("YYYY-MM-DD")
+                    if (dayjs(today).diff(item.date, 'days') < 0) {
                         list.push(item);
                     }
-                    if (moment(today).diff(item.date, 'days') == 0) {
+                    if (dayjs(today).diff(item.date, 'days') == 0) {
                         list_2.push(item);
                     }
-                    if (moment(today).diff(item.date, 'days') > 0) {
+                    if (dayjs(today).diff(item.date, 'days') > 0) {
                         list_3.push(item);
                     }
                 });
@@ -149,10 +149,10 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 minWidth: '120px',
                 ignoreCSV: true,
                 cell: row => <>
-                    {moment().diff(row.date, 'days') <= 0
-                        ? <button className="btn btn-secondary btn-sm me-1" onClick={() => setItem_edit(row)}><i class="far fa-edit fa-2x"></i></button>
+                    {dayjs().diff(row.date, 'days') <= 0
+                        ? <button className="btn btn-secondary btn-sm me-1" onClick={() => setItem_edit(row)}><i className="far fa-edit fa-2x"></i></button>
                         : ""}
-                    <button className="btn btn-info btn-sm" onClick={() => setItemFn(row)}><i class="fas fa-info-circle fa-2x"></i></button>
+                    <button className="btn btn-info btn-sm" onClick={() => setItemFn(row)}><i className="fas fa-info-circle fa-2x"></i></button>
                 </>
                 ,
             },
@@ -278,12 +278,12 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                     <div className="col-12 d-flex justify-content-start p-0">
                         <MDBBreadcrumb className="mb-0 p-0 ms-0">
                             <MDBBreadcrumbItem>
-                                <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                             </MDBBreadcrumbItem>
                             <MDBBreadcrumbItem>
-                                <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                             </MDBBreadcrumbItem>
-                            <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u5}</label></MDBBreadcrumbItem>
+                            <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u5}</label></MDBBreadcrumbItem>
                         </MDBBreadcrumb>
                     </div>
                     <div className="col-lg-12 col-md-10">
@@ -338,7 +338,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                         <div className="text-center">
                             <h2 className="text-center my-4">Citas pasadas</h2>
                             <Collapsible trigger={<><label className="m-2"> </label>
-                                <button className="btn btn-warning btn-sm my-2"><i class="fas fa-plus"></i> Ver Lista</button></>}>
+                                <button className="btn btn-warning btn-sm my-2"><i className="fas fa-plus"></i> Ver Lista</button></>}>
                                 {isLoaded ? (
                                     <>
                                     <DataTable
@@ -355,10 +355,10 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                         defaultSortFieldId={1}
                                         defaultSortAsc={false}
                                         title={
-                                            <div class="d-flex justify-content-between">
+                                            <div className="d-flex justify-content-between">
                                                 <div><h5>CITAS PASADAS</h5></div>
                                                 <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(items_3, 'CITAS') }}
-                                                ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                                ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
                                             </div>
                                         }
                                     />
@@ -375,7 +375,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                     <MDBModalDialog size="lg">
                         <MDBModalContent className="container-primary">
                             <MDBModalHeader>
-                                <MDBModalTitle><h2 className="text-center"><i class="far fa-file-alt"></i> DETALLES DE LA CITA {currentItem ? currentItem.id : ''} </h2></MDBModalTitle>
+                                <MDBModalTitle><h2 className="text-center"><i className="far fa-file-alt"></i> DETALLES DE LA CITA {currentItem ? currentItem.id : ''} </h2></MDBModalTitle>
                                 <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                             </MDBModalHeader>
                             <MDBModalBody>
@@ -466,7 +466,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                             </MDBModalBody>
                             <MDBModalFooter>
                                 <MDBBtn color='info' onClick={toggle}>
-                                    <h4 className="pt-2"><i class="fas fa-times-circle"></i> Cerrar</h4>
+                                    <h4 className="pt-2"><i className="fas fa-times-circle"></i> Cerrar</h4>
                                 </MDBBtn>
                             </MDBModalFooter>
                         </MDBModalContent>
@@ -479,7 +479,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i>ACTUALIZAR LA CITA {currentItem ? currentItem.id : ''} </label>
+                        <label><i className="far fa-file-alt"></i>ACTUALIZAR LA CITA {currentItem ? currentItem.id : ''} </label>
                         <MDBBtn className='btn-close' color='none' onClick={toggle_edit}></MDBBtn>
                     </div>
                     <form id="appointment_edit" onSubmit={app_edit}>
@@ -529,7 +529,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                             <tr>
                                                 <td><label>Nombre Profesional</label></td>
                                                 <td>
-                                                    <select class="form-select" id="app_worker" defaultValue={(currentItem.profesional).normalize("NFD").replace(/[\u0300-\u036f]/g, "")}>
+                                                    <select className="form-select" id="app_worker" defaultValue={(currentItem.profesional).normalize("NFD").replace(/[\u0300-\u036f]/g, "")}>
                                                         {users.map(user => <option>{`${user.name.toUpperCase()} ${user.surname.toUpperCase()}`}</option>)}
                                                     </select>
                                                 </td>
@@ -537,21 +537,21 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                             <tr>
                                                 <td><label>Fecha</label></td>
                                                 <td>
-                                                    <input type="date" max="2100-01-01" class="form-control" id="app_date"
+                                                    <input type="date" max="2100-01-01" className="form-control" id="app_date"
                                                         defaultValue={currentItem.date} />
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td><label>Hora</label></td>
                                                 <td>
-                                                    <input type="time" class="form-control" id="app_time"
-                                                        defaultValue={moment(currentItem.time, 'hh:mm').format("HH:mm")} />
+                                                    <input type="time" className="form-control" id="app_time"
+                                                        defaultValue={dayjs(currentItem.time, 'hh:mm').format("HH:mm")} />
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td><label>Presentación</label></td>
                                                 <td>
-                                                    <select class="form-select" id="app_type" defaultValue={currentItem.appointment_type ? 1 : 0}>
+                                                    <select className="form-select" id="app_type" defaultValue={currentItem.appointment_type ? 1 : 0}>
                                                         <option value="0">{translation.form_appointment_type_0}</option>
                                                         <option value="1">{translation.form_appointment_type_1}</option>
                                                     </select>
@@ -560,7 +560,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                             <tr>
                                                 <td><label>Tipo de Cita</label></td>
                                                 <td>
-                                                    <select class="form-select" id="app_motive" defaultValue={currentItem.motive}>
+                                                    <select className="form-select" id="app_motive" defaultValue={currentItem.motive}>
                                                         <option>{translation.form_motive_0}</option>
                                                         <option>{translation.form_motive_1}</option>
                                                         <option>{translation.form_motive_2}</option>
@@ -574,7 +574,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                             </tr>
                                             <tr>
                                                 <td colSpan="2">
-                                                    <textarea rows="3" defaultValue={currentItem.content} id="app_content" class="form-control"></textarea>
+                                                    <textarea rows="3" defaultValue={currentItem.content} id="app_content" className="form-control"></textarea>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -582,7 +582,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                             </tr>
                                             <tr>
                                                 <td colSpan="2">
-                                                    <textarea rows="3" defaultValue={currentItem.details} id="app_detail" class="form-control"></textarea>
+                                                    <textarea rows="3" defaultValue={currentItem.details} id="app_detail" className="form-control"></textarea>
                                                 </td>
                                             </tr>
                                         </> : ""}
@@ -592,8 +592,8 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                         </MDBRow>
 
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-secondary me-1"><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                            <MDBBtn className="btn btn-lg btn-info" onClick={() => toggle_edit()}><i class="fas fa-times-circle"></i> CERRAR </MDBBtn>
+                            <button className="btn btn-lg btn-secondary me-1"><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                            <MDBBtn className="btn btn-lg btn-info" onClick={() => toggle_edit()}><i className="fas fa-times-circle"></i> CERRAR </MDBBtn>
                         </div>
                     </form>
                 </Modal>

@@ -1,5 +1,5 @@
 import { MDBBtn, MDBIcon } from '../../../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useEffect, useState, memo } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 import Swal from 'sweetalert2'
@@ -15,10 +15,10 @@ const BUILD_AREAS = ['OBRA NUEVA', 'AMPLIADA', 'ADECUADA', 'MODIFICADA', 'RESTAU
 function FUN_CHART_TIME(props) {
     var [hovered, setHovered] = useState(false);
 
-    var [filterId, SetFilterId] = useState([`${infoCud.nomen}${moment().subtract(1, 'year').format('YY')}-0000`, `${infoCud.nomen}${moment().format('YY')}-9999`]);
+    var [filterId, SetFilterId] = useState([`${infoCud.nomen}${dayjs().subtract(1, 'year').format('YY')}-0000`, `${infoCud.nomen}${dayjs().format('YY')}-9999`]);
     var [filterD, SetFilterD] = useState([0, 200]);
-    var [date_1, SetDate_1] = useState(moment().subtract(1, 'y').startOf('year').format('YYYY-MM-DD'));
-    var [date_2, SetDate_2] = useState(moment().format('YYYY-MM-DD'));
+    var [date_1, SetDate_1] = useState(dayjs().subtract(1, 'y').startOf('year').format('YYYY-MM-DD'));
+    var [date_2, SetDate_2] = useState(dayjs().format('YYYY-MM-DD'));
 
     var [items, setItems] = useState([]);
 
@@ -140,7 +140,7 @@ function FUN_CHART_TIME(props) {
                     newDatano.push(row.id_public);
                     return;
                 };
-                if (!moment(row.clock_license).isBetween(date_1, date_2, undefined, '[]')) return;
+                if (!dayjs(row.clock_license).isBetween(date_1, date_2, undefined, '[]')) return;
 
                 let time_process = dateParser_dateDiff(row.clock_license, row.clock_date);
                 let _x = time_process > 200 ? 200 : time_process;
@@ -193,7 +193,7 @@ function FUN_CHART_TIME(props) {
                 }, newData);
             }
         })
-        newTypes.sort((a, b) => {
+        newTypes = [...newTypes].sort((a, b) => {
             if (a.type < b.type) { return -1; }
             if (a.type > b.type) { return 1; }
             return 0;
@@ -207,7 +207,7 @@ function FUN_CHART_TIME(props) {
         setDatan(newTotalC);
         setDatano(newDatano);
 
-        values.sort((prev, next) => prev - next);
+        values = [...values].sort((prev, next) => prev - next);
         // ---------------- MEAN -----------------
         newAvg = Number(newAvg / values.length).toFixed(2)
         newAvgC = newAvgC.map((avg, i) => Number(avg / newTotalC[i]).toFixed(2))
@@ -226,7 +226,7 @@ function FUN_CHART_TIME(props) {
         valuesC = valuesC.map(_values => {
             let _valuesA = _values.trim().split(' ');
             let newValuesA = _valuesA.slice(0, _valuesA.length);
-            newValuesA.sort((a, b) => a - b);
+            newValuesA = [...newValuesA].sort((a, b) => a - b);
             return newValuesA;
         })
 
@@ -324,7 +324,7 @@ function FUN_CHART_TIME(props) {
                     newDatano.push(row.id_public);
                     return;
                 };
-                if (!moment(row.clock_acto).isBetween(date_1, date_2, undefined, '[]')) return;
+                if (!dayjs(row.clock_acto).isBetween(date_1, date_2, undefined, '[]')) return;
 
                 let time_process = dateParser_dateDiff(row.clock_acto, row.clock_date);
                 let _x = time_process > 200 ? 200 : time_process;
@@ -365,7 +365,7 @@ function FUN_CHART_TIME(props) {
         setDatan2(newTotalC);
         setDatano2(newDatano);
 
-        values.sort((prev, next) => prev - next);
+        values = [...values].sort((prev, next) => prev - next);
         // ---------------- MEAN -----------------
         newAvg = Number(newAvg / values.length).toFixed(2)
         newAvgC = newAvgC.map((avg, i) => Number(avg / newTotalC[i]).toFixed(2))
@@ -384,7 +384,7 @@ function FUN_CHART_TIME(props) {
         valuesC = valuesC.map(_values => {
             let _valuesA = _values.trim().split(' ');
             let newValuesA = _valuesA.slice(0, _valuesA.length);
-            newValuesA.sort((a, b) => a - b);
+            newValuesA = [...newValuesA].sort((a, b) => a - b);
             return newValuesA;
         })
 
@@ -464,31 +464,31 @@ function FUN_CHART_TIME(props) {
         return <>
             <div className='row text-center my-1'>
             <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">FECHAS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">FECHAS</span>
                         </div>
-                        <input type="date" class="form-control text-end" id="date_1" defaultValue={date_1} />
-                        <input type="date" class="form-control text-end" id="date_2" defaultValue={date_2} />
+                        <input type="date" className="form-control text-end" id="date_1" defaultValue={date_1} />
+                        <input type="date" className="form-control text-end" id="date_2" defaultValue={date_2} />
                     </div>
                 </div>
                 <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">RADICADOS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">RADICADOS</span>
                         </div>
-                        <input type="text" class="form-control text-end" id="ids_1" defaultValue={filterId[0]} />
-                        <input type="text" class="form-control text-end" id="ids_2" defaultValue={filterId[1]} />
+                        <input type="text" className="form-control text-end" id="ids_1" defaultValue={filterId[0]} />
+                        <input type="text" className="form-control text-end" id="ids_2" defaultValue={filterId[1]} />
                     </div>
                 </div>
 
                 <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">RANGO DE DÍAS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">RANGO DE DÍAS</span>
                         </div>
-                        <input type="text" class="form-control text-end" id="d_1" defaultValue={filterD[0]} />
-                        <input type="text" class="form-control text-end" id="d_2" defaultValue={filterD[1]} />
+                        <input type="text" className="form-control text-end" id="d_1" defaultValue={filterD[0]} />
+                        <input type="text" className="form-control text-end" id="d_2" defaultValue={filterD[1]} />
                     </div>
                 </div>
 
@@ -663,9 +663,9 @@ function FUN_CHART_TIME(props) {
             {seeValid1 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div class="d-flex flex-wrap">
-                            {(Array.isArray(data) ? data : []).map(value => <div class="input-group-prepend border border-success">
-                                <div class="input-group-text">
+                        <div className="d-flex flex-wrap">
+                            {(Array.isArray(data) ? data : []).map(value => <div className="input-group-prepend border border-success">
+                                <div className="input-group-text">
                                     <label>{(value.name.slice(-7))}</label></div>
                             </div>)}
                         </div>
@@ -679,9 +679,9 @@ function FUN_CHART_TIME(props) {
                         <div className='fw-bold'> NO VALIDOS: {datano.length} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
                             <MDBIcon fas icon='eye' /></MDBBtn></div>
                         {seeNotValid1 ?
-                            <div class="d-flex flex-wrap">
-                                {(Array.isArray(datano) ? datano : []).map(value => <div class="input-group-prepend border border-primary">
-                                    <div class="input-group-text">
+                            <div className="d-flex flex-wrap">
+                                {(Array.isArray(datano) ? datano : []).map(value => <div className="input-group-prepend border border-primary">
+                                    <div className="input-group-text">
                                         <label>{(value.slice(-7))}</label></div>
                                 </div>)}
                             </div>
@@ -883,9 +883,9 @@ function FUN_CHART_TIME(props) {
             {seeValid2 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div class="d-flex flex-wrap">
-                            {(Array.isArray(data2) ? data2 : []).map(value => <div class="input-group-prepend border border-success">
-                                <div class="input-group-text">
+                        <div className="d-flex flex-wrap">
+                            {(Array.isArray(data2) ? data2 : []).map(value => <div className="input-group-prepend border border-success">
+                                <div className="input-group-text">
                                     <label>{(value.name.slice(-7))}</label></div>
                             </div>)}
                         </div>
@@ -899,9 +899,9 @@ function FUN_CHART_TIME(props) {
                         <div className='fw-bold'> NO VALIDOS: {datano2.length} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
                             <MDBIcon fas icon='eye' /></MDBBtn></div>
                         {seeNotValid2 ?
-                            <div class="d-flex flex-wrap">
-                                {(Array.isArray(datano2) ? datano2 : []).map(value => <div class="input-group-prepend border border-primary">
-                                    <div class="input-group-text">
+                            <div className="d-flex flex-wrap">
+                                {(Array.isArray(datano2) ? datano2 : []).map(value => <div className="input-group-prepend border border-primary">
+                                    <div className="input-group-text">
                                         <label>{(value.slice(-7))}</label></div>
                                 </div>)}
                             </div>

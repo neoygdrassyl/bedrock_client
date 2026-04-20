@@ -1,5 +1,5 @@
 import { MDBTooltip } from '../../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -71,12 +71,12 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                         {row.worker_id == window.user.id || window.user.roleId == 1
                             ? <MDBTooltip title='Dar visto' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                                 <button onClick={() => setFeedback(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                    <i class="far fa-check-square fa-2x"></i></button></MDBTooltip>
+                                    <i className="far fa-check-square fa-2x"></i></button></MDBTooltip>
                             : ""}
                         {window.user.roleId == 5 || window.user.roleId == 1 || window.user.roleId == 2
                             ? <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                                 <button onClick={() => setWorker(row)} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
-                                    <i class="far fa-paper-plane fa-2x"></i></button></MDBTooltip>
+                                    <i className="far fa-paper-plane fa-2x"></i></button></MDBTooltip>
                             : ""}
                     </>,
                 },
@@ -98,11 +98,11 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                     <h3 className="text-center py-2">DAR VISTO FINAL</h3>
                     <div className="col-6">
                         <label>Visto Final</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group mb-3">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
-                            <select class="form-select" id="pqrs_worker_feeback_1" required>
+                            <select className="form-select" id="pqrs_worker_feeback_1" required>
                                 <option value="0">NO APRUEBO</option>
                                 <option value="1" selected>SI APRUEBO</option>
                             </select>
@@ -111,12 +111,12 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                     </div>
                     <div className="col-6">
                         <label>Fecha de Visto</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group mb-3">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="pqrs_worker_feeback_2"
-                                disabled required defaultValue={moment().format('YYYY-MM-DD')} />
+                            <input type="date" max="2100-01-01" className="form-control" id="pqrs_worker_feeback_2"
+                                disabled required defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                 <div className="row">
                     <div className="col">
                         <label>Argumentación (Máximo 1000 Caracteres)</label>
-                        <textarea class="form-control mb-3" rows="3" maxlength="2000" id="pqrs_worker_feeback_3"></textarea>
+                        <textarea className="form-control mb-3" rows="3" maxlength="2000" id="pqrs_worker_feeback_3"></textarea>
                     </div>
                 </div>
             </>
@@ -192,7 +192,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                             {WOERKER_FEEBACK_COMPONENT()}
                             <div className="row d-flex justify-content-center">
                                 <div className="col-4 text-center">
-                                    <button className="btn btn-lg btn-success"><i class="far fa-check-square"></i> DAR VISTO </button>
+                                    <button className="btn btn-lg btn-success"><i className="far fa-check-square"></i> DAR VISTO </button>
                                 </div>
                             </div>
                         </form>
@@ -201,7 +201,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                     : ""}
                 {worker
                     ? <>
-                        <label class="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
+                        <label className="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
                         <PQRS_WORKERS_EMAILS
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}

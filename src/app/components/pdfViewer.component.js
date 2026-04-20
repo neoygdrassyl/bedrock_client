@@ -87,23 +87,23 @@ function PDF_VIEWER({ url, apipath }) {
                 <Page pageNumber={pageNumber} onLoadSuccess={onPageLoadSuccess} scale="1.75" />
             </Document>
 
-            <div class="row py-3">
-                <div class="col-6 text-start">
+            <div className="row py-3">
+                <div className="col-6 text-start">
                     <label className="pb-3">Pagina {pageNumber} de {numPages}</label>
-                    <i class="fas fa-chevron-circle-left fa-2x mx-2" style={_GET_STYLE('left')} onClick={() => prevPage()} ></i>
-                    <i class="fas fa-chevron-circle-right fa-2x mx-2" style={_GET_STYLE('right')} onClick={() => nextPage()} ></i>
+                    <i className="fas fa-chevron-circle-left fa-2x mx-2" style={_GET_STYLE('left')} onClick={() => prevPage()} ></i>
+                    <i className="fas fa-chevron-circle-right fa-2x mx-2" style={_GET_STYLE('right')} onClick={() => nextPage()} ></i>
                 </div>
-                <div class="col-6 text-end">
+                <div className="col-6 text-end">
                     <form id="form_pdf_viewer_to_page" onSubmit={toPage}>
                     <div className="row">
-                        <div class="col-8">
+                        <div className="col-8">
                             <label className="">Ir a pagina: </label>
                         </div>
-                        <div class="col-3">
+                        <div className="col-3">
                             <input type="number" step="1" min="1" id="pdf_viewer_page_to" className="form-control" defaultValue="1" />
                         </div>
-                        <div class="col-1 text-start ms-0 ps-0">
-                            <i class="fas fa-caret-square-right fa-2x ms-0 ps-0" onClick={() => toPage()} style={{ color: "DeepSkyBlue" }}></i>
+                        <div className="col-1 text-start ms-0 ps-0">
+                            <i className="fas fa-caret-square-right fa-2x ms-0 ps-0" onClick={() => toPage()} style={{ color: "DeepSkyBlue" }}></i>
                         </div>
                     </div>
                     </form>

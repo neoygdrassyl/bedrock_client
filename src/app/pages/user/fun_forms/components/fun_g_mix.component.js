@@ -99,7 +99,7 @@ function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }
             return <div className="row mb-3">
                 <div className="col-7">
                     <label>Foto de Valla o aviso</label>
-                    <select class="form-select" id="alert_sign_select" defaultValue={_GET_SIGN()[0]} disabled>
+                    <select className="form-select" id="alert_sign_select" defaultValue={_GET_SIGN()[0]} disabled>
                         <option value="-1">APORTADO FISICAMENTE</option>
                         <option value="0">SIN DOCUMENTO</option>
                         {_CHILD_6_SELECT()}
@@ -107,7 +107,7 @@ function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }
                 </div>
                 <div className="col-4">
                     <label>Fecha de Radicación</label>
-                    <input type="date" class="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
+                    <input type="date" className="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
                         disabled />
                 </div>
                 <div className="col-1">

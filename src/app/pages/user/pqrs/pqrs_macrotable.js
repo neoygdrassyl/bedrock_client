@@ -78,11 +78,11 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
         }
         let _GET_STOPLIGHT_COLOR = (row) => {
             if (!row.pqrs_time) return ""
-            if (row.status) return <i class="fas fa-lightbulb fa-2x text-dark"></i>
+            if (row.status) return <i className="fas fa-lightbulb fa-2x text-dark"></i>
             let days = dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1));
-            if (days <= 0) return <i class="fas fa-lightbulb fa-2x text-danger"></i>
-            if (days > 0 && days < 7) return <i class="fas fa-lightbulb fa-2x text-warning"></i>
-            if (days >= 7) return <i class="fas fa-lightbulb fa-2x text-success"></i>
+            if (days <= 0) return <i className="fas fa-lightbulb fa-2x text-danger"></i>
+            if (days > 0 && days < 7) return <i className="fas fa-lightbulb fa-2x text-warning"></i>
+            if (days >= 7) return <i className="fas fa-lightbulb fa-2x text-success"></i>
         }
         let _GET_REPLY_TIME_TIME = (row) => {
             if (!row.pqrs_time) return ""
@@ -116,7 +116,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 cell: row => <> <MDBTooltip title='Informacion solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                     <button className="btn btn-sm btn-info m-0 p-2 shadow-none"
                         onClick={() => NAVIGATION_GEN(row)}>
-                        <i class="far fa-eye" ></i></button></MDBTooltip>
+                        <i className="far fa-eye" ></i></button></MDBTooltip>
                 </>,
                 excell: false,
             },
@@ -378,7 +378,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 <div className="row">
                     <div className="col">
                         <label className="lead fw-bold me-3">Descargar Excel</label>
-                        <a target="_blank" onClick={() => generateCVS()} ><i class="far fa-file-excel fa-2x" style={{ color: "darkgreen" }}></i> </a>
+                        <button type="button" onClick={() => generateCVS()} ><i className="far fa-file-excel fa-2x" style={{ color: "darkgreen" }}></i> </button>
                     </div>
                 </div>
 

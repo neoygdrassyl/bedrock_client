@@ -81,11 +81,11 @@ export default function RECORD_ARC_GEN_2_REVIEW(props) {
                                     <input type='hidden' value={it.name} name={'rar_values_' + re.pid} id={'rar_values_' + re.pid + '_' + it.v} />
                                     <div className='col-2'>
                                         <input type="text" defaultValue={localJson.norm} name={'rar_norm_' + re.pid} id={'rar_norm_' + re.pid + '_' + it.j}
-                                            class="form-control form-control-sm" onBlur={() => manage_rar_rew(false)} />
+                                            className="form-control form-control-sm" onBlur={() => manage_rar_rew(false)} />
                                     </div>
                                     <div className='col-2'>
                                         <input type="text" defaultValue={localJson.project} name={'rar_project_' + re.pid} id={'rar_project_' + re.pid + '_' + it.j}
-                                            class="form-control form-control-sm" onBlur={() => manage_rar_rew(false)} />
+                                            className="form-control form-control-sm" onBlur={() => manage_rar_rew(false)} />
                                     </div>
                                     <div className='col-2'>
                                         <select className={_GET_SELECT_COLOR_VALUE(_check[it.c])}
@@ -98,7 +98,7 @@ export default function RECORD_ARC_GEN_2_REVIEW(props) {
                                     </div>
                                     <div className='col-4'>
                                         <input type="text" defaultValue={localJson.detail} name={'rar_detail_' + re.pid} id={'rar_detail_' + re.pid + '_' + it.j}
-                                            class="form-control form-control-sm" onBlur={() => manage_rar_rew(false)} />
+                                            className="form-control form-control-sm" onBlur={() => manage_rar_rew(false)} />
                                     </div>
                                 </div>}
                         </>

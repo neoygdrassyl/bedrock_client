@@ -48,6 +48,7 @@ yarn-error.log*
 
 # MCP config (contains secrets — keep only locally)
 .mcp.json
+opencode.json
 
 # Playwright MCP temporary artifacts (screenshots, snapshots, etc.)
 .playwright-mcp/

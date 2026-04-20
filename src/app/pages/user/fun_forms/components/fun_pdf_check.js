@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { dateParser } from '../../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains, domains_number } from '../../../../components/jsons/vars';
 
 const MySwal = withReactContent(Swal);
@@ -897,7 +897,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto']);
         pdfDoc.setLanguage('es-co');
@@ -924,16 +924,16 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>Autoridad Competente</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"func_pdf_0_1"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"func_pdf_0_1"}>
                                 {domains_number}
                             </select>
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Ciudad</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"func_pdf_0_2"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"func_pdf_0_2"}>
                                 {cities}
                             </select>
                         </div>
@@ -941,7 +941,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button className="btn btn-danger my-3" onClick={() => getPdfForm()}><i class="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
+                        <button className="btn btn-danger my-3" onClick={() => getPdfForm()}><i className="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
                     </div>
                 </div>
             </div>

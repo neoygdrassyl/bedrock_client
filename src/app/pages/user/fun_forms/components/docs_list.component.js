@@ -63,13 +63,13 @@ function DOCS_LIST({ idRef, text, setValues }) {
                 button: true,
                 cell: row => <MDBTooltip title='Copiar informacion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
                     <button className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => _COPY_INFO(row)}>
-                        <i class="far fa-copy fa-2x"></i></button></MDBTooltip>,
+                        <i className="far fa-copy fa-2x"></i></button></MDBTooltip>,
             }
         ]
         const docsData = _GET_DOCS_DATA();
 
         let toggle = (id) => {
-            setModalSearchList(!modalSearchList);
+            setModalSearchList(prev => !prev);
         }
         let _COPY_INFO = (_data) => {
             setValues(idRef, [_data.cod, _data.desc])
@@ -77,7 +77,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
         }
         return (
             <div>
-                <MDBBtn className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i class="fas fa-th-list"></i> {text}</MDBBtn>
+                <MDBBtn className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</MDBBtn>
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modalSearchList}
                     style={customStylesForModal}
@@ -85,7 +85,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
                 >
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-th-list"></i> CODIGOS TIPOLOGIA DOCUMENTAL</label>
+                        <label><i className="fas fa-th-list"></i> CODIGOS TIPOLOGIA DOCUMENTAL</label>
                         <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                     </div>
                     <DataTable
@@ -100,7 +100,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
                         noDataComponent="No hay datos"
                     />
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                        <MDBBtn className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                     </div>
                 </Modal>
 
