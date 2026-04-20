@@ -42,13 +42,30 @@
 #main-content :where(.bg-secondary) { background-color: hsl(var(--muted)) !important; }
 #main-content :where(.bg-light)     { background-color: hsl(var(--muted)) !important; }
 #main-content :where(.bg-dark)      { background-color: hsl(var(--sidebar)) !important; }
+#main-content :where(.bg-white)     { background-color: hsl(var(--card)) !important; }
+#main-content :where(.bg-transparent) { background-color: transparent !important; }
 
-#main-content :where(.text-primary)   { color: hsl(var(--primary)) !important; }
-#main-content :where(.text-success)   { color: hsl(var(--accent)) !important; }
-#main-content :where(.text-danger)    { color: hsl(var(--destructive)) !important; }
-#main-content :where(.text-warning)   { color: hsl(var(--warning)) !important; }
-#main-content :where(.text-info)      { color: hsl(var(--primary)) !important; }
-#main-content :where(.text-muted)     { color: hsl(var(--muted-foreground)) !important; }
+/* ── Border color utilities (v15) ─────────────────────────────────── */
+#main-content :where(.border-primary)   { border-color: hsl(var(--primary)) !important; }
+#main-content :where(.border-secondary) { border-color: hsl(var(--border)) !important; }
+#main-content :where(.border-info)      { border-color: hsl(var(--primary) / 0.3) !important; }
+#main-content :where(.border-success)   { border-color: hsl(var(--accent) / 0.3) !important; }
+#main-content :where(.border-warning)   { border-color: hsl(var(--warning) / 0.3) !important; }
+#main-content :where(.border-danger)    { border-color: hsl(var(--destructive) / 0.3) !important; }
+
+/* ── Collapsible triggers (v15) ───────────────────────────────────── */
+#main-content :where(.Collapsible) {
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+#main-content :where(.Collapsible__trigger) {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
 
 /* ── Buttons (Enhanced v6) ────────────────────────────────────────── */
 #main-content :where(.btn) {
@@ -840,18 +857,36 @@
   border-color: hsl(var(--border));
 }
 
-/* ─── Text utility overrides ───────────────────────────────────────── */
+/* ─── Text utility overrides (Enhanced v15) ───────────────────────── */
 #main-content :where(.text-primary) { color: hsl(var(--primary)) !important; }
 #main-content :where(.text-success) { color: hsl(var(--accent)) !important; }
-#main-content :where(.text-danger) { color: hsl(var(--destructive)) !important; }
+#main-content :where(.text-danger)  { color: hsl(var(--destructive)) !important; }
 #main-content :where(.text-warning) { color: hsl(var(--warning)) !important; }
-#main-content :where(.text-muted) { color: hsl(var(--muted-foreground)) !important; }
+#main-content :where(.text-info)    { color: hsl(var(--primary)) !important; }
+#main-content :where(.text-muted)   { color: hsl(var(--muted-foreground)) !important; }
+/* text-dark/text-light/text-white: map to foreground tokens for dark mode compat */
+#main-content :where(.text-dark)    { color: hsl(var(--foreground)) !important; }
+#main-content :where(.text-light)   { color: hsl(var(--primary-foreground)) !important; }
+#main-content :where(.text-white)   { color: hsl(var(--primary-foreground)) !important; }
+/* text-justify: soften to normal for modern reading flow */
+#main-content :where(.text-justify) { text-align: start; }
+/* lead: tone down to match app density */
+#main-content :where(.lead)         { font-size: 0.9375rem; font-weight: 400; line-height: 1.5; }
+/* fw-bold: slightly reduce weight for modern feel */
+#main-content :where(.fw-bold)      { font-weight: 600; }
 
-/* ─── Headings ─────────────────────────────────────────────────────── */
-#main-content :where(h1, h2, h3, h4) {
+/* ─── Headings (Enhanced v15) ──────────────────────────────────────── */
+#main-content :where(h1, h2, h3, h4, h5, h6) {
   color: hsl(var(--foreground));
   font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
 }
+#main-content :where(h1) { font-size: 1.5rem; font-weight: 700; }
+#main-content :where(h2) { font-size: 1.25rem; font-weight: 600; }
+#main-content :where(h3) { font-size: 1.125rem; font-weight: 600; }
+#main-content :where(h4) { font-size: 1rem; font-weight: 600; }
+#main-content :where(h5) { font-size: 0.875rem; font-weight: 600; }
+#main-content :where(h6) { font-size: 0.8125rem; font-weight: 600; }
 
 /* ─── Accordion / Collapsible ──────────────────────────────────────── */
 #main-content :where(.accordion-button) {
@@ -879,35 +914,7 @@
   background-color: hsl(var(--muted) / 0.5);
 }
 
-/* ── Typography density & polish ──────────────────────────────────── */
-#main-content :where(h1) {
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
-}
-#main-content :where(h2) {
-  font-size: 1.1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-#main-content :where(h3) {
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-#main-content :where(h4) {
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-#main-content :where(h5) {
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-#main-content :where(h6) {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: hsl(var(--muted-foreground));
-}
+/* ── Typography density & polish (merged into v15 headings) ───────── */
 #main-content :where(p, label, span) {
   font-size: 0.8125rem;
 }
