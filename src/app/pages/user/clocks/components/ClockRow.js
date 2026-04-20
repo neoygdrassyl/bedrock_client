@@ -298,15 +298,15 @@ export const ClockRow = memo((props) => {
             if (isCompleted) {
                 text = `A tiempo`;
                 color = '#2f9e44';
-                icon = 'fa-check';
+                icon = 'Check';
             } else if (!isCompleted && actoAdministrativo?.date_start) {
                 text = 'Vencida';
                 color = '#e03131';
-                icon = 'fa-times-circle';
+                icon = 'XCircle';
             } else {
                 text = 'Pendiente';
                 color = '#f08c00';
-                icon = 'fa-hourglass-half';
+                icon = 'Hourglass';
             }
             return { text, color, icon };
         }
@@ -331,11 +331,11 @@ export const ClockRow = memo((props) => {
                 const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                 text = `Retraso de ${delayDays} día(s)`;
                 color = '#e03131';
-                icon = 'fa-exclamation-circle';
+                icon = 'AlertCircle';
             } else {
                 text = `A tiempo`;
                 color = '#2f9e44';
-                icon = 'fa-check';
+                icon = 'Check';
             }
         } else {
             const isOverdue = today.isAfter(limitMoment, 'day');
@@ -345,17 +345,17 @@ export const ClockRow = memo((props) => {
                 const overdueDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                 text = `Vencido por ${overdueDays} día(s)`;
                 color = '#e03131';
-                icon = 'fa-exclamation-circle';
+                icon = 'AlertCircle';
             } else {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                 const remainingDays = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                 text = `${remainingDays} día(s) restante(s)`;
                 color = '#f08c00';
-                icon = 'fa-hourglass-half';
+                icon = 'Hourglass';
                 
                 if (remainingDays <= 2) {
                     color = '#e03131';
-                    icon = 'fa-exclamation-triangle';
+                    icon = 'AlertTriangle';
                 }
             }
         }
@@ -396,11 +396,11 @@ export const ClockRow = memo((props) => {
                 const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                 text = `Retraso de ${delayDays} día(s)`;
                 color = '#e03131';
-                icon = 'fa-exclamation-circle';
+                icon = 'AlertCircle';
             } else {
                 text = `A tiempo`;
                 color = '#2f9e44';
-                icon = 'fa-check';
+                icon = 'Check';
             }
         } else {
             const isOverdue = today.isAfter(limitMoment, 'day');
@@ -410,17 +410,17 @@ export const ClockRow = memo((props) => {
                 const overdueDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                 text = `Vencido por ${overdueDays} día(s)`;
                 color = '#e03131';
-                icon = 'fa-exclamation-circle';
+                icon = 'AlertCircle';
             } else {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                 const remainingDays = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                 text = `${remainingDays} día(s) restante(s)`;
                 color = '#f08c00';
-                icon = 'fa-hourglass-half';
+                icon = 'Hourglass';
                 
                 if (remainingDays <= 2) {
                     color = '#e03131';
-                    icon = 'fa-exclamation-triangle';
+                    icon = 'AlertTriangle';
                 }
             }
         }
@@ -466,7 +466,7 @@ export const ClockRow = memo((props) => {
                     if (depClockDef) {
                         return {
                             text: `Espera: ${depClockDef.name || 'Evento previo'}`,
-                            icon: 'fa-pause-circle',
+                            icon: 'PauseCircle',
                             color: '#868e96'
                         };
                     }
@@ -477,7 +477,7 @@ export const ClockRow = memo((props) => {
         // Si no hay dependencias pendientes, este es el siguiente paso
         return {
             text: 'Acción requerida',
-            icon: 'fa-play-circle',
+            icon: 'PlayCircle',
             color: '#1971c2'
         };
     };

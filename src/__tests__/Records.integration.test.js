@@ -60,9 +60,6 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('sweetalert2-react-content', () => ({
-  default: (swal) => swal,
-}));
 
 vi.mock('../app/services/fun.service', () => ({
   __esModule: true,

@@ -168,13 +168,6 @@ export const MDBTypography = ({ tag: Tag = 'p', variant, note, noteColor, classN
   )} {...rest}>{children}</Tag>
 );
 
-// ─── Icon ─────────────────────────────────────────────────────────────────────
-
-export const MDBIcon = ({ icon, fab, fas, far, flag, className, size, ...rest }) => {
-  const prefix = fab ? 'fab' : far ? 'far' : flag ? 'flag-icon' : 'fas';
-  return <i className={clsx(prefix, flag ? `flag-icon-${flag}` : `fa-${icon}`, size && `fa-${size}`, className)} {...rest} />;
-};
-
 // ─── Spinner ──────────────────────────────────────────────────────────────────
 
 export const MDBSpinner = ({ tag: Tag = 'div', color, grow, size, className, ...rest }) => (

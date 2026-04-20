@@ -11,7 +11,7 @@ import { MemoryRouter } from 'react-router-dom';
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key) => key,
-    i18n: { changeLanguage: vi.fn() },
+    i18n: { changeLanguage: vi.fn() }
   }),
 }));
 
@@ -33,11 +33,7 @@ vi.mock('sweetalert2', () => ({
     close: vi.fn(),
   },
 }));
-vi.mock('sweetalert2-react-content', () => ({
-  default: () => ({
-    fire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
-  }),
-}));
+
 
 vi.mock('@/app/components/jsons/vars', () => ({
   infoCud: {
