@@ -214,6 +214,24 @@
     0 10px 15px -3px rgb(0 0 0 / 0.3),
     0 4px 6px -4px rgb(0 0 0 / 0.2);
 }
+.dark .swal2-title {
+  color: hsl(var(--foreground));
+}
+.dark .swal2-html-container {
+  color: hsl(var(--muted-foreground));
+}
+.dark .swal2-input,
+.dark .swal2-textarea,
+.dark .swal2-select {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--input));
+}
+.dark .swal2-input:focus,
+.dark .swal2-textarea:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
 
 .dark .swal2-container {
   background: rgb(0 0 0 / 0.6) !important;
