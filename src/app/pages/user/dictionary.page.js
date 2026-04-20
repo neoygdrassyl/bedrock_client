@@ -106,25 +106,25 @@ export default function DICTIONARY(props) {
         _COMPONENT.push(<>{_array[0] > 0
             ?
             <VIZUALIZER id={_array[0]} apipath={'/files/'}
-                icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} />
+                icon={'IdCard'} color={'DeepSkyBlue'} />
             : ""}</>)
 
         _COMPONENT.push(<>{_array[1] > 0
             ?
             <VIZUALIZER id={_array[1]} apipath={'/files/'}
-                icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
+                icon={'BadgeCheck'} color={'DarkOrchid'} />
             : ""}</>)
 
         _COMPONENT.push(<>{_array[2] > 0
             ?
             <VIZUALIZER id={_array[2]} apipath={'/files/'}
-                icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} />
+                icon={'BookOpen'} color={'GoldenRod'} />
             : ""}</>)
 
         _COMPONENT.push(<>{_array[3] > 0
             ?
             <VIZUALIZER id={_array[3]} apipath={'/files/'}
-                icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} />
+                icon={'FileText'} color={'LimeGreen'} />
             : ""}</>)
 
         return <>{_COMPONENT}</>

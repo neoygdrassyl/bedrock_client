@@ -56,23 +56,23 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
             id: 'details_time',
             color: 'info',
             items: [
-                { id: 'general', icon: 'far fa-folder-open', label: 'DETALLES', from: 'general' },
-                { id: 'clock', icon: 'far fa-clock', label: 'TIEMPOS', from: 'clock' }
+                { id: 'general', icon: 'FolderOpen', label: 'DETALLES', from: 'general' },
+                { id: 'clock', icon: 'Clock', label: 'TIEMPOS', from: 'clock' }
             ]
         });
 
         // Grupo 2: Documentos y Edición (solo si el estado lo permite)
         const editGroup = [];
-        editGroup.push({ id: 'archive', icon: 'fas fa-archive', label: 'DOCUMENTOS', from: 'archive' });
+        editGroup.push({ id: 'archive', icon: 'Archive', label: 'DOCUMENTOS', from: 'archive' });
         
         if (currentItem.state != 101 && currentItem.state <= 200) {
-            editGroup.push({ id: 'edit', icon: 'far fa-folder-open', label: 'ACTUALIZAR', from: 'edit' });
-            editGroup.push({ id: 'check', icon: 'far fa-check-square', label: 'CHECKEO', from: 'check' });
+            editGroup.push({ id: 'edit', icon: 'FolderOpen', label: 'ACTUALIZAR', from: 'edit' });
+            editGroup.push({ id: 'check', icon: 'CheckSquare', label: 'CHECKEO', from: 'check' });
             
             if (!isPH && !isOA && rules[0] != 1) {
                 editGroup.push({ 
                     id: 'alert', 
-                    icon: 'fas fa-sign', 
+                    icon: 'Signpost', 
                     label: 'PUBLICIDAD', 
                     from: 'alert',
                     badge: pqrsxfun?.length ? 'PQRS' : null
@@ -93,17 +93,17 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
             const reportsItems = [];
 
             if (!isPH) {
-                reportsItems.push({ id: 'record_law', icon: 'fas fa-balance-scale', label: 'INF. JURÍDICO', from: 'record_law' });
+                reportsItems.push({ id: 'record_law', icon: 'Scale', label: 'INF. JURÍDICO', from: 'record_law' });
 
                 if (!isOA) {
-                    reportsItems.push({ id: 'record_arc', icon: 'far fa-building', label: 'INF. ARQ.', from: 'record_arc' });
+                    reportsItems.push({ id: 'record_arc', icon: 'Building', label: 'INF. ARQ.', from: 'record_arc' });
                     
                     if (rules[1] != 1) {
-                        reportsItems.push({ id: 'record_eng', icon: 'fas fa-cogs', label: 'INF. ESTRUCT.', from: 'record_eng' });
+                        reportsItems.push({ id: 'record_eng', icon: 'Settings', label: 'INF. ESTRUCT.', from: 'record_eng' });
                     }
                 }
             } else {
-                reportsItems.push({ id: 'record_ph', icon: 'fas fa-pencil-ruler', label: 'INFORME P.H.', from: 'record_ph' });
+                reportsItems.push({ id: 'record_ph', icon: 'PenTool', label: 'INFORME P.H.', from: 'record_ph' });
             }
 
             if (reportsItems.length > 0) {
@@ -118,10 +118,10 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
             const finalItems = [];
             
             if (!isPH && !isOA) {
-                finalItems.push({ id: 'record_review', icon: 'fas fa-file-contract', label: 'ACTA', from: 'record_review' });
+                finalItems.push({ id: 'record_review', icon: 'FileText', label: 'ACTA', from: 'record_review' });
             }
             
-            finalItems.push({ id: 'expedition', icon: 'far fa-file-alt', label: 'EXPEDICIÓN', from: 'expedition' });
+            finalItems.push({ id: 'expedition', icon: 'FileText', label: 'EXPEDICIÓN', from: 'expedition' });
 
             if (finalItems.length > 0) {
                 navGroups.push({
@@ -209,7 +209,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                                             disabled={isActive}
                                             data-tooltip={item.label}
                                         >
-                                            <i className={item.icon}></i>
+                                            <Icon name={item.icon} size={16} />
                                             {!isCollapsed && (
                                                 <span className="fun-nav-label">
                                                     {item.label}

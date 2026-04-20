@@ -35,24 +35,24 @@ function RECORD_ENG_DOCS_CHECK(props) {
             _COMPONENT.push(<>{_array[0] > 0
                 ?
                 <span title="CEDULA DE CIUDADANIA"><VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                        icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} /></span>
+                        icon={'IdCard'} color={'DeepSkyBlue'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[1] > 0
                 ?
                 <span title="MATRICULA"><VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                        icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} /></span>
+                        icon={'BadgeCheck'} color={'DarkOrchid'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
                 ?
                 <span title="FICHA COPNIA"><VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                        icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} /></span>
+                        icon={'BookOpen'} color={'GoldenRod'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
                 ? <span title="HOJA DE VIDA Y CERTIFICADOS"><VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                        icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} /></span>
+                        icon={'FileText'} color={'LimeGreen'} /></span>
                 : ""}</>)
 
             return <>{_COMPONENT}</>

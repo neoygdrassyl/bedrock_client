@@ -13,6 +13,7 @@ import { AlarmsWidget } from './components/AlarmsWidget';
 import { ToolsMenu } from './components/ToolsMenu';
 import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles, sumarDiasHabiles } from './hooks/useClocksManager';
+import { getIconSvg } from '../../../utils/iconSvgString';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
 import { GanttModal } from './components/gantt/GanttModal';
 
@@ -493,7 +494,7 @@ export default function EXP_CLOCKS(props) {
       swalFormDialog({
         title: 'Nueva Suspensión de Términos',
         html: `<div class="row g-3">
-            <div class="col-12"><div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Días disponibles: <strong>${availableDays}</strong></div></div>
+            <div class="col-12"><div class="alert alert-info">${getIconSvg("fa-info-circle", 14, "me-2")}Días disponibles: <strong>${availableDays}</strong></div></div>
             ${typeSelectHtml}
             <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="susp_start" class="form-control" value="${systemDate}"/></div>
             <div class="col-12"><label class="form-label">Información Adicional</label><textarea id="susp_info" class="form-control" rows="3" placeholder="Detalles..."></textarea></div>
@@ -523,7 +524,7 @@ export default function EXP_CLOCKS(props) {
       swalFormDialog({
         title: 'Nueva Prórroga por Complejidad',
         html: `<div class="row g-3">
-                <div class="col-12"><div class="alert alert-info"><i class="fas fa-clock me-2"></i>Otorga hasta <strong>22 días hábiles</strong> adicionales.</div></div>
+                <div class="col-12"><div class="alert alert-info">${getIconSvg("fa-clock", 14, "me-2")}Otorga hasta <strong>22 días hábiles</strong> adicionales.</div></div>
                 <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="ext_start" class="form-control" value="${systemDate}"/></div>
                 <div class="col-12"><label class="form-label">Fecha de Fin (Opcional)</label><input type="date" id="ext_end" class="form-control"/></div>
             </div>`,

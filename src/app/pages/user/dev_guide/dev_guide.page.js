@@ -73,15 +73,15 @@ export default function DEV_GUIDE(props) {
 
     let _NAVIGATION_BUTTONS = () => {
         const sections = [
-            { num: 1, label: 'Visión General', md: guide_dev_01, icon: 'fa-eye' },
-            { num: 2, label: 'Arquitectura', md: guide_dev_02, icon: 'fa-sitemap' },
-            { num: 3, label: 'Frontend', md: guide_dev_03, icon: 'fa-laptop-code' },
-            { num: 4, label: 'Backend', md: guide_dev_04, icon: 'fa-server' },
-            { num: 5, label: 'APIs', md: guide_dev_05, icon: 'fa-plug' },
-            { num: 6, label: 'Configuración', md: guide_dev_06, icon: 'fa-cogs' },
-            { num: 7, label: 'Extensibilidad', md: guide_dev_07, icon: 'fa-puzzle-piece' },
-            { num: 8, label: 'Licencias', md: guide_dev_08, icon: 'fa-id-card' },
-            { num: 9, label: 'Revisiones', md: guide_dev_09, icon: 'fa-clipboard-check' },
+            { num: 1, label: 'Visión General', md: guide_dev_01, icon: 'Eye' },
+            { num: 2, label: 'Arquitectura', md: guide_dev_02, icon: 'Network' },
+            { num: 3, label: 'Frontend', md: guide_dev_03, icon: 'Monitor' },
+            { num: 4, label: 'Backend', md: guide_dev_04, icon: 'Server' },
+            { num: 5, label: 'APIs', md: guide_dev_05, icon: 'Plug' },
+            { num: 6, label: 'Configuración', md: guide_dev_06, icon: 'Settings' },
+            { num: 7, label: 'Extensibilidad', md: guide_dev_07, icon: 'Puzzle' },
+            { num: 8, label: 'Licencias', md: guide_dev_08, icon: 'IdCard' },
+            { num: 9, label: 'Revisiones', md: guide_dev_09, icon: 'ClipboardCheck' },
         ];
 
         return (

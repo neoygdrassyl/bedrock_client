@@ -4,6 +4,7 @@ import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager
 import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 import { Icon } from '@/components/icon';
 import { swalFormDialog } from '../../../../utils/swalAdapter';
+import { getIconSvg } from '../../../../utils/iconSvgString';
 
 // --- Anchos de columna centralizados ---
 const COL_WIDTHS = {
@@ -540,7 +541,7 @@ export const ClockRow = memo((props) => {
             <div class="time-detail-modal">
                 <div class="tdm-header">
                     <div class="tdm-title-group">
-                        <div class="tdm-icon-box"><i class="fas fa-calendar-day"></i></div>
+                        <div class="tdm-icon-box">${getIconSvg("fa-calendar-day")}</div>
                         <div>
                             <h5 class="tdm-title">${title}</h5>
                             <span class="tdm-subtitle">${systemDesc}</span>
@@ -551,7 +552,7 @@ export const ClockRow = memo((props) => {
 
                 <div class="tdm-grid">
                     <div class="tdm-card">
-                        <div class="tdm-card-header"><i class="fas fa-calendar-check text-primary"></i> Fecha Real</div>
+                        <div class="tdm-card-header">${getIconSvg("fa-calendar-check", 14, "text-primary")} Fecha Real</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${currentDate}</div>
                             ${legalData.baseDate ? `<div className="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
@@ -559,7 +560,7 @@ export const ClockRow = memo((props) => {
                     </div>
 
                     <div class="tdm-card">
-                        <div class="tdm-card-header"><i class="fas fa-gavel text-danger"></i> Límite Legal</div>
+                        <div class="tdm-card-header">${getIconSvg("fa-gavel", 14, "text-danger")} Límite Legal</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${legalData.limitDate ? formatDate(legalData.limitDate) : 'N/A'}</div>
                             <div class="tdm-sub-value">${(state === 501 ? 'Límite legal con holgura de 2 días' : state === 502 ? 'Límite legal con holgura de 1 día' : '') || ''}</div>
@@ -567,7 +568,7 @@ export const ClockRow = memo((props) => {
                     </div>
 
                     <div class="tdm-card">
-                        <div class="tdm-card-header"><i class="fas fa-user-clock text-info"></i> Programado</div>
+                        <div class="tdm-card-header">${getIconSvg("fa-user-clock", 14, "text-info")} Programado</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : 'N/A'}</div>
                             <div class="tdm-sub-value">${scheduledData ? `${scheduledData.days} días hábiles previstos` : 'No programado'}</div>
@@ -585,7 +586,7 @@ export const ClockRow = memo((props) => {
                 ` : ''}
 
                 <div class="tdm-section">
-                    <div class="tdm-section-title"><i class="fas fa-comment-alt"></i> Observaciones / Notas</div>
+                    <div class="tdm-section-title">${getIconSvg("fa-comment-alt")} Observaciones / Notas</div>
                     <textarea id="swal-input-obs" class="form-control tdm-textarea" placeholder="Escribe aquí observaciones sobre este tiempo...">${existingObs}</textarea>
                 </div>
             </div>

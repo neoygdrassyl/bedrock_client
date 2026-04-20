@@ -619,10 +619,7 @@ const restoreDocs = useCallback(() => {
                                     </Button>
                                 </>
                                 ) : null}
-                                <i
-                                className={`fas fa-chevron-${listDocsOpen ? "up" : "down"} caret`}
-                                aria-hidden="true"
-                                />
+                                <Icon name={listDocsOpen ? "ChevronUp" : "ChevronDown"} size={14} />
                             </span>
                             </button>
 
@@ -864,11 +861,7 @@ const restoreDocs = useCallback(() => {
                                         }}
                                         title={showHiddenDocs ? "Ocultar ocultos" : "Mostrar ocultos"}
                                     >
-                                        <i
-                                        className={`fas ${
-                                            showHiddenDocs ? "fa-eye-slash" : "fa-eye"
-                                        }`}
-                                        />
+                                        <Icon name={showHiddenDocs ? "EyeOff" : "Eye"} size={14} />
                                         <span className="d-none d-sm-inline">
                                         {showHiddenDocs ? "Ocultar ocultos" : "Mostrar ocultos"}
                                         </span>
@@ -899,10 +892,7 @@ const restoreDocs = useCallback(() => {
                                     </>
                                 ) : null}
 
-                                <i
-                                    className={`fas fa-chevron-${docsOpen ? "up" : "down"} caret`}
-                                    aria-hidden="true"
-                                />
+                                <Icon name={docsOpen ? "ChevronUp" : "ChevronDown"} size={14} />
                                 </span>
                             </button>
 
