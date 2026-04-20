@@ -72,13 +72,13 @@ const AlarmPreviewCard = ({ alarm }) => {
     if (isBinaryActivity) {
         displayStatusText = statusText; // "Pendiente", "Vencida", "Completada"
         if (alarmType === 'overdue') {
-            statusIcon = 'fa-times-circle';
+            statusIcon = 'XCircle';
             statusColor = 'text-danger';
         } else if (alarmType === 'completed') {
-            statusIcon = 'fa-check-circle';
+            statusIcon = 'CheckCircle';
             statusColor = 'text-success';
         } else {
-            statusIcon = 'fa-circle';
+            statusIcon = 'Circle';
             statusColor = 'text-warning';
         }
     } 
@@ -86,15 +86,15 @@ const AlarmPreviewCard = ({ alarm }) => {
     else {
         if (alarm.remainingDays < 0) {
             displayStatusText = `Vencido por ${Math.abs(alarm.remainingDays)}d`;
-            statusIcon = 'fa-exclamation-circle';
+            statusIcon = 'AlertCircle';
             statusColor = 'text-danger';
         } else if (alarm.remainingDays === 0) {
             displayStatusText = 'Vence Hoy';
-            statusIcon = 'fa-calendar-times';
+            statusIcon = 'CalendarX';
             statusColor = 'text-danger';
         } else {
             displayStatusText = `Vence en ${alarm.remainingDays}d`;
-            statusIcon = 'fa-hourglass-half';
+            statusIcon = 'Hourglass';
             statusColor = 'text-warning';
         }
     }
@@ -102,7 +102,7 @@ const AlarmPreviewCard = ({ alarm }) => {
     // NUEVO: Clases y estilos específicos por tipo
     const cardTypeClass = type === 'legal' ? 'alarm-card-legal' : 'alarm-card-scheduled';
     const typeBadgeClass = type === 'legal' ? 'type-badge-legal' : 'type-badge-scheduled';
-    const typeIcon = type === 'legal' ? 'fa-gavel' : 'fa-calendar-check';
+    const typeIcon = type === 'legal' ? 'Gavel' : 'CalendarCheck';
 
     return (
         <div className={`alarm-preview-card severity-${severity} ${cardTypeClass}`}>

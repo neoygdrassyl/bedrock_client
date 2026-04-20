@@ -70,7 +70,6 @@ vi.mock('../http-common', () => ({
 }));
 
 vi.mock('sweetalert2', () => ({ default: { fire: vi.fn(() => Promise.resolve({ isConfirmed: true })), close: vi.fn() } }));
-vi.mock('sweetalert2-react-content', () => ({ default: () => ({ fire: vi.fn(() => Promise.resolve({ isConfirmed: true })) }) }));
 vi.mock('../app/components/jsons/vars', () => ({ infoCud: { name: 'Curaduría Urbana Test', city: 'bucaramanga', nit: '000-000', email: 'test@test.com' } }));
 
 import App from '../app/App';

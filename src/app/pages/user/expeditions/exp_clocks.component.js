@@ -345,18 +345,18 @@ export default function EXP_CLOCKS(props) {
   // ************** CATEGORÍAS (color/ícono) ************** //
   const catForTitle = (title = '') => {
     title = title.toUpperCase();
-    if (title.includes('DESISTIDO')) return { color: '#F93154', icon: 'fa-exclamation-circle' };
-    if (title.includes('RADICACIÓN')) return { color: '#5bc0de', icon: 'fa-inbox' };
-    if (title.includes('OBSERVACIONES')) return { color: '#fd7e14', icon: 'fa-clipboard-list' };
-    if (title.includes('CORRECCIONES')) return { color: '#20c997', icon: 'fa-tools' };
-    if (title.includes('VIABILIDAD')) return { color: '#6f42c1', icon: 'fa-compass' };
-    if (title.includes('PAGOS')) return { color: '#198754', icon: 'fa-money-bill' };
-    if (title.includes('RESOLUCIÓN')) return { color: '#0b5ed7', icon: 'fa-file-signature' };
-    if (title.includes('RECURSO')) return { color: '#d63384', icon: 'fa-exclamation-circle' };
-    if (title.includes('LICENCIA')) return { color: '#157347', icon: 'fa-id-card' };
-    if (title.includes('SUSPENSIÓN')) return { color: '#ffc107', icon: 'fa-pause' };
-    if (title.includes('PRÓRROGA')) return { color: '#17a2b8', icon: 'fa-clock' };
-    return { color: '#5bc0de', icon: 'fa-folder-open' };
+    if (title.includes('DESISTIDO')) return { color: '#F93154', icon: 'AlertCircle' };
+    if (title.includes('RADICACIÓN')) return { color: '#5bc0de', icon: 'Inbox' };
+    if (title.includes('OBSERVACIONES')) return { color: '#fd7e14', icon: 'ClipboardList' };
+    if (title.includes('CORRECCIONES')) return { color: '#20c997', icon: 'Wrench' };
+    if (title.includes('VIABILIDAD')) return { color: '#6f42c1', icon: 'Compass' };
+    if (title.includes('PAGOS')) return { color: '#198754', icon: 'Banknote' };
+    if (title.includes('RESOLUCIÓN')) return { color: '#0b5ed7', icon: 'FileSignature' };
+    if (title.includes('RECURSO')) return { color: '#d63384', icon: 'AlertCircle' };
+    if (title.includes('LICENCIA')) return { color: '#157347', icon: 'IdCard' };
+    if (title.includes('SUSPENSIÓN')) return { color: '#ffc107', icon: 'Pause' };
+    if (title.includes('PRÓRROGA')) return { color: '#17a2b8', icon: 'Clock' };
+    return { color: '#5bc0de', icon: 'FolderOpen' };
   };
 
   // *************** BARRA DE CONTROL MEJORADA ****************** //

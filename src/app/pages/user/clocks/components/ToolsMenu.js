@@ -24,14 +24,14 @@ export const ToolsMenu = ({ onAction, canAddSuspension, canAddExtension, isDesis
     };
 
     const menuItems = [
-        { id: 'schedule', label: 'Programar Tiempos', icon: 'fa-calendar-check', show: true },
-        { id: 'breakdown', label: 'Desglose de Días', icon: 'fa-chart-pie', show: true },
-        { id: 'gantt', label: 'Ver Gantt', icon: 'fa-project-diagram', show: true },
-        { id: 'time-travel', label: 'Emulador de Fecha', icon: 'fa-user-clock', show: true },
-        { id: 'calendar', label: 'Calendario', icon: 'fa-calendar-alt', show: true },
+        { id: 'schedule', label: 'Programar Tiempos', icon: 'CalendarCheck', show: true },
+        { id: 'breakdown', label: 'Desglose de Días', icon: 'PieChart', show: true },
+        { id: 'gantt', label: 'Ver Gantt', icon: 'Network', show: true },
+        { id: 'time-travel', label: 'Emulador de Fecha', icon: 'UserClock', show: true },
+        { id: 'calendar', label: 'Calendario', icon: 'Calendar', show: true },
         { isDivider: true, show: !isDesisted && (canAddSuspension || canAddExtension) },
-        { id: 'suspension', label: 'Añadir Suspensión', icon: 'fa-pause', show: !isDesisted && canAddSuspension, isDynamic: true },
-        { id: 'extension', label: 'Añadir Prórroga', icon: 'fa-clock', show: !isDesisted && canAddExtension, isDynamic: true },
+        { id: 'suspension', label: 'Añadir Suspensión', icon: 'Pause', show: !isDesisted && canAddSuspension, isDynamic: true },
+        { id: 'extension', label: 'Añadir Prórroga', icon: 'Clock', show: !isDesisted && canAddExtension, isDynamic: true },
     ];
 
     return (

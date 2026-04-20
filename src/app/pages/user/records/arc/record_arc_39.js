@@ -3,7 +3,6 @@ import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 // import React, { Component } from 'react';
 // import { Tabs, Tab, Modal, Button, Form, Table } from 'react-bootstrap';
 // // // import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-// import { MDBIcon } from 'mdbreact';
 
 // // class RECORD_ARC_39 extends Component {
 //   state = {

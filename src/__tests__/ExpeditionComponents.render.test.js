@@ -68,13 +68,6 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('sweetalert2-react-content', () => ({
-  default: () => ({
-    fire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
-    close: vi.fn(),
-  }),
-}));
-
 vi.mock('@/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
     if (!isOpen) return null;

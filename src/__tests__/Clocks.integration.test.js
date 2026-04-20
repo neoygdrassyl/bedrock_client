@@ -16,9 +16,6 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('sweetalert2-react-content', () => ({
-  default: (swal) => swal,
-}));
 
 vi.mock('sweetalert2', () => ({
   default: {

@@ -94,11 +94,7 @@ vi.mock('sweetalert2', () => ({
     close: vi.fn(),
   },
 }));
-vi.mock('sweetalert2-react-content', () => ({
-  default: () => ({
-    fire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
-  }),
-}));
+
 
 vi.mock('../app/components/jsons/vars', () => ({
   infoCud: {

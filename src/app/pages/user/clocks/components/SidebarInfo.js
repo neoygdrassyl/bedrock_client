@@ -11,13 +11,13 @@ import { getIconSvg } from '../../../../utils/iconSvgString';
 // --- COPIAR Y PEGAR TODOS LOS COMPONENTES AUXILIARES (STATUS_MAP, ResponsiblePill, etc.) ---
 // ... (Estos componentes no cambian)
 const STATUS_MAP = {
-  PENDIENTE: { text: 'Pendiente', color: 'secondary', icon: 'fa-hourglass-start' },
-  ACTIVO: { text: 'En curso', color: 'primary', icon: 'fa-running' },
-  PAUSADO: { text: 'Pausado', color: 'warning', icon: 'fa-pause-circle' },
-  COMPLETADO: { text: 'Completado', color: 'success', icon: 'fa-check-circle' },
-  ESPERANDO_NOTIFICACION: { text: 'Esperando notif.', color: 'info', icon: 'fa-envelope' },
-  VENCIDO: { text: 'Vencido', color: 'danger', icon: 'fa-exclamation-triangle' },
-  RETRASADO: { text: 'Retrasado', color: 'danger', icon: 'fa-exclamation-circle' }
+  PENDIENTE: { text: 'Pendiente', color: 'secondary', icon: 'HourglassIcon' },
+  ACTIVO: { text: 'En curso', color: 'primary', icon: 'Play' },
+  PAUSADO: { text: 'Pausado', color: 'warning', icon: 'PauseCircle' },
+  COMPLETADO: { text: 'Completado', color: 'success', icon: 'CheckCircle' },
+  ESPERANDO_NOTIFICACION: { text: 'Esperando notif.', color: 'info', icon: 'Mail' },
+  VENCIDO: { text: 'Vencido', color: 'danger', icon: 'AlertTriangle' },
+  RETRASADO: { text: 'Retrasado', color: 'danger', icon: 'AlertCircle' }
 };
 
 const escapeHtml = (s) => {
@@ -43,13 +43,13 @@ const getResolvedStatus = (status, remainingDays, endDate, limitDate) => {
 const getResponsibleCfg = (responsible) => {
   switch (responsible) {
     case 'Curaduria':
-      return { icon: 'fa-building', color: 'primary', text: 'Curaduría' };
+      return { icon: 'Building', color: 'primary', text: 'Curaduría' };
     case 'Solicitante':
-      return { icon: 'fa-user', color: 'info', text: 'Solicitante' };
+      return { icon: 'User', color: 'info', text: 'Solicitante' };
     case 'Mixto':
-      return { icon: 'fa-users', color: 'purple', text: 'Mixto' };
+      return { icon: 'Users', color: 'purple', text: 'Mixto' };
     default:
-      return { icon: 'fa-user-tie', color: 'secondary', text: responsible || 'Responsable' };
+      return { icon: 'UserCheck', color: 'secondary', text: responsible || 'Responsable' };
   }
 };
 
@@ -66,7 +66,7 @@ const ResponsiblePill = ({ responsible }) => {
 const ActorCompactRow = ({ actor, onActorClick, dense = false }) => {
   const {
     name,
-    icon = 'fa-user',
+    icon = 'User',
     color = 'secondary',
     totalDays = 0,
     usedDays = 0,
@@ -185,12 +185,12 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
               : responsible || 'Responsable',
         icon:
           responsible === 'Curaduria'
-            ? 'fa-building'
+            ? 'Building'
             : responsible === 'Solicitante'
-              ? 'fa-user'
+              ? 'User'
               : responsible === 'Mixto'
-                ? 'fa-users'
-                : 'fa-user-tie',
+                ? 'Users'
+                : 'UserCheck',
         color: responsible === 'Solicitante' ? 'info' : responsible === 'Mixto' ? 'purple' : 'primary',
         totalDays,
         usedDays,

@@ -23,11 +23,7 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('sweetalert2-react-content', () => ({
-  default: () => ({
-    fire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
-  }),
-}));
+
 
 vi.mock('../app/components/ui', () => ({
   MDBBtn: ({ children, onClick, ...props }) => React.createElement('button', { onClick, ...props }, children),

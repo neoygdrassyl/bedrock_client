@@ -36,9 +36,6 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('sweetalert2-react-content', () => ({
-  default: (swal) => swal,
-}));
 
 vi.mock('@/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen }) => (isOpen ? <div data-testid='mock-modal'>{children}</div> : null),
