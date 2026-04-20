@@ -976,7 +976,7 @@ export default function EXP_CLOCKS(props) {
           {value.title ? (
             <div className="exp-section" style={{ '--cat': cat.color }}>
               <div className="d-flex align-items-center mb-1">
-                <i className={`fas ${cat.icon} me-2`}></i>
+                <Icon name={cat.icon} size={16} className="me-2" />
                 <strong className="">{value.title}</strong>
               </div>
             </div>

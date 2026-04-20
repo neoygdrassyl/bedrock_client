@@ -44,7 +44,7 @@ export const ToolsMenu = ({ onAction, canAddSuspension, canAddExtension, isDesis
 
                         return (
                             <button key={item.id} className="tools-menu-item" onClick={() => handleAction(item.id)}>
-                                <i className={`fas ${item.icon}`}></i>
+                                <Icon name={item.icon} size={16} />
                                 <span>{item.label}</span>
                             </button>
                         );
