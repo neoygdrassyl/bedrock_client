@@ -190,13 +190,13 @@ function ModuleCard({ title, icon, desc, link, count, hasCount = false, loadingC
   const iconColor = ICON_COLORS[link] || DEFAULT_ICON_COLOR;
 
   return (
-    <Link to={link} className="no-underline group">
+    <Link to={link} className="no-underline group h-full">
       <Card className={cn(
-        'hover:shadow-md hover:border-border/60 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-border/40',
+        'hover:shadow-md hover:border-border/60 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-border/40 h-full',
         'border-l-2',
         borderColor
       )}>
-        <CardContent className="flex items-start gap-3 p-3.5">
+        <CardContent className="flex items-start gap-3 p-3.5 min-h-[4.5rem]">
           <div className={cn(
             'flex items-center justify-center w-8 h-8 rounded-md shrink-0 transition-all duration-200 group-hover:scale-105',
             iconColor
@@ -205,7 +205,7 @@ function ModuleCard({ title, icon, desc, link, count, hasCount = false, loadingC
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-1.5">
-              <h3 className="text-[13px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors duration-150">{title}</h3>
+              <h3 className="text-[13px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors duration-150 line-clamp-1">{title}</h3>
               {loadingCount && hasCount ? (
                 <Skeleton className="h-5 w-7 rounded" />
               ) : hasCount && count != null ? (
