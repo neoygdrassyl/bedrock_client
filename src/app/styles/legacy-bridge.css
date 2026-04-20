@@ -1161,3 +1161,161 @@
   background-color: hsl(var(--destructive) / 0.08);
   border-left-color: hsl(var(--destructive) / 0.7);
 }
+
+/* ── Dark mode: comprehensive element coverage (v16) ────────────────── */
+
+/* Collapsible triggers */
+.dark #main-content :where(.Collapsible) {
+  border-color: hsl(var(--border));
+}
+.dark #main-content :where(.Collapsible__trigger) {
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.Collapsible__contentOuter) {
+  background-color: hsl(var(--card));
+}
+
+/* Pagination */
+.dark #main-content :where(.page-link) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.page-item.active .page-link) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.dark #main-content :where(.page-item.disabled .page-link) {
+  background-color: hsl(var(--muted) / 0.1);
+  color: hsl(var(--muted-foreground));
+}
+
+/* Dropdowns (Bootstrap) */
+.dark #main-content :where(.dropdown-menu) {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
+  color: hsl(var(--popover-foreground));
+}
+.dark #main-content :where(.dropdown-item) {
+  color: hsl(var(--popover-foreground));
+}
+.dark #main-content :where(.dropdown-item:hover,
+                             .dropdown-item:focus) {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.dropdown-divider) {
+  border-color: hsl(var(--border));
+}
+
+/* Nav tabs */
+.dark #main-content :where(.nav-link) {
+  color: hsl(var(--muted-foreground));
+}
+.dark #main-content :where(.nav-link.active,
+                             .nav-tabs .nav-link.active) {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+.dark #main-content :where(.nav-link:hover) {
+  color: hsl(var(--foreground));
+}
+
+/* Container-primary */
+.dark #main-content :where(.container-primary) {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Badges */
+.dark #main-content :where(.badge) {
+  opacity: 0.9;
+}
+
+/* Breadcrumb */
+.dark #main-content :where(.breadcrumb-item) {
+  color: hsl(var(--muted-foreground));
+}
+.dark #main-content :where(.breadcrumb-item.active) {
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.breadcrumb-item + .breadcrumb-item::before) {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Progress bars */
+.dark #main-content :where(.progress) {
+  background-color: hsl(var(--muted) / 0.2);
+}
+
+/* Contextual backgrounds in dark mode — soften brightness */
+.dark #main-content :where(.bg-warning) {
+  background-color: hsl(var(--warning) / 0.15) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-success) {
+  background-color: hsl(var(--accent) / 0.15) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-info) {
+  background-color: hsl(var(--primary) / 0.15) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-danger) {
+  background-color: hsl(var(--destructive) / 0.15) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-secondary) {
+  background-color: hsl(var(--muted) / 0.3) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-light) {
+  background-color: hsl(var(--muted) / 0.1) !important;
+}
+.dark #main-content :where(.bg-white) {
+  background-color: hsl(var(--card)) !important;
+}
+
+/* text-white on colored bg in dark mode */
+.dark #main-content :where(.bg-primary .text-white,
+                             .bg-info .text-white,
+                             .bg-success .text-white,
+                             .bg-warning .text-white,
+                             .bg-danger .text-white) {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Borders in dark mode */
+.dark #main-content :where(.border) {
+  border-color: hsl(var(--border)) !important;
+}
+.dark #main-content :where(.border-info) {
+  border-color: hsl(var(--primary) / 0.2) !important;
+}
+.dark #main-content :where(.border-secondary) {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Modals - ensure content area is dark */
+.dark #main-content :where(.modal-header) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+}
+.dark #main-content :where(.modal-footer) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+/* Form floating labels in dark mode */
+.dark #main-content :where(.form-floating > label) {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Spinners in dark mode */
+.dark #main-content :where(.spinner-border,
+                             .spinner-grow) {
+  color: hsl(var(--primary));
+}
