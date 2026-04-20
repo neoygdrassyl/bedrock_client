@@ -21,6 +21,7 @@ Rediseno completo de la interfaz de Dovela. El resultado debe ser irreconocible 
 | [04-antipatrones.md](./04-antipatrones.md) | Errores a evitar y como prevenirlos |
 | [05-fases-futuras.md](./05-fases-futuras.md) | Roadmap detallado Fases 3-6 |
 | [06-brecha-visual.md](./06-brecha-visual.md) | Analisis de la brecha entre lo implementado y lo esperado |
+| [07-guia-estandares-rediseno.md](./07-guia-estandares-rediseno.md) | **Guia consolidada** — estado real, tokens, patrones, reglas, metricas |
 
 ### Documentos de referencia existentes (no duplicar)
 
