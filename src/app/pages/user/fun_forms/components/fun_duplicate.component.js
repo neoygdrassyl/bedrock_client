@@ -10,7 +10,7 @@ import { swalConfirm, swalError, swalLoading } from '@/app/utils/swalAdapter';
 const OPTION_GROUPS = [
     {
         label: 'Datos del formulario',
-        icon: 'fas fa-file-alt',
+        icon: 'FileText',
         options: [
             { key: 'fun_1', label: 'Tipo y trámite' },
             { key: 'fun_2', label: 'Datos del predio' },
@@ -20,7 +20,7 @@ const OPTION_GROUPS = [
     },
     {
         label: 'Intervinientes',
-        icon: 'fas fa-users',
+        icon: 'Users',
         options: [
             { key: 'fun_51', label: 'Propietarios' },
             { key: 'fun_52', label: 'Profesionales responsables' },
@@ -29,7 +29,7 @@ const OPTION_GROUPS = [
     },
     {
         label: 'Documentos',
-        icon: 'fas fa-folder-open',
+        icon: 'FolderOpen',
         options: [
             { key: 'fun_6', label: 'Documentos del expediente' },
             { key: 'fun_c', label: 'Checklist información' },
@@ -38,7 +38,7 @@ const OPTION_GROUPS = [
     },
     {
         label: 'Tiempos',
-        icon: 'far fa-clock',
+        icon: 'Clock',
         options: [
             { key: 'fun_law', label: 'Control de tiempos jurídico' },
             { key: 'fun_clock', label: 'Cronómetros' },
@@ -46,7 +46,7 @@ const OPTION_GROUPS = [
     },
     {
         label: 'Records de revisión',
-        icon: 'fas fa-clipboard-check',
+        icon: 'ClipboardCheck',
         options: [
             { key: 'record_law', label: 'Revisión jurídica' },
             { key: 'record_eng', label: 'Revisión ingeniería' },
@@ -57,7 +57,7 @@ const OPTION_GROUPS = [
     },
     {
         label: 'Expedición',
-        icon: 'fas fa-stamp',
+        icon: 'Stamp',
         options: [
             { key: 'expedition', label: 'Expedición y áreas' },
         ],
@@ -230,7 +230,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                             <div className="col-md-6">
                                 <div className="border rounded p-2 h-100">
                                     <h6 className="fw-bold mb-2">
-                                        <i className={`${group.icon} me-1`}></i> {group.label}
+                                        <Icon name={group.icon} size={14} className="me-1" /> {group.label}
                                     </h6>
                                     {group.options.map((opt) => (
                                         <div className="form-check mb-1" key={opt.key}>

@@ -326,7 +326,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
           id: "",
           cell: row => <> {row.id == 0 || row.id == _LIST.length - 1 || _LIST.length < 4
             ? ""
-            : <Button variant="destructive" size="sm" className="mx-1 p-1" onClick={() => _DELETE_ROW(row.id)}><i class="far fa-times-circle fa-2x"></i></Button>}
+            : <Button variant="destructive" size="sm" className="mx-1 p-1" onClick={() => _DELETE_ROW(row.id)}><Icon name="XCircle" size={20} /></Button>}
           </>,
         },
       ]
@@ -604,7 +604,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
                       <div class="input-group mb-3">
                         <span class="input-group-text bg-primary text-primary-foreground">
-                          <i class="fas fa-home"></i>
+                          <Icon name="Home" size={14} />
                         </span>
                         <select class="form-select" id="project-liquidator" required onChange={e => setType(e.target.value)}>
                           <option value="" disabled>{translation.form_project_0}</option>
@@ -619,7 +619,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
                       <div class="input-group mb-3">
                         <span class="input-group-text bg-primary text-primary-foreground" >
-                          <i class="fas fa-tasks"></i>
+                          <Icon name="ListTodo" size={14} />
                         </span>
                         <select class="form-select" id="select_type" required >
                           <option value="" disabled>{translation.form_module_0}</option>
@@ -640,7 +640,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
                       <div class="input-group mb-3">
                         <span class="input-group-text bg-primary text-primary-foreground" >
-                          <i class="fas fa-home"></i>
+                          <Icon name="Home" size={14} />
                         </span>
                         <select class="form-select" id="use-liquidator" required
                           onChange={handleUse}>
@@ -652,7 +652,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
                       <div class="input-group mb-3">
                         <span class="input-group-text bg-primary text-primary-foreground">
-                          <i class="fas fa-home"></i>
+                          <Icon name="Home" size={14} />
                         </span>
                         <select class="form-select" id="social-liquidator" required>
                           <option value="" disabled>{translation.form_social_0}</option>
@@ -664,7 +664,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
                       <div class="input-group mb-3">
                         <span class="input-group-text bg-primary text-primary-foreground" >
-                          <i class="fas fa-dollar-sign"></i>
+                          <Icon name="DollarSign" size={14} />
                         </span>
                         <select class="form-select" id="strata-liquidator" required>
                           <option value="" disabled>{translation.form_strata_0}</option>
@@ -680,7 +680,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
                       <div class="input-group mb-3">
                         <span class="input-group-text bg-primary text-primary-foreground">
-                          <i class="fas fa-cube"></i>
+                          <Icon name="Box" size={14} />
                         </span>
                         <input type="number" class="form-control" placeholder={translation.form_area} id="area-liquidator" min="0.01" step="0.01" />
                       </div>

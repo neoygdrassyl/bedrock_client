@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
 import { GanttModal } from './gantt/GanttModal';
 import { Icon } from '@/components/icon';
+import { getIconSvg } from '../../../../utils/iconSvgString';
 
 
 // --- COPIAR Y PEGAR TODOS LOS COMPONENTES AUXILIARES (STATUS_MAP, ResponsiblePill, etc.) ---
@@ -427,17 +428,17 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
 
           <div class="days-info-grid">
             <div class="info-card">
-              <div class="info-card-title"><i class="fas fa-layer-group"></i> Composición</div>
+              <div class="info-card-title">${getIconSvg('fa-layer-group')} Composición</div>
               <div class="info-card-body">
-                <div class="info-row"><span><i class="fas fa-calendar-day"></i> Base</span><strong>${escapeHtml(baseDays)}</strong></div>
-                <div class="info-row ${suspDays ? '' : 'muted'}"><span><i class="fas fa-pause"></i> Suspensiones</span><strong class="${suspDays ? 'text-warning' : ''}">${escapeHtml(suspDays || 0)}</strong></div>
-                <div class="info-row ${extDays ? '' : 'muted'}"><span><i class="fas fa-clock"></i> Prórroga</span><strong class="${extDays ? 'text-info' : ''}">${escapeHtml(extDays || 0)}</strong></div>
+                <div class="info-row"><span>${getIconSvg('fa-calendar-day')} Base</span><strong>${escapeHtml(baseDays)}</strong></div>
+                <div class="info-row ${suspDays ? '' : 'muted'}"><span>${getIconSvg('fa-pause')} Suspensiones</span><strong class="${suspDays ? 'text-warning' : ''}">${escapeHtml(suspDays || 0)}</strong></div>
+                <div class="info-row ${extDays ? '' : 'muted'}"><span>${getIconSvg('fa-clock')} Prórroga</span><strong class="${extDays ? 'text-info' : ''}">${escapeHtml(extDays || 0)}</strong></div>
                 <div class="info-row total"><span>Total</span><strong>${escapeHtml(totalDays)}</strong></div>
               </div>
             </div>
 
             <div class="info-card">
-              <div class="info-card-title"><i class="fas fa-tasks"></i> Distribución</div>
+              <div class="info-card-title">${getIconSvg('fa-tasks')} Distribución</div>
               <div class="info-card-body">
                 <div class="phase-detail">
                   <div class="phase-header">
@@ -450,7 +451,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                 </div>
 
                 <div class="phase-transfer">
-                  <i class="fas fa-arrow-down"></i>
+                  ${getIconSvg('fa-arrow-down')}
                   <span>${escapeHtml(phase4Available)} días pasan a Fase 4</span>
                 </div>
 
@@ -495,14 +496,14 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           <div class="pdm-header">
             <div class="pdm-title">
               <div class="pdm-name">
-                <i class="fas ${escapeHtml(actor.icon || 'fa-user')}"></i>
+                ${getIconSvg(actor.icon || 'fa-user')}
                 <span>${escapeHtml(actor.name || 'Actor')}</span>
               </div>
               <div class="pdm-sub">Fase: <b>${phaseTitle}</b></div>
             </div>
             <div class="pdm-badges">
               <span class="pdm-pill status-${escapeHtml(st.color)}">
-                <i class="fas ${escapeHtml(st.icon)}"></i> ${escapeHtml(st.text)}
+                ${getIconSvg(st.icon)} ${escapeHtml(st.text)}
               </span>
             </div>
           </div>
@@ -563,19 +564,19 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           <div class="pdm-header">
             <div class="pdm-title">
               <div class="pdm-name">
-                <i class="fas fa-layer-group"></i>
+                ${getIconSvg('fa-layer-group')}
                 <span>${escapeHtml(phase.title || 'Fase')}</span>
               </div>
               <div class="pdm-sub">
                 Responsable:
                 <span class="pdm-pill phase-pill-${escapeHtml(respCfg.color)}">
-                  <i class="fas ${escapeHtml(respCfg.icon)}"></i> ${escapeHtml(respCfg.text)}
+                  ${getIconSvg(respCfg.icon)} ${escapeHtml(respCfg.text)}
                 </span>
               </div>
             </div>
             <div class="pdm-badges">
               <span class="pdm-pill status-${escapeHtml(st.color)}">
-                <i class="fas ${escapeHtml(st.icon)}"></i> ${escapeHtml(st.text)}
+                ${getIconSvg(st.icon)} ${escapeHtml(st.text)}
               </span>
             </div>
           </div>
@@ -638,11 +639,11 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                       <div class="pdm-actor">
                         <div class="pdm-actor-top">
                           <div class="pdm-actor-name">
-                            <i class="fas ${escapeHtml(a.icon || 'fa-user')}"></i>
+                            ${getIconSvg(a.icon || 'fa-user')}
                             <span>${escapeHtml(a.name || 'Actor')}</span>
                           </div>
                           <span class="pdm-pill status-${escapeHtml(ast.color)}">
-                            <i class="fas ${escapeHtml(ast.icon)}"></i> ${escapeHtml(ast.text)}
+                            ${getIconSvg(ast.icon)} ${escapeHtml(ast.text)}
                           </span>
                         </div>
                         <div class="pdm-actor-grid">

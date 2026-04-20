@@ -73,7 +73,7 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
     return (<>
 
         {icon
-            ? <button type="button"  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}><i className={icon} style={{...iconStyle, color: color }}></i></button>
+            ? <button type="button"  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}><Icon name={icon} size={20} style={{...iconStyle, color: color }} /></button>
             : <MDBTooltip title='Visualizar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                 <button type="button" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}>
                     <Icon name="search" size={16} /></button> </MDBTooltip>
@@ -94,8 +94,8 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
             />
             <hr />
             <div className="text-end py-4 mt-3">
-                <button className="btn btn-lg btn-danger me-2" onClick={() => _DOWNLOAD()}><Icon name="cloud-download-alt" size={16} /> DESCARGAR </button>
-                <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                <button className="btn btn-lg btn-danger me-2" onClick={() => _DOWNLOAD()}><Icon name="Download" size={16} /> DESCARGAR </button>
+                <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="XCircle" size={16} /> CERRAR </button>
             </div>
         </Modal>
     </>

@@ -89,12 +89,12 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             _COMPONENT.push(<>{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} />
+                    icon={'IdCard'} color={'DeepSkyBlue'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[1] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
+                    icon={'BadgeCheck'} color={'DarkOrchid'} />
                 : ""}</>)
 
             return <>{_COMPONENT}</>

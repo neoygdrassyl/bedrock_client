@@ -68,28 +68,28 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico: 
                             
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'fas fa-cloud-download-alt'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
 
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_2")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio: 
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'fas fa-cloud-download-alt'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
                                 <br/>
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_3")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web: 
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'fas fa-cloud-download-alt'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
                                 <br/>
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_4")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico: 
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'fas fa-cloud-download-alt'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
                     </>);
                 }
             }

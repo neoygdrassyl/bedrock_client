@@ -269,68 +269,76 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     <p className="text-sm text-muted-foreground mt-1">Gestión de entradas y radicados</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="flex items-center justify-center">
-                        <Button onClick={() => toggle_new()}>
-                            <Icon name="PlusCircle" size={14} /> Nueva Entrada
-                        </Button>
+                <div className="space-y-3">
+                    <h2 className="text-sm font-semibold text-center tracking-wide uppercase">ACCIONES</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <Card>
+                            <CardHeader className="py-2.5 px-3">
+                                <CardTitle className="text-sm text-center">Crear entrada</CardTitle>
+                            </CardHeader>
+                            <CardContent className="px-3 pb-3 flex items-center justify-center">
+                                <Button onClick={() => toggle_new()}>
+                                    <Icon name="PlusCircle" size={14} /> Nueva Entrada
+                                </Button>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="py-2.5 px-3">
+                                <CardTitle className="text-sm text-center">Consultar</CardTitle>
+                            </CardHeader>
+                            <CardContent className="px-3 pb-3">
+                                <div className="input-group mb-2">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="Info" size={13} />
+                                    </span>
+                                    <select className="form-select" id="submit_search_0" required>
+                                        <option value="1">Número de radicado VR</option>
+                                        <option value="2">Número de Licencia / Solicitud</option>
+                                        <option value="3">Propietario</option>
+                                        <option value="4">Persona que Entrega</option>
+                                        <option value="5">C.C Persona que Entrega</option>
+                                    </select>
+                                </div>
+                                <div className="input-group mb-2">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="MessageCircle" size={13} />
+                                    </span>
+                                    <input type="text" className="form-control" id="submit_search_1" placeholder="Buscar..." />
+                                </div>
+                                <div className="text-center">
+                                    <Button variant="secondary" size="sm" onClick={() => search()}>
+                                        <Icon name="SearchCheck" size={13} /> Consultar
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="py-2.5 px-3">
+                                <CardTitle className="text-sm text-center">Documento CSV</CardTitle>
+                            </CardHeader>
+                            <CardContent className="px-3 pb-3">
+                                <div className="input-group mb-2">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="Hash" size={13} />
+                                    </span>
+                                    <input type="text" className="form-control" id="csv_limit_1" placeholder="Limite inferior"
+                                        defaultValue={`VR${dayjs().format('YY')}-0001`} />
+                                </div>
+                                <div className="input-group mb-2">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="Hash" size={13} />
+                                    </span>
+                                    <input type="text" className="form-control" id="csv_limit_2" placeholder="Limite superior"
+                                        defaultValue={`VR${dayjs().format('YY')}-9999`} />
+                                </div>
+                                <div className="text-center">
+                                    <Button variant="default" size="sm" onClick={() => generateCVS()}>
+                                        <Icon name="Table" size={13} /> Generar CSV
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
-                    <Card>
-                        <CardHeader className="py-2.5 px-3">
-                            <CardTitle className="text-sm text-center">Consultar</CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-3 pb-3">
-                            <div className="input-group mb-2">
-                                <span className="input-group-text bg-primary text-primary-foreground">
-                                    <Icon name="Info" size={13} />
-                                </span>
-                                <select className="form-select" id="submit_search_0" required>
-                                    <option value="1">Número de radicado VR</option>
-                                    <option value="2">Número de Licencia / Solicitud</option>
-                                    <option value="3">Propietario</option>
-                                    <option value="4">Persona que Entrega</option>
-                                    <option value="5">C.C Persona que Entrega</option>
-                                </select>
-                            </div>
-                            <div className="input-group mb-2">
-                                <span className="input-group-text bg-primary text-primary-foreground">
-                                    <Icon name="MessageCircle" size={13} />
-                                </span>
-                                <input type="text" className="form-control" id="submit_search_1" placeholder="Buscar..." />
-                            </div>
-                            <div className="text-center">
-                                <Button variant="secondary" size="sm" onClick={() => search()}>
-                                    <Icon name="SearchCheck" size={13} /> Consultar
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="py-2.5 px-3">
-                            <CardTitle className="text-sm text-center">Documento CSV</CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-3 pb-3">
-                            <div className="input-group mb-2">
-                                <span className="input-group-text bg-primary text-primary-foreground">
-                                    <Icon name="Hash" size={13} />
-                                </span>
-                                <input type="text" className="form-control" id="csv_limit_1" placeholder="Limite inferior"
-                                    defaultValue={`VR${dayjs().format('YY')}-0001`} />
-                            </div>
-                            <div className="input-group mb-2">
-                                <span className="input-group-text bg-primary text-primary-foreground">
-                                    <Icon name="Hash" size={13} />
-                                </span>
-                                <input type="text" className="form-control" id="csv_limit_2" placeholder="Limite superior"
-                                    defaultValue={`VR${dayjs().format('YY')}-9999`} />
-                            </div>
-                            <div className="text-center">
-                                <Button variant="default" size="sm" onClick={() => generateCVS()}>
-                                    <Icon name="Table" size={13} /> Generar CSV
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
                 </div>
                 <div>
                     <h3 className="text-sm font-semibold text-center mb-2">Lista de entradas</h3>

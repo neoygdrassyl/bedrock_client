@@ -109,37 +109,37 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             _COMPONENT.push(<>{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'far fa-id-card fa-2x'} color={'DeepSkyBlue'} />
+                    icon={'IdCard'} color={'DeepSkyBlue'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[1] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'DarkOrchid'} />
+                    icon={'FileText'} color={'DarkOrchid'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'GoldenRod'} />
+                    icon={'FileText'} color={'GoldenRod'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[3] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'LimeGreen'} />
+                    icon={'FileText'} color={'LimeGreen'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[4] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'tomato'} />
+                    icon={'FileText'} color={'tomato'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[5] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[5]).path + "/" + _FIND_6(_array[5]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'gray'} />
+                    icon={'FileText'} color={'gray'} />
                 : ""}</>)
 
             return <>{_COMPONENT}</>

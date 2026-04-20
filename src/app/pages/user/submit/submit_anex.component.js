@@ -94,7 +94,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                     minWidth: '150px',
                     cell: row => <>
                         <VIZUALIZER url={row.path + "/" + row.filename} apipath={'/files/'}
-                            icon='fas fa-search'
+                            icon='Search'
                             iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
                             iconStyle={{ fontSize: '150%' }} />
                     </>

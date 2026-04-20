@@ -160,16 +160,16 @@ function Home({ translation, history }) {
             <div className='' style={{ backgroundColor: '#1b83c4', borderRadius: '2px' }}>
               <div class="row justify-content-center px-1 mx-2">
                 <div class="col-5 text-start py-1" style={{ color: ' white ' }}>
-                  <h5 className='px-4 py-0 fw-normal'><i class="fas fa-calendar-alt text-light"></i> Horario: {infoCud.schedule}</h5>
-                  <h5 className='px-4 py-0 fw-normal'><i class="fas fa-calendar-alt text-light"></i> Consulta horarios especiales y atencion especializada, click <Link className='text-light' to={'/mailbox'}>Aqui <i class="far fa-hand-point-left"></i></Link></h5>
+                  <h5 className='px-4 py-0 fw-normal'><Icon name="Calendar" size={16} className="text-light" /> Horario: {infoCud.schedule}</h5>
+                  <h5 className='px-4 py-0 fw-normal'><Icon name="Calendar" size={16} className="text-light" /> Consulta horarios especiales y atencion especializada, click <Link className='text-light' to={'/mailbox'}>Aqui <Icon name="ArrowLeft" size={16} /></Link></h5>
                 </div>
                 <div class="col-7 py-1">
                   <div class="px-0">
                     <span className='col-lg-12'>
-                      <h5 className='fw-normal'> <a style={{ color: 'white' }} href='https://www.google.es/maps/place/Curaduria+Urbana+No.+1+de+Bucaramanga/@7.1236512,-73.1155874,17z/data=!3m1!4b1!4m5!3m4!1s0x8e683f0ec6e6ea35:0xd99c4a977df44614!8m2!3d7.1236459!4d-73.1133987?hl=es' target="_blank" > <i class="fas fa-map-marker-alt text-light"></i> {infoCud.address}</a> </h5>
+                      <h5 className='fw-normal'> <a style={{ color: 'white' }} href='https://www.google.es/maps/place/Curaduria+Urbana+No.+1+de+Bucaramanga/@7.1236512,-73.1155874,17z/data=!3m1!4b1!4m5!3m4!1s0x8e683f0ec6e6ea35:0xd99c4a977df44614!8m2!3d7.1236459!4d-73.1133987?hl=es' target="_blank" > <Icon name="MapPin" size={16} className="text-light" /> {infoCud.address}</a> </h5>
                     </span>
                   </div>
-                  <h5 className='fw-normal' style={{ color: 'white' }}><a href="https://web.whatsapp.com/send?phone=+573162795010" style={{ color: 'white' }} target="_blank" > <i class="fas fa-mobile-alt text-light"></i> Whatsapp: {infoCud.number1}</a> <i class="fas fa-envelope text-light"></i> Correo: curaduriaurbana1@gmail.com</h5>
+                  <h5 className='fw-normal' style={{ color: 'white' }}><a href="https://web.whatsapp.com/send?phone=+573162795010" style={{ color: 'white' }} target="_blank" > <Icon name="Smartphone" size={16} className="text-light" /> Whatsapp: {infoCud.number1}</a> <Icon name="Mail" size={16} className="text-light" /> Correo: curaduriaurbana1@gmail.com</h5>
                 </div>
               </div>
             </div>
@@ -226,7 +226,7 @@ function Home({ translation, history }) {
                     <Link style={{ color: 'white', backgroundImage: 'white' }} to="/normogram">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
-                          <h4 className='fw-normal'><i class="fas fa-file-invoice fa-2x"></i>   Consulta Normatividad</h4>
+                          <h4 className='fw-normal'><Icon name="FileText" size={24} />   Consulta Normatividad</h4>
                         </div>
                       </div>
                     </Link>
@@ -235,7 +235,7 @@ function Home({ translation, history }) {
                     <Link style={{ color: 'white', backgroundImage: 'white' }} to="/status">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
-                          <h4 className='fw-normal'><i class="fas fa-search fa-2x"></i>    Consulta Procesos</h4>
+                          <h4 className='fw-normal'><Icon name="Search" size={24} />    Consulta Procesos</h4>
                         </div>
                       </div>
                     </Link>
@@ -244,7 +244,7 @@ function Home({ translation, history }) {
                     <Link style={{ color: 'white', backgroundImage: 'white' }} to="/administrative">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
-                          <h4 className='fw-normal'><i class="fas fa-list-alt fa-2x"></i>    Consulta publicaciones</h4>
+                          <h4 className='fw-normal'><Icon name="List" size={24} />    Consulta publicaciones</h4>
                         </div>
                       </div>
                     </Link>
@@ -253,7 +253,7 @@ function Home({ translation, history }) {
                     <Link style={{ color: 'white', backgroundImage: 'white' }} to="/old">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
-                          <h4 className='fw-normal'><i class="fas fa-folder-minus fa-2x"></i> Consulta repositorio</h4>
+                          <h4 className='fw-normal'><Icon name="FolderMinus" size={24} /> Consulta repositorio</h4>
                         </div>
                       </div>
                     </Link>
@@ -273,37 +273,37 @@ function Home({ translation, history }) {
                 </div>
                 <div class="col-2  text-center border border-dark px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
                   <Link className='text-light' to={'/inclusivity'}>
-                    <i class="fas fa-sign-language fa-3x fa-lg-4"></i>
+                    <Icon name="HandMetal" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Curaduria inclusiva</h5>
                   </Link>
                 </div>
                 <div class="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
                   <Link className='text-light' to={'/file'}>
-                    <i class="fas fa-file-alt fa-3x fa-lg-4"></i>
+                    <Icon name="FileText" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Instrumentos de apoyo</h5>
                   </Link>
                 </div>
                 <div class="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
                   <Link className='text-light' to={'/liquidator'}>
-                    <i class="fas fa-calculator fa-3x fa-lg-4"></i>
+                    <Icon name="Calculator" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Calculadora liquidación expensa</h5>
                   </Link>
                 </div>
                 <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
                   <Link className='text-light' to={'/pqrs'}>
-                    <i class="fas fa-envelope-square fa-3x fa-lg-4"></i>
+                    <Icon name="Mail" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Radicacion (pqrs)</h5>
                   </Link>
                 </div>
                 <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
                   <Link className='text-light' to={'/scheduling'}>
-                    <i class="fas fa-calendar-check fa-3x fa-lg-4"></i>
+                    <Icon name="CalendarCheck" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Agendamiento de citas</h5>
                   </Link>
                 </div>
                 <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '27px', paddingBottom: '15px', borderRadius: '120px', width: '130px', height: '130px' }}>
                   <Link className='text-light' to={'/certificacion'}>
-                    <i class="fas fa-file-pdf fa-3x fa-lg-4"></i>
+                    <Icon name="FileText" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Certificacion en linea </h5>
                   </Link>
                 </div>
@@ -311,7 +311,7 @@ function Home({ translation, history }) {
             </div>
             <hr className='bg-primary'></hr>
             <div class="px-0 py-0 my-0 text-center">
-              <i class="fas fa-search-location fa-4x"></i>
+              <Icon name="MapPin" size={48} />
               <h3 class="" id='process'>Consulta de Procesos {<Button_navigation Iddown={'news'} Idup={'services'} />}  </h3>
               <div class="col-lg-8 mx-auto">
                 <h5 class=" fw-normal">Ingrese el ID del proceso o el número de cédula para conocer el estado del proceso</h5>
@@ -361,11 +361,11 @@ function Home({ translation, history }) {
               {/*
               <div className="row mt-5">
                 <div className="col-md-4">
-                  <i class="far fa-list-alt fa-4x"></i>
+                  <Icon name="List" size={48} />
                   <h3 className="display-6 fw-bold">Listado de Publicaciones</h3>
                   <p className="lead">Encuentre todas las publicaciones expedidas por la Curaduría</p>
                   <Link to={'/administrative'}><Button variant="outline" size="sm">
-                    <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Ver Listado</h4>
+                    <h4 className="pt-2"><Icon name="ChevronRight" size={16} /> Ver Listado</h4>
                   </Button></Link>
                 </div>
                 <div className="col-md-4">
@@ -373,15 +373,15 @@ function Home({ translation, history }) {
                   <h3 className="display-6 fw-bold">Radicación de Licencias</h3>
                   <p className="lead">Inicie aquí su proceso para radicar una Licencia</p>
                   <Link to={'/file'}><Button size="sm">
-                    <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Radicar</h4>
+                    <h4 className="pt-2"><Icon name="ChevronRight" size={16} /> Radicar</h4>
                   </Button></Link>
                 </div>
                 <div className="col-md-4">
-                  <i class="fas fa-calculator fa-4x"></i>
+                  <Icon name="Calculator" size={48} />
                   <h3 className="display-6 fw-bold">Calculadora de liquidación</h3>
                   <p className="lead">Determine un valor posible de su liquidación aquí</p>
                   <Link to={'/liquidator'}><Button size="sm">
-                    <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Calculadora</h4>
+                    <h4 className="pt-2"><Icon name="ChevronRight" size={16} /> Calculadora</h4>
                   </Button>
                   </Link>
                 </div>
@@ -474,7 +474,7 @@ function Home({ translation, history }) {
 
           <div className="text-end py-4 mt-3">
             <Button variant="outline" size="sm" onClick={() => setModal(false)}>
-              <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+              <h4 className="pt-2"><Icon name="XCircle" size={16} /> CERRAR</h4>
             </Button>
           </div>
 

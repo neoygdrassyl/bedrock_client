@@ -157,7 +157,7 @@ export default function RECORD_LAW_FUN_52(props) {
     let _GET_DOCS_BTN = (_id, typeIndex) => {
         if (_id < 1 || _id == null || _id == undefined) return ''
         let ColorIndex = ['DeepSkyBlue', 'DarkOrchid', 'GoldenRod', 'LimeGreen', 'tomato', 'gray'];
-        let IconIndex = ['far fa-id-card fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x']
+        let IconIndex = ['IdCard', 'FileText', 'FileText', 'FileText', 'FileText', 'FileText']
         return <VIZUALIZER url={_FIND_6(_id).path + "/" + _FIND_6(_id).filename} apipath={'/files/'}
             icon={IconIndex[typeIndex]} color={ColorIndex[typeIndex]} />
     }

@@ -180,6 +180,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     await act(async () => {
       renderSubmit();
     });
+    expect(screen.getByText('ACCIONES')).toBeInTheDocument();
     expect(screen.getByText(/Nueva Entrada/i)).toBeInTheDocument();
     expect(screen.getByText(/Documento CSV/i)).toBeInTheDocument();
   });
