@@ -282,6 +282,24 @@
   transition: background-color 0.1s ease;
 }
 
+#main-content :where(.table-bordered) {
+  border-color: hsl(var(--border));
+}
+#main-content :where(.table-bordered > :not(caption) > * > *) {
+  border-color: hsl(var(--border));
+}
+
+/* table-light: ensure dark mode compat */
+#main-content :where(.table-light) {
+  --bs-table-bg: hsl(var(--muted) / 0.15);
+  --bs-table-border-color: hsl(var(--border));
+}
+
+/* table-sm: tighter padding for compact views */
+#main-content :where(.table-sm > :not(caption) > * > *) {
+  padding: 0.25rem 0.5rem;
+}
+
 /* ── Forms (Enhanced v6) ──────────────────────────────────────────── */
 #main-content :where(.form-control) {
   border-color: hsl(var(--input));
@@ -514,29 +532,57 @@
   color: hsl(var(--foreground));
 }
 
-/* ── react-data-table-component ──────────────────────────────────── */
+/* ── react-data-table-component (consolidated v17) ───────────────── */
 #main-content :where(.rdt_Table) {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
-
 #main-content :where(.rdt_TableHeadRow) {
   background-color: hsl(var(--muted));
   border-bottom-color: hsl(var(--border));
-  min-height: 40px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: hsl(var(--muted-foreground));
+  min-height: 36px;
 }
-
 #main-content :where(.rdt_TableRow) {
-  border-bottom-color: hsl(var(--border));
+  border-bottom-color: hsl(var(--border) / 0.5);
+  min-height: 38px;
+  transition: background-color 0.1s ease;
 }
-
 #main-content :where(.rdt_TableRow:hover) {
-  background-color: hsl(var(--muted));
+  background-color: hsl(var(--muted) / 0.4);
 }
-
 #main-content :where(.rdt_Pagination) {
   border-top-color: hsl(var(--border));
   color: hsl(var(--muted-foreground));
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
+  min-height: 40px;
+}
+#main-content :where(.rdt_TableCell) {
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.rdt_Table) {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.rdt_TableHeadRow) {
+  background-color: hsl(var(--muted) / 0.2);
+  color: hsl(var(--muted-foreground));
+}
+.dark #main-content :where(.rdt_TableRow) {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+  border-bottom-color: hsl(var(--border) / 0.3);
+}
+.dark #main-content :where(.rdt_TableRow:hover) {
+  background-color: hsl(var(--muted) / 0.15);
+}
+.dark #main-content :where(.rdt_Pagination) {
+  background-color: transparent;
+  color: hsl(var(--muted-foreground));
+  border-top-color: hsl(var(--border));
 }
 
 /* ── Input groups (Enhanced v6) ───────────────────────────────────── */
@@ -919,21 +965,6 @@
   font-size: 0.8125rem;
 }
 
-/* ── Tighter table density ────────────────────────────────────────── */
-#main-content :where(.table td),
-#main-content :where(.table th) {
-  padding: 0.4rem 0.6rem;
-  font-size: 0.8125rem;
-  vertical-align: middle;
-}
-#main-content :where(.table th) {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.6875rem;
-  letter-spacing: 0.03em;
-  color: hsl(var(--muted-foreground));
-}
-
 /* ── Link polish ──────────────────────────────────────────────────── */
 #main-content :where(a:not(.btn):not(.no-underline):not(.nav-link):not(.page-link):not(.dropdown-item)) {
   color: hsl(var(--primary));
@@ -957,30 +988,6 @@
   letter-spacing: 0.02em;
   padding: 0.2em 0.55em;
   border-radius: 9999px;
-}
-
-/* ── react-data-table-component bridge table refinements ──────────── */
-#main-content :where(.rdt_Table) {
-  font-size: 0.8125rem;
-}
-#main-content :where(.rdt_TableHeadRow) {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: hsl(var(--muted-foreground));
-  min-height: 36px;
-}
-#main-content :where(.rdt_TableRow) {
-  min-height: 38px;
-  border-bottom-color: hsl(var(--border) / 0.5);
-}
-#main-content :where(.rdt_TableRow:hover) {
-  background-color: hsl(var(--muted) / 0.4);
-}
-#main-content :where(.rdt_Pagination) {
-  font-size: 0.75rem;
-  min-height: 40px;
 }
 
 /* ── Form-select & form-floating polish ────────────────────────────── */
