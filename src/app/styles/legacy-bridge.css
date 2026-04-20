@@ -1326,3 +1326,117 @@
                              .spinner-grow) {
   color: hsl(var(--primary));
 }
+
+/* ======================================================================
+   v19 — Micro-interactions & Loading Polish
+   ====================================================================== */
+
+/* Page content fade-in */
+@keyframes bridgeFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#main-content > .legacy-bridge {
+  animation: bridgeFadeIn 0.2s ease-out;
+}
+
+/* Modernized spinner */
+#main-content :where(.spinner-border) {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-width: 2px;
+  border-color: hsl(var(--primary) / 0.2);
+  border-right-color: hsl(var(--primary));
+  animation: spinner-border 0.6s linear infinite;
+}
+#main-content :where(.spinner-border-sm) {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-width: 1.5px;
+}
+
+/* Loading text polish (CARGANDO patterns) */
+#main-content :where(.lead.text-muted) {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground)) !important;
+  animation: bridgePulse 1.5s ease-in-out infinite;
+}
+@keyframes bridgePulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* Card entrance — subtle slide-up on first paint */
+@keyframes bridgeCardIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#main-content :where(.card) {
+  animation: bridgeCardIn 0.25s ease-out both;
+}
+
+/* Fieldset / section entrance */
+#main-content :where(fieldset) {
+  animation: bridgeCardIn 0.25s ease-out both;
+}
+
+/* Row hover highlight for tables */
+#main-content :where(.table tbody tr) {
+  transition: background-color 0.1s ease;
+}
+#main-content :where(.table-hover tbody tr:hover) {
+  background-color: hsl(var(--muted) / 0.4) !important;
+}
+.dark #main-content :where(.table-hover tbody tr:hover) {
+  background-color: hsl(var(--muted) / 0.2) !important;
+}
+
+/* List-group item transitions */
+#main-content :where(.list-group-item) {
+  transition: background-color 0.1s ease, border-color 0.1s ease;
+}
+
+/* Alert entrance */
+#main-content :where(.alert) {
+  animation: bridgeCardIn 0.2s ease-out both;
+}
+
+/* Smooth focus transitions */
+#main-content :where(.form-control,
+                       .form-select,
+                       .form-check-input) {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+/* Badge subtle scale on hover in interactive contexts */
+#main-content :where(a .badge,
+                       button .badge,
+                       .list-group-item .badge) {
+  transition: transform 0.1s ease;
+}
+#main-content :where(a:hover .badge,
+                       button:hover .badge,
+                       .list-group-item:hover .badge) {
+  transform: scale(1.05);
+}
+
+/* Progress bar smooth fill */
+#main-content :where(.progress-bar) {
+  transition: width 0.4s ease;
+}
+
+/* Pagination hover lift */
+#main-content :where(.page-link) {
+  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease, transform 0.1s ease;
+}
+#main-content :where(.page-link:hover) {
+  transform: translateY(-1px);
+}
+
+/* Dropdown fade */
+#main-content :where(.dropdown-menu.show) {
+  animation: bridgeFadeIn 0.15s ease-out;
+}
