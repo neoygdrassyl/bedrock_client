@@ -110,7 +110,7 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
                 return (
                     <div className="gantt-actor-card">
                         <div className="gantt-actor-header">
-                            <i className={`fas ${parallelActors.primary.icon}`} />
+                            <Icon name={parallelActors.primary.icon} size={16} />
                             <span>{parallelActors.primary.name}</span>
                         </div>
                         <div className="gantt-actor-info">
@@ -135,7 +135,7 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
                 return (
                     <div className="gantt-actor-card">
                         <div className="gantt-actor-header">
-                            <i className={`fas ${parallelActors.secondary.icon}`} />
+                            <Icon name={parallelActors.secondary.icon} size={16} />
                             <span>{parallelActors.secondary.name}</span>
                         </div>
                         <div className="gantt-actor-info">

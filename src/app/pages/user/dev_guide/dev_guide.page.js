@@ -93,7 +93,7 @@ export default function DEV_GUIDE(props) {
                         size="sm"
                         onClick={() => CHANGE_CONTENT(section.md, '', section.num)}
                     >
-                        <i className={`fas ${section.icon} me-1`}></i>
+                        <Icon name={section.icon} size={16} className="me-1" />
                         {section.label}
                     </Button>
                 ))}

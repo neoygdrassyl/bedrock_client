@@ -56,7 +56,7 @@ const ResponsiblePill = ({ responsible }) => {
   const cfg = getResponsibleCfg(responsible);
   return (
     <span className={`phase-pill phase-pill-${cfg.color}`} title={cfg.text}>
-      <i className={`fas ${cfg.icon}`} />
+      <Icon name={cfg.icon} size={16} />
       <span className="text-truncate">{cfg.text}</span>
     </span>
   );
@@ -97,12 +97,12 @@ const ActorCompactRow = ({ actor, onActorClick, dense = false }) => {
     >
       <div className="actor-compact-top">
         <div className="actor-compact-name">
-          <i className={`fas ${icon}`} />
+          <Icon name={icon} size={16} />
           <span className="text-truncate">{name}</span>
         </div>
 
         <span className={`actor-compact-status status-${st.color}`}>
-          <i className={`fas ${st.icon}`} />
+          <Icon name={st.icon} size={16} />
           {st.text}
         </span>
       </div>
@@ -224,7 +224,7 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
             {title}
           </h5>
           <span className={`phase-status-pill status-${st.color}`}>
-            <i className={`fas ${st.icon}`} />
+            <Icon name={st.icon} size={16} />
             {st.text}
           </span>
         </div>

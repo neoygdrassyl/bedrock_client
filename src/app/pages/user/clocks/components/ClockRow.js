@@ -367,7 +367,7 @@ export const ClockRow = memo((props) => {
         if (!alarmInfo) return null;
         return (
             <div className="d-flex align-items-center" style={{ color: alarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {alarmInfo.icon && <i className={`fas ${alarmInfo.icon} me-1`}></i>}
+                {alarmInfo.icon && <Icon name={alarmInfo.icon} size={16} className="me-1" />}
                 {alarmInfo.text}
             </div>
         );
@@ -487,7 +487,7 @@ export const ClockRow = memo((props) => {
         if (!scheduledAlarmInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem' }}>- -</span>;
         return (
             <div style={{ display: 'flex', alignItems: 'center', color: scheduledAlarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {scheduledAlarmInfo.icon && <i className={`fas ${scheduledAlarmInfo.icon}`} style={{ marginRight: '0.35rem' }}></i>}
+                {scheduledAlarmInfo.icon && <Icon name={scheduledAlarmInfo.icon} size={16} className="me-1" />}
                 {scheduledAlarmInfo.text}
             </div>
         );
@@ -497,7 +497,7 @@ export const ClockRow = memo((props) => {
         if (!nextStepInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem', fontStyle: 'italic' }}>Completado</span>;
         return (
             <div style={{ display: 'flex', alignItems: 'center', color: nextStepInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {nextStepInfo.icon && <i className={`fas ${nextStepInfo.icon}`} style={{ marginRight: '0.35rem' }}></i>}
+                {nextStepInfo.icon && <Icon name={nextStepInfo.icon} size={16} className="me-1" />}
                 {nextStepInfo.text}
             </div>
         );

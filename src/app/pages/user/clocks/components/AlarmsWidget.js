@@ -109,12 +109,12 @@ const AlarmPreviewCard = ({ alarm }) => {
             <div className="alarm-preview-header">
                 <div className="d-flex align-items-center gap-2">
                     <span className={`alarm-type-badge-small ${typeBadgeClass}`}>
-                        <i className={`fas ${typeIcon}`}></i>
+                        <Icon name={typeIcon} size={16} />
                     </span>
                     <h6 className="alarm-preview-title mb-0">{eventName}</h6>
                 </div>
                 <div className={`alarm-preview-status ${statusColor}`}>
-                    <i className={`fas ${statusIcon} me-1`}></i>
+                    <Icon name={statusIcon} size={16} className="me-1" />
                     <span>{displayStatusText}</span>
                 </div>
             </div>
