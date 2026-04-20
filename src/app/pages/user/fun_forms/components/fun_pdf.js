@@ -1,11 +1,10 @@
 import { useCallback } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
-import moment from 'moment';
 import { cities, domains, states } from '../../../../components/jsons/vars';
+import moment from 'moment';
 
 const MySwal = withReactContent(Swal);
 function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
@@ -148,7 +147,6 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
     }
 
     const getPdfForm = async () => {
-        let swaMsg = swaMsg;
         let model = currentItem.model
         if (!model) return MySwal.fire({
             title: 'SOLICITUD SIN MODELO',
@@ -174,7 +172,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
         var _child = null;
         var _array = null;
-        const currentItem = currentItem;
+        
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)

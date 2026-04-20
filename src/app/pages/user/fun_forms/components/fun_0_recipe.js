@@ -161,11 +161,11 @@ function FUN_0_RECIPE(props) {
 
                     <div className="col-6">
                         <label>Modelo de Solicitud</label>
-                        <select class="form-select" id="fun_0_model" defaultValue={currentItem.model ?? 2023}>
+                        <select class="form-select" id="fun_0_model" defaultValue={currentItem.model ?? 2026}>
                             <option value="0">Sin modelo</option>
                             <option value={2021}>Res. 463 / 17</option>
                             <option value={2022}>Res. 1026 / 21 (2022)</option>
-                            <option value={2023} selected>Res. 1026 / 21 (2023-2025)</option>
+                            <option value={2023}>Res. 1026 / 21 (2023-2025)</option>
                             <option value={2026} selected>Res. 1051 / 25 (2026)</option>
                         </select>
                     </div>
@@ -508,8 +508,10 @@ function FUN_0_RECIPE(props) {
             let model = document.getElementById("fun_0_model").value;
             formData0.set('model', model);
 
-            let tags = tagInput.current.props.tags ?? []
-            formData0.set('tags', tags.join(','));
+           
+            let _tags = tags || currentItem.tags || [];
+            console.log(_tags)
+            formData0.set('tags', _tags.join(','));
 
             let rules_html = document.getElementsByName('fun_0_rules');
             let rules = [];
