@@ -69,7 +69,7 @@ function Dashboard({ breadCrums }) {
     async function fetchCounts() {
       try {
         const results = await Promise.allSettled([
-          FUNService.getAll(),
+          FUNService.getAll_fun(),
           PqrsMainService.getAll(),
           SubmitService.getAll(),
           MailboxService.getAll(),

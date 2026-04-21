@@ -57,6 +57,13 @@ describe('navigation-config', () => {
       expect(redirects['/pqrsadmin']).toBe('/peticiones');
       expect(redirects['/mail']).toBe('/mensajes');
       expect(redirects['/profesionals']).toBe('/profesionales');
+      expect(redirects['/normogram']).toBe('/normas');
+      expect(redirects['/administrative']).toBe('/publicaciones');
+      expect(redirects['/old']).toBe('/archivo');
+      expect(redirects['/liquidator']).toBe('/calculadora');
+      expect(redirects['/pqrs']).toBe('/peticiones');
+      expect(redirects['/scheduling']).toBe('/calendario');
+      expect(redirects['/certificacion']).toBe('/certificados');
     });
   });
 });

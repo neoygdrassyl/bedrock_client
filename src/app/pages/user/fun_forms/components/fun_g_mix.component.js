@@ -70,7 +70,7 @@ function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }
             let _LIST = _SET_CHILD_6();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
             }
             return <>{_COMPONENT}</>
         }

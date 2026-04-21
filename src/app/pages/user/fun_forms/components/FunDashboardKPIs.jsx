@@ -113,7 +113,7 @@ function SimpleKPICard({ cfg, value, loading, isActive, onFilterChange }) {
         <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           {cfg.label}
         </CardTitle>
-        <i className={`${cfg.icon} ${cfg.colorClass} text-base`} aria-hidden="true" />
+        <Icon name={cfg.icon} size={16} className={cfg.colorClass} aria-hidden="true" />
       </CardHeader>
       <CardContent>
         <div className={`text-3xl font-bold ${cfg.colorClass}`}>

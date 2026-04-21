@@ -2,6 +2,15 @@
 
 Bootstrap corto para agentes y modelos que entren a este repo sin contexto previo. Usa este archivo para arrancar y sigue las referencias indicadas; no lo conviertas en una enciclopedia.
 
+## 0. Politica de idioma para agentes
+
+1. **Idioma visible para el usuario: espanol.** Responde, pregunta, resume y explica en espanol salvo instruccion explicita en otro idioma.
+2. **Idioma operativo interno preferido: ingles.** Si el usuario escribe en espanol, reformula mentalmente la peticion en ingles antes de razonar, planear, buscar o implementar.
+3. **Antes de responder, vuelve la salida al espanol.** La respuesta final debe quedar en espanol claro y natural.
+4. **No traduzcas tokens tecnicos.** Manten intactos nombres de archivos, rutas, componentes, props, hooks, servicios, endpoints, comandos, logs, errores literales y bloques de codigo.
+5. **Si una traduccion puede introducir ambiguedad tecnica, conserva el termino original y explicalo en espanol.**
+6. **Esto no reemplaza un hook real del runtime.** Es una regla persistente de comportamiento para este repo.
+
 ## 1. Que es este repo
 
 SPA para modelar procesos de curaduria urbana: licencias, expedientes, relojes legales, PQRS, archivo, nomenclatura, usos del suelo y documentos juridicos.

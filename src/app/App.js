@@ -29,6 +29,7 @@ import './styles/swal-theme.css';
 
 // Login (extracted, eager — entry point for unauthenticated users)
 import LoginPage from './pages/auth/LoginPage';
+import Home from './pages/home';
 
 // ── Lazy-loaded page components (code-split per route) ──────────────
 const PQRSADMIN = lazy(() => import('./pages/user/pqrs/pqrsadmin'));
@@ -171,7 +172,11 @@ export default function App() {
                   <Routes>
                     {/* ── Public routes (no shell) ──────────────────── */}
                     <Route path="/login" element={<LoginPageWithAuth />} />
-                    <Route path="/home" element={<Navigate to="/login" replace />} />
+                    <Route path="/home" element={
+                      <ShellAwarePublicRoute>
+                        <Home translation={loginT} />
+                      </ShellAwarePublicRoute>
+                    } />
 
                     <Route path="/normas" element={
                       <ShellAwarePublicRoute>

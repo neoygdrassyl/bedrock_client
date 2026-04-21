@@ -146,6 +146,13 @@ export function getRouteRedirects() {
     '/zone_use': '/uso-suelo',
     '/archive': '/archivo',
     '/norms': '/normas',
+    '/normogram': '/normas',
+    '/administrative': '/publicaciones',
+    '/old': '/archivo',
+    '/liquidator': '/calculadora',
+    '/pqrs': '/peticiones',
+    '/scheduling': '/calendario',
+    '/certificacion': '/certificados',
     '/seals': '/sellos',
   };
 }

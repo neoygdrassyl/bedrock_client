@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { readFileSync } from 'node:fs';
 
 vi.mock('sweetalert2', () => ({
   default: {
@@ -18,6 +19,8 @@ import {
   swalFormDialog,
 } from '@/app/utils/swalAdapter';
 import Swal from 'sweetalert2';
+
+const swalThemeCss = readFileSync('/home/diego/dovela/frontend/src/app/styles/swal-theme.css', 'utf8');
 
 describe('swalAdapter', () => {
   beforeEach(() => {
@@ -55,8 +58,22 @@ describe('swalAdapter', () => {
       expect.objectContaining({
         title: 'Oops',
         icon: 'error',
+        customClass: expect.objectContaining({
+          confirmButton: 'swal2-confirm-themed',
+          cancelButton: 'swal2-cancel-themed',
+        }),
       })
     );
+  });
+
+  it('swal theme styles the adapter button classes directly', () => {
+    expect(swalThemeCss).toMatch(/\.swal2-confirm-themed\s*\{/);
+    expect(swalThemeCss).toMatch(/\.swal2-cancel-themed\s*\{/);
+    expect(swalThemeCss).toMatch(/\.swal2-deny-themed\s*\{/);
+  });
+
+  it('swal theme does not force hidden popups to replay the show animation', () => {
+    expect(swalThemeCss).not.toMatch(/\.swal2-popup:not\(\.swal2-show\)/);
   });
 
   it('swalLoading calls Swal.fire with no buttons', async () => {

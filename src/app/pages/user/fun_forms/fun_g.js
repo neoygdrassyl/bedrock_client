@@ -24,6 +24,8 @@ import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 import FUN_DUPLICATE from './components/fun_duplicate.component';
 import { swalError } from '@/app/utils/swalAdapter';
 
+const asInputValue = (value) => value ?? '';
+
 
 function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, NAVIGATION_VERSION, onDuplicateSuccess }) {
     const [load, setLoad] = useState(false);
@@ -148,35 +150,35 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
+            _COMPONENT.push(<span key="doc-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
                     icon={'IdCard'} color={'DeepSkyBlue'} />
-                : ""}</>)
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[1] > 0
+            _COMPONENT.push(<span key="doc-1">{_array[1] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'DarkOrchid'} />
-                : ""}</>)
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[2] > 0
+            _COMPONENT.push(<span key="doc-2">{_array[2] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'GoldenRod'} />
-                : ""}</>)
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[3] > 0
+            _COMPONENT.push(<span key="doc-3">{_array[3] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'LimeGreen'} />
-                : ""}</>)
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[4] > 0
+            _COMPONENT.push(<span key="doc-4">{_array[4] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'tomato'} />
-                : ""}</>)
+                : ""}</span>)
 
             return <>{_COMPONENT}</>
         }
@@ -210,16 +212,16 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
+            _COMPONENT.push(<span key="fun51-doc-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
                     icon={'IdCard'} color={'DeepSkyBlue'} />
-                : ""}</>)
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[1] > 0
+            _COMPONENT.push(<span key="fun51-doc-1">{_array[1] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
                     icon={'BadgeCheck'} color={'DarkOrchid'} />
-                : ""}</>)
+                : ""}</span>)
 
             return <>{_COMPONENT}</>
         }
@@ -302,57 +304,57 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 <div className="row">
                     <div className="col-6">
                         <label>1.1 Tipo de Solicitud</label>
-                        <textarea className="form-control mb-3" rows="3" value={_CHILD_VARS.item_1} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_1)} disabled></textarea>
                     </div>
                     <div className="col-6">
                         <label>1.2 Objeto del Trámite</label>
-                        <input type="text" className="form-control" value={_CHILD_VARS.item_2} disabled />
+                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_2)} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.3 Modalidad Licencia de Urbanización</label>
-                        <input type="text" className="form-control" value={_CHILD_VARS.item_3} disabled />
+                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_3)} disabled />
                     </div>
                     <div className="col-6">
                         <label >1.4 Modalidad Licencia de Subdivisión</label>
-                        <input type="text" className="form-control" value={_CHILD_VARS.item_4} disabled />
+                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_4)} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.5 Modalidad Licencia de Construcción</label>
-                        <textarea className="form-control mb-3" rows="3" value={_CHILD_VARS.item_5} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_5)} disabled></textarea>
                     </div>
                     <div className="col-6">
                         <label>1.6 Usos</label>
-                        <textarea className="form-control mb-3" rows="3" value={_CHILD_VARS.item_6} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_6)} disabled></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.7 Área Construida</label>
-                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_7} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_7)} disabled />
                     </div>
                     <div className="col-6">
                         <label>1.8 Tipo de Vivienda</label>
-                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_8} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_8)} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.9  Bien de Interés Cultural</label>
-                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_9} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_9)} disabled />
                     </div>
                     <div className="col-6">
                         <label>1.10.2  Zonificación Climática</label>
-                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_101} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_101)} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-12">
                         <label>1.10.1  Declaración de medidas de construcción sostenible</label>
-                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_102} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_102)} disabled />
                     </div>
                 </div>
             </>
@@ -825,19 +827,19 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     <div className="col-6">
                         <label>Nombre Encargado de Revision</label>
                         <input type="text" className="form-control mb-3" id="c_31" disabled
-                            value={_CHILD_VARS.item_c1} />
+                            value={asInputValue(_CHILD_VARS.item_c1)} />
                     </div>
                     <div className="col-6">
                         <label>No. Radicado</label>
                         <input type="text" className="form-control mb-3" id="c_33" disabled
-                            value={currentItem.id_public} />
+                            value={asInputValue(currentItem.id_public)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>Fecha de Revision</label>
                         <input type="date" className="form-control mb-3" max='2100-01-01' id="c_32" disabled
-                            value={_CHILD_VARS.item_c2} />
+                            value={asInputValue(_CHILD_VARS.item_c2)} />
                     </div>
                 </div>
 
@@ -888,29 +890,29 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     <div className="col-6">
                         <label>Nombre</label>
                         <input type="text" className="form-control mb-3" id="c_43" disabled
-                            value={_CHILD_VARS.item_c5} />
+                            value={asInputValue(_CHILD_VARS.item_c5)} />
                     </div>
                     <div className="col-6">
                         <label>Fecha incompleto</label>
                         <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01' disabled
-                            value={_CHILD_VARS.item_c6} />
+                            value={asInputValue(_CHILD_VARS.item_c6)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>CC/NIT</label>
                         <input type="text" className="form-control mb-3" id="c_45" disabled
-                            value={_CHILD_VARS.item_c7} />
+                            value={asInputValue(_CHILD_VARS.item_c7)} />
                     </div>
                     <div className="col-6">
                         <label>Fecha legal y debida forma</label>
                         <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01' disabled
-                            value={_CHILD_VARS.item_c9} />
+                            value={asInputValue(_CHILD_VARS.item_c9)} />
                     </div>
                     <div className="col-12">
                         <label>Observaciones</label>
                         <textarea className="form-control mb-3" rows="3" id="c_46" disabled
-                            value={_CHILD_VARS.item_c4}></textarea>
+                            value={asInputValue(_CHILD_VARS.item_c4)}></textarea>
                     </div>
                 </div>
 

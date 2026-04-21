@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
 import { Link } from "react-router-dom";
+import { LegacyPageWrapper } from '@/app/layouts/LegacyPageWrapper';
 import { swalLoading, swalError, swalClose } from '@/app/utils/swalAdapter';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
@@ -57,6 +58,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const [modal_record_eng, setModal_record_eng] = useState(false);
     const [modal_record_ph, setModal_record_ph] = useState(false);
     const [modal_record_review, setModal_record_review] = useState(false);
+    const [showVersionBanner, setShowVersionBanner] = useState(
+        () => localStorage.getItem('dovela.fun.banner.dismissed') !== '1'
+    );
     const [modal_exp, setModal_exp] = useState(false);
     const [modal_macro, setModal_macro] = useState(false);
     const [modal_report, setModal_report] = useState(false);
@@ -569,6 +573,25 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             toggle_report()
         };
         return (
+            <LegacyPageWrapper>
+            {showVersionBanner && (
+                <div className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm bg-primary/8 border-b border-primary/20 text-foreground">
+                    <div className="flex items-center gap-2">
+                        <Icon name="sparkles" size={15} className="text-primary shrink-0" />
+                        <span>Hay una versión modernizada disponible.</span>
+                        <Link to="/licencias/gestion-nueva" className="font-medium text-primary hover:underline underline-offset-2">
+                            Ir a Gestión Nueva →
+                        </Link>
+                    </div>
+                    <button
+                        onClick={() => { setShowVersionBanner(false); localStorage.setItem('dovela.fun.banner.dismissed', '1'); }}
+                        className="p-0.5 rounded hover:bg-primary/10 text-muted-foreground hover:text-foreground transition-colors"
+                        aria-label="Cerrar aviso"
+                    >
+                        <Icon name="x" size={14} />
+                    </button>
+                </div>
+            )}
             <div className="Publish container p-0">
                 <div>
                     <h1 className="text-xl font-bold text-foreground">Gestión de Licencias</h1>
@@ -1186,6 +1209,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                 </Modal>}
             </div >
+            </LegacyPageWrapper>
         );
 }
 
