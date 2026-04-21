@@ -1,15 +1,12 @@
 /**
  * Centralized navigation configuration for Dovela.
- * Defines the icon rail items, role visibility, routes, and legacy redirects.
+ * Defines the icon rail items, routes, and legacy redirects.
+ *
+ * NOTE: Role filtering is temporarily disabled (roles:[] in all items).
+ * Permissions will be reintroduced in a future iteration using real DB roles
+ * (Prog., Curador, Admin., Ing., Abg., Arq., Secretario) — not fake codes.
  */
 
-/** @typedef {'ADMIN' | 'ADM' | 'AUX' | 'USER'} RoleShort */
-
-/**
- * All navigation items. `roles` array defines who can see each item.
- * An empty array means visible to all roles (including null/undefined).
- * `children` define sub-items shown in the contextual panel.
- */
 const NAV_ITEMS = [
   {
     id: 'dashboard',
@@ -24,7 +21,7 @@ const NAV_ITEMS = [
     label: 'Licencias',
     icon: 'FileText',
     route: '/licencias',
-    roles: ['ADMIN', 'AUX'],
+    roles: [],
     children: [
       { id: 'licencias-radicar', label: 'Radicar', route: '/licencias', icon: 'FilePlus' },
       { id: 'licencias-gestion', label: 'Gestión', route: '/licencias/gestion', icon: 'FolderOpen' },
@@ -44,7 +41,7 @@ const NAV_ITEMS = [
     label: 'Ventanilla',
     icon: 'FileInput',
     route: '/ventanilla',
-    roles: ['ADMIN', 'USER'],
+    roles: [],
     children: [],
   },
   {
@@ -52,7 +49,7 @@ const NAV_ITEMS = [
     label: 'Mensajes',
     icon: 'Mail',
     route: '/mensajes',
-    roles: ['ADMIN'],
+    roles: [],
     children: [],
   },
   {
@@ -68,7 +65,7 @@ const NAV_ITEMS = [
     label: 'Archivo',
     icon: 'FolderOpen',
     route: '/archivo',
-    roles: ['ADMIN'],
+    roles: [],
     children: [],
   },
   {
@@ -76,7 +73,7 @@ const NAV_ITEMS = [
     label: 'Publicaciones',
     icon: 'Newspaper',
     route: '/publicaciones',
-    roles: ['ADMIN'],
+    roles: [],
     children: [],
   },
   {
@@ -84,7 +81,7 @@ const NAV_ITEMS = [
     label: 'Nomenclatura',
     icon: 'PenLine',
     route: '/nomenclatura',
-    roles: ['ADMIN'],
+    roles: [],
     children: [],
   },
   {
@@ -102,23 +99,12 @@ const NAV_ITEMS = [
 
 /**
  * Returns nav items filtered by role.
- * If role is null/undefined, returns all items (legacy fallback).
- *
- * @param {RoleShort | null} role
- * @returns {typeof NAV_ITEMS}
+ * Currently no filtering is applied (all items visible to all roles).
+ * Kept as pass-through to preserve call sites during the redesign.
  */
-function normalizeRoleCode(role) {
-  if (!role) return null;
-  const normalized = String(role).toUpperCase();
-  if (normalized === 'ADM') return 'ADMIN';
-  return normalized;
-}
-
-export function getNavItems(role) {
-  const normalizedRole = normalizeRoleCode(role);
-  if (!normalizedRole) return NAV_ITEMS;
+export function getNavItems(_role) {
   return NAV_ITEMS.filter(
-    (item) => item.roles.length === 0 || item.roles.includes(normalizedRole)
+    (item) => !item.roles || item.roles.length === 0
   );
 }
 
