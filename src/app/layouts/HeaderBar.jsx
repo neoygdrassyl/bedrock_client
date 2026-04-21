@@ -10,8 +10,9 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/components/theme-provider';
-import { Sun, Moon, LogOut, Search, Bell, PanelLeftClose, PanelLeft, ChevronRight } from 'lucide-react';
+import { Sun, Moon, LogOut, Search, PanelLeftClose, PanelLeft, ChevronRight } from 'lucide-react';
 import { Icon } from '@/components/icon';
+import { AlarmBell } from '../pages/user/fun_forms/components/AlarmBell';
 import {
   Tooltip,
   TooltipContent,
@@ -114,9 +115,7 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
       </button>
 
       {/* Notifications */}
-      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 relative text-muted-foreground" aria-label="Notificaciones">
-        <Bell className="h-3.5 w-3.5" />
-      </Button>
+      <AlarmBell />
 
       {/* Theme toggle */}
       <Button
