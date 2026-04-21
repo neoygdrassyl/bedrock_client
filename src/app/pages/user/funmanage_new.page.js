@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
-// SERVICES
-import FunManageDashboardService from '../../services/funmanage_dashboard.service';
-
-// Dashboard components
 import { FunDashboardKPIs } from './fun_forms/components/FunDashboardKPIs';
 import { FunmanageScatterChart } from './fun_forms/components/FunmanageScatterChart';
 import { FunmanageDataTable } from './fun_forms/components/FunmanageDataTable';
 import { FunmanagePhaseChart } from './fun_forms/components/FunmanagePhaseChart';
 import { FunExpedienteDetail } from './fun_forms/components/FunExpedienteDetail';
 import { FunExpedienteWorkspace } from './fun_forms/components/FunExpedienteWorkspace';
+import { useDashboard } from './fun_forms/hooks/useDashboard';
+import { useAlarmConfig } from './fun_forms/hooks/useAlarmConfig';
+import { useBookmarks } from './fun_forms/hooks/useBookmarks';
+import { DEFAULT_FILTERS, mergeFilters, hasActiveFilters } from './fun_forms/utils/filters';
 import {
   Select,
   SelectContent,
@@ -21,47 +20,67 @@ import {
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 
-// =============================================================================
-// Component
-// =============================================================================
+function useDebounce(value, delay = 400) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
+
 function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
-  // ---- Dashboard filter state ----
-  const [dashboardFilter, setDashboardFilter] = useState({ status: null, fase: null, desistido: null, causal: null });
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebounce(searchInput, 450);
+
   const [kpiActiveFilterKey, setKpiActiveFilterKey] = useState(null);
   const [selectedExpediente, setSelectedExpediente] = useState(null);
   const [workspaceExpediente, setWorkspaceExpediente] = useState(null);
 
-  // ---- Dashboard data (single fetch) ----
-  const PAGE_SIZE = 12;
-  const [dashData, setDashData]       = useState([]);
-  const [dashChartData, setDashChartData] = useState([]);
-  const [dashKpis, setDashKpis]       = useState(null);
-  const [dashTotal, setDashTotal]     = useState(0);
-  const [dashPage, setDashPage]       = useState(1);
-  const [dashLoading, setDashLoading] = useState(true);
-  const [dashError, setDashError]     = useState(null);
-  const [dashSearch, setDashSearch]   = useState('');
-  const [dashSorting, setDashSorting] = useState([]);
-  const debouncedDashSearch = useDebounce(dashSearch, 450);
+  useEffect(() => {
+    setFilters((prev) => (prev.search === debouncedSearch ? prev : mergeFilters(prev, { search: debouncedSearch })));
+  }, [debouncedSearch]);
+
+  const { kpis, chartData, table, loading, error, refetch } = useDashboard(filters);
+  const { config: alarmConfig } = useAlarmConfig();
+  const { bookmarks, toggle: toggleBookmark } = useBookmarks();
+
+  const scatterThresholds = useMemo(() => {
+    const s = alarmConfig?.scatterThresholds;
+    return {
+      warning: Number.isFinite(s?.warning) ? s.warning : 80,
+      critical: Number.isFinite(s?.critical) ? s.critical : 95,
+      overdue: Number.isFinite(s?.overdue) ? s.overdue : 100,
+    };
+  }, [alarmConfig]);
+
+  const bookmarkedSet = useMemo(
+    () => new Set((bookmarks || []).map((b) => b.fun0Id ?? b.fun_0_id ?? b.id)),
+    [bookmarks]
+  );
 
   const handleKPIFilterChange = useCallback(({ status, phase, desistido, causal, key }) => {
-    setKpiActiveFilterKey(prev => {
+    setKpiActiveFilterKey((prev) => {
       if (prev === key) {
-        setDashboardFilter({ status: null, fase: null, desistido: null, causal: null });
+        setFilters((f) => mergeFilters(f, { status: null, fase: null, desistido: null, causal: null }));
         return null;
       }
-      setDashboardFilter({
-        status: status || null,
-        fase: phase || null,
-        desistido: desistido || null,
-        causal: causal || null,
-      });
+      setFilters((f) =>
+        mergeFilters(f, {
+          status: status || null,
+          fase: phase || null,
+          desistido: desistido || null,
+          causal: causal || null,
+        })
+      );
       return key;
     });
   }, []);
 
-  const clearDashboardFilter = useCallback(() => {
-    setDashboardFilter({ status: null, fase: null, desistido: null, causal: null });
+  const clearAllFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
+    setSearchInput('');
     setKpiActiveFilterKey(null);
   }, []);
 
@@ -70,77 +89,58 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
     setWorkspaceExpediente(expediente);
   }, []);
 
-  // Centralized dashboard fetch
-  const fetchDashboard = useCallback((options = {}) => {
-    const isStale = options.isStale || (() => false);
-
-    setDashLoading(true);
-    setDashError(null);
-
-    const sortField = dashSorting[0]?.id || 'fecha_radicacion';
-    const sortOrder = dashSorting[0]?.desc !== undefined ? (dashSorting[0].desc ? 'DESC' : 'ASC') : 'DESC';
-
-    return FunManageDashboardService.getExpedientes({
-      page: dashPage,
-      limit: PAGE_SIZE,
-      fase: dashboardFilter.fase || undefined,
-      status: dashboardFilter.status || undefined,
-      desistido: dashboardFilter.desistido || undefined,
-      causal: dashboardFilter.causal || undefined,
-      search: debouncedDashSearch || undefined,
-      sort: sortField,
-      order: sortOrder,
-    })
-      .then(res => {
-        if (isStale()) return;
-        const body = res.data;
-        setDashKpis(body.kpis || null);
-        setDashData(Array.isArray(body.data) ? body.data : []);
-        setDashChartData(Array.isArray(body.chartData) ? body.chartData : []);
-        setDashTotal(typeof body.total === 'number' ? body.total : 0);
-        setDashLoading(false);
-      })
-      .catch(() => {
-        if (isStale()) return;
-        setDashError('No se pudo cargar el dashboard.');
-        setDashLoading(false);
-      });
-  }, [dashPage, dashboardFilter, debouncedDashSearch, dashSorting]);
-
   const handleCloseWorkspace = useCallback(() => {
     setWorkspaceExpediente(null);
   }, []);
 
-  // Reset page on filter/search/sort change
-  useEffect(() => {
-    setDashPage(1);
-  }, [dashboardFilter, debouncedDashSearch, dashSorting]);
+  const handleSortingChange = useCallback((updater) => {
+    const next = typeof updater === 'function' ? updater([]) : updater;
+    const sortField = next?.[0]?.id || DEFAULT_FILTERS.sort;
+    const sortOrder = next?.[0]?.desc !== undefined ? (next[0].desc ? 'DESC' : 'ASC') : 'DESC';
+    setFilters((f) => mergeFilters(f, { sort: sortField, order: sortOrder }));
+  }, []);
 
-  // Fetch on any change
-  useEffect(() => {
-    let cancelled = false;
-    fetchDashboard({ isStale: () => cancelled });
-    return () => {
-      cancelled = true;
-    };
-  }, [fetchDashboard]);
+  const handlePageChange = useCallback((page) => {
+    setFilters((f) => ({ ...f, page }));
+  }, []);
 
-  // =========================================================================
-  // RENDER
-  // =========================================================================
+  const handleToggleBookmark = useCallback(
+    (row) => {
+      const id = row.fun0Id ?? row.fun_0_id ?? row.id;
+      if (!id) return;
+      toggleBookmark(id, 'user', bookmarkedSet.has(id)).then(() => refetch());
+    },
+    [toggleBookmark, bookmarkedSet, refetch]
+  );
+
+  const tableData = useMemo(
+    () =>
+      (table.data || []).map((row) => ({
+        ...row,
+        _bookmarked: bookmarkedSet.has(row.fun0Id ?? row.fun_0_id ?? row.id),
+      })),
+    [table.data, bookmarkedSet]
+  );
+
+  const sortingState = useMemo(() => {
+    if (!filters.sort || filters.sort === DEFAULT_FILTERS.sort) return [];
+    return [{ id: filters.sort, desc: filters.order !== 'ASC' }];
+  }, [filters.sort, filters.order]);
+
   return (
     <div className="space-y-6">
-      {/* ---- Page Header ---- */}
       <div>
         <h1 className="text-xl font-bold text-foreground">Centro de Operaciones de Licencias</h1>
         <p className="text-sm text-muted-foreground mt-1">Gestión y seguimiento del flujo de licencias urbanísticas</p>
       </div>
 
-      {/* ---- Title ---- */}
       <div className="row mb-3 d-flex justify-content-center">
         <div className="col-lg-11 col-md-12">
           <div className="d-flex justify-content-end my-3">
-            <Button variant="outline" size="sm" onClick={() => window.open('/legal-flow-guide', '_blank')}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open('/legal-flow-guide', '_blank')}
               title="Abrir guía del flujo jurídico en nueva ventana"
             >
               <Icon name="project-diagram" size={16} className="me-1" />
@@ -149,12 +149,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           </div>
         </div>
 
-        {/* ============================================================= */}
-        {/* DASHBOARD: Panel de Control                                  */}
-        {/* ============================================================= */}
         <div className="col-12 px-1" data-testid="dashboard-section">
-
-          {/* ─── 1. FILTROS GLOBALES (Barra superior) ─────────────────── */}
           <div
             className="rounded border px-3 py-2 mb-4 d-flex flex-wrap align-items-center gap-3"
             style={{ backgroundColor: '#f8fafc', borderColor: '#e2e8f0' }}
@@ -165,9 +160,9 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
             </span>
 
             <Select
-              value={dashboardFilter.fase || '__all__'}
-              onValueChange={val => {
-                setDashboardFilter(f => ({ ...f, fase: val === '__all__' ? null : val, desistido: null, causal: null }));
+              value={filters.fase || '__all__'}
+              onValueChange={(val) => {
+                setFilters((f) => mergeFilters(f, { fase: val === '__all__' ? null : val, desistido: null, causal: null }));
                 setKpiActiveFilterKey(null);
               }}
             >
@@ -195,9 +190,9 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
             </Select>
 
             <Select
-              value={dashboardFilter.status || '__all__'}
-              onValueChange={val => {
-                setDashboardFilter(f => ({ ...f, status: val === '__all__' ? null : val, desistido: null, causal: null }));
+              value={filters.status || '__all__'}
+              onValueChange={(val) => {
+                setFilters((f) => mergeFilters(f, { status: val === '__all__' ? null : val, desistido: null, causal: null }));
                 setKpiActiveFilterKey(null);
               }}
             >
@@ -213,24 +208,54 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
               </SelectContent>
             </Select>
 
-            {(dashboardFilter.status || dashboardFilter.fase || dashboardFilter.desistido || dashboardFilter.causal) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearDashboardFilter}
-                data-testid="filter-clear"
-              >
+            <Select
+              value={filters.bookmarked === true ? 'only' : '__all__'}
+              onValueChange={(val) => {
+                setFilters((f) => mergeFilters(f, { bookmarked: val === 'only' ? true : null }));
+              }}
+            >
+              <SelectTrigger className="w-40" data-testid="filter-bookmarked">
+                <SelectValue placeholder="Marcados" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">Todos</SelectItem>
+                <SelectItem value="only">Solo marcados</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.vecinosState || '__all__'}
+              onValueChange={(val) => {
+                setFilters((f) => mergeFilters(f, { vecinosState: val === '__all__' ? null : val }));
+              }}
+            >
+              <SelectTrigger className="w-44" data-testid="filter-vecinos">
+                <SelectValue placeholder="Vecinos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">Todos</SelectItem>
+                <SelectItem value="pendiente">Pendientes</SelectItem>
+                <SelectItem value="enviada">Enviada</SelectItem>
+                <SelectItem value="respondida">Respondida</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <label className="d-flex align-items-center gap-1 text-sm text-muted-foreground" data-testid="filter-cerrados">
+              <input
+                type="checkbox"
+                checked={!!filters.incluirCerrados}
+                onChange={(e) => setFilters((f) => mergeFilters(f, { incluirCerrados: e.target.checked }))}
+              />
+              Incluir cerrados
+            </label>
+
+            {hasActiveFilters(filters) && (
+              <Button variant="ghost" size="sm" onClick={clearAllFilters} data-testid="filter-clear">
                 <Icon name="times" size={16} className="me-1" /> Limpiar filtros
               </Button>
             )}
-            {(dashboardFilter.status || dashboardFilter.fase || dashboardFilter.desistido || dashboardFilter.causal) && (
-              <span className="text-xs text-muted-foreground ms-auto">
-                Activo: {[dashboardFilter.fase, dashboardFilter.status, dashboardFilter.desistido && 'Desistidos', dashboardFilter.causal && `Causal: ${dashboardFilter.causal}`].filter(Boolean).join(' · ')}
-              </span>
-            )}
           </div>
 
-          {/* ─── 2. TARJETAS DE KPIs ──────────────────────────────────── */}
           <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
             <Icon name="arrow-left" size={14} className="shrink-0" />
             <a href="/licencias/gestion" className="hover:text-foreground hover:underline underline-offset-2 transition-colors">
@@ -238,84 +263,66 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
             </a>
           </div>
           <FunDashboardKPIs
-            kpis={dashKpis}
-            loading={dashLoading}
+            kpis={kpis}
+            loading={loading}
             onFilterChange={handleKPIFilterChange}
             activeFilterKey={kpiActiveFilterKey}
           />
 
-          {/* ─── 3+4. LAYOUT PRINCIPAL: Tabla (izq) + Gráficos (der) ── */}
           <div className="row g-3 mb-4" data-testid="main-content-row">
-
-            {/* ── Columna izquierda: Tabla de gestión ─────────────────── */}
             <div className="col-12 col-lg-7 col-xl-8" data-testid="table-section">
-              <div
-                className="rounded border p-3 h-100"
-                style={{ borderColor: '#e2e8f0', background: '#fff' }}
-              >
+              <div className="rounded border p-3 h-100" style={{ borderColor: '#e2e8f0', background: '#fff' }}>
                 <div className="d-flex flex-wrap align-items-center justify-content-between mb-3">
-                  <h6
-                    className="text-muted mb-0"
-                    style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
-                  >
+                  <h6 className="text-muted mb-0" style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}>
                     <Icon name="table" size={16} className="me-2" />Vista de Gestión
                   </h6>
                 </div>
                 <FunmanageDataTable
-                  data={dashData}
-                  totalRows={dashTotal}
-                  page={dashPage}
-                  pageSize={PAGE_SIZE}
-                  loading={dashLoading}
-                  error={dashError}
-                  search={dashSearch}
-                  onSearchChange={setDashSearch}
-                  sorting={dashSorting}
-                  onSortingChange={setDashSorting}
-                  onPageChange={setDashPage}
-                  onRetry={fetchDashboard}
+                  data={tableData}
+                  totalRows={table.total}
+                  page={filters.page}
+                  pageSize={filters.limit}
+                  loading={loading}
+                  error={error ? 'No se pudo cargar el dashboard.' : null}
+                  search={searchInput}
+                  onSearchChange={setSearchInput}
+                  sorting={sortingState}
+                  onSortingChange={handleSortingChange}
+                  onPageChange={handlePageChange}
+                  onRetry={refetch}
                   onViewDetail={setSelectedExpediente}
                   onOpenWorkspace={handleOpenWorkspace}
+                  onToggleBookmark={handleToggleBookmark}
                 />
               </div>
             </div>
 
-            {/* ── Columna derecha: Gráficos apilados ──────────────────── */}
             <div className="col-12 col-lg-5 col-xl-4 d-flex flex-column gap-3" data-testid="charts-col">
-
-              {/* Scatter: Tiempo por Categoría */}
               <div
                 className="rounded border p-3"
                 style={{ borderColor: '#e2e8f0', background: '#fff' }}
                 data-testid="scatter-section"
               >
-                <h6
-                  className="text-muted mb-2"
-                  style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
-                >
+                <h6 className="text-muted mb-2" style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}>
                   <Icon name="circle-nodes" size={16} className="me-2" />Tiempo por Categoría
                 </h6>
-                <FunmanageScatterChart data={dashChartData} loading={dashLoading} />
+                <FunmanageScatterChart data={chartData} loading={loading} thresholds={scatterThresholds} />
               </div>
 
-              {/* Distribución de Fases */}
               <div
                 className="rounded border p-3"
                 style={{ borderColor: '#e2e8f0', background: '#fff' }}
                 data-testid="phase-section"
               >
-                <h6
-                  className="text-muted mb-2"
-                  style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
-                >
+                <h6 className="text-muted mb-2" style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}>
                   <Icon name="chart-bar" size={16} className="me-2" />Distribución de Fases
                 </h6>
                 <FunmanagePhaseChart
-                  porFase={dashKpis?.por_fase}
-                  chartData={dashChartData}
-                  loading={dashLoading}
-                  dashboardFilter={dashboardFilter}
-                  onPhaseClick={phase => {
+                  porFase={kpis?.por_fase}
+                  chartData={chartData}
+                  loading={loading}
+                  dashboardFilter={{ status: filters.status, fase: filters.fase, desistido: filters.desistido, causal: filters.causal }}
+                  onPhaseClick={(phase) => {
                     const LABEL_TO_ID = {
                       'Radicación LDF': 'RAD', 'Estudio y Observaciones': 'EST',
                       'Notificación Observaciones': 'NOT_OBS', 'Correcciones del Solicitante': 'CORR',
@@ -327,12 +334,11 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                       'Ejecutoria Desistimiento': 'DESIST_EJEC', 'Cerrado por Desistimiento': 'DESIST_CERRADO',
                     };
                     const faseId = LABEL_TO_ID[phase] || null;
-                    setDashboardFilter(f => ({ ...f, fase: f.fase === faseId ? null : faseId, desistido: null, causal: null }));
+                    setFilters((f) => mergeFilters(f, { fase: f.fase === faseId ? null : faseId, desistido: null, causal: null }));
                     setKpiActiveFilterKey(null);
                   }}
                 />
               </div>
-
             </div>
           </div>
         </div>
@@ -353,23 +359,11 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           globals={globals}
           swaMsg={swaMsg}
           onClose={handleCloseWorkspace}
-          onRefresh={fetchDashboard}
+          onRefresh={refetch}
         />
       )}
     </div>
   );
-}
-
-// =============================================================================
-// useDebounce — hook de debounce para búsqueda
-// =============================================================================
-function useDebounce(value, delay = 400) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
 }
 
 export default FunManageNewPage;
