@@ -21,8 +21,32 @@ function field(row, a, b) {
 }
 
 // ── Definición de columnas ────────────────────────────────────────────────────
-function buildColumns(onViewDetail, onOpenWorkspace) {
+function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
   return [
+    {
+      id: 'bookmark',
+      header: '',
+      enableSorting: false,
+      cell: info => {
+        const row = info.row.original;
+        const marked = !!row._bookmarked;
+        return (
+          <button
+            type="button"
+            className="btn btn-sm py-0 px-2 border-0"
+            title={marked ? 'Quitar marca' : 'Marcar expediente'}
+            onClick={(e) => { e.stopPropagation(); onToggleBookmark?.(row); }}
+            data-testid={`bookmark-toggle-${row.id ?? row.fun0Id ?? ''}`}
+          >
+            <Icon
+              name={marked ? 'bookmark' : 'bookmark-regular'}
+              size={16}
+              className={marked ? 'text-warning' : 'text-slate-400'}
+            />
+          </button>
+        );
+      },
+    },
     {
       id: 'radicado',
       header: 'Radicado',
@@ -104,6 +128,38 @@ function buildColumns(onViewDetail, onOpenWorkspace) {
       },
     },
     {
+      id: 'responsable',
+      header: 'Responsable',
+      enableSorting: false,
+      accessorFn: row => row.responsable ?? row.responsable_nombre ?? '—',
+      cell: info => {
+        const v = info.getValue();
+        if (!v || v === '—') return <span className="text-xs text-slate-400">—</span>;
+        return <span className="text-sm text-slate-600">{v}</span>;
+      },
+    },
+    {
+      id: 'vecinos',
+      header: 'Vecinos',
+      enableSorting: false,
+      accessorFn: row => row.vecinos_state ?? row.vecinosState ?? null,
+      cell: info => {
+        const s = info.getValue();
+        if (!s) return <span className="text-xs text-slate-400">—</span>;
+        const META = {
+          pendiente:   { label: 'Pendiente',   cls: 'bg-slate-100 text-slate-700 border-slate-200' },
+          enviada:     { label: 'Enviada',     cls: 'bg-blue-100 text-blue-800 border-blue-200' },
+          respondida:  { label: 'Respondida',  cls: 'bg-green-100 text-green-800 border-green-200' },
+        };
+        const meta = META[s] ?? { label: String(s), cls: 'bg-slate-100 text-slate-700 border-slate-200' };
+        return (
+          <Badge variant="outline" className={`text-xs font-semibold px-2 py-0.5 ${meta.cls}`}>
+            {meta.label}
+          </Badge>
+        );
+      },
+    },
+    {
       id: 'acciones',
       header: '',
       enableSorting: false,
@@ -164,11 +220,11 @@ export function FunmanageDataTable({
   onRetry,
   onViewDetail,
   onOpenWorkspace,
+  onToggleBookmark,
 }) {
-  // ── Tabla ────────────────────────────────────────────────────────────────────
   const columns = useMemo(
-    () => buildColumns(onViewDetail, onOpenWorkspace),
-    [onViewDetail, onOpenWorkspace]
+    () => buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark),
+    [onViewDetail, onOpenWorkspace, onToggleBookmark]
   );
 
   const table = useReactTable({
