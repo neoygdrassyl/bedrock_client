@@ -95,6 +95,14 @@ const NAV_ITEMS = [
       { id: 'uso-suelo', label: 'Uso de suelo', route: '/uso-suelo', icon: 'MapPin' },
     ],
   },
+  {
+    id: 'configuracion',
+    label: 'Configuración',
+    icon: 'Settings',
+    route: '/configuracion',
+    roles: [],
+    children: [],
+  },
 ];
 
 /**
