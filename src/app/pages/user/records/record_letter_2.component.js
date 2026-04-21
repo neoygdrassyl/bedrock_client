@@ -27,10 +27,12 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
             const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CARTA AMPLIACION DE TERMINOS');
 
-            if(data) document.getElementById("vr_selected1").value = data.vr
-            setVrSelected(data.vr);
-            setCubSelected(data.cub);
-            setIdCUBxVr(data.id);
+            if (data) {
+                // document.getElementById("vr_selected1").value = data.vr
+                setVrSelected(data.vr);
+                setCubSelected(data.cub);
+                setIdCUBxVr(data.id);
+            }
         } catch (error) {
             console.log(error);
         }
@@ -65,214 +67,313 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
     useEffect(() => {
         if (currentVersion != null) {
             var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
-            document.getElementById('gena_type').value = formsParser1(_CHILD_1);
+            // document.getElementById('gena_type').value = formsParser1(_CHILD_1);
         }
     }, [currentVersion]);
 
-        function capitalize(s) {
-            return s && s[0].toUpperCase() + s.slice(1);
-        }
+    function capitalize(s) {
+        return s && s[0].toUpperCase() + s.slice(1);
+    }
 
-        let _GET_LAST_ID = (_id) => {
-            let new_id = "";
-            PQRS_Service.getlascub()
-                .then(response => {
-                    new_id = response.data[0].cub;
-                    new_id = _MANAGE_IDS(new_id, 'end')
-                    document.getElementById(_id).value = new_id;
-                })
-                .catch(e => {
-                    console.log(e);
+    let _GET_LAST_ID = (_id) => {
+        let new_id = "";
+        PQRS_Service.getlascub()
+            .then(response => {
+                new_id = response.data[0].cub;
+                new_id = _MANAGE_IDS(new_id, 'end')
+                document.getElementById(_id).value = new_id;
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: "ERROR AL CARGAR",
+                    text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
+                    icon: 'error',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+
+    }
+    let _SET_CHILD_53 = () => {
+        var _CHILD = currentItem.fun_53s;
+        var _CURRENT_VERSION = currentVersion - 1;
+        var _CHILD_VARS = {
+            item_530: "",
+            item_5311: "",
+            item_5312: "",
+            item_532: "",
+            item_533: "",
+            item_534: "",
+            item_535: "",
+            item_536: "",
+        }
+        if (_CHILD) {
+            if (_CHILD[_CURRENT_VERSION] != null) {
+                _CHILD_VARS.item_530 = _CHILD[_CURRENT_VERSION].id;
+                _CHILD_VARS.item_5311 = _CHILD[_CURRENT_VERSION].name;
+                _CHILD_VARS.item_5312 = _CHILD[_CURRENT_VERSION].surname;
+                _CHILD_VARS.item_532 = _CHILD[_CURRENT_VERSION].id_number;
+                _CHILD_VARS.item_533 = _CHILD[_CURRENT_VERSION].role;
+                _CHILD_VARS.item_534 = _CHILD[_CURRENT_VERSION].number;
+                _CHILD_VARS.item_535 = _CHILD[_CURRENT_VERSION].email;
+                _CHILD_VARS.item_536 = _CHILD[_CURRENT_VERSION].address;
+            }
+        }
+        return _CHILD_VARS;
+    }
+    let _GET_CHILD_LAW = () => {
+        var _CHILD = currentItem.fun_law;
+        var _CHILD_VARS = {
+            id: _CHILD ? (_CHILD.id ?? null) : null,
+            sign: _CHILD ? (_CHILD.sign ?? '') : '',
+            new_type: _CHILD ? (_CHILD.new_type ?? '') : '',
+            publish_neighbour: _CHILD ? (_CHILD.publish_neighbour ?? '') : '',
+            id6payment: _CHILD ? (_CHILD.id6payment ?? '') : '',
+            cub_act: _CHILD ? (_CHILD.cub_act ?? '') : '',
+            cub_act2: _CHILD ? (_CHILD.cub_act2 ?? '') : '',
+            cub_act_json: _CHILD ? (_CHILD.cub_act_json ?? null) : null,
+            cub_act2_json: _CHILD ? (_CHILD.cub_act2_json ?? null) : null,
+        }
+        return _CHILD_VARS;
+    }
+
+    let _GET_CLOCK = () => {
+        var _CHILD = currentItem.fun_clocks;
+        var _LIST = [];
+        if (_CHILD) {
+            _LIST = _CHILD;
+        }
+        return _LIST;
+    }
+    let _GET_CLOCK_STATE = (_state) => {
+        var _CLOCK = _GET_CLOCK();
+        if (_state == null) return false;
+        for (var i = 0; i < _CLOCK.length; i++) {
+            if (_CLOCK[i].state == _state) return _CLOCK[i];
+        }
+        return false;
+    }
+    // *********************************
+    let _GENDOC_COMPONENT = () => {
+        var _CHILD_53 = _SET_CHILD_53();
+        let _JSON = getJSONFull(_GET_CHILD_LAW().cub_act2_json);
+        let clock = _GET_CLOCK_STATE(32).date_start || _GET_CLOCK_STATE(33).date_start || _GET_CLOCK_STATE(5).date_start;
+        return <>
+            <div className="row mb-3">
+                <div className="col">
+                    <label>Fecha del documento</label>
+                    <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_doc" required
+                        defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
+                </div>
+                <div className="col">
+                    <label>Número de Radicación</label>
+                    <input type="text" className="form-control mb-3" id="gena2_id_public" disabled
+                        defaultValue={currentItem.id_public} />
+                </div>
+                <div></div>
+                <div className="col">
+                    <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="gena_cub_act2"
+                            defaultValue={_GET_CHILD_LAW().cub_act2 || cubSelected || ""} />
+                        {edit ? <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
+                            : ''}
+                    </div>
+                </div>
+                <div className="col" >
+                    <label className="mt-1">{infoCud.serials.start}</label>
+
+                    <div className="input-group">
+                        <select className="form-select" id="vr_selected1" defaultValue={vrSelected || ""}>
+                            <option disabled value=''>Seleccione una opción</option>
+                            {vrsRelated.map((value, key) => (
+                                <option key={value.id} value={value.id_public}>
+                                    {value.id_public}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <div className="row mb-3">
+                <div className="col">
+                    <label>Fecha limite (fecha not. + 30 d hab.)</label>
+                    <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_limit" required
+                        defaultValue={_JSON.date_limit || dateParser_finalDate(clock, 30)} />
+                </div>
+                <div className="col">
+                    <label>Fecha limite + extension (fecha not. + 30 d + 15 d)</label>
+                    <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_limit_2" required
+                        defaultValue={_JSON.date_limit_2 || dateParser_finalDate(clock, 45)} />
+                </div>
+            </div>
+            <div className="row mb-3">
+                <div className="col">
+                    <label>Ciudad</label>
+                    <input type="text" className="form-control mb-3" id="gena2_city"
+                        defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
+                </div>
+                <div className="col">
+                    <label>Responsable</label>
+                    <input type="text" className="form-control mb-3" id="gena2_name"
+                        defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
+                </div>
+                <div className="col">
+                    <label>Dirección</label>
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="gena2_address"
+                            defaultValue={_JSON.address || _CHILD_53.item_536} />
+                    </div>
+                </div>
+                <div className="col">
+                    <label>Email</label>
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="gena2_email"
+                            defaultValue={_JSON.email || _CHILD_53.item_535} />
+                    </div>
+                </div>
+            </div>
+        </>
+    }
+
+    let gen_confirmDoc = (e) => {
+
+        if (e) e.preventDefault();
+        let formData = new FormData();
+
+        let date_doc = document.getElementById("gena2_date_doc").value;
+        //let date = document.getElementById("gena_date").value;
+        let date_limit = document.getElementById("gena2_date_limit").value;
+        let date_limit_2 = document.getElementById("gena2_date_limit_2").value;
+        let id_public = document.getElementById("gena2_id_public").value;
+        let name = document.getElementById("gena2_name").value;
+        let city = document.getElementById("gena2_city").value;
+        let email = document.getElementById("gena2_email").value;
+        let address = document.getElementById("gena2_address").value;
+        let cub = document.getElementById("gena_cub_act2").value;
+
+        formData.set('date_doc', date_doc);
+        formData.set('date_limit_2', date_limit_2);
+        formData.set('date_limit', date_limit);
+        formData.set('id_public', id_public);
+        formData.set('name', name);
+        formData.set('city', city);
+        formData.set('email', email);
+        formData.set('address', address);
+        formData.set('cub', cub);
+
+        MySwal.fire({
+            title: swaMsg.title_wait,
+            text: swaMsg.text_wait,
+            icon: 'info',
+            showConfirmButton: false,
+        });
+        RecordReviewService.gen_doc_incomplete_act_2(formData)
+            .then(response => {
+                if (response.data === 'OK') {
+                    MySwal.close();
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/confirmact2/" + "Carta_Ampliacion_Terminos_" + currentItem.id_public + ".pdf");
+                } else {
                     MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
-                        icon: 'error',
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
                         confirmButtonText: swaMsg.text_btn,
                     });
-                });
-
-        }
-        let _SET_CHILD_53 = () => {
-            var _CHILD = currentItem.fun_53s;
-            var _CURRENT_VERSION = currentVersion - 1;
-            var _CHILD_VARS = {
-                item_530: "",
-                item_5311: "",
-                item_5312: "",
-                item_532: "",
-                item_533: "",
-                item_534: "",
-                item_535: "",
-                item_536: "",
-            }
-            if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_530 = _CHILD[_CURRENT_VERSION].id;
-                    _CHILD_VARS.item_5311 = _CHILD[_CURRENT_VERSION].name;
-                    _CHILD_VARS.item_5312 = _CHILD[_CURRENT_VERSION].surname;
-                    _CHILD_VARS.item_532 = _CHILD[_CURRENT_VERSION].id_number;
-                    _CHILD_VARS.item_533 = _CHILD[_CURRENT_VERSION].role;
-                    _CHILD_VARS.item_534 = _CHILD[_CURRENT_VERSION].number;
-                    _CHILD_VARS.item_535 = _CHILD[_CURRENT_VERSION].email;
-                    _CHILD_VARS.item_536 = _CHILD[_CURRENT_VERSION].address;
                 }
-            }
-            return _CHILD_VARS;
-        }
-        let _GET_CHILD_LAW = () => {
-            var _CHILD = currentItem.fun_law;
-            var _CHILD_VARS = {
-                id: _CHILD ? (_CHILD.id ?? null) : null,
-                sign: _CHILD ? (_CHILD.sign ?? '') : '',
-                new_type: _CHILD ? (_CHILD.new_type ?? '') : '',
-                publish_neighbour: _CHILD ? (_CHILD.publish_neighbour ?? '') : '',
-                id6payment: _CHILD ? (_CHILD.id6payment ?? '') : '',
-                cub_act: _CHILD ? (_CHILD.cub_act ?? '') : '',
-                cub_act2: _CHILD ? (_CHILD.cub_act2 ?? '') : '',
-                cub_act_json: _CHILD ? (_CHILD.cub_act_json ?? null) : null,
-                cub_act2_json: _CHILD ? (_CHILD.cub_act2_json ?? null) : null,
-            }
-            return _CHILD_VARS;
-        }
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    }
 
-        let _GET_CLOCK = () => {
-            var _CHILD = currentItem.fun_clocks;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
-        }
-        let _GET_CLOCK_STATE = (_state) => {
-            var _CLOCK = _GET_CLOCK();
-            if (_state == null) return false;
-            for (var i = 0; i < _CLOCK.length; i++) {
-                if (_CLOCK[i].state == _state) return _CLOCK[i];
-            }
-            return false;
-        }
-        // *********************************
-        let _GENDOC_COMPONENT = () => {
-            var _CHILD_53 = _SET_CHILD_53();
-            let _JSON = getJSONFull(_GET_CHILD_LAW().cub_act2_json);
-            let clock = _GET_CLOCK_STATE(32).date_start || _GET_CLOCK_STATE(33).date_start || _GET_CLOCK_STATE(5).date_start;
-            return <>
-                <div className="row mb-3">
-                    <div className="col">
-                        <label>Fecha del documento</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_doc" required
-                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
-                    </div>
-                    <div className="col">
-                        <label>Número de Radicación</label>
-                        <input type="text" className="form-control mb-3" id="gena2_id_public" disabled
-                            defaultValue={currentItem.id_public} />
-                    </div>
-                    <div></div>
-                    <div className="col">
-                        <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
-                        <div className="input-group">
-                            <input type="text" className="form-control" id="gena_cub_act2"
-                                defaultValue={_GET_CHILD_LAW().cub_act2 || cubSelected || ""} />
-                                {edit ? <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
-                                : ''}
-                        </div>
-                    </div>
-                    <div className="col" >
-                        <label className="mt-1">{infoCud.serials.start}</label>
+    let save_doc = (e) => {
+        if (e) e.preventDefault();
+        let formData = new FormData();
+        let cub_act2_json = getJSONFull(_GET_CHILD_LAW().cub_act2_json);
 
-                        <div className="input-group">
-                            <select className="form-select" id="vr_selected1" defaultValue={vrSelected || ""}>
-                                <option disabled value=''>Seleccione una opción</option>
-                                {vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.id_public}>
-                                        {value.id_public}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+        let new_id = document.getElementById("gena_cub_act2").value;
+        formData.set('new_id', new_id);
+        formData.set('prev_id', _GET_CHILD_LAW().cub_act2);
+        formData.set('aim_cub', 'cub_act2');
 
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <div className="col">
-                        <label>Fecha limite (fecha not. + 30 d hab.)</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_limit" required
-                            defaultValue={_JSON.date_limit || dateParser_finalDate(clock, 30)} />
-                    </div>
-                    <div className="col">
-                        <label>Fecha limite + extension (fecha not. + 30 d + 15 d)</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_limit_2" required
-                            defaultValue={_JSON.date_limit_2 || dateParser_finalDate(clock, 45)} />
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <div className="col">
-                        <label>Ciudad</label>
-                        <input type="text" className="form-control mb-3" id="gena2_city"
-                            defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
-                    </div>
-                    <div className="col">
-                        <label>Responsable</label>
-                        <input type="text" className="form-control mb-3" id="gena2_name"
-                            defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
-                    </div>
-                    <div className="col">
-                        <label>Dirección</label>
-                        <div className="input-group">
-                            <input type="text" className="form-control" id="gena2_address"
-                                defaultValue={_JSON.address || _CHILD_53.item_536} />
-                        </div>
-                    </div>
-                    <div className="col">
-                        <label>Email</label>
-                        <div className="input-group">
-                            <input type="text" className="form-control" id="gena2_email"
-                                defaultValue={_JSON.email || _CHILD_53.item_535} />
-                        </div>
-                    </div>
-                </div>
-            </>
-        }
+        let date_doc = document.getElementById("gena2_date_doc").value;
+        //let date = document.getElementById("gena_date").value;
+        let date_limit = document.getElementById("gena2_date_limit").value;
+        let date_limit_2 = document.getElementById("gena2_date_limit_2").value;
+        let id_public = document.getElementById("gena2_id_public").value;
+        let name = document.getElementById("gena2_name").value;
+        let city = document.getElementById("gena2_city").value;
+        let email = document.getElementById("gena2_email").value;
+        let address = document.getElementById("gena2_address").value;
 
-        let gen_confirmDoc = (e) => {
+        cub_act2_json.date_doc = date_doc;
+        cub_act2_json.date_limit_2 = date_limit_2;
+        cub_act2_json.date_limit = date_limit;
+        cub_act2_json.id_public = id_public;
+        cub_act2_json.name = name;
+        cub_act2_json.city = city;
+        cub_act2_json.email = email;
+        cub_act2_json.address = address;
 
-            if (e) e.preventDefault();
-            let formData = new FormData();
-
-            let date_doc = document.getElementById("gena2_date_doc").value;
-            //let date = document.getElementById("gena_date").value;
-            let date_limit = document.getElementById("gena2_date_limit").value;
-            let date_limit_2 = document.getElementById("gena2_date_limit_2").value;
-            let id_public = document.getElementById("gena2_id_public").value;
-            let name = document.getElementById("gena2_name").value;
-            let city = document.getElementById("gena2_city").value;
-            let email = document.getElementById("gena2_email").value;
-            let address = document.getElementById("gena2_address").value;
-            let cub = document.getElementById("gena_cub_act2").value;
-
-            formData.set('date_doc', date_doc);
-            formData.set('date_limit_2', date_limit_2);
-            formData.set('date_limit', date_limit);
-            formData.set('id_public', id_public);
-            formData.set('name', name);
-            formData.set('city', city);
-            formData.set('email', email);
-            formData.set('address', address);
-            formData.set('cub', cub);
-
+        formData.set('cub_act2_json', JSON.stringify(cub_act2_json));
+        manage_law(true, formData);
+        createVRxCUB_relation(new_id);
+        retrieveItem();
+    }
+    let manage_law = (useMySwal, formData) => {
+        var _CHILD = _GET_CHILD_LAW();
+        formData.set('fun0Id', currentItem.id);
+        if (useMySwal) {
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
                 icon: 'info',
                 showConfirmButton: false,
             });
-            RecordReviewService.gen_doc_incomplete_act_2(formData)
+        }
+        if (_CHILD.id) {
+            FUNService.update_law(_CHILD.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/confirmact2/" + "Carta_Ampliacion_Terminos_" + currentItem.id_public + ".pdf");
+                        if (useMySwal) {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            requestUpdate(currentItem.id)
+                        }
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
                     } else {
+                        if (useMySwal) {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    if (useMySwal) {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
@@ -280,211 +381,112 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
                             confirmButtonText: swaMsg.text_btn,
                         });
                     }
+                });
+        }
+        else {
+            FUNService.create_law(formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        if (useMySwal) {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            requestUpdate(currentItem.id)
+                        }
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+                        if (useMySwal) {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useMySwal) {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
                 });
         }
 
-        let save_doc = (e) => {
-            if (e) e.preventDefault();
-            let formData = new FormData();
-            let cub_act2_json = getJSONFull(_GET_CHILD_LAW().cub_act2_json);
+    }
+    let createVRxCUB_relation = (cub_selected) => {
+        let vr = document.getElementById("vr_selected1").value;
+        let cub = cub_selected;
+        let formatData = new FormData();
 
-            let new_id = document.getElementById("gena_cub_act2").value;
-            formData.set('new_id', new_id);
-            formData.set('prev_id', _GET_CHILD_LAW().cub_act2);
-            formData.set('aim_cub', 'cub_act2');
 
-            let date_doc = document.getElementById("gena2_date_doc").value;
-            //let date = document.getElementById("gena_date").value;
-            let date_limit = document.getElementById("gena2_date_limit").value;
-            let date_limit_2 = document.getElementById("gena2_date_limit_2").value;
-            let id_public = document.getElementById("gena2_id_public").value;
-            let name = document.getElementById("gena2_name").value;
-            let city = document.getElementById("gena2_city").value;
-            let email = document.getElementById("gena2_email").value;
-            let address = document.getElementById("gena2_address").value;
+        formatData.set('vr', vr);
+        formatData.set('cub', cub);
+        formatData.set('fun', currentItem.id_public);
+        formatData.set('process', 'CARTA AMPLIACION DE TERMINOS');
 
-            cub_act2_json.date_doc = date_doc;
-            cub_act2_json.date_limit_2 = date_limit_2;
-            cub_act2_json.date_limit = date_limit;
-            cub_act2_json.id_public = id_public;
-            cub_act2_json.name = name;
-            cub_act2_json.city = city;
-            cub_act2_json.email = email;
-            cub_act2_json.address = address;
+        //let desc = document.getElementById('geni_type').value;
+        formatData.set('desc', "Carta ampliación de términos");
 
-            formData.set('cub_act2_json', JSON.stringify(cub_act2_json));
-            manage_law(true, formData);
-            createVRxCUB_relation(new_id);
-            retrieveItem();
-        }
-        let manage_law = (useMySwal, formData) => {
-            var _CHILD = _GET_CHILD_LAW();
-            formData.set('fun0Id', currentItem.id);
-            if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
+        let date = document.getElementById('gena2_date_doc').value;
+        formatData.set('date', date);
+
+        if (idCUBxVr) {
+            CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        // Refrescar la UI
+                        requestUpdate(currentItem.id, true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
                 });
-            }
-            if (_CHILD.id) {
-                FUNService.update_law(_CHILD.id, formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                requestUpdate(currentItem.id)
-                            }
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        } else {
-                            if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                            }
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                    });
-            }
-            else {
-                FUNService.create_law(formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                requestUpdate(currentItem.id)
-                            }
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        } else {
-                            if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                            }
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                    });
-            }
-
+        } else {
+            // Crear relación
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        // Refrescar la UI
+                        requestUpdate(currentItem.id, true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         }
-        let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("vr_selected1").value;
-            let cub = cub_selected;
-            let formatData = new FormData();
-            
-
-            formatData.set('vr', vr);
-            formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id_public);
-            formatData.set('process', 'CARTA AMPLIACION DE TERMINOS');
-
-            //let desc = document.getElementById('geni_type').value;
-            formatData.set('desc', "Carta ampliación de términos");
-
-            let date = document.getElementById('gena2_date_doc').value;
-            formatData.set('date', date);
-
-            if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
-                    .then((response) => {
-                        if (response.data === 'OK') {
-                            // Refrescar la UI
-                            requestUpdate(currentItem.id, true);
-                        } 
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
-            } else {
-                // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
-                    .then((response) => {
-                        if (response.data === 'OK') {
-                            // Refrescar la UI
-                            requestUpdate(currentItem.id, true);
-                        } 
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
-            }
-        };
-        return (
-            <form id="genc_doc_form" onSubmit={save_doc}>
-                {_GENDOC_COMPONENT()}
-                <div className="row text-center">
-                    {edit ?
-                        <div className="col">
-                            <button className="btn btn-success my-3"><i className="fas fa-share-square"></i> GUARDAR DATOS</button>
-                        </div>
-                        : ''}
+    };
+    return (
+        <form id="genc_doc_form" onSubmit={save_doc}>
+            {_GENDOC_COMPONENT()}
+            <div className="row text-center">
+                {edit ?
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
+                        <button className="btn btn-success my-3"><i className="fas fa-share-square"></i> GUARDAR DATOS</button>
                     </div>
+                    : ''}
+                <div className="col">
+                    <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
                 </div>
-            </form>
+            </div>
+        </form>
 
-        );
+    );
 }
 
 export default RECORD_DOC_LETTER_2;

@@ -124,7 +124,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         const data = response.data.find(item => item.process === 'OBSERVACIONES Y CORRECIONES')
 
         if (data) {
-            document.getElementById("vr_selected11").value = data.vr
+            // document.getElementById("vr_selected11").value = data.vr
             setVrSelected(data.vr);
             setCubSelected(data.cub);
             setIdCUBxVr(data.id);
@@ -1077,7 +1077,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div className="input-group">
-                            <select className="form-select" id="vr_selected11" defaultValue={vrSelected || ""}>
+                            <select className="form-select" id="vr_selected11" defaultValue={vrSelected}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
