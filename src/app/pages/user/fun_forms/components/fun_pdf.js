@@ -5,10 +5,11 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { cities, domains, states } from '../../../../components/jsons/vars';
-import moment from 'moment';
+// import moment from 'moment';
 
 const MySwal = withReactContent(Swal);
-function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
+function FUN_PDF(props) {
+    const { currentItem, currentVersion, swaMsg } = props;
 
     let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -147,9 +148,10 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         return _CHILD_VARS;
     }
 
-    const getPdfForm = useCallback(async () => {
+    const getPdfForm = async () => {
         // NOTE: Direct DOM queries (document.getElementById) are kept for this PDF generator
         // to handle the uncontrolled inputs without adding excessive state management overhead for these specific fields.
+        console.log(currentItem)
         let model = currentItem.model
         if (!model) return MySwal.fire({
             title: 'SOLICITUD SIN MODELO',
@@ -172,10 +174,8 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         //if (model == '2023') formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
-
         var _child = null;
         var _array = null;
-        const currentItem = currentItem;
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -2137,84 +2137,84 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
           console.log(`${type}: ${name}`)
         })
         */
-    }, [currentItem, currentVersion, swaMsg]);
+    };
 
-        let _GET_CLOCK = () => {
-            var _CHILD = currentItem.fun_clocks;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
+    let _GET_CLOCK = () => {
+        var _CHILD = currentItem.fun_clocks;
+        var _LIST = [];
+        if (_CHILD) {
+            _LIST = _CHILD;
         }
-        let _GET_CLOCK_STATE = (_state) => {
-            var _CLOCK = _GET_CLOCK();
-            if (_state == null) return false;
-            var _clock = [];
-            for (var i = 0; i < _CLOCK.length; i++) {
-                if (_CLOCK[i].state == _state) return (_CLOCK[i]);
-            }
-            return _clock;
+        return _LIST;
+    }
+    let _GET_CLOCK_STATE = (_state) => {
+        var _CLOCK = _GET_CLOCK();
+        if (_state == null) return false;
+        var _clock = [];
+        for (var i = 0; i < _CLOCK.length; i++) {
+            if (_CLOCK[i].state == _state) return (_CLOCK[i]);
         }
-        return (
-            <div className="py-3">
-                <div className="row mb-3">
-                    <div className="col-5">
-                        <label>Oficina Responsable</label>
-                        <div className="input-group my-1">
-                            <select className="form-select me-1" id={"fun_pdf_0_1"}>
-                                {domains}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        <label>No. de Radicación</label>
-                        <div className="input-group my-1">
-                            <input type="text" className="form-control" id="fun_pdf_0_2"
-                                defaultValue={currentItem.id_public} disabled />
-                        </div>
-                    </div>
-                    <div className="col">
-                        <label>Modelo</label>
-                        <div className="input-group my-1">
-                            <input type="text" className="form-control" id="fun_pdf_0_6"
-                                defaultValue={currentItem.model} disabled />
-                        </div>
+        return _clock;
+    }
+    return (
+        <div className="py-3">
+            <div className="row mb-3">
+                <div className="col-5">
+                    <label>Oficina Responsable</label>
+                    <div className="input-group my-1">
+                        <select className="form-select me-1" id={"fun_pdf_0_1"}>
+                            {domains}
+                        </select>
                     </div>
                 </div>
-                <div className="row mb-3">
-                    <div className="col-4">
-                        <label>Departamento</label>
-                        <div className="input-group my-1">
-                            <select className="form-select me-1" id={"fun_pdf_0_3"}>
-                                {states}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        <label>Municipio</label>
-                        <div className="input-group my-1">
-                            <select className="form-select me-1" id={"fun_pdf_0_4"}>
-                                {cities}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col-3">
-                        <label>Fecha (Pago de Expensas)</label>
-                        <div className="input-group my-1">
-                            <input type="text" className="form-control" id="fun_pdf_0_5"
-                                defaultValue={dateParser(_GET_CLOCK_STATE(3).date_start)} disabled />
-                        </div>
+                <div className="col-4">
+                    <label>No. de Radicación</label>
+                    <div className="input-group my-1">
+                        <input type="text" className="form-control" id="fun_pdf_0_2"
+                            defaultValue={currentItem.id_public} disabled />
                     </div>
                 </div>
-
-                <div className="row mb-3 text-center">
-                    <div className="col-12">
-                        <button className="btn btn-danger my-3" onClick={getPdfForm}><i className="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
+                <div className="col">
+                    <label>Modelo</label>
+                    <div className="input-group my-1">
+                        <input type="text" className="form-control" id="fun_pdf_0_6"
+                            defaultValue={currentItem.model} disabled />
                     </div>
                 </div>
             </div>
-        );
+            <div className="row mb-3">
+                <div className="col-4">
+                    <label>Departamento</label>
+                    <div className="input-group my-1">
+                        <select className="form-select me-1" id={"fun_pdf_0_3"}>
+                            {states}
+                        </select>
+                    </div>
+                </div>
+                <div className="col-4">
+                    <label>Municipio</label>
+                    <div className="input-group my-1">
+                        <select className="form-select me-1" id={"fun_pdf_0_4"}>
+                            {cities}
+                        </select>
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label>Fecha (Pago de Expensas)</label>
+                    <div className="input-group my-1">
+                        <input type="text" className="form-control" id="fun_pdf_0_5"
+                            defaultValue={dateParser(_GET_CLOCK_STATE(3).date_start)} disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div className="row mb-3 text-center">
+                <div className="col-12">
+                    <button className="btn btn-danger my-3" onClick={getPdfForm}><i className="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default FUN_PDF;

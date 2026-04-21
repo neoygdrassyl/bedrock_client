@@ -15,7 +15,7 @@ function Dashboard({ breadCrums }) {
         { title: "Archivo", image: "fas fa-folder-open fa-3x", link: "/archive" },
         { title: "Radicar Licencias", image: "fas fa-file-alt fa-3x", link: "/fun" },
         { title: "Gestionar Licencias", image: "fas fa-folder fa-3x", link: "/funmanage" },
-        { title: "Gestion Licencias Nuevo", image: "fas fa-layer-group fa-3x", link: "/funmanage-new" },
+        // { title: "Gestion Licencias Nuevo", image: "fas fa-layer-group fa-3x", link: "/funmanage-new" },
     ];
 
     if (_GLOBAL_ID == "cb1") {

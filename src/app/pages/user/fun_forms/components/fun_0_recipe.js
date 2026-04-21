@@ -510,7 +510,6 @@ function FUN_0_RECIPE(props) {
 
            
             let _tags = tags || currentItem.tags || [];
-            console.log(_tags)
             formData0.set('tags', _tags.join(','));
 
             let rules_html = document.getElementsByName('fun_0_rules');
