@@ -132,12 +132,25 @@ function ScatterTooltip({ active, payload }) {
 }
 
 // ── Componente principal ──────────────────────────────────────────────────────
+// Umbrales por defecto (fallback si no hay configuración de alarmas cargada).
+// La verdad operativa vive en el panel admin (alarm_config.configJson.scatterThresholds).
+const DEFAULT_THRESHOLDS = { warning: 80, critical: 95, overdue: 100 };
+
 /**
  * Gráfico de dispersión de solicitudes de curaduría.
  *
- * @param {{ data: Array, loading: boolean }} props
+ * @param {{
+ *   data: Array,
+ *   loading: boolean,
+ *   thresholds?: { warning?: number, critical?: number, overdue?: number }
+ * }} props
  */
-export function FunmanageScatterChart({ data, loading }) {
+export function FunmanageScatterChart({ data, loading, thresholds }) {
+  const t = {
+    warning:  Number.isFinite(thresholds?.warning)  ? thresholds.warning  : DEFAULT_THRESHOLDS.warning,
+    critical: Number.isFinite(thresholds?.critical) ? thresholds.critical : DEFAULT_THRESHOLDS.critical,
+    overdue:  Number.isFinite(thresholds?.overdue)  ? thresholds.overdue  : DEFAULT_THRESHOLDS.overdue,
+  };
   // Transformar datos del backend al formato del scatter chart
   // X-axis: % del tiempo usado (dias_usados / dias_limite * 100)
   const plotData = useMemo(() => {
@@ -215,10 +228,10 @@ export function FunmanageScatterChart({ data, loading }) {
         <ScatterChart margin={{ top: 12, right: 24, bottom: 28, left: 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
 
-          {/* Líneas de referencia: umbrales de semáforo */}
-          <ReferenceLine x={80}  stroke="#eab308" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: '80%', position: 'top', fontSize: 9, fill: '#eab308' }} />
-          <ReferenceLine x={95}  stroke="#ef4444" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: '95%', position: 'top', fontSize: 9, fill: '#ef4444' }} />
-          <ReferenceLine x={100} stroke="#991b1b" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: '100%', position: 'top', fontSize: 9, fill: '#991b1b' }} />
+          {/* Líneas de referencia: umbrales de semáforo (configurables via panel admin) */}
+          <ReferenceLine x={t.warning}  stroke="#eab308" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: `${t.warning}%`,  position: 'top', fontSize: 9, fill: '#eab308' }} />
+          <ReferenceLine x={t.critical} stroke="#ef4444" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: `${t.critical}%`, position: 'top', fontSize: 9, fill: '#ef4444' }} />
+          <ReferenceLine x={t.overdue}  stroke="#991b1b" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: `${t.overdue}%`,  position: 'top', fontSize: 9, fill: '#991b1b' }} />
 
           <XAxis
             type="number"
