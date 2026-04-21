@@ -231,6 +231,12 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           </div>
 
           {/* ─── 2. TARJETAS DE KPIs ──────────────────────────────────── */}
+          <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
+            <Icon name="arrow-left" size={14} className="shrink-0" />
+            <a href="/licencias/gestion" className="hover:text-foreground hover:underline underline-offset-2 transition-colors">
+              Ver vista clásica
+            </a>
+          </div>
           <FunDashboardKPIs
             kpis={dashKpis}
             loading={dashLoading}
@@ -332,7 +338,6 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
         </div>
       </div>
 
-      {/* ── Panel lateral de detalle ──────────────────────────────── */}
       {selectedExpediente && (
         <FunExpedienteDetail
           expediente={selectedExpediente}
@@ -341,7 +346,6 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
         />
       )}
 
-      {/* ── Workspace FUN en pantalla grande ─────────────────────── */}
       {workspaceExpediente && (
         <FunExpedienteWorkspace
           expediente={workspaceExpediente}

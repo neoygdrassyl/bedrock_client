@@ -11,6 +11,7 @@ const BASE = {
     popup: 'swal2-themed',
     confirmButton: 'swal2-confirm-themed',
     cancelButton: 'swal2-cancel-themed',
+    denyButton: 'swal2-deny-themed',
   },
   buttonsStyling: false,
   reverseButtons: true,

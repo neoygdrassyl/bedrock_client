@@ -25,6 +25,7 @@ import './home.css'
 import { infoCud } from '../components/jsons/vars';
 import Map from '../components/map';
 import { _news } from '../components/jsons/_news';
+import customService from '../services/custom.service';
 
 import { Button_navigation } from '../components/button.component';
 import { Icon } from '@/components/icon';
@@ -34,6 +35,9 @@ import { Icon } from '@/components/icon';
 function Home({ translation, history }) {
     const [modal, setModal] = useState(true);
     const inputSearchRef = useRef(null);
+    const [statusResult, setStatusResult] = useState(null);
+    const [statusError, setStatusError] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
     {/*const modalMessage = {
       title: <h2>¡AVISO IMPORTANTE!</h2>,
       body: <dic>
@@ -80,17 +84,65 @@ function Home({ translation, history }) {
 
       }
     };
-    let _CHECK_STATUS = () => {
-      let searchValue = inputSearchRef.current.value;
-      history.push('/status/' + searchValue);
-    }
+    const getStatusLookup = (searchValue) => {
+      const normalizedValue = searchValue.trim().toUpperCase();
+
+      if (!normalizedValue) {
+        return null;
+      }
+
+      if (normalizedValue.startsWith('68001-') || /^\d{5}-/.test(normalizedValue)) {
+        return customService.checkStatus_Lc;
+      }
+
+      if (normalizedValue.startsWith('VR')) {
+        return customService.checkStatus_vr;
+      }
+
+      if (normalizedValue.startsWith('N')) {
+        return customService.checkStatus_Nr;
+      }
+
+      return customService.checkStatus_In;
+    };
+
+    const _CHECK_STATUS = async () => {
+      const searchValue = inputSearchRef.current?.value?.trim() || '';
+      const lookup = getStatusLookup(searchValue);
+
+      if (!lookup) {
+        setStatusResult(null);
+        setStatusError('Ingrese un identificador o número de cédula para consultar el proceso.');
+        return;
+      }
+
+      setIsSearching(true);
+      setStatusError('');
+      setStatusResult(null);
+
+      try {
+        const response = await lookup(searchValue);
+        const firstResult = Array.isArray(response?.data) ? response.data[0] : null;
+
+        if (!firstResult) {
+          setStatusError('No encontramos resultados para el criterio ingresado.');
+          return;
+        }
+
+        setStatusResult(firstResult);
+      } catch (error) {
+        setStatusError('No fue posible consultar el estado del proceso en este momento.');
+      } finally {
+        setIsSearching(false);
+      }
+    };
 
 
 
     const Redirect = (id) => {
       var element = document.getElementById(id);
       //console.log(element)
-      element.scrollIntoView();
+      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     //console.log(Redirect())
 
@@ -156,15 +208,15 @@ function Home({ translation, history }) {
          * 
         */}
 
-          <div class="container pt-2" id="hanging-icons">
+          <div className="container pt-2" id="hanging-icons">
             <div className='' style={{ backgroundColor: '#1b83c4', borderRadius: '2px' }}>
-              <div class="row justify-content-center px-1 mx-2">
-                <div class="col-5 text-start py-1" style={{ color: ' white ' }}>
+              <div className="row justify-content-center px-1 mx-2">
+                <div className="col-5 text-start py-1" style={{ color: ' white ' }}>
                   <h5 className='px-4 py-0 fw-normal'><Icon name="Calendar" size={16} className="text-light" /> Horario: {infoCud.schedule}</h5>
-                  <h5 className='px-4 py-0 fw-normal'><Icon name="Calendar" size={16} className="text-light" /> Consulta horarios especiales y atencion especializada, click <Link className='text-light' to={'/mailbox'}>Aqui <Icon name="ArrowLeft" size={16} /></Link></h5>
+                  <h5 className='px-4 py-0 fw-normal'><Icon name="Calendar" size={16} className="text-light" /> Consulta horarios especiales y atencion especializada, click <Link className='text-light' to={'/publicaciones'}>Aqui <Icon name="ArrowLeft" size={16} /></Link></h5>
                 </div>
-                <div class="col-7 py-1">
-                  <div class="px-0">
+                <div className="col-7 py-1">
+                  <div className="px-0">
                     <span className='col-lg-12'>
                       <h5 className='fw-normal'> <a style={{ color: 'white' }} href='https://www.google.es/maps/place/Curaduria+Urbana+No.+1+de+Bucaramanga/@7.1236512,-73.1155874,17z/data=!3m1!4b1!4m5!3m4!1s0x8e683f0ec6e6ea35:0xd99c4a977df44614!8m2!3d7.1236459!4d-73.1133987?hl=es' target="_blank" > <Icon name="MapPin" size={16} className="text-light" /> {infoCud.address}</a> </h5>
                     </span>
@@ -174,56 +226,56 @@ function Home({ translation, history }) {
               </div>
             </div>
 
-            <div class="container py-2">
-              <div class="row align-items-start">
+            <div className="container py-2">
+              <div className="row align-items-start">
                 <div className='col-lg-9 px-0 ' style={{ height: '280px' }}>
-                  <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel" style={{ height: '280px' }}>
-                    <div class="carousel-indicators">
-                      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                  <div id="carouselExampleDark" className="carousel carousel-dark slide" data-bs-ride="carousel" style={{ height: '280px' }}>
+                    <div className="carousel-indicators">
+                      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
                       <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
                       <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
                       <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="3" aria-label="Slide 4"></button>
                     </div>
-                    <div class="carousel-inner ">
-                      <div class="carousel-item active" data-bs-interval="11000">
-                        <img src={COLOMBIA} class="d-block w-100" alt="Bucaramanga santander y sus hermosos paisajes." style={{ height: '275px' }} />
-                        <div class="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
+                    <div className="carousel-inner ">
+                      <div className="carousel-item active" data-bs-interval="11000">
+                        <img src={COLOMBIA} className="d-block w-100" alt="Bucaramanga santander y sus hermosos paisajes." style={{ height: '275px' }} />
+                        <div className="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
                           <p className='text-light  text-end' style={{ width: '800px' }}>Creditos: Daniel Beltran.</p>
                         </div>
                       </div>
-                      <div class="carousel-item" data-bs-interval="9000">
-                        <img src={IMG1} class="d-block w-100" alt="Bucaramanga santander y sus hermosos paisajes." style={{ height: '275px' }} />
-                        <div class="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
+                      <div className="carousel-item" data-bs-interval="9000">
+                        <img src={IMG1} className="d-block w-100" alt="Bucaramanga santander y sus hermosos paisajes." style={{ height: '275px' }} />
+                        <div className="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
                           <p className='text-light text-end ' style={{ width: '800px' }}>Creditos: David Alberto Arias</p>
                         </div>
                       </div>
-                      <div class="carousel-item" data-bs-interval="9000">
-                        <img src={IMG2} class="d-block w-100" alt="Bucaramanga santander la ciudad de los parques." style={{ height: '275px' }} />
-                        <div class="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
+                      <div className="carousel-item" data-bs-interval="9000">
+                        <img src={IMG2} className="d-block w-100" alt="Bucaramanga santander la ciudad de los parques." style={{ height: '275px' }} />
+                        <div className="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
                           <p className='text-light text-end' style={{ width: '800px' }}>Creditos: David Alberto Arias</p>
                         </div>
                       </div>
-                      <div class="carousel-item" data-bs-interval="9000">
-                        <img src={IMG3} class="d-block w-100" alt="Bucaramanga santander la ciudad bonita." style={{ height: '275px' }} />
-                        <div class="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
+                      <div className="carousel-item" data-bs-interval="9000">
+                        <img src={IMG3} className="d-block w-100" alt="Bucaramanga santander la ciudad bonita." style={{ height: '275px' }} />
+                        <div className="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
                           <p className='text-light text-end' style={{ width: '800px' }}>Creditos: David Alberto Arias</p>
                         </div>
                       </div>
 
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Previous</span>
+                    <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                      <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span className="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Next</span>
+                    <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                      <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span className="visually-hidden">Next</span>
                     </button>
                   </div>
                 </div>
                 <div className='col-lg-3 py-1' >
                   <div className='py-1'>
-                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/normogram">
+                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/normas">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
                           <h4 className='fw-normal'><Icon name="FileText" size={24} />   Consulta Normatividad</h4>
@@ -232,16 +284,16 @@ function Home({ translation, history }) {
                     </Link>
                   </div>
                   <div className='py-1'>
-                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/status">
+                    <a style={{ color: 'white', backgroundImage: 'white', textDecoration: 'none' }} href="#process">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
                           <h4 className='fw-normal'><Icon name="Search" size={24} />    Consulta Procesos</h4>
                         </div>
                       </div>
-                    </Link>
+                    </a>
                   </div>
                   <div className='py-1'>
-                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/administrative">
+                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/publicaciones">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
                           <h4 className='fw-normal'><Icon name="List" size={24} />    Consulta publicaciones</h4>
@@ -250,7 +302,7 @@ function Home({ translation, history }) {
                     </Link>
                   </div>
                   <div className='py-1'>
-                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/old">
+                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/archivo">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
                           <h4 className='fw-normal'><Icon name="FolderMinus" size={24} /> Consulta repositorio</h4>
@@ -264,45 +316,45 @@ function Home({ translation, history }) {
             <hr className='bg-primary py-0'></hr>
             <h2 className='text-center' id='services'>Servicios <Button_navigation Iddown={'process'} Idup={null} /> </h2>
             <div className='col-lg col-mb-10 justify-content-center d-flex mx-0 px-0 ' style={{ borderRadius: '8px' }}>
-              <div class="row align-items-center py-0 my-0" style={{ borderRadius: '20px', }}>
-                <div class="col-2  text-center  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/payments'}>
-                  <img src={LGOG13} class="d-block w-100" alt="pse." style={{ width: '8px', height: '70px'}} />
+              <div className="row align-items-center py-0 my-0" style={{ borderRadius: '20px', }}>
+                <div className="col-2  text-center  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/ventanilla'}>
+                  <img src={LGOG13} className="d-block w-100" alt="pse." style={{ width: '8px', height: '70px'}} />
                   <h5 className='py-1 text-white fw-normal'>Pagos pse</h5>
                   </Link>
                 </div>
-                <div class="col-2  text-center border border-dark px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/inclusivity'}>
+                <div className="col-2  text-center border border-dark px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/documentos'}>
                     <Icon name="HandMetal" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Curaduria inclusiva</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/file'}>
+                <div className="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/documentos'}>
                     <Icon name="FileText" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Instrumentos de apoyo</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/liquidator'}>
+                <div className="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/calculadora'}>
                     <Icon name="Calculator" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Calculadora liquidación expensa</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/pqrs'}>
+                <div className="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/peticiones'}>
                     <Icon name="Mail" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Radicacion (pqrs)</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/scheduling'}>
+                <div className="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/calendario'}>
                     <Icon name="CalendarCheck" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Agendamiento de citas</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '27px', paddingBottom: '15px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/certificacion'}>
+                <div className="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '27px', paddingBottom: '15px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/certificados'}>
                     <Icon name="FileText" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Certificacion en linea </h5>
                   </Link>
@@ -310,12 +362,12 @@ function Home({ translation, history }) {
               </div>
             </div>
             <hr className='bg-primary'></hr>
-            <div class="px-0 py-0 my-0 text-center">
+            <div className="px-0 py-0 my-0 text-center">
               <Icon name="MapPin" size={48} />
-              <h3 class="" id='process'>Consulta de Procesos {<Button_navigation Iddown={'news'} Idup={'services'} />}  </h3>
-              <div class="col-lg-8 mx-auto">
-                <h5 class=" fw-normal">Ingrese el ID del proceso o el número de cédula para conocer el estado del proceso</h5>
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+              <h3 className="" id='process'>Consulta de Procesos {<Button_navigation Iddown={'news'} Idup={'services'} />}  </h3>
+              <div className="col-lg-8 mx-auto">
+                <h5 className=" fw-normal">Ingrese el ID del proceso o el número de cédula para conocer el estado del proceso</h5>
+                <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
                   <div style={{ width: '33rem' }}>
                     <div className="input-group mb-3">
                       <div className="dropdown">
@@ -330,31 +382,52 @@ function Home({ translation, history }) {
                         </ul>
                       </div>
                       <input type="text" className="form-control" placeholder="ID del proceso" ref={inputSearchRef} />
-                      <Button onClick={() => _CHECK_STATUS()}>BUSCAR</Button>
+                      <Button onClick={_CHECK_STATUS} disabled={isSearching}>{isSearching ? 'BUSCANDO...' : 'BUSCAR'}</Button>
                     </div>
                   </div>
                 </div>
-                <p class=""><h5>aa = los dos últimos dígitos del año del proceso, 0000 = consecutivo del proceso</h5></p>
+                <p className="mb-0">
+                  <span className="h5 d-block fw-normal">aa = los dos últimos dígitos del año del proceso, 0000 = consecutivo del proceso</span>
+                </p>
+                {statusError ? (
+                  <div className="alert alert-warning mt-3 mb-0" role="alert">
+                    {statusError}
+                  </div>
+                ) : null}
+                {statusResult ? (
+                  <div className="card mt-3 text-start shadow-sm">
+                    <div className="card-body">
+                      <h4 className="card-title mb-3">Resultado de la consulta</h4>
+                      <p className="card-text mb-1"><strong>ID:</strong> {statusResult.id_public || inputSearchRef.current?.value}</p>
+                      <p className="card-text mb-1"><strong>Trámite:</strong> {statusResult.tramite || statusResult.type || 'Sin información disponible'}</p>
+                      <p className="card-text mb-1"><strong>Tipo:</strong> {statusResult.tipo || statusResult.legal || 'Sin información disponible'}</p>
+                      <p className="card-text mb-0"><strong>Estado:</strong> {statusResult.state ?? statusResult.status ?? 'Sin información disponible'}</p>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               <hr className='bg-primary'></hr>
               <h2 className='text-center' id='news'>Noticias importantes {<Button_navigation Iddown={'ubicacion'} Idup={'process'} />}</h2>
               <div className='col-lg col-mb-10 justify-content-center d-flex mx-0 px-0 ' style={{ backgroundColor: ' ' }}>
-                <div class="row align-items-center px-4 py-4 mx-">
-                  {_news.filter((data, index) => index <= 3).map(function (value) {
-                    return <>
-                      <div class="col-3 align-items-center">
-                        <div class="card align-items-center">
-                          <img src={value.image} class="card-img-top" alt="Noticias y avisos importantes de la curaduria." style={{ height: '160px' }} />
-                          <div class="card-body">
+                <div className="row align-items-center px-4 py-4 mx-">
+                  {_news.filter((data, index) => index <= 3).map(function (value, index) {
+                    return <div className="col-3 align-items-center" key={value.id || value.title || index}>
+                        <div className="card align-items-center">
+                          <img src={value.image} className="card-img-top" alt="Noticias y avisos importantes de la curaduria." style={{ height: '160px' }} />
+                          <div className="card-body">
                             <label className="text-start fw-normal" style={{ color: 'gray' }}>{value.icon_folder} {value.category}</label>
-                            <h5 class="card-title fw-normal "><b>{value.title}</b></h5>
-                            <Link to={value.url} class="text-dark"><p class="card-text fw-normal">{value.summary} <p className='text-info'> {value.link}</p></p></Link>
+                            <h5 className="card-title fw-normal "><b>{value.title}</b></h5>
+                            <Link to={value.url} className="text-dark text-decoration-none">
+                              <div className="card-text fw-normal">
+                                <p className="mb-1">{value.summary}</p>
+                                <span className='text-info'>{value.link}</span>
+                              </div>
+                            </Link>
                             <label className="px-1" style={{ color: 'gray' }}>{value.icon_date} {value.date}</label>
                           </div>
                         </div>
                       </div>
-                    </>
                   })}
                 </div>
               </div>
@@ -451,8 +524,8 @@ function Home({ translation, history }) {
         </div>
         <hr className='bg-primary'></hr>
         <h2 className='text-center' id='ubicacion'> Ubicación {<Button_navigation Iddown={null} Idup={'news'} />}</h2>
-        <div class="row justify-content-center px-4 mx-4 px-4 mb-5">
-          <div class="col-lg-12 justify-content-center">
+        <div className="row justify-content-center px-4 mx-4 px-4 mb-5">
+          <div className="col-lg-12 justify-content-center">
             <Map></Map>
           </div>
         </div>

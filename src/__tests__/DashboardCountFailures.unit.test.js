@@ -7,7 +7,7 @@ vi.mock('@/components/icon', () => ({
   Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
 }));
 
-vi.mock('../app/services/fun.service', () => ({ default: { getAll: vi.fn(() => Promise.reject(new Error('FUN down'))) } }));
+vi.mock('../app/services/fun.service', () => ({ default: { getAll_fun: vi.fn(() => Promise.reject(new Error('FUN down'))) } }));
 vi.mock('../app/services/pqrs_main.service', () => ({ default: { getAll: vi.fn(() => Promise.reject(new Error('PQRS down'))) } }));
 vi.mock('../app/services/submit.service', () => ({ default: { getAll: vi.fn(() => Promise.reject(new Error('Submit down'))) } }));
 vi.mock('../app/services/mailbox.service', () => ({ default: { getAll: vi.fn(() => Promise.reject(new Error('Mailbox down'))) } }));

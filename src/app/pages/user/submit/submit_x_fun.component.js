@@ -256,7 +256,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                 </PopoverTrigger>
                 <PopoverContent side="left" className="w-[600px] max-h-80 overflow-y-auto">
                     <h4 className="text-sm font-semibold mb-2">Ventanilla Única</h4>
-                    <div className="space-y-1">{vrItem.map(value => listVR(value))}</div>
+                    <div className="space-y-1">{vrItem.map((value, idx) => <div key={idx}>{listVR(value)}</div>)}</div>
                 </PopoverContent>
             </Popover>
         }
@@ -296,7 +296,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                             if (submited.includes(code) && !inChecked.includes(code)) classColor = "text-warning"
                             if (inChecked.includes(code) && !submited.includes(code)) classColor = "text-warning"
                             if (inChecked.includes(code) && submited.includes(code)) classColor = "text-success"
-                            return <li className={classColor}>
+                            return <li key={code} className={classColor}>
                                 <label> <label className='fw-bold'>{code}</label> - {Codes[code]}  {inChecked.includes(code) ? <Icon name="check-square" size={16} className="text-dark" /> : ''} {submited.includes(code) ? <Icon name="file-import" size={16} className="text-dark" /> : ''}</label>
                             </li>
                         })}

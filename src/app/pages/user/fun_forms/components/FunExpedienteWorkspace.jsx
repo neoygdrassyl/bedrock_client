@@ -288,7 +288,7 @@ export function FunExpedienteWorkspace({
               Modo de gestión completa
             </span>
             <div className="d-flex align-items-center gap-2 mt-1">
-              <i className={meta.icon}></i>
+              <Icon name={meta.icon} size={16} />
               <span className="fw-semibold">{meta.label}</span>
             </div>
             <div className="text-muted mt-1">

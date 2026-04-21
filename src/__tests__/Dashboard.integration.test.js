@@ -1,10 +1,60 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import './helpers/mockExternals';
 import { defaultProps, setWindowUser, clearWindowUser } from './helpers/renderHelpers';
+
+const {
+  funServiceMock,
+  pqrsMainServiceMock,
+  submitServiceMock,
+  mailboxServiceMock,
+  appointmentsServiceMock,
+} = vi.hoisted(() => ({
+  funServiceMock: {
+    getAll: vi.fn(() => Promise.resolve({ data: [] })),
+    getAll_fun: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+  pqrsMainServiceMock: {
+    getAll: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+  submitServiceMock: {
+    getAll: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+  mailboxServiceMock: {
+    getAll: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+  appointmentsServiceMock: {
+    getAll: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+}));
+
+vi.mock('../app/services/fun.service', () => ({
+  __esModule: true,
+  default: funServiceMock,
+}));
+
+vi.mock('../app/services/pqrs_main.service', () => ({
+  __esModule: true,
+  default: pqrsMainServiceMock,
+}));
+
+vi.mock('../app/services/submit.service', () => ({
+  __esModule: true,
+  default: submitServiceMock,
+}));
+
+vi.mock('../app/services/mailbox.service', () => ({
+  __esModule: true,
+  default: mailboxServiceMock,
+}));
+
+vi.mock('../app/services/appointments.service', () => ({
+  __esModule: true,
+  default: appointmentsServiceMock,
+}));
 
 // Mock the Icon component (used by new dashboard cards)
 vi.mock('@/components/icon', () => ({
@@ -124,5 +174,16 @@ describe('Dashboard — Integración del panel principal', () => {
     expect(hrefs).toContain('/documentos');
     expect(hrefs).toContain('/calculadora');
     expect(hrefs).toContain('/consecutivos');
+  });
+
+  it('usa el endpoint curado de FUN para los conteos del dashboard', async () => {
+    render(
+      <MemoryRouter>
+        <Dashboard {...defaultProps} />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => expect(funServiceMock.getAll_fun).toHaveBeenCalledTimes(1));
+    expect(funServiceMock.getAll).not.toHaveBeenCalled();
   });
 });

@@ -64,7 +64,6 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
 
   return (
     <>
-      {/* Overlay */}
       <div
         onClick={onClose}
         style={{
@@ -73,7 +72,6 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
         }}
       />
 
-      {/* Panel */}
       <div
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0,
@@ -106,7 +104,6 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
           </button>
         </div>
 
-        {/* ── Body (scrollable) ──────────────────────────── */}
         <div className="flex-grow-1 overflow-auto px-4 py-3" style={{ fontSize: '0.875rem' }}>
 
           {/* Status + Progress */}
@@ -116,7 +113,7 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
                 style={{ backgroundColor: s.bg, color: s.color, border: `1px solid ${s.color}33` }}
                 className="text-xs font-semibold px-2 py-1"
               >
-                <i className={`${s.icon} me-1`} style={{ fontSize: '0.65rem' }} />
+                <Icon name={s.icon} size={12} className="me-1" />
                 {s.label}
               </Badge>
               <span className="text-sm font-semibold tabular-nums" style={{ color: s.color }}>
@@ -358,9 +355,8 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
               {expediente.m_lic && <span>Modalidad: {expediente.m_lic}</span>}
             </div>
           </div>
-        </div>
+          </div>
 
-        {/* ── Footer ─────────────────────────────────────── */}
         <div
           className="px-4 py-3 d-flex gap-2 justify-content-end"
           style={{ borderTop: '1px solid #e2e8f0', flexShrink: 0 }}
@@ -410,7 +406,7 @@ function InfoField({ label, value, icon }) {
   return (
     <div className="col-6">
       <div className="d-flex align-items-start gap-2">
-        <i className={`${icon} text-slate-400 mt-1`} style={{ fontSize: '0.75rem', width: 14 }} />
+        <Icon name={icon} size={14} className="text-slate-400 mt-1 flex-shrink-0" />
         <div>
           <span className="text-xs text-muted-foreground d-block">{label}</span>
           <span className="font-medium text-sm">{value}</span>
@@ -426,7 +422,7 @@ function FlagBadge({ icon, label, bg, color }) {
       className="d-inline-flex align-items-center gap-1 rounded-pill px-2 py-1 text-xs font-semibold"
       style={{ backgroundColor: bg, color }}
     >
-      <i className={icon} style={{ fontSize: '0.65rem' }} />
+      <Icon name={icon} size={12} />
       {label}
     </span>
   );

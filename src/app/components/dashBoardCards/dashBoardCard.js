@@ -1,5 +1,6 @@
 import './dashBoardCardStyles.css';
 import { Link } from "react-router-dom";
+import { Icon } from '@/components/icon';
 
 export function DashBoardCard({ title, image, link }) {
     return (
@@ -9,7 +10,8 @@ export function DashBoardCard({ title, image, link }) {
         }}>
             <button className="dashboard-card">
                 <div className="image-container">
-                    <i className={image} />
+                    {/* Use Icon bridge for FA/Lucide compatibility */}
+                    <Icon name={image} />
                 </div>
                 <div className="title-container">
                     <h3>{title}</h3>
