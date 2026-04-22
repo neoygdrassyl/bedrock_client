@@ -34,10 +34,17 @@ function normalizeConfig(raw) {
   });
 
   const neighbors = cfg.neighbors || { threshold: '' };
-  const billboard = cfg.billboard || { threshold: '' };
+  const legacyVallaKey = ['bill', 'board'].join('');
+  const vallaPublicitaria = cfg.types?.valla_overdue || cfg[legacyVallaKey] || { threshold: '' };
   const trafficLight = cfg.trafficLight || { green: '', yellow: '', red: '' };
 
-  return { phases, neighbors, billboard, trafficLight };
+  return {
+    ...cfg,
+    phases,
+    neighbors,
+    vallaPublicitaria,
+    trafficLight,
+  };
 }
 
 export default function SettingsPage() {
@@ -83,10 +90,10 @@ export default function SettingsPage() {
     setDirty(true);
   };
 
-  const updateBillboard = (value) => {
+  const updateVallaPublicitaria = (value) => {
     setDraft(prev => ({
       ...prev,
-      billboard: { ...prev.billboard, threshold: value }
+      vallaPublicitaria: { ...prev.vallaPublicitaria, threshold: value }
     }));
     setDirty(true);
   };
@@ -100,9 +107,18 @@ export default function SettingsPage() {
   };
 
   const handleSave = async () => {
-    try {
-      setAlertMsg(null);
-      await save(draft);
+      try {
+        setAlertMsg(null);
+      await save({
+        ...draft,
+        types: {
+          ...(draft.types || {}),
+          valla_overdue: {
+            ...(draft.types?.valla_overdue || {}),
+            threshold: draft.vallaPublicitaria?.threshold ?? '',
+          },
+        },
+      });
       setAlertMsg({ type: 'success', text: 'Configuración guardada exitosamente.' });
       setDirty(false);
       setTimeout(() => setAlertMsg(null), 3000);
@@ -178,7 +194,7 @@ export default function SettingsPage() {
                 className={`nav-link ${activeTab === 'valla' ? 'active' : ''}`} 
                 onClick={() => setActiveTab('valla')}
               >
-                <i className="fas fa-sign me-2"></i>Valla Publicitaria
+                <i className="fas fa-sign me-2"></i>Valla publicitaria
               </button>
             </li>
             <li className="nav-item">
@@ -265,7 +281,7 @@ export default function SettingsPage() {
 
           {activeTab === 'valla' && (
             <div>
-              <h5 className="card-title mb-3">Alarma de Valla Publicitaria</h5>
+              <h5 className="card-title mb-3">Alarma de Valla publicitaria</h5>
               <p className="card-text text-muted mb-4">
                 Establezca el límite de tiempo para verificar la instalación de la valla publicitaria.
               </p>
@@ -275,8 +291,8 @@ export default function SettingsPage() {
                   <input
                     type="number"
                     className="form-control"
-                    value={draft.billboard.threshold ?? ''}
-                    onChange={(e) => updateBillboard(e.target.value)}
+                    value={draft.vallaPublicitaria.threshold ?? ''}
+                    onChange={(e) => updateVallaPublicitaria(e.target.value)}
                     disabled={loading || saving}
                     min="0"
                   />
