@@ -513,35 +513,35 @@ function FUN_CHART_MACRO_GRANTT(props) {
 
             areas.push(
                 <ReferenceArea key={`rad-${i}`} x1={0} x2={rad_time} y1={i} y2={i + 1}
-                    fill="rgba(30, 144, 235, 0.70)" fillOpacity={1} />
+                    fill="rgba(30, 144, 235, 0.70)" fillOpacity={1} ifOverflow="visible" />
             );
             areas.push(
                 <ReferenceArea key={`eva1-${i}`} x1={rad_time} x2={rad_time + v[0] + eva_time} y1={i} y2={i + 1}
-                    fill="rgba(34, 139, 34, 0.70)" fillOpacity={1} />
+                    fill="rgba(34, 139, 34, 0.70)" fillOpacity={1} ifOverflow="visible" />
             );
             areas.push(
                 <ReferenceArea key={`blank1-${i}`} x1={rad_time + v[0] + eva_time} x2={rad_time + v[0] + eva_time + blank_time} y1={i} y2={i + 1}
-                    fill="rgba(220, 220, 220, 0.70)" fillOpacity={1} />
+                    fill="rgba(220, 220, 220, 0.70)" fillOpacity={1} ifOverflow="visible" />
             );
             areas.push(
                 <ReferenceArea key={`eva2-${i}`} x1={rad_time + v[0] + eva_time + blank_time} x2={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2} y1={i} y2={i + 1}
-                    fill="rgba(34, 139, 34, 0.70)" fillOpacity={1} />
+                    fill="rgba(34, 139, 34, 0.70)" fillOpacity={1} ifOverflow="visible" />
             );
             areas.push(
                 <ReferenceArea key={`via1-${i}`} x1={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2} x2={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 5} y1={i} y2={i + 1}
-                    fill="rgba(173, 255, 47, 0.70)" fillOpacity={1} />
+                    fill="rgba(173, 255, 47, 0.70)" fillOpacity={1} ifOverflow="visible" />
             );
             areas.push(
                 <ReferenceArea key={`via2-${i}`} x1={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 5} x2={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 10} y1={i} y2={i + 1}
-                    fill="rgba(255, 215, 0, 0.70)" fillOpacity={1} />
+                    fill="rgba(255, 215, 0, 0.70)" fillOpacity={1} ifOverflow="visible" />
             );
             areas.push(
-                <ReferenceArea key={`blank2-${i}`} x1={rad_time + v[0] + eva_time + eva_time + blank_time + v[1] + eva_time_2 + 10} x2={rad_time + v[0] + eva_time + eva_time + blank_time + v[1] + eva_time_2 + 10 + blank_time_2} y1={i} y2={i + 1}
-                    fill="rgba(220, 220, 220, 0.70)" fillOpacity={1} />
+                <ReferenceArea key={`blank2-${i}`} x1={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 10} x2={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 10 + blank_time_2} y1={i} y2={i + 1}
+                    fill="rgba(220, 220, 220, 0.70)" fillOpacity={1} ifOverflow="visible" />
             );
             areas.push(
                 <ReferenceArea key={`pay-${i}`} x1={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 10 + blank_time_2} x2={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 10 + blank_time_2 + 20} y1={i} y2={i + 1}
-                    fill="rgba(255, 215, 0, 0.70)" fillOpacity={1} />
+                    fill="rgba(255, 215, 0, 0.70)" fillOpacity={1} ifOverflow="visible" />
             );
         });
         return areas;
@@ -606,7 +606,7 @@ function FUN_CHART_MACRO_GRANTT(props) {
                             <ResponsiveContainer width="100%" height={400}>
                                 <ScatterChart margin={{ left: 36, right: 10, top: 10, bottom: 30 }}>
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis type="number" dataKey="x" domain={[0, 180]}
+                                    <XAxis type="number" dataKey="x" domain={[0, 200]}
                                         ticks={_tickValues}
                                         tickFormatter={v => v}
                                         style={{ fontSize: 12 }} />
