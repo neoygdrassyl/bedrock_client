@@ -6,7 +6,6 @@ import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,6 +21,7 @@ import { cn } from '@/lib/utils';
 
 // SERVICES
 import FUNService from '../../services/fun.service'
+import FunManageDashboardService from '../../services/funmanage_dashboard.service';
 import USER_SERVICE from '../../services/users.service';
 
 // FUN FAMILY!
@@ -45,6 +45,7 @@ import FUN_WORKER_ASIGN from './fun_forms/components/fun_worker_asign.component'
 import RECORD_REVIEW from './records/record_review';
 import EXPEDITION from './expeditions/expedition.page';
 import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
+import { FunExpedienteDetail } from './fun_forms/components/FunExpedienteDetail';
 import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
@@ -101,6 +102,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             clocks: [],
 
             worker_list: [],
+            previewExpediente: null,
+            previewSourceRow: null,
 
             currentId: undefined,
             currentLastVersion: undefined,
@@ -114,6 +117,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     );
 
     const prevUrlParamsRef = useRef(urlParams);
+    const detailRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrievePublish();
@@ -693,6 +697,102 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         }
         const _fun_0_type = { '0': 'NC', 'i': 'I', 'ii': "II", 'iii': "III", 'iv': "IV", 'oa': "OA" }
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
+        const buildQuickPreviewSeed = (item) => {
+            const totalDays = _fun_0_type_time[item?.type] ?? 30;
+            const parsedUsedDays = Number(item?.clock_payment ? dateParser_timePassed(item.clock_payment) : 0);
+            const usedDays = Number.isFinite(parsedUsedDays) ? Math.max(parsedUsedDays, 0) : 0;
+            const remainingDays = totalDays - usedDays;
+            const status = remainingDays <= 0 ? 'VENCIDO' : remainingDays <= 5 ? 'PRONTO_A_VENCER' : 'EN_TERMINO';
+
+            return {
+                id: item?.id,
+                radicado: item?.id_public ?? '—',
+                fase_actual: '',
+                fase_label: _GET_STATE_STR(item?.state, true, item) || 'Sin fase',
+                responsable: item?.responsable || '—',
+                categoria: _fun_0_type[item?.type] || item?.type || '—',
+                tipo_licencia: formsParser1(item, true),
+                tramite: item?.tramite || '—',
+                fecha_radicacion: item?.date || item?.clock_payment || '—',
+                fecha_limite: item?.clock_payment ? dateParser_finalDate(item.clock_payment, totalDays) : '—',
+                dias_habiles_usados: usedDays,
+                dias_habiles_limite: totalDays,
+                dias_habiles_totales: totalDays,
+                porcentaje_avance: totalDays > 0 ? Math.min(100, Math.round((usedDays / totalDays) * 100)) : 0,
+                status,
+                sugerencia: null,
+                bitacora: [],
+                state_raw: item?.state,
+                clocks_count: 0,
+                __sourceRow: item,
+            };
+        };
+        const closeQuickPreview = () => {
+            detailRequestIdRef.current += 1;
+            setState({
+                previewExpediente: null,
+                previewSourceRow: null,
+            });
+        };
+        const openDetailedManagement = (expediente) => {
+            const sourceRow = expediente?.__sourceRow ?? state.previewSourceRow;
+
+            closeQuickPreview();
+            if (sourceRow) {
+                toggle(sourceRow);
+            }
+        };
+        const openQuickPreview = (item) => {
+            if (!item) {
+                return;
+            }
+
+            const previewSeed = buildQuickPreviewSeed(item);
+            const requestId = ++detailRequestIdRef.current;
+
+            setState({
+                selectedRow: item.id,
+                previewSourceRow: item,
+                previewExpediente: previewSeed,
+            });
+
+            FunManageDashboardService.getExpedientes({
+                search: item.id_public || item.id,
+                page: 1,
+                limit: 10,
+            })
+                .then((response) => {
+                    if (requestId !== detailRequestIdRef.current) {
+                        return;
+                    }
+
+                    const rows = response.data?.data ?? [];
+                    const match = rows.find((candidate) => (
+                        String(candidate?.id ?? candidate?.fun0Id ?? candidate?.fun_0_id ?? '') === String(item.id)
+                        || candidate?.radicado === item.id_public
+                        || candidate?.id_public === item.id_public
+                    ));
+
+                    if (!match) {
+                        return;
+                    }
+
+                    setState({
+                        previewExpediente: {
+                            ...previewSeed,
+                            ...match,
+                            radicado: match.radicado ?? match.id_public ?? previewSeed.radicado,
+                            __sourceRow: item,
+                        },
+                        previewSourceRow: item,
+                    });
+                })
+                .catch(() => {
+                    if (requestId !== detailRequestIdRef.current) {
+                        return;
+                    }
+                });
+        };
         // ----------------------
         const rowSelectedStyle = [
             {
@@ -1168,9 +1268,9 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <DropdownMenuLabel className="flex items-center gap-2">
                             <Icon name="Eye" size={14} /> Consulta
                         </DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => toggle(row)}>
-                            <Icon name="FolderOpen" size={14} className="text-primary" />
-                            Detalles
+                        <DropdownMenuItem onClick={() => openQuickPreview(row)}>
+                            <Icon name="Eye" size={14} className="text-primary" />
+                            Consulta rápida
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggle_clock(row)}>
                             <Icon name="Clock" size={14} className="text-muted-foreground" />
@@ -1367,10 +1467,101 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
         return (
             
-            <div className="space-y-6">
-                <div className="space-y-1 text-center md:text-left max-w-4xl mx-auto">
-                    <h1 className="text-2xl font-bold tracking-tight">RADICACIÓN DE SOLICITUDES</h1>
-                    <p className="text-sm text-muted-foreground">Gestione la radicación, consulta y seguimiento de licencias urbanísticas.</p>
+            <div className="space-y-4">
+                <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+                    <div className="grid gap-0 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+                        <div className="border-b border-border p-4 lg:border-b-0 lg:border-r">
+                            <div className="mb-3 flex items-start gap-3">
+                                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                    <Icon name="FilePlus" size={18} />
+                                </span>
+                                <div className="min-w-0">
+                                    <h1 className="text-xl font-bold tracking-tight">RADICACIÓN DE SOLICITUDES</h1>
+                                    <p className="mt-1 text-xs text-muted-foreground">
+                                        Frente operativo compacto para radicar, consultar y seguir expedientes sin perder altura útil en la tabla.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="grid gap-2 md:grid-cols-[minmax(0,10rem)_minmax(0,1fr)_auto]">
+                                <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
+                                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                        <Icon name="Calendar" size={14} />
+                                    </span>
+                                    <input
+                                        type="date"
+                                        className="h-10 min-w-0 flex-1 border-0 bg-transparent px-3 text-sm text-foreground outline-none"
+                                        id="f_01"
+                                        required
+                                    />
+                                </label>
+
+                                <div className="flex min-w-0 items-stretch overflow-hidden rounded-md border border-border bg-background shadow-sm">
+                                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                        <Icon name="Hash" size={14} />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="h-10 min-w-0 flex-1 border-0 bg-transparent px-3 text-sm text-foreground outline-none"
+                                        defaultValue={nomens}
+                                        id="f_02"
+                                        required
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-10 rounded-none border-l border-border px-3 text-[11px] font-semibold uppercase tracking-[0.08em]"
+                                        onClick={() => _GET_LAST_ID_PUBLIC()}
+                                    >
+                                        Generar
+                                    </Button>
+                                </div>
+
+                                <Button type="submit" className="h-10 whitespace-nowrap bg-accent text-accent-foreground hover:bg-accent/90">
+                                    <Icon name="FolderPlus" size={14} /> Crear
+                                </Button>
+                            </form>
+                        </div>
+
+                        <div className="p-4">
+                            <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                                <Icon name="Search" size={14} />
+                                Consultar Solicitud
+                            </div>
+
+                            <form onSubmit={search} className="grid gap-2 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)_auto]">
+                                <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
+                                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                        <Icon name="Info" size={13} />
+                                    </span>
+                                    <select className="h-10 min-w-0 flex-1 border-0 bg-transparent px-3 text-sm text-foreground outline-none" id="search_0" required>
+                                        <option value="1">Número de Radicado</option>
+                                        <option value="2">Número de Matricula Inmobiliaria</option>
+                                        <option value="3">Número de Indentificacion Predial/Catastral</option>
+                                        <option value="4">Dirección Actual</option>
+                                        <option value="5">C.C o NIT</option>
+                                        <option value="6">Nombre</option>
+                                    </select>
+                                </label>
+
+                                <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
+                                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                        <Icon name="MessageCircle" size={13} />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="h-10 min-w-0 flex-1 border-0 bg-transparent px-3 text-sm text-foreground outline-none"
+                                        id="search_1"
+                                    />
+                                </label>
+
+                                <Button type="submit" variant="secondary" className="h-10 whitespace-nowrap px-4">
+                                    <Icon name="SearchCheck" size={13} /> Consultar
+                                </Button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 <FUN_WORKER_ASIGN translation={translation} globals={globals}
                     type={"law"}
@@ -1381,90 +1572,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 <FUN_WORKER_ASIGN translation={translation} globals={globals}
                     type={"eng"}
                     openModal={openModal} />
-
-                {/* ── Actions: New license + Search ──────────────── */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <Icon name="FilePlus" size={18} className="text-primary" />
-                                Generar Nueva Radicación
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleSubmit} id="app-form" className="space-y-3">
-                                <div className="flex gap-2">
-                                    <div className="flex-1">
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="Calendar" size={14} />
-                                            </span>
-                                            <input type="date" className="form-control" id="f_01" required />
-                                        </div>
-                                    </div>
-                                    <div className="flex-[2]">
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="Hash" size={14} />
-                                            </span>
-                                            <input type="text" className="form-control" defaultValue={nomens} id="f_02" required />
-                                            <Button type="button" variant="outline" size="sm" className="rounded-l-none"
-                                                onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                        <Icon name="FolderPlus" size={14} /> Crear
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="py-2.5 px-3">
-                            <CardTitle className="text-sm flex items-center gap-2">
-                                <Icon name="Search" size={15} className="text-primary" />
-                                Consultar Solicitud
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-3 pb-3">
-                            <form onSubmit={search} id="app-form" className="space-y-2">
-                                <div className="flex gap-2">
-                                    <div className="flex-1">
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="Info" size={13} />
-                                            </span>
-                                            <select className="form-select" id="search_0" required>
-                                                <option value="1">Número de Radicado</option>
-                                                <option value="2">Número de Matricula Inmobiliaria</option>
-                                                <option value="3">Número de Indentificacion Predial/Catastral</option>
-                                                <option value="4">Dirección Actual</option>
-                                                <option value="5">C.C o NIT</option>
-                                                <option value="6">Nombre</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="MessageCircle" size={13} />
-                                            </span>
-                                            <input type="text" className="form-control" id="search_1" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <Button type="submit" variant="secondary" size="sm">
-                                        <Icon name="SearchCheck" size={13} /> Consultar
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </div>
 
                 {/* ── Search results ─────────────────────────────── */}
                 {state.hasSearchResult && (
@@ -1482,11 +1589,11 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             data={list_search}
                             highlightOnHover
                             pagination
-                            paginationPerPage={20}
-                            paginationRowsPerPageOptions={[20, 50, 100]}
+                            paginationPerPage={50}
+                            paginationRowsPerPageOptions={[25, 50, 100]}
                             className="data-table-component"
                             noHeader
-                            onRowClicked={(e) => setState({ selectedRow: e.id })}
+                            onRowClicked={openQuickPreview}
                             dense
                             progressPending={!isLoaded}
                             progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
@@ -1538,12 +1645,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 data={list_started}
                                 highlightOnHover
                                 pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
+                                onRowClicked={openQuickPreview}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1558,12 +1665,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 data={list_incomplete}
                                 highlightOnHover
                                 pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
+                                onRowClicked={openQuickPreview}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1578,12 +1685,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 data={state.list_legal}
                                 highlightOnHover
                                 pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
+                                onRowClicked={openQuickPreview}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1598,12 +1705,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 data={state.list_profesional}
                                 highlightOnHover
                                 pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
+                                onRowClicked={openQuickPreview}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1618,12 +1725,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 data={state.list_expedition}
                                 highlightOnHover
                                 pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
+                                onRowClicked={openQuickPreview}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1643,18 +1750,26 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 data={state.list_archive}
                                 highlightOnHover
                                 pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
+                                onRowClicked={openQuickPreview}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                     </div>
                 </div>
+
+                {state.previewExpediente && (
+                    <FunExpedienteDetail
+                        expediente={state.previewExpediente}
+                        onClose={closeQuickPreview}
+                        onOpenWorkspace={openDetailedManagement}
+                    />
+                )}
 
                 {/* ── Modals (react-modal — kept during migration) ── */}
                 <Modal contentLabel="GENERAL VIEW FUN"
