@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import {
   DropdownMenu,
@@ -13,6 +14,7 @@ import { useAlarms } from '../hooks/useAlarms';
 
 export function AlarmBell() {
   const { alarms, loading, attend, hide } = useAlarms({ pollMs: 60000 });
+  const navigate = useNavigate();
 
   const openAlarms = useMemo(
     () => (alarms || []).filter((a) => !a.attendedAt && !a.hiddenAt),
@@ -23,6 +25,11 @@ export function AlarmBell() {
     () => openAlarms.some((a) => (a.severity || '').toLowerCase() === 'critical'),
     [openAlarms]
   );
+
+  const handleAlarmClick = (a) => {
+    const rad = a.radicado || a.fun0Id;
+    if (rad) navigate(`/funmanage/expediente/${rad}`);
+  };
 
   return (
     <DropdownMenu>
@@ -68,6 +75,7 @@ export function AlarmBell() {
               <DropdownMenuItem
                 key={a.id}
                 className="flex flex-col items-start gap-1 py-2"
+                onClick={() => handleAlarmClick(a)}
                 onSelect={(e) => e.preventDefault()}
                 data-testid={`alarm-item-${a.id}`}
               >
@@ -86,14 +94,20 @@ export function AlarmBell() {
                   <button
                     type="button"
                     className="text-[11px] text-primary hover:underline"
-                    onClick={() => attend(a.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      attend(a.id);
+                    }}
                   >
                     Atender
                   </button>
                   <button
                     type="button"
                     className="text-[11px] text-muted-foreground hover:underline"
-                    onClick={() => hide(a.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      hide(a.id);
+                    }}
                   >
                     Ocultar
                   </button>
