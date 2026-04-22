@@ -8,15 +8,15 @@ export function useAlarmConfig() {
   const [error, setError] = useState(null);
 
   const refetch = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const resp = await AlarmService.getConfig();
-      setConfig(resp.data?.configJson ?? resp.data ?? null);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
+      setLoading(true);
+      setError(null);
+      try {
+        const resp = await AlarmService.getConfig();
+        setConfig(resp.data?.data?.configJson ?? resp.data?.configJson ?? null);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
     }
   }, []);
 
@@ -26,7 +26,7 @@ export function useAlarmConfig() {
       setError(null);
       try {
         const resp = await AlarmService.updateConfig(nextConfig);
-        setConfig(resp.data?.configJson ?? nextConfig);
+        setConfig(resp.data?.data?.configJson ?? resp.data?.configJson ?? nextConfig);
         return resp.data;
       } catch (err) {
         setError(err);
