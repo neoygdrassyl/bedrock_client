@@ -1,6 +1,12 @@
 import React from 'react';
 
 import Icon from '@/components/icon';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -136,10 +142,32 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
 
             }
 
-            return <>{_COMPONENT.map((item, i) => React.cloneElement(item, { key: i }))}</>
+            return (
+                <TooltipProvider delayDuration={150}>
+                    <div className="flex flex-nowrap items-center gap-1 whitespace-nowrap">
+                        {_COMPONENT.map((item, i) => {
+                            const label = item?.props?.title || 'Estado del expediente';
+
+                            return (
+                                <Tooltip key={i}>
+                                    <TooltipTrigger asChild>
+                                        {React.cloneElement(item, {
+                                            'aria-label': label,
+                                            className: 'inline-flex shrink-0 items-center justify-center',
+                                        })}
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="max-w-xs text-xs">
+                                        {label}
+                                    </TooltipContent>
+                                </Tooltip>
+                            );
+                        })}
+                    </div>
+                </TooltipProvider>
+            )
         }
         return (
-            <div>
+            <div className="min-w-0 overflow-x-auto">
                 {_PROGRESS_COMPONENT(currentItem)}
             </div>
         );
