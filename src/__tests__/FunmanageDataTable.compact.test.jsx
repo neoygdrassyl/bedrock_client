@@ -108,11 +108,11 @@ describe('FunmanageDataTable compact', () => {
       ],
     });
 
-    expect(screen.getByTestId('bookmark-toggle-303')).toHaveAttribute(
+    expect(screen.getByTestId('bookmark-menu-trigger-303')).toHaveAttribute(
       'title',
-      'Destacado para mi y para el equipo',
+      'Destacado para mí y para el equipo',
     );
-    expect(screen.getByTestId('bookmark-toggle-303').querySelector('svg')).toHaveClass(
+    expect(screen.getByTestId('bookmark-menu-trigger-303').querySelector('svg')).toHaveClass(
       'text-accent',
     );
   });
@@ -125,11 +125,25 @@ describe('FunmanageDataTable compact', () => {
 
     renderCompactTable({ onViewDetail, onOpenWorkspace, onToggleBookmarkScope });
 
-    await user.click(screen.getByTestId('bookmark-toggle-101'));
+    await user.click(screen.getByTestId('bookmark-menu-trigger-101'));
+    await user.click(screen.getByTestId('bookmark-menu-personal-101'));
+
     expect(onToggleBookmarkScope).toHaveBeenCalledTimes(1);
     expect(onToggleBookmarkScope).toHaveBeenCalledWith(
       expect.objectContaining({ rowId: 101 }),
       'personal',
+      true,
+    );
+    expect(onViewDetail).not.toHaveBeenCalled();
+    expect(onOpenWorkspace).not.toHaveBeenCalled();
+
+    await user.click(screen.getByTestId('bookmark-menu-trigger-101'));
+    await user.click(screen.getByTestId('bookmark-menu-team-101'));
+
+    expect(onToggleBookmarkScope).toHaveBeenCalledTimes(2);
+    expect(onToggleBookmarkScope).toHaveBeenCalledWith(
+      expect.objectContaining({ rowId: 101 }),
+      'team',
       true,
     );
     expect(onViewDetail).not.toHaveBeenCalled();

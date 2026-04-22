@@ -13,34 +13,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { MissingDataBadge } from './MissingDataBadge';
-
-function getBookmarkVisualState(bookmarkState) {
-  if (bookmarkState?.personal && bookmarkState?.team) {
-    return {
-      iconClassName: 'text-accent',
-      label: 'Destacado para mi y para el equipo',
-    };
-  }
-
-  if (bookmarkState?.team) {
-    return {
-      iconClassName: 'text-primary',
-      label: 'Destacado para el equipo',
-    };
-  }
-
-  if (bookmarkState?.personal) {
-    return {
-      iconClassName: 'text-warning',
-      label: 'Destacado solo para mi',
-    };
-  }
-
-  return {
-    iconClassName: 'text-muted-foreground opacity-40',
-    label: 'Marcar como destacado',
-  };
-}
+import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 
 function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
   return [
@@ -53,24 +26,17 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
         const radicado = info.getValue();
         const rowId = row.rowId ?? row.id ?? row.fun0Id ?? row.fun_0_id ?? '';
         const bookmarkState = row._bookmarkState;
-        const bookmarkVisualState = getBookmarkVisualState(bookmarkState);
-        const isPersonalMarked = Boolean(bookmarkState?.personal);
 
         return (
           <div className="flex min-w-0 items-center gap-2">
-            <button
-              type="button"
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-transparent bg-transparent transition-colors hover:border-border hover:bg-muted"
-              title={bookmarkVisualState.label}
-              aria-label={bookmarkVisualState.label}
-              data-testid={`bookmark-toggle-${rowId}`}
-              onClick={(event) => {
-                event.stopPropagation();
-                onToggleBookmarkScope?.(row, 'personal', !isPersonalMarked);
+            <BookmarkQuickMenu
+              bookmarkState={bookmarkState}
+              rowId={rowId}
+              onToggleScope={(scope, isMarked) => {
+                onToggleBookmarkScope?.(row, scope, isMarked);
               }}
-            >
-              <Icon name="star" size={16} className={bookmarkVisualState.iconClassName} />
-            </button>
+              triggerClassName="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-transparent bg-transparent transition-colors hover:border-border hover:bg-muted"
+            />
 
             {radicado && radicado !== '—' ? (
               <span className="truncate font-mono text-sm font-semibold text-foreground" data-testid={`radicado-value-${rowId}`}>

@@ -178,12 +178,12 @@ test.describe('Gestion Licencias v2 compact table', () => {
     await expect(authenticatedPage.getByTestId('row-fullscreen-501')).toBeVisible();
   });
 
-  test('bookmark and preview buttons remain visible in dark mode', async ({ authenticatedPage }) => {
+  test('bookmark menu and preview buttons remain visible in dark mode', async ({ authenticatedPage }) => {
     await authenticatedPage.emulateMedia({ colorScheme: 'dark' });
     await authenticatedPage.goto('/licencias/gestion-nueva');
     await authenticatedPage.waitForLoadState('domcontentloaded');
     await expect(authenticatedPage.getByTestId('funmanage-table')).toBeVisible();
-    await expect(authenticatedPage.locator('[data-testid^="bookmark-toggle-"]').first()).toBeVisible();
+    await expect(authenticatedPage.locator('[data-testid^="bookmark-menu-trigger-"]').first()).toBeVisible();
     await expect(authenticatedPage.locator('[data-testid^="row-preview-"]').first()).toBeVisible();
     await expect(authenticatedPage.locator('[data-testid^="row-fullscreen-"]').first()).toBeVisible();
     await expect(authenticatedPage.locator('[data-testid^="status-cur-value-"]').first()).toHaveText('5/14');
