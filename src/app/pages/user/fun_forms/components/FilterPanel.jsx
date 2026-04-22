@@ -251,15 +251,22 @@ export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActive
             </Select>
 
             <Select
-              value={filters.bookmarked === true ? 'only' : '__all__'}
-              onValueChange={(val) => setFilters((f) => mergeFilters(f, { bookmarked: val === 'only' ? true : null }))}
+              value={filters.bookmarked || '__all__'}
+              onValueChange={(val) => {
+                setFilters((f) => mergeFilters(f, {
+                  bookmarked: val === '__all__' ? null : val,
+                }));
+                setKpiActiveFilterKey(null);
+              }}
             >
               <SelectTrigger style={{ width: '130px', height: '31px', fontSize: '0.8rem' }}>
                 <SelectValue placeholder="Marcados" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">Marcados: Todos</SelectItem>
-                <SelectItem value="only">Solo marcados</SelectItem>
+                <SelectItem value="personal">Marcados para mí</SelectItem>
+                <SelectItem value="team">Marcados para el equipo</SelectItem>
+                <SelectItem value="any">Marcados para mí o equipo</SelectItem>
               </SelectContent>
             </Select>
 
