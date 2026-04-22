@@ -1,9 +1,7 @@
-import React, { useState, useMemo } from 'react';
-import moment from 'moment';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-
-const MySwal = withReactContent(Swal);
+import { useState, useMemo } from 'react';
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 // --- Componente para una fila de la tabla en el modal ---
 const AlarmTableRow = ({ alarm }) => {
@@ -74,13 +72,13 @@ const AlarmPreviewCard = ({ alarm }) => {
     if (isBinaryActivity) {
         displayStatusText = statusText; // "Pendiente", "Vencida", "Completada"
         if (alarmType === 'overdue') {
-            statusIcon = 'fa-times-circle';
+            statusIcon = 'XCircle';
             statusColor = 'text-danger';
         } else if (alarmType === 'completed') {
-            statusIcon = 'fa-check-circle';
+            statusIcon = 'CheckCircle';
             statusColor = 'text-success';
         } else {
-            statusIcon = 'fa-circle';
+            statusIcon = 'Circle';
             statusColor = 'text-warning';
         }
     } 
@@ -88,15 +86,15 @@ const AlarmPreviewCard = ({ alarm }) => {
     else {
         if (alarm.remainingDays < 0) {
             displayStatusText = `Vencido por ${Math.abs(alarm.remainingDays)}d`;
-            statusIcon = 'fa-exclamation-circle';
+            statusIcon = 'AlertCircle';
             statusColor = 'text-danger';
         } else if (alarm.remainingDays === 0) {
             displayStatusText = 'Vence Hoy';
-            statusIcon = 'fa-calendar-times';
+            statusIcon = 'CalendarX';
             statusColor = 'text-danger';
         } else {
             displayStatusText = `Vence en ${alarm.remainingDays}d`;
-            statusIcon = 'fa-hourglass-half';
+            statusIcon = 'Hourglass';
             statusColor = 'text-warning';
         }
     }
@@ -104,19 +102,19 @@ const AlarmPreviewCard = ({ alarm }) => {
     // NUEVO: Clases y estilos específicos por tipo
     const cardTypeClass = type === 'legal' ? 'alarm-card-legal' : 'alarm-card-scheduled';
     const typeBadgeClass = type === 'legal' ? 'type-badge-legal' : 'type-badge-scheduled';
-    const typeIcon = type === 'legal' ? 'fa-gavel' : 'fa-calendar-check';
+    const typeIcon = type === 'legal' ? 'Gavel' : 'CalendarCheck';
 
     return (
         <div className={`alarm-preview-card severity-${severity} ${cardTypeClass}`}>
             <div className="alarm-preview-header">
                 <div className="d-flex align-items-center gap-2">
                     <span className={`alarm-type-badge-small ${typeBadgeClass}`}>
-                        <i className={`fas ${typeIcon}`}></i>
+                        <Icon name={typeIcon} size={16} />
                     </span>
                     <h6 className="alarm-preview-title mb-0">{eventName}</h6>
                 </div>
                 <div className={`alarm-preview-status ${statusColor}`}>
-                    <i className={`fas ${statusIcon} me-1`}></i>
+                    <Icon name={statusIcon} size={16} className="me-1" />
                     <span>{displayStatusText}</span>
                 </div>
             </div>
@@ -129,31 +127,20 @@ const AlarmPreviewCard = ({ alarm }) => {
 
 // --- Componente principal del Widget ACTUALIZADO ---
 export const AlarmsWidget = ({ alarms, onClose }) => {
-    
-    const openExpandedModal = () => {
-        MySwal.fire({
-            html: <ExpandedAlarmsModal alarms={alarms} />,
-            showCloseButton: true,
-            showConfirmButton: false,
-            width: '90vw',
-            customClass: {
-                popup: 'alarm-modal-popup',
-                htmlContainer: 'alarm-modal-container',
-            }
-        });
-    };
+    const [showExpanded, setShowExpanded] = useState(false);
 
     return (
+        <>
         <div className="alarms-widget-preview">
             <div className="widget-preview-header">
-                <i className="fas fa-bell-on"></i>
+                <Icon name="bell-on" size={16} />
                 <h5>Alertas ({alarms.length})</h5>
                 <div className="widget-preview-actions">
-                    <button onClick={openExpandedModal} className="btn-expand" title="Ver todas las alertas">
-                        <i className="fas fa-expand-alt me-1"></i> Expandir
+                    <button onClick={() => setShowExpanded(true)} className="btn-expand" title="Ver todas las alertas">
+                        <Icon name="expand-alt" size={16} className="me-1" /> Expandir
                     </button>
                     <button onClick={onClose} className="btn-close-widget" title="Cerrar">
-                        <i className="fas fa-times"></i>
+                        <Icon name="times" size={16} />
                     </button>
                 </div>
             </div>
@@ -162,13 +149,19 @@ export const AlarmsWidget = ({ alarms, onClose }) => {
                     alarms.map(alarm => <AlarmPreviewCard key={alarm.id} alarm={alarm} />)
                 ) : (
                     <div className="widget-preview-empty">
-                        <i className="fas fa-check-circle"></i>
+                        <Icon name="check-circle" size={16} />
                         <p>¡Todo en orden!</p>
                         <span>No hay alertas activas.</span>
                     </div>
                 )}
             </div>
         </div>
+        <Dialog open={showExpanded} onOpenChange={setShowExpanded}>
+            <DialogContent className="alarm-modal-popup" style={{ maxWidth: '90vw', width: '90vw' }}>
+                <ExpandedAlarmsModal alarms={alarms} />
+            </DialogContent>
+        </Dialog>
+        </>
     );
 };
 
@@ -189,8 +182,8 @@ const ExpandedAlarmsModal = ({ alarms }) => {
             let valB = b[sort.key];
             
             if (sort.key === 'limitDate') {
-                valA = moment(a.limitDate, 'DD/MM/YYYY');
-                valB = moment(b.limitDate, 'DD/MM/YYYY');
+                valA = dayjs(a.limitDate, 'DD/MM/YYYY');
+                valB = dayjs(b.limitDate, 'DD/MM/YYYY');
             }
             
             if (valA < valB) return sort.order === 'asc' ? -1 : 1;
@@ -209,9 +202,9 @@ const ExpandedAlarmsModal = ({ alarms }) => {
     };
 
     const getSortIcon = (key) => {
-        if (sort.key !== key) return <i className="fas fa-sort text-muted"></i>;
-        if (sort.order === 'asc') return <i className="fas fa-sort-up"></i>;
-        return <i className="fas fa-sort-down"></i>;
+        if (sort.key !== key) return <Icon name="sort" size={16} className="text-muted" />;
+        if (sort.order === 'asc') return <Icon name="sort-up" size={16} />;
+        return <Icon name="sort-down" size={16} />;
     };
 
     return (

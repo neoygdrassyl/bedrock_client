@@ -1,38 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import Modal from 'react-modal';
-import { MDBBtn, MDBIcon, MDBTooltip } from 'mdb-react-ui-kit';
+import { useEffect, useState } from 'react';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
+
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars'
-
-const customStyles = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
-        zIndex: 1050
-    },
-    content: {
-        position: 'absolute',
-        top: '80px',
-        left: '15%',
-        right: '15%',
-        bottom: '50px',
-        border: '1px solid #ccc',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        borderRadius: '4px',
-        outline: 'none',
-        padding: '20px',
-
-    }
-};
-const MySwal = withReactContent(Swal);
-
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { swalError } from '@/app/utils/swalAdapter';
 export const PQRS_ACTION_REVIEW = (props) => {
     const { translation, swaMsg, globals, currentItemId } = props;
     const [currentItem, setCurrentItem] = useState(null)
@@ -43,16 +16,11 @@ export const PQRS_ACTION_REVIEW = (props) => {
         PQRS_Service.get(id)
             .then(response => {
                 setCurrentItem(response.data)
-                if (toogle) setModal(!review_modal)
+                if (toogle) setModal(prev => !prev)
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
 
@@ -225,14 +193,13 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     const rew_2_04 = { id_public: "rew_2_04", desc: `Observaciones `, value: true };
 
-
     const SOLICITORS_COMPONENT = () => {
         let solicitors = currentItem.pqrs_solocitors || [];
         let contacts = currentItem.pqrs_contacts || [];
         return <>
-            <div class="card border border-dark mb-3">
-                <div class="card-header text-uppercase">  1. DATOS PETICIONARIO</div>
-                <div class="card-body text-dark">
+            <div className="card border border-dark mb-3">
+                <div className="card-header">  1. DATOS PETICIONARIO</div>
+                <div className="card-body text-dark">
                     <div className='row'>
                         <div className='col'>
                             {solicitors.map(s => <>
@@ -270,9 +237,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     const DESC_COMMPONENT = () => {
         return <>
-            <div class="card border border-dark mb-3">
-                <div class="card-header text-uppercase">2.DESCRIPCIÓN DEL ASUNTO DE LA SOLICITUD</div>
-                <div class="card-body text-dark text-justify">
+            <div className="card border border-dark mb-3">
+                <div className="card-header">2.DESCRIPCIÓN DEL ASUNTO DE LA SOLICITUD</div>
+                <div className="card-body text-dark text-justify">
                     <label className='fw-bold'>Hechos:</label>  {currentItem.content}
                 </div>
             </div>
@@ -281,9 +248,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     const STUDY_COMMPONENT = () => {
         return <>
-            <div class="card border border-dark mb-3">
-                <div class="card-header text-uppercase">3. VALORACIÓN DE LA SOLICITUD Y DEFINICIÓN DE COMPETENCIA</div>
-                <div class="card-body text-dark">
+            <div className="card border border-dark mb-3">
+                <div className="card-header">3. VALORACIÓN DE LA SOLICITUD Y DEFINICIÓN DE COMPETENCIA</div>
+                <div className="card-body text-dark">
                     {REW_DATA.map(rew => {
                         if (rew.title) return <>
                             <br />
@@ -437,7 +404,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
                     <div className='col-1 border'>
                         <div className='row text-center'>
                             <div className='col'>
-                                <MDBIcon color='danger' fas icon='trash' onClick={() => DELETE_STEP_JSON(i)} />
+                                <Icon name="trash" size={16} className="text-danger cursor-pointer" onClick={() => DELETE_STEP_JSON(i)} />
                             </div>
                         </div>
                     </div>
@@ -446,7 +413,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
             <div className='row text-center my-3'>
                 <div className='col'>
-                    <MDBBtn color='success' size='sm' outline rounded onClick={() => NEW_STEP_JSON(-1)}>NUEVO OFICIO</MDBBtn>
+                    <Button variant="outline" size="sm" className="rounded-pill" onClick={() => NEW_STEP_JSON(-1)}>NUEVO OFICIO</Button>
                 </div>
             </div>
         </>
@@ -454,9 +421,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     const RESOLVE_COMMPONENT = () => {
         return <>
-            <div class="card border border-dark mb-3">
-                <div class="card-header text-uppercase">4. CLASIFICACIÓN Y TERMINO PARA RESOLUCIÓN DE LA PQRS</div>
-                <div class="card-body text-dark">
+            <div className="card border border-dark mb-3">
+                <div className="card-header">4. CLASIFICACIÓN Y TERMINO PARA RESOLUCIÓN DE LA PQRS</div>
+                <div className="card-body text-dark">
                     <div className='row'><label className='fw-bold'>Programación y control de proceso de Respuesta. Se programa para un ciclo de 10 días hábiles</label></div>
 
                     {OFICE_COMPONENT()}
@@ -496,7 +463,6 @@ export const PQRS_ACTION_REVIEW = (props) => {
                     <div className='row'><label className='fw-bold'>Observaciones</label></div>
                     <textarea rows={4} defaultValue={GET_STEP('rew_2_04').value} onBlur={(e) => SAVE_STEP(e.target.value, rew_2_04)} className='form-control' />
 
-
                 </div>
             </div>
         </>
@@ -508,20 +474,25 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     return (
         <div className="">
-            <MDBTooltip title='Control administrativo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button className="btn btn-sm btn-warning m-0 px-2 shadow-none"
-                    onClick={() => loadData(currentItemId)}>
-                    <i class="fas fa-clipboard-check"></i></button></MDBTooltip>
+            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 m-0 px-2" title="Control administrativo" onClick={() => loadData(currentItemId)}>
+                    <Icon name="clipboard-check" size={16} /></Button>
 
             <Modal contentLabel="REVIEW ACTION"
                 isOpen={review_modal}
-                style={customStyles}
+               
                 ariaHideApp={false}
             >
                 {currentItem ? <>
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-th"></i> Control Administrativo {currentItem.id_global}</label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setModal(!review_modal)}></MDBBtn>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="th" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Control administrativo — {currentItem.id_global}</h2>
+                        </div>
+                        <button type="button" onClick={() => setModal(prev => !prev)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     <hr />
                     {SOLICITORS_COMPONENT()}
@@ -532,10 +503,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
                     : "CARGARGANDO..."}
 
-
                 <div className="text-end py-4 mt-3">
-                    <button className="btn btn-lg btn-info" onClick={() => setModal(!review_modal)}>
-                        <i class="fas fa-times-circle"></i> CERRAR </button>
+                    <Button variant="outline" size="sm" onClick={() => setModal(prev => !prev)}>
+                        <Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
         </div>

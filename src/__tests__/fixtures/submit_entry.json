@@ -1,0 +1,65 @@
+{
+  "entry_complete": {
+    "id": 1,
+    "id_public": "VR26-0001",
+    "type_doc": "SOLICITUD",
+    "sender_name": "Carlos Rodríguez",
+    "sender_cc": "91.234.567",
+    "sender_phone": "3109876543",
+    "subject": "Solicitud de licencia de construcción",
+    "destination": "CURADURÍA",
+    "date_entry": "2026-01-10",
+    "date_created": "2026-01-10",
+    "pages": 15,
+    "annexes": 3,
+    "fun_id": null,
+    "status": "ACTIVO",
+    "user_id": 1
+  },
+  "entry_linked": {
+    "id": 2,
+    "id_public": "VR26-0002",
+    "type_doc": "RADICACIÓN",
+    "sender_name": "Juan Pérez",
+    "sender_cc": "13.456.789",
+    "subject": "Radicación de documentos LC26-0001",
+    "destination": "CURADURÍA",
+    "date_entry": "2026-01-16",
+    "date_created": "2026-01-16",
+    "pages": 45,
+    "annexes": 12,
+    "fun_id": 1,
+    "status": "ACTIVO",
+    "user_id": 1
+  },
+  "entry_list": [
+    {
+      "id": 1,
+      "id_public": "VR26-0001",
+      "type_doc": "SOLICITUD",
+      "sender_name": "Carlos Rodríguez",
+      "subject": "Solicitud de licencia",
+      "date_entry": "2026-01-10",
+      "status": "ACTIVO"
+    },
+    {
+      "id": 2,
+      "id_public": "VR26-0002",
+      "type_doc": "RADICACIÓN",
+      "sender_name": "Juan Pérez",
+      "subject": "Radicación de documentos",
+      "date_entry": "2026-01-16",
+      "fun_id": 1,
+      "status": "ACTIVO"
+    },
+    {
+      "id": 3,
+      "id_public": "VR26-0003",
+      "type_doc": "PQRS",
+      "sender_name": "Ana Martínez",
+      "subject": "Queja por demora",
+      "date_entry": "2026-01-20",
+      "status": "ACTIVO"
+    }
+  ]
+}

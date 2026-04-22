@@ -1,11 +1,24 @@
-import React, { Component } from 'react';
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBDropdownLink, MDBPopover, MDBPopoverBody } from 'mdb-react-ui-kit';
-import { Link } from "react-router-dom";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
-import Modal from 'react-modal';
-import IMG_SEARCH_ICON from '../../img/pqrs/Buscaricono-01.png'
+import ChartErrorBoundary from '../../components/ChartErrorBoundary';
+import { useReducer, useEffect, useRef } from 'react';
+import { TabPane } from '@/components/ui/tab-pane';
+import { swalLoading, swalSuccess, swalError, swalClose } from '@/app/utils/swalAdapter';
+import DataTable from '@/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
+import { Icon } from '@/components/icon';
+import { cn } from '@/lib/utils';
 
 // SERVICES
 import FUNService from '../../services/fun.service'
@@ -20,6 +33,7 @@ import FUN_ALERT from './fun_forms/fun_alertn';
 import FUNCLOCK from './fun_forms/fun_clock';
 
 import { dateParser, dateParser_finalDate, dateParser_timePassed, dateParser_timeLeft, formsParser1, regexChecker_isPh, regexChecker_isOA, regexChecker_isOA_2 } from '../../components/customClasses/typeParse';
+import { DiasHabilesColombia } from '../../utils/BusinessDaysCol';
 
 // RECORDS
 import RECORD_ARC from './records/record_arc';
@@ -35,25 +49,13 @@ import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
 
-
 // JSONS
-const moment = require('moment');
-const momentB = require('moment-business-days');
-const MySwal = withReactContent(Swal);
+import dayjs from 'dayjs';
 
-class FUN extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.retrievSingle = this.retrievSingle.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.navigation = this.navigation.bind(this);
-        this.navigation_version = this.navigation_version.bind(this);
-        this.toggle = this.toggle.bind(this);
-        this.openModal = this.openModal.bind(this);
-        this.toggle_NEGATIVE = this.toggle_NEGATIVE.bind(this);
-        this.state = {
+function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
+    const [state, setState] = useReducer(
+        (prev, next) => ({ ...prev, ...next }),
+        {
             error: null,
             isLoaded: false,
             isLoadedSearch: false,
@@ -83,6 +85,7 @@ class FUN extends Component {
 
             list_complete: [],
             list_search: [],
+            hasSearchResult: false,
             list_started: [],
             list_incomplete: [],
             list_legal: [],
@@ -98,106 +101,118 @@ class FUN extends Component {
             clocks: [],
 
             worker_list: [],
-        };
+
+            currentId: undefined,
+            currentLastVersion: undefined,
+            currentDate: undefined,
+            currentPublic: undefined,
+            currentItems: undefined,
+            load: undefined,
+            date_start: undefined,
+            date_end: undefined,
+        }
+    );
+
+    const prevUrlParamsRef = useRef(urlParams);
+
+    useEffect(() => {
+        retrievePublish();
+        setSubtmitRows();
+        retrieveWorkers();
+        if (urlParams) LOAD_BY_URL();
+    }, []);
+
+    useEffect(() => {
+        if (urlParams !== prevUrlParamsRef.current && urlParams != null) {
+            console.log(urlParams);
+            LOAD_BY_URL();
+        }
+        prevUrlParamsRef.current = urlParams;
+    }, [urlParams]);
+
+    function LOAD_BY_URL() {
+        // Placeholder — urlParams is not currently passed to this component
     }
-    componentDidMount() {
-        this.retrievePublish();
-        this.setSubtmitRows();
-        this.retrieveWorkers();
-        if (this.props.urlParams) this.LOAD_BY_URL()
-    }
-    retrieveWorkers() {
+
+    function retrieveWorkers() {
         USER_SERVICE.getAll()
             .then(response => {
-                this.setState({ worker_list: response.data })
+                setState({ worker_list: response.data })
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    componentDidUpdate(prevProps) {
-        if (this.props.urlParams !== prevProps.urlParams && this.props.urlParams != null) {
-            console.log(this.props.urlParams)
-            this.LOAD_BY_URL();
-        }
-    }
-    retrievePublish() {
+    function retrievePublish() {
         FUNService.getAll_fun()
             .then(response => {
-                this.asignList(response.data);
+                asignList(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    retrievSingle(id) {
-        MySwal.fire({
-            title: this.props.swaMsg.title_wait,
-            text: this.props.swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
+    function retrievSingle(id) {
+        swalLoading({
+            title: swaMsg.title_wait,
+            text: swaMsg.text_wait,
         });
         FUNService.get(id)
             .then(response => {
-                MySwal.close()
+                swalClose()
 
-                this.toggle_d(response.data);
+                toggle_d(response.data);
             })
             .catch(e => {
-                MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                swalError({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
                 });
                 console.log(e);
             });
     }
-    retrieveMacroSingle(id) {
-        MySwal.fire({
-            title: this.props.swaMsg.title_wait,
-            text: this.props.swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
+    function retrieveMacroSingle(id) {
+        swalLoading({
+            title: swaMsg.title_wait,
+            text: swaMsg.text_wait,
         });
         FUNService.loadMacroSingle(null, null, id)
             .then(response => {
-                if (response.data.length) this.setState({ currentItemAsignProf: response.data, modal_asign_prof: true })
-                else this.setState({ currentItemAsignProf: null, modal_asign_prof: null })
-                MySwal.close();
+                if (response.data.length) setState({ currentItemAsignProf: response.data, modal_asign_prof: true })
+                else setState({ currentItemAsignProf: null, modal_asign_prof: null })
+                swalClose();
             })
             .catch(e => {
-                  MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                swalError({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
                 });
                 console.log(e);
             });
     }
-    retrieveSearch(field, string) {
+    function retrieveSearch(field, string) {
         FUNService.getSearch(field, string)
             .then(response => {
-                this.setState({
+                setState({
                     list_search: response.data,
+                    hasSearchResult: true,
                     isLoadedSearch: false,
                 });
-                //this.asignList(response.data);
-                MySwal.close();
+                //asignList(response.data);
+                swalClose();
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    refreshList() {
-        this.retrievePublish();
-        this.setState({
+    function refreshList() {
+        retrievePublish();
+        setState({
             currentItem: null,
             currentIndex: -1,
         });
     }
-    asignList(_LIST) {
+    function asignList(_LIST) {
         let statrted = [];
         let incomplete = [];
         let legal = [];
@@ -205,33 +220,32 @@ class FUN extends Component {
         let expedition = [];
         let archive = [];
         for (const item in _LIST) {
-            let state = _LIST[item].state
+            let itemState = _LIST[item].state
             let object = _LIST[item]
-            if (state >= 100) {
+            if (itemState >= 100) {
                 archive.push(object)
             }
             else {
                 if (regexChecker_isPh(object, true) || regexChecker_isOA(object)) {
                     profesonal.push(object)
                 } else {
-                    if (state < -100) {
+                    if (itemState < -100) {
                         incomplete.push(object)
                     }
-                    if (state >= -1 && state < 5) {
+                    if (itemState >= -1 && itemState < 5) {
                         statrted.push(object)
                     }
-                    if (state >= 5 && state < 50) {
+                    if (itemState >= 5 && itemState < 50) {
                         legal.push(object)
                     }
-                    if (state >= 50) {
+                    if (itemState >= 50) {
                         expedition.push(object)
                     }
                 }
             }
 
-
         }
-        this.setState({
+        setState({
             items: _LIST,
             list_started: statrted,
             list_incomplete: incomplete,
@@ -244,22 +258,22 @@ class FUN extends Component {
         });
     }
     //  MODAL CONTROLS
-    openModal(item, TO) {
-        this.navigation(item, TO, '');
+    function openModal(item, TO) {
+        navigation(item, TO, '');
     }
 
-    toggle(item) {
+    function toggle(item) {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal: !this.state.modal,
+        setState({
+            modal: !state.modal,
             modal_macro: false,
         });
     }
-    toggle_NEGATIVE(item) {
+    function toggle_NEGATIVE(item) {
         if (item) {
-            this.setState({
+            setState({
                 currentVersion: item.version,
                 currentId: item.id_sistem,
                 currentLastVersion: item.version,
@@ -268,284 +282,273 @@ class FUN extends Component {
                 selectedRow: item.id_sistem
             });
         }
-        this.setState({
-            modal: !this.state.modal,
+        setState({
+            modal: !state.modal,
             modal_macro: false,
         });
     }
-    getToggle = () => {
-        return this.state.modal;
+    const getToggle = () => {
+        return state.modal;
     }
-    getToggle_c = () => {
-        return this.state.modal_c;
+    const getToggle_c = () => {
+        return state.modal_c;
     }
-    toggle_c = (item) => {
+    const toggle_c = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_c: !this.state.modal_c
+        setState({
+            modal_c: !state.modal_c
         });
     }
-    getToggle_n = () => {
-        return this.state.modal_n;
+    const getToggle_n = () => {
+        return state.modal_n;
     }
-    toggle_n = (item) => {
+    const toggle_n = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_n: !this.state.modal_n
+        setState({
+            modal_n: !state.modal_n
         });
     }
-    getToggle_d = () => {
-        return this.state.modal_d;
+    const getToggle_d = () => {
+        return state.modal_d;
     }
-    toggle_d = (item) => {
+    const toggle_d = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_d: !this.state.modal_d
+        setState({
+            modal_d: !state.modal_d
         });
     }
-    getToggle_alert = () => {
-        return this.state.modal_alert;
+    const getToggle_alert = () => {
+        return state.modal_alert;
     }
-    toggle_alert = (item) => {
+    const toggle_alert = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_alert: !this.state.modal_alert
+        setState({
+            modal_alert: !state.modal_alert
         });
     }
-    getToggle_recordArc = () => {
-        return this.state.modal_record_arc;
+    const getToggle_recordArc = () => {
+        return state.modal_record_arc;
     }
-    toggle_recordArc = (item) => {
+    const toggle_recordArc = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_record_arc: !this.state.modal_record_arc
+        setState({
+            modal_record_arc: !state.modal_record_arc
         });
     }
-    getToggle_recordLaw = () => {
-        return this.state.modal_record_law;
-    }
-    toggle_recordLaw = (item) => {
+    const toggle_recordLaw = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_record_law: !this.state.modal_record_law
+        setState({
+            modal_record_law: !state.modal_record_law
         });
     }
-    getToggle_recordLaw = () => {
-        return this.state.modal_record_law;
+    const getToggle_recordLaw = () => {
+        return state.modal_record_law;
     }
-    toggle_recordEng = (item) => {
+    const toggle_recordEng = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_record_eng: !this.state.modal_record_eng
+        setState({
+            modal_record_eng: !state.modal_record_eng
         });
     }
-    getToggle_recordEng = () => {
-        return this.state.modal_record_eng;
+    const getToggle_recordEng = () => {
+        return state.modal_record_eng;
     }
-    toggle_recordLaw = (item) => {
+    const getToggle_recordPH = () => {
+        return state.modal_record_ph;
+    }
+    const toggle_recordPH = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_record_law: !this.state.modal_record_law
+        setState({
+            modal_record_ph: !state.modal_record_ph
         });
     }
-    getToggle_recordPH = () => {
-        return this.state.modal_record_ph;
-    }
-    toggle_recordPH = (item) => {
+    const toggle_recordReview = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_record_ph: !this.state.modal_record_ph
+        setState({
+            modal_record_review: !state.modal_record_review
         });
     }
-    toggle_recordReview = (item) => {
+    const getToggle_recordReview = () => {
+        return state.modal_record_review;
+    }
+    const toggle_exp = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_record_review: !this.state.modal_record_review
+        setState({
+            modal_exp: !state.modal_exp
         });
     }
-    getToggle_recordReview = () => {
-        return this.state.modal_record_review;
+    const getToggle_exp = () => {
+        return state.modal_exp;
     }
-    toggle_exp = (item) => {
+    const getToggle_clock = () => {
+        return state.modal_clocK;
+    }
+    const toggle_clock = (item) => {
         if (item) {
-            this.setItem(item)
+            setItem(item)
         }
-        this.setState({
-            modal_exp: !this.state.modal_exp
+        setState({
+            modal_clocK: !state.modal_clocK
         });
     }
-    getToggle_recordReview = () => {
-        return this.state.modal_exp;
+    const getToggle_macro = () => {
+        return state.modal_macro;
     }
-    getToggle_clock = () => {
-        return this.state.modal_clocK;
-    }
-    toggle_clock = (item) => {
-        if (item) {
-            this.setItem(item)
-        }
-        this.setState({
-            modal_clocK: !this.state.modal_clocK
-        });
-    }
-    getToggle_macro = () => {
-        return this.state.modal_macro;
-    }
-    toggle_macro = (item) => {
-        this.setState({
-            modal_macro: !this.state.modal_macro,
+    const toggle_macro = (item) => {
+        setState({
+            modal_macro: !state.modal_macro,
         });
         if (item) {
-            this.setState({
+            setState({
                 selectedRow: item.id,
 
             });
         } else {
-            this.setState({
+            setState({
                 selectedRow: null,
 
             });
         }
     }
-    toggle_report = (item) => {
-        this.setState({
-            modal_report: !this.state.modal_report,
+    const toggle_report = (item) => {
+        setState({
+            modal_report: !state.modal_report,
         });
         if (item) {
-            this.setState({
+            setState({
                 selectedRow: item.id,
 
             });
         } else {
-            this.setState({
+            setState({
                 selectedRow: null,
 
             });
         }
     }
     // NAVIGATION
-    navigation = (item, TO, FROM) => {
+    const navigation = (item, TO, FROM) => {
         switch (FROM) {
             case "general":
-                this.toggle(false)
+                toggle(false)
                 break;
             case "edit":
-                this.toggle_n(false)
+                toggle_n(false)
                 break;
             case "archive":
-                this.toggle_d(false)
+                toggle_d(false)
                 break;
             case "check":
-                this.toggle_c(false)
+                toggle_c(false)
                 break;
             case "alert":
-                this.toggle_alert(false)
+                toggle_alert(false)
                 break;
             case "clock":
-                this.toggle_clock(false)
+                toggle_clock(false)
                 break;
             case "record_arc":
-                this.toggle_recordArc(false)
+                toggle_recordArc(false)
                 break;
             case "record_law":
-                this.toggle_recordLaw(false)
+                toggle_recordLaw(false)
                 break;
             case "record_eng":
-                this.toggle_recordEng(false)
+                toggle_recordEng(false)
                 break;
             case "record_ph":
-                this.toggle_recordPH(false)
+                toggle_recordPH(false)
                 break;
             case "record_review":
-                this.toggle_recordReview(false)
+                toggle_recordReview(false)
                 break;
             case "expedition":
-                this.toggle_exp(false)
+                toggle_exp(false)
                 break;
             case "macro":
-                this.toggle_macro(false)
+                toggle_macro(false)
                 break;
 
         }
         switch (TO) {
             case "general":
-                this.toggle(item)
+                toggle(item)
                 break;
             case "edit":
-                this.toggle_n(item)
+                toggle_n(item)
                 break;
             case "archive":
-                this.toggle_d(item)
+                toggle_d(item)
                 break;
             case "check":
-                this.toggle_c(item)
+                toggle_c(item)
                 break;
             case "alert":
-                this.toggle_alert(item)
+                toggle_alert(item)
                 break;
             case "clock":
-                this.toggle_clock(item)
+                toggle_clock(item)
                 break;
             case "record_arc":
-                this.toggle_recordArc(item)
+                toggle_recordArc(item)
                 break;
             case "record_law":
-                this.toggle_recordLaw(item)
+                toggle_recordLaw(item)
                 break;
             case "record_eng":
-                this.toggle_recordEng(item)
+                toggle_recordEng(item)
                 break;
             case "record_ph":
-                this.toggle_recordPH(item)
+                toggle_recordPH(item)
                 break;
             case "record_review":
-                this.toggle_recordReview(item)
+                toggle_recordReview(item)
                 break;
             case "expedition":
-                this.toggle_exp(item)
+                toggle_exp(item)
                 break;
             case "macro":
-                this.setState({
-                    date_start: moment(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'),
-                    date_end: moment(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'),
+                setState({
+                    date_start: dayjs(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'),
+                    date_end: dayjs(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'),
                 })
-                this.toggle_macro(item)
+                toggle_macro(item)
                 break;
         }
     }
-    navigation_version = (STEP) => {
+    const navigation_version = (STEP) => {
         switch (STEP) {
             case "minus":
-                this.setState({ currentVersion: this.state.currentVersion - 1 });
+                setState({ currentVersion: state.currentVersion - 1 });
                 break;
             case "plus":
-                this.setState({ currentVersion: this.state.currentVersion + 1 });
+                setState({ currentVersion: state.currentVersion + 1 });
                 break;
         }
     }
     // END MODAL CONTROLS
-    setItem(item) {
-        this.setState({
+    function setItem(item) {
+        setState({
             currentVersion: item.version,
             currentId: item.id,
             currentLastVersion: item.version,
@@ -555,27 +558,38 @@ class FUN extends Component {
         });
     }
 
-    requestUpdate(id) {
+    function requestUpdate(id) {
         FUNService.get(id).then(response => {
             let item = response.data
-            this.setState({
+            setState({
                 currentItem: item,
                 currentId: item.id,
                 currentVersion: item.version
             })
-            this.retrievePublish();
+            retrievePublish();
         })
     }
+    function handleDuplicateSuccess(newId) {
+        toggle(); // close current general modal
+        FUNService.get(newId)
+            .then(response => {
+                toggle(response.data); // re-open with new project
+                retrievePublish();
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
     // HELPER FUNCTIONS
-    setSubtmitRows() {
-        var end_date = moment().format('YYYY-MM-DD');
-        var start_date = momentB(end_date, 'YYYY-MM-DD').businessSubtract(15)._d;
-        start_date = moment(start_date).format('YYYY-MM-DD');
+    function setSubtmitRows() {
+        var end_date = dayjs().format('YYYY-MM-DD');
+        const _bd = new DiasHabilesColombia();
+        var start_date = _bd.restarDiasHabiles(end_date, 15);
 
         FUNService.loadSubmit2(start_date, end_date)
             .then(response => {
                 if (response.data.length) {
-                    this.setState({
+                    setState({
                         currentItems: response.data,
                         load: true,
                     })
@@ -583,7 +597,7 @@ class FUN extends Component {
                     for (var i = 0; i < response.data.length; i++) {
                         submitItems.push(response.data[i].id)
                     }
-                    this.setState({ submitItems: submitItems })
+                    setState({ submitItems: submitItems })
                 }
             })
             .catch(e => {
@@ -591,7 +605,7 @@ class FUN extends Component {
             });
 
     }
-    _REGEX_MATCH_PH(_string) {
+    function _REGEX_MATCH_PH(_string) {
         let regex0 = /p\.\s+h/i;
         let regex1 = /p\.h/i;
         let regex2 = /propiedad\s+horizontal/i;
@@ -599,21 +613,48 @@ class FUN extends Component {
         if (regex0.test(_string) || regex2.test(_string) || regex1.test(_string) || regex3.test(_string)) return true;
         return false
     }
-    render() {
-        const { translation, swaMsg, globals, breadCrums } = this.props;
-        const { currentItemAsignProf, currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search, worker_list } = this.state;
+    // --- RENDER ---
+        const { currentItemAsignProf, currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search, worker_list } = state;
 
-        const modalHeader = <div className="my-3 d-flex justify-content-between">
-            <label>ULTIMA VERSIÓN :{this.state.currentLastVersion}</label>
-        </div>
+        const modalHeader = null; // Legacy variable — replaced by FunModalHeader below
+
+        const FunModalHeader = ({ icon, title, onClose }) => (
+            <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                <div className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                        <Icon name={icon} size={14} className="text-primary" />
+                    </div>
+                    <div>
+                        <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+                        <p className="text-[0.6875rem] text-muted-foreground">Rad. {state.currentPublic} — v{state.currentLastVersion}</p>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="rounded-md p-1 hover:bg-muted transition-colors"
+                    aria-label="Cerrar"
+                >
+                    <Icon name="X" size={16} className="text-muted-foreground" />
+                </button>
+            </div>
+        );
+
+        const ModalFooter = ({ onClose }) => (
+            <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                <Button variant="outline" size="sm" onClick={onClose}>
+                    <Icon name="X" size={14} /> Cerrar
+                </Button>
+            </div>
+        );
         let _GET_MISSING_CONTEXT = (state) => {
-            if (state == '-1') return <label className="fw-bold">INCOMPLETO</label>
-            if (state == '-101') return <label className="fw-bold text-danger">DESISTIMIENTO POR INCOMPLETO</label>
-            if (state == '-102') return <label className="fw-bold text-danger">NO CUMPLE ACTA DE OBSERVACIONES</label>
-            if (state == '-103') return <label className="fw-bold text-danger">NO CUMPLE ACTA DE CORRECIONES</label>
-            if (state == '-104') return <label className="fw-bold text-danger">NO PAGO EXPENSAS VARIABLES</label>
-            if (state == '-105') return <label className="fw-bold text-danger">VOLUNTARIO</label>
-            if (state == '-106') return <label className="fw-bold text-danger">NEGADA</label>
+            if (state == '-1') return <Badge variant="secondary" className="text-[10px]">INCOMPLETO</Badge>
+            if (state == '-101') return <Badge variant="destructive" className="text-[10px]">DESIST. INCOMPLETO</Badge>
+            if (state == '-102') return <Badge variant="destructive" className="text-[10px]">NO CUMPLE ACTA OBS.</Badge>
+            if (state == '-103') return <Badge variant="destructive" className="text-[10px]">NO CUMPLE ACTA CORR.</Badge>
+            if (state == '-104') return <Badge variant="destructive" className="text-[10px]">NO PAGO EXPENSAS</Badge>
+            if (state == '-105') return <Badge variant="destructive" className="text-[10px]">VOLUNTARIO</Badge>
+            if (state == '-106') return <Badge variant="destructive" className="text-[10px]">NEGADA</Badge>
         }
         let _GET_MISSING_DATE = (row) => {
             if (row.state == '-1') return false
@@ -625,13 +666,13 @@ class FUN extends Component {
             if (row.state == '-106') return row.clock_close_6
         }
         let _GET_STATE_STR = (state, isString, row) => {
-            if (state < '-1') return isString ? 'DESISTIDO (Ejecución)' : <label className='text-danger text-center'>DESISTIDO (Ejecución)</label>
+            if (state < '-1') return isString ? 'DESISTIDO (Ejecución)' : <Badge variant="destructive" className="text-[10px]">Desistido (Ejecución)</Badge>
             if (state == '-1') return 'INCOMPLETO'
             if (state == '1') return 'INCOMPLETO'
-            if (state == '5') return 'LYDF'
-            if (state == '50') return 'EXPEDICIÓN'
-            if (state == '100') return isString ? 'ARCHIVADO' : <label className='fw-bold'>CERRADO</label>
-            if (state == '101') return isString ? 'ARCHIVADO' : <label className='fw-bold text-primary'>ARCHIVADO</label>
+            if (state == '5') return isString ? 'LYDF' : <Badge className="text-[10px] bg-primary">LyDF</Badge>
+            if (state == '50') return isString ? 'EXPEDICIÓN' : <Badge className="text-[10px] bg-accent text-accent-foreground">Expedición</Badge>
+            if (state == '100') return isString ? 'ARCHIVADO' : <Badge variant="secondary" className="text-[10px]">Cerrado</Badge>
+            if (state == '101') return isString ? 'ARCHIVADO' : <Badge variant="outline" className="text-[10px] text-primary border-primary">Archivado</Badge>
             if (state == '200') {
                 if (isString) {
                     if (row.clock_close_6) return 'NEGADA'
@@ -640,14 +681,14 @@ class FUN extends Component {
                     if (row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
                     if (row.clock_close_2) return 'DESISTIDO (No radicó valla)'
                     if (row.clock_close_1) return 'DESISTIDO (Incompleto)'
-                } else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
+                } else return <Badge variant="secondary" className="text-[10px]">Cerrado (Desistido)</Badge>
             }
-            if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <label className='text-danger text-center'>DESISTIDO (Incompleto)</label>
-            if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <label className='text-danger text-center'>DESISTIDO (No radicó valla)</label>
-            if (state == '203') return isString ? 'DESISTIDO (No subsanó Acta)' : <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
-            if (state == '204') return isString ? 'DESISTIDO (No radicó pagos)' : <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
-            if (state == '205') return isString ? 'DESISTIDO (Voluntario)' : <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
-            if (state == '206') return isString ? 'DESISTIDO (Negada)' : <label className='text-danger text-center'>DESISTIDO (Negada)</label>
+            if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <Badge variant="destructive" className="text-[10px]">Desist. Incompleto</Badge>
+            if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <Badge variant="destructive" className="text-[10px]">Desist. Valla</Badge>
+            if (state == '203') return isString ? 'DESISTIDO (No subsanó Acta)' : <Badge variant="destructive" className="text-[10px]">Desist. Acta</Badge>
+            if (state == '204') return isString ? 'DESISTIDO (No radicó pagos)' : <Badge variant="destructive" className="text-[10px]">Desist. Pagos</Badge>
+            if (state == '205') return isString ? 'DESISTIDO (Voluntario)' : <Badge variant="destructive" className="text-[10px]">Desist. Voluntario</Badge>
+            if (state == '206') return isString ? 'DESISTIDO (Negada)' : <Badge variant="destructive" className="text-[10px]">Negada</Badge>
             return ''
         }
         const _fun_0_type = { '0': 'NC', 'i': 'I', 'ii': "II", 'iii': "III", 'iv': "IV", 'oa': "OA" }
@@ -655,322 +696,299 @@ class FUN extends Component {
         // ----------------------
         const rowSelectedStyle = [
             {
-                when: row => (this.state.submitItems).includes(row.id),
+                when: row => (state.submitItems).includes(row.id),
                 style: {
-                    backgroundColor: 'Skyblue',
+                    backgroundColor: 'hsl(var(--primary) / 0.08)',
                 },
             },
             {
-                when: row => row.id == this.state.selectedRow,
+                when: row => row.id == state.selectedRow,
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
-
             },
-
         ];
 
         // ---------------------
         const columns = [
             {
-                name: <label className="text-center">No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <h6 className='fw-normal'>{(row.id_public)}</h6>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">FECHA PAGO EXPENSAS FIJAS</label>,
+                name: 'FECHA PAGO EXPENSAS',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_payment)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
             },
             {
-                name: <label className="text-center">FECHA LIMITE LyDF</label>,
+                name: 'FECHA LÍMITE LyDF',
                 selector: row => dateParser_finalDate(row.clock_payment, 30),
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser_finalDate(row.clock_payment, 30)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser_finalDate(row.clock_payment, 30)}</span>
             },
             {
-                name: <label className="text-center">TIEMPO RESTANTE</label>,
+                name: 'TIEMPO RESTANTE',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
                 cell: row => {
                     let time = 30 - dateParser_timePassed(row.clock_payment)
-                    return <label><label className={time <= 0 ? 'text-danger fw-bold' : ''}>{time}</label> / 30</label>
+                    return <span className="text-xs"><span className={cn('font-bold tabular-nums', time <= 0 ? 'text-destructive' : time <= 5 ? 'text-warning' : '')}>{time}</span><span className="text-muted-foreground"> / 30</span></span>
                 }
             },
 
             {
-                name: <label className="text-center">PROGRESIÓN</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label className="text-center">ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 center: true,
                 minWidth: '80px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_missing = [
             {
-                name: <label className="text-center">No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.id_public)}</label>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">MOTIVO</label>,
+                name: 'MOTIVO',
                 selector: row => _GET_MISSING_CONTEXT(row.state),
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{_GET_MISSING_CONTEXT(row.state)}</label>
+                cell: row => _GET_MISSING_CONTEXT(row.state)
             },
             {
-                name: <label className="text-center">FECHA PAGO EXPENSAS</label>,
+                name: 'FECHA PAGO EXPENSAS',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_payment)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '80px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_legal = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">FECHA LYDF</label>,
+                name: 'FECHA LyDF',
                 selector: row => row.clock_date,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_date)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_date}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: 'ACCIÓN',
                 button: true,
-                minWidth: '100px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                minWidth: '80px',
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_exp = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">FECHA VIAVILIDAD</label>,
+                name: 'FECHA VIABILIDAD',
                 selector: row => row.clock_pay2,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_pay2)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_pay2}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: 'ACCIÓN',
                 button: true,
-                minWidth: '100px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                minWidth: '80px',
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_profesional = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">FECHA PAGO EXPENSAS</label>,
+                name: 'FECHA PAGO EXPENSAS',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_payment)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
             },
             {
-                name: <label className="text-center">FECHA LYDF</label>,
+                name: 'FECHA LyDF',
                 selector: row => row.clock_date,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_date)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_date}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: 'ACCIÓN',
                 button: true,
-                minWidth: '100px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                minWidth: '80px',
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_archive = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => row.id_public
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => formsParser1(row, true),
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>,
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => _fun_0_type[row.type]
-
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label>ESTADO</label>,
+                name: 'ESTADO',
                 selector: row => _GET_STATE_STR(row.state, true, row),
                 sortable: true,
                 filterable: true,
@@ -979,58 +997,54 @@ class FUN extends Component {
                 cvsCB: row => _GET_STATE_STR(row.state, true, row)
             },
             {
-                name: <label className="text-center">FECHA ARCHIVACIÓN</label>,
+                name: 'FECHA ARCHIVACIÓN',
                 selector: row => row.clock_archive,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => row.clock_archive
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_archive}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
                 ignoreCSV: true,
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: 'ACCIÓN',
                 button: true,
-                minWidth: '100px',
+                minWidth: '80px',
                 ignoreCSV: true,
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_search = [
             {
-                name: <label className="text-center">No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <h6 className='fw-normal'>{(row.id_public)}</h6>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">ESTADO</label>,
+                name: 'ESTADO',
                 selector: row => row.state,
                 sortable: true,
                 filterable: true,
@@ -1038,21 +1052,17 @@ class FUN extends Component {
                 cell: row => _GET_STATE_STR(row.state)
             },
             {
-                name: <label className="text-center">PROGRESIÓN</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label className="text-center">ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 center: true,
                 minWidth: '80px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
 
@@ -1128,59 +1138,121 @@ class FUN extends Component {
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${_id[1]}-${_id[2]}-${concecutive}`
                             document.getElementById('f_02').value = new_id;
-                        } else document.getElementById('f_02').value = nomens + moment().format('YY') + "-0001";
-                    } else document.getElementById('f_02').value = nomens + moment().format('YY') + "-0001";
+                        } else document.getElementById('f_02').value = nomens + dayjs().format('YY') + "-0001";
+                    } else document.getElementById('f_02').value = nomens + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
+                    swalError({
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
                     });
                 });
 
         }
-        let _MODULE_BTN_POP = (row) => {
+        let _MODULE_ACTION_MENU = (row) => {
             const isOA = regexChecker_isOA_2(row)
             let rules = row.rules ? row.rules.split(';') : [];
+            const canEdit = row.state != 101 && row.state <= 200;
+            const isPH = regexChecker_isPh(row, true);
+            const canAssign = window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2;
 
-            return <MDBPopoverBody>
-                <div class="list-group list-group-flush">
-                    <button type="button" onClick={() => this.toggle(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                    <button type="button" onClick={() => this.toggle_clock(row)} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                    <button type="button" onClick={() => this.toggle_d(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
-                    {row.state != 101 && row.state <= 200 ?
-                        <>
-                            <button type="button" onClick={() => this.toggle_n(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                            <button type="button" onClick={() => this.toggle_c(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
-                            {regexChecker_isPh(row, true) ?
-                                <>
-                                    <button type="button" onClick={() => this.toggle_recordPH(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
-                                </>
-                                :
-                                <>
-                                    {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => this.toggle_alert(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
-                                    </> : ''}
-
-                                    <button type="button" onClick={() => this.toggle_recordLaw(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
-                                    {!isOA ? <>
-                                        <button type="button" onClick={() => this.toggle_recordArc(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTÓNICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => this.toggle_recordEng(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-
-                                        <button type="button" onClick={() => this.toggle_recordReview(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
-                                    </> : ''}
-                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
-                                </>}
-                        </> : <></>}
-                    {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ? <>
-                        <button type="button" onClick={() => this.retrieveMacroSingle(row.id)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-user-clock"></i> ASIGNAR</button>
-                    </> : null}
-                </div>
-            </MDBPopoverBody>
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="fun-action-toggle h-8 w-8">
+                            <Icon name="MoreVertical" size={16} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="fun-action-menu w-56">
+                        <DropdownMenuLabel className="flex items-center gap-2">
+                            <Icon name="Eye" size={14} /> Consulta
+                        </DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => toggle(row)}>
+                            <Icon name="FolderOpen" size={14} className="text-primary" />
+                            Detalles
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toggle_clock(row)}>
+                            <Icon name="Clock" size={14} className="text-muted-foreground" />
+                            Tiempos
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toggle_d(row)}>
+                            <Icon name="Archive" size={14} className="text-muted-foreground" />
+                            Documentos
+                        </DropdownMenuItem>
+                        {canEdit && (
+                            <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel className="flex items-center gap-2">
+                                    <Icon name="Pencil" size={14} /> Gestión
+                                </DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => toggle_n(row)}>
+                                    <Icon name="RefreshCw" size={14} className="text-primary" />
+                                    Actualizar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => toggle_c(row)}>
+                                    <Icon name="CheckSquare" size={14} className="text-accent" />
+                                    Checkeo
+                                </DropdownMenuItem>
+                                {isPH ? (
+                                    <DropdownMenuItem onClick={() => toggle_recordPH(row)}>
+                                        <Icon name="PenTool" size={14} className="text-warning" />
+                                        Inf. P.H.
+                                    </DropdownMenuItem>
+                                ) : (
+                                    <>
+                                        {!isOA && rules[0] != 1 && (
+                                            <DropdownMenuItem onClick={() => toggle_alert(row)}>
+                                                <Icon name="Megaphone" size={14} className="text-warning" />
+                                                Publicidad
+                                            </DropdownMenuItem>
+                                        )}
+                                        <DropdownMenuItem onClick={() => toggle_recordLaw(row)}>
+                                            <Icon name="Scale" size={14} className="text-warning" />
+                                            Inf. Jurídico
+                                        </DropdownMenuItem>
+                                        {!isOA && (
+                                            <>
+                                                <DropdownMenuItem onClick={() => toggle_recordArc(row)}>
+                                                    <Icon name="Building" size={14} className="text-warning" />
+                                                    Inf. Arquitectónico
+                                                </DropdownMenuItem>
+                                                {rules[1] != 1 && (
+                                                    <DropdownMenuItem onClick={() => toggle_recordEng(row)}>
+                                                        <Icon name="Cog" size={14} className="text-warning" />
+                                                        Inf. Estructural
+                                                    </DropdownMenuItem>
+                                                )}
+                                                <DropdownMenuItem onClick={() => toggle_recordReview(row)}>
+                                                    <Icon name="FileText" size={14} className="text-warning" />
+                                                    Acta
+                                                </DropdownMenuItem>
+                                            </>
+                                        )}
+                                    </>
+                                )}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel className="flex items-center gap-2">
+                                    <Icon name="FileOutput" size={14} /> Resolución
+                                </DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => toggle_exp(row)}>
+                                    <Icon name="FileCheck" size={14} className="text-accent" />
+                                    Expedición
+                                </DropdownMenuItem>
+                            </>
+                        )}
+                        {canAssign && (
+                            <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => retrieveMacroSingle(row.id)}>
+                                    <Icon name="UserCog" size={14} className="text-primary" />
+                                    Asignar
+                                </DropdownMenuItem>
+                            </>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            );
         }
 
         var formData = new FormData();
@@ -1195,48 +1267,38 @@ class FUN extends Component {
             let id_public = document.getElementById("f_02").value;
             formData.set('id_public', id_public);
 
-            MySwal.fire({
+            swalLoading({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
             });
             FUNService.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
+                        swalSuccess({
                             title: swaMsg.publish_success_title,
                             text: swaMsg.publish_success_text,
                             footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
                         });
-                        this.refreshList();
+                        refreshList();
                     }
                     else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
+                        swalError({
                             title: "ERROR DE DUPLICACION",
                             text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
                         });
                     }
                     else {
-                        MySwal.fire({
+                        swalError({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
                         });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
+                    swalError({
                         title: swaMsg.generic_eror_title,
                         text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
         };
@@ -1246,26 +1308,25 @@ class FUN extends Component {
             let field = document.getElementById("search_0").value;
             let string = document.getElementById("search_1").value;
             if (string) {
-                MySwal.fire({
+                swalLoading({
                     title: swaMsg.title_wait,
                     text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
                 });
-                this.retrieveSearch(field, string);
+                retrieveSearch(field, string);
             } else {
-                this.refreshList();
-                this.setState({
+                refreshList();
+                setState({
                     list_search: [],
+                    hasSearchResult: false,
                     isLoadedSearch: false,
                 })
             }
         };
-        const handleFillClick = (state) => {
-            if (state === this.state.fillActive) {
+        const handleFillClick = (value) => {
+            if (value === state.fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setState({ fillActive: value });
         };
 
         let generateCVS = (_data, _name) => {
@@ -1273,13 +1334,13 @@ class FUN extends Component {
 
             let extraColumns = [
                 {
-                    name: <label className="text-center">FECHA DE LICENCIA</label>,
+                name: 'Fecha de Licencia',
                     cell: row => row.clock_license
                 }
             ]
 
             let _columns = [...columns_archive, ...extraColumns]
-            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return typeof c.name === 'string' ? c.name : (c.name?.props?.children ?? '') })
             rows = _data.map(d =>
                 _columns.filter(c => c.ignoreCSV == undefined).map(c => {
                     if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')
@@ -1292,7 +1353,6 @@ class FUN extends Component {
 
             let csvContent = "data:text/csv;charset=utf-8,"
                 + rows.map(e => e.join(";")).join("\n");
-
 
             var encodedUri = encodeURI(csvContent);
             const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
@@ -1307,179 +1367,168 @@ class FUN extends Component {
 
         return (
             
-            <div className="Publish container-fluid p-0 mb-4">
-                <div className="row d-flex p-0">
+            <div className="space-y-6">
+                <div className="space-y-1 text-center md:text-left max-w-4xl mx-auto">
+                    <h1 className="text-2xl font-bold tracking-tight">RADICACIÓN DE SOLICITUDES</h1>
+                    <p className="text-sm text-muted-foreground">Gestione la radicación, consulta y seguimiento de licencias urbanísticas.</p>
+                </div>
+                <FUN_WORKER_ASIGN translation={translation} globals={globals}
+                    type={"law"}
+                    openModal={openModal} />
+                <FUN_WORKER_ASIGN translation={translation} globals={globals}
+                    type={"arc"}
+                    openModal={openModal} />
+                <FUN_WORKER_ASIGN translation={translation} globals={globals}
+                    type={"eng"}
+                    openModal={openModal} />
 
-                        <div className="col-12 d-flex justify-content-start p-0">
-                            <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                                <MDBBreadcrumbItem>
-                                <Link to="/home"><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                                </MDBBreadcrumbItem>
-                                <MDBBreadcrumbItem>
-                                <Link to="/dashboard"><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                                </MDBBreadcrumbItem>
-                                <MDBBreadcrumbItem active>
-                                <i className="fas fa-file-alt"></i> <label className="text-uppercase">RADICACIÓN DE SOLICITUDES</label>
-                                </MDBBreadcrumbItem>
-                            </MDBBreadcrumb>
-                        </div>
-                    <div className="col-lg-11 col-md-12">
-                        <h1 className="text-center my-4">RADICACIÓN DE SOLICITUDES</h1>
-                        <hr />
+                {/* ── Actions: New license + Search ──────────────── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <Icon name="FilePlus" size={18} className="text-primary" />
+                                Generar Nueva Radicación
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} id="app-form" className="space-y-3">
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <div className="input-group">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="Calendar" size={14} />
+                                            </span>
+                                            <input type="date" className="form-control" id="f_01" required />
+                                        </div>
+                                    </div>
+                                    <div className="flex-[2]">
+                                        <div className="input-group">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="Hash" size={14} />
+                                            </span>
+                                            <input type="text" className="form-control" defaultValue={nomens} id="f_02" required />
+                                            <Button type="button" variant="outline" size="sm" className="rounded-l-none"
+                                                onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                        <Icon name="FolderPlus" size={14} /> Crear
+                                    </Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="py-2.5 px-3">
+                            <CardTitle className="text-sm flex items-center gap-2">
+                                <Icon name="Search" size={15} className="text-primary" />
+                                Consultar Solicitud
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="px-3 pb-3">
+                            <form onSubmit={search} id="app-form" className="space-y-2">
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <div className="input-group">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="Info" size={13} />
+                                            </span>
+                                            <select className="form-select" id="search_0" required>
+                                                <option value="1">Número de Radicado</option>
+                                                <option value="2">Número de Matricula Inmobiliaria</option>
+                                                <option value="3">Número de Indentificacion Predial/Catastral</option>
+                                                <option value="4">Dirección Actual</option>
+                                                <option value="5">C.C o NIT</option>
+                                                <option value="6">Nombre</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="input-group">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="MessageCircle" size={13} />
+                                            </span>
+                                            <input type="text" className="form-control" id="search_1" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <Button type="submit" variant="secondary" size="sm">
+                                        <Icon name="SearchCheck" size={13} /> Consultar
+                                    </Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* ── Search results ─────────────────────────────── */}
+                {state.hasSearchResult && (
+                    <div>
+                        <h3 className="text-sm font-semibold text-center mb-2 flex items-center justify-center gap-2">
+                            <Icon name="SearchCheck" size={15} className="text-primary" />
+                            Resultado de la Búsqueda
+                        </h3>
+                        <DataTable
+                            conditionalRowStyles={rowSelectedStyle}
+                            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                            noDataComponent="NO HAY SOLICITUDES"
+                            striped="true"
+                            columns={columns_search}
+                            data={list_search}
+                            highlightOnHover
+                            pagination
+                            paginationPerPage={20}
+                            paginationRowsPerPageOptions={[20, 50, 100]}
+                            className="data-table-component"
+                            noHeader
+                            onRowClicked={(e) => setState({ selectedRow: e.id })}
+                            dense
+                            progressPending={!isLoaded}
+                            progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
+                        />
+                    </div>
+                )}
+
+                {/* ── Tab navigation ─────────────────────────────── */}
+                <div>
+                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                        {[
+                            { key: '1', label: 'Radicación', count: list_started.length, icon: 'FileInput' },
+                            { key: '5', label: 'Evaluación', count: state.list_legal.length, icon: 'ClipboardCheck' },
+                            { key: '50', label: 'Expedición', count: state.list_expedition.length, icon: 'FileOutput' },
+                            { key: '10', label: 'Otras Actuaciones', count: state.list_profesional.length, icon: 'Briefcase' },
+                            { key: '-1', label: 'Desistimiento', count: list_incomplete.length, icon: 'XCircle', variant: 'destructive' },
+                            { key: '100', label: 'Archivadas', count: state.list_archive.length, icon: 'Archive' },
+                        ].map((tab) => (
+                            <button
+                                key={tab.key}
+                                role="tab"
+                                aria-selected={state.fillActive === tab.key}
+                                onClick={() => handleFillClick(tab.key)}
+                                className={cn(
+                                    'flex items-center gap-1.5 px-3 py-2 text-[0.8125rem] font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                    state.fillActive === tab.key
+                                        ? 'border-b-primary text-primary'
+                                        : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                                )}
+                            >
+                                <Icon name={tab.icon} size={14} />
+                                {tab.label}
+                                <Badge variant={tab.variant === 'destructive' ? 'destructive' : 'secondary'} className="ml-1 text-[10px] px-1.5 py-0">
+                                    {tab.count}
+                                </Badge>
+                            </button>
+                        ))}
                     </div>
 
-                    <FUN_WORKER_ASIGN translation={translation} globals={globals}
-                        type={"law"}
-                        openModal={this.openModal} />
-                    <FUN_WORKER_ASIGN translation={translation} globals={globals}
-                        type={"arc"}
-                        openModal={this.openModal} />
-                    <FUN_WORKER_ASIGN translation={translation} globals={globals}
-                        type={"eng"}
-                        openModal={this.openModal} />
-                    <div style={{ paddingLeft: '175px', paddingRight: '175px' }}>
-                        <MDBRow>
-                            <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
-                            <MDBCol md="6">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>GENERAR NUEVA RADICACIÓN</h4></MDBCardTitle>
-                                        <form onSubmit={handleSubmit} id="app-form">
-
-                                            <div className='row'>
-                                                <div className='col'>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-info text-white">
-                                                            <i class="far fa-calendar-alt"></i>
-                                                        </span>
-                                                        <input type="date" class="form-control" id="f_01" required />
-                                                    </div>
-                                                </div>
-                                                <div className='col-7'>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-info text-white">
-                                                            <i class="fas fa-hashtag"></i>
-                                                        </span>
-                                                        <input type="text" class="form-control" defaultValue={nomens} id="f_02" required />
-                                                        <MDBBtn class="btn btn-sm btn-info shadow-none m-1"
-                                                            onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</MDBBtn>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="text-center">
-                                                <button className="btn btn btn-success my-1"><i class="fas fa-folder-plus"></i> CREAR </button>
-                                            </div>
-                                        </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="6">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>CONSULTAR SOLICITUD</h4></MDBCardTitle>
-                                        <form onSubmit={search} id="app-form">
-                                            <div className='row'>
-                                                <div className='col'>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-info text-white">
-                                                            <i class="fas fa-info-circle"></i>
-                                                        </span>
-                                                        <select class="form-select" id="search_0" required>
-                                                            <option value="1">Número de Radicado</option>
-                                                            <option value="2">Número de Matricula Inmobiliaria</option>
-                                                            <option value="3">Número de Indentificacion Predial/Catastral</option>
-                                                            <option value="4">Dirección Actual</option>
-                                                            <option value="5">C.C o NIT</option>
-                                                            <option value="6">Nombre</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className='col'>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-info text-white">
-                                                            <i class="far fa-comment-dots"></i>
-                                                        </span>
-                                                        <input type="text" class="form-control" id="search_1" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="text-center">
-                                                <button className="btn btn-secondary mt-1"><i class="fas fa-search-plus"></i> CONSULTAR </button>
-                                            </div>
-                                        </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-
-                        </MDBRow>
-                    </div>
-                    {list_search.length > 0 ?
-                        <div className="row d-flex justify-content-center">
-                            <div className="col-12">
-
-                                <h2 class="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} class="" height="75px" alt="..." /></h2>
-
-                                <DataTable
-                                    conditionalRowStyles={rowSelectedStyle}
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    noDataComponent="NO HAY SOLICITUDES"
-                                    striped="true"
-                                    columns={columns_search}
-                                    data={list_search}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={20}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    className="data-table-component"
-                                    noHeader
-                                    onRowClicked={(e) => this.setState({ selectedRow: e.id })}
-                                    dense
-                                    progressPending={!isLoaded}
-                                    progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
-                                />
-
-                            </div>
-                        </div>
-
-                        : ''}
-
-                    <MDBTabs fill className='m-0 border' pills>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('1')} active={this.state.fillActive === '1'}>
-                                <label className="upper-case">Radicación ({list_started.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('5')} active={this.state.fillActive === '5'}>
-                                <label className="upper-case">Evaluacion ({this.state.list_legal.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('50')} active={this.state.fillActive === '50'}>
-                                <label className="upper-case">EXPEDICIÓN ({this.state.list_expedition.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('10')} active={this.state.fillActive === '10'}>
-                                <label className="upper-case">OTRAS ACTUACIONES ({this.state.list_profesional.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('-1')} active={this.state.fillActive === '-1'}>
-                                <label className="upper-case text-danger">Desistimiento ({list_incomplete.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('100')} active={this.state.fillActive === '100'}>
-                                <label className="upper-case">ARCHIVADAS ({this.state.list_archive.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                    </MDBTabs>
-
-                    <MDBTabsContent>
-                        <MDBTabsPane show={this.state.fillActive === '1'}>
+                    {/* Tab content */}
+                    <div className="mt-2">
+                        <TabPane show={state.fillActive === '1'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1494,14 +1543,12 @@ class FUN extends Component {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => this.setState({ selectedRow: e.id })}
-
+                                onRowClicked={(e) => setState({ selectedRow: e.id })}
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-                        </MDBTabsPane>
-                        <MDBTabsPane show={this.state.fillActive === '-1'}>
-
+                        </TabPane>
+                        <TabPane show={state.fillActive === '-1'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1516,22 +1563,19 @@ class FUN extends Component {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => this.setState({ selectedRow: e.id })}
-
+                                onRowClicked={(e) => setState({ selectedRow: e.id })}
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
-                        </MDBTabsPane>
-                        <MDBTabsPane show={this.state.fillActive === '5'}>
-
+                        </TabPane>
+                        <TabPane show={state.fillActive === '5'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                 noDataComponent="NO HAY SOLICITUDES"
                                 striped="true"
                                 columns={columns_legal}
-                                data={this.state.list_legal}
+                                data={state.list_legal}
                                 highlightOnHover
                                 pagination
                                 paginationPerPage={20}
@@ -1539,22 +1583,19 @@ class FUN extends Component {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => this.setState({ selectedRow: e.id })}
-
+                                onRowClicked={(e) => setState({ selectedRow: e.id })}
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
-                        </MDBTabsPane>
-                        <MDBTabsPane show={this.state.fillActive === '10'}>
-
+                        </TabPane>
+                        <TabPane show={state.fillActive === '10'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                 noDataComponent="NO HAY SOLICITUDES"
                                 striped="true"
                                 columns={columns_profesional}
-                                data={this.state.list_profesional}
+                                data={state.list_profesional}
                                 highlightOnHover
                                 pagination
                                 paginationPerPage={20}
@@ -1562,22 +1603,19 @@ class FUN extends Component {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => this.setState({ selectedRow: e.id })}
-
+                                onRowClicked={(e) => setState({ selectedRow: e.id })}
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
-                        </MDBTabsPane>
-                        <MDBTabsPane show={this.state.fillActive === '50'}>
-
+                        </TabPane>
+                        <TabPane show={state.fillActive === '50'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                 noDataComponent="NO HAY SOLICITUDES"
                                 striped="true"
                                 columns={columns_exp}
-                                data={this.state.list_expedition}
+                                data={state.list_expedition}
                                 highlightOnHover
                                 pagination
                                 paginationPerPage={20}
@@ -1585,25 +1623,24 @@ class FUN extends Component {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => this.setState({ selectedRow: e.id })}
-
+                                onRowClicked={(e) => setState({ selectedRow: e.id })}
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
-                        </MDBTabsPane>
-                        <MDBTabsPane show={this.state.fillActive === '100'}>
-
-                            <div className='my-2'><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.list_archive, "LICENCIAS ARCHIVADAS") }}
-                            ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
-
+                        </TabPane>
+                        <TabPane show={state.fillActive === '100'}>
+                            <div className='my-2'>
+                                <Button variant="outline" size="sm" onClick={() => { generateCVS(state.list_archive, "LICENCIAS ARCHIVADAS") }}>
+                                    <Icon name="FileSpreadsheet" size={14} /> Descargar CSV
+                                </Button>
+                            </div>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                 noDataComponent="NO HAY SOLICITUDES"
                                 striped="true"
                                 columns={columns_archive}
-                                data={this.state.list_archive}
+                                data={state.list_archive}
                                 highlightOnHover
                                 pagination
                                 paginationPerPage={20}
@@ -1611,337 +1648,238 @@ class FUN extends Component {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={(e) => this.setState({ selectedRow: e.id })}
-
+                                onRowClicked={(e) => setState({ selectedRow: e.id })}
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
+                        </TabPane>
+                    </div>
+                </div>
 
-                        </MDBTabsPane>
-                    </MDBTabsContent>
-
-                </div >
-
+                {/* ── Modals (react-modal — kept during migration) ── */}
                 <Modal contentLabel="GENERAL VIEW FUN"
-                    isOpen={this.state.modal}
+                    isOpen={state.modal}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
 
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="FileText" title="Detalles de la Solicitud" onClose={toggle} />
 
                     <FUNG
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version}
+                        onDuplicateSuccess={handleDuplicateSuccess}
                     />
 
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => this.toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
-                    </div>
+                    <ModalFooter onClose={toggle} />
                 </Modal>
 
                 <Modal contentLabel="FUN CHECKEO"
-                    isOpen={this.state.modal_c}
+                    isOpen={state.modal_c}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {this.state.currentPublic}</label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_c()}></MDBBtn>
-                    </div>
-                    {modalHeader}
-
+                    <FunModalHeader icon="CheckSquare" title="Lista de Checkeo" onClose={toggle_c} />
 
                     <FUNC translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        requesRefresh={this.retrievePublish}
-                        closeModal={this.toggle_c}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        requesRefresh={retrievePublish}
+                        closeModal={toggle_c}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_c}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_c} />
                 </Modal>
 
                 <Modal contentLabel="FUN NEW/UPDATE"
-                    isOpen={this.state.modal_n}
+                    isOpen={state.modal_n}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_n()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="FileSignature" title="Actualización de Solicitud" onClose={toggle_n} />
 
                     <FUNN translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        requesRefresh={this.retrievePublish}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        requesRefresh={retrievePublish}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_n}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_n} />
                 </Modal>
 
                 <Modal contentLabel="FUN DOC CONTROL"
-                    isOpen={this.state.modal_d}
+                    isOpen={state.modal_d}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_d()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Archive" title="Gestión Documental" onClose={toggle_d} />
 
                     <FUND translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_d}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_d} />
                 </Modal>
 
                 <Modal contentLabel="FUN ALERTA A VECINOS"
-                    isOpen={this.state.modal_alert}
+                    isOpen={state.modal_alert}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_alert()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Bell" title="Avisos a Vecinos" onClose={toggle_alert} />
 
-                    <FUN_ALERT translation={translation} swaMsg={swaMsg} globals={globals}
+                    <ChartErrorBoundary><FUN_ALERT translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        closeModal={this.toggle_alert}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        closeModal={toggle_alert}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} /></ChartErrorBoundary>
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_alert}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_alert} />
                 </Modal>
 
                 <Modal contentLabel="FUN CLOCK"
-                    isOpen={this.state.modal_clocK}
+                    isOpen={state.modal_clocK}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_clock()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Clock" title="Control de Tiempo de Proceso" onClose={toggle_clock} />
 
                     <FUNCLOCK translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requesRefresh={this.retrievePublish}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requesRefresh={retrievePublish}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_clock}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_clock} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS ARCHITECTURE"
-                    isOpen={this.state.modal_record_arc}
+                    isOpen={state.modal_record_arc}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordArc()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Building2" title="Informe Arquitectónico" onClose={toggle_recordArc} />
 
                     <RECORD_ARC translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        requesRefresh={this.retrievePublish}
-                        closeModal={this.toggle_recordArc}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        requesRefresh={retrievePublish}
+                        closeModal={toggle_recordArc}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordArc}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_recordArc} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS LAW"
-                    isOpen={this.state.modal_record_law}
+                    isOpen={state.modal_record_law}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordLaw()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Scale" title="Informe Jurídico" onClose={toggle_recordLaw} />
 
                     <RECORD_LAW translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        closeModal={this.toggle_recordLaw}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        closeModal={toggle_recordLaw}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordLaw}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_recordLaw} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS PH"
-                    isOpen={this.state.modal_record_ph}
+                    isOpen={state.modal_record_ph}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordPH()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="PencilRuler" title="Informe Propiedad Horizontal" onClose={toggle_recordPH} />
 
                     <RECORD_PH translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        requesRefresh={this.retrievePublish}
-                        closeModal={this.toggle_recordPH}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        requesRefresh={retrievePublish}
+                        closeModal={toggle_recordPH}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordPH}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_recordPH} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS ENG"
-                    isOpen={this.state.modal_record_eng}
+                    isOpen={state.modal_record_eng}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordEng()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Cog" title="Informe Estructural" onClose={toggle_recordEng} />
 
                     <RECORD_ENG translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        closeModal={this.toggle_recordLaw}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        closeModal={toggle_recordLaw}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordEng}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_recordEng} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS REVIEW"
-                    isOpen={this.state.modal_record_review}
+                    isOpen={state.modal_record_review}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordReview()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="FileCheck" title="Acta de Observaciones / Correcciones" onClose={toggle_recordReview} />
 
                     <RECORD_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        closeModal={this.toggle_recordReview}
-                        NAVIGATION={this.navigation} />
+                        requestUpdate={requestUpdate}
+                        closeModal={toggle_recordReview}
+                        NAVIGATION={navigation} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordReview}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_recordReview} />
                 </Modal>
 
                 <Modal contentLabel="EXPEDITION"
-                    isOpen={this.state.modal_exp}
+                    isOpen={state.modal_exp}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_exp()}></MDBBtn>
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="FileOutput" title="Expedición de la Licencia" onClose={toggle_exp} />
 
                     <EXPEDITION translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requesRefresh={this.retrievePublish}
-                        closeModal={this.toggle_exp}
-                        NAVIGATION={this.navigation} />
+                        requesRefresh={retrievePublish}
+                        closeModal={toggle_exp}
+                        NAVIGATION={navigation} />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_exp}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={toggle_exp} />
                 </Modal>
 
                 <Modal contentLabel="ASIGN PROFS"
-                    isOpen={this.state.modal_asign_prof}
+                    isOpen={state.modal_asign_prof}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.setState({ modal_asign_prof: false })}></MDBBtn>
-                    </div>
+                    <FunModalHeader icon="Users" title="Asignación de Profesionales" onClose={() => setState({ modal_asign_prof: false })} />
 
                     {currentItemAsignProf?.length ? <TABLE_COMPONENT_EXPANDED currentItem={{ ...currentItemAsignProf[0], rec_review: currentItemAsignProf[0].rec_review, rec_review_2: currentItemAsignProf[0].rec_rev_2 }}
                         requestUpdate={null}
@@ -1951,16 +1889,11 @@ class FUN extends Component {
                         dataL={currentItemAsignProf}
                     /> : "Loading..."}
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={() => this.setState({ modal_asign_prof: false })}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
-                    </div>
+                    <ModalFooter onClose={() => setState({ modal_asign_prof: false })} />
                 </Modal>
 
             </div >
         );
-    }
 }
 
 export default FUN;

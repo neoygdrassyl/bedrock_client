@@ -1,91 +1,71 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import FUN_SERVICE from '../../../../services/fun.service'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import { MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
+
 import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHandler';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
+import { Icon } from '@/components/icon';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class RECORD_ARC_38 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new_element: false,
-            new_location: false,
-            VRDocs: [],
-            load: false
-        };
-    }
-    componentDidMount() {
-        this.setVRList(this.props.currentItem ? this.props.currentItem.id_public : false);
-    }
-    setVRList(id_public) {
-        if (!id_public) return;
-        if (this.state.load) return;
-        submitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            let newList = [];
-            let List = response.data;
-            List.map((value, i) => {
-                let subList = value.sub_lists;
-                subList.map(valuej => {
-                    let name = valuej.list_name ? valuej.list_name.split(";") : []
-                    let category = valuej.list_category ? valuej.list_category.split(",") : []
-                    let code = valuej.list_code ? valuej.list_code.split(",") : []
-                    let page = valuej.list_pages ? valuej.list_pages.split(",") : []
-                    let review = valuej.list_review ? valuej.list_review.split(",") : []
+function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate }) {
+    const [VRDocs, setVRDocs] = useState([]);
+    const [load, setLoad] = useState(false);
+    const [rewState, setRewState] = useState({});
 
-                    review.map((valuek, k) => {
-                        if (valuek === 'SI') newList.push({
-                            id_public: value.id_public,
-                            date: value.date,
-                            time: value.time,
-                            name: name[k],
-                            category: category[k],
-                            page: page[k],
-                            code: code[k],
+    useEffect(() => {
+        if (currentItem && currentItem.id_public) {
+            submitService.getIdRelated(currentItem.id_public).then(response => {
+                let newList = [];
+                let List = response.data;
+                List.map((value, i) => {
+                    let subList = value.sub_lists;
+                    subList.map(valuej => {
+                        let name = valuej.list_name ? valuej.list_name.split(";") : []
+                        let category = valuej.list_category ? valuej.list_category.split(",") : []
+                        let code = valuej.list_code ? valuej.list_code.split(",") : []
+                        let page = valuej.list_pages ? valuej.list_pages.split(",") : []
+                        let review = valuej.list_review ? valuej.list_review.split(",") : []
+
+                        review.map((valuek, k) => {
+                            if (valuek === 'SI') newList.push({
+                                id_public: value.id_public,
+                                date: value.date,
+                                time: value.time,
+                                name: name[k],
+                                category: category[k],
+                                page: page[k],
+                                code: code[k],
+                            })
                         })
                     })
                 })
+                setVRDocs(newList);
+                setLoad(true);
             })
-            this.setState({ VRDocs: newList, load: true })
-        })
+        }
+    }, []);
 
-    };
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers, _date) {
-        let swaMsg = this.props.swaMsg;
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+    const CREATE_CHECK = async (_detail, chekcs, _currentItem, _headers, _date) => {
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         const currentItem = _currentItem;
         const id_public = currentItem.id_public;
 
         let model = currentItem.model
-        if (!model) return MySwal.fire({
-            title: 'SOLICITUD SIN MODELO',
-            text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
-            icon: 'error',
-            showConfirmButton: true,
-            confirmButtonText: 'CONTINUAR',
-        });
+        if (!model) return swalError({ title: 'SOLICITUD SIN MODELO', text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.' });
 
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
-        if (Number(model) === 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
-        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra2022";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
+        if (Number(model) === 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
+        if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra2022";
 
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
@@ -96,7 +76,6 @@ class RECORD_ARC_38 extends Component {
         // WIDTH = 612, HEIGHT = 936
 
         handleArchCheck(pdfDoc, page, chekcs, _detail, 0, 1, model)
-
 
         let _city = _headers.city;
         if (_date && _GLOBAL_ID === 'cb1') _city = _headers.city + ", radicado el " + _date;
@@ -127,7 +106,7 @@ class RECORD_ARC_38 extends Component {
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'estructural', 'ingenieria']);
         pdfDoc.setLanguage('es-co');
@@ -137,14 +116,8 @@ class RECORD_ARC_38 extends Component {
         var pdfBytes = await pdfDoc.save();
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'CHECKEO INFORME ARQUITECTÓNICO ' + id_public + '.pdf');
-        MySwal.close();
-
-
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { VRDocs } = this.state;
-
+        swalClose();
+    };
 
         // DATA GETERS
         let _GET_CHILD_1 = () => {
@@ -222,7 +195,6 @@ class RECORD_ARC_38 extends Component {
         }
         let _GET_PROFESIONAL_NAME = () => {
             var _ROLEID = window.user.roleId;
-            return window.user.name + " " + window.user.surname
             //THIS ROLES ARE PROGRAMER MASTER, CURATOR AND ARCHITEC
             if (_ROLEID === 1 || _ROLEID === 2 || _ROLEID === 6) {
                 return window.user.name + " " + window.user.surname
@@ -305,7 +277,7 @@ class RECORD_ARC_38 extends Component {
             return false;
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_arc_steps;
+            var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -329,7 +301,7 @@ class RECORD_ARC_38 extends Component {
 
             return <>
                 <div className="row py-3">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Observaciones totales</label>
                         </div>
@@ -369,7 +341,7 @@ class RECORD_ARC_38 extends Component {
 
             return <>
                 <div className="row py-3">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Observaciones totales</label>
                         </div>
@@ -384,7 +356,7 @@ class RECORD_ARC_38 extends Component {
 
             return <>
                 <div className="row">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Observaciones finales del Proyecto</label>
                         </div>
@@ -414,11 +386,11 @@ class RECORD_ARC_38 extends Component {
             const ALLOW_REVIEW = _ALLOW_REVIEW();
 
             return <>
-                {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                {!ALLOW_REVIEW ? <div className="alert alert-danger">
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 3.1 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
-                </MDBTypography> : ''}
-                <div className="row border bg-info py-1 text-white fw-bold">
+                </div> : ''}
+                <div className="row border bg-primary text-primary-foreground py-1 fw-bold">
                     <div className="col">
                         <label>REVISION</label>
                     </div>
@@ -452,8 +424,8 @@ class RECORD_ARC_38 extends Component {
                                 <label className='fw-bold'>{value}</label>
                             </div>
                             <div className="col-3 text-center">
-                                {this.state['REW' + i]
-                                    ? <input type="text" class="form-control me-1" id={"r_a_38_2_" + i}
+                                {rewState['REW' + i]
+                                    ? <input type="text" className="form-control me-1" id={"r_a_38_2_" + i}
                                         defaultValue={iworker} disabled />
                                     : <label>{iworker}</label>
                                 }
@@ -462,7 +434,7 @@ class RECORD_ARC_38 extends Component {
                                 <label>{iasing}</label>
                             </div>
                             <div className="col text-center">
-                                {this.state['REW' + i]
+                                {rewState['REW' + i]
                                     ? <select className="form-select form-control form-control-sm" defaultValue={ireview} id={"r_a_38_3_" + i}>
                                         <option value="0" className="text-danger">NO ES VIABLE</option>
                                         {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -471,19 +443,18 @@ class RECORD_ARC_38 extends Component {
                                 }
                             </div>
                             <div className="col text-center">
-                                {this.state['REW' + i]
-                                    ? <input type="date" class="form-control form-control-sm" id={"r_a_38_4_" + i} max="2100-01-01"
+                                {rewState['REW' + i]
+                                    ? <input type="date" className="form-control form-control-sm" id={"r_a_38_4_" + i} max="2100-01-01"
                                         defaultValue={idate} />
                                     : <label>{idate ?? ''}</label>
                                 }
                             </div>
                             <div className="col-1">
-                                {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={this.state['REW' + i]}
-                                    onClick={() => this.setState({ ['REW' + i]: !this.state['REW' + i] })}><i class="far fa-edit"></i></MDBBtn>
+                                {allowReview ? <Button variant={!rewState['REW' + i] ? "outline" : "default"} size="sm"
+                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></Button>
                                     : ''}
-                                {this.state['REW' + i]
-                                    ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                        onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
+                                {rewState['REW' + i]
+                                    ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
                                     : ""
                                 }
                                 {true ?
@@ -492,7 +463,7 @@ class RECORD_ARC_38 extends Component {
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
-                                        requestUpdate={this.props.requestUpdate}
+                                        requestUpdate={requestUpdate}
                                         swaMsg={swaMsg}
                                         id6={"arc" + i} />
                                     : ''
@@ -546,24 +517,24 @@ class RECORD_ARC_38 extends Component {
                     <div className="row mb-3">
                         <div className="col">
                             <label>Autoridad Competente</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_1"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_1"}>
                                     {domains_number}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Ciudad</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_2"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_2"}>
                                     {cities}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Acta</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_version"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_version"}>
                                     <option value={1}>OBSERVACIONES</option>
                                     <option value={2}>CORRECCIONES</option>
                                 </select>
@@ -571,8 +542,8 @@ class RECORD_ARC_38 extends Component {
                         </div>
                         <div className="col">
                             <label>Cabecera</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_header"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_header"}>
                                     <option value={1}>USAR CABECERA</option>
                                     <option value={0}>NO USAR CABECERA</option>
                                 </select>
@@ -582,44 +553,44 @@ class RECORD_ARC_38 extends Component {
                     <div className="row mb-3">
                         <div className="col">
                             <label>Revision</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
                                     {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Profesional</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_worker_name"} disabled defaultValue={reviews[0].worker} />
                             </div>
                         </div>
                         <div className="col">
                             <label>Resultado</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_check"} disabled defaultValue={reviews[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
                             </div>
                         </div>
                         <div className="col">
                             <label>Fecha</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_date"} disabled defaultValue={reviews[0].date} />
                             </div>
                         </div>
                         <div className="col-2">
                             <br />
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="record_arc_pending" />
-                                <label class="form-check-label" for="exampleCheck1">Pendiente</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="record_arc_pending" />
+                                <label className="form-check-label" htmlFor="exampleCheck1">Pendiente</label>
                             </div>
                         </div>
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col">
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i class="far fa-file-pdf"></i> DESCARGAR INFORME</button>
+                            <Button variant="destructive" size="sm" className="me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</Button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i class="far fa-check-square"></i> DESCARGAR CHECKEO</button>
+                            <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</Button>
                         </div>
                     </div>
                 </div>
@@ -628,14 +599,7 @@ class RECORD_ARC_38 extends Component {
         // FUNCTIONS AND WORKING ENGINES
         var formData = new FormData();
         let review_r = (isPrimal, i, iasing) => {
-            MySwal.fire({
-                title: "REALIZAR REVISION",
-                text: `¿Esta seguro de realizar la revision ${currentVersionR} de este Informe?`,
-                icon: 'question',
-                confirmButtonText: "REVISAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "REALIZAR REVISION", text: `¿Esta seguro de realizar la revision ${currentVersionR} de este Informe?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     save_review(isPrimal);
                     save_clock(i, iasing);
@@ -643,14 +607,7 @@ class RECORD_ARC_38 extends Component {
             });
         }
         let review = () => {
-            MySwal.fire({
-                title: "REALIZAR REVISION",
-                text: `¿Esta seguro de realizar la revision ${currentVersionR} de este Informe?`,
-                icon: 'question',
-                confirmButtonText: "REVISAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "REALIZAR REVISION", text: `¿Esta seguro de realizar la revision ${currentVersionR} de este Informe?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     save_review();
                     save_clock();
@@ -663,47 +620,26 @@ class RECORD_ARC_38 extends Component {
             formData.set('recordArcId', currentRecord.id);
             formData.set('version', currentVersionR);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
                 RECORD_ARCSERVICE.update_arc_38(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdateRecord(currentItem.id)
+                            requestUpdateRecord(currentItem.id)
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -712,35 +648,19 @@ class RECORD_ARC_38 extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdateRecord(currentItem.id)
+                            requestUpdateRecord(currentItem.id)
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -772,48 +692,27 @@ class RECORD_ARC_38 extends Component {
             formData.set('recordArcId', currentRecord.id);
             formData.set('version', currentVersionR);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
                 RECORD_ARCSERVICE.update_arc_38(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            requestUpdateRecord(currentItem.id);
+                            setRewState(prev => ({ ...prev, REW0: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -822,36 +721,20 @@ class RECORD_ARC_38 extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            requestUpdateRecord(currentItem.id);
+                            setRewState(prev => ({ ...prev, REW0: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -861,12 +744,7 @@ class RECORD_ARC_38 extends Component {
             var _CHILD = _GET_CLOCK_STATE(findOne, altVersion ?? currentVersionR);
             formDataclock.set('fun0Id', currentItem.id);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
 
             if (_CHILD.id) {
@@ -874,36 +752,20 @@ class RECORD_ARC_38 extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setRewState(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -912,36 +774,20 @@ class RECORD_ARC_38 extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setRewState(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -1010,34 +856,19 @@ class RECORD_ARC_38 extends Component {
             let r_arc_pending = document.getElementById("record_arc_pending").checked;
             formData.set('r_arc_pending', r_arc_pending);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_ARCSERVICE.pdfgen(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordarc/" + "INFORME ARQUITECTONICO " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordarc/" + "INFORME ARQUITECTONICO " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -1122,14 +953,14 @@ class RECORD_ARC_38 extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
+            CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
         }
         let _VERSIONS_SELECT = () => {
             var _COMPONENT = [];
             for (let i = 0; i < currentItem.version; i++) {
                 _COMPONENT.push(<option value={i + 1}>Revision {i + 1}</option>)
             }
-            return <select class="form-select" id="record_version">{_COMPONENT}</select>
+            return <select className="form-select" id="record_version">{_COMPONENT}</select>
         }
         return (
             <div className="record_arc_32 container">
@@ -1146,7 +977,6 @@ class RECORD_ARC_38 extends Component {
                 {_COMPONENT_2()}
             </div>
         );
-    }
 }
 
 export default RECORD_ARC_38;

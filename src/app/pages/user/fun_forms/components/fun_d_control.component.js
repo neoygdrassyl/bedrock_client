@@ -1,34 +1,17 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+
+import Icon from '@/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import Codes from '../../../../components/jsons/fun6DocsList.json';
 import { SERIES_DOCS, _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUN_D_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-        this._GET_CHILD_1 = this._GET_CHILD_1.bind(this);
-        this.state = {
-        };
-    }
-    componentDidMount() {
-        let SERIE = document.getElementById('fun_doc_control_0').value;
-        let _CHILD = this._GET_CHILD_1();
-        if (!SERIE) SERIE = 0;
-        let str = _GET_SERIE_STR(_CHILD)
-        document.getElementById('fun_doc_control_1').value = str;
+function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
-        SERIE = document.getElementById('fun_doc_control_2').value;
-        if (!SERIE) SERIE = 0;
-        str = _GET_SUBSERIE_STR(_CHILD);
-        document.getElementById('fun_doc_control_3').value = str;
-    }
-    _GET_CHILD_1 = () => {
-        var _CHILD = this.props.currentItem.fun_1s;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
+    const _GET_CHILD_1 = () => {
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
             item_0: "",
             item_1: "",
@@ -62,9 +45,18 @@ class FUN_D_CONTROL extends Component {
         return _CHILD_VARS;
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    useEffect(() => {
+        let SERIE = document.getElementById('fun_doc_control_0').value;
+        let _CHILD = _GET_CHILD_1();
+        if (!SERIE) SERIE = 0;
+        let str = _GET_SERIE_STR(_CHILD)
+        document.getElementById('fun_doc_control_1').value = str;
+
+        SERIE = document.getElementById('fun_doc_control_2').value;
+        if (!SERIE) SERIE = 0;
+        str = _GET_SUBSERIE_STR(_CHILD);
+        document.getElementById('fun_doc_control_3').value = str;
+    }, []);
         let sumPages = 0;
         const _SERIES_DOCS = SERIES_DOCS
         // DATA GETTERS
@@ -113,7 +105,7 @@ class FUN_D_CONTROL extends Component {
         }
         // COMPONENT JSX
         let _GET_SERIES = () => {
-            let _CHILD = this._GET_CHILD_1();
+            let _CHILD = _GET_CHILD_1();
             let _SERIE = _GET_SERIE_COD(_CHILD);
             let _SUBSERIE = _GET_SUBSERIE_COD(_CHILD);
             return <>
@@ -122,10 +114,10 @@ class FUN_D_CONTROL extends Component {
                         <label className="fw-bold ms-4">Series Documental:</label>
                     </div>
                     <div className="col-3">
-                        <input class="form-control me-1" id="fun_doc_control_0" defaultValue={_SERIE[0]}  disabled />
+                        <input className="form-control me-1" id="fun_doc_control_0" defaultValue={_SERIE[0]}  disabled />
                     </div>
                     <div className="col-6">
-                        <input type="text" class="form-control me-1" id="fun_doc_control_1" disabled defaultValue={''} />
+                        <input type="text" className="form-control me-1" id="fun_doc_control_1" disabled defaultValue={''} />
                     </div>
                 </div>
 
@@ -134,25 +126,25 @@ class FUN_D_CONTROL extends Component {
                         <label className="fw-bold ms-4">Subseries Documental:</label>
                     </div>
                     <div className="col-3">
-                        <input class="form-control me-1" id="fun_doc_control_2" defaultValue={_SUBSERIE[0]}  disabled  />
+                        <input className="form-control me-1" id="fun_doc_control_2" defaultValue={_SUBSERIE[0]}  disabled  />
                          
                     </div>
                     <div className="col-6">
-                        <input type="text" class="form-control me-1 text-uppercase" id="fun_doc_control_3" disabled
+                        <input type="text" className="form-control me-1" id="fun_doc_control_3" disabled
                             defaultValue={''} />
                     </div>
                 </div>
 
                 {_SERIE.length > 1 || _SUBSERIE.length > 1
                     ? <div className="row my-2">
-                        <label className="text-danger fw-bold text-uppercase">AMBIGÜEDAD DE SERIES O SUBSERIES ENCONTRADA</label><br />
+                        <label className="text-danger fw-bold">AMBIGÜEDAD DE SERIES O SUBSERIES ENCONTRADA</label><br />
                         <label className="fw-bold">El sistema ha detectado varias series o varias subseries validas para esta solicitud</label>
                     </div>
                     : ""}
 
                 {_SERIE.length == 0 || _SUBSERIE.length == 0
                     ? <div className="row my-2">
-                        <label className="text-danger fw-bold text-uppercase">SERIE O SUBSERIE NO ENCONTRADA</label><br />
+                        <label className="text-danger fw-bold">SERIE O SUBSERIE NO ENCONTRADA</label><br />
                         <label className="fw-bold">El sistema no ha podido identificar una serie o subserie, revise la modalidad de la solicitud.</label>
                     </div>
                     : ""}
@@ -162,14 +154,14 @@ class FUN_D_CONTROL extends Component {
                         <form id="form_manage_ph_gen" onSubmit={save_fun_r}>
                             <div className="row mb-3 text-center">
                                 <div className="col">
-                                    <button className="btn btn-success my-3" ><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                                 <div className="col">
-                                    <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                                    <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                 </div>
                             </div>
-                            <ul class="list-group mx-2">
-                                <li class="list-group-item">
+                            <ul className="list-group mx-2">
+                                <li className="list-group-item">
                                     <div className="row">
                                         <div className="col-1 text-center"><label className="fw-bold">N° Orden</label></div>
                                         <div className="col text-center"><label className="fw-bold">Nombre Tipologia Documental</label></div>
@@ -186,7 +178,7 @@ class FUN_D_CONTROL extends Component {
             </>
         }
         let _COMPONENT_LIST = () => {
-            let _CHILD = this._GET_CHILD_1();
+            let _CHILD = _GET_CHILD_1();
             let _SERIE = _GET_SERIE_COD(_CHILD);
             let _SUBSERIE = _GET_SUBSERIE_COD(_CHILD);
             let _LIST = [];
@@ -200,7 +192,7 @@ class FUN_D_CONTROL extends Component {
                 let DOCS_COUNT = 1;
                 for (var ITEM in _LIST_2) {
                     _RETURN_COMPONENT.push(<>
-                        <li class="list-group-item">
+                        <li className="list-group-item">
                             <div className="row">
                                 <div className="col">
                                     <label className="fw-bold" name="title_doc">{ITEM}</label>
@@ -215,7 +207,7 @@ class FUN_D_CONTROL extends Component {
                     DOCS_COUNT += _LIST_2[ITEM].length;
                 }
                 _RETURN_COMPONENT.push(<>
-                    <li class="list-group-item">
+                    <li className="list-group-item">
                         <div className="row">
                             <div className="col-1 text-center">
 
@@ -249,7 +241,7 @@ class FUN_D_CONTROL extends Component {
                 let docName = Codes[array[i].n];
                 let docCode = array[i].n;
                 _COMPONENT.push(<>
-                    <li class="list-group-item">
+                    <li className="list-group-item">
                         <div className="row">
                             <div className="col-1 text-center">
                                 <label className="fw-bold" name="number_doc">{i + _DOCS_COUNT}</label>
@@ -265,7 +257,7 @@ class FUN_D_CONTROL extends Component {
                                     defaultValue={currentPages} />
                             </div>
                             <div className="col-2 text-center">
-                                <select class="form-select" name="select_doc" id={"select_doc_" + cId}
+                                <select className="form-select" name="select_doc" id={"select_doc_" + cId}
                                     defaultValue={_GET_FUNR_CHECK_CONTROL(cId) ?? _GET_FUNR_CODE(array[i].i) ?? 2}>
                                     <option value="2">N/A</option>
                                     <option value="1">SI</option>
@@ -307,72 +299,35 @@ class FUN_D_CONTROL extends Component {
         let manage_fun_r = () => {
             var _CHILD = _SET_CHILD_REVIEW();
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 FUN_SERVICE.update_r(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id);
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
             else {
                 FUN_SERVICE.create_funr(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id);
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
 
@@ -442,34 +397,19 @@ class FUN_D_CONTROL extends Component {
             var subserie_str = document.getElementById('fun_doc_control_3').value;
             formData.set('subserie_str', subserie_str);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUN_SERVICE.gen_doc_checkcontrol(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/controlcheck/" + "Hoja de control serie documental - " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/controlcheck/" + "Hoja de control serie documental - " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
 
         }
@@ -478,7 +418,6 @@ class FUN_D_CONTROL extends Component {
                 {_GET_SERIES()}
             </div>
         );
-    }
 }
 
 export default FUN_D_CONTROL;

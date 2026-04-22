@@ -1,4 +1,5 @@
 import { procesarFecha, procesarFechaRestar } from './BusinessDaysCol';
+import dayjs from 'dayjs';
 
 export class BaseDocumentUtils {
   constructor(data, htmlString) {
@@ -42,7 +43,7 @@ export class BaseDocumentUtils {
       }
       throw new Error('Tipo de dato inesperado');
     } catch (_) {
-      return 'Fecha Inválida';
+      return null;
     }
   }
 
@@ -150,16 +151,20 @@ export class BaseDocumentUtils {
   };
 
   dateParser(date) {
-    const moment = require("moment");
-    let esLocale = require("moment/locale/es");
-    var momentLocale = moment(date, "YYYY-MM-DD").locale("es", esLocale);
-    return momentLocale.format("LL");
+    return dayjs(date, "YYYY-MM-DD").format("LL");
   }
 
   getDateByState(s) {
     if (this.data?.clocks === undefined) return null;
     return (this.data?.clocks.find(c => Number(c?.state) === s && c?.date_start && !Number.isNaN(Date.parse(c.date_start)))?.date_start) ?? null;
   }
+
+  formatYmdToDmy(d) {
+    if (!d) return null;
+    const p = d.split("-");
+    return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
+  }
+
 
   capFirstOnly = s => s.toLowerCase().replace(/^(\s*)(\S)/, (_, sp, ch) => sp + ch.toUpperCase());
 

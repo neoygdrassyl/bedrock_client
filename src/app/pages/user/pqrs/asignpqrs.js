@@ -1,10 +1,8 @@
-import React, { Component } from 'react';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
+
 import PQRS_Service from '../../../services/pqrs_main.service';
 import USERS_Service from '../../../services/users.service'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser } from '../../../components/customClasses/typeParse'
 import PQRS_COMPONENT_SOLICITORS from './components/pqrs_solicitors.component';
 import PQRS_COMPONENT_CONTACTS from './components/pqrs_contancts.component';
@@ -13,76 +11,57 @@ import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_PDFGEN_CONFIRM from './components/pqrs_genPDF_confirm.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 
-const moment = require('moment');
-const MySwal = withReactContent(Swal);
-class PQRSASIGN extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            users_list: []
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+    const [users_list, setUsersList] = useState([]);
+    const [asign, setAsign] = useState(false);
+    const [worker, setWorker] = useState(false);
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-                this.setState({
-                    load: false
-                })
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                setLoad(false);
             });
         USERS_Service.getAll()
             .then(response => {
-                this.setState({
-                    users_list: response.data,
-                })
+                setUsersList(response.data);
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-                this.setState({
-                    load: false
-                })
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                setLoad(false);
             });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    clearForm() {
-        document.getElementById("app-formAsign").reset()
-    }
+    };
 
-    render() {
-        const { translation, swaMsg, globals } = this.props;
-        const { attachsForEmails, currentItem, load } = this.state;
+    const refreshList = () => {
+        refreshListProp();
+    };
+
+    const clearForm = () => {
+        document.getElementById("app-formAsign").reset()
+    };
         var formData = new FormData();
 
         // DATA GETTERS 
         let _GET_USERS = () => {
             var _USERS = [];
-            if (this.state.users_list.length) {
-                _USERS = this.state.users_list;
+            if (users_list.length) {
+                _USERS = users_list;
             }
             return _USERS;
         }
@@ -122,8 +101,8 @@ class PQRSASIGN extends Component {
             return false;
         }
         let _GET_DOC_BODY = () => {
-            return `Me permito comunicarle que el ${dateParser(moment(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
-            a las ${moment(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
+            return `Me permito comunicarle que el ${dateParser(dayjs(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
+            a las ${dayjs(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
             solicitud con el número ${currentItem.id_publico}. A partir de este momento, la Curaduría Urbana Estudiará
             su peticion y en el termino de ${currentItem.pqrs_time.time} días hábiles le dará respuesta de manera clara, precisa y
             de fondo. No obstante de requerir un mayor término para lograr este cometido la Curaduría
@@ -139,11 +118,11 @@ class PQRSASIGN extends Component {
                     <input type="hidden" id="pqrs_worker_0" defaultValue={_GET_USERS()[0].id} />
                     <div className="col-4">
                         <label>Profesional</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user-circle"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user-circle" size={16} />
                             </span>
-                            <select class="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
+                            <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
                                 {_array_workers_names.map(function (name) {
                                     return <option>{name}</option>;
                                 })}
@@ -152,20 +131,20 @@ class PQRSASIGN extends Component {
                     </div>
                     <div className="col-4">
                         <label>Fecha Asignación</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input id="pqrs_worker_1" class="form-control" type="date" required />
+                            <input id="pqrs_worker_1" className="form-control" type="date" required />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Competencia</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-briefcase"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="briefcase" size={16} />
                             </span>
-                            <input class="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
+                            <input className="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
                         </div>
                     </div>
                 </div>
@@ -178,43 +157,39 @@ class PQRSASIGN extends Component {
             }
             const columns = [
                 {
-                    name: <label>PROFESIONAL</label>,
-                    selector: 'name',
+                    name: 'PROFESIONAL',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.name}</p>
                 },
                 {
-                    name: <label>COMPETENCIA</label>,
-                    selector: 'competence',
+                    name: 'COMPETENCIA',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.competence}</p>
                 },
                 {
-                    name: <label>FECHA ASIGNACIÓN</label>,
-                    selector: 'asign',
+                    name: 'FECHA ASIGNACIÓN',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{dateParser(row.asign)}</p>
                 },
                 {
-                    name: <label>¿NOTIFICO EMAIL?</label>,
+                    name: '¿NOTIFICO EMAIL?',
                     cell: row => <p className="pt-3 text-center">{row.sent_email_notify ? "SI" : "NO"}</p>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <MDBTooltip title='Desasignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
-                                <i class="fas fa-user-minus fa-2x"></i></button>
-                        </MDBTooltip>
-                        <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => this.setState({ worker: row })}>
-                                <i class="far fa-paper-plane fa-2x"></i></button>
-                        </MDBTooltip>
+                        <Button variant="destructive" size="sm" className="mx-0 px-2" title="Desasignar Profesional" onClick={() => removeAsign(row.id)}>
+                                <Icon name="user-minus" size={16} /></Button>
+                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 mx-0 px-2" title="Enviar Correo" onClick={() => setWorker(row)}>
+                                <Icon name="paper-plane" size={16} /></Button>
                     </>,
                 },
             ]
@@ -240,31 +215,31 @@ class PQRSASIGN extends Component {
                     <div className="row">
                         <div className="col-6">
                             <label>Lista de Correos</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-envelope"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="envelope" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
+                                <input type="text" className="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
                             </div>
                         </div>
                         <div className="col-6">
                             <label>Lista de Solicitantes</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-user"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="user" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
+                                <input type="text" className="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
                             </div>
                         </div>
                     </div>
                     <label>Cuerpo del Documento</label>
-                    <textarea class="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
+                    <textarea className="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
                         defaultValue={_GET_DOC_BODY()}></textarea>
                     <table className="table table-sm table-hover table-bordered">
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                                <td><MDBBtn className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i class="fas fa-cloud-download-alt fa-2x"></i></MDBBtn></td>
+                                <td><Button variant="destructive" size="sm" onClick={() => request_dpfConfirmation()}><Icon name="cloud-download-alt" size={16} /></Button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -304,77 +279,36 @@ class PQRSASIGN extends Component {
                 let competence = document.getElementById('pqrs_worker_3').value;
                 formData.set('competence', competence);
 
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 PQRS_Service.createWorker(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.clearForm();
-                            this.retrieveItem(currentItem.id)
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                            clearForm();
+                            retrieveItem(currentItem.id)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
                     });
             } else {
-                MySwal.fire({
-                    title: "NO ES POSIBLE ASIGNAR",
-                    text: "Este profesional ya fue asignado a esta solicitud, los profesionales solo pueden ser asignador una vez por solicitud.",
-                    icon: 'error',
-                });
+                swalError({ title: "NO ES POSIBLE ASIGNAR", text: "Este profesional ya fue asignado a esta solicitud, los profesionales solo pueden ser asignador una vez por solicitud." });
             }
         };
         let removeAsign = (id) => {
-            MySwal.fire({
-                title: "REMOVER PROFESIONAL ",
-                text: "¿Está seguro de remover este profesional de la Peticion?",
-                icon: 'warning',
-                confirmButtonText: "REMOVER",
-                cancelButtonText: "CANCELAR",
-                showCancelButton: true
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "REMOVER PROFESIONAL ", text: "¿Está seguro de remover este profesional de la Peticion?", icon: 'warning', confirmButtonText: "REMOVER" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     PQRS_Service.deleteWorker(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.generic_success_title,
-                                    text: swaMsg.generic_success_text,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.clearForm();
-                                this.retrieveItem(currentItem.id)
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                                clearForm();
+                                retrieveItem(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
@@ -397,34 +331,19 @@ class PQRSASIGN extends Component {
             let body = document.getElementById("pqrs_confirmation_doc_body").value;
             formData.set('body', body);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.request_pdfConfirmation(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
@@ -432,8 +351,8 @@ class PQRSASIGN extends Component {
                 {currentItem != null ? <>
                     {load ? <>
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE SOLICITANTE(S)</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE SOLICITANTE(S)</label>
                             </legend>
                             <PQRS_COMPONENT_SOLICITORS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -442,8 +361,8 @@ class PQRSASIGN extends Component {
                         </fieldset>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACION DE SOLICITANTE(S)</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACION DE SOLICITANTE(S)</label>
                             </legend>
                             <PQRS_COMPONENT_CONTACTS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -453,45 +372,44 @@ class PQRSASIGN extends Component {
 
                         <fieldset className="p-3">
                             <form onSubmit={asignPQRS} id="app-formAsign">
-                                <h2 class="text-uppercase text-center pb-2">ASIGNAR PROFESIONALES</h2>
-                                <div class="form-check ms-5">
-                                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ asign: e.target.checked })} />
-                                    <label class="form-check-label" for="flexCheckDefault">
+                                <h2 className="text-center pb-2">ASIGNAR PROFESIONALES</h2>
+                                <div className="form-check ms-5">
+                                    <input className="form-check-input" type="checkbox" onChange={(e) => setAsign(e.target.checked)} />
+                                    <label className="form-check-label" htmlFor="flexCheckDefault">
                                         Asignar Profesional
                                     </label>
                                 </div>
-                                {this.state.asign
+                                {asign
                                     ? <>
                                         {_WORKERS_COMPONENT()}
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-warning"><i class="fas fa-user-plus"></i> ASIGNAR </button>
+                                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90"><Icon name="user-plus" size={14} /> Asignar</Button>
                                         </div>
                                     </> : ""}
                             </form>
 
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead text-start fw-normal text-uppercase">PROFESIONALES ASIGNADOS</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead text-start fw-normal">PROFESIONALES ASIGNADOS</label>
                             </legend>
                             <div className="mb-2">
                                 {_ASIGN_COMPOENTN()}
                             </div>
-                            {this.state.worker
+                            {worker
                                 ? <>
-                                    <label class="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
+                                    <label className="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
                                     <PQRS_WORKERS_EMAILS
                                         translation={translation} swaMsg={swaMsg} globals={globals}
                                         currentItem={currentItem}
-                                        worker={this.state.worker}
+                                        worker={worker}
                                         email_types={[0, 1]}
-                                        retrieveItem={this.retrieveItem}
-                                        closeComponent={() => this.setState({ worker: false })}
+                                        retrieveItem={retrieveItem}
+                                        closeComponent={() => setWorker(false)}
                                     />
                                 </> : ""}
 
-
                         </fieldset>
 
-                        <h2 class="text-uppercase text-center pb-2">CONFIRMAR A PETICIONRIO</h2>
+                        <h2 className="text-center pb-2">CONFIRMAR A PETICIONRIO</h2>
                         <p className="app-p">GUIA PARA ENVIAR LA CONFIRMACION POR EMAIL</p>
                         <ul>
                             <li className="app-p">Escriba el cuerpo del email.</li>
@@ -511,7 +429,7 @@ class PQRSASIGN extends Component {
                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                 currentItem={currentItem}
                                 email_types={[0, 2, 4]}
-                                refreshCurrentItem={this.retrieveItem}
+                                refreshCurrentItem={retrieveItem}
                                 attachs={true}
                             />
                         </div>
@@ -528,11 +446,10 @@ class PQRSASIGN extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"start"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );
-    }
 }
 
 export default PQRSASIGN;

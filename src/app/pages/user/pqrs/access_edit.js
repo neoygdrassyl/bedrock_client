@@ -1,12 +1,10 @@
-import React from 'react'
 import './components/editorStyles.css'
+import { Button } from '@/components/ui/button';
 import PQRS_SERVICES from '../../../services/pqrs_main.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component'
+import { Icon } from '@/components/icon';
+import { swalError } from '@/app/utils/swalAdapter';
 let sha256 = require('js-sha256');
-
-const MySwal = withReactContent(Swal);
 
 export const ACESS_EDIT = (props) => {
 
@@ -24,12 +22,7 @@ export const ACESS_EDIT = (props) => {
                 if (response.data === 'OK') {
                     props.editMaster1()
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: 'Acceso denegado',
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: 'Acceso denegado' });
                 }
             })
     }
@@ -48,15 +41,15 @@ export const ACESS_EDIT = (props) => {
                     <div className="col">
                         <label>Contraseña</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-key"></i>
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="key" size={16} />
                             </span>
                             <input type='password' className='form-control' id='user_password' required></input>
                         </div>
                     </div>
                 </div>
                 <div className='text-center py-3'>
-                    <button type="button" className="btn btn-sm btn-info" onClick={access}>ACCEDER <i className="fas fa-sign-in-alt"></i></button>
+                    <Button size="sm" onClick={access}>ACCEDER <Icon name="sign-in-alt" size={16} /></Button>
                 </div>
             </div>
         </fieldset>

@@ -1,8 +1,7 @@
-import moment from 'moment';
-import React, { Component, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import dayjs from 'dayjs';
+import { useRef, useState } from 'react';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
 import { pdfExporter } from 'quill-to-pdf';
@@ -83,7 +82,7 @@ export default function RTE_PQRS(props) {
         'link', 'image', 'color', 'background', 'align', 'table',
     ];
     const textHTML = `
-    <p>${infoCud.city}, ${dateParser(moment().format('YYYY-MM-DD'))}</p>
+    <p>${infoCud.city}, ${dateParser(dayjs().format('YYYY-MM-DD'))}</p>
     <p>${currentItem.id_publico} ${currentItem.id_reply} </p>
     <br/>
     <p>Senor(a).</p>

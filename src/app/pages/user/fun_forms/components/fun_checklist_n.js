@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
+import { useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
 import FUNService from '../../../../services/fun.service'
-import { MDBBtn } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
 import JsonDocList from '../../../../components/jsons/fun6DocsList.json'
 import { regexChecker_cota, regexChecker_isPh, regexChecker_modPlano, regexChecker_movTierra, regexChecker_piscina } from '../../../../components/customClasses/typeParse';
-
-const MySwal = withReactContent(Swal);
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 
 const fatherValues = ['511', '512', '513', '516', '517', '518', '519',
@@ -103,59 +102,21 @@ const dvCheckList = {
     '6892': item => true,
     '6893': item => true,
 }
-class FUN_CHECKLIST_N extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    componentDidUpdate(prevProps) {
-        // Uso tipico (no olvides de comparar las props):
-        if (this.props.currentVersion !== prevProps.currentVersion && this.props.currentVersion != null) {
+function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate, swaMsg }) {
+
+    useEffect(() => {
+        if (currentVersion != null) {
             for (var i = 0; i < fatherValues.length; i++) {
                 let radios = document.getElementsByName(fatherValues[i]);
                 if (radios.length) {
-                    (this._CHECK_INDEXVALUE(fatherValues[i], 1)) ? radios[0].checked = true : radios[0].checked = false;
-                    (this._CHECK_INDEXVALUE(fatherValues[i], 0)) ? radios[1].checked = true : radios[1].checked = false;
-                    (this._CHECK_INDEXVALUE(fatherValues[i], 2)) ? radios[2].checked = true : radios[2].checked = false;
+                    (_CHECK_INDEXVALUE(fatherValues[i], 1)) ? radios[0].checked = true : radios[0].checked = false;
+                    (_CHECK_INDEXVALUE(fatherValues[i], 0)) ? radios[1].checked = true : radios[1].checked = false;
+                    (_CHECK_INDEXVALUE(fatherValues[i], 2)) ? radios[2].checked = true : radios[2].checked = false;
                 }
             }
         }
-    }
-    _SET_CHILD_REVIEW() {
-        var _CHILD = this.props.currentItem.fun_rs;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
-        if (_CHILD) {
-            if (_CHILD[_CURRENT_VERSION] != null) {
-                _CHILD = _CHILD[_CURRENT_VERSION]
-            } else {
-                _CHILD = false
-            }
-        }
-        return _CHILD;
-    }
-    _CHECK_INDEXVALUE(_CODE, _VALUE) {
-        const _CHILD_REVIEW = this._SET_CHILD_REVIEW();
-        if (_CHILD_REVIEW) {
-            let _ARRAY_OF_CODES = _CHILD_REVIEW.code.split(",");
-            let _ARRAY_OF_CHECKEDS = _CHILD_REVIEW.checked.split(",");
-            if (_ARRAY_OF_CODES.indexOf(_CODE) > -1) {
-                let pos = _ARRAY_OF_CODES.indexOf(_CODE);
-                if (_ARRAY_OF_CHECKEDS[pos] == _VALUE) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
+    }, [currentVersion]);
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
         var formData = new FormData();
 
         let _SET_CHILD = () => {
@@ -192,7 +153,7 @@ class FUN_CHECKLIST_N extends Component {
             }
             return _CHILD;
         }
-        let _CHECK_INDEXVALUE = (_CODE, _VALUE) => {
+        const _CHECK_INDEXVALUE = (_CODE, _VALUE) => {
             const _CHILD_REVIEW = _SET_CHILD_REVIEW();
             if (_CHILD_REVIEW) {
                 let _ARRAY_OF_CODES = (_CHILD_REVIEW.code ? _CHILD_REVIEW.code.split(",") : []);
@@ -598,27 +559,26 @@ class FUN_CHECKLIST_N extends Component {
         let _PRINT_GROUP = (_array) => {
             return _array.map((value) => {
                 //if(!_CHECK_INDEXVALUE(value, 0)) return '';
-                return (<>
-                    <div className="row">
+                return (<div key={value} className="row">
                         <div className="col-9">
                             <ul>
                                 <label>({value}) {JsonDocList[value]}</label>
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" type="radio" name={value} value="1"
+                            <input className="form-check-input" type="radio" name={value} value="1"
                                 defaultChecked={_CHECK_INDEXVALUE(value, 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" type="radio" name={value} value="0"
+                            <input className="form-check-input" type="radio" name={value} value="0"
                                 defaultChecked={_CHECK_INDEXVALUE(value, 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" type="radio" name={value} value="2"
+                            <input className="form-check-input" type="radio" name={value} value="2"
                                 defaultChecked={_CHECK_INDEXVALUE(value, 2)} />
                         </div>
                     </div>
-                </>)
+                )
             })
         }
 
@@ -649,70 +609,35 @@ class FUN_CHECKLIST_N extends Component {
             formData.set('version', currentVersion);
             formData.set('fun0Id', currentItem.id);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             if (_CHILD_REVIEW) {
                 FUNService.update_r(_CHILD_REVIEW.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id, true);
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                            requestUpdate(currentItem.id, true);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             } else {
                 FUNService.create_funr(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id, true)
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                            requestUpdate(currentItem.id, true)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
         }
@@ -727,18 +652,17 @@ class FUN_CHECKLIST_N extends Component {
                 {_SET_660()}
                 {_SET_670()}
                 {_SET_680()}
-                {this.props.readOnly ?
+                {readOnly ?
                     ''
                     : <div className="row text-center">
                         <div className="col-12">
-                            <MDBBtn className="btn btn-success my-3" onClick={() => setCheckList()}><i class="far fa-share-square"></i> GUARDAR CAMBIOS</MDBBtn>
+                            <Button size="sm" className="my-3" onClick={() => setCheckList()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</Button>
                         </div>
                     </div>}
 
                 <hr />
             </div>
         );
-    }
 }
 
 export default FUN_CHECKLIST_N;

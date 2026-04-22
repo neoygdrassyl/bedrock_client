@@ -1,6 +1,6 @@
 import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import { NEGATIVE_PROCESS_TITLE } from '../hooks/useClocksManager';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const DESIST_CLOCKS = {
     '-50': { name: 'Inicio del proceso de desistimiento', desc: 'Inicio formal del proceso de desistimiento.' },
@@ -163,9 +163,9 @@ const extraClocks = (props) => {
     const postActaSusp = getSuspensionClocks(suspensionPostActa, 'post');
     
     // La prórroga se muestra donde esté ubicada temporalmente
-    const preActaExt = !acta1 || (extension.exists && extension.start?.date_start && (!acta1.date_start || moment(extension.start.date_start).isBefore(acta1.date_start)))
+    const preActaExt = !acta1 || (extension.exists && extension.start?.date_start && (!acta1.date_start || dayjs(extension.start.date_start).isBefore(acta1.date_start)))
         ? getExtensionClocks(extension) : [];
-    const postActaExt = acta1 && extension.exists && extension.start?.date_start && moment(extension.start.date_start).isSameOrAfter(acta1.date_start)
+    const postActaExt = acta1 && extension.exists && extension.start?.date_start && dayjs(extension.start.date_start).isSameOrAfter(acta1.date_start)
         ? getExtensionClocks(extension) : [];
 
     return [
@@ -282,9 +282,9 @@ const extraClocks = (props) => {
         icon: "empty", 
         spentDaysConfig: { startState: 30 },
         allowSchedule: true,
-        show: estudioOptions.notificationType==='comunicar',
+        show: estudioOptions.notificationType === 'comunicar',
       },
-      { title: 'Notificación Observaciones', show: estudioOptions.notificationType !== 'comunicar' },
+      { title: 'Notificación Observaciones', show: estudioOptions.notificationType === 'notificar' },
       {
         state: 31, 
         name: 'Citación (Observaciones)', 
@@ -309,11 +309,11 @@ const extraClocks = (props) => {
         state: 33, 
         name: 'Notificación por Aviso (Observaciones)', 
         desc: "Notificación por aviso del acta de observaciones (si no se logró notificación personal)", 
-        limit: [[32, 5]], 
+        limit: [[31, 10]], 
         icon: "empty", 
         spentDaysConfig: { startState: 31 },
         allowSchedule: true,
-        show: (estudioOptions.notificationType === 'notificar' && estudioOptions.byAviso),
+        show: estudioOptions.notificationType === 'notificar' && estudioOptions.byAviso,
       },
       { title: 'Correcciones del Solicitante' },
       {
@@ -366,22 +366,23 @@ const extraClocks = (props) => {
         desc: "Comunicación del acto de viabilidad", 
         limit: [[61, 1]], 
         icon: "empty", 
-        spentDaysConfig: { startState: 55 },
+        spentDaysConfig: { startState: 61 },
         allowSchedule: true,
-        show: correccionesOptions.notificationType==='comunicar',
+        show: correccionesOptions.notificationType === 'comunicar',
       },
       ...buildDesistSection('-3', getClockVersion),
       ...buildDesistSection('-5', getClockVersion),
       ...buildDesistSection('-6', getClockVersion),
       
-      { title: "Notificación de Viabilidad", show: correccionesOptions.notificationType !== 'comunicar' },
+      { title: "Notificación de Viabilidad", show: correccionesOptions.notificationType === 'notificar' },
       { 
         state: 55, 
         name: 'Citación (Viabilidad)', 
         desc: "Citación para notificar el acto de viabilidad", 
         limit: [[61, 5]], 
         spentDaysConfig: { startState: 61 },
-        allowSchedule: true
+        allowSchedule: true,
+        show: correccionesOptions.notificationType === 'notificar',
       },
       { 
         state: 56, 
@@ -389,7 +390,8 @@ const extraClocks = (props) => {
         desc: "Notificación personal del acto de viabilidad", 
         limit: [[55, 5]], 
         spentDaysConfig: { startState: 55 },
-        allowSchedule: true 
+        allowSchedule: true,
+        show: correccionesOptions.notificationType === 'notificar',
       },
       { 
         state: 57, 
@@ -400,7 +402,7 @@ const extraClocks = (props) => {
         icon: "empty", 
         spentDaysConfig: { startState: 55 },
         allowSchedule: true,
-        show: (correccionesOptions.notificationType === 'notificar' && correccionesOptions.byAviso),
+        show: correccionesOptions.notificationType === 'notificar' && correccionesOptions.byAviso,
       },
     ]
 };

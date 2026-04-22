@@ -1,16 +1,6 @@
-import React, { Component } from 'react';
 import { dateParser, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 
-class PQRS_COMPONENT_REPLIES_TOSOLICITOR extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_REPLIES_TOSOLICITOR({ translation, swaMsg, globals, currentItem }) {
 
         // COMPONENTS JSX
         let _REPLIY_TO_SOLICITOR_COMPONENT = () => {
@@ -52,12 +42,11 @@ class PQRS_COMPONENT_REPLIES_TOSOLICITOR extends Component {
             return <>{_COMPONENT}</>;
         }
 
-        return (
-            <div>
-                {_REPLIY_TO_SOLICITOR_COMPONENT()}
-            </div>
-        );
-    }
+    return (
+        <div>
+            {_REPLIY_TO_SOLICITOR_COMPONENT()}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_REPLIES_TOSOLICITOR;

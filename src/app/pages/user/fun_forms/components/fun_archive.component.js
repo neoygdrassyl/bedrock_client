@@ -1,20 +1,11 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUN_SERVICE from '../../../../services/fun.service'
 
-const MySwal = withReactContent(Swal);
-class FUN_ARCHIVE extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, isEdit } = this.props;
-        const { } = this.state;
+function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion, isEdit }) {
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -128,69 +119,32 @@ class FUN_ARCHIVE extends Component {
 
         let manage_archive = () => {
             let _CHILD = _GET_ARCHIVE();
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 FUN_SERVICE.update_archive(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             } else {
                 FUN_SERVICE.create_archive(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
         }
@@ -227,34 +181,19 @@ class FUN_ARCHIVE extends Component {
             var column = document.getElementById('archive_label_14') ? document.getElementById('archive_label_14').innerText : document.getElementById('fun_archive_8').value;
             formData.set('column', column);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUN_SERVICE.gen_doc_stickerarchive(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/stickerarvhive/" + "STICKER DE ARCHIVO - " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/stickerarvhive/" + "STICKER DE ARCHIVO - " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
         return (
@@ -301,7 +240,7 @@ class FUN_ARCHIVE extends Component {
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="text" class="form-control" id="fun_archive_1"
+                                ? <input type="text" className="form-control" id="fun_archive_1"
                                     defaultValue={_GET_ARCHIVE().resolution} />
                                 : <label className="fw-bold" id="archive_label_6">{_GET_ARCHIVE().resolution}</label>}
                         </div>
@@ -322,11 +261,11 @@ class FUN_ARCHIVE extends Component {
                         </div>
                         <div className="col-10">
                             {isEdit
-                                ? <><div class="input-group my-1">
-                                    <input type="date" max="2100-01-01" class="form-control me-2" id="fun_archive_2"
+                                ? <><div className="input-group my-1">
+                                    <input type="date" max="2100-01-01" className="form-control me-2" id="fun_archive_2"
                                         defaultValue={_GET_ARCHIVE().date_1} />
                                     a
-                                    <input type="date" max="2100-01-01" class="form-control ms-2" id="fun_archive_3"
+                                    <input type="date" max="2100-01-01" className="form-control ms-2" id="fun_archive_3"
                                         defaultValue={_GET_ARCHIVE().date_2} />
                                 </div>
                                 </>
@@ -345,7 +284,7 @@ class FUN_ARCHIVE extends Component {
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_4"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_4"
                                     defaultValue={_GET_ARCHIVE().folder} />
                                 : <label className="fw-bold" id="archive_label_10">{_GET_ARCHIVE().folder}</label>}
                         </div>
@@ -354,7 +293,7 @@ class FUN_ARCHIVE extends Component {
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_5"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_5"
                                     defaultValue={_GET_ARCHIVE().pages} />
                                 : <label className="fw-bold" id="archive_label_11">{_GET_ARCHIVE().pages}</label>}
                         </div>
@@ -363,7 +302,7 @@ class FUN_ARCHIVE extends Component {
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_6"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_6"
                                     defaultValue={_GET_ARCHIVE().box} />
                                 : <label className="fw-bold" id="archive_label_12">{_GET_ARCHIVE().box}</label>}
                         </div>
@@ -381,7 +320,7 @@ class FUN_ARCHIVE extends Component {
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_7"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_7"
                                     defaultValue={_GET_ARCHIVE().row} />
                                 : <label className="fw-bold" id="archive_label_13">{_GET_ARCHIVE().row}</label>}
                         </div>
@@ -393,7 +332,7 @@ class FUN_ARCHIVE extends Component {
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_8"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_8"
                                     defaultValue={_GET_ARCHIVE().column} />
                                 : <label className="fw-bold" id="archive_label_14">{_GET_ARCHIVE().column}</label>}
                         </div>
@@ -401,18 +340,17 @@ class FUN_ARCHIVE extends Component {
                     <div className="row">
                         {isEdit
                             ? <div className="col  text-center">
-                                <button className="btn btn-success my-3" ><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                                <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                             : ""}
                         <div className="col  text-center">
-                            <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                            <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                         </div>
                     </div>
 
                 </form>
             </div>
         );
-    }
 }
 
 export default FUN_ARCHIVE;

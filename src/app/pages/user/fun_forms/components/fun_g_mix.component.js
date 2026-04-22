@@ -1,16 +1,7 @@
-import React, { Component } from 'react';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import FUN_REPORT_DATA from './fun_report_data';
 
-class FUN_G_MIX extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }) {
 
         // DATA GETTERS
         let _SET_CHILD_1 = () => {
@@ -79,7 +70,7 @@ class FUN_G_MIX extends Component {
             let _LIST = _SET_CHILD_6();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -108,7 +99,7 @@ class FUN_G_MIX extends Component {
             return <div className="row mb-3">
                 <div className="col-7">
                     <label>Foto de Valla o aviso</label>
-                    <select class="form-select" id="alert_sign_select" defaultValue={_GET_SIGN()[0]} disabled>
+                    <select className="form-select" id="alert_sign_select" defaultValue={_GET_SIGN()[0]} disabled>
                         <option value="-1">APORTADO FISICAMENTE</option>
                         <option value="0">SIN DOCUMENTO</option>
                         {_CHILD_6_SELECT()}
@@ -116,7 +107,7 @@ class FUN_G_MIX extends Component {
                 </div>
                 <div className="col-4">
                     <label>Fecha de Radicación</label>
-                    <input type="date" class="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
+                    <input type="date" className="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
                         disabled />
                 </div>
                 <div className="col-1">
@@ -133,20 +124,20 @@ class FUN_G_MIX extends Component {
         return (
             <div className="fun_g_mix">
                 <fieldset className="p-3" id="fung_mix">
-                    <legend className="my-2 px-3 text-uppercase Collapsible text-white">
-                        <label className="app-p lead text-center fw-normal text-uppercase">8. DATOS VARIOS</label>
+                    <legend className="my-2 px-3 Collapsible text-white">
+                        <label className="app-p lead text-center fw-normal">8. DATOS VARIOS</label>
                     </legend>
 
-                    <legend className="my-2 px-3 text-uppercase bg-light" id="fung_mix_sign">
-                        <label className="app-p lead text-center fw-normal text-uppercase">8.1 PUBLICIDAD</label>
+                    <legend className="my-2 px-3 bg-light" id="fung_mix_sign">
+                        <label className="app-p lead text-center fw-normal">8.1 PUBLICIDAD</label>
                     </legend>
                     {rules[0] != 1 ?
                         _COMPONENT_SIGN()
                         : <label className="fw-bold text-danger">NO APLICA</label>
                     }
 
-                    <legend className="my-2 px-3 text-uppercase bg-light" id="fung_mix_report">
-                        <label className="app-p lead text-center fw-normal text-uppercase">8.2 REPORTE DE PLANEACION</label>
+                    <legend className="my-2 px-3 bg-light" id="fung_mix_report">
+                        <label className="app-p lead text-center fw-normal">8.2 REPORTE DE PLANEACION</label>
                     </legend>
                     {_SET_CHILD_1().item_1.includes('F')
                         ? <>
@@ -162,7 +153,6 @@ class FUN_G_MIX extends Component {
                 </fieldset>
             </div>
         );
-    }
 }
 
 export default FUN_G_MIX;

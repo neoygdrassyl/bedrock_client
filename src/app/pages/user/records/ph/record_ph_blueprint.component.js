@@ -1,23 +1,18 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
+function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
 
-class RECORD_PH_BLUEPRINT extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
 
             document.getElementById("r_ph_bl_1_edit").value = _ITEM.id_public;
             document.getElementById("r_ph_bl_2_edit").value = _ITEM.floor;
@@ -33,10 +28,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 }
             }
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [edit]);
 
         // DATA GETTERS
         let _GET_CHILD_BLUEPRINTS = () => {
@@ -55,31 +47,31 @@ class RECORD_PH_BLUEPRINT extends Component {
             let _LIST = _GET_CHILD_BLUEPRINTS();
             const columns = [
                 {
-                    name: <label className="text-center">ID Plano</label>,
-                    selector: 'id_public',
+                    name: 'ID Plano',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
-                    name: <label className="text-center">Sótano / Piso</label>,
-                    selector: 'floor',
+                    name: 'Sótano / Piso',
+                    selector: row => row.floor,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.floor}</label>
+                    cell: row => <span className="text-sm">{row.floor}</span>
                 },
                 {
-                    name: <label className="text-center">Área total construida m2</label>,
-                    selector: 'area',
+                    name: 'Área total construida m2',
+                    selector: row => row.area,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.area}</label>
+                    cell: row => <span className="text-sm">{row.area}</span>
                 },
                 {
-                    name: <label className="text-center">Vivienda / Aptos.</label>,
+                    name: 'Vivienda / Aptos.',
                     selector: row => (row.units).split(";")[0],
                     sortable: true,
                     filterable: true,
@@ -89,7 +81,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                     cell: row => <label >{(row.units).split(";")[0]}</label>
                 },
                 {
-                    name: <label className="text-center">Locales / Lockers</label>,
+                    name: 'Locales / Lockers',
                     selector: row => (row.units).split(";")[1],
                     sortable: true,
                     filterable: true,
@@ -99,7 +91,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                     cell: row => <label >{(row.units).split(";")[1]}</label>
                 },
                 {
-                    name: <label className="text-center">Parcelas / Lotes</label>,
+                    name: 'Parcelas / Lotes',
                     selector: row => (row.units).split(";")[2],
                     sortable: true,
                     filterable: true,
@@ -109,7 +101,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                     cell: row => <label >{(row.units).split(";")[2]}</label>
                 },
                 {
-                    name: <label className="text-center">Paqrueos</label>,
+                    name: 'Paqrueos',
                     selector: row => (row.units).split(";")[3],
                     sortable: true,
                     filterable: true,
@@ -119,7 +111,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                     cell: row => <label >{(row.units).split(";")[3]}</label>
                 },
                 {
-                    name: <label className="text-center">Oficinas</label>,
+                    name: 'Oficinas',
                     selector: row => (row.units).split(";")[4],
                     sortable: true,
                     filterable: true,
@@ -129,7 +121,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                     cell: row => <label >{(row.units).split(";")[4]}</label>
                 },
                 {
-                    name: <label className="text-center">Bodegas</label>,
+                    name: 'Bodegas',
                     selector: row => (row.units).split(";")[5],
                     sortable: true,
                     filterable: true,
@@ -139,7 +131,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                     cell: row => <label >{(row.units).split(";")[5]}</label>
                 },
                 {
-                    name: <label className="text-center">Número Parqueos</label>,
+                    name: 'Número Parqueos',
                     selector: row => (row.units).split(";")[6],
                     sortable: true,
                     filterable: true,
@@ -149,8 +141,8 @@ class RECORD_PH_BLUEPRINT extends Component {
                     cell: row => <label >{(row.units).split(";")[6]}</label>
                 },
                 {
-                    name: <label className="text-center">Descripción otros bienes (espacios)</label>,
-                    selector: 'units_other',
+                    name: 'Descripción otros bienes (espacios)',
+                    selector: row => row.units_other,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -158,16 +150,12 @@ class RECORD_PH_BLUEPRINT extends Component {
                     cell: row => <label >{row.units_other}</label>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}><i class="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -186,29 +174,29 @@ class RECORD_PH_BLUEPRINT extends Component {
                 <div className="row mb-1">
                     <div className="col-3">
                         <label>ID Plano</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id={"r_ph_bl_1" + edit} />
+                            <input type="text" className="form-control" id={"r_ph_bl_1" + edit} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Sótano / Piso</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="text" class="form-control" id={"r_ph_bl_2" + edit} />
+                            <input type="text" className="form-control" id={"r_ph_bl_2" + edit} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Área total Construida m2</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-ruler"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="ruler" size={16} />
                             </span>
-                            <input type="number" min="0" step="0.01" class="form-control" id={"r_ph_bl_3" + edit} />
+                            <input type="number" min="0" step="0.01" className="form-control" id={"r_ph_bl_3" + edit} />
                         </div>
                     </div>
                 </div>
@@ -216,38 +204,38 @@ class RECORD_PH_BLUEPRINT extends Component {
                     <label className="fw-bold">Número de unidades privadas</label>
                     <div className="col">
                         <label>Viviendas/ Apartamentos</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Locales / Lockers</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Parcelas / Lotes</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Parqueos</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Oficinas</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Bodegas</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                 </div>
@@ -256,14 +244,14 @@ class RECORD_PH_BLUEPRINT extends Component {
                     <label className="fw-bold">Bienes comunes (Espacios)</label>
                     <div className="col-3">
                         <label>Número Parqueos</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" class="form-control" name={"r_ph_bl_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + edit} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Descripción otros bienes (espacios)</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id={"r_ph_bl_5" + edit} />
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id={"r_ph_bl_5" + edit} />
                         </div>
                     </div>
                 </div>
@@ -347,88 +335,39 @@ class RECORD_PH_BLUEPRINT extends Component {
             }
             formData.set('units', units.join(';'));
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_PH_SERVICE.create_blueprint(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_ph_blueprint_new').reset();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let delete_item = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     RECORD_PH_SERVICE.delete_blueprint(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit: false });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdateRecord(currentItem.id);
+                                setEdit(false);
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -454,62 +393,40 @@ class RECORD_PH_BLUEPRINT extends Component {
             }
             if (units.length) formData.set('units', units.join(';'));
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            RECORD_PH_SERVICE.update_blueprint(this.state.edit.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            RECORD_PH_SERVICE.update_blueprint(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_ph_blueprint_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
             <div className="record_law_gen_11 container my-2">
                 <label className="app-p lead fw-bold">RELACIÓN DE PLANOS PRESENTADOS</label>
 
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Nuevo Plano
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_ph_blueprint_new" onSubmit={new_item}>
                             {_COMPONENT_MANAGE()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
@@ -517,14 +434,14 @@ class RECORD_PH_BLUEPRINT extends Component {
                     : ""}
                 {_CHILD_LICENCE_LIST()}
                 {_COMPONENT_TOTAL()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_ph_blueprint_edit" onSubmit={edit_item}>
                             <h3 className="my-3 text-center">Actualizar Plano</h3>
                             {_COMPONENT_MANAGE('_edit')}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                             </div>
                         </form>
@@ -532,7 +449,6 @@ class RECORD_PH_BLUEPRINT extends Component {
                     : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_PH_BLUEPRINT;

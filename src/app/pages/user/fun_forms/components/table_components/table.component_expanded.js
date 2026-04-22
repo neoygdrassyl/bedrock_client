@@ -1,4 +1,5 @@
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../../components/TagInput';
+import { Button } from '@/components/ui/button';
 import React, { useEffect, useState } from 'react';
 import FUN_SERVICE from '../../../../../services/fun.service';
 import USER_SERVICE from '../../../../../services/users.service';
@@ -6,14 +7,11 @@ import RECORD_LAW_SERVICE from '../../../../../services/record_law.service';
 import RECORD_ENG_SERVICE from '../../../../../services/record_eng.service';
 import RECORD_ARC_SERVICE from '../../../../../services/record_arc.service';
 import RECORD_PH_SERVICE from '../../../../../services/record_ph.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh } from '../../../../../components/customClasses/typeParse';
-import { MDBBtn } from 'mdb-react-ui-kit';
 
-
-const MySwal = withReactContent(Swal);
-const moment = require('moment')
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function TABLE_COMPONENT_EXPANDED(props) {
     const { currentItem, swaMsg, worker_list, lenghtL, dataL, date_start, date_end } = props;
@@ -47,7 +45,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     const ci = row => !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : '';
 
     useEffect(() => {
-        if (load === 0) {
+        if (load === 0 && currentItem?.id) {
             setLoad(1)
             loadAsignClocks(currentItem.id);
             getCurrentItem(currentItem.id);
@@ -154,10 +152,10 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
 
     let _GET_REVIEW = (_REVIEW) => {
         let res = {
-            '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-            '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+            '-1': <label className=" me-1"><Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+            '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+            '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+            '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} style={{ fontSize: '150%' }} /></label>,
         }
 
         return res[_REVIEW] ?? res['-1']
@@ -165,10 +163,10 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     let _GET_REVIEW_ENG = (_REVIEW) => {
         let revies = _REVIEW ? Array.isArray(_REVIEW) ? _REVIEW : _REVIEW.split(',') : ['-1', '-1'];
         let res = {
-            '-1': <label className=" me-1"><i class="far fa-dot-circle"></i></label>,
-            '0': <label className="fw-bold text-danger  me-1"><i class="far fa-times-circle"></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle"></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle"></i></label>,
+            '-1': <label className=" me-1"><Icon name="dot-circle" size={16} /></label>,
+            '0': <label className="fw-bold text-danger  me-1"><Icon name="times-circle" size={16} /></label>,
+            '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} /></label>,
+            '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} /></label>,
         }
         return revies.map((value, index) => <label>R. {index + 1}: {res[value] ?? res['-1']}</label>)
 
@@ -283,7 +281,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                     <h5 className=''>{title}:</h5>
                 </div>
                 <div className='col'>
-                    <div class="input-group input-group-sm">
+                    <div className="input-group input-group-sm">
                         {state ? _WORKERS_SELECT(_TABLE_GET_ASIGN_ID(loadItem, state), state, loadItem, roleFilter) : ''}
                     </div>
                 </div>
@@ -299,11 +297,9 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
         var asigns = clocks_asign.date_start ? clocks_asign.date_start.split(';') : [_TABLE_GET_ASIGN_DATE(loadItem, state)];
         var informs = clocks_inform.date_start ? clocks_inform.date_start.split(';') : [];
 
-
         if (state == 11) defaultRevew = regexChecker_isPh(row, true) ? row.ph_review_law : row.jur_review;
         if (state == 13) defaultRevew = regexChecker_isPh(row, true) ? row.ph_review : row.arc_review;
         if (state == 12) defaultRevew = !regexChecker_isPh(row, true) ? [row.eng_review, row.eng_review_2] : false;
-
 
         var clocks_process = ['Acta Observaciones',]
         if (row.rec_review == 0) clocks_process = ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Revision de Correcciones',]
@@ -331,8 +327,8 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                     <div className='col border'><h6 className='py-1 fw-normal'> {value} </h6></div>
                     <div className='col border'><h6 className='py-1 fw-normal'> {prof(state, regexChecker_isPh(row, true))}</h6></div>
                     <div className='col border'><h6 className='py-1 fw-normal'>{editDate[index + '_' + state] ?
-                        <div class="input-group input-group-sm">
-                            <input type="date" class="form-control input-sm" id={'new_asign_date_' + state} defaultValue={asignDate}
+                        <div className="input-group input-group-sm">
+                            <input type="date" className="form-control input-sm" id={'new_asign_date_' + state} defaultValue={asignDate}
                                 onBlur={(e) => edit_clock(state, asigns, e.target.value, index, 100)} />
                         </div>
                         : asignDate}</h6></div>
@@ -344,14 +340,14 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                             ? _GET_REVIEW_ENG(index == 0 ? defaultRevew ?? reviews_check[index] : reviews_check[index])
                             : _GET_REVIEW(index == 0 ? defaultRevew ?? reviews_check[index] : reviews_check[index])}</h6></div>
                     <div className='col border'><h6 className='py-1 fw-normal'>{editDate[index + '_' + state] ?
-                        <div class="input-group input-group-sm">
-                            <input type="date" class="form-control input-sm" id={'new_inform_date_' + state} defaultValue={inforDate}
+                        <div className="input-group input-group-sm">
+                            <input type="date" className="form-control input-sm" id={'new_inform_date_' + state} defaultValue={inforDate}
                                 onBlur={(e) => edit_clock(state, informs, e.target.value, index, 300)} />
                         </div>
                         : inforDate}</h6></div>
                     <div className='col-1 border'>
-                        <MDBBtn floating tag='a' size='sm' className='me-1' color='secondary' outline={editDate[index + '_' + state]}
-                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><i class="far fa-edit"></i></MDBBtn>
+                        <Button variant={!editDate[index + '_' + state] ? "outline" : "default"} size="sm"
+                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><Icon name="edit" size={16} /></Button>
                     </div>
                 </div>
             })}
@@ -362,50 +358,49 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
         return <>
             <div className='row text-center py-1'>
                 <div className='col'>
-                    <button className='btn btn-sm btn-info' onClick={() => {
+                    <Button size="sm" onClick={() => {
                         if (state == 11) setncl(!ncl);
                         if (state == 12) setnce(!nce);
                         if (state == 13) setnca(!nca);
-                    }}><label><i class="fas fa-plus-circle"></i> NUEVA</label></button>
+                    }}><label><Icon name="plus-circle" size={16} /> NUEVA</label></Button>
                 </div>
                 <div className='col-4'>
                     {(state == 11 && ncl) || (state == 12 && nce) || (state == 13 && nca) ?
                         <div className='row text-center py-2'>
                             <div className='col'>
-                                <div class="input-group input-group-sm"> <div class="input-group-prepend">
-                                    <span class="input-group-text">Fecha Asignación</span>
-                                </div><input type="date" class="form-control input-sm" id={'asign_date_' + state} /></div>
+                                <div className="input-group input-group-sm"> <div className="input-group-prepend">
+                                    <span className="input-group-text">Fecha Asignación</span>
+                                </div><input type="date" className="form-control input-sm" id={'asign_date_' + state} /></div>
                             </div>
                         </div>
                         : ''}
                 </div>
                 <div className='col'>
                     {(state == 11 && ncl) || (state == 12 && nce) || (state == 13 && nca) ?
-                        <button className='btn btn-sm btn-success' onClick={() => {
+                        <Button size="sm" onClick={() => {
                             var date = document.getElementById('asign_date_' + state).value;
                             if (!date) return;
                             save_clock(state, date)
-                        }}><label><i class="fas fa-life-ring"></i> ASIGNAR</label></button>
+                        }}><label><Icon name="life-ring" size={16} /> ASIGNAR</label></Button>
                         : ''}
 
                 </div>
                 <div className='col'>
                     {(state == 11 && ncl) || (state == 12 && nce) || (state == 13 && nca) ?
-                        <button className='btn btn-sm btn-danger' onClick={() => {
+                        <Button variant="destructive" size="sm" onClick={() => {
                             if (state == 11) setncl(false);
                             if (state == 12) setnce(false);
                             if (state == 13) setnca(false);
-                        }}><label><i class="fas fa-times-circle"></i> CANCELAR</label></button>
+                        }}><label><Icon name="times-circle" size={16} /> CANCELAR</label></Button>
                         : ''}
 
                 </div>
             </div>
 
-
         </>
     }
     let INFO = () => {
-        let daysActa = dateParser_dateDiff(loadItem.clock_date, loadItem.clock_not_1 ?? loadItem.clock_not_2 ?? moment().format('YYYY-MM-DD'));
+        let daysActa = dateParser_dateDiff(loadItem.clock_date, loadItem.clock_not_1 ?? loadItem.clock_not_2 ?? dayjs().format('YYYY-MM-DD'));
         let daysRev = _fun_0_type_time[loadItem.type] ?? 45
         return <>
             {REVIEW_HEADER('INFORMACIÓN GENERAL ' + loadItem.id_public, { backgroundColor: 'Gainsboro' })}
@@ -496,7 +491,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
             <div className='row text-center'>
                 <div className='col border '><h6 className='py-1 fw-normal'>ETIQUETAS</h6></div>
                 <div className='col border'><h6 className='py-1 fw-bold'>{
-                    <ReactTagInput
+                    <TagInput
                         tags={tags}
                         onChange={(newTags) => saveTags(newTags)}
                         placeholder="Etiquetas de la solicitud"
@@ -505,10 +500,8 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                 }</h6></div>
             </div>
 
-
         </>
     }
-
 
     let REVIEW_LAW = () => {
 
@@ -573,15 +566,9 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
-
 
     let getCurrentItem = (id) => {
         FUN_SERVICE.loadMacroSingle(date_start, date_end, id)
@@ -591,12 +578,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
 
@@ -605,40 +587,19 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
         setTags(tags)
         formData.set('tags', tags.join(','));
 
-        if (useMySwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useMySwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FUN_SERVICE.update(loadItem.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useMySwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useMySwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     getCurrentItem(loadItem.id);
                 } else {
-                    if (useMySwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useMySwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             });
     }
 
@@ -648,23 +609,13 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                 if (response.data) {
                     setClocks(response.data)
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
                 setLoad(true)
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             });
 
     }
@@ -672,13 +623,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     let save_clock = (state, date) => {
         var _CLOCK = _GET_CLOCK_STATE_VERSION(state, 100);
 
-
-        if (!prof(state)) return MySwal.fire({
-            title: 'NO SE PUEDE ASIGNAR',
-            text: 'Para asignar esta solicitud se debe asignar a un profesional primero',
-            icon: 'error',
-            confirmButtonText: swaMsg.text_btn,
-        });
+        if (!prof(state)) return swalError({ title: 'NO SE PUEDE ASIGNAR', text: 'Para asignar esta solicitud se debe asignar a un profesional primero' });
 
         var date_start = [];
         if (_CLOCK) date_start = _CLOCK.date_start.split(';');
@@ -704,13 +649,11 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     }
 
     let delete_asgin = (index, clocks, state, reviews) => {
-        MySwal.fire({
+        swalConfirm({
             title: "ELIMINAR ESTE ITEM",
             text: "¿Esta seguro de eliminar de forma permanente este item?",
             icon: 'question',
             confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
         }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
                 let oldClocks = clocks;
@@ -734,18 +677,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
 
     }
 
-
     let manage_clock = (useMySwal, findOne, formDataClock, version = 100, reloadPage = true) => {
         var _CHILD = _GET_CLOCK_STATE_VERSION(findOne, version);
 
         formDataClock.set('fun0Id', loadItem.id);
         if (useMySwal) {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         }
 
         if (_CHILD.id) {
@@ -753,36 +690,20 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         getCurrentItem(currentItem.id);
                         loadAsignClocks(currentItem.id);
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 });
         }
@@ -793,36 +714,20 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         getCurrentItem(currentItem.id);
                         loadAsignClocks(currentItem.id);
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 });
         }
@@ -861,22 +766,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         getCurrentItem(currentItem.id);
                         loadAsignClocks(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         } else {
             RECORD_PH_SERVICE.create(formData)
@@ -885,22 +780,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         if (reloadPage) getCurrentItem(loadItem.id);
                         retrieveWorkerList();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -913,22 +798,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         getCurrentItem(currentItem.id);
                         loadAsignClocks(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         } else {
             RECORD_LAW_SERVICE.create(formData)
@@ -937,22 +812,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         if (reloadPage) getCurrentItem(loadItem.id);
                         retrieveWorkerList();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -965,22 +830,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         getCurrentItem(currentItem.id);
                         loadAsignClocks(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         } else {
             RECORD_ENG_SERVICE.create(formData)
@@ -989,22 +844,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         if (reloadPage) getCurrentItem(loadItem.id);
                         retrieveWorkerList();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -1017,22 +862,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         getCurrentItem(currentItem.id);
                         loadAsignClocks(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         } else {
             RECORD_ARC_SERVICE.create(formData)
@@ -1041,22 +876,12 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         if (reloadPage) getCurrentItem(loadItem.id);
                         retrieveWorkerList();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 

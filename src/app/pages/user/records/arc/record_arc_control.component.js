@@ -1,7 +1,5 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import { useState, useEffect } from 'react';
+import DataTable from '@/components/data-table-bridge';
 
 import FUN_SERVICE from '../../../../services/fun.service'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
@@ -12,35 +10,23 @@ import RECORD_ARC_DESC from './record_arc_desc';
 import { getJSONFull } from '../../../../components/customClasses/typeParse';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
+function RECORD_ARC_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
+    const [editBlueprint, setEditBlueprint] = useState(false);
+    const [saveState, setSaveState] = useState({});
 
-class RECORD_ARC_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new_area: false,
-            new_blueprint: false,
-            edit_area: false,
-            edit_blueprint: false,
-            sort: 'asc',
-            sort2: 'asc',
-            fillActive: 'tab2',
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit_blueprint !== prevState.edit_blueprint && this.state.edit_blueprint != false) {
-            var _ITEM = this.state.edit_blueprint;
+    useEffect(() => {
+        if (editBlueprint) {
+            var _ITEM = editBlueprint;
             document.getElementById("r_a_33_blueprint_1_edit").value = _ITEM.id_public;
             document.getElementById("r_a_33_blueprint_2_edit").value = _ITEM.use;
             document.getElementById("r_a_33_blueprint_3_edit").value = _ITEM.scale;
             //document.getElementById("r_a_33_blueprint_4_edit").value = _ITEM.category
             document.getElementById("r_a_33_blueprint_5_edit").value = _ITEM.id6_blueprint ? _ITEM.id6_blueprint : 0;
-            //document.getElementById("r_a_33_blueprint_6_edit").value = _ITEM.active == 1 ? 1 : 0;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R } = this.props;
+    }, [editBlueprint]);
         // DATA GETERS
 
         let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
@@ -57,7 +43,7 @@ class RECORD_ARC_CONTROL extends Component {
 
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_arc_steps || [];
+            var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -81,8 +67,8 @@ class RECORD_ARC_CONTROL extends Component {
         }
         let _SAVING_STATE = (state) => {
             if (!state) return '';
-            if (state == 1) return <label className='text-warning fw-bold'><i class="fas fa-save"></i></label>;
-            if (state == 2) return <label className='text-success fw-bold'><i class="fas fa-save"></i></label>;
+            if (state == 1) return <label className='text-warning fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 2) return <label className='text-success fw-bold'><Icon name="save" size={16} /></label>;
         }
         // COMPONENTS JSX 
 
@@ -96,8 +82,8 @@ class RECORD_ARC_CONTROL extends Component {
                     currentVersion={currentVersion}
                     currentRecord={currentRecord}
                     currentVersionR={currentVersionR}
-                    requestUpdateRecord={this.props.requestUpdateRecord}
-                    requestUpdate={this.props.requestUpdate}
+                    requestUpdateRecord={requestUpdateRecord}
+                    requestUpdate={requestUpdate}
                 />
             </>
         }
@@ -106,10 +92,10 @@ class RECORD_ARC_CONTROL extends Component {
             const _STEP = _GET_STEP_TYPE('geo', 'value');
             return <div className='row'>
                 <div className="col my-1 text-end"><label>Norte</label> </div>
-                <div className="col my-1"><input type="text" class="form-control" name="ra_s_geo" defaultValue={_STEP[0] ?? ''}
+                <div className="col my-1"><input type="text" className="form-control" name="ra_s_geo" defaultValue={_STEP[0] ?? ''}
                     onBlur={() => manage_ra_33(false)} /> </div>
                 <div className="col my-1 text-end"><label>Este</label> </div>
-                <div className="col my-1"><input type="text" class="form-control" name="ra_s_geo" defaultValue={_STEP[1] ?? ''}
+                <div className="col my-1"><input type="text" className="form-control" name="ra_s_geo" defaultValue={_STEP[1] ?? ''}
                     onBlur={() => manage_ra_33(false)} /> </div>
             </div>
         }
@@ -157,34 +143,50 @@ class RECORD_ARC_CONTROL extends Component {
                 <div className="row">
                     <div className='col'>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">N° Parqueaderos</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_0" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">N° Parqueaderos (Totales)</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_0" min="0" step="1"
                                     defaultValue={control.n_parking} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">m2 Área predio</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_1" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">N° Parqueaderos (Privados)</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_0_1" min="0" step="1"
+                                    defaultValue={control.n_parking_private} onBlur={() => manage_ra_33_control('pym')} />
+                            </div>
+                        </div>
+
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">N° Parqueaderos (Visitantes)</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_0_2" min="0" step="1"
+                                    defaultValue={control.n_parking_visit} onBlur={() => manage_ra_33_control('pym')} />
+                            </div>
+                        </div>
+
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">m2 Área predio</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_1" min="0" step="0.01"
                                     defaultValue={control.m2_predio} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Uso Principal</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control form-control-sm" id="ra_control_data_2"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Uso Principal</label>
+                            <div className="col-sm-4">
+                                <input type="text" className="form-control form-control-sm" id="ra_control_data_2"
                                     defaultValue={control.main_use} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Número de Subdivisión</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_3"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Número de Subdivisión</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_3"
                                     defaultValue={control.n_sub} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
@@ -192,26 +194,26 @@ class RECORD_ARC_CONTROL extends Component {
                     </div>
                     <div className='col'>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Bruta m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_4" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Bruta m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_4" min="0" step="0.01"
                                     defaultValue={control.m2_brute} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Neta m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_5" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Neta m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_5" min="0" step="0.01"
                                     defaultValue={control.m2_net} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_6" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_6" min="0" step="0.01"
                                     defaultValue={control.m2_useful} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
@@ -219,50 +221,50 @@ class RECORD_ARC_CONTROL extends Component {
                     </div>
                     <div className='col'>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util VIS</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_7" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util VIS</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_7" min="0" step="0.01"
                                     defaultValue={control.m2_vis} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util VIP</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_8" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util VIP</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_8" min="0" step="0.01"
                                     defaultValue={control.m2_vip} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util NO VIS</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_9" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util NO VIS</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_9" min="0" step="0.01"
                                     defaultValue={control.m2_novis} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Industrial</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_10" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Industrial</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_10" min="0" step="0.01"
                                     defaultValue={control.m2_ind} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Com./Serv.</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_11" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Com./Serv.</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_11" min="0" step="0.01"
                                     defaultValue={control.m2_com} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Dotacional</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_12" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Dotacional</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_12" min="0" step="0.01"
                                     defaultValue={control.m2_dot} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
@@ -336,6 +338,8 @@ class RECORD_ARC_CONTROL extends Component {
             const control = getJSONFull(json);
 
             control.n_parking = document.getElementById('ra_control_data_0').value;
+            control.n_parking_private = document.getElementById('ra_control_data_0_1').value;
+            control.n_parking_visit = document.getElementById('ra_control_data_0_2').value;
             control.m2_predio = document.getElementById('ra_control_data_1').value;
             control.main_use = document.getElementById('ra_control_data_2').value;
             control.n_sub = document.getElementById('ra_control_data_3').value;
@@ -359,81 +363,44 @@ class RECORD_ARC_CONTROL extends Component {
 
         }
         let save_step = (_id_public, useSwal, formData, state) => {
-            this.setState({ [state]: 1 })
+            setSaveState(prev => ({...prev, [state]: 1}))
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ARCSERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ [state]: 2 })
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
+                            setSaveState(prev => ({...prev, [state]: 2}))
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.setState({ [state]: 3 })
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                            setSaveState(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.setState({ [state]: 3 })
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                        setSaveState(prev => ({...prev, [state]: 3}))
                     });
             }
             else {
                 RECORD_ARCSERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ [state]: 2 })
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
+                            setSaveState(prev => ({...prev, [state]: 2}))
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.setState({ [state]: 3 })
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                            setSaveState(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.setState({ [state]: 3 })
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                        setSaveState(prev => ({...prev, [state]: 3}))
                     });
             }
         }
@@ -452,19 +419,18 @@ class RECORD_ARC_CONTROL extends Component {
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        requestUpdateRecord={this.props.requestUpdateRecord}
-                        requestUpdate={this.props.requestUpdate}
+                    requestUpdateRecord={requestUpdateRecord}
+                    requestUpdate={requestUpdate}
                     />
 
                     <h3 className="my-3">3.3.4 Información Geográfica de Coordenadas</h3>
                     {_COMPONENT_5_GEO()}
 
-                    <h3 className="my-3">3.3.5 Control para Entidades (Planeación y Ministerio de vivienda) {_SAVING_STATE(this.state.pym)}</h3>
+                    <h3 className="my-3">3.3.5 Control para Entidades (Planeación y Ministerio de vivienda) {_SAVING_STATE(saveState.pym)}</h3>
                     {_COMPONENT_CONTROL()}
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_CONTROL;

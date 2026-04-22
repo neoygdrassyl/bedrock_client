@@ -1,10 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
-
-const MySwal = withReactContent(Swal);
-
+import { useEffect, useState } from 'react';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 export default function RECORDS_BINNACLE(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, SERVICE, AIM, PATH, readOnly } = props;
 
@@ -30,7 +25,7 @@ export default function RECORDS_BINNACLE(props) {
     let _COMPONENT = () => {
 
         return <>
-            <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+            <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                 <div className='col'>
                     <label>Bitácora - {AIM ?? ''}</label>
                 </div>
@@ -50,32 +45,16 @@ export default function RECORDS_BINNACLE(props) {
         SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                   
                 } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 

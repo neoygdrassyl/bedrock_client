@@ -1,61 +1,68 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../components/jsons/vars';
-import { MDBBtn, MDBCollapse } from 'mdb-react-ui-kit';
-import Collapsible from 'react-collapsible';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
+import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import EXP_RES from './exp._res.component';
 import EXP_ACT_DESIST from './exp_act_desist.component';
 import EXP_RES_2 from './exp_res_2.component';
 import EXP_EJEC from './exp_eje.component';
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 var writtenNumber = require('written-number');
 const IVA = 0.19;
-class EXP_DOCS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    async retrieveItem() {
+
+function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc, requestUpdate, requestUpdateRecord }) {
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected, setVrSelected] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [tn, setTn] = useState(undefined);
+    const [showCollapse_expedition_21, setShowCollapse_expedition_21] = useState(false);
+    const [showCollapse_expedition_22, setShowCollapse_expedition_22] = useState(false);
+    const [showCollapse_expedition_23, setShowCollapse_expedition_23] = useState(false);
+    const [showCollapse_expedition_24, setShowCollapse_expedition_24] = useState(false);
+    const [showCollapse_expedition_25, setShowCollapse_expedition_25] = useState(false);
+    const [showCollapse_expedition_26, setShowCollapse_expedition_26] = useState(false);
+    const [showCollapse_expedition_27, setShowCollapse_expedition_27] = useState(false);
+
+    const retrieveItem = async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data)
             })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
 
             if (data) {
                 document.getElementById("vr_selected33").value = data.vr
-                this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+                setVrSelected(data.vr);
+                setCubSelected(data.cub);
+                setIdCUBxVr(data.id);
             }
-            else this.setState({ vrSelected: null, cubSelected: null, idCUBxVr: null })
+            else {
+                setVrSelected(null);
+                setCubSelected(null);
+                setIdCUBxVr(null);
+            }
         } catch (error) {
             console.log(error);
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = this.props;
-        const { } = this.state;
-        // DATA GETTERS
+    };
 
+    useEffect(() => {
+        retrieveItem();
+    }, []);
+        // DATA GETTERS
 
         let _GET_EXPEDITION_JSON = (field) => {
             let json = currentRecord[field];
@@ -171,12 +178,7 @@ class EXP_DOCS extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente." });
                 });
 
         }
@@ -295,24 +297,24 @@ class EXP_DOCS extends Component {
                     <strong>TIPO DE NOTIFICACIÓN</strong>
 
                     <div className="col-4">
-                        <select className='form-select' id="type_not" onChange={(e) => this.setState({ 'tn': e.target.value })}>
+                        <select className='form-select' id="type_not" onChange={(e) => setTn(e.target.value)}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
-                    {this.state.tn == 4 ?
+                    {tn == 4 ?
                         <>
                          <div className="col-4">
-                                <div class="input-group my-1">
+                                <div className="input-group my-1">
                                     <label>Fecha Comunicación: </label>
                                 </div>
                             </div>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
+                                <div className="input-group my-1">
+                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
                                 </div>
                             </div>
                         </>
@@ -326,32 +328,31 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Fecha Acto de tramite de licencia</label>
-                        <input type="date" class="form-control" id="expedition_doc_1_1" max="2100-01-01"
+                        <input type="date" className="form-control" id="expedition_doc_1_1" max="2100-01-01"
                             defaultValue={currentRecord.date ?? ''} />
                     </div>
                     <div className="col">
                         <label className="mt-1">Consecutivo Acto de tramite de licencia</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_1_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_1_2" disabled
                                 value={currentRecord.cub1 ?? ''} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_1_3" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_1_3" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Ciudad</label>
-                        <div class="input-group">
-                            <select class="form-select me-1" id={"expedition_doc_1_8"}>
+                        <div className="input-group">
+                            <select className="form-select me-1" id={"expedition_doc_1_8"}>
                                 {cities}
                             </select>
                         </div>
                     </div>
-
 
                 </div>
 
@@ -359,31 +360,31 @@ class EXP_DOCS extends Component {
                     <div className="col">
                         <label className="mt-2">Titular(es)</label>
                         <div className="col">
-                            <textarea class="form-control" id="expedition_doc_1_4" disabled readOnly >
+                            <textarea className="form-control" id="expedition_doc_1_4" disabled readOnly >
                                 {_names}
                             </textarea>
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Responsable</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_1_5" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_1_5" disabled
                                 value={_GET_CHILD_53().item_536} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_1_6"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_1_6"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_1_7" disabled
+                        <input type="text" className="form-control" id="expedition_doc_1_7" disabled
                             value={formsParser1(_GET_CHILD_1())} />
                     </div>
                 </div>
@@ -401,22 +402,22 @@ class EXP_DOCS extends Component {
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_2_descs" disabled
+                                <input type="text" className="form-control" name="expedition_doc_2_descs" disabled
                                     value={_areas[i].desc} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_2_uses" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_2_uses" disabled
                                         value={_areas[i].use} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_2_areas" disabled
+                                <input type="text" className="form-control" name="expedition_doc_2_areas" disabled
                                     value={_areas[i].area} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_2_charges" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_2_charges" disabled
                                         value={addDecimalPoints(_areas[i].charge ?? 0)} readOnly />
                                 </div>
                             </div>
@@ -424,20 +425,19 @@ class EXP_DOCS extends Component {
                     </>)
                 }
 
-
             }
 
             return <>
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_2_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_2_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -446,28 +446,28 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinación</label>
-                        <input type="text" class="form-control" id="expedition_doc_2_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_2_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -484,15 +484,15 @@ class EXP_DOCS extends Component {
 
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_2_7" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_2_7" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_2_8" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_2_8" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -515,36 +515,36 @@ class EXP_DOCS extends Component {
                 {_COMPONENT}
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             value={'SUBTOTAL'} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_11" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_11" disabled
                                 value={addDecimalPoints(sum)} readOnly />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             value={`IVA (${IVA * 100}%)`} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_10" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_10" disabled
                                 value={addDecimalPoints(Math.round(sum * IVA))} readOnly />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             value={'TOTAL EXPENSAS'} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_2_9" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_2_9" disabled
                                 value={addDecimalPoints(Math.round(sum * (1 + IVA)))} readOnly />
                         </div>
                     </div>
@@ -590,25 +590,24 @@ class EXP_DOCS extends Component {
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_3_descs" disabled
+                                <input type="text" className="form-control" name="expedition_doc_3_descs" disabled
                                     value={_areas[i].desc} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_3_uses" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_3_uses" disabled
                                         value={_areas[i].use} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_3_areas" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_3_areas" disabled
                                         value={_areas[i].area} readOnly />
                                 </div>
                             </div>
                         </div>
                     </>)
                 }
-
 
             }
 
@@ -629,13 +628,13 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_3_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -644,28 +643,28 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinación</label>
-                        <input type="text" class="form-control" id="expedition_doc_3_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -681,15 +680,15 @@ class EXP_DOCS extends Component {
                 </div>
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_3_7" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_3_7" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_3_8" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_3_8" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -711,22 +710,22 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col-4">
                         <label className="mt-1">Tratamiento</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_10" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_10" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').type ?? ''} readOnly />
                         </div>
                     </div>
                     <div className="col-4">
                         <label className="mt-1">Zona</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_21" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_21" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').zone ? zonesVar[_GET_EXPEDITION_JSON('tmp').zone] : ''} readOnly />
                         </div>
                     </div>
                     <div className="col-4">
                         <label className="mt-1">Eje</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_22" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_22" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').axis ? axisVar[_GET_EXPEDITION_JSON('tmp').axis] : ''} readOnly />
                         </div>
                     </div>
@@ -746,60 +745,60 @@ class EXP_DOCS extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3">
-                        <input type="text" class="form-control" id="expedition_doc_3_11" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_11" disabled
                             defaultValue={'002'} />
                     </div>
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_3_12" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_12" disabled
                             defaultValue={"Impuesto de Delineación y Urbanismo"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_13" onBlur={(e) => _ADD_TOTAL(e.target.value)}
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_13" onBlur={(e) => _ADD_TOTAL(e.target.value)}
                                 defaultValue={addDecimalPoints(value_deli)} />
                         </div>
                     </div>
                 </div>
                 <div className="row mt-1">
                     <div className="col-3">
-                        <input type="text" class="form-control" id="expedition_doc_3_14" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_14" disabled
                             defaultValue={'007'} />
                     </div>
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_3_15" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_15" disabled
                             defaultValue={"Impuesto de Uso y Escavación del subsuelo"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_16" onBlur={(e) => _ADD_TOTAL(e.target.value)}
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_16" onBlur={(e) => _ADD_TOTAL(e.target.value)}
                                 defaultValue={addDecimalPoints(value_uso)} />
                         </div>
                     </div>
                 </div>
                 <div className="row mt-1">
                     <div className="col-3">
-                        <input type="text" class="form-control" id="expedition_doc_3_17" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_17" disabled
                             defaultValue={'601'} />
                     </div>
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_3_18" disabled
+                        <input type="text" className="form-control" id="expedition_doc_3_18" disabled
                             defaultValue={"Fonto de Embellecimiento Urbano"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_19" onBlur={(e) => _ADD_TOTAL(e.target.value)}
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_19" onBlur={(e) => _ADD_TOTAL(e.target.value)}
                                 defaultValue={addDecimalPoints(value_emb)} />
                         </div>
                     </div>
                 </div>
                 <div className="row mt-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             value={'TOTAL IMPUESTOS'} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_20"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_3_20"
                                 defaultValue={addDecimalPoints(value_total)} />
                         </div>
                     </div>
@@ -814,13 +813,13 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_4_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_4_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicacion</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -829,28 +828,28 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinacion</label>
-                        <input type="text" class="form-control" id="expedition_doc_4_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_4_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Direccion Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -867,15 +866,15 @@ class EXP_DOCS extends Component {
 
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_4_7" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_4_7" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_4_8" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_4_8" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -883,29 +882,29 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col-3">
                         <label className="mt-2">Área intervención</label>
-                        <input type="text" class="form-control" id="expedition_doc_4_9" disabled
+                        <input type="text" className="form-control" id="expedition_doc_4_9" disabled
                             value={_GET_EXPEDITION_JSON('tmp').uis ?? ''} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Valor Estampilla PRO-UIS</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_10" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_10" disabled
                                 value={addDecimalPoints(puisst)} readOnly />
                         </div>
                     </div>
                     <div className="col-4">
                         <label className="mt-1">Valor Extra</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_11" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_11" disabled
                                 value={addDecimalPoints(_GET_EXPEDITION_JSON('taxes').id_payment_2_p + '%' ?? '')} readOnly />
-                            <input type="text" class="form-control" id="expedition_doc_4_12" disabled
+                            <input type="text" className="form-control" id="expedition_doc_4_12" disabled
                                 value={addDecimalPoints(puisp.toFixed(0))} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Total</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_4_13" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_4_13" disabled
                                 value={addDecimalPoints(puist.toFixed(0))} readOnly />
                         </div>
                     </div>
@@ -931,20 +930,20 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Fecha Deber Urbanistico</label>
-                        <input type="date" class="form-control" id="expedition_doc_5_1" max="2100-01-01"
+                        <input type="date" className="form-control" id="expedition_doc_5_1" max="2100-01-01"
                             defaultValue={currentRecord.date2 ?? ''} />
                     </div>
                     <div className="col">
                         <label className="mt-1">Consecutivo Deber Urbanistico</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_2" disabled
                                 value={currentRecord.cub2 ?? ''} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Ciudad</label>
-                        <div class="input-group">
-                            <select class="form-select me-1" id={"expedition_doc_5_26"}>
+                        <div className="input-group">
+                            <select className="form-select me-1" id={"expedition_doc_5_26"}>
                                 {cities}
                             </select>
                         </div>
@@ -954,13 +953,13 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_5_3" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicacion</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_4" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -969,28 +968,28 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinacion</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_6" disabled
+                        <input type="text" className="form-control" id="expedition_doc_5_6" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_7" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_7" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Direccion Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_8"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_8"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_9" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_9" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -999,15 +998,15 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col-3">
                         <label className="mt-1">Matricula</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_5" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_5" disabled
                                 value={_GET_CHILD_2().item_22} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Tratamiento</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_5_26" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_5_26" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').type ?? ''} readOnly />
                         </div>
                     </div>
@@ -1024,15 +1023,15 @@ class EXP_DOCS extends Component {
 
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_5_10" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_5_10" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_5_11" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_5_11" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -1040,22 +1039,22 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">Unidades Vivienda</label>
-                        <input type="number" class="form-control" id="expedition_doc_5_12" disabled readOnly
+                        <input type="number" className="form-control" id="expedition_doc_5_12" disabled readOnly
                             value={_GET_EXPEDITION_JSON('duty').units ?? ''} />
                     </div>
                     <div className="col">
                         <label className="mt-1">Áreas uso Comercio</label>
-                        <input type="number" class="form-control" id="expedition_doc_5_13" disabled readOnly
+                        <input type="number" className="form-control" id="expedition_doc_5_13" disabled readOnly
                             value={_GET_EXPEDITION_JSON('duty').comerce ?? ''} />
                     </div>
                     <div className="col">
                         <label className="mt-1">Valor m2 (COP)</label>
-                        <input type="number" class="form-control" id="expedition_doc_5_14" disabled readOnly
+                        <input type="number" className="form-control" id="expedition_doc_5_14" disabled readOnly
                             value={addDecimalPoints(_GET_EXPEDITION_JSON('duty').charge) ?? 0} />
                     </div>
                     <div className="col-2">
                         <label className="mt-1">ZGU</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_15" disabled readOnly
+                        <input type="text" className="form-control" id="expedition_doc_5_15" disabled readOnly
                             value={_GET_EXPEDITION_JSON('duty').zgu ?? ''} />
                     </div>
                 </div>
@@ -1065,22 +1064,22 @@ class EXP_DOCS extends Component {
                         <label className="my-2 fw-bold">Liquidación de Proyectos de Vivienda (Unidades {'>'} 0)</label>
                         <div className="col-2">
                             <label className="mt-1">m2 por Viv.</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_16" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_16" disabled readOnly
                                 value={nV} />
                         </div>
                         <div className="col-2">
                             <label className="mt-1">Numero</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_17" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_17" disabled readOnly
                                 value={uV} />
                         </div>
                         <div className="col-2">
                             <label className="mt-1">Valor (COP)</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_18" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_18" disabled readOnly
                                 value={addDecimalPoints(charge)} />
                         </div>
                         <div className="col">
                             <label className="mt-1">Total (COP)</label>
-                            <input type="text" class="form-control" id="expedition_doc_5_19" disabled readOnly
+                            <input type="text" className="form-control" id="expedition_doc_5_19" disabled readOnly
                                 value={addDecimalPoints(total1)} />
                         </div>
                     </div>
@@ -1092,38 +1091,37 @@ class EXP_DOCS extends Component {
                         <label className="my-2 fw-bold">Liquidación para uso de comercio, servicio, industrial, dotacional (Áreas uso Comercio {'>'} 0)</label>
                         <div className="col-2">
                             <label className="mt-1">6 m2 * 100m2</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_20" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_20" disabled readOnly
                                 value={'0.06'} />
                         </div>
                         <div className="col-2">
                             <label className="mt-1">m2</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_21" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_21" disabled readOnly
                                 value={mC} />
                         </div>
                         <div className="col-2">
                             <label className="mt-1">Valor (COP)</label>
-                            <input type="number" class="form-control" id="expedition_doc_5_22" disabled readOnly
+                            <input type="number" className="form-control" id="expedition_doc_5_22" disabled readOnly
                                 value={addDecimalPoints(charge)} />
                         </div>
                         <div className="col">
                             <label className="mt-1">Total (COP)</label>
-                            <input type="text" class="form-control" id="expedition_doc_5_23" disabled readOnly
+                            <input type="text" className="form-control" id="expedition_doc_5_23" disabled readOnly
                                 value={addDecimalPoints(total2)} />
                         </div>
                     </div>
 
                     : ""}
 
-
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">Total (Letras)</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_24" disabled readOnly
+                        <input type="text" className="form-control" id="expedition_doc_5_24" disabled readOnly
                             value={writtenNumber(total).toUpperCase() + ' MCTE'} />
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Total (COP) (Numeros)</label>
-                        <input type="text" class="form-control" id="expedition_doc_5_25" disabled readOnly
+                        <input type="text" className="form-control" id="expedition_doc_5_25" disabled readOnly
                             value={addDecimalPoints(total)} />
                     </div>
                 </div>
@@ -1148,13 +1146,12 @@ class EXP_DOCS extends Component {
             let date = document.getElementById('exodfb_date_doc').value;
             formatData.set('date', date);
 
-
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1166,7 +1163,7 @@ class EXP_DOCS extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1203,30 +1200,30 @@ class EXP_DOCS extends Component {
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_6_descs" disabled
+                                <input type="text" className="form-control" name="expedition_doc_6_descs" disabled
                                     value={_areas[i].desc} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_6_uses" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_6_uses" disabled
                                         value={_areas[i].use} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_6_charges" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_6_charges" disabled
                                         value={_areas[i].charge} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_6_areas" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_6_areas" disabled
                                         value={addDecimalPoints(_areas[i].area)} readOnly />
                                 </div>
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_6_sums" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_6_sums" disabled
                                         value={addDecimalPoints(axc)} readOnly />
                                 </div>
                             </div>
@@ -1234,20 +1231,19 @@ class EXP_DOCS extends Component {
                     </>)
                 }
 
-
             }
 
             return <>
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_6_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_6_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -1256,22 +1252,22 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinación</label>
-                        <input type="text" class="form-control" id="expedition_doc_6_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_6_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
 
                     <div className="col-6">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -1279,16 +1275,16 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
 
                     <div className="col">
                         <label className="mt-1">Matricula</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_mat" value={_GET_CHILD_2().item_22} readOnly />
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_mat" value={_GET_CHILD_2().item_22} readOnly />
                         </div>
                     </div>
 
@@ -1304,15 +1300,15 @@ class EXP_DOCS extends Component {
 
                 <div className="row">
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_6_7" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_6_7" disabled readOnly >
                             {_names}
                         </textarea>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_6_8" disabled readOnly >
+                        <textarea className="form-control" id="expedition_doc_6_8" disabled readOnly >
                             {_namesid}
                         </textarea>
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -1323,8 +1319,8 @@ class EXP_DOCS extends Component {
                     <div className="row">
                         <div className="col-4">
                             <label className="mt-1">Área del predio</label>
-                            <div class="input-group">
-                                <input type="number" step={0.01} class="form-control" id="expedition_doc_6_area" defaultValue="0.00" />
+                            <div className="input-group">
+                                <input type="number" step={0.01} className="form-control" id="expedition_doc_6_area" defaultValue="0.00" />
                             </div>
                         </div>
 
@@ -1352,12 +1348,12 @@ class EXP_DOCS extends Component {
 
                 <div className="row">
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_6_12" disabled
+                        <input type="text" className="form-control" id="expedition_doc_6_12" disabled
                             defaultValue={"Total"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_13" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_6_13" disabled
                                 value={addDecimalPoints(_totalArea())} readOnly />
                         </div>
                     </div>
@@ -1386,22 +1382,22 @@ class EXP_DOCS extends Component {
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_7_descs" disabled
+                                <input type="text" className="form-control" name="expedition_doc_7_descs" disabled
                                     value={_areas[i].desc} readOnly />
                             </div>
                             <div className="col">
-                                <input type="text" class="form-control" name="expedition_doc_7_uses" disabled
+                                <input type="text" className="form-control" name="expedition_doc_7_uses" disabled
                                     value={_areas[i].use} readOnly />
                             </div>
                             <div className="col">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_7_areas" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_7_areas" disabled
                                         value={_areas[i].area} readOnly />
                                 </div>
                             </div>
                             <div className="col-3">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="expedition_doc_7_sums" disabled
+                                <div className="input-group">
+                                    <input type="text" className="form-control" name="expedition_doc_7_sums" disabled
                                         value={addDecimalPoints(axc)} readOnly />
                                 </div>
                             </div>
@@ -1409,52 +1405,49 @@ class EXP_DOCS extends Component {
                     </>)
                 }
 
-
             }
 
             return <>
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_doc_7_1" disabled
+                        <input type="text" className="form-control" id="expedition_doc_7_1" disabled
                             value={formsParser1(_GET_CHILD_1())} readOnly />
                     </div>
                     <div className="col-3">
                         <label className="mt-1"># Radicación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_2" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_2" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
                 </div>
 
-
-
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Destinación</label>
-                        <input type="text" class="form-control" id="expedition_doc_7_3" disabled
+                        <input type="text" className="form-control" id="expedition_doc_7_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
                     <div className="col">
                         <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_4" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_4" disabled
                                 value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Dirección Predio</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_5"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><i class="fas fa-home"></i></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Estrato</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_6" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_6" disabled
                                 value={_GET_CHILD_2().item_267} readOnly />
                         </div>
                     </div>
@@ -1471,13 +1464,13 @@ class EXP_DOCS extends Component {
 
                 <div className="row">
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_7_7" disabled
+                        <input type="text" className="form-control" id="expedition_doc_7_7" disabled
                             value={fun_51_p.name + ' ' + fun_51_p.surname} readOnly />
                     </div>
                     <div className="col">
-                        <input type="text" class="form-control" id="expedition_doc_7_8" disabled
+                        <input type="text" className="form-control" id="expedition_doc_7_8" disabled
                             value={fun_51_p.id_number} readOnly />
-                        <div class="input-group">
+                        <div className="input-group">
                         </div>
                     </div>
                 </div>
@@ -1501,12 +1494,12 @@ class EXP_DOCS extends Component {
 
                 <div className="row mb-1 ">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Ajuste cargo Fijo"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_12" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_12" disabled
                                 value={addDecimalPoints(taxes.id_payment_fix ?? 0)} readOnly />
                         </div>
                     </div>
@@ -1514,12 +1507,12 @@ class EXP_DOCS extends Component {
 
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Total expensas"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_9" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_9" disabled
                                 value={addDecimalPoints(_totalArea())} readOnly />
                         </div>
                     </div>
@@ -1527,12 +1520,12 @@ class EXP_DOCS extends Component {
 
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Sub Total"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_13" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_13" disabled
                                 value={addDecimalPoints(Number(taxes.id_payment_fix ?? 0) + Number(_totalArea()))} readOnly />
                         </div>
                     </div>
@@ -1540,24 +1533,24 @@ class EXP_DOCS extends Component {
 
                 <div className="row mb-1">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Iva"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_10" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_10" disabled
                                 value={addDecimalPoints((_totalArea() * IVA).toFixed(0))} readOnly />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1 ">
                     <div className="col">
-                        <input type="text" class="form-control" disabled
+                        <input type="text" className="form-control" disabled
                             defaultValue={"Total"} />
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_7_11" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_7_11" disabled
                                 value={addDecimalPoints(
                                     (
                                         Number(taxes.id_payment_fix ?? 0) +
@@ -1570,7 +1563,6 @@ class EXP_DOCS extends Component {
             </>
         }
 
-
         let _COMPOENEN_DOC_FINAL_NOT = () => {
             var _CHILD_53 = _GET_CHILD_53();
             let _JSON = getJSONFull(currentRecord.cub3_json)
@@ -1579,30 +1571,30 @@ class EXP_DOCS extends Component {
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha del documento</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="exodfb_date_doc" required
-                            defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="exodfb_date_doc" required
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
 
                     <div className="col">
                         <label>Número de Radicación</label>
-                        <input type="text" class="form-control mb-3" id="exodfb_id_public" disabled
+                        <input type="text" className="form-control mb-3" id="exodfb_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
                     <div></div>
                     <div className="col">
                         <label className="mt-1"> {infoCud.serials.end} Carta Citación</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="exodfb_cub3_exp"
-                                defaultValue={currentRecord.cub3 || this.state.cubSelected || ""} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="exodfb_cub3_exp"
+                                defaultValue={currentRecord.cub3 || cubSelected || ""} />
+                            <Button size="sm" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected33" defaultValue={this.state.vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected33" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
+                                {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
@@ -1614,37 +1606,37 @@ class EXP_DOCS extends Component {
                 <div className="row mb-3">
                     <div className="col">
                         <label>Ciudad</label>
-                        <input type="text" class="form-control mb-3" id="exodfb_city"
+                        <input type="text" className="form-control mb-3" id="exodfb_city"
                             defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
                     </div>
                     <div className="col">
                         <label>Número de Resolución</label>
-                        <input type="text" class="form-control mb-3" id="exodfb_res_public" disabled
+                        <input type="text" className="form-control mb-3" id="exodfb_res_public" disabled
                             defaultValue={currentRecord.id_public} />
                     </div>
                     <div className="col">
                         <label>Fecha de Resolución</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="exodfb_date_res" disabled
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="exodfb_date_res" disabled
                             defaultValue={RES_JSON.date || ''} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
                         <label>Responsable</label>
-                        <input type="text" class="form-control mb-3" id="exodfb_name"
+                        <input type="text" className="form-control mb-3" id="exodfb_name"
                             defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col">
                         <label>Dirección</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="exodfb_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="exodfb_address"
                                 defaultValue={_JSON.address || _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Email</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="exodfb_email"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="exodfb_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
                         </div>
                     </div>
@@ -1672,29 +1664,29 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" class="form-control" id="expedition_eje_type"
+                        <input type="text" className="form-control" id="expedition_eje_type"
                             defaultValue={type} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">Fecha Vigencia</label>
-                        <div class="input-group">
-                            <input type="date" class="form-control" id="expedition_eje_date"
+                        <div className="input-group">
+                            <input type="date" className="form-control" id="expedition_eje_date"
                                 defaultValue={reso_vig_date_dv} required />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Consecutivo</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" disabled id="expedition_eje_id_res"
+                        <div className="input-group">
+                            <input type="text" className="form-control" disabled id="expedition_eje_id_res"
                                 value={currentRecord.id_public} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Vigencia Tiempo</label>
-                        <div class="input-group my-1">
-                            <select class="form-select" id="expedition_eje_vign" defaultValue={reso_vig_n_dv}>
+                        <div className="input-group my-1">
+                            <select className="form-select" id="expedition_eje_vign" defaultValue={reso_vig_n_dv}>
                                 <option value={0}>SIN VIGENCIA</option>
                                 <option value={12}>DOCE (12) MESES</option>
                                 <option value={24}>VEINTE Y CUATRO (24) MESES</option>
@@ -1708,23 +1700,23 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">POT</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_eje_pot" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_eje_pot" disabled
                                 value={reso_pot_dv} />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Estado</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_eje_state" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_eje_state" disabled
                                 value={'EJECUTORIADA'} readOnly />
 
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1"># Radicacion</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_eje_id_public" disabled
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_eje_id_public" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -1733,7 +1725,7 @@ class EXP_DOCS extends Component {
                 <div className="row my-2">
                     <label>Parrafo 1</label>
                     <div className="col text-start">
-                        <select class="form-select me-1" id={"expedition_eje_p1"} defaultValue={reso_vig_p1_dv}>
+                        <select className="form-select me-1" id={"expedition_eje_p1"} defaultValue={reso_vig_p1_dv}>
                             <option value={1}>al haber concluido los términos de ley sin haberse interpuesto ningún recurso</option>
                             <option value={2} >al haber renunciado expresamente a los términos de ley para interponer los recursos</option>
                             <option value={3} >NO USAR</option>
@@ -1744,7 +1736,7 @@ class EXP_DOCS extends Component {
                 <div className="row my-2">
                     <label>Vigencia</label>
                     <div className="col text-start">
-                        <select class="form-select me-1" id={"expedition_eje_vig"} defaultValue={reso_vig_vp_dv}>
+                        <select className="form-select me-1" id={"expedition_eje_vig"} defaultValue={reso_vig_vp_dv}>
                             <option value={1}>Conceder con fundamento en los articulos 2.2.6.1.4.1 y 2.2.6.4.2.5 del decreto 1077 de 2015.</option>
                             <option value={2}>La modificación de licencia vigente no amplía la vigencia establecida en la licencia de construcción inicial objeto de modificación.</option>
                         </select>
@@ -1761,36 +1753,35 @@ class EXP_DOCS extends Component {
                     </div>
                     <div className="row mb-1">
                         <div className="col-2">
-                            <div class="form-check form-check-inline mt-5">
+                            <div className="form-check form-check-inline mt-5">
                                 <label> 1. Antecedentes</label>
-                                <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[0] == 1 ? true : false} name="eje_pdf_arts_cb" />
+                                <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[0] == 1 ? true : false} name="eje_pdf_arts_cb" />
                             </div>
                         </div>
                         <div className="col">
-                            <textarea class="form-control" id="eje_pdf_art_4_1_dv" rows={'3'} defaultValue={art_4_1_dv}></textarea>
+                            <textarea className="form-control" id="eje_pdf_art_4_1_dv" rows={'3'} defaultValue={art_4_1_dv}></textarea>
                         </div>
                     </div>
 
                     <div className="row mb-1">
                         <div className="col-2">
-                            <div class="form-check form-check-inline mt-5">
+                            <div className="form-check form-check-inline mt-5">
                                 <label> 2. Descripción</label>
-                                <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[1] == 1 ? true : false} name="eje_pdf_arts_cb" />
+                                <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[1] == 1 ? true : false} name="eje_pdf_arts_cb" />
                             </div>
                         </div>
 
                         <div className="col">
-                            <textarea class="form-control" id="eje_pdf_art_4_2_dv" rows={'4'} defaultValue={art_4_2_dv}></textarea>
+                            <textarea className="form-control" id="eje_pdf_art_4_2_dv" rows={'4'} defaultValue={art_4_2_dv}></textarea>
                         </div>
                     </div>
                 </div>
 
-
                 <div className="row mb-2">
                     <div className="col">
                         <label>Alineción firma curador</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"eje_pdf_reso_1"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"eje_pdf_reso_1"}>
                                 <option value={'center'}>CENTRO</option>
                                 <option value={'left'}>IZQUIERDA</option>
                                 <option value={'right'}>DERECHA</option>
@@ -1798,11 +1789,10 @@ class EXP_DOCS extends Component {
                         </div>
                     </div>
 
-
                     <div className="col">
                         <label>Logo</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"eje_pdf_reso_logo"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"eje_pdf_reso_logo"}>
                                 <option value={'no'}>SIN LOGO</option>
                                 <option value={'left'}>IZQUIERDA</option>
                                 <option value={'left2'}>IZQUIERDA ENTRESALTO</option>
@@ -1817,78 +1807,78 @@ class EXP_DOCS extends Component {
                 <div className="row mb-2 text-center">
 
                     <div className="col ">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Superior (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="eje_maring_top" defaultValue={2.5} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Superior (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="eje_maring_top" defaultValue={2.5} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Inferior (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="eje_maring_bot" defaultValue={2.5} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Inferior (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="eje_maring_bot" defaultValue={2.5} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Izquierdo (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="eje_maring_left" defaultValue={1.7} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Izquierdo (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="eje_maring_left" defaultValue={1.7} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="input-group-sm my-1">
-                            <label class="form-check-label">Margen Derecho (cm)</label>
-                            <input type="number" min={0} step={0.01} class="form-control-sm" id="eje_maring_right" defaultValue={1.7} />
+                        <div className="input-group-sm my-1">
+                            <label className="form-check-label">Margen Derecho (cm)</label>
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="eje_maring_right" defaultValue={1.7} />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-2">
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_simple" />
-                            <label class="form-check-label">Usar nombre revisor</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_simple" />
+                            <label className="form-check-label">Usar nombre revisor</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_signs" />
-                            <label class="form-check-label">Usar firma profesionales</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_signs" />
+                            <label className="form-check-label">Usar firma profesionales</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_pagesi" />
-                            <label class="form-check-label">Usar pie de pagina</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_pagesi" />
+                            <label className="form-check-label">Usar pie de pagina</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_pagesn" defaultChecked="true" />
-                            <label class="form-check-label">Usar paginación</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_pagesn" defaultChecked="true" />
+                            <label className="form-check-label">Usar paginación</label>
                         </div>
                     </div>
                 </div>
                 <div className="row m-3">
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_pagesx" defaultChecked={false} />
-                            <label class="form-check-label">Paginacion Arriba</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="eje_pdf_rew_pagesx" defaultChecked={false} />
+                            <label className="form-check-label">Paginacion Arriba</label>
                         </div>
                     </div>
                 </div>
                 <hr />
                 <div className="row text-center">
                     <div className="col">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+                        <Button size="sm" className="my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => pd_eje()}><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => pd_eje()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                     </div>
                 </div>
             </>
@@ -1913,34 +1903,19 @@ class EXP_DOCS extends Component {
             formData.set('type_not', document.getElementById("type_not").value);
             if(document.getElementById("type_not_name")) formData.set('type_not_name', document.getElementById("type_not_name").value);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_1(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc1/" + "Acto de tramite de licencia " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc1/" + "Acto de tramite de licencia " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
@@ -1985,34 +1960,19 @@ class EXP_DOCS extends Component {
             formData.set('iva', document.getElementById('expedition_doc_2_10').value);
             formData.set('subtotal', document.getElementById('expedition_doc_2_11').value);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_2(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc2/" + "Liquidacion de Expensas " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc2/" + "Liquidacion de Expensas " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
@@ -2064,34 +2024,19 @@ class EXP_DOCS extends Component {
 
             formData.set('total', document.getElementById('expedition_doc_3_20').value);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_3(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc3/" + "Impuestos Minicipales " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc3/" + "Impuestos Minicipales " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
@@ -2117,34 +2062,19 @@ class EXP_DOCS extends Component {
             formData.set('uis2_v', document.getElementById('expedition_doc_4_12').value);
             formData.set('uis2_t', document.getElementById('expedition_doc_4_13').value);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_4(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc4/" + "Estampilla PRO-UIS " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc4/" + "Estampilla PRO-UIS " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
@@ -2188,34 +2118,19 @@ class EXP_DOCS extends Component {
 
             formData.set('city', document.getElementById('expedition_doc_5_26').value);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_5(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc5/" + "Deber Urbanistico " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc5/" + "Deber Urbanistico " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
@@ -2266,34 +2181,19 @@ class EXP_DOCS extends Component {
 
             formData.set('total', document.getElementById('expedition_doc_6_13').value);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_6(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc6/" + "Impuestos Delineación Urbana " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc6/" + "Impuestos Delineación Urbana " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
@@ -2340,34 +2240,19 @@ class EXP_DOCS extends Component {
             formData.set('iva', document.getElementById('expedition_doc_7_10').value);
             formData.set('total', document.getElementById('expedition_doc_7_11').value);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_7(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc7/" + "Liquidación Expensas " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc7/" + "Liquidación Expensas " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
@@ -2393,34 +2278,19 @@ class EXP_DOCS extends Component {
 
             formData.set('id_public', currentItem.id_public);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_final_not(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdocfinalnot/" + "Citacio para Notificacion Resolucsion " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdocfinalnot/" + "Citacio para Notificacion Resolucsion " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
@@ -2445,7 +2315,7 @@ class EXP_DOCS extends Component {
 
             createVRxCUB_relation(cub3)
             manage_exp();
-            this.retrieveItem();
+            retrieveItem();
         }
         let save_eje = () => {
             formData = new FormData();
@@ -2456,8 +2326,6 @@ class EXP_DOCS extends Component {
             reso.vig.p1 = document.getElementById('expedition_eje_p1').value;
             reso.vig.vp = document.getElementById('expedition_eje_vig').value;
             reso.vig.n = document.getElementById('expedition_eje_vign').value;
-
-
 
             let values = []
             let values_html = document.getElementsByName('eje_pdf_arts_cb');
@@ -2523,241 +2391,200 @@ class EXP_DOCS extends Component {
             }
             formData.set('arts_cb', values.join(','));
 
-
             formData.set('curaduria', infoCud.job);
             formData.set('ciudad', infoCud.city);
             formData.set('record_version', 1);
             formData.set('id', currentItem.id);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_eje(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         }
 
         let manage_exp = () => {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.update(currentRecord.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
             <div className="record_ph_gen container">
-                <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="nav_expedition_20">
+                <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_20">
                     <label className="app-p lead fw-normal">PAGOS</label>
                 </legend>
 
-
-                <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_21"
-                    onClick={() => this.setState({ showCollapse_expedition_21: !this.state.showCollapse_expedition_21 })}>
-                    <label className="app-p lead fw-normal text-info">Acto de tramite de licencia</label>
-                </MDBBtn>
-                <MDBCollapse show={this.state.showCollapse_expedition_21}>
+                <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_21"
+                    onClick={() => setShowCollapse_expedition_21(!showCollapse_expedition_21)}>
+                    <span className="text-sm font-medium text-foreground/80">Acto de tramite de licencia</span>
+                    <Icon name={!showCollapse_expedition_21 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
+                <UiCollapsible open={showCollapse_expedition_21}><CollapsibleContent>
                     <fieldset className="p-3">
                         <form id="form_expedition_1" onSubmit={pdf_gen_1}>
                             {_COMPONENT_DOC_1()}
                             <div className="row text-center">
                                 <div className="col">
-                                    <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                    <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                 </div>
                             </div>
                         </form>
                     </fieldset>
-                </MDBCollapse>
+                </CollapsibleContent></UiCollapsible>
 
                 {_GLOBAL_ID === 'cp1' ?
                     <>
-                        <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_27"
-                            onClick={() => this.setState({ showCollapse_expedition_27: !this.state.showCollapse_expedition_27 })}>
-                            <label className="app-p lead fw-normal text-info">Liquidación de Expensas</label>
-                        </MDBBtn>
-                        <MDBCollapse show={this.state.showCollapse_expedition_27}>
+                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_27"
+                    onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
+                    <span className="text-sm font-medium text-foreground/80">Liquidación de Expensas</span>
+                    <Icon name={!showCollapse_expedition_27 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
+                        <UiCollapsible open={showCollapse_expedition_27}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_7}>
                                     {_COMPONENT_DOC_7()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                         </div>
                                     </div>
                                 </form>
                             </fieldset>
-                        </MDBCollapse>
+                        </CollapsibleContent></UiCollapsible>
                     </>
                     : ''}
 
-
                 {!conOA() && _GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2' ? <>
-                    <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_22"
-                        onClick={() => this.setState({ showCollapse_expedition_22: !this.state.showCollapse_expedition_22 })}>
-                        <label className="app-p lead fw-normal text-info">Liquidacion de Expensas</label>
-                    </MDBBtn>
-                    <MDBCollapse show={this.state.showCollapse_expedition_22}>
+                    <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_22"
+                    onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
+                    <span className="text-sm font-medium text-foreground/80">Liquidacion de Expensas</span>
+                    <Icon name={!showCollapse_expedition_22 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
+                    <UiCollapsible open={showCollapse_expedition_22}><CollapsibleContent>
                         <fieldset className="p-3">
                             <form id="form_expedition_2" onSubmit={pdf_gen_2}>
                                 {_COMPONENT_DOC_2()}
                                 <div className="row text-center">
                                     <div className="col">
-                                        <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                        <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                     </div>
                                 </div>
                             </form>
                         </fieldset>
-                    </MDBCollapse>
+                    </CollapsibleContent></UiCollapsible>
                 </> : null}
 
                 {!conOA() && _GLOBAL_ID === 'cb1' ? <>
-                    <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
-                        onClick={() => this.setState({ showCollapse_expedition_23: !this.state.showCollapse_expedition_23 })}>
-                        <label className="app-p lead fw-normal text-info">Impuestos Municipales</label>
-                    </MDBBtn>
-                    <MDBCollapse show={this.state.showCollapse_expedition_23}>
+                    <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_23"
+                    onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
+                    <span className="text-sm font-medium text-foreground/80">Impuestos Municipales</span>
+                    <Icon name={!showCollapse_expedition_23 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
+                    <UiCollapsible open={showCollapse_expedition_23}><CollapsibleContent>
 
                         <fieldset className="p-3">
                             <form id="form_expedition_3" onSubmit={pdf_gen_3}>
                                 {_COMPONENT_DOC_3()}
                                 <div className="row text-center">
                                     <div className="col">
-                                        <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                        <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                     </div>
                                 </div>
                             </form>
                         </fieldset>
-                    </MDBCollapse>
+                    </CollapsibleContent></UiCollapsible>
                 </> : null}
 
-
-                <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_24"
-                    onClick={() => this.setState({ showCollapse_expedition_24: !this.state.showCollapse_expedition_24 })}>
-                    <label className="app-p lead fw-normal text-info">Estampilla PRO-UIS</label>
-                </MDBBtn>
-                <MDBCollapse show={this.state.showCollapse_expedition_24}>
+                <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_24"
+                    onClick={() => setShowCollapse_expedition_24(!showCollapse_expedition_24)}>
+                    <span className="text-sm font-medium text-foreground/80">Estampilla PRO-UIS</span>
+                    <Icon name={!showCollapse_expedition_24 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
+                <UiCollapsible open={showCollapse_expedition_24}><CollapsibleContent>
                     <fieldset className="p-3">
                         <form id="form_expedition_4" onSubmit={pdf_gen_4}>
                             {_COMPONENT_DOC_4()}
                             <div className="row text-center">
                                 <div className="col">
-                                    <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                    <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                 </div>
                             </div>
                         </form>
                     </fieldset>
-                </MDBCollapse>
+                </CollapsibleContent></UiCollapsible>
 
                 {_GET_CHILD_2().item_267 > 2 && _GLOBAL_ID === 'cb1'
                     ? <>
-                        <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_25"
-                            onClick={() => this.setState({ showCollapse_expedition_25: !this.state.showCollapse_expedition_25 })}>
-                            <label className="app-p lead fw-normal text-info">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</label>
-                        </MDBBtn>
-                        <MDBCollapse show={this.state.showCollapse_expedition_25}>
+                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_25"
+                    onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
+                    <span className="text-sm font-medium text-foreground/80">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</span>
+                    <Icon name={!showCollapse_expedition_25 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
+                        <UiCollapsible open={showCollapse_expedition_25}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_5}>
                                     {_COMPONENT_DOC_5()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                         </div>
                                     </div>
                                 </form>
                             </fieldset>
-                        </MDBCollapse>
-
-
+                        </CollapsibleContent></UiCollapsible>
 
                     </>
                     : ""}
 
                 {_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2' ?
                     <>
-                        <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_26"
-                            onClick={() => this.setState({ showCollapse_expedition_26: !this.state.showCollapse_expedition_26 })}>
-                            <label className="app-p lead fw-normal text-info">Impuesto Delineación Urbana</label>
-                        </MDBBtn>
-                        <MDBCollapse show={this.state.showCollapse_expedition_26}>
+                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_26"
+                    onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
+                    <span className="text-sm font-medium text-foreground/80">Impuesto Delineación Urbana</span>
+                    <Icon name={!showCollapse_expedition_26 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                </button>
+                        <UiCollapsible open={showCollapse_expedition_26}><CollapsibleContent>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_6}>
                                     {_COMPONENT_DOC_6()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                         </div>
                                     </div>
                                 </form>
                             </fieldset>
-                        </MDBCollapse>
+                        </CollapsibleContent></UiCollapsible>
                     </>
                     : ''}
 
-
-                <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="nav_expedition_26">
+                <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_26">
                     <label className="app-p lead fw-normal">DOCUMENTOS</label>
                 </legend>
 
@@ -2768,22 +2595,21 @@ class EXP_DOCS extends Component {
                         currentVersion={currentVersion}
                         currentRecord={currentRecord}
                         currentVersionR={currentVersionR}
-                        requestUpdate={this.props.requestUpdate}
-                        requestUpdateRecord={this.props.requestUpdateRecord}
+                        requestUpdate={requestUpdate}
+                        requestUpdateRecord={requestUpdateRecord}
                         recordArc={recordArc}
                     />
                 </Collapsible>
-
 
                 <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">CITACIÓN PARA NOTIFICACIÓN</label></>}>
                     <form id="form_expedition_4" onSubmit={save_exp_doc_final_not}>
                         {_COMPOENEN_DOC_FINAL_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <button className="btn btn-success my-3"><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                                <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                             <div className="col">
-                                <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_final_not()}><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                                <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_final_not()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                             </div>
                         </div>
                     </form>
@@ -2797,8 +2623,8 @@ class EXP_DOCS extends Component {
                         currentVersion={currentVersion}
                         currentRecord={currentRecord}
                         currentVersionR={currentVersionR}
-                        requestUpdate={this.props.requestUpdate}
-                        requestUpdateRecord={this.props.requestUpdateRecord}
+                        requestUpdate={requestUpdate}
+                        requestUpdateRecord={requestUpdateRecord}
                         recordArc={recordArc}
                     /> : _COMPONENT_EJE()}
                 </Collapsible>
@@ -2811,15 +2637,14 @@ class EXP_DOCS extends Component {
                             currentVersion={currentVersion}
                             currentRecord={currentRecord}
                             currentVersionR={currentVersionR}
-                            requestUpdate={this.props.requestUpdate}
-                            requestUpdateRecord={this.props.requestUpdateRecord}
+                            requestUpdate={requestUpdate}
+                            requestUpdateRecord={requestUpdateRecord}
                             recordArc={recordArc}
                         />
                     </Collapsible> : ''
                 }
             </div >
         );
-    }
 }
 
 export default EXP_DOCS;

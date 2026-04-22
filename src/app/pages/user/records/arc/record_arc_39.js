@@ -1,14 +1,10 @@
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 // // Importaciones
 // import React, { Component } from 'react';
 // import { Tabs, Tab, Modal, Button, Form, Table } from 'react-bootstrap';
-// import Swal from 'sweetalert2';
-// import withReactContent from 'sweetalert2-react-content';
-// import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-// import { MDBIcon } from 'mdbreact';
+// // // import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 
-// const MySwal = withReactContent(Swal);
-
-// class RECORD_ARC_39 extends Component {
+// // class RECORD_ARC_39 extends Component {
 //   state = {
 //     // Datos principales
 //     predios: [],
@@ -159,11 +155,7 @@
 
 //     // Validación básica
 //     if (!newPredio.name.trim() || !newPredio.area.trim()) {
-//       MySwal.fire({ 
-//         title: 'Error', 
-//         text: 'Por favor complete todos los campos obligatorios',
-//         icon: 'warning' 
-//       });
+//       swalError({ title: 'Error', text: 'Por favor complete todos los campos obligatorios', icon: 'warning' });
 //       return;
 //     }
 
@@ -178,10 +170,7 @@
 //     RECORD_ARCSERVICE.create_arc_39(formData)
 //       .then(response => {
 //         if (response.data === 'OK') {
-//           MySwal.fire({ 
-//             title: swaMsg.publish_success_title, 
-//             icon: 'success' 
-//           });
+//           swalSuccess({ title: swaMsg.publish_success_title });
 //           this.props.requestUpdateRecord(this.props.currentItem.id);
 //           this.closeCreatePredioModal();
 //           this.loadRA39Data();
@@ -190,10 +179,7 @@
 //         }
 //       })
 //       .catch(() => {
-//         MySwal.fire({ 
-//           title: swaMsg.generic_eror_title, 
-//           icon: 'error' 
-//         });
+//         swalError({ title: swaMsg.generic_eror_title });
 //       });
 //   };
 
@@ -228,11 +214,7 @@
 
 //     // Validación básica
 //     if (!newPoint.label.trim() || !newPoint.coord_x || !newPoint.coord_y) {
-//       MySwal.fire({ 
-//         title: 'Error', 
-//         text: 'Por favor complete todos los campos obligatorios',
-//         icon: 'warning' 
-//       });
+//       swalError({ title: 'Error', text: 'Por favor complete todos los campos obligatorios', icon: 'warning' });
 //       return;
 //     }
 
@@ -245,10 +227,7 @@
 //     RECORD_ARCSERVICE.create_arc_39_point(formData)
 //       .then(response => {
 //         if (response.data === 'OK') {
-//           MySwal.fire({ 
-//             title: swaMsg.publish_success_title, 
-//             icon: 'success' 
-//           });
+//           swalSuccess({ title: swaMsg.publish_success_title });
 //           this.props.requestUpdateRecord(this.props.currentItem.id);
 //           this.closeCreatePointModal();
 //           this.loadRA39Data();
@@ -258,10 +237,7 @@
 //         }
 //       })
 //       .catch(() => {
-//         MySwal.fire({ 
-//           title: swaMsg.generic_eror_title, 
-//           icon: 'error' 
-//         });
+//         swalError({ title: swaMsg.generic_eror_title });
 //       });
 //   };
 
@@ -274,7 +250,6 @@
 //   closeViewPointsModal = () => {
 //     this.toggleModal('viewPoints', false);
 //   };
-
 
 //   openEditPredioModal = (predio) => {
 //     this.setState({ 
@@ -306,11 +281,7 @@
 
 //     // Validación básica
 //     if (!editingPredio.name.trim() || !editingPredio.area.toString().trim()) {
-//       MySwal.fire({ 
-//         title: 'Error', 
-//         text: 'Por favor complete todos los campos obligatorios',
-//         icon: 'warning' 
-//       });
+//       swalError({ title: 'Error', text: 'Por favor complete todos los campos obligatorios', icon: 'warning' });
 //       return;
 //     }
 
@@ -324,10 +295,7 @@
 //     RECORD_ARCSERVICE.update_arc_39(formData)
 //       .then(response => {
 //         if (response.data === 'OK') {
-//           MySwal.fire({ 
-//             title: swaMsg.publish_success_title, 
-//             icon: 'success' 
-//           });
+//           swalSuccess({ title: swaMsg.publish_success_title });
 //           this.props.requestUpdateRecord(this.props.currentItem.id);
 //           this.closeEditPredioModal();
 //           this.loadRA39Data();
@@ -336,10 +304,7 @@
 //         }
 //       })
 //       .catch(() => {
-//         MySwal.fire({ 
-//           title: swaMsg.generic_eror_title, 
-//           icon: 'error' 
-//         });
+//         swalError({ title: swaMsg.generic_eror_title });
 //       });
 //   };
 
@@ -377,11 +342,7 @@
 
 //     // Validación básica
 //     if (!editingBoundary.lindero_number || !editingBoundary.distance || !editingBoundary.direction) {
-//       MySwal.fire({ 
-//         title: 'Error', 
-//         text: 'Por favor complete todos los campos obligatorios',
-//         icon: 'warning' 
-//       });
+//       swalError({ title: 'Error', text: 'Por favor complete todos los campos obligatorios', icon: 'warning' });
 //       return;
 //     }
 
@@ -394,10 +355,7 @@
 //     RECORD_ARCSERVICE.update_arc_39_boundary(formData)
 //       .then(response => {
 //         if (response.data === 'OK') {
-//           MySwal.fire({ 
-//             title: swaMsg.publish_success_title, 
-//             icon: 'success' 
-//           });
+//           swalSuccess({ title: swaMsg.publish_success_title });
 //           this.props.requestUpdateRecord(this.props.currentItem.id);
 //           this.closeEditBoundaryModal();
 //           this.loadRA39Data();
@@ -406,10 +364,7 @@
 //         }
 //       })
 //       .catch(() => {
-//         MySwal.fire({ 
-//           title: swaMsg.generic_eror_title, 
-//           icon: 'error' 
-//         });
+//         swalError({ title: swaMsg.generic_eror_title });
 //       });
 //   };
 
@@ -430,10 +385,7 @@
 //     RECORD_ARCSERVICE.create_arc_39_boundary(formData)
 //       .then(response => {
 //         if (response.data === 'OK') {
-//           MySwal.fire({ 
-//             title: swaMsg.publish_success_title, 
-//             icon: 'success' 
-//           });
+//           swalSuccess({ title: swaMsg.publish_success_title });
 //           this.props.requestUpdateRecord(this.props.currentItem.id);
 //           this.loadRA39Data();
 //           form.reset(); // Limpiar formulario
@@ -442,10 +394,7 @@
 //         }
 //       })
 //       .catch(() => {
-//         MySwal.fire({ 
-//           title: swaMsg.generic_eror_title, 
-//           icon: 'error' 
-//         });
+//         swalError({ title: swaMsg.generic_eror_title });
 //       });
 //   };
 
@@ -517,7 +466,7 @@
 //               className="me-2" 
 //               onClick={this.openCreatePredioModal}
 //             >
-//               <MDBIcon icon="plus-square" className="me-1" />Crear Predio
+//               Crear Predio
 //             </Button>
 //             <Button 
 //               size="sm" 
@@ -525,14 +474,14 @@
 //               className="me-2" 
 //               onClick={this.openCreatePointModal}
 //             >
-//               <MDBIcon icon="plus-square" className="me-1" /> Crear Punto
+//                Crear Punto
 //             </Button>
 //             <Button
 //               size="sm"
 //               variant="outline-info"
 //               onClick={this.openViewPointsModal}
 //             >
-//               <MDBIcon icon="list" className="me-1" /> Ver Puntos
+//                Ver Puntos
 //             </Button>
 //           </div>
 //         </div>
@@ -551,7 +500,7 @@
 //                     variant="outline-secondary" 
 //                     onClick={() => this.openEditPredioModal(predio)}
 //                   >
-//                     <MDBIcon far icon="edit" /> Editar Predio
+//                      Editar Predio
 //                   </Button>
 //                 </div>
 //               </div>
@@ -680,14 +629,14 @@
 //                               onClick={() => this.toggleBoundaryForm(predio.id, index)}
 //                               className="me-1"
 //                             >
-//                               <MDBIcon fas icon="plus" />
+//                               <Icon name="plus" size={16} />
 //                             </Button>
 //                             <Button 
 //                               size="sm" 
 //                               variant="outline-secondary" 
 //                               onClick={() => this.openEditBoundaryModal(boundary, index)}
 //                             >
-//                               <MDBIcon far icon="edit" />
+//                               
 //                             </Button>
 //                           </td>
 //                         </tr>
@@ -1212,7 +1161,7 @@
 //                     <td>{point.coord_y}</td>
 //                     <td>
 //                       <Button variant="outline-secondary" size="sm">
-//                         <MDBIcon far icon="edit" /> Editar
+//                          Editar
 //                       </Button>
 //                     </td>
 //                   </tr>

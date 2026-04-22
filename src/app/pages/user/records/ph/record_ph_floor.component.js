@@ -1,35 +1,32 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
+function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [divisions, setDivisions] = useState(1);
+    const [divisionsEdit, setDivisionsEdit] = useState(1);
+    const [fixed, setFixed] = useState(false);
+    const [fixedEdit, setFixedEdit] = useState(false);
 
-class RECORD_PH_FLOOR extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-            divisions: 1,
-            divisions_edit: 1,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
 
             document.getElementById("r_ph_fl_1_edit").value = _ITEM.floor;
             let common = [];
             if (_ITEM.common) common = (_ITEM.common).split(';');
 
-            let fixed = _ITEM.fixed ? (_ITEM.fixed).split(';') : [];
+            let fixedVal = _ITEM.fixed ? (_ITEM.fixed).split(';') : [];
 
             const cb = document.getElementById("cb_fixed_edit");
             const lastValue = cb.checked;
-            if (fixed[0] == '&&') cb.checked = true;
+            if (fixedVal[0] == '&&') cb.checked = true;
             else cb.checked = false;
             const event = new Event("input", { fixed_edit: true });
             const tracker = cb._valueTracker;
@@ -38,14 +35,12 @@ class RECORD_PH_FLOOR extends Component {
             }
             cb.dispatchEvent(event);
 
-
             document.getElementById("r_ph_fl_1_edit").value = _ITEM.floor;
 
-            document.getElementById("r_ph_floor_fixed_3_edit").value = fixed[1] ?? "";
-            document.getElementById("r_ph_floor_fixed_4_edit").value = fixed[2] ?? "";
-            document.getElementById("r_ph_floor_fixed_5_edit").value = fixed[3] ?? "";
-            document.getElementById("r_ph_floor_fixed_6_edit").value = fixed[4] ?? "";
-
+            document.getElementById("r_ph_floor_fixed_3_edit").value = fixedVal[1] ?? "";
+            document.getElementById("r_ph_floor_fixed_4_edit").value = fixedVal[2] ?? "";
+            document.getElementById("r_ph_floor_fixed_5_edit").value = fixedVal[3] ?? "";
+            document.getElementById("r_ph_floor_fixed_6_edit").value = fixedVal[4] ?? "";
 
             let inputs = document.getElementsByName("r_ph_fl_common_edit");
             for (var i = 0; i < inputs.length; i++) {
@@ -78,27 +73,12 @@ class RECORD_PH_FLOOR extends Component {
             }
 
         }
-    }
-    add_division() {
-        this.setState({ divisions: this.state.divisions + 1 })
-    }
-    minus_division() {
-        this.setState({ divisions: this.state.divisions - 1 })
-    }
-    add_division_edit() {
-        this.setState({ divisions_edit: this.state.divisions_edit + 1 })
-    }
-    minus_division_edit() {
-        this.setState({ divisions_edit: this.state.divisions_edit - 1 })
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [edit]);
         const rowSelectedStyle = [
             {
                 when: row => row.fixed != null && row.fixed.includes('&&'),
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];
@@ -200,80 +180,80 @@ class RECORD_PH_FLOOR extends Component {
 
         }
         let _SET_EDIT = (row) => {
-            this.setState({ edit: row })
-            if (row.division) this.setState({ divisions_edit: row.division.split(';').length })
-            else this.setState({ divisions_edit: 1 })
-            console.log(this.state.divisions_edit)
+            setEdit(row)
+            if (row.division) setDivisionsEdit(row.division.split(';').length)
+            else setDivisionsEdit(1)
+            console.log(divisionsEdit)
         }
         // COMPONENT JSX
         let _CHILD_LICENCE_LIST = () => {
             let _LIST = _GET_CHILD_FLOOR();
             const columns = [
                 {
-                    name: <label className="text-center">Piso</label>,
-                    selector: 'floor',
+                    name: 'Piso',
+                    selector: row => row.floor,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.floor}</label>
+                    cell: row => <span className="text-sm">{row.floor}</span>
                 },
                 {
-                    name: <label className="text-center">División</label>,
+                    name: 'División',
                     center: true,
                     compact: true,
-                    cell: row => <ul class="list-group list-group-flush">{_DISPLAY_DIVISION(row.division)}</ul>
+                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division)}</ul>
                 },
                 {
-                    name: <label className="text-center">Área Privada Construida</label>,
+                    name: 'Área Privada Construida',
                     center: true,
                     compact: true,
-                    cell: row => <ul class="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_build)}</ul>
+                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_build)}</ul>
                 },
                 {
-                    name: <label className="text-center">Área Privada Libre</label>,
+                    name: 'Área Privada Libre',
                     center: true,
                     compact: true,
-                    cell: row => <ul class="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_free)}</ul>
+                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_free)}</ul>
                 },
                 {
-                    name: <label className="text-center">Área Total Privada</label>,
+                    name: 'Área Total Privada',
                     center: true,
-                    cell: row => <ul class="list-group list-group-flush">{_DISPLAY_DIVISION_TOTAL(row)}</ul>
+                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION_TOTAL(row)}</ul>
                 },
                 {
-                    name: <label className="text-center">Área Común Construida</label>,
+                    name: 'Área Común Construida',
                     selector: row => (row.common).split(";")[0],
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.common).split(';')[0]}</label>
+                    cell: row => <span className="text-sm">{(row.common).split(';')[0]}</span>
                 },
                 {
-                    name: <label className="text-center">Área Común Libre</label>,
+                    name: 'Área Común Libre',
                     selector: row => (row.common).split(";")[1],
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.common).split(';')[1]}</label>
+                    cell: row => <span className="text-sm">{(row.common).split(';')[1]}</span>
                 },
                 {
-                    name: <label className="text-center">Área Exclusiva Construida</label>,
+                    name: 'Área Exclusiva Construida',
                     selector: row => (row.common).split(";")[2],
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.common).split(';')[2]}</label>
+                    cell: row => <span className="text-sm">{(row.common).split(';')[2]}</span>
                 },
                 {
-                    name: <label className="text-center">Área Exclusiva Libre</label>,
+                    name: 'Área Exclusiva Libre',
                     selector: row => (row.common).split(";")[3],
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.common).split(';')[3]}</label>
+                    cell: row => <span className="text-sm">{(row.common).split(';')[3]}</span>
                 },
                 {
-                    name: <label className="text-center">Total Común Construida</label>,
+                    name: 'Total Común Construida',
                     selector: row => (Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])).toFixed(2),
                     sortable: true,
                     filterable: true,
@@ -281,7 +261,7 @@ class RECORD_PH_FLOOR extends Component {
                     cell: row => <label className="fw-bold text-secondary">{(Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])).toFixed(2) }</label>
                 },
                 {
-                    name: <label className="text-center">Area Total Visto Bueno</label>,
+                    name: 'Area Total Visto Bueno',
                     selector: row => _DISPLAY_SUB_TOTAL(row),
                     sortable: true,
                     filterable: true,
@@ -289,16 +269,12 @@ class RECORD_PH_FLOOR extends Component {
                     cell: row => <label className="fw-bold text-danger">{_DISPLAY_SUB_TOTAL(row)}</label>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => _SET_EDIT(row)}><i class="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => _SET_EDIT(row)}><Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -313,18 +289,18 @@ class RECORD_PH_FLOOR extends Component {
                 noHeader
             />
         }
-        let _COMPONENT_MANAGE = (edit = "") => {
-            var counter = edit ? this.state.divisions_edit : this.state.divisions;
+        let _COMPONENT_MANAGE = (editSuffix = "") => {
+            var counter = editSuffix ? divisionsEdit : divisions;
 
             return <>
                 <div className="row mb-1">
                     <div className="col-3">
                         <label>Piso</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id={"r_ph_fl_1" + edit} required />
+                            <input type="text" className="form-control" id={"r_ph_fl_1" + editSuffix} required />
                         </div>
                     </div>
                 </div>
@@ -332,27 +308,27 @@ class RECORD_PH_FLOOR extends Component {
                 <div className="row mb-1">
                     <div className="col-8 border border-info p-2">
                         <label className="fw-bold">Unidades</label>
-                        {PH_DIVISIONS(edit, counter, edit ? this.state.edit : null)}
+                        {PH_DIVISIONS(editSuffix, counter, editSuffix ? edit : null)}
                     </div>
                     <div className="col-4 text-end">
-                        {edit ?
+                        {editSuffix ?
                             <>
-                                {this.state.divisions_edit > 1
+                                {divisionsEdit > 1
                                     ? <>
-                                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => edit ? this.minus_division_edit() : this.minus_division()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                        <Button variant="outline" size="sm" className="mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                     </>
                                     : ""}
                             </>
 
                             : <>
-                                {this.state.divisions > 1
+                                {divisions > 1
                                     ? <>
-                                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => edit ? this.minus_division_edit() : this.minus_division()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                        <Button variant="outline" size="sm" className="mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                     </>
                                     : ""}
                             </>}
 
-                        <MDBBtn className="btn btn-sm btn-secondary" onClick={() => edit ? this.add_division_edit() : this.add_division()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                        <Button variant="outline" size="sm" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit + 1) : setDivisions(divisions + 1)}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                     </div>
                 </div>
 
@@ -363,14 +339,14 @@ class RECORD_PH_FLOOR extends Component {
                         <div className="row ">
                             <div className="col">
                                 <label>Construida</label>
-                                <div class="input-group my-1">
-                                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_fl_common" + edit} />
+                                <div className="input-group my-1">
+                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
                                 </div>
                             </div>
                             <div className="col">
                                 <label>Libre</label>
-                                <div class="input-group my-1">
-                                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_fl_common" + edit} />
+                                <div className="input-group my-1">
+                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
                                 </div>
                             </div>
                         </div>
@@ -380,29 +356,29 @@ class RECORD_PH_FLOOR extends Component {
                         <div className="row ">
                             <div className="col">
                                 <label>Construida</label>
-                                <div class="input-group my-1">
-                                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_fl_common" + edit} />
+                                <div className="input-group my-1">
+                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
                                 </div>
                             </div>
                             <div className="col">
                                 <label>Libre</label>
-                                <div class="input-group my-1">
-                                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_fl_common" + edit} />
+                                <div className="input-group my-1">
+                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-check ms-5 my-3">
-                    {edit ?
-                        <input class="form-check-input" type="checkbox" id="cb_fixed_edit" onChange={(e) => this.setState({ fixed_edit: e.target.checked })} />
-                        : <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ fixed: e.target.checked })} />}
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5 my-3">
+                    {editSuffix ?
+                        <input className="form-check-input" type="checkbox" id="cb_fixed_edit" onChange={(e) => setFixedEdit(e.target.checked)} />
+                        : <input className="form-check-input" type="checkbox" onChange={(e) => setFixed(e.target.checked)} />}
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Área no modificable
                     </label>
                 </div>
-                {PH_FIXED_AREA(edit)}
+                {PH_FIXED_AREA(editSuffix)}
 
             </>
         }
@@ -464,7 +440,7 @@ class RECORD_PH_FLOOR extends Component {
 
             formData.set('recordPhId', currentRecord.id);
 
-            if (this.state.fixed) {
+            if (fixed) {
                 let fixed = [];
 
                 fixed.push('&&');
@@ -508,89 +484,39 @@ class RECORD_PH_FLOOR extends Component {
 
             formData.set('common', common.join(';'));
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_PH_SERVICE.create_floor(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_ph_floor_new').reset();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let delete_item = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     RECORD_PH_SERVICE.delete_floor(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit: false });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdateRecord(currentItem.id);
+                                setEdit(false);
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -647,62 +573,40 @@ class RECORD_PH_FLOOR extends Component {
 
             formData.set('common', common.join(';'));
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            RECORD_PH_SERVICE.update_floor(this.state.edit.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            RECORD_PH_SERVICE.update_floor(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_ph_floor_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
             <div className="record_law_gen_11 container my-2">
                 <label className="app-p lead fw-bold">AREAS COMUNES Y PRIVADAS</label>
 
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Nuevo Área
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_ph_floor_new" onSubmit={new_item}>
                             {_COMPONENT_MANAGE()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
@@ -710,14 +614,14 @@ class RECORD_PH_FLOOR extends Component {
                     : ""}
                 {_CHILD_LICENCE_LIST()}
                 {_COMPONENT_TOTAL()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_ph_floor_edit" onSubmit={edit_item}>
                             <h3 className="my-3 text-center">Actualizar Área</h3>
                             {_COMPONENT_MANAGE('_edit')}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                             </div>
                         </form>
@@ -725,9 +629,7 @@ class RECORD_PH_FLOOR extends Component {
                     : ""}
             </div >
         );
-    }
 }
-
 
 const PH_DIVISIONS = (edit, LENGTH = 1, object) => {
     var _COMPONEN_DIV = [];
@@ -741,20 +643,20 @@ const PH_DIVISIONS = (edit, LENGTH = 1, object) => {
         _COMPONEN_DIV.push(<div className="row">
             <div className="col">
                 <label>Unidad {i + 1}</label>
-                <div class="input-group my-1">
-                    <input type="text" class="form-control" name={"r_ph_floor_division" + edit} />
+                <div className="input-group my-1">
+                    <input type="text" className="form-control" name={"r_ph_floor_division" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Área Priv. Construida</label>
-                <div class="input-group my-1">
-                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_floor_division_common" + edit} />
+                <div className="input-group my-1">
+                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_floor_division_common" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Área Priv. Libre</label>
-                <div class="input-group my-1">
-                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_floor_division_free" + edit} />
+                <div className="input-group my-1">
+                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_floor_division_free" + edit} />
                 </div>
             </div>
         </div>)
@@ -768,26 +670,26 @@ const PH_FIXED_AREA = (edit) => {
         <div className="row">
             <div className="col">
                 <label>Escritura</label>
-                <div class="input-group my-1">
-                    <input type="text" class="form-control" id={"r_ph_floor_fixed_3" + edit} />
+                <div className="input-group my-1">
+                    <input type="text" className="form-control" id={"r_ph_floor_fixed_3" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Fecha</label>
-                <div class="input-group my-1">
-                    <input type="date" max="2100-01-01" class="form-control" id={"r_ph_floor_fixed_4" + edit} />
+                <div className="input-group my-1">
+                    <input type="date" max="2100-01-01" className="form-control" id={"r_ph_floor_fixed_4" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Notaria</label>
-                <div class="input-group my-1">
-                    <input type="number" min="0" step="1" class="form-control" id={"r_ph_floor_fixed_5" + edit} />
+                <div className="input-group my-1">
+                    <input type="number" min="0" step="1" className="form-control" id={"r_ph_floor_fixed_5" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Ciudad</label>
-                <div class="input-group my-1">
-                    <input type="text" class="form-control" id={"r_ph_floor_fixed_6" + edit} />
+                <div className="input-group my-1">
+                    <input type="text" className="form-control" id={"r_ph_floor_fixed_6" + edit} />
                 </div>
             </div>
         </div>
@@ -796,6 +698,5 @@ const PH_FIXED_AREA = (edit) => {
     return <>{_COMPONEN_DIV}</>
 
 }
-
 
 export default RECORD_PH_FLOOR;

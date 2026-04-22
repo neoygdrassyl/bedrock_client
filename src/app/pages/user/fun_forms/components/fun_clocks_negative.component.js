@@ -1,53 +1,45 @@
-import moment from 'moment';
-import DataTable from 'react-data-table-component';
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
+import { useState, useEffect, useCallback } from 'react';
 
 import FUN_SERVICE from "../../../../services/fun.service"
 import FUN_CLOCKS_EMAILS from './fun_clocks_email.component';
 import { dateParser_finalDate, dateParser_timePassed } from '../../../../components/customClasses/typeParse';
-import { MDBBtn, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from 'mdb-react-ui-kit';
+import { TabPane } from '@/components/ui/tab-pane';
 import VIZUALIZER from '../../../../components/vizualizer.component';
+import { Icon } from '@/components/icon';
+import { cn } from '@/lib/utils';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 
-class FUN_CLOCKS_NEGATIVE extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.manage_clock = this.manage_clock.bind(this);
-        this.state = {
-            fillActive: null,
-        };
-    }
+function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg }) {
+        const [fillActive, setFillActive] = useState(null);
+        const [edit, setEdit] = useState(false);
 
-    requestUpdate(id) {
-        this.props.requestUpdate(id)
-    }
+    useEffect(() => {
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
-            document.getElementById("f_clock_edit_1").value = _ITEM.resolver_sattus ? _ITEM.resolver_sattus : 0;
-            document.getElementById("f_clock_edit_2").value = _ITEM.resolver_id6 ? _ITEM.resolver_id6 : 0;
-            document.getElementById("f_clock_edit_3").value = _ITEM.resolver_context;
-            document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : moment().format('YYYY-MM-DD');
+        if (edit != false) {
+            var _ITEM = edit;
+            document.getElementById("f_clock_edit_1") && (document.getElementById("f_clock_edit_1").value = _ITEM.resolver_sattus ? _ITEM.resolver_sattus : 0);
+            document.getElementById("f_clock_edit_2") && (document.getElementById("f_clock_edit_2").value = _ITEM.resolver_id6 ? _ITEM.resolver_id6 : 0);
+            document.getElementById("f_clock_edit_3") && (document.getElementById("f_clock_edit_3").value = _ITEM.resolver_context);
+            document.getElementById("f_clock_edit_4") && (document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : dayjs().format('YYYY-MM-DD'));
         }
-        // Verificar si hay nuevos datos para ejecutar la autoguardado
-        if (this.props.currentItem !== prevProps.currentItem) {
-            this.autoSaveMissingStartClock();
-        }
-    }
+        autoSaveMissingStartClock();
 
-    componentDidMount() {
-        this.setState({ fillActive: this.props.currentItem.state });
-        this.autoSaveMissingStartClock();
-    }
+    }, [currentItem, edit]);
+
+    useEffect(() => {
+
+        setFillActive(currentItem.state);
+        autoSaveMissingStartClock();
+
+    }, []);
 
     // --- DATA GETTERS MOVIDOS A METODOS DE CLASE ---
-    get_child_clock() {
-        var _CHILD = this.props.currentItem.fun_clocks;
+    const get_child_clock = () => {
+        var _CHILD = currentItem.fun_clocks;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
@@ -55,8 +47,8 @@ class FUN_CLOCKS_NEGATIVE extends Component {
         return _LIST;
     }
 
-    get_clock_state_version(_state, _version) {
-        var _CLOCK = this.get_child_clock();
+    const get_clock_state_version = (_state, _version) => {
+        var _CLOCK = get_child_clock();
         if (_state == null) return false;
         for (var i = 0; i < _CLOCK.length; i++) {
             if (_CLOCK[i].state == _state && _CLOCK[i].version == _version) return _CLOCK[i];
@@ -65,12 +57,12 @@ class FUN_CLOCKS_NEGATIVE extends Component {
     }
 
     // --- LOGICA DE AUTOGUARDADO ---
-    autoSaveMissingStartClock() {
+    const autoSaveMissingStartClock = () => {
         const versionsToCheck = [-1, -2, -3, -4, -5, -6]; // Versiones posibles de desistimiento
 
         versionsToCheck.forEach(version => {
-            let clock50 = this.get_clock_state_version(-50, version);
-            let clock5 = this.get_clock_state_version(-5, version);
+            let clock50 = get_clock_state_version(-50, version);
+            let clock5 = get_clock_state_version(-5, version);
 
             // SI EXISTE -5 (Citación) PERO NO EXISTE -50 (Inicio Desistimiento)
             if (clock5 && !clock50) {
@@ -84,48 +76,31 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 formDataClock.set('desc', "Inicio de proceso generado automáticamente desde Citación."); 
                 formDataClock.set('state', -50);
                 formDataClock.set('version', version);
-                formDataClock.set('fun0Id', this.props.currentItem.id);
+                formDataClock.set('fun0Id', currentItem.id);
 
                 // Llamamos a manage_clock en modo silencioso (false)
-                this.manage_clock(false, -50, version, formDataClock);
+                manage_clock(false, -50, version, formDataClock);
             }
         });
     }
 
     // --- API ACTION ---
-    manage_clock(useMySwal, state, version, formDataClock) {
-        const { swaMsg, currentItem } = this.props;
-        var _CHILD = this.get_clock_state_version(state, version);
+    const manage_clock = (useMySwal, state, version, formDataClock) => {
+        var _CHILD = get_clock_state_version(state, version);
 
         if (useMySwal) {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         }
 
         const handleResponse = (response) => {
             if (response.data === 'OK') {
                 if (useMySwal) {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                 }
-                this.props.requestUpdate(currentItem.id);
+                requestUpdate(currentItem.id);
             } else {
                 if (useMySwal) {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             }
         };
@@ -133,12 +108,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
         const handleError = (e) => {
             console.log(e);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             }
         };
 
@@ -153,9 +123,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
         }
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { fillActive } = this.state;
+        // Props and state already available from function signature and useState hooks
 
         const ClockDictionary = {
             '-3': {
@@ -239,15 +207,15 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             // '-6': 'NEGADA',
         }
         const resolveStatusIcon = {
-            '-1': <i class="far fa-dot-circle text-muted" style={{ fontSize: '150%' }}></i>,
-            '0': <i class="far fa-times-circle text-danger" style={{ fontSize: '150%' }}></i>,
-            '1': <i class="far fa-check-circle text-success" style={{ fontSize: '150%' }}></i>,
-            '2': <i class="fas fa-clock text-primary" style={{ fontSize: '150%' }}></i>,
+            '-1': <Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} />,
+            '0': <Icon name="times-circle" size={16} style={{ fontSize: '150%' }} />,
+            '1': <Icon name="check-circle" size={16} style={{ fontSize: '150%' }} />,
+            '2': <Icon name="clock" size={16} style={{ fontSize: '150%' }} />,
         }
 
         // DATA GETTERS
         // Usamos los métodos de clase ahora, pero mantenemos alias locales si es necesario para compatibilidad con el resto del código en render
-        let _GET_CHILD_CLOCK = () => this.get_child_clock();
+        let _GET_CHILD_CLOCK = () => get_child_clock();
         
         let _GET_CHILD_6 = () => {
             var _CHILD = currentItem.fun_6s;
@@ -268,7 +236,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             return _CHILD;
         }
         // DATA CONVERTERS
-        let _GET_CLOCK_STATE_VERSION = (_state, _version) => this.get_clock_state_version(_state, _version);
+        let _GET_CLOCK_STATE_VERSION = (_state, _version) => get_clock_state_version(_state, _version);
 
         let _GET_CLOCK_STATE = (_state) => {
             var _CLOCKS = _GET_CHILD_CLOCK();
@@ -408,18 +376,18 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                         </div>
                         <div className="col">
                             Fecha de Evento
-                            <input type="date" class="form-control" max="2100-01-01" id="fun_cloclneg_2"
-                                defaultValue={moment().format('YYYY-MM-DD')} required />
+                            <input type="date" className="form-control" max="2100-01-01" id="fun_cloclneg_2"
+                                defaultValue={dayjs().format('YYYY-MM-DD')} required />
                         </div>
                         <div className="col">
                             Profesional que abre proceso
-                            <input type="text" class="form-control" id="fun_cloclneg_3" disabled
+                            <input type="text" className="form-control" id="fun_cloclneg_3" disabled
                                 defaultValue={window.user.name + " " + window.user.surname} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="btn btn-danger" ><i class="far fa-times-circle"></i> ABRIR PROCESO </button>
+                            <Button variant="destructive" size="sm"><Icon name="times-circle" size={16} /> ABRIR PROCESO </Button>
                         </div>
                     </div>
                 </form>
@@ -438,18 +406,18 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                         </div>
                         <div className="col">
                             Fecha de Evento
-                            <input type="date" class="form-control" max="2100-01-01" id="fun_clock_cancel_2"
-                                defaultValue={moment().format('YYYY-MM-DD')} required />
+                            <input type="date" className="form-control" max="2100-01-01" id="fun_clock_cancel_2"
+                                defaultValue={dayjs().format('YYYY-MM-DD')} required />
                         </div>
                         <div className="col">
                             Profesional realiza cambio
-                            <input type="text" class="form-control" id="fun_clock_cancel_3" disabled
+                            <input type="text" className="form-control" id="fun_clock_cancel_3" disabled
                                 defaultValue={window.user.name + " " + window.user.surname} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="btn btn-info" ><i class="far fa-times-circle"></i> CANCELAR PROCESO </button>
+                            <button className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors" ><Icon name="times-circle" size={16} /> CANCELAR PROCESO </button>
                         </div>
                     </div>
                 </form>
@@ -462,19 +430,19 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 <div className="row mb-1">
                     <div className="col">
                         <label>Evento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
-                            <input type="text" class="form-control" disabled
+                            <input type="text" className="form-control" disabled
                                 defaultValue={data.name} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Resultado evento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className='form-select' id={"f_clock_next_1_" + state} defaultValue={data.resolver_sattus} >
                                 <option value="-1">SIN DEFINIR</option>
@@ -486,19 +454,19 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                     </div>
                     <div className="col">
                         <label>Fecha Evento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" class="form-control" max="2100-01-01" id={"f_clock_next_2_" + state}
-                                defaultValue={data.date_start ?? moment().format('YYYY-MM-DD')} required />
+                            <input type="date" className="form-control" max="2100-01-01" id={"f_clock_next_2_" + state}
+                                defaultValue={data.date_start ?? dayjs().format('YYYY-MM-DD')} required />
                         </div>
                     </div>
                     <div className="col">
                         <label>Soporte: Relacionar Documento </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id={"f_clock_next_3_" + state} defaultValue={data.resolver_id6}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -511,20 +479,19 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 <div className="row mb-1">
                     <div className="col-12">
                         <label>Contexto u Observaciones al resultado de la acción</label>
-                        <textarea class="form-control" id={"f_clock_next_4_" + state} rows="2"
+                        <textarea className="form-control" id={"f_clock_next_4_" + state} rows="2"
                             defaultValue={data.desc}></textarea>
                     </div>
                 </div>
 
-
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3" onClick={() => save_clock(data)}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                        <Button size="sm" className="my-3" onClick={() => save_clock(data)}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                     {data.end && data.id ?
                        !_GET_CLOCK_STATE_VERSION(200, data.version) ?
                         <div className="col">
-                            <button className="btn btn-primary my-3" onClick={() => update_fun_0_atFinalProcess(true, data.version)}><i class="fas fa-angle-double-right"></i> SALVAR PROCESO </button>
+                            <Button size="sm" className="my-3" onClick={() => update_fun_0_atFinalProcess(true, data.version)}><Icon name="angle-double-right" size={16} /> SALVAR PROCESO </Button>
                             <p>El proceso continua su curso normal</p>
                         </div>
                         : ''
@@ -535,7 +502,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                             {!_GET_CLOCK_STATE_VERSION(200, data.version)
                                 ?
                                 <div className="col">
-                                    <button className="btn btn-danger my-3" onClick={() => close(data.version)}><i class="fas fa-times"></i> CERRAR PROCESO </button>
+                                    <Button variant="destructive" size="sm" className="my-3" onClick={() => close(data.version)}><Icon name="times" size={16} /> CERRAR PROCESO </Button>
                                     <p>El proceso NO fue subsanado y se finaliza</p>
                                 </div>
                                 : ''
@@ -544,7 +511,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                             {_GET_CLOCK_STATE_VERSION(200, data.version)
                                 ?
                                 <div className="col">
-                                    <button className="btn btn-danger my-3" onClick={() => archive(data.version)}><i class="fas fa-times"></i> ARCHIVAR PROCESO </button>
+                                    <Button variant="destructive" size="sm" className="my-3" onClick={() => archive(data.version)}><Icon name="times" size={16} /> ARCHIVAR PROCESO </Button>
                                     <p>El proceso NO fue subsanado y se archiva (no se podrá editar)</p>
                                 </div>
                                 : ''
@@ -554,8 +521,6 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
                         : ''}
                 </div>
-
-
 
                 {window.user.id == 1 ? preData : ''}
             </>
@@ -568,48 +533,48 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
             const columns = [
                 {
-                    name: <label className="text-center">EVENTO</label>,
-                    selector: 'name',
+                    name: 'EVENTO',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     minWidth: '250px',
-                    cell: row => <label>{row.name}</label>
+                    cell: row => <span className="text-sm">{row.name}</span>
                 },
                 {
-                    name: <label className="text-center">OBSERVACIONES</label>,
+                    name: 'OBSERVACIONES',
                     minWidth: '330px',
-                    cell: row => <label>{(row.desc)}</label>
+                    cell: row => <span className="text-sm">{(row.desc)}</span>
                 },
                 {
-                    name: <label className="text-center">FECHA EVENTO</label>,
-                    selector: 'date_start',
+                    name: 'FECHA EVENTO',
+                    selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.date_start)}</label>
+                    cell: row => <span className="text-sm">{(row.date_start)}</span>
                 },
                 {
-                    name: <label className="text-center">FECHA LIMITE</label>,
-                    selector: 'date_start',
+                    name: 'FECHA LIMITE',
+                    selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{_GET_LIMITE_DATE(row.state, row.version)}</label>
+                    cell: row => <span className="text-sm">{_GET_LIMITE_DATE(row.state, row.version)}</span>
                 },
                 {
-                    name: <label className="text-center">RESULTADO</label>,
+                    name: 'RESULTADO',
                     center: true,
-                    cell: row => <label>{resolveStatusIcon[row.resolver_sattus ?? '-1']}</label>
+                    cell: row => <span className="text-sm">{resolveStatusIcon[row.resolver_sattus ?? '-1']}</span>
                 },
                 {
-                    name: <label className="text-center">SOPORTE DOCUMENTO</label>,
+                    name: 'SOPORTE DOCUMENTO',
                     center: true,
                     cell: row => {
                         let id6 = row.resolver_id6;
                         let id6Object = _FIND_6(id6);
                         if (id6Object.id > 0) return <VIZUALIZER url={id6Object.path + "/" + id6Object.filename} apipath={'/files/'}
-                            icon='fas fa-search'
-                            iconWrapper='btn btn-sm btn-info m-0 p-1 shadow-none'
+                            icon='Search'
+                            iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
                             iconStyle={{ fontSize: '150%' }} />
                         return ''
                     }
@@ -703,23 +668,13 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
             let alreadyExist = _GET_CLOCK_STATE_VERSION(-50, process) || _GET_CLOCK_STATE_VERSION(-5, process);
             if (alreadyExist) {
-                MySwal.fire({
-                    title: 'ESTE PROCESO YA EXISTE',
-                    text: 'Ya existe un proceso de desestimiento para este esta solicitud que coincide con el motivo de desestimiento.',
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: 'ESTE PROCESO YA EXISTE', text: 'Ya existe un proceso de desestimiento para este esta solicitud que coincide con el motivo de desestimiento.' });
                 return 1;
             }
 
             let inProcess = _CHECK_IF_PROCESS();
             if (inProcess) {
-                MySwal.fire({
-                    title: 'YA EXISTE UN PROCESO ABIERTO',
-                    text: 'No puede haber mas de un proceso de desestimientos abierto al mismo tiempo.',
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: 'YA EXISTE UN PROCESO ABIERTO', text: 'No puede haber mas de un proceso de desestimientos abierto al mismo tiempo.' });
                 return 1;
             }
 
@@ -733,7 +688,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', process);
             formDataClock.set('fun0Id', currentItem.id);
 
-            this.manage_clock(true, state, process, formDataClock);
+            manage_clock(true, state, process, formDataClock);
 
             formData = new FormData();
             let new_state = Number(process) - 100;
@@ -770,8 +725,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', data.version);
             formDataClock.set('fun0Id', currentItem.id);
 
-
-            this.manage_clock(true, data.state, data.version, formDataClock);
+            manage_clock(true, data.state, data.version, formDataClock);
         }
         let save_close = (version) => {
             formDataClock = new FormData();
@@ -779,7 +733,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             let state = 200 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
 
             let worker = window.user.name + " " + window.user.surname;
-            let date = moment().format('YYYY-MM-DD');
+            let date = dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "CERRADOC");
@@ -788,7 +742,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', version);
             formDataClock.set('fun0Id', currentItem.id);
 
-            this.manage_clock(false, state, currentVersion, formDataClock);
+            manage_clock(false, state, currentVersion, formDataClock);
 
         }
         let save_archive = () => {
@@ -797,7 +751,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             let state = 101 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
 
             let worker = window.user.name + " " + window.user.surname;
-            let date = moment().format('YYYY-MM-DD');
+            let date = dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "ARCHIVACIÓN");
@@ -806,7 +760,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', currentVersion);
             formDataClock.set('fun0Id', currentItem.id);
 
-            this.manage_clock(false, state, currentVersion, formDataClock);
+            manage_clock(false, state, currentVersion, formDataClock);
 
         }
         let final_clock = () => {
@@ -814,7 +768,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
             let state = -30 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
             let OngoingProcess = _GET_ONGOING_PROCESS();
-            let date = moment().format('YYYY-MM-DD');
+            let date = dayjs().format('YYYY-MM-DD');
             let defaultProcess = _GET_DEFAULT_PROCESS();
             let processToCheck = defaultProcess[state];
 
@@ -825,7 +779,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', OngoingProcess);
             formDataClock.set('fun0Id', currentItem.id);
 
-            this.manage_clock(false, state, OngoingProcess, formDataClock);
+            manage_clock(false, state, OngoingProcess, formDataClock);
         }
         
         // NOTA: Se ha movido manage_clock a un método de clase para ser usado en el ciclo de vida.
@@ -846,47 +800,29 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
-                        this.props.requestRefresh();
-                        this.props.requestUpdate(currentItem.id)
+                        requestRefresh();
+                        requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 });
         }
         let close = (version) => {
-            MySwal.fire({
+            swalConfirm({
                 title: "CERRA SOLICITUD",
                 text: "¿Esta seguro de archivar esta Solicitud? \nSI SE PODRÁ modificar mas adelante.",
                 icon: 'question',
                 confirmButtonText: "CERRAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
 
@@ -896,53 +832,30 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
                     formData.set('state', 200);
 
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     FUN_SERVICE.update(currentItem.id, formData)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestRefresh();
-                                this.props.requestUpdate(currentItem.id)
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestRefresh();
+                                requestUpdate(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         });
                 }
             });
         }
         let archive = (version) => {
-            MySwal.fire({
+            swalConfirm({
                 title: "ARCHIVAR SOLICITUD",
                 text: "¿Esta seguro de archivar esta Solicitud? \nNO SE PODRÁ modificar de ninguna forma.",
                 icon: 'question',
                 confirmButtonText: "ARCHIVAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
 
@@ -951,50 +864,29 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
                     formData.set('state', 200 + (Number(version) * -1));
 
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     FUN_SERVICE.update(currentItem.id, formData)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestRefresh();
-                                this.props.requestUpdate(currentItem.id)
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestRefresh();
+                                requestUpdate(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         });
                 }
             });
         }
         const handleFillClick = (state) => {
-            if (state === this.state.fillActive) {
+            if (state === fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setFillActive(state);
         };
         return (
             <div className="fun_clocks_negative">
@@ -1003,80 +895,132 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                     <>
                         {currentItem.state == -1 ?
                             <>
-                                <legend className="my-2 px-3 text-uppercase Collapsible text-white" id="new_process">
-                                    <label className="app-p lead text-center fw-normal text-uppercase">CANCELAR PROCESO DE DESISTIMIENTO</label>
+                                <legend className="my-2 px-3 Collapsible text-white" id="new_process">
+                                    <label className="app-p lead text-center fw-normal">CANCELAR PROCESO DE DESISTIMIENTO</label>
                                 </legend>
                                 {_CANCEL_PROCESS()}
                             </>
                             : ""}
 
-
-
-                        <legend className="my-2 px-3 text-uppercase bg-danger text-white" id="new_process">
-                            <label className="app-p lead text-center fw-normal text-uppercase">NUEVO PROCESO DE DESESTIMIENTO</label>
+                        <legend className="my-2 px-3 bg-danger text-white" id="new_process">
+                            <label className="app-p lead text-center fw-normal">NUEVO PROCESO DE DESESTIMIENTO</label>
                         </legend>
                         {_NEW_PROCESS()}
                     </>
                     : ""
                 }
 
-                <MDBTabs fill className='mb-3'>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-101')} active={this.state.fillActive == '-101'}>
-                            <label className="upper-case">INCOMPLETO</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-102')} active={this.state.fillActive == '-102'}>
-                            <label className="upper-case">FALTA VALLA INFORMATIVA</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-103')} active={this.state.fillActive == '-103'}>
-                            <label className="upper-case">NO CUMPLE ACTA CORRECIONES</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-104')} active={this.state.fillActive == '-104'}>
-                            <label className="upper-case">NO PAGA EXPENSAS</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-105')} active={this.state.fillActive == '-105'}>
-                            <label className="upper-case">VOLUNTARIO</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                    <MDBTabsLink onClick={() => handleFillClick('-106')} active={this.state.fillActive == '-106'}>
-                        <label className="upper-case">NEGADA</label>
-                    </MDBTabsLink>
-                </MDBTabsItem>
-                </MDBTabs>
+                <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-101'}
+                        onClick={() => handleFillClick('-101')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-101'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="FileX" size={13} />
+                        Incompleto
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-102'}
+                        onClick={() => handleFillClick('-102')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-102'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="Construction" size={13} />
+                        Falta Valla Informativa
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-103'}
+                        onClick={() => handleFillClick('-103')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-103'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="ClipboardX" size={13} />
+                        No Cumple Acta Correcciones
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-104'}
+                        onClick={() => handleFillClick('-104')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-104'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="CreditCard" size={13} />
+                        No Paga Expensas
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-105'}
+                        onClick={() => handleFillClick('-105')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-105'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="HandHelping" size={13} />
+                        Voluntario
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-106'}
+                        onClick={() => handleFillClick('-106')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-106'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="Ban" size={13} />
+                        Negada
+                    </button>
+                </div>
 
-                <MDBTabsContent>
-                    <MDBTabsPane show={this.state.fillActive == '-101'}>
+                <div>
+                    <TabPane show={fillActive == '-101'}>
                         {_MANAGE_NEGATIVE_PROCESS('-1')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-102'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-102'}>
                         {_MANAGE_NEGATIVE_PROCESS('-2')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-103'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-103'}>
                         {_MANAGE_NEGATIVE_PROCESS('-3')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-104'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-104'}>
                         {_MANAGE_NEGATIVE_PROCESS('-4')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-105'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-105'}>
                         {_MANAGE_NEGATIVE_PROCESS('-5')}
-                    </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-106'}>
+                    </TabPane>
+                    <TabPane show={fillActive == '-106'}>
                     {_MANAGE_NEGATIVE_PROCESS('-6')}
-                </MDBTabsPane>
-                </MDBTabsContent>
+                </TabPane>
+                </div>
 
                 {currentItem.state < -100 ? <>
-                    <legend className="my-2 px-3 text-uppercase bg-light" id="new_process">
-                        <label className="app-p lead text-center fw-normal text-uppercase">ASISTENTE DE CORREOS</label>
+                    <legend className="my-2 px-3 bg-light" id="new_process">
+                        <label className="app-p lead text-center fw-normal">ASISTENTE DE CORREOS</label>
                     </legend>
                     <FUN_CLOCKS_EMAILS
                         translation={translation} swaMsg={swaMsg}
@@ -1089,7 +1033,6 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 </> : ""}
             </div>
         );
-    }
 }
 
 export default FUN_CLOCKS_NEGATIVE;

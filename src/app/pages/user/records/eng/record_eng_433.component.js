@@ -1,20 +1,8 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-
-class RECORD_ENG_STEP_433 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version } = this.props;
-        const { } = this.state;
+function RECORD_ENG_STEP_433(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version, requestUpdateRecord } = props;
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
 
         // FUNCTIONS & VARIABLES
@@ -904,7 +892,7 @@ class RECORD_ENG_STEP_433 extends Component {
                 {SUBCATEGORIES[10] == 1 ? <>
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold text-uppercase my-2">Paso 9, Desplazamientos horizontales. Se evalúan los desplazamientos horizontales, incluyendo los efectos torsionales dela estructura, las derivas (desplazamiento entre niveles continuos), por medio de los procedimientos del (Cap. A.6), y con base en los desplazamientos obtenidos en el paso 8.</label>
+                            <label className="fw-bold my-2">Paso 9, Desplazamientos horizontales. Se evalúan los desplazamientos horizontales, incluyendo los efectos torsionales dela estructura, las derivas (desplazamiento entre niveles continuos), por medio de los procedimientos del (Cap. A.6), y con base en los desplazamientos obtenidos en el paso 8.</label>
                         </div>
                         <div className="col-2">
                             <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s433', 'check', 0) ?? 1)} name="r_e_select_s433"
@@ -943,7 +931,7 @@ class RECORD_ENG_STEP_433 extends Component {
 
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold text-uppercase my-2">Paso10: Verificación de las derivas. Comprobar que las derivas no excedan los límites del (Cap. A.6), si la estructura excede dichos límites,  es obligatorio rigidizarla y llevar a cabo los pasos 8, 9 y 10, hasta que cumpla.</label>
+                            <label className="fw-bold my-2">Paso10: Verificación de las derivas. Comprobar que las derivas no excedan los límites del (Cap. A.6), si la estructura excede dichos límites,  es obligatorio rigidizarla y llevar a cabo los pasos 8, 9 y 10, hasta que cumpla.</label>
                         </div>
                         <div className="col-2">
                             <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s43310', 'check', 0) ?? 1)} name="r_e_select_s43310"
@@ -956,7 +944,7 @@ class RECORD_ENG_STEP_433 extends Component {
                     {version === 2 ?
                         <div className="row">
                             <div className="col-10">
-                                <label className="fw-bold text-uppercase my-2">Desplazamientos horizontales. Se evalúan los desplazamientos horizontales, incluyendo los efectos torsionales dela estructura, las derivas (desplazamiento entre niveles continuos), por medio de los procedimientos del (Cap. A.6), y con base en los desplazamientos obtenidos en el paso 8.</label>
+                                <label className="fw-bold my-2">Desplazamientos horizontales. Se evalúan los desplazamientos horizontales, incluyendo los efectos torsionales dela estructura, las derivas (desplazamiento entre niveles continuos), por medio de los procedimientos del (Cap. A.6), y con base en los desplazamientos obtenidos en el paso 8.</label>
                             </div>
                             <div className="col-2">
                                 <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s43310_22', 'check', 0) ?? 1)} name="r_e_select_s43310_22"
@@ -971,7 +959,7 @@ class RECORD_ENG_STEP_433 extends Component {
                 {SUBCATEGORIES[12] == 1 ? <>
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold text-uppercase my-2">Paso 11, Combinación de las diferentes solicitudes. De la combinación de las diferentes solicitudes sale la obtención de las fuerzas internas de diseño de la estructura, (Cap. B.2), por el método de diseño propio de cada material estructural,  cada una de las combinaciones de carga se multiplica por un coeficiente de carga prescrito para esta combinación,  en los efectos del sismo de diseño, se tiene en cuenta la capacidad de disipación de energía lo cual se logra empleando unos efectos sísmicos reducidos de diseño, E, determinadas en el paso 7, por el coeficiente de capacidad de disipar energía,  R(E = Fs/R). </label>
+                            <label className="fw-bold my-2">Paso 11, Combinación de las diferentes solicitudes. De la combinación de las diferentes solicitudes sale la obtención de las fuerzas internas de diseño de la estructura, (Cap. B.2), por el método de diseño propio de cada material estructural,  cada una de las combinaciones de carga se multiplica por un coeficiente de carga prescrito para esta combinación,  en los efectos del sismo de diseño, se tiene en cuenta la capacidad de disipación de energía lo cual se logra empleando unos efectos sísmicos reducidos de diseño, E, determinadas en el paso 7, por el coeficiente de capacidad de disipar energía,  R(E = Fs/R). </label>
                         </div>
                         <div className="col-2">
                             <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s43311', 'check', 0) ?? 1)} name="r_e_select_s43311"
@@ -985,7 +973,7 @@ class RECORD_ENG_STEP_433 extends Component {
                 {SUBCATEGORIES[13] == 1 ? <>
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold text-uppercase my-2">Paso 12, Diseño de los elementos estructurales. Se lleva a cabo de acuerdo con los requisitos del sistema de resistencia sísmica y del material estructural utilizado, los materiales deben diseñarse de acuerdo con el grado de disipación de energía, prescrito en el Cap. A  según corresponda, lo cual permitirá a la estructura responder ante la ocurrencia de un sismo, en el rango inelástico de respuesta, y cumplir con los objetivos de la norma sismo resistente, este diseño debe efectuarse con los elementos más desfavorables, entre las combinaciones obtenidas en el paso 11, tal como lo prescribe el título B del reglamento.</label>
+                            <label className="fw-bold my-2">Paso 12, Diseño de los elementos estructurales. Se lleva a cabo de acuerdo con los requisitos del sistema de resistencia sísmica y del material estructural utilizado, los materiales deben diseñarse de acuerdo con el grado de disipación de energía, prescrito en el Cap. A  según corresponda, lo cual permitirá a la estructura responder ante la ocurrencia de un sismo, en el rango inelástico de respuesta, y cumplir con los objetivos de la norma sismo resistente, este diseño debe efectuarse con los elementos más desfavorables, entre las combinaciones obtenidas en el paso 11, tal como lo prescribe el título B del reglamento.</label>
                         </div>
                         <div className="col-2">
                             <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s43312', 'check', 0) ?? 1)} name="r_e_select_s43312"
@@ -1003,8 +991,8 @@ class RECORD_ENG_STEP_433 extends Component {
         let COMPONENT_02 = () => {
             return <>
                 {SUBCATEGORIES[13] == 1 ? <>
-                    <ul class="list-group my-0 py-0">
-                        <li class="list-group-item py-0">
+                    <ul className="list-group my-0 py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de elementos estructurales</label>
@@ -1019,7 +1007,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de cimentación</label>
@@ -1034,7 +1022,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de placas de entrepiso</label>
@@ -1049,7 +1037,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de escaleras</label>
@@ -1064,7 +1052,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de muros</label>
@@ -1079,7 +1067,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de tanques</label>
@@ -1094,7 +1082,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de diseño de estructuras metálicas</label>
@@ -1109,7 +1097,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Memorias de otros diseños</label>
@@ -1130,8 +1118,8 @@ class RECORD_ENG_STEP_433 extends Component {
         }
         let COMPONENT_03 = () => {
             return <>
-                <ul class="list-group my-0 py-0">
-                    <li class="list-group-item py-0">
+                <ul className="list-group my-0 py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Coherencia técnica con los planos arquitectónicos</label>
@@ -1146,7 +1134,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Coherencia con las memorias de cálculo</label>
@@ -1161,7 +1149,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Especificaciones de materiales</label>
@@ -1176,7 +1164,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Plantas de cimentación, entrepisos y cubierta</label>
@@ -1191,7 +1179,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Detalle de losas de entrepiso</label>
@@ -1206,7 +1194,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de cimentación</label>
@@ -1221,7 +1209,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de columnas y muros</label>
@@ -1236,7 +1224,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de vigas</label>
@@ -1251,7 +1239,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de viguetas</label>
@@ -1266,7 +1254,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Detalles de cubierta (elementos de cubierta, conexiones)</label>
@@ -1281,7 +1269,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseño de escaleras</label>
@@ -1296,7 +1284,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Detalle y refuerzo de tanques</label>
@@ -1311,7 +1299,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Detalle y refuerzo estructuras de contención</label>
@@ -1326,7 +1314,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Diseños de elementos no estructurales</label>
@@ -1341,7 +1329,7 @@ class RECORD_ENG_STEP_433 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Firma del ingeniero geotecnista en plano de cimentación (H.1.1.2.1)</label>
@@ -1357,7 +1345,7 @@ class RECORD_ENG_STEP_433 extends Component {
                         </div>
                     </li>
                     {version === 2 ? <>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Firma del profesional responsable en cada documento entregado</label>
@@ -1372,7 +1360,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Firma del revisor independiente en todo lo relacionado con el componente estructural</label>
@@ -1387,7 +1375,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Firma del director de obra en planos y memorias de elementos no estructurales (A.1.3.6.5)</label>
@@ -1402,7 +1390,7 @@ class RECORD_ENG_STEP_433 extends Component {
                                 </div>
                             </div>
                         </li>
-                        <li class="list-group-item py-0">
+                        <li className="list-group-item py-0">
                             <div className="row">
                                 <div className="col-10">
                                     <label className="">Firma del director de obra en el informe de demolición</label>
@@ -1715,72 +1703,35 @@ class RECORD_ENG_STEP_433 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ENG_SERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ENG_SERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -1793,15 +1744,14 @@ class RECORD_ENG_STEP_433 extends Component {
                 {(!version && SUBCATEGORIES[14] == 1)
                     || (version === 2 && SUBCATEGORIES[15] == 1)
                     ? <>
-                        <legend className="my-3 px-3 text-uppercase bg-light" id="record_eng_433">
-                            <label className="app-p lead fw-normal text-uppercase">4.3.3 Planos Estructurales</label>
+                        <legend className="my-3 px-3 bg-light" id="record_eng_433">
+                            <label className="app-p lead fw-normal">4.3.3 Planos Estructurales</label>
                         </legend>
                         {COMPONENT_03()}
 
                     </> : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_STEP_433;

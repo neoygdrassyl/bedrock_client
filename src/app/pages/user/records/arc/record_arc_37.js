@@ -1,14 +1,14 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useState } from 'react';
-import DataTable from 'react-data-table-component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_ARC_37(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
-    const MySwal = withReactContent(Swal);
     var importCounter = 0;
     const GROUPS = [
         {
@@ -88,7 +88,7 @@ export default function RECORD_ARC_37(props) {
 
     // ***************************  DATA GETTERS *********************** //
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_arc_steps;
+        var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }
@@ -241,7 +241,6 @@ export default function RECORD_ARC_37(props) {
         let nunPartA = Number(A[1]) ?? Infinity;
         let nunPartB = Number(B[1]) ?? Infinity;
 
-
         if (strPartA < strPartB) { return -1; }
         if (strPartA > strPartB) { return 1; }
 
@@ -265,25 +264,25 @@ export default function RECORD_ARC_37(props) {
         return <>
             <div className='row border'>
                 <div className='col my-1'>
-                    <MDBBtn rounded outline size='sm' className='me-1' onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO GRUPO</MDBBtn>
+                    <Button variant="outline" size="sm" className="rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO GRUPO</Button>
                 </div>
             </div>
 
             <div className='row border'>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i class="fas fa-asterisk"></i> GRUPO</h5>
+                    <h5 className='fw-bold'><Icon name="asterisk" size={16} /> GRUPO</h5>
                 </div>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i class="fas fa-asterisk"></i><i class="fas fa-asterisk"></i> SUBGRUPO</h5>
+                    <h5 className='fw-bold'><Icon name="asterisk" size={16} /><Icon name="asterisk" size={16} /> SUBGRUPO</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-cube"></i> ÁREA NETA</h5>
+                    <h5 className='fw-bold'><Icon name="cube" size={16} /> ÁREA NETA</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-male"></i> INDICE</h5>
+                    <h5 className='fw-bold'><Icon name="male" size={16} /> INDICE</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-male"></i> OCUPACIÓN REAL</h5>
+                    <h5 className='fw-bold'><Icon name="male" size={16} /> OCUPACIÓN REAL</h5>
                 </div>
                 <div className='col-1'></div>
 
@@ -349,7 +348,7 @@ export default function RECORD_ARC_37(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <MDBBtn color="danger" rounded outline size='sm' className='px-2' onClick={() => del_grp_37(data.id)}> <i class="fas fa-minus text-danger"></i></MDBBtn>
+                                <Button variant="outline" size="sm" className="text-destructive border-destructive rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <Icon name="minus" size={16} className="text-danger" /></Button>
                             }
                         </div>
                     </div>
@@ -382,7 +381,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <MDBBtn color="success" rounded outline size='sm' className='px-2' onClick={() => add_grp_37(data.id)}> <i class="fas fa-plus text-success"></i></MDBBtn> : ''}
+                            <Button variant="outline" size="sm" className="rounded-pill px-2" onClick={() => add_grp_37(data.id)}> <Icon name="plus" size={16} className="text-success" /></Button> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -390,7 +389,7 @@ export default function RECORD_ARC_37(props) {
 
     let _COMPONENTN_IMPORT = () => {
         let areas = _GET_CHILD_33_AREAS();
-        areas.sort((a, b) => array_sort(a, b));
+        areas = [...areas].sort((a, b) => array_sort(a, b));
         return <>
             <div className='row'>
                 <div className='col-1'></div>
@@ -404,9 +403,9 @@ export default function RECORD_ARC_37(props) {
             {areas.map((area, i) => {
                 return <div className='row'>
 
-                    <div className='col-1 text-end'> <input class="form-check-input" type="checkbox" defaultChecked={true} name="import_checks" /> </div>
+                    <div className='col-1 text-end'> <input className="form-check-input" type="checkbox" defaultChecked={true} name="import_checks" /> </div>
                     <div className='col border'>
-                        <input type="text" class="form-control form-control-sm" name={'import_name'} defaultValue={area.floor} />
+                        <input type="text" className="form-control form-control-sm" name={'import_name'} defaultValue={area.floor} />
                     </div>
                     <div className='col border'><select className="form-select form-select-sm" name="import_main_group"
                         onChange={(e) => _SET_SUBGROUP_IMPORT(e.target.value, i)}>
@@ -416,16 +415,16 @@ export default function RECORD_ARC_37(props) {
                         {GROUPS.map(g => <option>{g.name}</option>)}
                     </select></div>
                     <div className='col border'>
-                        <input type="number" min={0} class="form-control form-control-sm" name={'import_anet'} defaultValue={_GET_NET_INDEX(area.build, area.destroy, area.historic_areas)} />
+                        <input type="number" min={0} className="form-control form-control-sm" name={'import_anet'} defaultValue={_GET_NET_INDEX(area.build, area.destroy, area.historic_areas)} />
                     </div>
-                    <div className='col border'><input type="number" min={0} class="form-control form-control-sm" name={'import_index'} /></div>
-                    <div className='col border'><input type="number" min={0} class="form-control form-control-sm" name={'import_real'} /></div>
+                    <div className='col border'><input type="number" min={0} className="form-control form-control-sm" name={'import_index'} /></div>
+                    <div className='col border'><input type="number" min={0} className="form-control form-control-sm" name={'import_real'} /></div>
                 </div>
             })}
             <div className='row my-2'>
                 <div className='col-1'></div>
                 <div className='col text-center'>
-                    <MDBBtn size='sm' color='success' onClick={() => import_37()}><i class="fas fa-file-upload"></i> IMPORTAR</MDBBtn>
+                    <Button size="sm" onClick={() => import_37()}><Icon name="file-upload" size={16} /> IMPORTAR</Button>
                 </div>
             </div>
         </>
@@ -537,17 +536,17 @@ export default function RECORD_ARC_37(props) {
 
         const columns = [
             {
-                name: <label>Dirección</label>,
+                name: 'Dirección',
                 selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 center: true,
                 compact: true,
                 minWidth: '150px',
-                cell: row => <label>{row.name}</label>
+                cell: row => <span className="text-sm">{row.name}</span>
             },
             {
-                name: <label>Grupos</label>,
+                name: 'Grupos',
                 center: true,
                 compact: true,
                 cell: row => {
@@ -558,7 +557,7 @@ export default function RECORD_ARC_37(props) {
                 }
             },
             {
-                name: <label>Subgrupos</label>,
+                name: 'Subgrupos',
                 center: true,
                 compact: true,
                 cell: row => {
@@ -567,7 +566,7 @@ export default function RECORD_ARC_37(props) {
                 }
             },
             {
-                name: <label>Áreas Netas</label>,
+                name: 'Áreas Netas',
                 center: true,
                 compact: true,
                 maxWidth: '60px',
@@ -581,7 +580,7 @@ export default function RECORD_ARC_37(props) {
             /**
              * 
              * {
-                name: <label>Evaluación</label>,
+                name: 'Evaluación',
                 button: true,
                 center: true,
                 minWidth: '140px',
@@ -596,13 +595,13 @@ export default function RECORD_ARC_37(props) {
            
              */
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 center: true,
                 minWidth: '110px',
                 cell: row => <>
-                    <MDBBtn className="btn btn-secondary btn-sm px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><i class="far fa-edit"></i></MDBBtn>
-                    <MDBBtn className="btn btn-danger btn-sm px-2" onClick={() => delete_37(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                    <Button variant="outline" size="sm" className="px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><Icon name="edit" size={16} /></Button>
+                    <Button variant="destructive" size="sm" className="px-2" onClick={() => delete_37(row.id)}><Icon name="trash-alt" size={16} /></Button>
                 </>,
             },
         ]
@@ -610,7 +609,7 @@ export default function RECORD_ARC_37(props) {
             noDataComponent="No hay Items"
             striped="true"
             columns={columns}
-            data={_LIST.sort((a, b) => array_sort(a, b))}
+            data={[..._LIST].sort((a, b) => array_sort(a, b))}
             highlightOnHover
             className="data-table-component"
             noHeader
@@ -625,7 +624,7 @@ export default function RECORD_ARC_37(props) {
                 <input type="hidden" id="r_a_34_" />
                 <div className="col-2 p-1">
                     <label>Espacio</label>
-                    <input type="text" class="form-control form-control-sm" id={"r_a_37_1" + edit}
+                    <input type="text" className="form-control form-control-sm" id={"r_a_37_1" + edit}
                         defaultValue={_edit37.name ?? ''} />
                 </div>
                 {_edit37 ? '' : <>
@@ -645,7 +644,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className="col p-1">
                         <label>Área neta</label>
-                        <input type="number" step={0.01} min={0} class="form-control form-control-sm" id={"r_a_37_5" + edit}
+                        <input type="number" step={0.01} min={0} className="form-control form-control-sm" id={"r_a_37_5" + edit}
                             defaultValue={''} />
                     </div>
                     <div className="col-2 p-1">
@@ -658,7 +657,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className="col p-1">
                         <label>Ocupación real</label>
-                        <input type="number" min={0} class="form-control form-control-sm" id={"r_a_37_6" + edit}
+                        <input type="number" min={0} className="form-control form-control-sm" id={"r_a_37_6" + edit}
                             defaultValue={''} />
                     </div>
                 </>}
@@ -699,72 +698,35 @@ export default function RECORD_ARC_37(props) {
     let save_step = (_id_public, useSwal, formData) => {
         var STEP = LOAD_STEP(_id_public);
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (STEP.id) {
             RECORD_ARCSERVICE.update_step(STEP.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         else {
             RECORD_ARCSERVICE.create_step(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
     }
@@ -790,32 +752,16 @@ export default function RECORD_ARC_37(props) {
         RECORD_ARCSERVICE.create_arc_37(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                     setNew(false)
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let edit_ra_37 = (e) => {
@@ -840,32 +786,16 @@ export default function RECORD_ARC_37(props) {
         RECORD_ARCSERVICE.update_arc_37(edit37.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                     set37(false)
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let add_grp_37 = (id, useSwal) => {
@@ -929,33 +859,17 @@ export default function RECORD_ARC_37(props) {
         RECORD_ARCSERVICE.update_arc_37(id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                     setRow({});
                     setEdit({});
                 } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let import_37 = () => {
@@ -982,12 +896,7 @@ export default function RECORD_ARC_37(props) {
             })
         }
 
-        if (newItems.length > 1) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (newItems.length > 1) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         newItems.map(it => {
             var formData = new FormData();
@@ -1004,38 +913,20 @@ export default function RECORD_ARC_37(props) {
                     if (response.data === 'OK') {
                         importCounter++;
                         if (importCounter == newItems.length) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             setImport(false)
                             props.requestUpdateRecord(currentItem.id);
                         }
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         })
-
-
 
     }
     let del_grp_37 = (id, ind, useSwal) => {
@@ -1105,80 +996,36 @@ export default function RECORD_ARC_37(props) {
         RECORD_ARCSERVICE.update_arc_37(id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                     setRow({});
                     setEdit({});
                 } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let delete_37 = (id) => {
-        MySwal.fire({
-            title: "ELIMINAR ESTE ITEM",
-            text: "¿Esta seguro de eliminar de forma permanente este item?",
-            icon: 'question',
-            confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 RECORD_ARCSERVICE.delete_37(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             props.requestUpdateRecord(currentItem.id);
                             set37(false)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         });
@@ -1191,22 +1038,12 @@ export default function RECORD_ARC_37(props) {
                 if (response.data === 'OK') {
                     props.requestUpdateRecord(currentItem.id);
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -1235,15 +1072,15 @@ export default function RECORD_ARC_37(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <div class="form-check ms-5 my-2">
-                        <input class="form-check-input" type="checkbox" onChange={(e) => setNew(e.target.checked)} />
-                        <label class="form-check-label" for="flexCheckDefault">
+                    <div className="form-check ms-5 my-2">
+                        <input className="form-check-input" type="checkbox" onChange={(e) => setNew(e.target.checked)} />
+                        <label className="form-check-label" htmlFor="flexCheckDefault">
                             Añadir nuevo elemento
                         </label>
                     </div>
                 </div>
                 <div className='col text-end'>
-                    <MDBBtn size='sm' outline={!newImport} onClick={() => setImport(!newImport)}><i class="fas fa-table"></i> IMPORTAR DE CUADRO DE AREAS</MDBBtn>
+                    <Button variant={!newImport ? "outline" : "default"} size="sm" onClick={() => setImport(!newImport)}><Icon name="table" size={16} /> IMPORTAR DE CUADRO DE AREAS</Button>
                 </div>
             </div>
 
@@ -1251,9 +1088,9 @@ export default function RECORD_ARC_37(props) {
                 ? <form id="form_ra_37" onSubmit={new_ra_37}>
                     {_COMPONENT_37('', false)}
                     <div className="text-center">
-                        <button className="btn btn-success btn-sm my-2">
-                            <i class="far fa-share-square"></i> AÑADIR ELEMENTOS
-                        </button>
+                        <Button size="sm" className="my-2">
+                            <Icon name="share-square" size={16} /> AÑADIR ELEMENTOS
+                        </Button>
                     </div>
                 </form>
                 : ""}
@@ -1264,9 +1101,9 @@ export default function RECORD_ARC_37(props) {
                     <h4 className="fw-bold text-center py-2">Actualizar Elemento</h4>
                     {_COMPONENT_37('_edit', edit37)}
                     <div className="text-center">
-                        <button className="btn btn-success btn-sm  my-2">
-                            <i class="far fa-share-square"></i> GUARDAR CAMBIOS
-                        </button>
+                        <Button size="sm" className="my-2">
+                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                        </Button>
                     </div>
                 </form>
                 : ""}

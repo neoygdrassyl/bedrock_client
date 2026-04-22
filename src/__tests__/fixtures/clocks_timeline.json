@@ -1,0 +1,26 @@
+{
+  "full_timeline": [
+    { "id": 1, "state": 0, "date_start": "2026-01-16", "version": "1", "description": "Radicación" },
+    { "id": 2, "state": 1, "date_start": "2026-01-17", "version": "1", "description": "Inicio revision formal" },
+    { "id": 3, "state": 50, "date_start": "2026-01-20", "version": "1", "description": "Inicio estudio" },
+    { "id": 4, "state": 51, "date_start": "2026-01-25", "version": "1", "description": "Completitud docs" },
+    { "id": 5, "state": 60, "date_start": "2026-01-26", "version": "1", "description": "Citación colindantes" },
+    { "id": 6, "state": 61, "date_start": "2026-01-30", "version": "1", "description": "Notificación colindantes" },
+    { "id": 7, "state": 100, "date_start": "2026-02-05", "version": "1", "description": "Acta comité" },
+    { "id": 8, "state": 200, "date_start": "2026-02-10", "version": "1", "description": "Resolución" }
+  ],
+  "with_suspension": [
+    { "id": 1, "state": 0, "date_start": "2026-01-16", "version": "1", "description": "Radicación" },
+    { "id": 2, "state": 1, "date_start": "2026-01-17", "version": "1", "description": "Inicio revision" },
+    { "id": 3, "state": 50, "date_start": "2026-01-20", "version": "1", "description": "Inicio estudio" },
+    { "id": 4, "state": 300, "date_start": "2026-01-25", "version": "1", "description": "Suspensión pre-acta INICIO" },
+    { "id": 5, "state": 350, "date_start": "2026-02-05", "version": "1", "description": "Suspensión pre-acta FIN" }
+  ],
+  "with_desistimiento": [
+    { "id": 1, "state": 0, "date_start": "2026-01-16", "version": "1", "description": "Radicación" },
+    { "id": 2, "state": 1, "date_start": "2026-01-17", "version": "1", "description": "Inicio revision" },
+    { "id": 3, "state": -50, "date_start": "2026-01-25", "version": "-1", "description": "Inicio desistimiento por incompleto" },
+    { "id": 4, "state": -5, "date_start": "2026-01-26", "version": "-1", "description": "Citación desistimiento" }
+  ],
+  "empty": []
+}

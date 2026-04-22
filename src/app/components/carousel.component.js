@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 
@@ -26,8 +25,7 @@ import LGOG20 from '../img/contacts/supernotariado.png'
 import LGOG21 from '../img/contacts/vanti.png'
 import { Button_navigation } from './button.component';
 
-class CarouselITems extends Component {
-  render() {
+function CarouselITems() {
     const responsive = {
         superLargeDesktop: {
           // the naming can be any, depends on you.
@@ -48,31 +46,30 @@ class CarouselITems extends Component {
         }
       };
 
-    let commonStyle = {backgroundColor: 'white'};
+    let commonStyle = {backgroundColor: 'var(--bs-body-bg)'};
     return (
       <div className="Carousel Items">
-        <h3 class="text-uppercase text-center m-3 mt-5">Entidades, agremaciones, asociaciones y otros grupos de interes {<Button_navigation Iddown={null} Idup={null} />}</h3>
+        <h3 className="text-uppercase text-center m-3 mt-5">Entidades, agremaciones, asociaciones y otros grupos de interes {<Button_navigation Iddown={null} Idup={null} />}</h3>
             <Carousel responsive={responsive} infinite={true} className="my-3">
-              <div style={commonStyle}><a class="" href="//www.amb.gov.co" target="_blank"><img src={LGOG1} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//camacol.co" target="_blank"><img src={LGOG5} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="http://www.cdmb.gov.co/web/" target="_blank"><img src={LGOG6} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="https://www.minvivienda.gov.co/" target="_blank"><img src={LGOG15} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="https://gobiernodigital.mintic.gov.co/portal/" target="_blank"><img src={LGOG13} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//puc.com.co" target="_blank"><img src={LGOG17} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.supernotariado.gov.co" target="_blank"><img src={LGOG20} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.arcgis.com/apps/webappviewer/index.html?id=5c32765bb4d544d1a20182ca13fc16b1" target="_blank"><img src={LGOG16} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.asosismica.org.co" target="_blank"><img src={LGOG3} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.colombia.co" target="_blank"><img src={LGOG8} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.copnia.gov.co" target="_blank"><img src={LGOG9} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//sci.org.co" target="_blank"><img src={LGOG14} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.curadoresurbanos.org" target="_blank"><img src={LGOG7} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.essa.com.co/site/clientes/" target="_blank"><img src={LGOG12} class="logo-img" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.amb.com.co:8443/inicio/" target="_blank"><img src={LGOG2} class="logo-img" width="96" height="96" alt="..." /></a></div>
-              <div style={commonStyle}><a class="" href="//www.grupovanti.com" target="_blank"><img src={LGOG21} class="logo-img" width="96" height="96" alt="..." /></a></div>           
+              <div style={commonStyle}><a className="" href="//www.amb.gov.co" target="_blank"><img src={LGOG1} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//camacol.co" target="_blank"><img src={LGOG5} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="http://www.cdmb.gov.co/web/" target="_blank"><img src={LGOG6} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="https://www.minvivienda.gov.co/" target="_blank"><img src={LGOG15} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="https://gobiernodigital.mintic.gov.co/portal/" target="_blank"><img src={LGOG13} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//puc.com.co" target="_blank"><img src={LGOG17} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.supernotariado.gov.co" target="_blank"><img src={LGOG20} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.arcgis.com/apps/webappviewer/index.html?id=5c32765bb4d544d1a20182ca13fc16b1" target="_blank"><img src={LGOG16} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.asosismica.org.co" target="_blank"><img src={LGOG3} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.colombia.co" target="_blank"><img src={LGOG8} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.copnia.gov.co" target="_blank"><img src={LGOG9} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//sci.org.co" target="_blank"><img src={LGOG14} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.curadoresurbanos.org" target="_blank"><img src={LGOG7} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.essa.com.co/site/clientes/" target="_blank"><img src={LGOG12} className="logo-img" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.amb.com.co:8443/inicio/" target="_blank"><img src={LGOG2} className="logo-img" width="96" height="96" alt="..." /></a></div>
+              <div style={commonStyle}><a className="" href="//www.grupovanti.com" target="_blank"><img src={LGOG21} className="logo-img" width="96" height="96" alt="..." /></a></div>           
             </Carousel>
       </div >
     );
-  }
 }
 
 export default CarouselITems;

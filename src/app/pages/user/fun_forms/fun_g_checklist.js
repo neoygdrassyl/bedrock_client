@@ -1,20 +1,9 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 
 import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
-const MySwal = withReactContent(Swal);
-class FUNG_CHECKLIST extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion }) => {
 
         let _SET_CHILD = () => {
             var _CHILD = currentItem.fun_1s;
@@ -93,15 +82,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="611" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="611" value="1"
                             checked={_CHECK_INDEXVALUE('611', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="611" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="611" value="0"
                             checked={_CHECK_INDEXVALUE('611', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="611" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="611" value="2"
                             checked={_CHECK_INDEXVALUE('611', 2)} />
                     </div>
                 </div>
@@ -112,15 +101,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="612" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="612" value="1"
                             checked={_CHECK_INDEXVALUE('612', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="612" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="612" value="0"
                             checked={_CHECK_INDEXVALUE('612', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="612" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="612" value="2"
                             checked={_CHECK_INDEXVALUE('612', 2)} />
                     </div>
                 </div>
@@ -131,15 +120,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="613" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="613" value="1"
                             checked={_CHECK_INDEXVALUE('613', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="613" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="613" value="0"
                             checked={_CHECK_INDEXVALUE('613', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="613" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="613" value="2"
                             checked={_CHECK_INDEXVALUE('613', 2)} />
                     </div>
                 </div>
@@ -150,15 +139,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="614" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="614" value="1"
                             checked={_CHECK_INDEXVALUE('614', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="614" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="614" value="0"
                             checked={_CHECK_INDEXVALUE('614', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="614" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="614" value="2"
                             checked={_CHECK_INDEXVALUE('614', 2)} />
                     </div>
                 </div>
@@ -169,15 +158,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="615" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="615" value="1"
                             checked={_CHECK_INDEXVALUE('615', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="615" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="615" value="0"
                             checked={_CHECK_INDEXVALUE('615', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="615" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="615" value="2"
                             checked={_CHECK_INDEXVALUE('615', 2)} />
                     </div>
                 </div>
@@ -188,15 +177,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="616" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="616" value="1"
                             checked={_CHECK_INDEXVALUE('616', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="616" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="616" value="0"
                             checked={_CHECK_INDEXVALUE('616', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="616" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="616" value="2"
                             checked={_CHECK_INDEXVALUE('616', 2)} />
                     </div>
                 </div>
@@ -207,15 +196,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="617" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="617" value="1"
                             checked={_CHECK_INDEXVALUE('617', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="617" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="617" value="0"
                             checked={_CHECK_INDEXVALUE('617', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="617" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="617" value="2"
                             checked={_CHECK_INDEXVALUE('617', 2)} />
                     </div>
                 </div>
@@ -262,15 +251,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="621" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="621" value="1"
                                 checked={_CHECK_INDEXVALUE('621', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="621" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="621" value="0"
                                 checked={_CHECK_INDEXVALUE('621', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="621" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="621" value="2"
                                 checked={_CHECK_INDEXVALUE('621', 2)} />
                         </div>
                     </div>
@@ -281,15 +270,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601a" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="601a" value="1"
                                 checked={_CHECK_INDEXVALUE('601a', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601a" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="601a" value="0"
                                 checked={_CHECK_INDEXVALUE('601a', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601a" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="601a" value="2"
                                 checked={_CHECK_INDEXVALUE('601a', 2)} />
                         </div>
                     </div>
@@ -300,15 +289,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="622" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="622" value="1"
                                 checked={_CHECK_INDEXVALUE('622', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="622" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="622" value="0"
                                 checked={_CHECK_INDEXVALUE('622', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="622" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="622" value="2"
                                 checked={_CHECK_INDEXVALUE('622', 2)} />
                         </div>
                     </div>
@@ -319,15 +308,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602a" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="602a" value="1"
                                 checked={_CHECK_INDEXVALUE('602a', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602a" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="602a" value="0"
                                 checked={_CHECK_INDEXVALUE('602a', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602a" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="602a" value="2"
                                 checked={_CHECK_INDEXVALUE('602a', 2)} />
                         </div>
                     </div>
@@ -350,15 +339,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="623" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="623" value="1"
                                 checked={_CHECK_INDEXVALUE('623', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="623" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="623" value="0"
                                 checked={_CHECK_INDEXVALUE('623', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="623" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="623" value="2"
                                 checked={_CHECK_INDEXVALUE('623', 2)} />
                         </div>
                     </div>
@@ -369,15 +358,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601b" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="601b" value="1"
                                 checked={_CHECK_INDEXVALUE('601b', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601b" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="601b" value="0"
                                 checked={_CHECK_INDEXVALUE('601b', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601b" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="601b" value="2"
                                 checked={_CHECK_INDEXVALUE('601b', 2)} />
                         </div>
                     </div>
@@ -388,15 +377,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602b" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="602b" value="1"
                                 checked={_CHECK_INDEXVALUE('602b', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602b" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="602b" value="0"
                                 checked={_CHECK_INDEXVALUE('602b', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602b" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="602b" value="2"
                                 checked={_CHECK_INDEXVALUE('602b', 2)} />
                         </div>
                     </div>
@@ -407,15 +396,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="624" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="624" value="1"
                                 checked={_CHECK_INDEXVALUE('624', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="624" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="624" value="0"
                                 checked={_CHECK_INDEXVALUE('624', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="624" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="624" value="2"
                                 checked={_CHECK_INDEXVALUE('624', 2)} />
                         </div>
                     </div>
@@ -426,15 +415,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="625" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="625" value="1"
                                 checked={_CHECK_INDEXVALUE('625', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="625" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="625" value="0"
                                 checked={_CHECK_INDEXVALUE('625', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="625" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="625" value="2"
                                 checked={_CHECK_INDEXVALUE('625', 2)} />
                         </div>
                     </div>
@@ -457,15 +446,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="626" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="626" value="1"
                                 checked={_CHECK_INDEXVALUE('626', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="626" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="626" value="0"
                                 checked={_CHECK_INDEXVALUE('626', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="626" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="626" value="2"
                                 checked={_CHECK_INDEXVALUE('626', 2)} />
                         </div>
                     </div>
@@ -476,15 +465,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="627" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="627" value="1"
                                 checked={_CHECK_INDEXVALUE('627', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="627" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="627" value="0"
                                 checked={_CHECK_INDEXVALUE('627', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="627" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="627" value="2"
                                 checked={_CHECK_INDEXVALUE('627', 2)} />
                         </div>
                     </div>
@@ -495,15 +484,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601c" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="601c" value="1"
                                 checked={_CHECK_INDEXVALUE('601c', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601c" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="601c" value="0"
                                 checked={_CHECK_INDEXVALUE('601c', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601c" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="601c" value="2"
                                 checked={_CHECK_INDEXVALUE('601c', 2)} />
                         </div>
                     </div>
@@ -514,15 +503,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602c" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="602c" value="1"
                                 checked={_CHECK_INDEXVALUE('602c', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602c" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="602c" value="0"
                                 checked={_CHECK_INDEXVALUE('602c', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602c" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="602c" value="2"
                                 checked={_CHECK_INDEXVALUE('602c', 2)} />
                         </div>
                     </div>
@@ -562,15 +551,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="631" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="631" value="1"
                             checked={_CHECK_INDEXVALUE('631', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="631" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="631" value="0"
                             checked={_CHECK_INDEXVALUE('631', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="631" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="631" value="2"
                             checked={_CHECK_INDEXVALUE('631', 2)} />
                     </div>
                 </div>
@@ -581,15 +570,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="632" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="632" value="1"
                             checked={_CHECK_INDEXVALUE('632', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="632" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="632" value="0"
                             checked={_CHECK_INDEXVALUE('632', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="632" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="632" value="2"
                             checked={_CHECK_INDEXVALUE('632', 2)} />
                     </div>
                 </div>
@@ -600,15 +589,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="633" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="633" value="1"
                             checked={_CHECK_INDEXVALUE('633', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="633" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="633" value="0"
                             checked={_CHECK_INDEXVALUE('633', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="633" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="633" value="2"
                             checked={_CHECK_INDEXVALUE('633', 2)} />
                     </div>
                 </div>
@@ -619,15 +608,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6023" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6023" value="1"
                             checked={_CHECK_INDEXVALUE('6023', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6023" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6023" value="0"
                             checked={_CHECK_INDEXVALUE('6023', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6023" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6023" value="2"
                             checked={_CHECK_INDEXVALUE('6023', 2)} />
                     </div>
                 </div>
@@ -647,15 +636,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="634" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="634" value="1"
                             checked={_CHECK_INDEXVALUE('634', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="634" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="634" value="0"
                             checked={_CHECK_INDEXVALUE('634', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="634" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="634" value="2"
                             checked={_CHECK_INDEXVALUE('634', 2)} />
                     </div>
                 </div>
@@ -666,15 +655,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="635" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="635" value="1"
                             checked={_CHECK_INDEXVALUE('635', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="635" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="635" value="0"
                             checked={_CHECK_INDEXVALUE('635', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="635" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="635" value="2"
                             checked={_CHECK_INDEXVALUE('635', 2)} />
                     </div>
                 </div>
@@ -685,15 +674,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="636" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="636" value="1"
                             checked={_CHECK_INDEXVALUE('636', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="636" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="636" value="0"
                             checked={_CHECK_INDEXVALUE('636', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="636" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="636" value="2"
                             checked={_CHECK_INDEXVALUE('636', 2)} />
                     </div>
                 </div>
@@ -730,15 +719,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="641" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="641" value="1"
                                 checked={_CHECK_INDEXVALUE('641', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="641" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="641" value="0"
                                 checked={_CHECK_INDEXVALUE('641', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="641" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="641" value="2"
                                 checked={_CHECK_INDEXVALUE('641', 2)} />
                         </div>
                     </div>
@@ -754,15 +743,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="642" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="642" value="1"
                                 checked={_CHECK_INDEXVALUE('642', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="642" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="642" value="0"
                                 checked={_CHECK_INDEXVALUE('642', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="642" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="642" value="2"
                                 checked={_CHECK_INDEXVALUE('642', 2)} />
                         </div>
                     </div>
@@ -773,15 +762,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="643" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="643" value="1"
                                 checked={_CHECK_INDEXVALUE('643', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="643" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="643" value="0"
                                 checked={_CHECK_INDEXVALUE('643', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="643" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="643" value="2"
                                 checked={_CHECK_INDEXVALUE('643', 2)} />
                         </div>
                     </div>
@@ -814,15 +803,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="651" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="651" value="1"
                                 checked={_CHECK_INDEXVALUE('651', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="651" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="651" value="0"
                                 checked={_CHECK_INDEXVALUE('651', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="651" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="651" value="2"
                                 checked={_CHECK_INDEXVALUE('651', 2)} />
                         </div>
                     </div>
@@ -833,15 +822,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="652" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="652" value="1"
                                 checked={_CHECK_INDEXVALUE('652', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="652" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="652" value="0"
                                 checked={_CHECK_INDEXVALUE('652', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="652" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="652" value="2"
                                 checked={_CHECK_INDEXVALUE('652', 2)} />
                         </div>
                     </div>
@@ -852,15 +841,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="653" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="653" value="1"
                                 checked={_CHECK_INDEXVALUE('653', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="653" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="653" value="0"
                                 checked={_CHECK_INDEXVALUE('653', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="653" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="653" value="2"
                                 checked={_CHECK_INDEXVALUE('653', 2)} />
                         </div>
                     </div>
@@ -906,15 +895,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6601" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6601" value="1"
                             checked={_CHECK_INDEXVALUE('6601', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6601" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6601" value="0"
                             checked={_CHECK_INDEXVALUE('6601', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6601" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6601" value="2"
                             checked={_CHECK_INDEXVALUE('6601', 2)} />
                     </div>
                 </div>
@@ -925,15 +914,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6602" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6602" value="1"
                             checked={_CHECK_INDEXVALUE('6602', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6602" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6602" value="0"
                             checked={_CHECK_INDEXVALUE('6602', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6602" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6602" value="2"
                             checked={_CHECK_INDEXVALUE('6602', 2)} />
                     </div>
                 </div>
@@ -944,15 +933,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6603" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6603" value="1"
                             checked={_CHECK_INDEXVALUE('6603', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6603" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6603" value="0"
                             checked={_CHECK_INDEXVALUE('6603', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6603" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6603" value="2"
                             checked={_CHECK_INDEXVALUE('6603', 2)} />
                     </div>
                 </div>
@@ -963,15 +952,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6604" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6604" value="1"
                             checked={_CHECK_INDEXVALUE('6604', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6604" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6604" value="0"
                             checked={_CHECK_INDEXVALUE('6604', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6604" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6604" value="2"
                             checked={_CHECK_INDEXVALUE('6604', 2)} />
                     </div>
                 </div>
@@ -982,15 +971,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6605" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6605" value="1"
                             checked={_CHECK_INDEXVALUE('6605', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6605" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6605" value="0"
                             checked={_CHECK_INDEXVALUE('6605', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6605" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6605" value="2"
                             checked={_CHECK_INDEXVALUE('6605', 2)} />
                     </div>
                 </div>
@@ -1015,15 +1004,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6606" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6606" value="1"
                             checked={_CHECK_INDEXVALUE('6606', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6606" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6606" value="0"
                             checked={_CHECK_INDEXVALUE('6606', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6606" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6606" value="2"
                             checked={_CHECK_INDEXVALUE('6606', 2)} />
                     </div>
                 </div>
@@ -1034,15 +1023,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6607" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6607" value="1"
                             checked={_CHECK_INDEXVALUE('6607', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6607" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6607" value="0"
                             checked={_CHECK_INDEXVALUE('6607', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6607" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6607" value="2"
                             checked={_CHECK_INDEXVALUE('6607', 2)} />
                     </div>
                 </div>
@@ -1053,15 +1042,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6608" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6608" value="1"
                             checked={_CHECK_INDEXVALUE('6608', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6608" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6608" value="0"
                             checked={_CHECK_INDEXVALUE('6608', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6608" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6608" value="2"
                             checked={_CHECK_INDEXVALUE('6608', 2)} />
                     </div>
                 </div>
@@ -1072,15 +1061,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6609" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6609" value="1"
                             checked={_CHECK_INDEXVALUE('6609', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6609" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6609" value="0"
                             checked={_CHECK_INDEXVALUE('6609', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6609" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6609" value="2"
                             checked={_CHECK_INDEXVALUE('6609', 2)} />
                     </div>
                 </div>
@@ -1091,15 +1080,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6610" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6610" value="1"
                             checked={_CHECK_INDEXVALUE('6610', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6610" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6610" value="0"
                             checked={_CHECK_INDEXVALUE('6610', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6610" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6610" value="2"
                             checked={_CHECK_INDEXVALUE('6610', 2)} />
                     </div>
                 </div>
@@ -1115,15 +1104,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6611" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6611" value="1"
                             checked={_CHECK_INDEXVALUE('6611', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6611" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6611" value="0"
                             checked={_CHECK_INDEXVALUE('6611', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6611" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6611" value="2"
                             checked={_CHECK_INDEXVALUE('6611', 2)} />
                     </div>
                 </div>
@@ -1134,15 +1123,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6612" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6612" value="1"
                             checked={_CHECK_INDEXVALUE('6612', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6612" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6612" value="0"
                             checked={_CHECK_INDEXVALUE('6612', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6612" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6612" value="2"
                             checked={_CHECK_INDEXVALUE('6612', 2)} />
                     </div>
                 </div>
@@ -1162,15 +1151,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6613" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6613" value="1"
                             checked={_CHECK_INDEXVALUE('6613', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6613" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6613" value="0"
                             checked={_CHECK_INDEXVALUE('6613', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6613" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6613" value="2"
                             checked={_CHECK_INDEXVALUE('6613', 2)} />
                     </div>
                 </div>
@@ -1186,15 +1175,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6614" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6614" value="1"
                             checked={_CHECK_INDEXVALUE('6614', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6614" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6614" value="0"
                             checked={_CHECK_INDEXVALUE('6614', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6614" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6614" value="2"
                             checked={_CHECK_INDEXVALUE('6614', 2)} />
                     </div>
                 </div>
@@ -1210,15 +1199,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6615" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6615" value="1"
                             checked={_CHECK_INDEXVALUE('6615', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6615" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6615" value="0"
                             checked={_CHECK_INDEXVALUE('6615', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6615" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6615" value="2"
                             checked={_CHECK_INDEXVALUE('6615', 2)} />
                     </div>
                 </div>
@@ -1234,15 +1223,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6616" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6616" value="1"
                             checked={_CHECK_INDEXVALUE('6616', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6616" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6616" value="0"
                             checked={_CHECK_INDEXVALUE('6616', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6616" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6616" value="2"
                             checked={_CHECK_INDEXVALUE('6616', 2)} />
                     </div>
                 </div>
@@ -1253,15 +1242,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6617" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6617" value="1"
                             checked={_CHECK_INDEXVALUE('6617', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6617" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6617" value="0"
                             checked={_CHECK_INDEXVALUE('6617', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6617" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6617" value="2"
                             checked={_CHECK_INDEXVALUE('6617', 2)} />
                     </div>
                 </div>
@@ -1277,15 +1266,15 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6618" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6618" value="1"
                             checked={_CHECK_INDEXVALUE('6618', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6618" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6618" value="0"
                             checked={_CHECK_INDEXVALUE('6618', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6618" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6618" value="2"
                             checked={_CHECK_INDEXVALUE('6618', 2)} />
                     </div>
                 </div>
@@ -1322,15 +1311,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="671" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="671" value="1"
                                 checked={_CHECK_INDEXVALUE('671', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="671" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="671" value="0"
                                 checked={_CHECK_INDEXVALUE('671', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="671" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="671" value="2"
                                 checked={_CHECK_INDEXVALUE('671', 2)} />
                         </div>
                     </div>
@@ -1341,15 +1330,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="672" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="672" value="1"
                                 checked={_CHECK_INDEXVALUE('672', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="672" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="672" value="0"
                                 checked={_CHECK_INDEXVALUE('672', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="672" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="672" value="2"
                                 checked={_CHECK_INDEXVALUE('672', 2)} />
                         </div>
                     </div>
@@ -1392,15 +1381,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="681" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="681" value="1"
                                 checked={_CHECK_INDEXVALUE('681', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="681" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="681" value="0"
                                 checked={_CHECK_INDEXVALUE('681', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="681" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="681" value="2"
                                 checked={_CHECK_INDEXVALUE('681', 2)} />
                         </div>
                     </div>
@@ -1416,15 +1405,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="682" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="682" value="1"
                                 checked={_CHECK_INDEXVALUE('682', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="682" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="682" value="0"
                                 checked={_CHECK_INDEXVALUE('682', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="682" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="682" value="2"
                                 checked={_CHECK_INDEXVALUE('682', 2)} />
                         </div>
                     </div>
@@ -1435,15 +1424,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="683" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="683" value="1"
                                 checked={_CHECK_INDEXVALUE('683', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="683" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="683" value="0"
                                 checked={_CHECK_INDEXVALUE('683', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="683" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="683" value="2"
                                 checked={_CHECK_INDEXVALUE('683', 2)} />
                         </div>
                     </div>
@@ -1454,15 +1443,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="684" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="684" value="1"
                                 checked={_CHECK_INDEXVALUE('684', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="684" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="684" value="0"
                                 checked={_CHECK_INDEXVALUE('684', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="684" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="684" value="2"
                                 checked={_CHECK_INDEXVALUE('684', 2)} />
                         </div>
                     </div>
@@ -1473,15 +1462,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="685" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="685" value="1"
                                 checked={_CHECK_INDEXVALUE('685', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="685" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="685" value="0"
                                 checked={_CHECK_INDEXVALUE('685', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="685" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="685" value="2"
                                 checked={_CHECK_INDEXVALUE('685', 2)} />
                         </div>
                     </div>
@@ -1497,15 +1486,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6861" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="6861" value="1"
                                 checked={_CHECK_INDEXVALUE('6861', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6861" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="6861" value="0"
                                 checked={_CHECK_INDEXVALUE('6861', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6861" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="6861" value="2"
                                 checked={_CHECK_INDEXVALUE('6861', 2)} />
                         </div>
                     </div>
@@ -1521,15 +1510,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="687" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="687" value="1"
                                 checked={_CHECK_INDEXVALUE('687', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="687" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="687" value="0"
                                 checked={_CHECK_INDEXVALUE('687', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="687" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="687" value="2"
                                 checked={_CHECK_INDEXVALUE('687', 2)} />
                         </div>
                     </div>
@@ -1540,15 +1529,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6862" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="6862" value="1"
                                 checked={_CHECK_INDEXVALUE('6862', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6862" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="6862" value="0"
                                 checked={_CHECK_INDEXVALUE('6862', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6862" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="6862" value="2"
                                 checked={_CHECK_INDEXVALUE('6862', 2)} />
                         </div>
                     </div>
@@ -1564,15 +1553,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="688" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="688" value="1"
                                 checked={_CHECK_INDEXVALUE('688', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="688" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="688" value="0"
                                 checked={_CHECK_INDEXVALUE('688', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="688" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="688" value="2"
                                 checked={_CHECK_INDEXVALUE('688', 2)} />
                         </div>
                     </div>
@@ -1583,15 +1572,15 @@ class FUNG_CHECKLIST extends Component {
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="689" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="689" value="1"
                                 checked={_CHECK_INDEXVALUE('689', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="689" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="689" value="0"
                                 checked={_CHECK_INDEXVALUE('689', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="689" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="689" value="2"
                                 checked={_CHECK_INDEXVALUE('689', 2)} />
                         </div>
                     </div>
@@ -1603,38 +1592,38 @@ class FUNG_CHECKLIST extends Component {
             let _LIST = currentItem.fun_6s;
             const columns = [
                 {
-                    name: <label className="text-center">DESCRIPCIÓN</label>,
-                    selector: 'description',
+                    name: 'DESCRIPCIÓN',
+                    selector: row => row.description,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.description}</label>
+                    cell: row => <span className="text-sm">{row.description}</span>
                 },
                 {
-                    name: <label>CÓDIGO</label>,
-                    selector: 'id_public',
+                    name: 'CÓDIGO',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
-                    name: <label>FOLIOS</label>,
-                    selector: 'pages',
+                    name: 'FOLIOS',
+                    selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
-                    cell: row => <label>{row.pages}</label>
+                    cell: row => <span className="text-sm">{row.pages}</span>
                 },
                 {
-                    name: <label>FECHA ANEXO</label>,
-                    selector: 'date',
+                    name: 'FECHA ANEXO',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
-                    cell: row => <label>{dateParser(row.date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
                 },
                 {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     maxWidth: '50px',
                     cell: row => <>
@@ -1644,7 +1633,7 @@ class FUNG_CHECKLIST extends Component {
                     </>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '140px',
                     cell: row => <>
@@ -1670,8 +1659,8 @@ class FUNG_CHECKLIST extends Component {
 
         return (
             <div>
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="fung_c3">
-                    <label className="app-p lead text-center fw-normal text-uppercase">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
+                <legend className="my-2 px-3 Collapsible" id="fung_c3">
+                    <label className="app-p lead text-center fw-normal">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
                 </legend>
                 {_SET_610()}
                 {_SET_620()}
@@ -1681,13 +1670,12 @@ class FUNG_CHECKLIST extends Component {
                 {_SET_660()}
                 {_SET_670()}
                 {_SET_680()}
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="fung_c4">
-                    <label className="app-p lead text-center fw-normal text-uppercase">7. GESTIÓN DOCUMENTAL</label>
+                <legend className="my-2 px-3 Collapsible" id="fung_c4">
+                    <label className="app-p lead text-center fw-normal">7. GESTIÓN DOCUMENTAL</label>
                 </legend>
                 {_CHILD_6_LIST()}
             </div>
         );
-    }
-}
+};
 
 export default FUNG_CHECKLIST;

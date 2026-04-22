@@ -1,21 +1,10 @@
-import React, { Component } from 'react';
 import FUNService from '../../../services/fun.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUNN4 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
         var formData = new FormData();
 
@@ -31,28 +20,28 @@ class FUNN4 extends Component {
             let _LIST = _SET_CHILD_4();
             const columns_4 = [
                 {
-                    name: <label>LINDEROS</label>,
-                    selector: 'coord',
+                    name: 'LINDEROS',
+                    selector: row => row.coord,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.coord}</label>
+                    cell: row => <span className="text-sm">{row.coord}</span>
                 },
                 {
-                    name: <label>LONGITUD</label>,
-                    selector: 'longitud',
+                    name: 'LONGITUD',
+                    selector: row => row.longitud,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.longitud}</label>
+                    cell: row => <span className="text-sm">{row.longitud}</span>
                 },
                 {
-                    name: <label>COLINDA CON</label>,
-                    selector: 'colinda',
-                    cell: row => <label>{row.colinda}</label>
+                    name: 'COLINDA CON',
+                    selector: row => row.colinda,
+                    cell: row => <span className="text-sm">{row.colinda}</span>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
-                    cell: row => <MDBBtn className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                    cell: row => <Button variant="destructive" size="sm" onClick={() => delete_4(row.id)}><Icon name="trash-alt" size={16} /></Button>
                 },
             ]
             return <DataTable
@@ -83,86 +72,42 @@ class FUNN4 extends Component {
             let longitud = document.getElementById("f_42").value;
             formData.set('longitud', longitud);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.create_fun4(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdate(currentItem.id)
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdate(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
         let delete_4 = (id) => {
-            MySwal.fire({
+            swalConfirm({
                 title: "ELIMINAR ESTE ITEM",
                 text: "¿Esta seguro de eliminar de forma permanente este item?",
                 icon: 'question',
                 confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     FUNService.delete_4(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdate(currentItem.id)
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdate(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         });
                 }
             });
@@ -170,17 +115,17 @@ class FUNN4 extends Component {
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_4">
-                    <label className="app-p lead text-center fw-normal text-uppercase">4. Linderos, Dimensiones y Áreas</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_4">
+                    <label className="app-p lead text-center fw-normal">4. Linderos, Dimensiones y Áreas</label>
                 </legend>
                 <div className="row mb-3">
                     <div className="col-4">
                         <label>4.1 Linderos</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-compass"></i>
+                        <div className="input-group mb-3">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="compass" size={16} />
                             </span>
-                            <select class="form-select" required id="f_41" >
+                            <select className="form-select" required id="f_41" >
                                 <option>NORTE</option>
                                 <option>SUR</option>
                                 <option>ORIENTE</option>
@@ -190,32 +135,31 @@ class FUNN4 extends Component {
                     </div>
                     <div className="col-4">
                         <label>4.2 Longitud (en m)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-ruler"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="ruler" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_42" />
+                            <input type="text" className="form-control" id="f_42" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>4.3 Colinda con </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_43" />
+                            <input type="text" className="form-control" id="f_43" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_4()}><i class="far fa-file-alt"></i> AÑADIR ITEM </MDBBtn>
+                        <Button size="sm" className="my-3" onClick={() => new_4()}><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                     </div>
                 </div>
                 {_CHILD_4_LIST()}
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN4;

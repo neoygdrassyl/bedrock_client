@@ -1,42 +1,37 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import { formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../components/customClasses/typeParse'
 import FUNService from '../../../../services/fun.service'
 import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUN_DOC_CONFIRMLEGAL extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.state = {
-            load: false,
-            curatedList: [],
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null,
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    componentDidUpdate(prevProps) {
-        // Uso tipico (no olvides de comparar las props):
-        if (this.props.currentVersion !== prevProps.currentVersion && this.props.currentVersion != null) {
-            var _CHILD_1 = this._SET_CHILD_1_FOREIGNER();
+function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate, swaMsg, alert }) {
+        const [load, setLoad] = useState(false);
+        const [curatedList, setCuratedList] = useState([]);
+        const [vrsRelated, setVrsRelated] = useState([]);
+        const [vrSelected, setVrSelected] = useState(null);
+        const [cubSelected, setCubSelected] = useState(null);
+        const [idCUBxVr, setIdCUBxVr] = useState(null);
+        const [tn, setTn] = useState(null);
+    useEffect(() => {
+        retrieveItem();
+    }, []);
+
+    useEffect(() => {
+        if (currentVersion != null) {
+            var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
             document.getElementById('geng_type').value = formsParser1(_CHILD_1)
         }
-    }
-    _SET_CHILD_1_FOREIGNER = () => {
-        var _CHILD = this.props.currentItem.fun_1s;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
+    }, [currentVersion]);
+
+    let _SET_CHILD_1_FOREIGNER = () => {
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
             tipo: [],
             tramite: [],
@@ -56,21 +51,23 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
         return _CHILD_VARS;
 
     }
-    async retrieveItem() {
+    const retrieveItem = async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data)
             })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CARTA LEGAL Y DEBIDA FORMA');
 
             if (data) document.getElementById("vr_selected").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            setVrSelected(data.vr);
+            setCubSelected(data.cub);
+            setIdCUBxVr(data.id)
         } catch (error) {
             console.log(error);
         }
     }
-    setCuratedList(List) {
+    const buildCuratedList = (List) => {
         let newList = [];
         if (!List) return;
         List.map((value, i) => {
@@ -95,12 +92,9 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 })
             })
         })
-        this.setState({ curatedList: newList, load: true })
+        setCuratedList(newList);
+        setLoad(true)
     }
-
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, alert, VIEW_G } = this.props;
 
         function capitalize(s) {
             return s && s[0].toUpperCase() + s.slice(1);
@@ -116,12 +110,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente." });
                 });
 
         }
@@ -303,42 +292,41 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.1. Fecha del documento</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="geng_date_doc" required
-                            defaultValue={_JSON.date_doc ?? moment().format('YYYY-MM-DD')} />
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geng_date_doc" required
+                            defaultValue={_JSON.date_doc ?? dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>5.2. Fecha LyDF</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="geng_date" required disabled
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geng_date" required disabled
                             value={_CHILD_C.item_c9} />
                     </div>
                     <div className="col">
                         <label>5.3 Número de Radicación</label>
-                        <input type="text" class="form-control mb-3" id="geng_id_public" disabled
+                        <input type="text" className="form-control mb-3" id="geng_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
                     <div></div>
                     <div className="col">
                         <label className="mt-1">5.4.1 {infoCud.serials.end} Carta LyDF</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geng_cub_ldf"
-                                defaultValue={_GET_CHILD_LAW().cub_ldf || this.state.cubSelected || ""} />
-                            {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geng_cub_ldf"
+                                defaultValue={_GET_CHILD_LAW().cub_ldf || cubSelected || ""} />
+                            {edit ? <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
+                                {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
                                 ))}
                             </select>
                         </div>
-
 
                     </div>
                 </div>
@@ -353,27 +341,27 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     </div>
                     <div className="col-4">
                         <label>5.6 Responsable</label>
-                        <input type="text" class="form-control mb-3" id="geng_name"
+                        <input type="text" className="form-control mb-3" id="geng_name"
                             defaultValue={_JSON.name ?? _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col-4">
                         <label>5.7 Documento Responsable</label>
-                        <input type="text" class="form-control mb-3" id="geng_id_number"
+                        <input type="text" className="form-control mb-3" id="geng_id_number"
                             defaultValue={_JSON.id_number ?? _CHILD_53.item_532} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.8 Dirección Responsable</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geng_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geng_address"
                                 defaultValue={_JSON.address ?? _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
                         <label>5.9 Email Responsable</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geng_email"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geng_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
                         </div>
                     </div>
@@ -382,17 +370,17 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.10 Dirección Predio</label>
-                        <input type="text" class="form-control mb-3" id="geng_address_2"
+                        <input type="text" className="form-control mb-3" id="geng_address_2"
                             defaultValue={_JSON.address_2 ?? _CHILD_2.item_211} />
                     </div>
                     <div className="col">
                         <label>5.11 Número Predial/Catastral</label>
-                        <input type="text" class="form-control mb-3" id="geng_predial"
+                        <input type="text" className="form-control mb-3" id="geng_predial"
                             defaultValue={_JSON.predial ?? _CHILD_2.item_23} />
                     </div>
                     <div className="col">
                         <label>5.12 Ciudad Predio</label>
-                        <input type="text" class="form-control mb-3" id="geng_city"
+                        <input type="text" className="form-control mb-3" id="geng_city"
                             defaultValue={_JSON.city ?? capitalize(infoCud.city.toLowerCase())} />
                     </div>
                 </div>
@@ -400,13 +388,11 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.13 Tipo de Solicitud</label>
-                        <textarea rows="2" class="form-control mb-3" id="geng_type" defaultValue={_JSON.type ?? formsParser1(_CHILD_1)}></textarea>
+                        <textarea rows="2" className="form-control mb-3" id="geng_type" defaultValue={_JSON.type ?? formsParser1(_CHILD_1)}></textarea>
                     </div>
                 </div>
             </>
         }
-
-
 
         let _GET_LAST_VR = () => {
             let fun_r = _SET_CHILD_REVIEW();
@@ -418,10 +404,10 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             let lastDate = _GET_CLOCK_STATE(3).date_start;
             let last_vr = ''
 
-            this.state.curatedList.map(obj => {
+            curatedList.map(obj => {
                 let date = obj.date
                 if (docsToCheck.includes(obj.code)) {
-                    if (moment(date).isAfter(lastDate)) {
+                    if (dayjs(date).isAfter(lastDate)) {
                         lastDate = date
                         last_vr = obj.id_public
                     }
@@ -430,13 +416,12 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             return { date: lastDate, vr: last_vr }
         }
 
-
         let _CONTROL_COMPONENTN = () => {
             let last_vr = _GET_LAST_VR()
             let control_clock = _GET_CLOCK_STATE_VERSION(0, 5)
             let name_1 = control_clock.name ? control_clock.name.split(';')[0] : window.user.name + ' ' + window.user.surname
             let name_2 = control_clock.name ? control_clock.name.split(';')[1] : 'Radicación extemporánea';
-            let date = control_clock.date_start || moment().format('YYYY-MM-DD');
+            let date = control_clock.date_start || dayjs().format('YYYY-MM-DD');
             let desc = control_clock.desc || ''
 
             let fun_c_control = _GET_CHILD_LAW().fun_c_control ? _GET_CHILD_LAW().fun_c_control.split(';') : []
@@ -444,51 +429,51 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 <strong>CONTROL DE CALIDAD: SNR</strong>
                 <hr />
                 <div className='mx-5'>
-                    <div class="form-check">
+                    <div className="form-check">
                         <label>
                             <a href='https://sisg.supernotariado.gov.co/siteminderagent/forms/loginsnr.fcc?TYPE=33554433&REALMOID=06-18e70428-379e-45d6-85a6-4095a9982c2e&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-PKnunRcJfp7c%2fiHfQBdxBnPiyhxa2OCzryG6HgblD42T09D171jXVqmTby6FXFtO&TARGET=-SM-http%3a%2f%2fsisg%2esupernotariado%2egov%2eco%2f'
                                 target='_blank'>Link de la Super Intendencia</a>
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="control_func_1"
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="" id="control_func_1"
                             defaultChecked={fun_c_control[0] == 1} />
-                        <label class="form-check-label" for="control_func_1">
+                        <label className="form-check-label" htmlFor="control_func_1">
                             Toda la documentación esta completa según lo requiere el tipo de actuación, siendo la constancia del ultimo radicado VR: {last_vr.vr}
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="control_func_2"
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="" id="control_func_2"
                             defaultChecked={fun_c_control[1] == 1} />
-                        <label class="form-check-label" for="control_func_2">
+                        <label className="form-check-label" htmlFor="control_func_2">
                             Se actualizo en el mismo dia en el modulo de radicación de la SNR
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="control_func_3"
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="" id="control_func_3"
                             defaultChecked={fun_c_control[2] == 1} />
-                        <label class="form-check-label" for="control_func_3">
+                        <label className="form-check-label" htmlFor="control_func_3">
                             Se radicó en LyDF de manera extemporánea
                         </label>
                     </div>
                     <div className="row m-2">
                         <div className="col">
                             <label>De:</label>
-                            <input type="text" class="form-control form-control-sm" id="clock_event_1" disabled defaultValue={name_1} />
+                            <input type="text" className="form-control form-control-sm" id="clock_event_1" disabled defaultValue={name_1} />
                         </div>
                         <div className="col">
                             <label>Para:</label>
-                            <input class="form-control form-control-sm" id="clock_event_2" defaultValue={name_2} />
+                            <input className="form-control form-control-sm" id="clock_event_2" defaultValue={name_2} />
                         </div>
                         <div className="col">
                             <label>Fecha</label>
-                            <input type="date" class="form-control form-control-sm" id="clock_event_3" max="2100-01-01" disabled
+                            <input type="date" className="form-control form-control-sm" id="clock_event_3" max="2100-01-01" disabled
                                 defaultValue={date} />
 
                         </div>
                         <div className="col-6">
                             <label>Mensaje</label>
-                            <input list="option_workers" class="form-select form-select-sm" id="clock_event_4" autoComplete='off'
+                            <input list="option_workers" className="form-select form-select-sm" id="clock_event_4" autoComplete='off'
                                 defaultValue={desc}></input>
                             <datalist id="option_workers">
                                 <option>Fallo / error del sistema de reporte o comunicación curaduria / SNR</option>
@@ -509,24 +494,24 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     <strong>TIPO DE NOTIFICACIÓN</strong>
 
                     <div className="col-4">
-                        <select className='form-select' id="type_not" onChange={(e) => this.setState({ 'tn': e.target.value })}>
+                        <select className='form-select' id="type_not" onChange={(e) => setTn(e.target.value)}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
-                    {this.state.tn == 4 ?
+                    {tn == 4 ?
                         <>
                          <div className="col-4">
-                                <div class="input-group my-1">
+                                <div className="input-group my-1">
                                     <label>Fecha Comunicación: </label>
                                 </div>
                             </div>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
+                                <div className="input-group my-1">
+                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
                                 </div>
                             </div>
                         </>
@@ -579,43 +564,23 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             let condition = null;
             if (_CHILD.condition != null) condition = _CHILD.condition;
             if (condition != null && condition == 1) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 FUNService.gen_doc_confirm(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.close();
-                            window.open(process.env.REACT_APP_API_URL + "/pdf/confirm/" + "Confirmacion_" + currentItem.id_public + ".pdf");
+                            swalClose();
+                            window.open(import.meta.env.VITE_API_URL + "/pdf/confirm/" + "Confirmacion_" + currentItem.id_public + ".pdf");
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
             else {
-                MySwal.fire({
-                    title: 'FALTAN DATOS IMPORTANTES',
-                    text: 'Para poder generar este documento la solicitud debe de estar en Legal y debida forma.',
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: 'FALTAN DATOS IMPORTANTES', text: 'Para poder generar este documento la solicitud debe de estar en Legal y debida forma.' });
             }
         }
 
@@ -667,61 +632,35 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             manage_law(true, formData);
             if (document.getElementById('control_func_3').checked) createEvent(false)
             createVRxCUB_relation(new_id)
-            this.retrieveItem();
+            retrieveItem();
 
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
             formData.set('fun0Id', currentItem.id);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
                 FUNService.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdate(currentItem.id, true)
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdate(currentItem.id, true)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION" });
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -730,42 +669,21 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdate(currentItem.id, true)
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdate(currentItem.id, true)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION" });
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -796,35 +714,19 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id, true)
+                            requestUpdate(currentItem.id, true)
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -833,35 +735,19 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -882,12 +768,12 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             let date = document.getElementById('geng_date_doc').value;
             formatData.set('date', date);
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -899,7 +785,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -913,24 +799,23 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 {_GENDOC_COMPONENT()}
                 {_NOTY_TYPE_COMPONENENT()}
 
-                {this.props.edit ? _CONTROL_COMPONENTN() : ''}
+                {edit ? _CONTROL_COMPONENTN() : ''}
 
                 <div className="row text-center">
                     <div className='row'>{alert ? <label className="text-danger">Nota: Antes de generar este documento, verifique que la solicitud se encuentre actualizada y en Legal y Debida forma.</label> : ""}</div>
 
-                    {this.props.edit ?
+                    {edit ?
                         <div className="col">
-                            <button className="btn btn-success my-3"><i class="fas fa-share-square"></i> GUARDAR DATOS</button>
+                            <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR DATOS</Button>
                         </div>
                         : ''}
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i class="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
                     </div>
                 </div>
             </form>
 
         );
-    }
 }
 
 export default FUN_DOC_CONFIRMLEGAL;

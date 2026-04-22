@@ -295,6 +295,13 @@ class UserslDataService {
   sendEmailNegative_6(data) {
     return http.post(`/${route}/process/email_6/`, data);
   }
+
+  // DUPLICATE PROJECT
+  duplicate(data) {
+    return http.post(`/${route}/duplicate`, data, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }
 
 export default new UserslDataService();

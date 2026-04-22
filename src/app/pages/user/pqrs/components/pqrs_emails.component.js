@@ -1,66 +1,51 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import USERS_Service from '../../../../services/users.service';
 import { PQRS_SEND_DATE } from './pqrs_send_date.component';
 
-const moment = require('moment');
-const MySwal = withReactContent(Swal);
-class PQRS_EMAILS extends Component {
-    constructor(props) {
-        super(props);
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email_types, refreshCurrentItem, closeComponent }) {
+    const [usersList, setUsersList] = useState([]);
+    const [attachsForEmails, setAttachsForEmails] = useState(0);
+    const [load, setLoad] = useState(false);
 
-        this.state = {
-            users_list: [],
-            attachsForEmails: 0,
-            load: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveuUsers();
-    }
-    retrieveuUsers() {
+    useEffect(() => {
+        retrieveUsers();
+    }, []);
+    const retrieveUsers = () => {
         USERS_Service.getAll()
             .then(response => {
-                this.setState({
-                    users_list: response.data,
-                    load: true
-                })
-                this._GET_EMAIL_BODY(this.props.email_types[0]);
+                setUsersList(response.data);
+                setLoad(true);
+                _GET_EMAIL_BODY(email_types[0]);
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-                this.setState({
-                    load: false
-                })
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                setLoad(false);
             });
-    }
+    };
 
-    minusAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails - 1 })
-    }
-    addAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails + 1 })
-    }
+    const minusAttachEmail = () => {
+        setAttachsForEmails(prev => prev - 1);
+    };
+    const addAttachEmail = () => {
+        setAttachsForEmails(prev => prev + 1);
+    };
 
-    _GET_USER = (_id) => {
-        let _users = this.state.users_list;
-        for (var i = 0; i < _users.length; i++) {
-            if (_users[i].id == _id) return _users[i]
+    const _GET_USER = (_id) => {
+        for (var i = 0; i < usersList.length; i++) {
+            if (usersList[i].id == _id) return usersList[i]
         }
         return false;
     }
-    _GET_SOLICITORS_NAMES = () => {
-        let _SOLICITORS = this.props.currentItem.pqrs_solocitors;
+    const _GET_SOLICITORS_NAMES = () => {
+        let _SOLICITORS = currentItem.pqrs_solocitors;
         let _LIST = [];
         for (var i = 0; i < _SOLICITORS.length; i++) {
             _LIST.push(_SOLICITORS[i].name);
@@ -70,11 +55,10 @@ class PQRS_EMAILS extends Component {
     
    
 
-
-    _GET_EMAIL_BODY = (_body) => {
+    const _GET_EMAIL_BODY = (_body) => {
         let _email_body = "";
-        let CURRENT_ITEM = this.props.currentItem;
-        let _SOLICITORS = this._GET_SOLICITORS_NAMES();
+        let CURRENT_ITEM = currentItem;
+        let _SOLICITORS = _GET_SOLICITORS_NAMES();
         // CONFIRMACION 1
         if (_body == 0 || _body == null) {
             _email_body = `
@@ -169,10 +153,6 @@ class PQRS_EMAILS extends Component {
         }
         document.getElementById('pqrs_email_2').value = _email_body;
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem, attachs } = this.props;
-        const { load, attachsForEmails } = this.state;
-
 
         // DATA GETTERS 
         let _GET_CONTACTS = () => {
@@ -182,7 +162,6 @@ class PQRS_EMAILS extends Component {
         // DATA CONVERTERS
         let _GET_EMAIL_TYPES = () => {
             let _COMPONENT = [];
-            let email_types = this.props.email_types;
             for (var i = 0; i < email_types.length; i++) {
                 if (email_types[i] == 0) _COMPONENT.push(<option value="0">CONFIRMACIÓN DE RECIBIDO</option>)
                 if (email_types[i] == 1) _COMPONENT.push(<option value="1">PRORROGA</option>)
@@ -210,22 +189,22 @@ class PQRS_EMAILS extends Component {
                 <div className="row">
                     <div className="col-6">
                         <label>Lista de Correos (Separados por coma)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="envelope" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="pqrs_email_1"
+                            <input type="text" className="form-control" id="pqrs_email_1"
                                 defaultValue={_EMAILS} required />
-                            <button type="submit" class="btn btn-warning shadow-none" disabled>ENVIAR CORREO</button>
+                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" type="submit" disabled>ENVIAR CORREO</Button>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Tipo de Correo</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="envelope" size={16} />
                             </span>
-                            <select class="form-control" id="pqrs_email_3" onChange={(e) => this._GET_EMAIL_BODY(e.target.value)}>
+                            <select className="form-control" id="pqrs_email_3" onChange={(e) => _GET_EMAIL_BODY(e.target.value)}>
                                 {_GET_EMAIL_TYPES()}
                             </select>
                         </div>
@@ -234,7 +213,7 @@ class PQRS_EMAILS extends Component {
                 <div className="row">
                     <div className="col">
                         <label>Cuerpo del Email (Modifique este texto debidamente)</label>
-                        <textarea class="form-control mb-3" rows="3" id="pqrs_email_2"></textarea>
+                        <textarea className="form-control mb-3" rows="3" id="pqrs_email_2"></textarea>
                     </div>
                 </div>
 
@@ -245,10 +224,10 @@ class PQRS_EMAILS extends Component {
             for (var i = 0; i < attachsForEmails; i++) {
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_foremail" accept="image/png, image/jpeg application/pdf" />
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="file" className="form-control" name="files_foremail" accept="image/png, image/jpeg application/pdf" />
                         </div>
                     </div>
                 </div>)
@@ -287,12 +266,7 @@ class PQRS_EMAILS extends Component {
                 }
             }
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             let email_type = document.getElementById('pqrs_email_3').value;
 
@@ -306,66 +280,34 @@ class PQRS_EMAILS extends Component {
             PQRS_Service.sendEmailExtension(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshCurrentItem(currentItem.id);
-                        this.setState({ attachsForEmails: 0 })
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        refreshCurrentItem(currentItem.id);
+                        setAttachsForEmails(0)
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let email_confirmation = () => {
             PQRS_Service.sendEmailConfirmation(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshCurrentItem(currentItem.id);
-                        this.setState({ attachsForEmails: 0 })
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        refreshCurrentItem(currentItem.id);
+                        setAttachsForEmails(0)
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let email_reply = () => {
@@ -374,30 +316,15 @@ class PQRS_EMAILS extends Component {
             formData.set('reply_formal', time_reply_formal);
             formData.set('id_time', currentItem.pqrs_time.id);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.sendEmailReply(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshCurrentItem(currentItem.id);
-                        this.setState({ attachsForEmails: 0 })
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                        refreshCurrentItem(currentItem.id);
+                        setAttachsForEmails(0)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
@@ -414,28 +341,12 @@ class PQRS_EMAILS extends Component {
             PQRS_Service.update(currentItem.id, form)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                 } else if (response.data === 'ERROR_DUPLICATE') {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
@@ -453,11 +364,11 @@ class PQRS_EMAILS extends Component {
                                 {attachs
                                     ? <>
                                         <div className="text-end m-3">
-                                            <p className="lead text-end fw-bold text-uppercase">Anexar Documento</p>
+                                            <p className="lead text-end fw-bold">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <MDBBtn className="btn btn-secondary btn-sm mx-3" onClick={() => this.minusAttachEmail()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                                 : ""}
-                                            <MDBBtn className="btn btn-secondary btn-sm" onClick={() => this.addAttachEmail()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <Button variant="outline" size="sm" onClick={() => addAttachEmail()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>
@@ -467,7 +378,6 @@ class PQRS_EMAILS extends Component {
                     : ""}
             </div>
         );
-    }
 }
 
 export default PQRS_EMAILS;

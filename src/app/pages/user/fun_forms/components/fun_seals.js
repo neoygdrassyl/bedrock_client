@@ -1,50 +1,41 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+
 import { dateParser, formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
 import sealService from '../../../../services/seal.service';
 import CustomService from '../../../../services/custom.service';
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUN_SEAL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            currentSeal: null,
+function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion }) {
+        const [currentSeal, setCurrentSeal] = useState(null);
+
+        const retrieveSeal = (id) => {
+            sealService.getParent(id)
+            .then(response => {
+                setCurrentSeal(response.data[0].seal);
+            })
+            .catch(e => {
+                console.log(e);
+                setCurrentSeal(false);
+            });
         };
-    }
-    componentDidMount() {
-        this.retrieveSeal(this.props.currentItem.id_public)
-    }
-    retrieveSeal(id) {
-        sealService.getParent(id)
-        .then(response => {
-            this.setState({
-                currentSeal: response.data[0].seal,
-            })
-        })
-        .catch(e => {
-            console.log(e);
-            this.setState({
-                currentSeal: false,
-            })
-        });
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.currentSeal !== prevState.currentSeal && this.state.currentSeal != null) {
-            var _ITEM = this.state.currentSeal;
-            document.getElementById("seal_3").value = _ITEM.id_public;
-            document.getElementById("seal_4").value = _ITEM.area;
-            document.getElementById("seal_5").value = this.props.currentItem.date;
-            document.getElementById("seal_6").value = _ITEM.blueprints;
-            document.getElementById("seal_7").value = _ITEM.drives;
-            document.getElementById("seal_8").value = _ITEM.folders;
-        }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { currentSeal } = this.state;
+
+        useEffect(() => {
+            retrieveSeal(currentItem.id_public);
+        }, []);
+
+        useEffect(() => {
+            if (currentSeal != null) {
+                var _ITEM = currentSeal;
+                document.getElementById("seal_3").value = _ITEM.id_public;
+                document.getElementById("seal_4").value = _ITEM.area;
+                document.getElementById("seal_5").value = currentItem.date;
+                document.getElementById("seal_6").value = _ITEM.blueprints;
+                document.getElementById("seal_7").value = _ITEM.drives;
+                document.getElementById("seal_8").value = _ITEM.folders;
+            }
+        }, [currentSeal]);
 
         var sael_name = ''
         if(currentItem.expedition) sael_name += currentItem.expedition.id_public ? `RESOLUCIÓN ${currentItem.expedition.id_public} DEL ` : '';
@@ -126,47 +117,26 @@ class FUN_SEAL extends Component {
         }
         let manage_seal = (useMySwal) => {
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD_SEAL.id) {
                 sealService.update(_CHILD_SEAL.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.retrieveSeal(currentItem.id_public);
+                            retrieveSeal(currentItem.id_public);
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -175,35 +145,19 @@ class FUN_SEAL extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.retrieveSeal(currentItem.id_public);
+                            retrieveSeal(currentItem.id_public);
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -211,12 +165,7 @@ class FUN_SEAL extends Component {
 
         // GENERATES AND GETS PDF SEAL
         let generate_pdf = (type) => {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             formData = new FormData();
             // DATA FROM THE PARENT
             let id_request =document.getElementById("seal_1").value
@@ -249,12 +198,12 @@ class FUN_SEAL extends Component {
             CustomService.generate(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
                         document.getElementById("app-form").reset();
                         formData = new FormData();
-                        this.refreshList();
-                        MySwal.close();
+                        retrieveSeal(currentItem.id_public);
+                        swalClose();
                     } else {
                         
                     }
@@ -269,88 +218,88 @@ class FUN_SEAL extends Component {
                     <div className="row">
                         <div className=" col-12">
                             <label>No. Radicación</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="hashtag" size={16} />
                                 </span>
-                                <input type="text" class="form-control" defaultValue={sael_name} id="seal_1" />
+                                <input type="text" className="form-control" defaultValue={sael_name} id="seal_1" />
                             </div>
                         </div>
                     </div>
 
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-check-circle"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="check-circle" size={16} />
                         </span>
-                        <input type="text" class="form-control" value="Modalidad" disabled />
+                        <input type="text" className="form-control" value="Modalidad" disabled />
                     </div>
-                    <textarea class="form-control mb-3" rows="3" id="seal_2"  defaultValue={formsParser1(_GET_CHILD_1())} ></textarea>
+                    <textarea className="form-control mb-3" rows="3" id="seal_2"  defaultValue={formsParser1(_GET_CHILD_1())} ></textarea>
                     <div className="row">
                         <div className=" col-4">
                             <label>Consecutivo Sello</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="hashtag" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Consecutivo Sello" id="seal_3" 
+                                <input type="text" className="form-control" placeholder="Consecutivo Sello" id="seal_3" 
                                  defaultValue={_CHILD_SEAL.id_public} />
                             </div>
                         </div>
                         <div className=" col-2 me-0">
                             <label>Área total</label>
-                            <div class="input-group mb-3 me-0">
-                                <input type="number" min="1" step="0.01" class="form-control" placeholder="Area Total" id="seal_4" 
+                            <div className="input-group mb-3 me-0">
+                                <input type="number" min="1" step="0.01" className="form-control" placeholder="Area Total" id="seal_4" 
                                 defaultValue={_CHILD_SEAL.area}/>
                             </div>
                         </div>
                         <div className=" col-2 ms-0">
                             <label></label>
-                            <div class="input-group mb-3 ms-0">
+                            <div className="input-group mb-3 ms-0">
                             <select className='form-select' id="seal_4_m"> 
                                 <option>m</option>
-                                <option selected>m2</option>
+                                <option>m2</option>
                                 <option>m3</option>
                             </select>
                             </div>
                         </div>
                         <div className=" col-4">
                             <label>Fecha</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" class="form-control" placeholder="Fecha de Expedicion" id="seal_5" />
+                                <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="seal_5" />
                             </div>
                         </div>
                     </div>
                     <div className="row">
                         <div className=" col-4">
                             <label>Planos</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-ruler-combined"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="ruler-combined" size={16} />
                                 </span>
-                                <input type="number" min="0" step="1" class="form-control" placeholder="Planos" id="seal_6"
+                                <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="seal_6"
                                 defaultValue={_CHILD_SEAL.blueprints} />
                             </div>
                         </div>
                         <div className=" col-4">
                             <label>Memorias</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-database"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="database" size={16} />
                                 </span>
-                                <input type="number" min="0" step="1" class="form-control" placeholder="Memorias" id="seal_7"
+                                <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="seal_7"
                                 defaultValue={_CHILD_SEAL.drives} />
                             </div>
                         </div>
                         <div className=" col-4">
                             <label>Estudios</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-file-invoice"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="file-invoice" size={16} />
                                 </span>
-                                <input type="number" min="0" step="1" class="form-control" placeholder="Estudios" id="seal_8"
+                                <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="seal_8"
                                 defaultValue={_CHILD_SEAL.folders} />
                             </div>
                         </div>
@@ -359,11 +308,11 @@ class FUN_SEAL extends Component {
                     <div className="row">
                         <div className=" col">
                             <label>Aprobación personalizada</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-ruler-combined"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="ruler-combined" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Con este plano se aprueban..." id="seal_custom_text"
+                                <input type="text" className="form-control" placeholder="Con este plano se aprueban..." id="seal_custom_text"
                                 defaultValue={''} />
                             </div>
                         </div>
@@ -372,25 +321,23 @@ class FUN_SEAL extends Component {
                     <div className="row">
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <button className="btn btn-success"><i class="fas fa-file-import"></i> GUARDAR CAMBIOS </button>
+                                <Button size="sm"><Icon name="file-import" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <MDBBtn className="btn btn-warning" onClick={() => generate_pdf(1)}><i class="far fa-file"></i> GENERAR ORIGINAL </MDBBtn>
+                                <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(1)}><Icon name="file" size={16} /> GENERAR ORIGINAL </Button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <MDBBtn className="btn btn-warning" onClick={() => generate_pdf(0)}><i class="far fa-file"></i> GENERAR TITULAR </MDBBtn>
+                                <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(0)}><Icon name="file" size={16} /> GENERAR TITULAR </Button>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
         );
-    }
 }
-
 
 export default FUN_SEAL;

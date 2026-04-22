@@ -1,4 +1,3 @@
-import moment from 'moment';
 import holidaysData from '../components/jsons/holydaysmoment.json';
 
 class DiasHabilesColombia {
@@ -39,6 +38,28 @@ class DiasHabilesColombia {
         }
         
         return !festivos.has(fecha);
+    }
+
+    /**
+     * Verifica si una fecha es festivo colombiano.
+     * @param {string} fecha - Fecha en formato 'YYYY-MM-DD'
+     * @returns {boolean}
+     */
+    esFestivo(fecha) {
+        const año = parseInt(fecha.substring(0, 4), 10);
+        const festivos = this.obtenerFestivos(año);
+        return festivos.has(fecha);
+    }
+
+    /**
+     * Convenience: verifica si una fecha es día hábil (no weekend, no festivo).
+     * @param {string} fecha - Fecha en formato 'YYYY-MM-DD'
+     * @returns {boolean}
+     */
+    esHabil(fecha) {
+        const año = parseInt(fecha.substring(0, 4), 10);
+        const festivos = this.obtenerFestivos(año);
+        return this.esDiaHabil(fecha, festivos);
     }
 
     // --- MÉTODOS EXISTENTES ---
@@ -113,26 +134,27 @@ class DiasHabilesColombia {
      * @returns {number}
      */
     contarDiasHabiles(startDate, endDate, include = false) {
-        let current = moment(startDate).startOf('day');
-        const end = moment(endDate).startOf('day');
-        if (!current.isValid() || !end.isValid() || current.isAfter(end)) {
+        const current = new Date(startDate + 'T00:00:00Z');
+        const end = new Date(endDate + 'T00:00:00Z');
+        if (isNaN(current.getTime()) || isNaN(end.getTime()) || current > end) {
             return 0;
         }
 
         let count = 0;
         
         if (!include) {
-            current.add(1, 'day');
+            current.setUTCDate(current.getUTCDate() + 1);
         }
         
-        while (current.isSameOrBefore(end, 'day')) {
-            const festivos = this.obtenerFestivos(current.year());
+        while (current <= end) {
+            const fechaStr = current.toISOString().split('T')[0];
+            const festivos = this.obtenerFestivos(current.getUTCFullYear());
             
-            if (this.esDiaHabil(current.format('YYYY-MM-DD'), festivos)) {
+            if (this.esDiaHabil(fechaStr, festivos)) {
                 count++;
             }
 
-            current.add(1, 'day');
+            current.setUTCDate(current.getUTCDate() + 1);
         }
         
         return count;

@@ -1,21 +1,8 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
 import VIZUALIZER from '../../../../components/vizualizer.component';
-const MySwal = withReactContent(Swal);
 
-class RECORD_PH_PROFESIONALS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentRecord } = this.props;
-        const { } = this.state;
+function RECORD_PH_PROFESIONALS(props) {
+        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentRecord } = props;
 
         // DATA GETTERS
         /*  ROLES LIST
@@ -98,29 +85,25 @@ class RECORD_PH_PROFESIONALS extends Component {
 
             _COMPONENT.push(<>{_array[0] > 0
                 ?
-                <MDBTooltip title='CEDULA DE CIUDADANIA' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} /> </MDBTooltip>
+                <span title="CEDULA DE CIUDADANIA"><VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
+                    icon={'IdCard'} color={'DeepSkyBlue'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[1] > 0
                 ?
-                <MDBTooltip title='MATRICULA' tag='a' >
-                <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} /> </MDBTooltip>
+                <span title="MATRICULA"><VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
+                    icon={'BadgeCheck'} color={'DarkOrchid'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
                 ?
-                <MDBTooltip title='FICHA COPNIA' tag='a' >
-                <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                    icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} /> </MDBTooltip>
+                <span title="FICHA COPNIA"><VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
+                    icon={'BookOpen'} color={'GoldenRod'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
-                ?   <MDBTooltip title='HOJA DE VIDA Y CERTIFICADOS' tag='a' >
-                <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                    icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} /> </MDBTooltip>
+                ?   <span title="HOJA DE VIDA Y CERTIFICADOS"><VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
+                    icon={'FileText'} color={'LimeGreen'} /></span>
                 : ""}</>)
 
             return <>{_COMPONENT}</>
@@ -162,7 +145,7 @@ class RECORD_PH_PROFESIONALS extends Component {
             let _COMPONENT = [];
             for (var i = 0; i < _roles.length; i++) {
                 _COMPONENT.push(<>
-                    <li class="list-group-item">{_PROFESIONAL_JSX(_roles[i])}</li>
+                    <li className="list-group-item">{_PROFESIONAL_JSX(_roles[i])}</li>
                 </>)
             }
             return <>{_COMPONENT}</>
@@ -170,19 +153,18 @@ class RECORD_PH_PROFESIONALS extends Component {
         let _PROFESIONAL_JSX = (_role) => {
             return <>
                 <label> {_FIND_PROFESIOANL(_role)
-                    ? <MDBBadge color='success'>DILIGENCIADO</MDBBadge>
-                    : <MDBBadge color='danger'>SIN DILIGENCIAR</MDBBadge>} <label className="">{_role}</label> - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
+                    ? <span className="badge bg-success">DILIGENCIADO</span>
+                    : <span className="badge bg-danger">SIN DILIGENCIAR</span>} <label className="">{_role}</label> - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
             </>
         }
 
         return (
             <div className="record_ph_profesional_evaluation container">
-                <li class="list-group-item"><label className="fw-bold">PROFESIONAL RESPONSABLE DE LOS PLANOS</label></li>
+                <li className="list-group-item"><label className="fw-bold">PROFESIONAL RESPONSABLE DE LOS PLANOS</label></li>
                 {COMPONENT_PROFESIONAL_RULES(['ARQUITECTO PROYECTISTA'])}
                 {_PROFESIOAL_INFO_COMPONENT()}
             </div >
         );
-    }
 }
 
 export default RECORD_PH_PROFESIONALS;

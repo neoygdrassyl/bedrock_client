@@ -1,14 +1,11 @@
-import React from 'react'
-import moment from 'moment';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import CubXVrDataService from '../../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
-//const moment = require('moment');
-
-const MySwal = withReactContent(Swal);
 export const PQRS_ID_CONFIRM = (props) => {
 
     const { currentItem, swaMsg } = props;
@@ -24,7 +21,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                     if (concecutive < 1000) concecutive = "0" + concecutive
                     if (concecutive < 100) concecutive = "0" + concecutive
                     if (concecutive < 10) concecutive = "0" + concecutive
-                    new_id = res1 + (moment().format('YY')).split('-')[0] + "-" + concecutive
+                    new_id = res1 + (dayjs().format('YY')).split('-')[0] + "-" + concecutive
                     document.getElementById('pqrs_master_id_confirm').value = new_id;
                 } else {
                     concecutive = new_id.split('-')[1];
@@ -38,12 +35,7 @@ export const PQRS_ID_CONFIRM = (props) => {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
             });
 
     }
@@ -58,28 +50,12 @@ export const PQRS_ID_CONFIRM = (props) => {
         PQRS_Service.update(currentItem.id, form)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                 } else if (response.data === 'ERROR_DUPLICATE') {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
@@ -106,7 +82,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                 .then((response) => {
                     if (response.data === 'OK') {
                         // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
+                        props.requestUpdate(currentItem.id, true);
                     }
                 })
                 .catch((error) => {
@@ -133,18 +109,18 @@ export const PQRS_ID_CONFIRM = (props) => {
     return (
         <div className="text-center">
             <label className="mt-0 center-text"> {infoCud.serials.end}</label>
-            <div class="input-group my-1">
-                <span class="input-group-text bg-info text-white">
-                    <i class="fas fa-hashtag"></i>
+            <div className="input-group my-1">
+                <span className="input-group-text bg-primary text-primary-foreground">
+                    <Icon name="hashtag" size={16} />
                 </span>
-                <input type="text" class="form-control" defaultValue={currentItem.id_confirm}
+                <input type="text" className="form-control" defaultValue={currentItem.id_confirm}
                     id="pqrs_master_id_confirm" require />
-                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
             </div>
-            <div class="d-flex justify-content-center">
-                <button type="button" class="btn btn-success btn-lg shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
-                    GUARDAR
-                </button>
+            <div className="d-flex justify-content-center">
+                <Button type="button" size="sm" className="shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
+                    Guardar
+                </Button>
             </div>
         </div>
 

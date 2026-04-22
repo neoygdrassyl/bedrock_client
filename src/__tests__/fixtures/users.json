@@ -1,0 +1,48 @@
+{
+  "users": {
+    "admin": {
+      "id": 1,
+      "name": "Admin",
+      "name_2": "Test",
+      "surname": "Usuario",
+      "surname_2": "Prueba",
+      "active": 1,
+      "roleId": 1,
+      "role": "ADMINISTRADOR",
+      "email": "admin@test.com"
+    },
+    "professional": {
+      "id": 5,
+      "name": "Profesional",
+      "name_2": "Test",
+      "surname": "Técnico",
+      "surname_2": "Prueba",
+      "active": 1,
+      "roleId": 2,
+      "role": "PROFESIONAL",
+      "email": "prof@test.com"
+    },
+    "archivist": {
+      "id": 10,
+      "name": "Archivista",
+      "name_2": "Test",
+      "surname": "Archivo",
+      "surname_2": "Prueba",
+      "active": 1,
+      "roleId": 3,
+      "role": "ARCHIVISTA",
+      "email": "archive@test.com"
+    },
+    "ventanilla": {
+      "id": 15,
+      "name": "Ventanilla",
+      "name_2": "Test",
+      "surname": "Atención",
+      "surname_2": "Prueba",
+      "active": 1,
+      "roleId": 4,
+      "role": "VENTANILLA",
+      "email": "ventanilla@test.com"
+    }
+  }
+}

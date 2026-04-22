@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect, useCallback } from 'react';
+
 import PQRS_Service from '../../../services/pqrs_main.service';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import PQRS_COMPONENT_REPLIES_PROFESIONAL_2 from './components/pqrs_replies_3.component';
 import PQRS_COMPONENT_INFO from './components/pqrs_gen.component';
 import PQRS_COMPONENT_CLOCKS from './components/pqrs_clock.component';
@@ -17,82 +15,75 @@ import PQRS_COMPONENT_WORKER_FEEDBACK from './components/pqrs_worker_feedback.co
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_PDFGEN_REPLY from './components/pqrs_genPDF_reply.component';
 import RTE_PQRS from './components/pqrs_rteReply.component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 
-const moment = require('moment');
-const MySwal = withReactContent(Swal);
-class PQRSLOCK extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            attachs: 0,
-            attachsForEmails: 0,
-            edit: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, refreshList: propRefreshList, NAVIGATION }) {
+    const [attachs, setAttachs] = useState(0);
+    const [attachsForEmails, setAttachsForEmails] = useState(0);
+    const [edit, setEdit] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(undefined);
+
+    const retrieveItem = useCallback((id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-                this.setState({
-                    load: false
-                })
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                setLoad(false);
             });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    clearForm() {
-        document.getElementById("app-formReply").reset()
-    }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
-    }
-    addAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails + 1 })
-    }
-    minusAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails - 1 })
-    }
+    }, [swaMsg]);
 
-    render() {
-        const { translation, swaMsg, globals, translation_form } = this.props;
-        const { attachs, attachsForEmails, currentItem, load } = this.state;
-        var formData = new FormData();
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, [currentId, retrieveItem]);
+
+    const refreshList = () => {
+        propRefreshList();
+    };
+
+    const clearForm = () => {
+        document.getElementById("app-formReply").reset();
+    };
+
+    const addAttach = () => {
+        setAttachs(prev => prev + 1);
+    };
+
+    const minusAttach = () => {
+        setAttachs(prev => prev - 1);
+    };
+
+    const addAttachEmail = () => {
+        setAttachsForEmails(prev => prev + 1);
+    };
+
+    const minusAttachEmail = () => {
+        setAttachsForEmails(prev => prev - 1);
+    };
+
+    var formData = new FormData();
 
         let _ATTACHS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < attachs; i++) {
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="text" class="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
                 </div>)
@@ -110,14 +101,14 @@ class PQRSLOCK extends Component {
             const columns = [
                 {
                     name: <h3>NOMBRE</h3>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.public_name}</p>
                 },
                 {
                     name: <h3>TIPO</h3>,
-                    selector: 'type',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3">{row.type}</p>
@@ -127,8 +118,8 @@ class PQRSLOCK extends Component {
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={process.env.REACT_APP_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
-                        <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                        <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2 mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><Icon name="cloud-download-alt" size={16} /></a>
+                        <Button variant="destructive" size="sm" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
@@ -175,28 +166,15 @@ class PQRSLOCK extends Component {
 
         let lockPQRS = (e) => {
             e.preventDefault();
-            MySwal.fire({
-                title: "CERRAR PETICION " + currentItem.id_publico,
-                text: "¿Esta seguro de cerrar esta peticion?",
-                icon: 'warning',
-                confirmButtonText: "CERRAR",
-                cancelButtonText: "CANCELAR",
-                showCancelButton: true
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "CERRAR PETICION ", text: "¿Esta seguro de cerrar esta peticion?", icon: 'warning', confirmButtonText: "CERRAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     formData = new FormData();
                     formData.set('id_master', currentItem.id);
                     formData.set('id_reply', currentItem.id_reply);
                     formData.set('time_id', currentItem.pqrs_time.id);
                     let reply_formal = document.getElementById('pqrs_formal_time').value
                     formData.set('reply_formal', reply_formal);
-
 
                     let files = document.getElementsByName("files_close");
 
@@ -215,21 +193,11 @@ class PQRSLOCK extends Component {
                     PQRS_Service.close(formData)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.generic_success_title,
-                                    text: swaMsg.generic_success_text,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.retrieveItem(currentItem.id)
-                                this.refreshList()
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                                retrieveItem(currentItem.id)
+                                refreshList()
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
@@ -257,31 +225,15 @@ class PQRSLOCK extends Component {
             }
             formData.set('files_names', array_form);
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.addAttachsClose(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.retrieveItem(currentItem.id)
-                        this.setState({ attachs: 0 });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                        retrieveItem(currentItem.id)
+                        setAttachs(0);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
@@ -290,38 +242,16 @@ class PQRSLOCK extends Component {
         }
 
         let deteleAttach = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ITEM",
-                text: "¿Esta seguro de eliminar este item de forma permanente?",
-                icon: 'warning',
-                confirmButtonText: "ELIMINAR",
-                cancelButtonText: "CANCELAR",
-                showCancelButton: true
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ITEM", text: "¿Esta seguro de eliminar este item de forma permanente?", icon: 'warning', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     PQRS_Service.deleteAttach(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.generic_success_title,
-                                    text: swaMsg.generic_success_text,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.retrieveItem(currentItem.id)
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                                retrieveItem(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
@@ -335,8 +265,8 @@ class PQRSLOCK extends Component {
                 {currentItem != null ? <>
                     {load ? <>
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE LA PQRS</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE LA PQRS</label>
                             </legend>
                             <PQRS_COMPONENT_INFO
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -345,11 +275,9 @@ class PQRSLOCK extends Component {
                             />
                         </fieldset>
 
-
-
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE RESPUESTAS</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE RESPUESTAS</label>
                             </legend>
                             <PQRS_COMPONENT_REPLIES_PROFESIONAL_2
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -360,8 +288,8 @@ class PQRSLOCK extends Component {
 
                         {_checkForOutputDocs()
                             ? <>
-                                <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                    <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS ANEXADOS POR PROFESIONAL(ES)</label>
+                                <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                    <label className="app-p lead fw-normal">DOCUMENTOS ANEXADOS POR PROFESIONAL(ES)</label>
                                 </legend>
                                 <PQRS_COMPONENT_ATTACH_PROFESIONAL
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -370,32 +298,31 @@ class PQRSLOCK extends Component {
 
                             </> : ""}
 
-
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">RESPUESTA AL PETICIONARIO</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">RESPUESTA AL PETICIONARIO</label>
                             </legend>
                             <PQRS_COMPONENT_REPLIES_TOSOLICITOR
                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                 translation_form={translation_form}
                                 currentItem={currentItem}
                             />
-                            <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">VISTO BUENO PROFESIONALES</label>
+                            <legend className="my-2 px-3 bg-warning" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">VISTO BUENO PROFESIONALES</label>
                             </legend>
                             <PQRS_COMPONENT_WORKER_FEEDBACK
                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                 currentItem={currentItem}
-                                retrieveItem={this.retrieveItem}
-                                refreshList={this.refreshList}
+                                retrieveItem={retrieveItem}
+                                refreshList={refreshList}
                             />
                         </fieldset>
 
                         <div className="row p-0 x-0">
                             <div className="col-6 p-0 x-0">
                                 <fieldset className="p-3">
-                                    <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                        <label className="app-p lead fw-normal text-uppercase">CONTROL DE TIEMPOS</label>
+                                    <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                        <label className="app-p lead fw-normal">CONTROL DE TIEMPOS</label>
                                     </legend>
                                     <PQRS_COMPONENT_CLOCKS
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -406,8 +333,8 @@ class PQRSLOCK extends Component {
                             <div className="col-6 p-0 x-0">
                                 {currentItem.pqrs_fun ?
                                     <fieldset className="p-3">
-                                        <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                            <label className="app-p lead fw-normal text-uppercase">SOLICITUD RELACIONADA</label>
+                                        <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                            <label className="app-p lead fw-normal">SOLICITUD RELACIONADA</label>
                                         </legend>
                                         <PQRS_COMPONENT_LICENCE
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -419,8 +346,8 @@ class PQRSLOCK extends Component {
                         </div>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE SOLICITANTE(S)</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN DE SOLICITANTE(S)</label>
                             </legend>
                             <PQRS_COMPONENT_SOLICITORS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -429,8 +356,8 @@ class PQRSLOCK extends Component {
                         </fieldset>
 
                         <fieldset className="p-3">
-                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN CONTACTO(S)</label>
+                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                <label className="app-p lead fw-normal">INFORMACIÓN CONTACTO(S)</label>
                             </legend>
                             <PQRS_COMPONENT_CONTACTS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -450,7 +377,7 @@ class PQRSLOCK extends Component {
                                         <li className="app-p">Verifique los correos a los que se enviará el email, es posible añadir o quitar correos de la lista separándoles por coma (,)</li>
                                     </ul>
 
-                                    <Collapsible className="bg-success" trigger={<label className="m-2 text-uppercase">Generar Documento Oficio de Respuesta</label>}>
+                                    <Collapsible className="bg-success" trigger={<label className="m-2">Generar Documento Oficio de Respuesta</label>}>
                                         <PQRS_PDFGEN_REPLY
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
@@ -458,7 +385,7 @@ class PQRSLOCK extends Component {
                                     </Collapsible>
 
                                     {/**
-                                     *    <Collapsible className="bg-success" trigger={<label className="m-2 text-uppercase">Generar Documento Oficio de Respuesta TEST</label>}>
+                                     *    <Collapsible className="bg-success" trigger={<label className="m-2">Generar Documento Oficio de Respuesta TEST</label>}>
                                         <RTE_PQRS translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem} />
                                     </Collapsible>
@@ -466,13 +393,12 @@ class PQRSLOCK extends Component {
                                      */}
                                  
 
-
                                     <div className="my-2 p-2">
                                         <PQRS_EMAILS
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
                                             email_types={[3]}
-                                            refreshCurrentItem={this.retrieveItem}
+                                            refreshCurrentItem={retrieveItem}
                                             attachs={true}
                                         />
                                     </div>
@@ -488,32 +414,32 @@ class PQRSLOCK extends Component {
                                             ? <table className="table table-sm table-hover table-bordered">
                                                 <tbody>
                                                     <tr className="bg-warning">
-                                                        <th><label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTOS DE CIERRE ANEXADOS</label></th>
+                                                        <th><label className="app-p lead text-start fw-normal">DOCUMENTOS DE CIERRE ANEXADOS</label></th>
                                                     </tr>
                                                     {_ATTACHSCLOSE_COMPONENT()}
                                                 </tbody>
                                             </table>
-                                            : <div className="text-start"><label className="app-p fw-bold text-uppercase text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
+                                            : <div className="text-start"><label className="app-p fw-bold text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
 
-                                        <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
+                                        <p className="app-p lead text-end fw-bold">ANEXAR DOCUMENTO DE CIERRE</p>
                                         <div className="text-end m-3">
                                             {attachs > 0
-                                                ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <Button type="button" variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={14} /> Remover último</Button>
                                                 : ""}
-                                            <MDBBtn className="btn btn-lg btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <Button type="button" variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={14} /> Añadir</Button>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
                                         {
                                             /**
                                              * 
                                              *    <div className="text-center m-3">
-                                            {attachs > 0 ? <MDBBtn className="btn btn-lg btn-warning my-2" onClick={() => addAttachsClose()}><i class="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
+                                            {attachs > 0 ? <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-2" onClick={() => addAttachsClose()}><Icon name="paperclip" size={14} /> Anexar {attachs} documentos</Button> : ""}
                                         </div>
                                              */
                                         }
                                         <hr />
                                         <div className="text-center m-3">
-                                            <button className="btn btn-lg btn-success" ><i class="fas fa-lock"></i> CERRAR PETICIÓN</button>
+                                            <Button size="sm"><Icon name="lock" size={14} /> Cerrar petición</Button>
                                         </div>
 
                                     </form> </>
@@ -530,11 +456,10 @@ class PQRSLOCK extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"lock"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );
-    }
 }
 
 export default PQRSLOCK;

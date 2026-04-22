@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
-import Modal from 'react-modal';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
+
 import FUNService from '../../../../services/fun.service';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_LAW_FUN_51(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, quickModalStyle } = props;
-    const MySwal = withReactContent(Swal);
-
     var [Fun51, setFun51] = useState([]);
     var [load, setLod] = useState(false);
     var [modal, setModal] = useState({});
@@ -101,7 +100,7 @@ export default function RECORD_LAW_FUN_51(props) {
     let _GET_DOCS_BTN = (_id, typeIndex) => {
         if (_id < 1) return ''
         let ColorIndex = ['DeepSkyBlue', 'DarkOrchid', 'GoldenRod', 'LimeGreen'];
-        let IconIndex = ['far fa-id-card fa-2x me-1', 'far fa-id-badge fa-2x me-1', 'fas fa-book fa-2x me-1', 'fas fa-file-invoice fa-2x me-1']
+        let IconIndex = ['IdCard', 'BadgeCheck', 'BookOpen', 'FileText']
         return <VIZUALIZER url={_FIND_6(_id).path + "/" + _FIND_6(_id).filename} apipath={'/files/'}
             icon={IconIndex[typeIndex]} color={ColorIndex[typeIndex]} />
     }
@@ -109,13 +108,13 @@ export default function RECORD_LAW_FUN_51(props) {
     // ************************** JSX COMPONENTS *********************** // 
     let COMPONENT = () => {
         return <>
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>5.1. TITULARES DE LA LICENCIA</label>
                 </div>
             </div>
 
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>DATOS FORMULARIO</label>
                 </div>
@@ -236,8 +235,6 @@ export default function RECORD_LAW_FUN_51(props) {
                 </>
             })}
 
-
-
         </>
     }
 
@@ -257,7 +254,7 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className='row'>
                     <div className="col-8 py-0"><label> <label className='fw-bold'>{i + 1}. </label>{value.desc}</label> </div>
                     <div className="col-4 py-0 ">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
 
                             <select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[ci])} name="s_f51_checks"
                                 defaultValue={_CHECK_ARRAY[ci]} onChange={() => manage_rl_sf51(false)}>
@@ -280,19 +277,25 @@ export default function RECORD_LAW_FUN_51(props) {
     }
     let _EDIT_BTN = (item) => {
         return <>
-            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal({ [item.id]: true })}><i class="far fa-edit" style={{ fontSize: '150%' }}></i></button>
+            <Button variant="ghost" size="sm" className="m-0 p-1" onClick={() => setModal({ [item.id]: true })}><Icon name="edit" size={16} style={{ fontSize: '150%' }} /></Button>
 
             <Modal contentLabel="EDIT FUN 1"
                 isOpen={modal[item.id]}
                 style={quickModalStyle}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label className="fw-bold align-middle"> <i class="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal({ [item.id]: false })}></MDBBtn>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="edit" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Actualización rápida</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal({ [item.id]: false })} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
                 {_EDIT_COMPONENT(item)}
-
 
             </Modal>
         </>
@@ -304,15 +307,15 @@ export default function RECORD_LAW_FUN_51(props) {
         let isLegalPerson = item.type == 'PERSONA JURIDICA';
         return <>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_51">
-                    <label className="app-p lead text-center fw-normal text-uppercase">5.1 Titular(es) de la Licencia</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_51">
+                    <label className="app-p lead text-center fw-normal">5.1 Titular(es) de la Licencia</label>
                 </legend>
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0 Tipo de Persona</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
                             <select className='form-select' id="f_51_type" defaultValue={item.type}
                                 onChange={(e) => {
@@ -336,20 +339,20 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0.1 Nombre y Apellidos (Representante Legal)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_name" disabled={!isLegalPerson} defaultValue={item.rep_name} />
+                            <input type="text" className="form-control" id="f_51_rep_name" disabled={!isLegalPerson} defaultValue={item.rep_name} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.0.2 Cédula (Representante Legal)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_idnumber" disabled={!isLegalPerson} defaultValue={item.rep_id_number}
+                            <input type="text" className="form-control" id="f_51_rep_idnumber" disabled={!isLegalPerson} defaultValue={item.rep_id_number}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
@@ -358,20 +361,20 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.1 Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_5111" defaultValue={item.name} />
+                            <input type="text" className="form-control" id="f_5111" defaultValue={item.name} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.1 Apellido(s)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_5112" defaultValue={item.surname} />
+                            <input type="text" className="form-control" id="f_5112" defaultValue={item.surname} />
                         </div>
                     </div>
                 </div>
@@ -379,39 +382,39 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.2 CC o NIT</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-id-card"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="id-card" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_512" defaultValue={item.id_number}
+                            <input type="text" className="form-control" id="f_512" defaultValue={item.id_number}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.3 Correo Electrónico</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="envelope" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_513" defaultValue={item.email} />
+                            <input type="text" className="form-control" id="f_513" defaultValue={item.email} />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.4 Teléfono de Contacto</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="phone-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_514" defaultValue={item.nunber} />
+                            <input type="text" className="form-control" id="f_514" defaultValue={item.nunber} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.5 Tipo de Titular</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="phone-alt" size={16} />
                             </span>
                             <select className='form-select' id="f_515" defaultValue={item.role}>
                                 <option>PROPIETARIO</option>
@@ -429,9 +432,9 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.6 Relacionar Documento: Documento de Identidad</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_51_doc1" defaultValue={docs[0]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -442,9 +445,9 @@ export default function RECORD_LAW_FUN_51(props) {
                     </div>
                     <div className="col-6">
                         <label>5.1.7 Relacionar Documento: Certificado de Existencia y Representación Legal </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_51_doc2" disabled={!isLegalPerson} defaultValue={docs[1]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -456,7 +459,7 @@ export default function RECORD_LAW_FUN_51(props) {
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button className="btn btn-success my-3" onClick={() => edit_51(item)} ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                        <Button size="sm" className="my-3" onClick={() => edit_51(item)} ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                 </div>
             </fieldset>
@@ -477,7 +480,6 @@ export default function RECORD_LAW_FUN_51(props) {
         }
         formData.set('check', checks.join(';'));
 
-
         formData.set('version', currentVersionR);
         formData.set('recordLawId', currentRecord.id);
         formData.set('id_public', 'f51');
@@ -488,72 +490,35 @@ export default function RECORD_LAW_FUN_51(props) {
     let save_step = (_id_public, useSwal, formData) => {
         var STEP = LOAD_STEP(_id_public);
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (STEP.id) {
             Record_lawService.update_step(STEP.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         else {
             Record_lawService.create_step(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
     }
@@ -590,40 +555,19 @@ export default function RECORD_LAW_FUN_51(props) {
         docs.push(document.getElementById("f_51_doc2").value);
         formData.set('docs', docs.join());
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FUNService.update_51(item.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdate(currentItem.id);
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 

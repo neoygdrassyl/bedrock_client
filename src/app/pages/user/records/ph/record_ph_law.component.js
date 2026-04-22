@@ -1,27 +1,15 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
-import { MDBBadge } from 'mdb-react-ui-kit';
+import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import VIZUALIZER from '../../../../components/vizualizer.component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import RECORD_LAW_PDF from '../law/record_law_pdf';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-
-class RECORD_PH_LAW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, _FUN_R, _FUN_6, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_PH_LAW(props) {
+        const { translation, swaMsg, globals, currentItem, _FUN_R, _FUN_6, currentRecord, currentVersionR } = props;
 
         // DATA GETTER
         let _GET_CHILD_6 = () => {
@@ -52,10 +40,10 @@ class RECORD_PH_LAW extends Component {
             return <>{_COMPONENT}</>
         }
         let _GET_VALUE_BADGE = (_value) => {
-            if (_value == -1) return <MDBBadge color='dark'>SIN DEFINIR</MDBBadge>
-            if (_value == 0) return <MDBBadge color='danger'>NO APORTO</MDBBadge>
-            if (_value == 1) return <MDBBadge color='success'>APORTO</MDBBadge>
-            if (_value == 2) return <MDBBadge color='warning'>NO APLICA</MDBBadge>
+            if (_value == -1) return <span className="badge bg-dark">SIN DEFINIR</span>
+            if (_value == 0) return <span className="badge bg-danger">NO APORTO</span>
+            if (_value == 1) return <span className="badge bg-success">APORTO</span>
+            if (_value == 2) return <span className="badge bg-warning">NO APLICA</span>
         }
         let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
             if (!_VALUE) {
@@ -103,7 +91,7 @@ class RECORD_PH_LAW extends Component {
             let _COMPONENT = [];
             for (var i = 0; i < _checks.length; i++) {
                 let index = _DOCS.indexOf(_checks[i]);
-                _COMPONENT.push(<li class="list-group-item">
+                _COMPONENT.push(<li className="list-group-item">
                     <div className="row mb-2">
                         <lavel> {index > -1
                             ? <>{_GET_VALUE_BADGE(_VALUE[index])} - {FUN6JSON[_DOCS[index]]}</>
@@ -147,32 +135,32 @@ class RECORD_PH_LAW extends Component {
                     <input type="hidden" id="record_ph_worker_law_0" defaultValue={currentRecord.worker_law_id ? currentRecord.worker_law_id : window.user.id} />
                     <div className="col-6">
                         <label>Profesional</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="record_ph_worker_law_1"
+                            <input type="text" className="form-control" id="record_ph_worker_law_1"
                                 defaultValue={currentRecord.worker_law_name ? currentRecord.worker_law_name : window.user.name + " " + window.user.surname} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Fecha de la revisón</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" class="form-control" id="record_ph_worker_law_2" required
-                                defaultValue={currentRecord.date_law_review ? currentRecord.date_law_review : moment().format('YYYY-MM-DD')} />
+                            <input type="date" className="form-control" id="record_ph_worker_law_2" required
+                                defaultValue={currentRecord.date_law_review ? currentRecord.date_law_review : dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 
                     <div className="col-3">
                         <label>Aprobado</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
-                            <select class="form-control" id="record_ph_worker_law_3" defaultValue={currentRecord.check_law} >
+                            <select className="form-control" id="record_ph_worker_law_3" defaultValue={currentRecord.check_law} >
                                 <option value="0" className="text-danger">NO</option>
                                 <option value="1" className="text-success">SI</option>
                             </select>
@@ -202,47 +190,26 @@ class RECORD_PH_LAW extends Component {
         }
         let manage_fun_r = (useMySwal) => {
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_FUN_R) {
                 FUN_SERVICE.update_r(_FUN_R.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id);
+                            props.requestUpdate(currentItem.id);
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -260,40 +227,19 @@ class RECORD_PH_LAW extends Component {
             let check_law = document.getElementById("record_ph_worker_law_3").value;
             formData.set('check_law', check_law);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_PH_SERVICE.update(currentRecord.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        props.requestUpdateRecord(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
@@ -305,7 +251,7 @@ class RECORD_PH_LAW extends Component {
                     <div className="row mb-3 text-center">
 
                         <div className="col">
-                            <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                            <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                         </div>
                     </div>
                 </form>
@@ -324,7 +270,6 @@ class RECORD_PH_LAW extends Component {
                     </div>
             </div >
         );
-    }
 }
 
 export default RECORD_PH_LAW;

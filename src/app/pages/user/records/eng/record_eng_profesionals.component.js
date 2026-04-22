@@ -1,12 +1,6 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
-import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-const MySwal = withReactContent(Swal);
-
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 const profs = [
     ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
     ['ARQUITECTO PROYECTISTA'],
@@ -17,16 +11,8 @@ const profs = [
     ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'],
 ]
 
-class RECORD_ENG_PROFESIONALS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentItem, currentRecord, profs, useCB } = this.props;
-        const { } = this.state;
+function RECORD_ENG_PROFESIONALS(props) {
+        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentItem, currentRecord, profs, useCB, requestUpdate } = props;
 
         // DATA GETTERS
         /*  ROLES LIST
@@ -116,29 +102,25 @@ class RECORD_ENG_PROFESIONALS extends Component {
 
             _COMPONENT.push(<>{_array[0] > 0
                 ?
-                <MDBTooltip title='CEDULA DE CIUDADANIA' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                        icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} /> </MDBTooltip>
+                <span title="CEDULA DE CIUDADANIA"><VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
+                        icon={'IdCard'} color={'DeepSkyBlue'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[1] > 0
                 ?
-                <MDBTooltip title='MATRICULA' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                        icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} /> </MDBTooltip>
+                <span title="MATRICULA"><VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
+                        icon={'BadgeCheck'} color={'DarkOrchid'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
                 ?
-                <MDBTooltip title='FICHA COPNIA' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                        icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} /> </MDBTooltip>
+                <span title="FICHA COPNIA"><VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
+                        icon={'BookOpen'} color={'GoldenRod'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
-                ? <MDBTooltip title='HOJA DE VIDA Y CERTIFICADOS' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                        icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} /> </MDBTooltip>
+                ? <span title="HOJA DE VIDA Y CERTIFICADOS"><VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
+                        icon={'FileText'} color={'LimeGreen'} /></span>
                 : ""}</>)
 
             return <>{_COMPONENT}</>
@@ -189,9 +171,9 @@ class RECORD_ENG_PROFESIONALS extends Component {
                     if (roles.length > 1) {
                         let role = roles[0];
                         roles.map(r => { if (_FIND_PROFESIOANL(r)) role = r });
-                        return <li class="list-group-item">{_PROFESIONAL_JSX(role, i)}</li>
+                        return <li className="list-group-item">{_PROFESIONAL_JSX(role, i)}</li>
                     } else {
-                        return <li class="list-group-item">{_PROFESIONAL_JSX(roles[0], i)}</li>
+                        return <li className="list-group-item">{_PROFESIONAL_JSX(roles[0], i)}</li>
                     }
                 })}
             </>
@@ -201,17 +183,16 @@ class RECORD_ENG_PROFESIONALS extends Component {
             let CHECKS = _GET_STEP_TYPE('cb_profs', 'check');
             let dc = CHECKS[i] == 1 ? true : false;
             return <>
-                {useCB ? <input class="form-check-input mx-2" type="checkbox" value={_role} name="cb_profs" defaultChecked={dc || false}
+                {useCB ? <input className="form-check-input mx-2" type="checkbox" value={_role} name="cb_profs" defaultChecked={dc || false}
                     onChange={() => manage_step()} /> : ''}
                 {_FIND_PROFESIOANL(_role)
-                    ? <MDBBadge color='success'>DILIGENCIADO</MDBBadge>
-                    : <MDBBadge color='danger'>SIN DILIGENCIAR</MDBBadge>}
+                    ? <span className="badge bg-success">DILIGENCIADO</span>
+                    : <span className="badge bg-danger">SIN DILIGENCIAR</span>}
                 <label>&nbsp;{_role}:</label>
                 <label className='fw-bold'>&nbsp;{_FIND_PROFESIOANL(_role).name} {_FIND_PROFESIOANL(_role).surname}</label>
                 <label>&nbsp; - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
             </>
         }
-
 
         // APIS
         let manage_step = (e) => {
@@ -233,88 +214,49 @@ class RECORD_ENG_PROFESIONALS extends Component {
             formData.set('id_public', 'cb_profs');
             save_step('cb_profs', false, formData);
 
-
         }
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ENG_SERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ENG_SERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
         return (
             <div className="record_ph_profesional_evaluation container">
-                <li class="list-group-item"><label className="fw-bold">PROFESIONALES</label></li>
+                <li className="list-group-item"><label className="fw-bold">PROFESIONALES</label></li>
                 {COMPONENT_PROFESIONAL_RULES(profs)}
                 {_PROFESIOAL_INFO_COMPONENT()}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_PROFESIONALS;

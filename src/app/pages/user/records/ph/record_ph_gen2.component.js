@@ -1,19 +1,10 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-
-class RECORD_PH_GEN_2 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_PH_GEN_2(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
 
         // DATA GETTERS
         let _GET_CHILD_REVIEW_GEN = () => {
@@ -197,40 +188,19 @@ class RECORD_PH_GEN_2 extends Component {
             if(review_check.length == 8) review_check.unshift(0)
             formData.set('review_check', review_check.join(';'));
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_PH_SERVICE.update(currentRecord.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        props.requestUpdateRecord(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
@@ -242,14 +212,13 @@ class RECORD_PH_GEN_2 extends Component {
                         {_COMPONENT_DETAILS_1()}
                         <div className="row mb-3 text-center">
                             <div className="col-12">
-                                <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                         </div>
                     </div>
                 </form>
             </div >
         );
-    }
 }
 
 export default RECORD_PH_GEN_2;

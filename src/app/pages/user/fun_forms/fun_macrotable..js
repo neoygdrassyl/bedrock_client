@@ -1,17 +1,21 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import React, { useReducer, useEffect, useRef } from 'react';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
-import { MDBBadge, MDBBtn, MDBCollapse, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from 'mdb-react-ui-kit';
-import ReactTagInput from "@pathofdev/react-tag-input";
-import Collapsible from 'react-collapsible';
-import "@pathofdev/react-tag-input/build/index.css";
+
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { TabPane } from '@/components/ui/tab-pane';
+import TagInput from "../../../components/TagInput";
+import Collapsible from '../../../components/Collapsible';
 
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
     _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER, _FUN_101_PARSER, _FUN_102_PARSER, _FUN_24_PARSER, _FUN_25_PARSER
 } from '../../../components/customClasses/funCustomArrays'
+import { Icon } from '@/components/icon';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import USER_SERVICE from '../../../services/users.service';
@@ -37,9 +41,8 @@ import TABLE_COMPONENT_EXPANDED from './components/table_components/table.compon
 import FUN_MACROTABLE_FILTERLIST from './components/fun_macro_filterList.component';
 import FUN_CHART_NEGATIVE from './components/charts_components.js/chart_negative.component';
 import FUN_CHART_TIME from './components/charts_components.js/chart_time.component';
+import ChartErrorBoundary from '../../../components/ChartErrorBoundary';
 
-
-const MySwal = withReactContent(Swal);
 const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15, '0': 45 };
 const priority_colors = ['4c75a3', '#ed302f ', '#ff4500', '#ffac44', '#25d366']
 const _fun_0_type_days = { 'i': 4, 'ii': 6, 'iii': 8, 'iv': 10, 'oa': 2, '0': 10 };
@@ -111,16 +114,13 @@ const _fun_0_type_days_matrix = {
     'oa': { 'law': 1, 'arc': 1, 'eng': 0 },
     '0': { 'law': 1, 'arc': 1, 'eng': 0 },
 }
-const moment = require('moment');
-class FUN_MACROTABLE extends Component {
-    constructor(props) {
-        super(props);
-        this.tagRef = React.createRef();
-        this.retrieveMacro = this.retrieveMacro.bind(this);
-        this.retrieveMacroClocks = this.retrieveMacroClocks.bind(this);
-        this._UPDATE_FILTERS = this._UPDATE_FILTERS.bind(this);
-        this._UPDATE_FILTERS_IDPUBIC = this._UPDATE_FILTERS_IDPUBIC.bind(this);
-        this.state = {
+import dayjs from 'dayjs';
+import { swalError } from '@/app/utils/swalAdapter';
+function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilter, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
+    const tagRef = useRef(null);
+    const [state, setState] = useReducer(
+        (prev, next) => ({ ...prev, ...next }),
+        {
             load: false,
             data_include: [],
             data_macro: [],
@@ -147,37 +147,37 @@ class FUN_MACROTABLE extends Component {
             tags: [],
             includeCompelte: false,
             includeEx: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveMacro();
-        this.retrieveMacroNegative();
-        this.retrieveWorkerList();
-        //this.retrieveMacroClocks();
-    }
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.data_macro !== prevState.data_macro && this.state.data_macro.length > 0) {
-            this.setDefaultFilters();
         }
+    );
+    useEffect(() => {
+        retrieveMacro();
+        retrieveMacroNegative();
+        retrieveWorkerList();
+        //retrieveMacroClocks();
+    }, []);
+    const prevDataMacroRef = useRef(state.data_macro);
+    useEffect(() => {
+        if (state.data_macro !== prevDataMacroRef.current && state.data_macro.length > 0) {
+            setDefaultFilters();
+        }
+        prevDataMacroRef.current = state.data_macro;
         /*
-if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.data_macro_filter.length > 0) ||
-            (this.state.data_macro_clocks !== prevState.data_macro_clocks && this.state.data_macro_clocks.length > 0)) {
-            this.equalizeLists();
+        if ((state.data_macro_filter.length > 0) || (state.data_macro_clocks.length > 0)) {
+            equalizeLists();
         }
         */
-
+    }, [state.data_macro]);
+    function setDefaultFilters() {
+        let filter = defaultFilter;
+        if (state.tags.length) _FILTER_LIST(state.tags);
+        else if (filter) _UPDATE_FILTERS_IDPUBIC([filter])
+        else _FILTER_LIST([]);
     }
-    setDefaultFilters() {
-        let filter = this.props.defaultFilter;
-        if (this.state.tags.length) this._FILTER_LIST(this.state.tags);
-        else if (filter) this._UPDATE_FILTERS_IDPUBIC([filter])
-        else this._FILTER_LIST([]);
-    }
-    InitialFilter(_list) {
+    function InitialFilter(_list) {
         var list_f = [];
         var list_oa = [];
         var list_oa_f = [];
-        if (this.state.includeCompelte) {
+        if (state.includeCompelte) {
             list_f = _list;
         } else {
             for (let i = 0; i < _list.length; i++) {
@@ -195,7 +195,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         }
         list_f = _SET_PRIORITY(list_f);
 
-        this.setState({
+        setState({
             data_include: _list,
             data_exlucde: list_f,
             data_macro: list_f,
@@ -205,130 +205,110 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             load: true,
         })
 
-        this.setDefaultFilters();
+        setDefaultFilters();
 
     }
-    retrieveMacro(LoadFilter = true) {
-        FUN_SERVICE.loadMacro(this.props.date_start, this.props.date_end)
+    function retrieveMacro(LoadFilter = true) {
+        FUN_SERVICE.loadMacro(date_start, date_end)
             .then(response => {
-                this.InitialFilter(response.data);
+                InitialFilter(response.data);
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
-    retrieveMacroClocks() {
-        FUN_SERVICE.loadMacroClocksControl(this.props.date_start, this.props.date_end)
+    function retrieveMacroClocks() {
+        FUN_SERVICE.loadMacroClocksControl(date_start, date_end)
             .then(response => {
-                this.setState({ data_macro_clocks: response.data })
+                setState({ data_macro_clocks: response.data })
 
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
-    retrieveMacroNegative() {
-        FUN_SERVICE.loadMacronegative(this.props.date_start, this.props.date_end)
+    function retrieveMacroNegative() {
+        FUN_SERVICE.loadMacronegative(date_start, date_end)
             .then(response => {
-                this.asignNegativeList(response.data)
+                asignNegativeList(response.data)
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
-    retrieveWorkerList() {
+    function retrieveWorkerList() {
         USER_SERVICE.getAll()
             .then(response => {
-                this.setState({ worker_list: response.data })
+                setState({ worker_list: response.data })
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
-    asignNegativeList(LIST) {
+    function asignNegativeList(LIST) {
         let negative_list = [];
         let negative_list_full = [];
         for (var i = 0; i < LIST.length; i++) {
             negative_list_full.push(LIST[i]);
             if (LIST[i].state < 0) negative_list.push(LIST[i]);
         }
-        this.setState({ data_negative_simple: negative_list, data_negative: negative_list, data_negative_full: negative_list_full })
+        setState({ data_negative_simple: negative_list, data_negative: negative_list, data_negative_full: negative_list_full })
     }
-    changeList = (value) => {
-        if (value) this.setState({
-            data_macro: this.state.data_include,
-            data_macro_filter: this.state.data_include,
-            data_oa: this.state.data_oa_includes,
+    function changeList(value) {
+        if (value) setState({
+            data_macro: state.data_include,
+            data_macro_filter: state.data_include,
+            data_oa: state.data_oa_includes,
             includeEx: value
         })
-        else this.setState({
-            data_macro: this.state.data_exlucde,
-            data_macro_filter: this.state.data_exlucde,
+        else setState({
+            data_macro: state.data_exlucde,
+            data_macro_filter: state.data_exlucde,
             includeEx: value,
-            data_oa: this.state.data_oa,
+            data_oa: state.data_oa,
         })
-        //this.setDefaultFilters();
+        //setDefaultFilters();
     }
-    equalizeLists() {
+    function equalizeLists() {
         var newData = [];
         console.log("EQUILIZE!")
-        this.state.data_macro_filter.map(value => {
-            this.state.data_macro_clocks.map(valueJ => {
+        state.data_macro_filter.map(value => {
+            state.data_macro_clocks.map(valueJ => {
                 if (value.id_public == valueJ.id_public) newData.push(valueJ)
             })
         })
-        this.setState({ data_macro_clocks_filter: newData })
+        setState({ data_macro_clocks_filter: newData })
     }
 
     // INPUT TAG WORK FUNCTIONS
-    _GET_LAW_REPORT_DATA_ICON(_ITEM) {
+    function _GET_LAW_REPORT_DATA_ICON(_ITEM) {
         if (!_ITEM.tipo) return 2;
         if (_ITEM.tipo.includes('F')) return 1
         return 2;
     }
-    _UPDATE_FILTERS(_FILTER) {
-        let _ARRAY_TAGS = this.state.tags;
+    function _UPDATE_FILTERS(_FILTER) {
+        let _ARRAY_TAGS = state.tags;
         if (_ARRAY_TAGS.includes(_FILTER)) _ARRAY_TAGS.splice(_ARRAY_TAGS.indexOf(_FILTER), 1);
         else _ARRAY_TAGS.push(_FILTER);
-        this._FILTER_LIST(_ARRAY_TAGS);
+        _FILTER_LIST(_ARRAY_TAGS);
     }
 
-    _UPDATE_FILTERS_IDPUBIC(_ARRAY) {
-        let _ARRAY_TAGS = this.state.tags;
+    function _UPDATE_FILTERS_IDPUBIC(_ARRAY) {
+        let _ARRAY_TAGS = state.tags;
         let newTag = 'num:' + _ARRAY.join(',')
         _ARRAY_TAGS.push(newTag)
-        this._FILTER_LIST(_ARRAY_TAGS);
+        _FILTER_LIST(_ARRAY_TAGS);
     }
-    _FILTER_LIST(_FILTERS) {
-        this.setState({ tags: _FILTERS, load: false });
-        if (_FILTERS.length == 0) return this.setState({ data_macro_filter: this.state.data_macro, load: true });
-        else if (_FILTERS.length == 1 && _FILTERS[0] == 'relax') return this.setState({ data_macro_filter: this.state.data_macro, load: true });
+    function _FILTER_LIST(_FILTERS) {
+        setState({ tags: _FILTERS, load: false });
+        if (_FILTERS.length == 0) return setState({ data_macro_filter: state.data_macro, load: true });
+        else if (_FILTERS.length == 1 && _FILTERS[0] == 'relax') return setState({ data_macro_filter: state.data_macro, load: true });
 
-        let _FULL_LIST = this.state.data_macro;
+        let _FULL_LIST = state.data_macro;
         let _FILTER_LIST = [];
         let meetConditions = 0;
         let forcedConditions = true
@@ -481,7 +461,6 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             'alltype': (row) => { return row.clocks_version ? row.clocks_version.split(';').some(value => value <= -1) : false },
         }
 
-
         for (var i = 0; i < _FULL_LIST.length; i++) {
             for (var j = 0; j < _FILTERS.length; j++) {
                 if (_FILTERS[j] == 'relax') forcedConditions = false;
@@ -532,7 +511,6 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 if (_FULL_LIST[i].state == 101) currentState = 7;
 
                 if (_FULL_LIST[i].state < -100) currentState = 8;
-
 
                 if (targetState > 0 && currentState > 0) {
                     if (sFILTER.includes('*') && currentState >= targetState) meetCondition = true;
@@ -652,13 +630,13 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 if (sFILTER == 'sellono' && _FULL_LIST[i].seal == null) meetCondition = true;
                 // REPORT
                 if (sFILTER == 'rep') {
-                    let reportRequirement = this._GET_LAW_REPORT_DATA_ICON(_FULL_LIST[i]);
+                    let reportRequirement = _GET_LAW_REPORT_DATA_ICON(_FULL_LIST[i]);
                     if (reportRequirement == 1) {
                         if (_FULL_LIST[i].report_cub) meetCondition = true;
                     }
                 }
                 if (sFILTER == 'repno') {
-                    let reportRequirement = this._GET_LAW_REPORT_DATA_ICON(_FULL_LIST[i]);
+                    let reportRequirement = _GET_LAW_REPORT_DATA_ICON(_FULL_LIST[i]);
                     if (reportRequirement == 1) {
                         if (!_FULL_LIST[i].report_cub) meetCondition = true;
                     }
@@ -815,7 +793,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0])) condition = true;
                             }
                             if (splitCon[0] && splitCon[1]) {
-                                if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0]) && splitCon[1] == moment(_FULL_LIST[i].clock_resolution, 'YYYY-MM-DD').format('YY', true)) condition = true;
+                                if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0]) && splitCon[1] == dayjs(_FULL_LIST[i].clock_resolution, 'YYYY-MM-DD').format('YY', true)) condition = true;
                             }
 
                         }
@@ -824,7 +802,6 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     })
                     if (counterConditions > 0 && condition_state) meetCondition = true;
                 }
-
 
                 // PQRS X FUN 
                 if (sFILTER == 'pqrs' && _FULL_LIST[i].pqrs > 0) meetCondition = true;
@@ -837,8 +814,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                         let date1 = fiterBody[2];
                         let date2 = fiterBody[3];
                         let case_1 = date1 && (date2 == undefined);
-                        let case_2 = moment(date2, 'YYYY-MM-DD', true).isValid() && moment(date2, 'YYYY-MM-DD', true).isValid();
-                        let case_3 = moment(date2, 'YYYY-MM-DD', true).isValid() && !isNaN(date2);
+                        let case_2 = dayjs(date2, 'YYYY-MM-DD', true).isValid() && dayjs(date2, 'YYYY-MM-DD', true).isValid();
+                        let case_3 = dayjs(date2, 'YYYY-MM-DD', true).isValid() && !isNaN(date2);
                         let case_4 = date1[0] == '-' && (date1[1] == 'd' || date1[1] == 'w' || date1[1] == 'm' || date1[1] == 'y');
 
                         let dates;
@@ -855,11 +832,11 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 if (date.includes(date1)) meetCondition = true;
                             }
                             if (case_2) {
-                                if (moment(date).isBetween(date1, date2, undefined, '[]')) meetCondition = true;
+                                if (dayjs(date).isBetween(date1, date2, undefined, '[]')) meetCondition = true;
                             }
                             if (case_3) {
                                 let finalDate = dateParser_finalDate(date1, date2)
-                                if (moment(date).isBetween(date1, finalDate, undefined, '[]')) meetCondition = true;
+                                if (dayjs(date).isBetween(date1, finalDate, undefined, '[]')) meetCondition = true;
                             }
                             if (case_4) {
                                 let numberT = date1.substring(2, date1.length)
@@ -867,29 +844,28 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 else numberT = Number(numberT);
 
                                 if (!isNaN(numberT)) {
-                                    let today = moment();
+                                    let today = dayjs();
                                     let lastDate;
                                     if (date1[1] == 'd') {
                                         lastDate = today.subtract(numberT, "days");
                                     }
                                     if (date1[1] == 'w') {
                                         lastDate = today.subtract(numberT, "week");
-                                        lastDate.startOf('isoWeek');
+                                        lastDate = lastDate.startOf('isoWeek');
                                     }
                                     if (date1[1] == 'm') {
                                         lastDate = today.subtract(numberT, "month");
-                                        lastDate.startOf('month');
+                                        lastDate = lastDate.startOf('month');
                                     }
                                     if (date1[1] == 'y') {
                                         lastDate = today.subtract(numberT, "year");
-                                        lastDate.startOf('year');
+                                        lastDate = lastDate.startOf('year');
                                     }
-                                    if (moment(date).isBetween(lastDate, moment(), undefined, '[]')) meetCondition = true;
+                                    if (dayjs(date).isBetween(lastDate, dayjs(), undefined, '[]')) meetCondition = true;
                                 }
                             }
                         })
                     }
-
 
                 }
                 // TAG
@@ -948,7 +924,6 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                         if (_FULL_LIST[i].priority_rank == number) meetCondition = true;
                     }
 
-
                 }
 
                 //TABLE
@@ -967,14 +942,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             meetConditions = 0;
         }
 
-        this.setState({ data_macro_filter: _FILTER_LIST, load: true })
+        setState({ data_macro_filter: _FILTER_LIST, load: true })
     }
-    myDataWorkers = () => {
+    function myDataWorkers() {
         const workersNames_bundle = []
         var vals = [];
         var vals_p = []
-        let _workers = this.state.worker_list;
-        let items = this.state.data_macro_filter;
+        let _workers = state.worker_list;
+        let items = state.data_macro_filter;
 
         for (var i = 0; i < _workers.length; i++) {
             workersNames_bundle.push(_workers[i].name + ' ' + _workers[i].surname);
@@ -1014,7 +989,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         return data;
     }
 
-    _GET_MIN_VALUE(row) {
+    function _GET_MIN_VALUE(row) {
         let v1a = Number(row.priority_left || 0);
         let v1b = Number(row.priority_rec || 0);
         // let v1c = Number(row.priority_corr || 0);
@@ -1029,20 +1004,18 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         return Math.min(...arr1)
     }
 
-    render() {
-        const { translation, swaMsg, globals, selectedRow, defaultFilter } = this.props;
-        const { load } = this.state;
+        const { load } = state;
         //  WORIKING CONSTS
         const ExpandedComponent = ({ data }) => <>
             <div style={{ width: '95vw' }} className="m-3">
                 <TABLE_COMPONENT_EXPANDED currentItem={data}
-                    requestUpdate={() => this.retrieveMacro()}
+                    requestUpdate={() => retrieveMacro()}
                     translation={translation} swaMsg={swaMsg} globals={globals}
-                    worker_list={this.state.worker_list}
-                    lenghtL={this.state.data_macro_filter.length}
-                    dataL={this.state.data_macro_filter}
-                    date_start={this.props.date_start}
-                    date_end={this.props.date_end} />
+                    worker_list={state.worker_list}
+                    lenghtL={state.data_macro_filter.length}
+                    dataL={state.data_macro_filter}
+                    date_start={date_start}
+                    date_end={date_end} />
             </div>
         </>;
 
@@ -1050,7 +1023,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             {
                 when: row => row.id == selectedRow,
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];
@@ -1058,14 +1031,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             {
                 when: row => row.id_sistem == selectedRow,
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];
         const conditionalCellStylesJUR = [
             {
                 when: row => row.id == selectedRow,
-                style: { backgroundColor: 'BlanchedAlmond' }
+                style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
             },
             {
                 when: row => row.id != selectedRow,
@@ -1075,7 +1048,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         const conditionalCellStylesENG = [
             {
                 when: row => row.id == selectedRow,
-                style: { backgroundColor: 'BlanchedAlmond' }
+                style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
             },
             {
                 when: row => row.id != selectedRow,
@@ -1085,7 +1058,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         const conditionalCellStylesARQ = [
             {
                 when: row => row.id == selectedRow,
-                style: { backgroundColor: 'BlanchedAlmond' }
+                style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
             },
             {
                 when: row => row.id != selectedRow,
@@ -1095,8 +1068,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
         const columns = [
             {
-                name: <label>No. RADICACION</label>,
-                selector: 'id_public',
+                name: 'No. RADICACION',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 minWidth: '140px',
@@ -1104,17 +1077,24 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => <label >{row.id_public}</label>
             },
             {
-                name: <label>INFO</label>,
+                name: 'INFO',
                 button: true,
                 fixed: true,
                 minWidth: '80px',
                 ignoreCSV: true,
-                cell: row => <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                    {_MODULE_BTN_POP(row)}
-                </MDBPopover>
+                cell: row => <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                            <Icon name="MoreHorizontal" size={14} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-52">
+                        {_MODULE_BTN_POP(row)}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             },
             {
-                name: <label>ACTUACION</label>,
+                name: 'ACTUACION',
                 selector: row => formsParser1(row, true),
                 sortable: true,
                 filterable: true,
@@ -1124,41 +1104,41 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => <h6 className='fw-normal'>{row.usos == 'A' ? <u>{formsParser1(row, true)}</u> : formsParser1(row, true)}</h6>
             },
             {
-                name: <label className="text-center">ESTADO</label>,
+                name: 'ESTADO',
                 selector: row => _fun_0_state(row.state, true, row),
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '140px',
                 cvsCB: row => _fun_0_state(row.state, true, row),
-                cell: row => <label>{_fun_0_state(row.state, false, row)}</label>
+                cell: row => <span className="text-sm">{_fun_0_state(row.state, false, row)}</span>
             },
             {
-                name: <label className="text-center">CATEGORIA</label>,
-                selector: 'type',
+                name: 'CATEGORIA',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '160px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <span className="text-sm">{_fun_0_type[row.type]}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESION',
                 center: true,
                 minWidth: '330px',
                 ignoreCSV: true,
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} small />
             },
             {
-                name: <label className="text-center">FECHA RADICACIÓN</label>,
+                name: 'FECHA RADICACIÓN',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 minWidth: '130px',
-                cell: row => <label>{row.clock_payment}</label>
+                cell: row => <span className="text-sm">{row.clock_payment}</span>
             },
             {
-                name: <label className="text-center">FECHA MAX LyDF</label>,
+                name: 'FECHA MAX LyDF',
                 selector: row => row.state == 1 || row.state == -1 ? dateParser_finalDate(row.clock_payment, 30) : '',
                 sortable: true,
                 filterable: true,
@@ -1166,10 +1146,10 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cvsCB: row => row.state == 1 || row.state == -1 ? dateParser_finalDate(row.clock_payment, 30) : '-',
                 cell: row => row.state == 1 || row.state == -1 ?
                     <label>{dateParser_finalDate(row.clock_payment, 30)}</label>
-                    : <i class="fas fa-minus"></i>
+                    : <Icon name="minus" size={16} />
             },
             {
-                name: <label className="text-center">DIAS LyDF</label>,
+                name: 'DIAS LyDF',
                 selector: row => row.state == 1 || row.state == -1 ? dateParser_timePassed(row.clock_payment) : -1,
                 sortable: true,
                 filterable: true,
@@ -1182,7 +1162,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     <label>{dateParser_timePassed(row.clock_payment) > 30 ?
                         <label className='text-danger'>{dateParser_timePassed(row.clock_payment)}</label>
                         : <label>{dateParser_timePassed(row.clock_payment)}</label>} / 30</label>
-                    : <i class="fas fa-minus"></i>
+                    : <Icon name="minus" size={16} />
             },
             {
                 name: <label className="fw-bold text-primary text-center">LYDF</label>,
@@ -1193,7 +1173,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => <label className="fw-bold text-primary">{row.clock_date}</label>
             },
             {
-                name: <label className="text-center">FECHA MAX ACTA</label>,
+                name: 'FECHA MAX ACTA',
                 selector: row => row.clock_record_p1 == null ? dateParser_finalDate(row.clock_date, _fun_0_type_time[row.type] ?? 45) : '',
                 sortable: true,
                 filterable: true,
@@ -1202,10 +1182,10 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => row.clock_record_p1 == null ? <>
                     <label>{dateParser_finalDate(row.clock_date, _fun_0_type_time[row.type] ?? 45)}</label>
                     {ci(row)}</>
-                    : <i class="fas fa-minus"></i>
+                    : <Icon name="minus" size={16} />
             },
             {
-                name: <label className="text-center">T. ACTA</label>,
+                name: 'T. ACTA',
                 selector: row => row.clock_record_p1 == null ? row.days_ldf : row.days_r1,
                 sortable: true,
                 filterable: true,
@@ -1225,7 +1205,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     </label>
             },
             {
-                name: <label className="text-center">INDICE PRIORIDAD</label>,
+                name: 'INDICE PRIORIDAD',
                 selector: row => row.priority_index,
                 sortable: true,
                 filterable: true,
@@ -1234,20 +1214,26 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => row.priority_index,
             },
             {
-                name: <label className="text-center">PRIORIDAD</label>,
+                name: 'PRIORIDAD',
                 selector: row => row.priority || 9999,
                 sortable: true,
                 filterable: true,
                 center: true,
                 ignoreCSV: true,
-                cell: row => row.priority > 0 ? <MDBPopover size='sm' clbtnClassName="mx-0" rounded placement='right' dismiss
-                    btnChildren={row.priority_rank} style={{ fontSize: '75%', backgroundColor: priority_colors[row.priority_rank] }}>
-                    {_PRIORITY_POP(row)}
-                </MDBPopover> : ''
+                cell: row => row.priority > 0 ? <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-6 px-1.5 text-xs tabular-nums" style={{ fontSize: '75%', backgroundColor: priority_colors[row.priority_rank] }}>
+                            {row.priority_rank}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent side="right" className="w-72">
+                        {_PRIORITY_POP(row)}
+                    </PopoverContent>
+                </Popover> : ''
             },
             /**
           {
-              name: <label>JUR. PROF. ASIG.</label>,
+              name: 'JUR. PROF. ASIG.',
               selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.asign_law_worker_name : row.asign_ph_law_worker_name,
               sortable: true,
               filterable: true,
@@ -1255,8 +1241,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
               conditionalCellStyles: conditionalCellStylesJUR,
               cellStyle: CellStylesJUR,
               center: true,
-              omit: this.state.hide_jur,
-              cell: row => this.state['asign_jur_' + row.id]
+              omit: state.hide_jur,
+              cell: row => state['asign_jur_' + row.id]
                   ? <>{_WORKERS_SELECT(
                       !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.asign_law_worker_id : row.asign_ph_law_worker_id,
                       !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_id : row.ph_id,
@@ -1267,26 +1253,26 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
           },
         
            *   {
-             name: <label>ASIGNAR</label>,
-             omit: (this.state.hide_jur && !(window.user.id == 1 || window.user.roleId == 3)),
+             name: 'ASIGNAR',
+             omit: (state.hide_jur && !(window.user.id == 1 || window.user.roleId == 3)),
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
              center: true,
              minWidth: '70px',
-             cell: row => <div class="form-check">
-                 <input class="form-check-input" type="checkbox" defaultChecked={this.state['asign_jur_' + row.id]} onChange={(e) => this.setState({ ['asign_jur_' + row.id]: e.target.checked })} />
+             cell: row => <div className="form-check">
+                 <input className="form-check-input" type="checkbox" defaultChecked={state['asign_jur_' + row.id]} onChange={(e) => setState({ ['asign_jur_' + row.id]: e.target.checked })} />
              </div>
          },
          {
-             name: <label>#</label>,
-             omit: this.state.hide_jur,
+             name: '#',
+             omit: state.hide_jur,
              minWidth: '70px',
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
-             cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_law ? row.clock_asign_law.split(';').length : row.jur_version}</label>
+             cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_law ? row.clock_asign_law.split(';').length : row.jur_version}</span>
          },
          {
-             name: <label>JUR. FECHA ASIG.</label>,
+             name: 'JUR. FECHA ASIG.',
              selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.asign_ph_law_date,
              sortable: true,
              filterable: true,
@@ -1294,11 +1280,11 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
              center: true,
-             omit: this.state.hide_jur,
-             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.asign_ph_law_date}</label>
+             omit: state.hide_jur,
+             cell: row => <span className="text-sm">{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.asign_ph_law_date}</span>
          },
          {
-             name: <label>JUR. FECHA MAX.</label>,
+             name: 'JUR. FECHA MAX.',
              selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ? dateParser_finalDate(_GET_ASIGN_DATE(row.asign_law_date, 11, row), _fun_0_type_days[row.type] ?? 5)
                  : dateParser_finalDate(row.asign_ph_law_date, _fun_0_type_days[row.type] ?? 5),
@@ -1308,20 +1294,20 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
              center: true,
-             omit: this.state.hide_jur,
+             omit: state.hide_jur,
              cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ?
                  _GET_ASIGN_DATE(row.asign_law_date, 11, row)
-                     ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                     ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                      : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
-                 : dateParser_finalDate(moment(row.asign_ph_law_date).isSameOrAfter(row.clock_date, 'day') >= 0 ? row.asign_ph_law_date : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                 : dateParser_finalDate(dayjs(row.asign_ph_law_date).isSameOrAfter(row.clock_date, 'day') >= 0 ? row.asign_ph_law_date : row.clock_date, _fun_0_type_days[row.type] ?? 5)
              } {!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''
                  : row.asign_ph_law_date && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''}
              </label>
          },
          {
-             name: <label>JUR. FECHA REV.</label>,
+             name: 'JUR. FECHA REV.',
              selector: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_law : row.jur_date,
              sortable: true,
              filterable: true,
@@ -1329,14 +1315,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
              center: true,
-             omit: this.state.hide_jur,
-             cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_law : row.jur_date}</label>
+             omit: state.hide_jur,
+             cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_law : row.jur_date}</span>
          },
           {
-              name: <label>DIAS</label>,
+              name: 'DIAS',
               selector: row => dateParser_dateDiff(
                   !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_date : row.ph_date_law,
-                  !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
+                  !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
                   , true),
               sortable: true,
               filterable: true,
@@ -1344,11 +1330,11 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
               cellStyle: CellStylesJUR,
               center: true,
               minWidth: '70px',
-              omit: this.state.hide_jur,
+              omit: state.hide_jur,
               cell: row => {
                   let diff = dateParser_dateDiff(
                       !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_date : row.ph_date_law,
-                      !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
+                      !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
                       , true)
                   return <>
                       <label> <label className={diff < 0 ? 'text-success fw-bold' : diff > (_fun_0_type_days[row.type] ?? 5) ? 'text-danger' : ''}>{diff}</label>
@@ -1362,7 +1348,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 */
 
             {
-                name: <label>JUR. REVISION</label>,
+                name: 'JUR. REVISION',
                 selector: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law) : _GET_REVIEW(row.jur_review),
                 sortable: true,
                 filterable: true,
@@ -1370,33 +1356,33 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 conditionalCellStyles: conditionalCellStylesJUR,
                 cellStyle: CellStylesJUR,
                 center: true,
-                omit: this.state.hide_jur,
+                omit: state.hide_jur,
                 cvsCB: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law, false, false, true) : _GET_REVIEW(row.jur_review, row.clock_review_law_c, row.clock_asign_law, true),
-                cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law) : _GET_REVIEW(row.jur_review, row.clock_review_law_c, row.clock_asign_law)}</label>
+                cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law) : _GET_REVIEW(row.jur_review, row.clock_review_law_c, row.clock_asign_law)}</span>
             },
             /**
                         {
-                            name: <label>ASIGNAR</label>,
-                            omit: this.state.hide_arc && !(window.user.id == 1 || window.user.roleId == 3),
+                            name: 'ASIGNAR',
+                            omit: state.hide_arc && !(window.user.id == 1 || window.user.roleId == 3),
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             center: true,
                             minWidth: '70px',
-                            cell: row => <div class="form-check">
-                                <input class="form-check-input" type="checkbox" defaultChecked={this.state['asign_arc_' + row.id]} onChange={(e) => this.setState({ ['asign_arc_' + row.id]: e.target.checked })} />
+                            cell: row => <div className="form-check">
+                                <input className="form-check-input" type="checkbox" defaultChecked={state['asign_arc_' + row.id]} onChange={(e) => setState({ ['asign_arc_' + row.id]: e.target.checked })} />
                             </div>
                         },
                         {
-                            name: <label>#</label>,
+                            name: '#',
                             center: true,
                             minWidth: '70px',
-                            omit: this.state.hide_arc,
+                            omit: state.hide_arc,
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
-                            cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_arc ? row.clock_asign_arc.split(';').length : row.arc_version}</label>
+                            cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_arc ? row.clock_asign_arc.split(';').length : row.arc_version}</span>
                         },
                         {
-                            name: <label>ARQ. FECHA ASIG.</label>,
+                            name: 'ARQ. FECHA ASIG.',
                             selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.asign_ph_arc_date,
                             sortable: true,
                             filterable: true,
@@ -1404,11 +1390,11 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             center: true,
-                            omit: this.state.hide_arc,
-                            cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.asign_ph_law_date}</label>
+                            omit: state.hide_arc,
+                            cell: row => <span className="text-sm">{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.asign_ph_law_date}</span>
                         },
                         {
-                            name: <label>ARQ. FECHA MAX.</label>,
+                            name: 'ARQ. FECHA MAX.',
                             selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                                 ? dateParser_finalDate(_GET_ASIGN_DATE(row.asign_arc_date, 13, row), _fun_0_type_days[row.type] ?? 5)
                                 : dateParser_finalDate(row.asign_ph_arc_date, _fun_0_type_days[row.type] ?? 5),
@@ -1418,11 +1404,11 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             center: true,
-                            omit: this.state.hide_arc,
+                            omit: state.hide_arc,
                             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                                 ?
                                 _GET_ASIGN_DATE(row.asign_arc_date, 13, row)
-                                    ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                                    ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                                     : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
                                 : dateParser_finalDate(row.asign_ph_arc_date, _fun_0_type_days[row.type] ?? 5)
                             }  {!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
@@ -1431,7 +1417,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                             </label>
                         },
                         {
-                            name: <label>ARQ. FECHA REV.</label>,
+                            name: 'ARQ. FECHA REV.',
                             selector: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_arc : row.arc_date,
                             sortable: true,
                             filterable: true,
@@ -1439,14 +1425,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             center: true,
-                            omit: this.state.hide_arc,
-                            cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_arc : row.arc_date}</label>
+                            omit: state.hide_arc,
+                            cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_arc : row.arc_date}</span>
                         },
                         {
-                name: <label>DIAS</label>,
+                name: 'DIAS',
                 selector: row => dateParser_dateDiff(
                     !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_date : row.ph_date_arc,
-                    !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
+                    !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
                     , true),
                 sortable: true,
                 filterable: true,
@@ -1454,11 +1440,11 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cellStyle: CellStylesARQ,
                 center: true,
                 minWidth: '70px',
-                omit: this.state.hide_arc,
+                omit: state.hide_arc,
                 cell: row => {
                     let diff = dateParser_dateDiff(
                         !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_date : row.ph_date_arc,
-                        !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
+                        !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
                         , true)
                     return <>
                         <label> <label className={diff < 0 ? 'text-success fw-bold' : diff > (_fun_0_type_days[row.type] ?? 5) ? 'text-danger' : ''}>{diff} </label>
@@ -1470,7 +1456,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
            
             {
-                name: <label>ARQ. PROF. ASIG.</label>,
+                name: 'ARQ. PROF. ASIG.',
                 selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.asign_arc_worker_name : row.asign_ph_arc_worker_name,
                 sortable: true,
                 filterable: true,
@@ -1478,8 +1464,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 conditionalCellStyles: conditionalCellStylesARQ,
                 cellStyle: CellStylesARQ,
                 center: true,
-                omit: this.state.hide_arc,
-                cell: row => this.state['asign_arc_' + row.id]
+                omit: state.hide_arc,
+                cell: row => state['asign_arc_' + row.id]
                     ? <>{_WORKERS_SELECT(
                         !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.asign_arc_worker_id : row.sign_ph_arc_worker_id,
                         !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_id : row.ph_id,
@@ -1490,7 +1476,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
   */
             {
-                name: <label>ARQ. REVISION</label>,
+                name: 'ARQ. REVISION',
                 selector: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review) : _GET_REVIEW(row.arc_review),
                 sortable: true,
                 filterable: true,
@@ -1498,35 +1484,35 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 conditionalCellStyles: conditionalCellStylesARQ,
                 cellStyle: CellStylesARQ,
                 center: true,
-                omit: this.state.hide_arc,
+                omit: state.hide_arc,
                 cvsCB: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review, false, false, true) : _GET_REVIEW(row.arc_review, row.clock_review_arc_c, row.clock_asign_arc, true),
-                cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review) : _GET_REVIEW(row.arc_review, row.clock_review_arc_c, row.clock_asign_arc)}</label>
+                cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review) : _GET_REVIEW(row.arc_review, row.clock_review_arc_c, row.clock_asign_arc)}</span>
             },
 
             /** 
 
         {
-            name: <label>ASIGNAR</label>,
-            omit: this.state.hide_ing && !(window.user.id == 1 || window.user.roleId == 3),
+            name: 'ASIGNAR',
+            omit: state.hide_ing && !(window.user.id == 1 || window.user.roleId == 3),
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             center: true,
             minWidth: '70px',
-            cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? <div class="form-check">
-                <input class="form-check-input" type="checkbox" defaultChecked={this.state['asign_eng_' + row.id]} onChange={(e) => this.setState({ ['asign_eng_' + row.id]: e.target.checked })} />
+            cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? <div className="form-check">
+                <input className="form-check-input" type="checkbox" defaultChecked={state['asign_eng_' + row.id]} onChange={(e) => setState({ ['asign_eng_' + row.id]: e.target.checked })} />
             </div> : ""
         },
         {
-            name: <label>#</label>,
-            omit: this.state.hide_ing,
+            name: '#',
+            omit: state.hide_ing,
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             minWidth: '70px',
-            cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.clock_asign_eng ? row.clock_asign_eng.split(';').length : row.eng_version : ""}</label>
+            cell: row => <span className="text-sm">{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.clock_asign_eng ? row.clock_asign_eng.split(';').length : row.eng_version : ""}</span>
         },
       
         {
-            name: <label>EST. FECHA ASIG.</label>,
+            name: 'EST. FECHA ASIG.',
             selector: row => _GET_ASIGN_DATE(row.asign_eng_date, 12, row),
             sortable: true,
             filterable: true,
@@ -1534,11 +1520,11 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             center: true,
-            omit: this.state.hide_ing,
-            cell: row => <label>{_GET_ASIGN_DATE(row.asign_eng_date, 12, row)}</label>
+            omit: state.hide_ing,
+            cell: row => <span className="text-sm">{_GET_ASIGN_DATE(row.asign_eng_date, 12, row)}</span>
         },
         {
-            name: <label>EST. FECHA MAX.</label>,
+            name: 'EST. FECHA MAX.',
             selector: row => dateParser_finalDate(_GET_ASIGN_DATE(row.asign_eng_date, 12, row), _fun_0_type_days[row.type] ?? 5),
             sortable: true,
             filterable: true,
@@ -1546,30 +1532,30 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             center: true,
-            omit: this.state.hide_ing,
+            omit: state.hide_ing,
             cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                 ? <label>{
                     _GET_ASIGN_DATE(row.asign_eng_date, 12, row)
-                        ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_eng_date, 12, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_eng_date, 12, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                        ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_eng_date, 12, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_eng_date, 12, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                         : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
                 }
                     {_GET_ASIGN_DATE(row.asign_eng_date, 12, row) && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''}</label>
                 : ''
         },
         {
-            name: <label>EST. FECHA REV.</label>,
-            selector: 'eng_date',
+            name: 'EST. FECHA REV.',
+            selector: row => row.eng_date,
             sortable: true,
             filterable: true,
             minWidth: '150px',
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             center: true,
-            omit: this.state.hide_ing,
-            cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.eng_date : ""}</label>
+            omit: state.hide_ing,
+            cell: row => <span className="text-sm">{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.eng_date : ""}</span>
         },
         {
-                name: <label>DIAS</label>,
+                name: 'DIAS',
                 selector: row => dateParser_dateDiff(row.eng_date, _GET_ASIGN_DATE(row.asign_eng_date, 12, row), true),
                 sortable: true,
                 filterable: true,
@@ -1577,7 +1563,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cellStyle: CellStylesENG,
                 center: true,
                 minWidth: '70px',
-                omit: this.state.hide_ing,
+                omit: state.hide_ing,
                 cell: row => {
                     if (!_REGEX_MATCH_PH(_PARSE_FUN_1(row))) {
                         let diff = dateParser_dateDiff(row.eng_date, _GET_ASIGN_DATE(row.asign_eng_date, 12, row), true)
@@ -1591,16 +1577,16 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
 
             {
-                name: <label>EST. PROF. ASIG.</label>,
-                selector: 'asign_eng_worker_name',
+                name: 'EST. PROF. ASIG.',
+                selector: row => row.asign_eng_worker_name,
                 sortable: true,
                 filterable: true,
                 minWidth: '200px',
                 conditionalCellStyles: conditionalCellStylesENG,
                 cellStyle: CellStylesENG,
                 center: true,
-                omit: this.state.hide_ing,
-                cell: row => this.state['asign_eng_' + row.id]
+                omit: state.hide_ing,
+                cell: row => state['asign_eng_' + row.id]
                     ? <>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                         ? <>{_WORKERS_SELECT(
                             row.asign_eng_worker_id,
@@ -1614,25 +1600,23 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
 */
             {
-                name: <label>EST. REVISION</label>,
-                selector: '',
+                name: 'EST. REVISION',
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
                 conditionalCellStyles: conditionalCellStylesENG,
                 cellStyle: CellStylesENG,
                 center: true,
-                omit: this.state.hide_ing,
+                omit: state.hide_ing,
                 cvsCB: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? GET_REVIEW_ENG([row.eng_review, row.eng_review_2], row.clock_review_eng_c, row.clock_asign_eng, true) : 'NA',
                 cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ?
                     <label>{GET_REVIEW_ENG([row.eng_review, row.eng_review_2], row.clock_review_eng_c, row.clock_asign_eng)}</label>
                     : ""
             },
 
-
             {
                 name: <label className="text-center text-primary fw-bold">FECHA ACTA P.1</label>,
-                selector: 'clock_record_p1',
+                selector: row => row.clock_record_p1,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1640,58 +1624,58 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => <label className="text-primary fw-bold">{row.clock_record_p1}</label>
             },
             {
-                name: <label>ACTA P.1 REV.</label>,
-                selector: 'rec_review',
+                name: 'ACTA P.1 REV.',
+                selector: row => row.rec_review,
                 sortable: true,
                 filterable: true,
                 center: true,
                 cvsCB: row => _GET_REVIEW_RECORD(row.rec_review, true),
-                cell: row => <label>{_GET_REVIEW_RECORD(row.rec_review)}</label>
+                cell: row => <span className="text-sm">{_GET_REVIEW_RECORD(row.rec_review)}</span>
             },
             /*{
-                name: <label className="text-center">¿REQ. CORRECIONES?</label>,
-                selector: 'rec_review',
+                name: '¿REQ. CORRECIONES?',
+                selector: row => row.rec_review,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.rec_review == 0 ? <label className="fw-bold text-danger">SI</label> : row.rec_review == 1 ? <label className="fw-bold text-success">NO</label> : ""}</label>
+                cell: row => <span className="text-sm">{row.rec_review == 0 ? <label className="fw-bold text-danger">SI</label> : row.rec_review == 1 ? <label className="fw-bold text-success">NO</label> : ""}</span>
             },*/
             {
-                name: <label className="text-center">FECHA NOTIFICACIÓN</label>,
+                name: 'FECHA NOTIFICACIÓN',
                 selector: row => row.clock_not_1 || row.clock_not_2 || '',
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <label>{row.clock_not_1 || row.clock_not_2 || ''}</label>
+                cell: row => <span className="text-sm">{row.clock_not_1 || row.clock_not_2 || ''}</span>
             },
             {
-                name: <label className="text-center">FECHA LIMITE ENTREGA</label>,
+                name: 'FECHA LIMITE ENTREGA',
                 selector: row => dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 30),
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 30)}</label>
+                cell: row => <span className="text-sm">{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 30)}</span>
             },
             {
-                name: <label className="text-center">FECHA LIMITE + PRÓRROGA</label>,
+                name: 'FECHA LIMITE + PRÓRROGA',
                 selector: row => dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 45),
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 45)}</label>
+                cell: row => <span className="text-sm">{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 45)}</span>
             },
             {
-                name: <label className="text-center">FECHA ENTREGA CORRECIONES</label>,
-                selector: 'clock_corrections',
+                name: 'FECHA ENTREGA CORRECIONES',
+                selector: row => row.clock_corrections,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.clock_corrections}</label>
+                cell: row => <span className="text-sm">{row.clock_corrections}</span>
             },
             {
                 name: <label className="text-center text-primary fw-bold">FECHA ACTA P.2</label>,
-                selector: 'clock_record_p2',
+                selector: row => row.clock_record_p2,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1699,53 +1683,53 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => <label className="text-primary fw-bold">{row.clock_record_p2}</label>
             },
             {
-                name: <label>ACTA P.2 REV.</label>,
-                selector: 'rec_review_2',
+                name: 'ACTA P.2 REV.',
+                selector: row => row.rec_review_2,
                 sortable: true,
                 filterable: true,
                 center: true,
                 cvsCB: row => _GET_REVIEW_RECORD(row.rec_review_2, true),
-                cell: row => <label>{_GET_REVIEW_RECORD(row.rec_review_2)}</label>
+                cell: row => <span className="text-sm">{_GET_REVIEW_RECORD(row.rec_review_2)}</span>
             },
             {
-                name: <label className="text-center">CARTA VIABILIDAD</label>,
-                selector: 'clock_pay2',
+                name: 'CARTA VIABILIDAD',
+                selector: row => row.clock_pay2,
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '120px',
-                cell: row => <label>{row.clock_pay2}</label>
+                cell: row => <span className="text-sm">{row.clock_pay2}</span>
             },
             {
-                name: <label className="text-center">RESOLUCIÓN LIMITE</label>,
+                name: 'RESOLUCIÓN LIMITE',
                 selector: row => dateParser_finalDate(row.clock_pay_69 ?? false, 5),
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '120px',
-                cell: row => <label>{dateParser_finalDate(row.clock_pay_69 ?? false, 5)}</label>
+                cell: row => <span className="text-sm">{dateParser_finalDate(row.clock_pay_69 ?? false, 5)}</span>
             },
             {
-                name: <label className="text-center">RESOLUCIÓN</label>,
-                selector: 'clock_resolution',
+                name: 'RESOLUCIÓN',
+                selector: row => row.clock_resolution,
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '120px',
-                cell: row => <label>{row.clock_pay_69}</label>
+                cell: row => <span className="text-sm">{row.clock_pay_69}</span>
             },
             {
-                name: <label className="text-center">LICENCIA LIMITE</label>,
+                name: 'LICENCIA LIMITE',
                 selector: row => dateParser_finalDate(row.clock_not_1_res || row.clock_not_2_res || false, 10),
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '120px',
-                cell: row => <label>{dateParser_finalDate(row.clock_not_1_res || row.clock_not_2_res || false, 10)}</label>
+                cell: row => <span className="text-sm">{dateParser_finalDate(row.clock_not_1_res || row.clock_not_2_res || false, 10)}</span>
             },
             {
                 name: <label className="text-center fw-bold text-primary">FECHA LICENCIA</label>,
-                selector: 'clock_license',
+                selector: row => row.clock_license,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1754,7 +1738,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center fw-bold">CONSECUTIVO LICENCIA</label>,
-                selector: 'exp_id',
+                selector: row => row.exp_id,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1762,7 +1746,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center fw-bold">ARCHIVO</label>,
-                selector: 'clock_archive',
+                selector: row => row.clock_archive,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1771,23 +1755,30 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         ]
         const columns_negative = [
             {
-                name: <label>No. RADICACION</label>,
-                selector: 'id_public',
+                name: 'No. RADICACION',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className="text-sm">{row.id_public}</span>
             },
             {
-                name: <label>INFO</label>,
+                name: 'INFO',
                 button: true,
                 ignoreCSV: true,
-                cell: row => <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                    {_MODULE_BTN_POP({ ...row, id: row.id_sistem })}
-                </MDBPopover>
+                cell: row => <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                            <Icon name="MoreHorizontal" size={14} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-52">
+                        {_MODULE_BTN_POP({ ...row, id: row.id_sistem })}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             },
             {
-                name: <label>ACTUACION</label>,
+                name: 'ACTUACION',
                 selector: row => _PARSE_FUN_1(row),
                 sortable: true,
                 filterable: true,
@@ -1796,38 +1787,38 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => <label>{row.usos == 'A' ? <u>{_PARSE_FUN_1(row)}</u> : _PARSE_FUN_1(row)}</label>
             },
             {
-                name: <label>CAUSA DESISTIMIENTO</label>,
+                name: 'CAUSA DESISTIMIENTO',
                 selector: row => row.clock_cause,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{_GET_PROCESS_CONTEXT(row.clock_cause)}</label>
+                cell: row => <span className="text-sm">{_GET_PROCESS_CONTEXT(row.clock_cause)}</span>
             },
             {
-                name: <label>ESTADO ACTUAL</label>,
+                name: 'ESTADO ACTUAL',
                 selector: row => _GET_CURRENT_STEP(row),
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{_GET_CURRENT_STEP(row)}</label>
+                cell: row => <span className="text-sm">{_GET_CURRENT_STEP(row)}</span>
             },
             {
-                name: <label>SIGUIENTE ESTADO</label>,
+                name: 'SIGUIENTE ESTADO',
                 selector: row => row.clock_5,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{_GET_NEXT_STEP_STRING(row)}</label>
+                cell: row => <span className="text-sm">{_GET_NEXT_STEP_STRING(row)}</span>
             },
             {
-                name: <label>FECHA LIMITE</label>,
+                name: 'FECHA LIMITE',
                 selector: row => _GET_TIME_FOR_NEGATIVE_PROCESS(row),
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{_GET_TIME_FOR_NEGATIVE_PROCESS(row)}</label>
+                cell: row => <span className="text-sm">{_GET_TIME_FOR_NEGATIVE_PROCESS(row)}</span>
             },
             {
-                name: <label>TIEMPO RESTANTE</label>,
+                name: 'TIEMPO RESTANTE',
                 selector: row => _GET_TIME_FOR_NEGATIVE_PROCESS(row),
                 sortable: true,
                 filterable: true,
@@ -1836,50 +1827,50 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     : ""}</label>
             },
             {
-                name: <label>SUJETO</label>,
+                name: 'SUJETO',
                 minWidth: '150px',
                 cvsCB: row => _GET_SUBJECT(row, true),
-                cell: row => <label>{_GET_SUBJECT(row)}</label>
+                cell: row => <span className="text-sm">{_GET_SUBJECT(row)}</span>
             },
             {
-                name: <label>{defaultProcess['-5'].name}</label>,
+                name: "{defaultProcess['-5'].name}",
                 selector: row => row.clock_5,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_5)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_5)}</span>
             },
             {
-                name: <label>{defaultProcess['-6'].name}</label>,
+                name: "{defaultProcess['-6'].name}",
                 selector: row => row.clock_6,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_6)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_6)}</span>
             },
             {
-                name: <label>{defaultProcess['-7'].name}</label>,
+                name: "{defaultProcess['-7'].name}",
                 selector: row => row.clock_7,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_7)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_7)}</span>
             },
             {
-                name: <label>{defaultProcess['-8'].name}</label>,
+                name: "{defaultProcess['-8'].name}",
                 selector: row => row.clock_8,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_8)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_8)}</span>
             },
             {
-                name: <label>{defaultProcess['-10'].name}</label>,
+                name: "{defaultProcess['-10'].name}",
                 selector: row => row.clock_10,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_10)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_10)}</span>
             },
             {
                 name: <label className="text-danger">{defaultProcess['-11'].name}</label>,
@@ -1890,20 +1881,20 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => <label className="text-danger">{dateParser(row.clock_11)}</label>
             },
             {
-                name: <label>{defaultProcess['-17'].name}</label>,
+                name: "{defaultProcess['-17'].name}",
                 selector: row => row.clock_17,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_17)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_17)}</span>
             },
             {
-                name: <label>{defaultProcess['-18'].name}</label>,
+                name: "{defaultProcess['-18'].name}",
                 selector: row => row.clock_18,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_18)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_18)}</span>
             },
             {
                 name: <label className="text-danger">{defaultProcess['-19'].name}</label>,
@@ -1914,28 +1905,28 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cell: row => <label className="text-danger">{dateParser(row.clock_19)}</label>
             },
             {
-                name: <label>{defaultProcess['-20'].name}</label>,
+                name: "{defaultProcess['-20'].name}",
                 selector: row => row.clock_20,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_20)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_20)}</span>
             },
             {
-                name: <label>{defaultProcess['-21'].name}</label>,
+                name: "{defaultProcess['-21'].name}",
                 selector: row => row.clock_21,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_21)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_21)}</span>
             },
             {
-                name: <label>{defaultProcess['-22'].name}</label>,
+                name: "{defaultProcess['-22'].name}",
                 selector: row => row.clock_22,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_22)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_22)}</span>
             },
             {
                 name: <label className="text-success">{defaultProcess['-30'].name}</label>,
@@ -1943,20 +1934,20 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_30)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_30)}</span>
             },
 
         ]
-        const handleFillClick = (state) => {
-            if (state === this.state.fillActive) {
+        const handleFillClick = (value) => {
+            if (value === state.fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setState({ fillActive: value });
         };
 
         // DATA GETTER
         let _GET_WORKER_BY_ID = (_ID) => {
-            let _workers = this.state.worker_list;
+            let _workers = state.worker_list;
             for (var i = 0; i < _workers.length; i++) {
                 if (_workers[i].id == _ID) return `${_workers[i].name} ${_workers[i].surname}`
             }
@@ -1965,10 +1956,10 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         //DATA CONVERTERS
         let _GET_REVIEW = (_REVIEW, _REVIEW_CLOCK, REVIEWS, _SIMPLE) => {
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-                '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} style={{ fontSize: '150%' }} /></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
 
@@ -1992,10 +1983,10 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         }
         let _GET_REVIEW_RECORD = (_REVIEW, _SIMPLE) => {
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-                '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} style={{ fontSize: '150%' }} /></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
             return _SIMPLE ? res_simple[_REVIEW] ?? res_simple['-1'] : res[_REVIEW] ?? res['-1']
@@ -2003,10 +1994,10 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         let GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS, _SIMPLE) => {
             let revies = _REVIEW ?? [-1, -1]
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle"></i></label>,
-                '0': <label className="fw-bold text-danger  me-1"><i class="far fa-times-circle"></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle"></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle"></i></label>,
+                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} /></label>,
+                '0': <label className="fw-bold text-danger  me-1"><Icon name="times-circle" size={16} /></label>,
+                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} /></label>,
+                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} /></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
             if (REVIEWS) {
@@ -2123,8 +2114,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             return nextStepString.join(' ó ')
         }
         let _SHOW_NEGATIVE = (value) => {
-            if (value) this.setState({ data_negative: this.state.data_negative_full })
-            else this.setState({ data_negative: this.state.data_negative_simple })
+            if (value) setState({ data_negative: state.data_negative_full })
+            else setState({ data_negative: state.data_negative_simple })
         }
         let _GET_TIME_FOR_NEGATIVE_PROCESS = (row) => {
             let time = 0
@@ -2196,166 +2187,210 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             return ""
         }
 
-
         let _MODULE_BTN_POP = (row) => {
             const isOA = regexChecker_isOA_2(row);
             let rules = row.rules ? row.rules.split(';') : [];
-            return <MDBPopoverBody>
-                <div class="list-group list-group-flush">
-                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'general', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'clock', 'macro')} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'archive', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
-                    {row.state != 101 && row.state <= 200 ?
-                        <>
-                            <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'edit', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                            <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'check', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
-                            {regexChecker_isPh(row, true) ?
-                                <>
-                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_ph', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
-                                </>
-                                :
-                                <>
-                                    {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'alert', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
-                                    </> : ''}
-                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_law', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
-                                    {!isOA ? <>
-                                        <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_arc', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_eng', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                        <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_review', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
-                                    </> : ''}
-                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
-                                </>}
-                        </> : <></>}
-                </div>
-            </MDBPopoverBody>
+            return <>
+                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'general', 'macro')}>
+                    <Icon name="FolderOpen" size={14} className="text-primary" /> Detalles
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'clock', 'macro')}>
+                    <Icon name="Clock" size={14} className="text-muted-foreground" /> Tiempos
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'archive', 'macro')}>
+                    <Icon name="Archive" size={14} className="text-muted-foreground" /> Documentos
+                </DropdownMenuItem>
+                {row.state != 101 && row.state <= 200 ?
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'edit', 'macro')}>
+                            <Icon name="FolderOpen" size={14} className="text-muted-foreground" /> Actualizar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'check', 'macro')}>
+                            <Icon name="CheckSquare" size={14} className="text-warning" /> Checkeo
+                        </DropdownMenuItem>
+                        {regexChecker_isPh(row, true) ?
+                            <>
+                                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_ph', 'macro')}>
+                                    <Icon name="PencilRuler" size={14} className="text-warning" /> Inf. P.H.
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')}>
+                                    <Icon name="FileText" size={14} className="text-warning" /> Expedición
+                                </DropdownMenuItem>
+                            </>
+                            :
+                            <>
+                                {!isOA && rules[0] != 1 ? <>
+                                    <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'alert', 'macro')}>
+                                        <Icon name="Megaphone" size={14} className="text-warning" /> Publicidad
+                                    </DropdownMenuItem>
+                                </> : ''}
+                                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_law', 'macro')}>
+                                    <Icon name="Scale" size={14} className="text-warning" /> Inf. Jurídico
+                                </DropdownMenuItem>
+                                {!isOA ? <>
+                                    <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')}>
+                                        <Icon name="Building2" size={14} className="text-warning" /> Inf. Arquitectónico
+                                    </DropdownMenuItem>
+                                    {rules[1] != 1 ? <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')}>
+                                        <Icon name="Cog" size={14} className="text-warning" /> Inf. Estructural
+                                    </DropdownMenuItem> : ''}
+                                    <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')}>
+                                        <Icon name="FileCheck" size={14} className="text-warning" /> Acta
+                                    </DropdownMenuItem>
+                                </> : ''}
+                                <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')}>
+                                    <Icon name="FileText" size={14} className="text-warning" /> Expedición
+                                </DropdownMenuItem>
+                            </>}
+                    </> : null}
+            </>;
         }
         // COMPONENT JSX
         let _COMPONENT_CHARTS = () => {
             return <div>
                 <div className="row my-1">
                     <div className="col text-center">
-                        <label className="app-p fw-bold text-uppercase"> GRAFICAS DE SOLICITUDES ({this.state.data_macro_filter.length})</label>
+                        <label className="app-p fw-bold"> GRAFICAS DE SOLICITUDES ({state.data_macro_filter.length})</label>
                     </div>
                 </div>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
+                <Collapsible className="bg-primary/10 py-0 my-1" trigger={<Button variant="outline" size="sm" className="my-1 py-0">
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i class="far fa-chart-bar"></i> GRAFICAS GENERALES
+                        <Icon name="chart-bar" size={16} /> GRAFICAS GENERALES
                     </label>
-                </MDBBtn>}>
+                </Button>}>
                     <div>
                         <div className="row">
                             <div className="col-4">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_STATE
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                             <div className="col-4">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_TYPE
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                             <div className="col-4">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_CATEGORY
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_TYPE2
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    itemsOA={this.state.data_oa}
-                                    itemsNegative={this.state.data_negative_simple}
-                                    itemsNegativeFull={this.state.data_negative_full}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    itemsOA={state.data_oa}
+                                    itemsNegative={state.data_negative_simple}
+                                    itemsNegativeFull={state.data_negative_full}
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                         </div>
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
+                <Collapsible className="bg-primary/10 py-0 my-1" trigger={<Button variant="outline" size="sm" className="my-1 py-0">
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i class="far fa-chart-bar"></i> GRAFICA DE ASIGNACION
+                        <Icon name="chart-bar" size={16} /> GRAFICA DE ASIGNACION
                     </label>
-                </MDBBtn>}>
+                </Button>}>
                     <div>
                         <div className="row">
                             {/**
                          * 
                          * <FUN_CHART_WORKER_REPORT
                             translation={translation} swaMsg={swaMsg} globals={globals}
-                            items={this.state.data_macro_filter} workers={this.state.worker_list}
-                            _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                            items={state.data_macro_filter} workers={state.worker_list}
+                            _UPDATE_FILTERS={_UPDATE_FILTERS} />
                          * 
                          */
                             }
 
                             <div className="col">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_WORKER
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter} workers={this.state.worker_list}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter} workers={state.worker_list}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                         </div>
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
+                <Collapsible className="bg-primary/10 py-0 my-1" trigger={<Button variant="outline" size="sm" className="my-1 py-0">
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i class="far fa-chart-bar"></i> GRAFICAS DE EVALUACION
+                        <Icon name="chart-bar" size={16} /> GRAFICAS DE EVALUACION
                     </label>
-                </MDBBtn>}>
+                </Button>}>
                     <div>
                         <div className="row">
                             <div className="col-4">
 
+                                <ChartErrorBoundary>
                                 <FUN_CHART_PAYMENT_1
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                             <div className="col-4">
 
+                                <ChartErrorBoundary>
                                 <FUN_CHART_LAW_R
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
 
+                                <ChartErrorBoundary>
                                 <FUN_CHART_NEGATIVE
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    itemsNegative={this.state.data_negative}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    itemsNegative={state.data_negative}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                             <div className="col-4">
 
+                                <ChartErrorBoundary>
                                 <FUN_CHART_RECORD_1
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                         </div>
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
+                <Collapsible className="bg-primary/10 py-0 my-1" trigger={<Button variant="outline" size="sm" className="my-1 py-0">
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i class="far fa-chart-bar"></i> GRAFICA DE LICENCIAS EXPEDIDAS
+                        <Icon name="chart-bar" size={16} /> GRAFICA DE LICENCIAS EXPEDIDAS
                     </label>
-                </MDBBtn>}>
+                </Button>}>
                     <div>
                         <div className="row">
+                            <ChartErrorBoundary>
                             <FUN_CHART_TIME
                                 translation={translation} swaMsg={swaMsg} globals={globals}
-                                items={this.state.data_include}
-                                _UPDATE_FILTERS_IDPUBIC={this._UPDATE_FILTERS_IDPUBIC} />
+                                items={state.data_include}
+                                _UPDATE_FILTERS_IDPUBIC={_UPDATE_FILTERS_IDPUBIC} />
+                            </ChartErrorBoundary>
                         </div>
                     </div>
                 </Collapsible>
@@ -2366,49 +2401,47 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             return <>
 
                 <div className="row">
-                    <ReactTagInput
-                        tags={this.state.tags}
-                        onChange={(newTags) => this._FILTER_LIST(newTags)}
+                    <TagInput
+                        tags={state.tags}
+                        onChange={(newTags) => _FILTER_LIST(newTags)}
                         placeholder="Filtros de lista..."
                         removeOnBackspace={true}
                     />
                 </div>
                 <div className="row">
-                    <div class="input-group my-1">
-                        <div class="input-group-text" style={{ backgroundColor: "lightGray" }}>
-                            <label>{`Numero de Solicitudes Filtradas: ${this.state.data_macro_filter.length}`} </label>
+                    <div className="input-group my-1">
+                        <div className="input-group-text" style={{ backgroundColor: "lightGray" }}>
+                            <label>{`Numero de Solicitudes Filtradas: ${state.data_macro_filter.length}`} </label>
                         </div>
-                        <div class="input-group-prepend">
-                            <button className="btn btn-secondary" onClick={() => this._FILTER_LIST([])}><i class="far fa-window-close"></i> LIMPIAR FILTROS</button>
+                        <div className="input-group-prepend">
+                            <Button variant="outline" size="sm" onClick={() => _FILTER_LIST([])}><Icon name="window-close" size={16} /> LIMPIAR FILTROS</Button>
                         </div>
-                        <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => this._UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
-                        <div class="input-group-prepend">
-                            <MDBBtn color='secondary' outline={this.state.includeEx} onClick={(e) => this.changeList(!this.state.includeEx)}><i class="fas fa-database"></i> {this.state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</MDBBtn>
+                        <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => _UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
+                        <div className="input-group-prepend">
+                            <Button variant={state.includeEx ? "outline" : "secondary"} size="sm" onClick={(e) => changeList(!state.includeEx)}><Icon name="database" size={16} /> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</Button>
                         </div>
                     </div>
                 </div>
             </>
         }
         let _PRIORITY_POP = (row) => {
-            return <MDBPopoverBody>
-                <MDBPopoverHeader>INDICE DE PRIORIDAD - {row.id_public}</MDBPopoverHeader>
-                <div>
-                    <div class="row border p-1"><label>ACTAS:  {_GET_REVIEW_RECORD(row.rec_review)} {_GET_REVIEW_RECORD(row.rec_review_2)}</label></div>
-                    <div class="row border p-1"><label>Estado: {_fun_0_state(row.state, true, row)}</label></div>
-                    <div class="row border p-1"><label>Categoria: {_fun_0_type[row.type]}</label></div>
-                    <div class="row border p-1"><label>Formula F(x) = c1 + (c2 - c3) + c4 + c5 + c6</label></div>
-                    <div class="row border p-1"><label>Limite de F(x) tiende a -INF</label></div>
-                    <div class="row border p-1">
-                        <div class="row p-1"><label> c1 :<label className='fw-bold'>{row.constants[0]} </label>  (LDF o INC)</label></div>
-                        <div class="row p-1"><label> c2 :<label className='fw-bold'>{row.constants[1]} </label>  (Tiempo de Categoia)</label></div>
-                        <div class="row p-1"><label> c3 :<label className={`fw-bold ${row.constants[3] > row.constants[1] ? 'text-danger' : ''}`}>{row.constants[3]} </label>  (Tiempo usado para revision)</label></div>
-                        <div class="row p-1"><label> c4 : <label className={`fw-bold ${row.constants[2] < 0 ? 'text-danger' : ''}`}>{row.constants[2]} </label> (Tiempo restante de correccion)</label></div>
-                        <div class="row p-1"><label> c5 : <label className='fw-bold'>{row.constants[4]} </label> (Tiempo de entrada de ultimo documento)</label></div>
-                        <div class="row p-1"><label> c6 : <label className='fw-bold'>{row.constants[5]} </label> (Inidice de asignacion)</label></div>
-                    </div>
-                    <div class="row border p-1"><label className='fw-bold'>{row.constants[0]} + ( {row.constants[1]}  -  {row.constants[3]}) + {row.constants[2]} +  {row.constants[4]} +  {row.constants[5]}  = {row.priority_index}</label></div>
+            return <div className="space-y-1 text-sm">
+                <p className="font-semibold text-base mb-2">Índice de Prioridad — {row.id_public}</p>
+                <div className="border rounded p-1"><label>ACTAS:  {_GET_REVIEW_RECORD(row.rec_review)} {_GET_REVIEW_RECORD(row.rec_review_2)}</label></div>
+                <div className="border rounded p-1"><label>Estado: {_fun_0_state(row.state, true, row)}</label></div>
+                <div className="border rounded p-1"><label>Categoría: {_fun_0_type[row.type]}</label></div>
+                <div className="border rounded p-1"><label>Fórmula F(x) = c1 + (c2 - c3) + c4 + c5 + c6</label></div>
+                <div className="border rounded p-1"><label>Límite de F(x) tiende a -INF</label></div>
+                <div className="border rounded p-1 space-y-0.5">
+                    <div><label> c1 :<span className='fw-bold'>{row.constants[0]} </span>  (LDF o INC)</label></div>
+                    <div><label> c2 :<span className='fw-bold'>{row.constants[1]} </span>  (Tiempo de Categoría)</label></div>
+                    <div><label> c3 :<span className={`fw-bold ${row.constants[3] > row.constants[1] ? 'text-danger' : ''}`}>{row.constants[3]} </span>  (Tiempo usado para revisión)</label></div>
+                    <div><label> c4 : <span className={`fw-bold ${row.constants[2] < 0 ? 'text-danger' : ''}`}>{row.constants[2]} </span> (Tiempo restante de corrección)</label></div>
+                    <div><label> c5 : <span className='fw-bold'>{row.constants[4]} </span> (Tiempo de entrada de último documento)</label></div>
+                    <div><label> c6 : <span className='fw-bold'>{row.constants[5]} </span> (Índice de asignación)</label></div>
                 </div>
-            </MDBPopoverBody>
+                <div className="border rounded p-1"><label className='fw-bold'>{row.constants[0]} + ( {row.constants[1]}  -  {row.constants[3]}) + {row.constants[2]} +  {row.constants[4]} +  {row.constants[5]}  = {row.priority_index}</label></div>
+            </div>
         }
 
         // APIS & FUNCTIONS
@@ -2416,13 +2449,13 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
         let _GET_OLDEST_DATE = (DATES, inTime) => {
             let dates = DATES ? DATES.split(';') : [];
-            let oldestDate = moment();
+            let oldestDate = dayjs();
             dates.forEach((element) => {
-                if (!moment(element).isSameOrAfter(oldestDate)) {
+                if (!dayjs(element).isSameOrAfter(oldestDate)) {
                     oldestDate = element;
                 }
             });
-            if (inTime) return dateParser_timePassed(moment(oldestDate).format('YYYY-MM-DD'))
+            if (inTime) return dateParser_timePassed(dayjs(oldestDate).format('YYYY-MM-DD'))
             else return oldestDate;
 
         }
@@ -2430,7 +2463,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             var rows = [];
             let extraColumns = [
                 {
-                    name: <label>JUR. ASIGN OVBSERVACIONES</label>,
+                    name: 'JUR. ASIGN OVBSERVACIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2442,7 +2475,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>JUR. ASIGN TEC. 1</label>,
+                    name: 'JUR. ASIGN TEC. 1',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2454,7 +2487,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>JUR. ASIGN TEC. 2</label>,
+                    name: 'JUR. ASIGN TEC. 2',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2466,7 +2499,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>JUR. ASIGN COREECIONES</label>,
+                    name: 'JUR. ASIGN COREECIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return row.asign_ph_law_date || '';
@@ -2478,7 +2511,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>JUR. REVISION OVBSERVACIONES</label>,
+                    name: 'JUR. REVISION OVBSERVACIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2490,7 +2523,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>JUR. REVISION TEC. 1</label>,
+                    name: 'JUR. REVISION TEC. 1',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2502,7 +2535,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>JUR. REVISION TEC. 2</label>,
+                    name: 'JUR. REVISION TEC. 2',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2514,7 +2547,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>JUR. REVISION COREECIONES</label>,
+                    name: 'JUR. REVISION COREECIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return row.ph_date_law || '';
@@ -2526,9 +2559,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
 
-
                 {
-                    name: <label>ARQ. ASIGN OVBSERVACIONES</label>,
+                    name: 'ARQ. ASIGN OVBSERVACIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2540,7 +2572,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>ARQ. ASIGN TEC. 1</label>,
+                    name: 'ARQ. ASIGN TEC. 1',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2552,7 +2584,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>ARQ. ASIGN TEC. 2</label>,
+                    name: 'ARQ. ASIGN TEC. 2',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2564,7 +2596,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>ARQ. ASIGN COREECIONES</label>,
+                    name: 'ARQ. ASIGN COREECIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return row.ph_date_arc || '';
@@ -2576,7 +2608,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>ARQ. REVISION OVBSERVACIONES</label>,
+                    name: 'ARQ. REVISION OVBSERVACIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2588,7 +2620,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>ARQ. REVISION TEC. 1</label>,
+                    name: 'ARQ. REVISION TEC. 1',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2600,7 +2632,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>ARQ. REVISION TEC. 2</label>,
+                    name: 'ARQ. REVISION TEC. 2',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2612,7 +2644,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>ARQ. REVISION COREECIONES</label>,
+                    name: 'ARQ. REVISION COREECIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return row.ph_date_arc || '';
@@ -2625,28 +2657,28 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 },
 
                 {
-                    name: <label>EST. ASIGN OVBSERVACIONES</label>,
+                    name: 'EST. ASIGN OVBSERVACIONES',
                     cvsCB: row => {
                         let date = row.clock_asign_eng ? row.clock_asign_eng.split(';')[0] : false
                         return date || row.asign_eng_date || '';
                     },
                 },
                 {
-                    name: <label>EST. ASIGN TEC. 1</label>,
+                    name: 'EST. ASIGN TEC. 1',
                     cvsCB: row => {
                         let date = row.clock_asign_eng ? row.clock_asign_eng.split(';')[1] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>EST. ASIGN TEC. 2</label>,
+                    name: 'EST. ASIGN TEC. 2',
                     cvsCB: row => {
                         let date = row.clock_asign_eng ? row.clock_asign_eng.split(';')[2] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>EST. ASIGN COREECIONES</label>,
+                    name: 'EST. ASIGN COREECIONES',
                     cvsCB: row => {
                         let date = row.clock_asign_arc ? row.clock_asign_arc.split(';')[3] : false
                         return date || '';
@@ -2654,65 +2686,65 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     },
                 },
                 {
-                    name: <label>EST. REVISION OVBSERVACIONES</label>,
+                    name: 'EST. REVISION OVBSERVACIONES',
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[0] : false
                         return date || row.eng_date || '';
                     },
                 },
                 {
-                    name: <label>EST. REVISION TEC. 1</label>,
+                    name: 'EST. REVISION TEC. 1',
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[1] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>EST. REVISION TEC. 2</label>,
+                    name: 'EST. REVISION TEC. 2',
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[2] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>EST. REVISION COREECIONES</label>,
+                    name: 'EST. REVISION COREECIONES',
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[3] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>DIRECCION PREDIO</label>,
+                    name: 'DIRECCION PREDIO',
                     cvsCB: row => {
                         return row.direccion ?? ''
                     },
                 },
                 {
-                    name: <label>MATRICULA PREDIO</label>,
+                    name: 'MATRICULA PREDIO',
                     cvsCB: row => {
                         return row.matricula ?? ''
                     },
                 },
                 {
-                    name: <label>PREDIAL PREDIO</label>,
+                    name: 'PREDIAL PREDIO',
                     cvsCB: row => {
                         return row.catastral ?? row.catastral_2 ?? ''
                     },
                 },
                 {
-                    name: <label>RESPONSABLE NOMBRE</label>,
+                    name: 'RESPONSABLE NOMBRE',
                     cvsCB: row => {
                         return (row.fun_53s_name ?? '') + (row.fun_53s_surname ?? '')
                     },
                 },
                 {
-                    name: <label>RESPONSABLE IDENTIFICACIÓN</label>,
+                    name: 'RESPONSABLE IDENTIFICACIÓN',
                     cvsCB: row => {
                         return (row.fun_53s_id_number ?? '')
                     },
                 },
                 {
-                    name: <label>RESPONSABLE CALIDAD</label>,
+                    name: 'RESPONSABLE CALIDAD',
                     cvsCB: row => {
                         return (row.fun_53s_role ?? '')
                     },
@@ -2720,7 +2752,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             ]
 
             let _columns = [...columns, ...extraColumns]
-            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return typeof c.name === 'string' ? c.name : (c.name?.props?.children ?? '') })
             rows = _data.map(d =>
                 _columns.filter(c => c.ignoreCSV == undefined).map(c => {
                     if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')
@@ -2733,7 +2765,6 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
             let csvContent = "data:text/csv;charset=utf-8,"
                 + rows.map(e => e.join(";")).join("\n");
-
 
             var encodedUri = encodeURI(csvContent);
             const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
@@ -2748,7 +2779,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         let generateCVSNegative = (_data, _name) => {
             var rows = [];
             let _columns = [...columns_negative]
-            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return typeof c.name === 'string' ? c.name : (c.name?.props?.children ?? '') })
             rows = _data.map(d =>
                 _columns.filter(c => c.ignoreCSV == undefined).map(c => {
                     if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')
@@ -2761,7 +2792,6 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
             let csvContent = "data:text/csv;charset=utf-8,"
                 + rows.map(e => e.join(";")).join("\n");
-
 
             var encodedUri = encodeURI(csvContent);
             const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
@@ -2779,28 +2809,57 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 {_COMPONENT_CHARTS()}
                 {_COMPONENT_FILTER()}
 
-                <MDBTabs fill className='m-0 border' pills>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('1')} active={this.state.fillActive === '1'}>
-                            <label className="upper-case">GENERAL ({this.state.data_macro_filter.length})</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('2')} active={this.state.fillActive === '2'}>
-                            <label className="upper-case">OTRAS ACTUACIONES ({this.state.data_oa.length})</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-1')} active={this.state.fillActive === '-1'}>
-                            <label className="upper-case text-danger">DESISTIMIENTOS ({this.state.data_negative.length})</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
+                <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                    <button
+                        role="tab"
+                        aria-selected={state.fillActive === '1'}
+                        onClick={() => handleFillClick('1')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            state.fillActive === '1'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="LayoutList" size={14} />
+                        General
+                        <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{state.data_macro_filter.length}</Badge>
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={state.fillActive === '2'}
+                        onClick={() => handleFillClick('2')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            state.fillActive === '2'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="FileStack" size={14} />
+                        Otras Actuaciones
+                        <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{state.data_oa.length}</Badge>
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={state.fillActive === '-1'}
+                        onClick={() => handleFillClick('-1')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            state.fillActive === '-1'
+                                ? 'border-b-destructive text-destructive'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="XCircle" size={14} />
+                        Desistimientos
+                        <Badge variant="destructive" className="ml-1 text-[10px] px-1.5 py-0">{state.data_negative.length}</Badge>
+                    </button>
+                </div>
 
-                </MDBTabs>
+                <div>
 
-                <MDBTabsContent>
-
-                    <MDBTabsPane show={this.state.fillActive === '1'}>
+                    <TabPane show={state.fillActive === '1'}>
                         <div className="row">
 
                             <DataTable
@@ -2808,7 +2867,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
                                 striped="true"
                                 columns={columns}
-                                data={(this.state.data_macro_filter)}
+                                data={(state.data_macro_filter)}
                                 highlightOnHover
                                 pagination
                                 paginationPerPage={30}
@@ -2816,10 +2875,10 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                 className="data-table-component"
                                 title={
-                                    <div class="d-flex justify-content-between">
+                                    <div className="d-flex justify-content-between">
                                         <div><h5>LICENCIAS URBANISTICAS</h5></div>
-                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.data_macro_filter) }}
-                                        ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                        <div><Button variant="outline" size="sm" onClick={() => { generateCVS(state.data_macro_filter) }}
+                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
                                     </div>
                                 }
                                 dense
@@ -2836,14 +2895,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 //expandableRowDisabled={row => row.disabled}
                                 defaultSortFieldId={1}
                                 defaultSortAsc={false}
-                                onRowClicked={(e) => this.props.setSelectedRow(e.id)}
+                                onRowClicked={(e) => setSelectedRow(e.id)}
                             //onRowDoubleClicked={(row, event) => console.log(row, event)}
                             />
 
                         </div>
-                    </MDBTabsPane>
+                    </TabPane>
 
-                    <MDBTabsPane show={this.state.fillActive === '2'}>
+                    <TabPane show={state.fillActive === '2'}>
                         <div className="row">
 
                             <DataTable
@@ -2851,7 +2910,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
                                 striped="true"
                                 columns={columns}
-                                data={this.state.data_oa}
+                                data={state.data_oa}
                                 highlightOnHover
                                 pagination
                                 paginationPerPage={30}
@@ -2860,10 +2919,10 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 className="data-table-component"
                                 dense
                                 title={
-                                    <div class="d-flex justify-content-between">
+                                    <div className="d-flex justify-content-between">
                                         <div><h5>OTRAS ACTUACIONES</h5></div>
-                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.data_oa, "OTRAS ACTUACIONES") }}
-                                        ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                        <div><Button variant="outline" size="sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
+                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
                                     </div>
                                 }
                                 progressPending={!load}
@@ -2878,21 +2937,21 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 //expandableRowDisabled={row => row.disabled}
                                 defaultSortFieldId={1}
                                 defaultSortAsc={false}
-                                onRowClicked={(e) => this.props.setSelectedRow(e.id)}
+                                onRowClicked={(e) => setSelectedRow(e.id)}
                             //onRowDoubleClicked={(row, event) => console.log(row, event)}
                             />
 
                         </div>
-                    </MDBTabsPane>
+                    </TabPane>
 
-                    <MDBTabsPane show={this.state.fillActive === '-1'}>
+                    <TabPane show={state.fillActive === '-1'}>
                         <div className="row">
                             <div className="col-2">
-                                <div class="input-group mb-3">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" type="checkbox" onChange={(e) => _SHOW_NEGATIVE(e.target.checked)} />
+                                <div className="input-group mb-3">
+                                    <div className="input-group-text">
+                                        <input className="form-check-input mt-0" type="checkbox" onChange={(e) => _SHOW_NEGATIVE(e.target.checked)} />
                                     </div>
-                                    <input type="text" class="form-control" disabled value="Mostrar Finalizados" />
+                                    <input type="text" className="form-control" disabled value="Mostrar Finalizados" />
                                 </div>
                             </div>
                         </div>
@@ -2904,7 +2963,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                     noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
                                     striped="true"
                                     columns={columns_negative}
-                                    data={this.state.data_negative}
+                                    data={state.data_negative}
                                     highlightOnHover
                                     pagination
                                     paginationPerPage={50}
@@ -2912,14 +2971,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                     paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                     className="data-table-component"
                                     title={
-                                        <div class="d-flex justify-content-between">
+                                        <div className="d-flex justify-content-between">
                                             <div><h5>DESISTIDOS / DESISTENDO</h5></div>
-                                            <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(this.state.data_negative, "DESISTIDOS") }}
-                                            ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                            <div><Button variant="outline" size="sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
+                                            ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
                                         </div>
                                     }
                                     dense
-                                    onRowClicked={(e) => this.props.setSelectedRow(e.id_sistem)}
+                                    onRowClicked={(e) => setSelectedRow(e.id_sistem)}
                                 />
                             ) : (
                                 <div className="text-center">
@@ -2930,35 +2989,33 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                         <div className="row">
 
                         </div>
-                    </MDBTabsPane>
+                    </TabPane>
                     {
                         /*
     
-    <MDBTabsPane show={this.state.fillActive === '2'}>
+    <TabPane show={state.fillActive === '2'}>
                         <FUN_MACROTABLE_CLOCKS translation={translation} swaMsg={swaMsg} globals={globals}
-                            date_start={this.props.date_start}
-                            date_end={this.props.date_end}
-                            dataFilter={this.state.data_macro_clocks_filter}
-                            setSelectedRow={this.props.setSelectedRow}
+                            date_start={date_start}
+                            date_end={date_end}
+                            dataFilter={state.data_macro_clocks_filter}
+                            setSelectedRow={setSelectedRow}
                             selectedRow={selectedRow}
-                            hide_jur={this.state.hide_jur}
-                            hide_arc={this.state.hide_arc}
-                            hide_ing={this.state.hide_ing}
-                            worker_list={this.state.worker_list}
-                            NAVIGATION_GEN={this.props.NAVIGATION_GEN}
-                            retrieveMacroClocks={this.retrieveMacroClocks}
-                            retrieveMacro={this.retrieveMacro}
+                            hide_jur={state.hide_jur}
+                            hide_arc={state.hide_arc}
+                            hide_ing={state.hide_ing}
+                            worker_list={state.worker_list}
+                            NAVIGATION_GEN={NAVIGATION_GEN}
+                            retrieveMacroClocks={retrieveMacroClocks}
+                            retrieveMacro={retrieveMacro}
                             load={load}
                         />
-                    </MDBTabsPane>
+                    </TabPane>
                         */
                     }
 
-
-                </MDBTabsContent>
+                </div>
             </div >
         );
-    }
 }
 
 export default FUN_MACROTABLE;
