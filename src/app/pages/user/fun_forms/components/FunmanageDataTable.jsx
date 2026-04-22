@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/icon';
 import {
   useReactTable,
@@ -7,13 +8,14 @@ import {
 } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { MissingDataBadge } from './MissingDataBadge';
+import { AlarmBell } from './AlarmBell';
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 const STATUS_META = {
-  EN_TERMINO:          { label: 'En Término',          className: 'bg-green-100 text-green-800 border-green-200' },
-  PRONTO_A_VENCER:     { label: 'Pronto a Vencer',     className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  ALERTA_VENCIMIENTO:  { label: 'Alerta Vencimiento',  className: 'bg-red-100 text-red-800 border-red-200' },
-  VENCIDO:             { label: 'Vencido',             className: 'bg-red-200 text-red-900 border-red-300' },
+  EN_TERMINO:          { label: 'En Término',          className: 'bg-success bg-opacity-10 text-success border border-success' },
+  PRONTO_A_VENCER:     { label: 'Pronto a Vencer',     className: 'bg-warning bg-opacity-10 text-warning border border-warning' },
+  ALERTA_VENCIMIENTO:  { label: 'Alerta Vencimiento',  className: 'bg-danger bg-opacity-10 text-danger border border-danger' },
+  VENCIDO:             { label: 'Vencido',             className: 'bg-secondary bg-opacity-10 text-secondary border border-secondary' },
 };
 
 // Extrae el valor de un campo con fallback
@@ -21,8 +23,16 @@ function field(row, a, b) {
   return row[a] ?? row[b] ?? '—';
 }
 
+function getTrafficLightClass(diasRestantes) {
+  if (diasRestantes == null) return '';
+  if (diasRestantes > 7) return 'text-success font-weight-bold';
+  if (diasRestantes >= 3 && diasRestantes <= 7) return 'text-warning font-weight-bold';
+  if (diasRestantes >= 0 && diasRestantes < 3) return 'text-danger font-weight-bold';
+  return 'text-secondary font-weight-bold'; // Vencido (<0)
+}
+
 // ── Definición de columnas ────────────────────────────────────────────────────
-function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
+function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate) {
   return [
     {
       id: 'bookmark',
@@ -40,9 +50,9 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
             data-testid={`bookmark-toggle-${row.id ?? row.fun0Id ?? ''}`}
           >
             <Icon
-              name={marked ? 'bookmark' : 'bookmark-regular'}
+              name={marked ? 'star' : 'star-regular'}
               size={16}
-              className={marked ? 'text-warning' : 'text-slate-400'}
+              className={marked ? 'text-warning' : 'text-secondary'}
             />
           </button>
         );
@@ -56,7 +66,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
         const val = info.getValue();
         if (!val || val === '—') return <MissingDataBadge reason="fecha_radicacion" />;
         return (
-          <span className="font-mono text-[0.78rem] font-semibold text-slate-700">
+          <span className="font-monospace small fw-bold text-dark">
             {val}
           </span>
         );
@@ -69,19 +79,31 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
       cell: info => {
         const val = info.getValue();
         if (!val || val === '—') return <MissingDataBadge reason="termino" />;
-        return <span className="text-sm text-slate-600">{val}</span>;
+        return <span className="small text-secondary">{val}</span>;
       },
     },
     {
-      id: 'categoria',
-      header: 'Cat.',
-      accessorFn: row => row.categoria ?? '—',
+      id: 'estado',
+      header: 'Estado',
+      accessorFn: row => row.estado ?? '—',
       cell: info => {
         const val = info.getValue();
-        if (!val || val === '—') return <MissingDataBadge reason="categoria" />;
+        if (!val || val === '—') return <MissingDataBadge reason="estado" />;
+        return <span className="small text-secondary">{val}</span>;
+      },
+    },
+    {
+      id: 'alarma',
+      header: 'Alarma',
+      enableSorting: false,
+      accessorFn: row => row.alarms || [],
+      cell: info => {
+        const alarms = info.getValue();
+        const activeAlarms = alarms.filter(a => !a.attendedAt && !a.hiddenAt);
+        if (activeAlarms.length === 0) return null;
         return (
-          <span className="inline-flex items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-xs w-7 h-7">
-            {val}
+          <span className="badge bg-danger rounded-pill">
+            {activeAlarms.length}
           </span>
         );
       },
@@ -90,23 +112,24 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
       id: 'dias_habiles_usados',
       header: ({ column }) => (
         <button
-          className="flex items-center gap-1 font-semibold text-xs uppercase tracking-wide hover:text-slate-900 transition-colors"
+          className="d-flex align-items-center gap-1 fw-bold text-uppercase border-0 bg-transparent p-0 text-decoration-none text-body"
           onClick={() => column.toggleSorting()}
           aria-label="Ordenar por días"
         >
-          Días
+          Días Restantes
           <SortIcon direction={column.getIsSorted()} />
         </button>
       ),
-      accessorFn: row => row.dias_habiles_usados ?? 0,
+      accessorFn: row => row.dias_habiles_limite ? row.dias_habiles_limite - (row.dias_habiles_usados ?? 0) : null,
       cell: info => {
-        const dias = info.getValue();
+        const diasRestantes = info.getValue();
         const row  = info.row.original;
-        const max  = row.dias_habiles_limite;
+        
+        if (diasRestantes == null) return <MissingDataBadge reason="termino" />;
+
         return (
-          <span className="tabular-nums text-sm font-medium">
-            {dias}
-            {max ? <span className="text-slate-400 font-normal"> /{max}</span> : null}
+          <span className={`font-monospace small ${getTrafficLightClass(diasRestantes)}`}>
+            {diasRestantes}
           </span>
         );
       },
@@ -115,11 +138,11 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
       id: 'status',
       header: ({ column }) => (
         <button
-          className="flex items-center gap-1 font-semibold text-xs uppercase tracking-wide hover:text-slate-900 transition-colors"
+          className="d-flex align-items-center gap-1 fw-bold text-uppercase border-0 bg-transparent p-0 text-decoration-none text-body"
           onClick={() => column.toggleSorting()}
           aria-label="Ordenar por estado"
         >
-          Estado
+          Semáforo
           <SortIcon direction={column.getIsSorted()} />
         </button>
       ),
@@ -127,46 +150,53 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
       cell: info => {
         const s    = info.getValue();
         const meta = STATUS_META[s];
-        if (!meta) return <span className="text-xs text-slate-400">{s}</span>;
+        if (!meta) return <span className="small text-secondary">{s}</span>;
         return (
-          <Badge
-            variant="outline"
-            className={`text-xs font-semibold px-2 py-0.5 ${meta.className}`}
+          <span
+            className={`badge rounded-pill px-2 py-1 ${meta.className}`}
           >
             {meta.label}
-          </Badge>
+          </span>
         );
       },
     },
     {
-      id: 'responsable',
-      header: 'Responsable',
-      enableSorting: false,
-      accessorFn: row => row.responsable ?? row.responsable_nombre ?? '—',
+      id: 'solicitante',
+      header: 'Solicitante',
+      accessorFn: row => row.solicitante ?? '—',
       cell: info => {
-        const v = info.getValue();
-        if (!v || v === '—') return <MissingDataBadge reason="actor" />;
-        return <span className="text-sm text-slate-600">{v}</span>;
+        const val = info.getValue();
+        if (!val || val === '—') return <MissingDataBadge reason="actor" />;
+        return <span className="small text-secondary">{val}</span>;
       },
     },
     {
-      id: 'vecinos',
-      header: 'Vecinos',
+      id: 'vecinos_valla',
+      header: 'Vecinos / Valla',
       enableSorting: false,
-      accessorFn: row => row.vecinos_state ?? row.vecinosState ?? null,
+      accessorFn: row => ({ vecinos: row.vecinos_state ?? row.vecinosState ?? null, valla: row.sign }),
       cell: info => {
-        const s = info.getValue();
-        if (!s) return <span className="text-xs text-slate-400">—</span>;
-        const META = {
-          pendiente:   { label: 'Pendiente',   cls: 'bg-slate-100 text-slate-700 border-slate-200' },
-          enviada:     { label: 'Enviada',     cls: 'bg-blue-100 text-blue-800 border-blue-200' },
-          respondida:  { label: 'Respondida',  cls: 'bg-green-100 text-green-800 border-green-200' },
-        };
-        const meta = META[s] ?? { label: String(s), cls: 'bg-slate-100 text-slate-700 border-slate-200' };
+        const { vecinos, valla } = info.getValue();
+        
         return (
-          <Badge variant="outline" className={`text-xs font-semibold px-2 py-0.5 ${meta.cls}`}>
-            {meta.label}
-          </Badge>
+          <div className="d-flex flex-column gap-1">
+            <div className="d-flex align-items-center gap-1">
+              <span className="small text-secondary" style={{ width: '55px' }}>Vecinos:</span>
+              {vecinos === 'Respondida' ? (
+                <span className="text-success small fw-bold">✓ OK</span>
+              ) : (
+                <span className="badge bg-warning bg-opacity-10 text-warning border border-warning">Pendiente</span>
+              )}
+            </div>
+            <div className="d-flex align-items-center gap-1">
+              <span className="small text-secondary" style={{ width: '55px' }}>Valla:</span>
+              {valla ? (
+                <span className="text-success small fw-bold">✓ OK</span>
+              ) : (
+                <span className="badge bg-danger bg-opacity-10 text-danger border border-danger">Sin valla</span>
+              )}
+            </div>
+          </div>
         );
       },
     },
@@ -177,23 +207,17 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
       cell: info => {
         const row = info.row.original;
         return (
-          <div className="flex gap-2 justify-end">
+          <div className="d-flex gap-2 justify-content-end">
             <button
               type="button"
               className="btn btn-sm btn-outline-primary py-0 px-2"
-              title="Ver detalles"
-              onClick={() => onViewDetail?.(row)}
+              title="Abrir expediente"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/funmanage/expediente/${row.radicado}`);
+              }}
             >
-              <Icon name="eye" size={16} />
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary py-0 px-2"
-              title="Abrir gestión completa"
-              onClick={() => onOpenWorkspace?.(row)}
-              disabled={row.id == null}
-            >
-              <Icon name="expand-alt" size={16} />
+              <Icon name="folder-open" size={16} />
             </button>
           </div>
         );
@@ -204,9 +228,9 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
 
 // ── Ícono de ordenamiento ─────────────────────────────────────────────────────
 function SortIcon({ direction }) {
-  if (direction === 'asc')  return <Icon name="sort-up" size={16} className="text-blue-500 text-[10px]" />;
-  if (direction === 'desc') return <Icon name="sort-down" size={16} className="text-blue-500 text-[10px]" />;
-  return <Icon name="sort" size={16} className="text-slate-300 text-[10px]" />;
+  if (direction === 'asc')  return <Icon name="sort-up" size={14} className="text-primary" />;
+  if (direction === 'desc') return <Icon name="sort-down" size={14} className="text-primary" />;
+  return <Icon name="sort" size={14} className="text-secondary opacity-50" />;
 }
 
 // ── Componente principal ──────────────────────────────────────────────────────
@@ -233,9 +257,11 @@ export function FunmanageDataTable({
   onOpenWorkspace,
   onToggleBookmark,
 }) {
+  const navigate = useNavigate();
+
   const columns = useMemo(
-    () => buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark),
-    [onViewDetail, onOpenWorkspace, onToggleBookmark]
+    () => buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate),
+    [onViewDetail, onOpenWorkspace, onToggleBookmark, navigate]
   );
 
   const table = useReactTable({
@@ -287,22 +313,21 @@ export function FunmanageDataTable({
 
       {/* Tabla */}
       <div
-        className="table-responsive rounded border"
+        className="table-responsive rounded border shadow-sm bg-white"
         style={{
-          borderColor: '#e2e8f0',
           maxHeight: 'clamp(300px, calc(100vh - 340px), 900px)',
           overflowY: 'auto',
         }}
       >
-        <table className="table table-sm mb-0" style={{ fontSize: '0.875rem' }}>
-          <thead style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+        <table className="table table-hover table-sm mb-0 align-middle">
+          <thead className="table-light border-bottom border-2">
             {table.getHeaderGroups().map(hg => (
               <tr key={hg.id}>
                 {hg.headers.map(h => (
                   <th
                     key={h.id}
-                    className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wide"
-                    style={{ whiteSpace: 'nowrap', width: h.id === 'acciones' ? 64 : 'auto' }}
+                    className="px-3 py-2 text-secondary text-uppercase fw-bold"
+                    style={{ fontSize: '0.75rem', whiteSpace: 'nowrap', width: h.id === 'acciones' ? 64 : 'auto' }}
                   >
                     {h.isPlaceholder
                       ? null
@@ -313,10 +338,10 @@ export function FunmanageDataTable({
             ))}
           </thead>
 
-          <tbody>
+          <tbody className="border-top-0">
             {loading ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-4 text-muted">
+                <td colSpan={columns.length} className="text-center py-4 text-secondary">
                   <div className="spinner-border spinner-border-sm me-2" role="status">
                     <span className="visually-hidden">Cargando…</span>
                   </div>
@@ -325,7 +350,7 @@ export function FunmanageDataTable({
               </tr>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-4 text-muted">
+                <td colSpan={columns.length} className="text-center py-4 text-secondary">
                   <Icon name="inbox" size={16} className="me-2" />
                   Sin resultados para los filtros aplicados.
                 </td>
@@ -334,12 +359,12 @@ export function FunmanageDataTable({
               table.getRowModel().rows.map((row, idx) => (
                 <tr
                   key={row.id}
-                  style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f8fafc' }}
-                  className="border-bottom"
+                  className="cursor-pointer"
                   data-testid={`table-row-${idx}`}
+                  onClick={() => navigate(`/funmanage/expediente/${row.original.radicado}`)}
                 >
                   {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-3 py-2 align-middle">
+                    <td key={cell.id} className="px-3 py-2">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
