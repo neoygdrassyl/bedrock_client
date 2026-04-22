@@ -3,6 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectFlowModal from '../../legal_flow_guide/components/ProjectFlowModal';
 import { Icon } from '@/components/icon';
+import { useBookmarks } from '../hooks/useBookmarks';
+import { useAlarms } from '../hooks/useAlarms';
 
 // ── Status visual config ─────────────────────────────────────────────────────
 const STATUS_META = {
@@ -57,10 +59,16 @@ function derivePhasesFromExpediente(exp) {
 export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
   const [showFlowModal, setShowFlowModal] = useState(false);
 
+  const { bookmarks, toggle: toggleBookmark } = useBookmarks();
+  const { alarms, attend, hide } = useAlarms({ includeAttended: true, includeHidden: true });
+
   if (!expediente) return null;
 
   const s = STATUS_META[expediente.status] || STATUS_META.EN_TERMINO;
   const pct = Math.min(expediente.porcentaje_avance ?? 0, 100);
+
+  const isBookmarked = bookmarks.some(b => String(b.fun0Id) === String(expediente.id) && b.scope === 'personal');
+  const expedienteAlarms = alarms.filter(a => String(a.fun0Id) === String(expediente.id));
 
   return (
     <>
@@ -86,27 +94,54 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
       >
         {/* ── Header ─────────────────────────────────────── */}
         <div
-          className="d-flex align-items-center justify-content-between px-4 py-3"
+          className="d-flex align-items-start justify-content-between px-4 py-3"
           style={{ borderBottom: '1px solid #e2e8f0', flexShrink: 0 }}
         >
           <div>
-            <span className="text-xs text-uppercase text-muted d-block" style={{ letterSpacing: '0.06em' }}>
-              Expediente
-            </span>
-            <span className="font-mono font-semibold text-lg">{expediente.radicado}</span>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <span className="text-xs text-uppercase text-muted d-block" style={{ letterSpacing: '0.06em' }}>
+                Expediente
+              </span>
+              <button
+                type="button"
+                className="btn btn-sm py-0 px-1 border-0"
+                title={isBookmarked ? 'Quitar marca' : 'Marcar expediente'}
+                onClick={() => toggleBookmark(expediente.id, 'personal', isBookmarked)}
+              >
+                <Icon
+                  name={isBookmarked ? 'star' : 'star-regular'}
+                  size={16}
+                  className={isBookmarked ? 'text-warning' : 'text-secondary'}
+                />
+              </button>
+            </div>
+            <div className="d-flex flex-wrap align-items-center gap-2">
+              <span className="font-mono font-semibold text-lg me-2">{expediente.radicado}</span>
+              {expediente.fase_label && (
+                <span className="badge bg-light text-secondary border">
+                  {expediente.fase_label}
+                </span>
+              )}
+              {expediente.dias_habiles_limite != null && (
+                <span className="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">
+                  Quedan {Math.max(0, expediente.dias_habiles_limite - (expediente.dias_habiles_usados ?? 0))} días
+                </span>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-md p-1 hover:bg-muted transition-colors"
+            className="rounded-md p-1 hover:bg-muted transition-colors mt-2"
             aria-label="Cerrar panel"
           >
             <Icon name="X" size={16} className="text-muted-foreground" />
           </button>
         </div>
 
-        <div className="flex-grow-1 overflow-auto px-4 py-3" style={{ fontSize: '0.875rem' }}>
+        <div className="d-flex flex-grow-1 overflow-hidden">
+          <div className="flex-grow-1 overflow-auto px-4 py-3" style={{ fontSize: '0.875rem' }}>
 
-          {/* Status + Progress */}
+            {/* Status + Progress */}
           <div className="mb-4">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <Badge
@@ -356,6 +391,90 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
             </div>
           </div>
           </div>
+
+          {/* ── Panel Lateral Alarmas ─────────────────────── */}
+          <div
+            className="overflow-auto bg-slate-50 border-start px-3 py-3"
+            style={{ width: 'clamp(260px, 30%, 340px)', flexShrink: 0, backgroundColor: '#f8fafc', borderLeftColor: '#e2e8f0' }}
+          >
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <span className="text-xs font-semibold text-uppercase text-muted d-block" style={{ letterSpacing: '0.06em' }}>
+                <Icon name="bell" size={14} className="me-1 text-danger" />
+                Alarmas
+              </span>
+              <span className="badge bg-danger rounded-pill">
+                {expedienteAlarms.filter(a => !a.attended && !a.hidden).length}
+              </span>
+            </div>
+
+            {expedienteAlarms.length === 0 ? (
+              <div className="text-center text-muted p-3 border rounded border-dashed" style={{ backgroundColor: '#fff' }}>
+                <Icon name="check-circle" size={24} className="text-success opacity-50 mb-2" />
+                <p className="mb-0 text-sm">Sin alarmas registradas.</p>
+              </div>
+            ) : (
+              <div className="d-flex flex-column gap-2">
+                {expedienteAlarms.map((a, idx) => {
+                  const isPending = !a.attended && !a.hidden;
+                  return (
+                    <div
+                      key={a.id || idx}
+                      className={`p-2 rounded border ${isPending ? 'border-danger-subtle bg-white' : 'border-secondary-subtle opacity-75'}`}
+                      style={{
+                        backgroundColor: isPending ? '#fff' : '#f1f5f9',
+                        transition: 'opacity 0.2s',
+                      }}
+                    >
+                      <div className="d-flex align-items-start gap-2 mb-1">
+                        <Icon
+                          name={a.severity === 'critical' || a.severity === 'expired' ? 'exclamation-circle' : 'exclamation-triangle'}
+                          size={14}
+                          className={isPending ? (a.severity === 'warning' ? 'text-warning' : 'text-danger') : 'text-muted'}
+                        />
+                        <div style={{ flex: 1 }}>
+                          <span className="text-xs fw-bold d-block" style={{ color: isPending ? '#1e293b' : '#64748b' }}>
+                            {a.phaseCode}
+                          </span>
+                          <span className="text-xs text-muted-foreground d-block lh-sm mt-1" style={{ whiteSpace: 'pre-wrap' }}>
+                            {a.message || 'Alarma de tiempo en el expediente.'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                        <span className="text-xs text-muted" title={a.computedAt}>
+                          {a.computedAt ? String(a.computedAt).substring(0, 10) : ''}
+                        </span>
+                        {isPending ? (
+                          <div className="d-flex gap-1">
+                            <button
+                              className="btn btn-sm btn-outline-secondary py-0 px-2 text-xs"
+                              title="Ocultar"
+                              onClick={() => hide(a.id)}
+                            >
+                              <Icon name="eye-slash" size={12} />
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-success py-0 px-2 text-xs"
+                              title="Marcar atendida"
+                              onClick={() => attend(a.id)}
+                            >
+                              <Icon name="check" size={12} /> Atender
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-xs fw-semibold text-success">
+                            <Icon name={a.attended ? 'check-double' : 'eye-slash'} size={12} className="me-1" />
+                            {a.attended ? 'Atendida' : 'Oculta'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
 
         <div
           className="px-4 py-3 d-flex gap-2 justify-content-end"
