@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import {
   ScatterChart,
   Scatter,
@@ -11,6 +12,8 @@ import {
   ReferenceLine,
   Cell,
 } from 'recharts';
+import { ExpedientePanelDrawer } from './ExpedientePanelDrawer';
+import { useNavigate } from 'react-router-dom';
 
 // ── Fases y orden ─────────────────────────────────────────
 const PHASES = [
@@ -89,6 +92,10 @@ function ScatterTooltip({ active, payload }) {
 
 export function FunmanageScatterChart({ data, loading }) {
   const [responsableFilter, setResponsableFilter] = useState('curaduria');
+  const [showVencidos, setShowVencidos] = useState(true);
+  const [selectedExpediente, setSelectedExpediente] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const navigate = useNavigate();
 
   const plotData = useMemo(() => {
     if (!Array.isArray(data)) return [];
@@ -123,10 +130,27 @@ export function FunmanageScatterChart({ data, loading }) {
         };
       })
       .filter(d => d.yNum != null)
-      .filter(d => d.respType === responsableFilter);
-  }, [data, responsableFilter]);
+      .filter(d => d.respType === responsableFilter)
+      .filter(d => showVencidos || d.colorStatus !== 'rojo');
+  }, [data, responsableFilter, showVencidos]);
 
-  const renderChart = (height = 300) => (
+  const handleNavigateDetail = (exp) => {
+    setSelectedExpediente(null);
+    if (isFullscreen) setIsFullscreen(false);
+    navigate(`/licencias/gestion/${exp.id || exp.radicado}`);
+  };
+
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreen]);
+
+  const renderChart = (height = 300, isModal = false) => (
     <ResponsiveContainer width="100%" height={height}>
       <ScatterChart margin={{ top: 12, right: 24, bottom: 28, left: 24 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -156,11 +180,18 @@ export function FunmanageScatterChart({ data, loading }) {
         />
         <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '4 4', stroke: '#94a3b8' }} />
         
-        <Scatter name="Expedientes" data={plotData} shape="circle">
+        {/* Render each point individually for correct coloring and click handling */}
+        <Scatter 
+          name="Expedientes" 
+          data={plotData} 
+          shape="circle"
+          onClick={(e) => setSelectedExpediente(e?.payload || e)}
+        >
           {plotData.map((entry, index) => (
             <Cell 
               key={`cell-${index}`} 
               fill={entry.fill} 
+              style={{ cursor: 'pointer' }}
             />
           ))}
         </Scatter>
@@ -189,11 +220,50 @@ export function FunmanageScatterChart({ data, loading }) {
             checked={responsableFilter === 'solicitante'} onChange={() => setResponsableFilter('solicitante')} />
           <label className="btn btn-outline-primary btn-sm" htmlFor="respSolicitante">Solicitante</label>
         </div>
+
+        <div className="d-flex align-items-center gap-3">
+          <div className="form-check form-switch m-0">
+            <input className="form-check-input" type="checkbox" id="toggleVencidos" 
+              checked={showVencidos} onChange={(e) => setShowVencidos(e.target.checked)} />
+            <label className="form-check-label text-muted" style={{ fontSize: '0.85rem' }} htmlFor="toggleVencidos">
+              Mostrar Vencidos
+            </label>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => setIsFullscreen(true)} title="Pantalla completa">
+            <Icon name="expand" size={14} />
+          </Button>
+        </div>
       </div>
 
       {plotData.length === 0 ? (
         <div className="text-center text-muted py-4"><Icon name="chart-bar" size={16} className="me-2" />Sin datos.</div>
       ) : renderChart(300)}
+
+      <ExpedientePanelDrawer 
+        show={!!selectedExpediente} 
+        expediente={selectedExpediente} 
+        onClose={() => setSelectedExpediente(null)}
+        onNavigateDetail={handleNavigateDetail}
+      />
+
+      {isFullscreen && (
+        <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+          <div className="modal-dialog modal-fullscreen">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title d-flex align-items-center">
+                  <Icon name="chart-scatter" size={20} className="me-2 text-primary" />
+                  Expedientes por Fase
+                </h5>
+                <button type="button" className="btn-close" onClick={() => setIsFullscreen(false)}></button>
+              </div>
+              <div className="modal-body">
+                {renderChart(window.innerHeight - 150, true)}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
