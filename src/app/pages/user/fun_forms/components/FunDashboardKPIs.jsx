@@ -66,13 +66,13 @@ const SIMPLE_KPIS = [
     filter: { phase: 'ENT' },
   },
   {
-    key: 'vecinos',
-    getValue: (kpis) => kpis?.pendientes_vecinos || 0,
-    label: 'Vecinos',
+    key: 'vecinos_pending',
+    getValue: (kpis) => (kpis?.vecinosPending ?? kpis?.vecinos_pendientes ?? 0),
+    label: 'Vecinos pendientes',
     icon: 'users',
     colorClass: 'text-warning',
-    description: 'Pendientes vecinos',
-    filter: { subfiltro: 'pendiente_vecinos' },
+    description: 'Dimensión transversal, no fase',
+    filter: { vecinos: 'pending' },
   },
   {
     key: 'valla',
