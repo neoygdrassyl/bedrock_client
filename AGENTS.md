@@ -112,6 +112,8 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 9. No des por buena documentacion vieja si contradice el codigo o el runtime.
 10. No cierres cambios de codigo ejecutable sin la validacion apropiada para su alcance.
 11. **Playwright**: Siempre usa `src/__playwright/config.js` para temp paths. No dejes archivos basura. Lee `.github/instructions/playwright-standards.md`.
+12. **NUNCA hagas `git merge` ni `git push` a `main` (o `master`) de forma autónoma.** Antes de cualquier integración de ramas, usa `ask_user` en la sesión activa para solicitar confirmación explícita. Esta regla aplica sin excepción, incluso si la tarea parece completamente exitosa.
+13. **Las preguntas al usuario SIEMPRE se hacen con `ask_user` dentro de la sesión en curso.** Nunca termines una respuesta ni la sesión para "esperar al usuario" — eso fuerza una request extra. Usa siempre `ask_user` con opciones claras antes de tomar decisiones que afecten ramas, merges o arquitectura.
 
 ## 7. Backend y limites de este repo
 
