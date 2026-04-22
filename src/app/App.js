@@ -212,6 +212,8 @@ export default function App() {
                     {Object.entries(getRouteRedirects()).map(([from, to]) => (
                       <Route key={from} path={from} element={<Navigate to={to} replace />} />
                     ))}
+                    <Route path="/settings" element={<Navigate replace to="/configuracion" />} />
+                    <Route path="/ajustes" element={<Navigate replace to="/configuracion" />} />
 
                     {/* ── Authenticated routes (inside AppShell) ───── */}
                     <Route element={<PrivateLayout />}>
