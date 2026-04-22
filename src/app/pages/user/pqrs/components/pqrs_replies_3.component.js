@@ -1,18 +1,6 @@
-import React, { Component } from 'react';
-import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse'
+import { dateParser, dateParser_finalDate, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 
-
-const moment = require('moment');
-const momentB = require('moment-business-days');
-class PQRS_COMPONENT_REPLIES_PROFESIONAL_2 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_REPLIES_PROFESIONAL_2({ translation, swaMsg, globals, currentItem }) {
 
         let _REPLIES_COMPONENT = () => {
             var _COMPONENT = [];
@@ -57,7 +45,7 @@ class PQRS_COMPONENT_REPLIES_PROFESIONAL_2 extends Component {
                                     <lavel>Tiempo de Respuesta</lavel>
                                 </div>
                                 <div className="col-6">
-                                    <label className="fw-bold">{momentB(currentItem.pqrs_workers[i].asign, 'YYYY-MM-DD').businessDiff(moment(currentItem.pqrs_workers[i].date_reply, 'YYYY-MM-DD')) + " dia(s) habiles"}</label>
+                                    <label className="fw-bold">{dateParser_dateDiff(currentItem.pqrs_workers[i].asign, currentItem.pqrs_workers[i].date_reply, true) + " dia(s) habiles"}</label>
                                 </div>
                             </div>
                             <div className="row">
@@ -86,12 +74,11 @@ class PQRS_COMPONENT_REPLIES_PROFESIONAL_2 extends Component {
             }
             return <>{_COMPONENT}</>;
         }
-        return (
-            <div>
-                {_REPLIES_COMPONENT()}
-            </div>
-        );
-    }
+    return (
+        <div>
+            {_REPLIES_COMPONENT()}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_REPLIES_PROFESIONAL_2;

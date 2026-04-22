@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import submitService from '../../../services/submit.service';
@@ -29,120 +28,89 @@ import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
-
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
 // RECORDS
 
+function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION }) {
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
 
-const MySwal = withReactContent(Swal);
+    const retrievePQRSxFUN = useCallback((id_public) => {
+        FUN_SERVICE.loadPQRSxFUN(id_public)
+            .then(response => {
+                setPqrsxfun(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }, []);
 
-class RECORD_LAW extends Component {
-    constructor(props) {
-        super(props);
-        this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
-        this.requestUpdateRecord = this.requestUpdateRecord.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.retrievePQRSxFUN = this.retrievePQRSxFUN.bind(this);
-        this.state = {
-            currentRecord: null,
-            currentVersionR: null,
-            loaded: false,
-            pqrsxfun: false,
-            currentItem: null,
-        };
-    }
-    componentDidMount() {
-        this.setItem_RecordArc();
-        this.retrieveItem(this.props.currentId);
-    }
-    setItem_RecordArc() {
-        RECORD_LAW_SERVICE.getRecord(this.props.currentId)
+    const retrieveItem = useCallback((id) => {
+        FUN_SERVICE.get(id)
+            .then(response => {
+                setCurrentItem(response.data);
+                retrievePQRSxFUN(response.data.id_public);
+            })
+            .catch(e => {
+                console.log(e);
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+            });
+    }, [swaMsg, retrievePQRSxFUN]);
+
+    const setItem_RecordArc = useCallback(() => {
+        RECORD_LAW_SERVICE.getRecord(currentId)
             .then(response => {
                 if (response.data.length < 1) {
-                    this.setState({
-                        currentRecord: null,
-                        currentVersionR: null,
-                        loaded: true,
-                    });
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
                 } else {
-                    this.setState({
-                        currentRecord: response.data[0],
-                        currentVersionR: response.data[0].version,
-                        loaded: true,
-                    });
+                    setCurrentRecord(response.data[0]);
+                    setCurrentVersionR(response.data[0].version);
+                    setLoaded(true);
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
-    }
-    requestUpdateRecord(id) {
+    }, [currentId, swaMsg]);
+
+    const requestUpdateRecord = (id) => {
         RECORD_LAW_SERVICE.getRecord(id)
             .then(response => {
-                this.setState({
-                    currentRecord: response.data[0],
-                    currentVersionR: response.data[0].version,
-                    loaded: true,
-                });
+                setCurrentRecord(response.data[0]);
+                setCurrentVersionR(response.data[0].version);
+                setLoaded(true);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    retrieveItem(id) {
-        FUN_SERVICE.get(id)
-            .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
-            })
-            .catch(e => {
-                console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-            });
-    }
+    };
 
-    retrievePQRSxFUN(id_public) {
-        FUN_SERVICE.loadPQRSxFUN(id_public)
-            .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
-    navigation_version = (STEP) => {
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+    };
+
+    const navigation_version = (STEP) => {
         switch (STEP) {
             case "minus":
-                this.setState({ currentVersionR: this.state.currentVersionR - 1 });
+                setCurrentVersionR(prev => prev - 1);
                 break;
             case "plus":
-                this.setState({ currentVersionR: this.state.currentVersionR + 1 });
+                setCurrentVersionR(prev => prev + 1);
                 break;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem } = this.state;
+    };
+
+    useEffect(() => {
+        setItem_RecordArc();
+        retrieveItem(currentId);
+    }, [currentId, setItem_RecordArc, retrieveItem]);
         const rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
         var formData = new FormData();
         const quickModalStyle = {
@@ -233,31 +201,15 @@ class RECORD_LAW extends Component {
             RECORD_LAW_SERVICE.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.requestUpdateRecord(currentItem.id)
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -270,7 +222,7 @@ class RECORD_LAW extends Component {
             formData0.set('rules', currentRules.join(';'));
 
             funService.update(currentItem.id, formData0).then(response => {
-                if (response.data === 'OK') this.retrieveItem(currentItem.id)
+                if (response.data === 'OK') retrieveItem(currentItem.id)
             });
         }
         return (
@@ -280,8 +232,8 @@ class RECORD_LAW extends Component {
                         {currentRecord
                             ? <>
 
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_law_gen">
-                                    <label className="app-p lead fw-normal text-uppercase">I. CONTROL DEL DEBIDO PROCESO DE LA SOLICITUD</label>
+                                <legend className="my-2 px-3 Collapsible" id="record_law_gen">
+                                    <label className="app-p lead fw-normal">I. CONTROL DEL DEBIDO PROCESO DE LA SOLICITUD</label>
                                 </legend>
                                 {
                                     /**
@@ -299,14 +251,12 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                 />
 
-
-
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_law_gen_2">
-                                    <label className="app-p lead fw-normal text-uppercase">II. Observaciones Jurídicas</label>
+                                <legend className="my-2 px-3 Collapsible" id="record_law_gen_2">
+                                    <label className="app-p lead fw-normal">II. Observaciones Jurídicas</label>
                                 </legend>
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_21">
-                                    <label className="app-p lead fw-normal text-uppercase">2.1 TIPO DE SOLICITUD</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_21">
+                                    <label className="app-p lead fw-normal">2.1 TIPO DE SOLICITUD</label>
                                 </legend>
                                 <RECORD_ARC_32 translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -317,7 +267,7 @@ class RECORD_LAW extends Component {
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
                                     SERVICE={RECORD_LAW_SERVICE}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     AIM={"Jurídico"}
                                 />
                                 <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
@@ -326,7 +276,7 @@ class RECORD_LAW extends Component {
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
                                     SERVICE={RECORD_ARCSERVICE}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     AIM={"Arquitectura"}
                                     PATH={"record_arc"}
                                     readOnly
@@ -337,12 +287,12 @@ class RECORD_LAW extends Component {
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
                                     SERVICE={RECORD_ENG_SERVICE}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     AIM={"Estructural"}
                                     readOnly />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_22">
-                                    <label className="app-p lead fw-normal text-uppercase">2.2 Inventario de Información Aportada</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_22">
+                                    <label className="app-p lead fw-normal">2.2 Inventario de Información Aportada</label>
                                 </legend>
 
                                 <RECORD_LAW_DOCSCHECK
@@ -351,13 +301,11 @@ class RECORD_LAW extends Component {
                                     _FUN_R={_GET_CHILD_REVIEW()}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     docsScope={'law'} />
 
-
-
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_23">
-                                    <label className="app-p lead fw-normal text-uppercase">2.3 DOCUMENTOS DIGITALIZADOS</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_23">
+                                    <label className="app-p lead fw-normal">2.3 DOCUMENTOS DIGITALIZADOS</label>
                                 </legend>
 
                                 <FUN_6_VIEW
@@ -365,23 +313,22 @@ class RECORD_LAW extends Component {
                                     swaMsg={swaMsg}
                                     globals={globals}
                                     currentItem={currentItem}
-                                    currentId={this.props.currentId}
+                                    currentId={currentId}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     readOnly
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_24">
-                                    <label className="app-p lead fw-normal text-uppercase">2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_24">
+                                    <label className="app-p lead fw-normal">2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
                                 </legend>
                                 <SUBMIT_SINGLE_VIEW
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     id_related={currentItem.id_public}
                                 />
 
-
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_25">
-                                    <label className="app-p lead fw-normal text-uppercase">2.5 Formulario Único Nacional</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_25">
+                                    <label className="app-p lead fw-normal">2.5 Formulario Único Nacional</label>
                                 </legend>
 
                                 <RECORD_LAW_STEP_1
@@ -390,8 +337,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                 />
 
                                 <RECORD_LAW_FUN_1
@@ -400,8 +347,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -411,11 +358,10 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
-
 
                                 <RECORD_LAW_FUN_51
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -423,8 +369,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -434,8 +380,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -445,11 +391,10 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
-
 
                                 <RECORD_LAW_GEN2_11
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -457,23 +402,22 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
-                                <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_26">
-                                    <label className="app-p lead fw-normal text-uppercase">2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</label>
+                                <legend className="my-2 px-3 bg-light" id="record_law_26">
+                                    <label className="app-p lead fw-normal">2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</label>
                                 </legend>
 
-
-                                <div className="row border my-2 py-4 border border-warning" style={{ backgroundColor: 'Gainsboro', borderWidth: '3px' }}>
+                                <div className="row border my-2 py-4 border border-warning bg-body-secondary" style={{ borderWidth: '3px' }}>
                                     <div className="col-4"></div>
                                     <div className="col-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="1" id="fun_0_rules" defaultChecked={rules[0] == 1} 
+                                        <div className="form-check">
+                                            <input className="form-check-input" type="checkbox" value="1" id="fun_0_rules" defaultChecked={rules[0] == 1} 
                                             onChange={() => save_fun0()}/>
-                                            <h2 class="form-check-label">No usar Publicidad</h2>
+                                            <h2 className="form-check-label">No usar Publicidad</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -485,16 +429,14 @@ class RECORD_LAW extends Component {
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
-                                        requestUpdate={this.requestUpdate}
-                                        requestUpdateRecord={this.requestUpdateRecord}
+                                        requestUpdate={requestUpdate}
+                                        requestUpdateRecord={requestUpdateRecord}
                                         quickModalStyle={quickModalStyle}
                                     />
                                 </> : ''}
 
-
-
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_law_gen_3">
-                                    <label className="app-p lead fw-normal text-uppercase">III. Viabilidad Jurídica</label>
+                                <legend className="my-2 px-3 Collapsible" id="record_law_gen_3">
+                                    <label className="app-p lead fw-normal">III. Viabilidad Jurídica</label>
                                 </legend>
                                 <RECORD_LAW_EVALUATION
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -502,8 +444,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                 />
 
                                 {/* {NAV_FUNA(_GET_CHILD_1())} */}
@@ -511,7 +453,7 @@ class RECORD_LAW extends Component {
 
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <button className="btn btn-info btn-lg" onClick={() => new_record_law()}> GENERAR INFORME EN BLANCO</button>
+                                        <Button size="sm" onClick={() => new_record_law()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
                                     </div>
                                 </fieldset>
 
@@ -523,7 +465,7 @@ class RECORD_LAW extends Component {
                         translation={translation}
                         currentItem={currentRecord}
                         currentVersion={currentVersionR}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION_VERSION={navigation_version}
                         _RECORD
                     />
                     <FUN_MODULE_NAV
@@ -531,15 +473,14 @@ class RECORD_LAW extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"record_law"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
                 </fieldset>}
             </div >
         );
-    }
 }
 
 const NAV_FUNA = (_CHILD) => {
@@ -553,66 +494,66 @@ const NAV_FUNA = (_CHILD) => {
     return (
         <div className="btn-navpqrs">
             <div className="fung_nav">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
                         <br />
                         <a href="#record_law_gen">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>I. CONTROL DEL DEBIDO PROCESO DE LA SOLICITUD</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_gen_2">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>II. Observaciones Jurídicas</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_21">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.1 TIPO DE SOLICITUD</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_22">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.2 Inventario de Información Aportada</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_23">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.3 DOCUMENTOS DIGITALIZADOS</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_24">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_25">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.5 Formulario Único Nacional</h6>
                             </legend>
                         </a>
                         <a href="#record_law_26">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</h6>
                             </legend>
                         </a>
                         <a href="#record_law_gen_3">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>III. Viabilidad Jurídica</h6>
                             </legend>
                         </a>
 
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );

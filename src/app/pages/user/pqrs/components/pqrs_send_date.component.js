@@ -1,12 +1,9 @@
-import React from 'react'
-import moment from 'moment';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-//const moment = require('moment');
+import { Icon } from '@/components/icon';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
 
-const MySwal = withReactContent(Swal);
 export const PQRS_SEND_DATE = (props) => {
     const { currentItem, swaMsg, retrievePublish, } = props;
 
@@ -20,32 +17,16 @@ export const PQRS_SEND_DATE = (props) => {
         PQRS_Service.update_date_reply(id ?? '', form)
         .then(response => {
             if (response.data === 'OK') {
-                MySwal.fire({
-                    title: swaMsg.publish_success_title,
-                    text: swaMsg.publish_success_text,
-                    footer: swaMsg.text_footer,
-                    icon: 'success',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                 props.retrieveItem(currentItem.id);
                 props.refreshList();
                 retrievePublish()
 
             } else if (response.data === 'ERROR_DUPLICATE') {
-                MySwal.fire({
-                    title: "ERROR DE DUPLICACION",
-                    text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
             }
             else {
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             }
         })
         .catch(e => {
@@ -59,11 +40,11 @@ export const PQRS_SEND_DATE = (props) => {
         <div className="row">
             <div className="col-">
                 <label>Fecha envio respuesta</label>
-                <div class="input-group my-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-calendar-alt"></i>
+                <div className="input-group my-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="calendar-alt" size={16} />
                     </span>
-                    <input type='date' class="form-control mb-" rows="3" id="pqrs_visto_worker_1" defaultValue={validations ?? moment().format('YYYY-MM-DD')} onBlur={crearteReply} required></input>
+                    <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_1" defaultValue={validations ?? dayjs().format('YYYY-MM-DD')} onBlur={crearteReply} required></input>
                 </div>
             </div>
         </div>

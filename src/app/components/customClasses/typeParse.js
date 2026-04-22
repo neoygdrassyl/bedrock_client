@@ -1,7 +1,15 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
+import 'dayjs/locale/es'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import { DiasHabilesColombia } from '../../utils/BusinessDaysCol'
 import { infoCud } from '../jsons/vars'
+
+dayjs.extend(localizedFormat)
+
+// Singleton instance for Colombian business day calculations
+const _businessDays = new DiasHabilesColombia();
 import SERIES_CB1 from "../jsons/funcCodes.cb1.json"
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export const SERIES_DOCS = {
     // i count = 86
@@ -722,10 +730,7 @@ function REGEX_MATCH_1100_250(input) {
 export function dateParser(date) {
     let con1 = date === false || date === null || date === undefined || date === '';
     if (con1) return ""
-    const moment = require('moment');
-    let esLocale = require('moment/locale/es');
-    var momentLocale = moment(date).locale('es', esLocale);
-    return momentLocale.format("LL")
+    return dayjs(date).locale('es').format("LL")
 }
 
 // RECIEVES A SATR DATE FORMAT YYYY-MM-DD AND AN POSITIVE INTEGER
@@ -735,14 +740,14 @@ export function dateParser_timeLeft(startDate, time) {
     let con2 = startDate === false || startDate === null || startDate === undefined
     if (con1 || con2) return ""
     if (!checkDate(startDate)) return ""
-    var moment = require('moment');
-    var momentB = require('moment-business-days');
-    const holydays = require("../jsons/holydaysmoment.json")
-    momentB.updateLocale('co', holydays);
-    let today = moment().format('YYYY-MM-DD');
-    let endate = momentB(startDate, 'YYYY-MM-DD').businessAdd(time)._d;
-    let diff = momentB(endate).businessDiff(moment(today), true);
-    return diff;
+    const today = dayjs().format('YYYY-MM-DD');
+    const endDate = _businessDays.sumarDiasHabiles(startDate, time);
+    // absolute diff: always positive regardless of direction
+    if (endDate >= today) {
+        return _businessDays.contarDiasHabiles(today, endDate);
+    } else {
+        return _businessDays.contarDiasHabiles(endDate, today);
+    }
 }
 
 // RECIEVES A SATR DATE FORMAT YYYY-MM-DD AND AN POSITIVE INTEGER
@@ -752,26 +757,24 @@ export function dateParser_finalDate(startDate, time) {
     let con2 = startDate === false || startDate === null || startDate === undefined || startDate === '';
     if (con1 || con2) return ""
     if (!checkDate(startDate)) return ""
-    let momentB = require('moment-business-days');
-    let moment = require('moment');
-    const holydays = require("../jsons/holydaysmoment.json")
-    momentB.updateLocale('co', holydays);
-    let endate = momentB(startDate, 'YYYY-MM-DD').businessAdd(time)._d;
-    return moment(endate).format('YYYY-MM-DD');
+    return _businessDays.sumarDiasHabiles(startDate, time);
 }
 
 // RECIEVES TWO DATES FORMAT YYYY-MM-DD
 // RETURN THE DIFFERENCE IN BUSINESS DAYS BETWEEN THE TWO DATES
-export function dateParser_dateDiff(dateA, dateB, momentDiff = false) {
+export function dateParser_dateDiff(dateA, dateB, absolute = false) {
     let con1 = dateA === false || dateA === null || dateA === undefined || dateA === '';
     let con2 = dateB === false || dateB === null || dateB === undefined || dateB === '';
     if (con1 || con2) return ""
-    let momentB = require('moment-business-days');
-    let moment = require('moment');
-    const holydays = require("../jsons/holydaysmoment.json")
-    momentB.updateLocale('co', holydays);
-    var diff = momentB(dateA, 'YYYY-MM-DD').businessDiff(moment(dateB, 'YYYY-MM-DD'), momentDiff)
-    return diff;
+    // Signed diff: dateA - dateB in business days
+    if (dateA === dateB) return 0;
+    if (dateA > dateB) {
+        const count = _businessDays.contarDiasHabiles(dateB, dateA);
+        return absolute ? count : count;
+    } else {
+        const count = _businessDays.contarDiasHabiles(dateA, dateB);
+        return absolute ? count : -count;
+    }
 }
 
 // RECIEVES A DATE FORMAT YYYY-MM-DD
@@ -779,13 +782,14 @@ export function dateParser_dateDiff(dateA, dateB, momentDiff = false) {
 export function dateParser_timePassed(date) {
     let con1 = date === false || date === null || date === undefined || date === '';
     if (con1) return ""
-    let momentB = require('moment-business-days');
-    let moment = require('moment');
-    const holydays = require("../jsons/holydaysmoment.json")
-    momentB.updateLocale('co', holydays);
-    const today = moment().format('YYYY-MM-DD');
-    var diff = momentB(date, 'YYYY-MM-DD').businessDiff(moment(today, 'YYYY-MM-DD'))
-    return diff;
+    const today = dayjs().format('YYYY-MM-DD');
+    // Signed diff: date - today (negative when date is in the past)
+    if (date === today) return 0;
+    if (date > today) {
+        return _businessDays.contarDiasHabiles(today, date);
+    } else {
+        return -_businessDays.contarDiasHabiles(date, today);
+    }
 }
 
 // RECIEVES A DATE FORMAT YYYY-MM-DD
@@ -793,16 +797,14 @@ export function dateParser_timePassed(date) {
 export function dateParser_yearsPassed(date) {
     let con1 = date === false || date === null || date === undefined || date === '';
     if (con1) return ""
-    let moment = require('moment');
-    const today = moment().format('YYYY-MM-DD');
-    var diff = moment(today, 'YYYY-MM-DD').diff(date, 'years');
+    const today = dayjs().format('YYYY-MM-DD');
+    var diff = dayjs(today, 'YYYY-MM-DD').diff(date, 'year');
     return diff;
 }
 
 function checkDate(_date) {
-    let moment = require('moment');
-    const date = moment(_date).format('YYYY');
-    if (date > 2010) return true;
+    const year = parseInt(_date?.substring(0, 4), 10);
+    if (year > 2010) return true;
     return false
 }
 
@@ -939,7 +941,6 @@ export function _GET_SUBSERIE_STR(_CHILD) {
 export function addDecimalPoints(num) {
     if (!num) return '';
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
 }
 
 export function _ADDRESS_SET_FULL(_DOMID, _FUN2) {
@@ -1180,7 +1181,7 @@ export function _MANAGE_IDS(_data, _type) {
     let new_id = _data;
     let concecutive;
     if (_type == 'end') {
-        if (!new_id) new_id = `${infoCud.serials.end}${moment().format('YY')}-0000`
+        if (!new_id) new_id = `${infoCud.serials.end}${dayjs().format('YY')}-0000`
         concecutive = new_id.split('-')[1];
         concecutive = Number(concecutive) + 1
         if (concecutive < 1000) concecutive = "0" + concecutive

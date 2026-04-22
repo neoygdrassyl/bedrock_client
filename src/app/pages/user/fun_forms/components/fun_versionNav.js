@@ -1,43 +1,37 @@
-import React, { Component } from 'react';
-import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 
-class FUN_VERSION_NAV extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, currentItem, currentVersion, ON , _RECORD} = this.props;
+function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD, NAVIGATION_VERSION }) {
         return (<>
             {currentItem
                 ? <> {currentItem.version > 1
                     ? <div className="btn-nav_version">
                         <div className="fun_nav">
-                            <MDBCard className="container-primary" border='dark' >
-                                <MDBCardBody className="p-1">
+                            <div className="rounded-lg border bg-card p-4 container-primary">
+                                <div>
                                     <div className="m-1 text-center">
                                         {ON
                                             ? <>
                                                 {currentVersion > 1
-                                                    ? <a className="btn btn-sm btn-info p-1" onClick={() => this.props.NAVIGATION_VERSION("minus")}><i class="fas fa-chevron-circle-left fa-2x"></i></a>
-                                                    : <a className="btn btn-sm btn-light p-1"><i class="fas fa-chevron-circle-left fa-2x"></i></a>}
+                                                    ? <Button size="sm" className="p-1" onClick={() => NAVIGATION_VERSION("minus")}><Icon name="chevron-circle-left" size={16} /></Button>
+                                                    : <a className="inline-flex items-center justify-center rounded-md text-xs font-medium hover:bg-muted p-1"><Icon name="chevron-circle-left" size={16} /></a>}
                                             </> : ""}
 
                                         <label className="mx-1 pb-1"> {_RECORD ? "REVISION: ": "VERSION: "} {currentVersion} de {currentItem.version} </label>
                                         {ON
                                             ? <>
                                                 {currentVersion >= currentItem.version
-                                                    ? <a className="btn btn-sm light-info p-1"><i class="fas fa-chevron-circle-right fa-2x"></i></a>
-                                                    : <a className="btn btn-sm btn-info p-1" onClick={() => this.props.NAVIGATION_VERSION("plus")}><i class="fas fa-chevron-circle-right fa-2x"></i></a>}
+                                                    ? <a className="inline-flex items-center justify-center rounded-md text-xs font-medium text-primary hover:bg-primary/10 p-1"><Icon name="chevron-circle-right" size={16} /></a>
+                                                    : <Button size="sm" className="p-1" onClick={() => NAVIGATION_VERSION("plus")}><Icon name="chevron-circle-right" size={16} /></Button>}
                                             </> : ""}
                                     </div>
-                                </MDBCardBody>
-                            </MDBCard>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     : ""}
                 </> : ""} </>
         );
-    }
 }
 
 export default FUN_VERSION_NAV;

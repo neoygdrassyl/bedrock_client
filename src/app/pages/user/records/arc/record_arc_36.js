@@ -1,26 +1,17 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import perfilData from '../../../../components/jsons/perfilesData.json';
 import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARC_36_TABLE from './record_arc_36.table';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
+function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [editElement, setEditElement] = useState(false);
 
-class RECORD_ARC_36 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            link_recipe: false,
-            new_duty: false,
-            new_element: false,
-            edit_element: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit_element !== prevState.edit_element && this.state.edit_element != false) {
-            var _ITEM = this.state.edit_element;
+    useEffect(() => {
+        if (editElement) {
+            var _ITEM = editElement;
 
             document.getElementById("r_a_36_info_1_edit").value = _ITEM.parent;
             document.getElementById("r_a_36_info_2_edit").value = _ITEM.name;
@@ -34,10 +25,7 @@ class RECORD_ARC_36 extends Component {
             let _BASE_URL = "//www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/"
             _COMPONENT.href = _BASE_URL + _LIST[_ITEM.parent].src;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [editElement]);
 
 
         // DATA GETERS
@@ -91,7 +79,7 @@ class RECORD_ARC_36 extends Component {
             return 'form-select form-select-sm';
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_arc_steps;
+            var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -250,7 +238,7 @@ class RECORD_ARC_36 extends Component {
 
         let _COMPONENT_CORRECTIONS = () => {
             return <div className="row">
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>Observaciones espacio publico</label>
                     </div>
@@ -309,7 +297,7 @@ class RECORD_ARC_36 extends Component {
                             <label>{con.p}</label>
                         </div>
                         <div className='col'>
-                            <label>{con.e && con.e != undefined ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger"></i>}</label>
+                            <label>{con.e && con.e != undefined ? <Icon name="check" size={16} className="text-success" /> : <Icon name="times" size={16} className="text-danger" />}</label>
                         </div>
                     </div>
                 })}
@@ -319,9 +307,9 @@ class RECORD_ARC_36 extends Component {
 
                 <div className='row py-3 border' style={{ backgroundColor: 'gainsboro' }}>
                     <div className='col text-center fw-bold'>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="s36_useduty_check" defaultChecked={_CHECK == 1 ? true : false} onChange={() => save_ra_36()} />
-                            <label class="form-check-label">USAR DEBERES URBANÍSTICOS</label>
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" id="s36_useduty_check" defaultChecked={_CHECK == 1 ? true : false} onChange={() => save_ra_36()} />
+                            <label className="form-check-label">USAR DEBERES URBANÍSTICOS</label>
                         </div>
                     </div>
                 </div>
@@ -436,72 +424,35 @@ class RECORD_ARC_36 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ARCSERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ARCSERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -524,7 +475,7 @@ class RECORD_ARC_36 extends Component {
                         currentVersion={currentVersion}
                         currentRecord={currentRecord}
                         currentVersionR={currentVersionR}
-                        requestUpdateRecord={() => this.props.requestUpdateRecord(currentItem.id)}
+                        requestUpdateRecord={() => requestUpdateRecord(currentItem.id)}
                     />
 
                     <h3 className="py-3" >3.6.2 Evaluación de Perfiles (Vías peatonales y andenes. Art 164 a 169)</h3>
@@ -538,7 +489,6 @@ class RECORD_ARC_36 extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_36;

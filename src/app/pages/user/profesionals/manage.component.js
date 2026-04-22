@@ -1,13 +1,11 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from 'mdb-react-ui-kit';
 import { useEffect, useState } from 'react';
-import { Divider } from 'rsuite';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { Button } from '@/components/ui/button';
+const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 import VIEWER from '../../../components/viewer.component';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import profesionalsService from '../../../services/profesionals.service';
-
-const MySwal = withReactContent(Swal);
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function PROFESIONALS_MANAGE(props) {
     const { translation, swaMsg, globals, id } = props;
@@ -47,25 +45,25 @@ export default function PROFESIONALS_MANAGE(props) {
             <div className='row my-1'>
                 <div className='col'>
                     <label>Primer Nombre</label>
-                    <input type="text" class="form-control" id="prof_name" defaultValue={data.name} />
+                    <input type="text" className="form-control" id="prof_name" defaultValue={data.name} />
                 </div>
                 <div className='col'>
                     <label>Segundo Nombre</label>
-                    <input type="text" class="form-control" id="prof_name_2" defaultValue={data.name_2} />
+                    <input type="text" className="form-control" id="prof_name_2" defaultValue={data.name_2} />
                 </div>
                 <div className='col'>
                     <label>Primer Apellido</label>
-                    <input type="text" class="form-control" id="prof_surname" defaultValue={data.surname} />
+                    <input type="text" className="form-control" id="prof_surname" defaultValue={data.surname} />
                 </div>
                 <div className='col'>
                     <label>Segundo Apellido</label>
-                    <input type="text" class="form-control" id="prof_surname_2" defaultValue={data.surname_2} />
+                    <input type="text" className="form-control" id="prof_surname_2" defaultValue={data.surname_2} />
                 </div>
             </div>
             <div className='row my-1'>
                 <div className='col'>
                     <label>Titulo</label>
-                    <select class="form-select" id="prof_title" defaultValue={data.title}>
+                    <select className="form-select" id="prof_title" defaultValue={data.title}>
                         <option value={'arq'}>ARQUITECTO</option>
                         <option value={'eng'}>INGENIERO</option>
                         <option value={'law'}>ABOGADO</option>
@@ -74,30 +72,30 @@ export default function PROFESIONALS_MANAGE(props) {
                 </div>
                 <div className='col'>
                     <label>Documento</label>
-                    <input type="text" class="form-control" id="prof_id_number" defaultValue={data.id_number} required
+                    <input type="text" className="form-control" id="prof_id_number" defaultValue={data.id_number} required
                         onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                 </div>
                 <div className='col'>
                     <label>Email</label>
-                    <input type="text" class="form-control" id="prof_email" defaultValue={data.email} />
+                    <input type="text" className="form-control" id="prof_email" defaultValue={data.email} />
                 </div>
                 <div className='col'>
                     <label>Número de contacto</label>
-                    <input type="text" class="form-control" id="prof_number" defaultValue={data.number} />
+                    <input type="text" className="form-control" id="prof_number" defaultValue={data.number} />
                 </div>
             </div>
             <div className='row my-1'>
                 <div className='col'>
                     <label>Matricula</label>
-                    <input type="text" class="form-control" id="prof_registration" defaultValue={data.registration} />
+                    <input type="text" className="form-control" id="prof_registration" defaultValue={data.registration} />
                 </div>
                 <div className='col'>
                     <label>Matricula Fecha</label>
-                    <input type="date" class="form-control" id="prof_registration_date" defaultValue={data.registration_date} />
+                    <input type="date" className="form-control" id="prof_registration_date" defaultValue={data.registration_date} />
                 </div>
                 <div className='col-6'>
                     <div className='mt-4'>
-                    <label>Concentimiento de trato de datos: </label> {data.concent ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger ms-2"></i>} 
+                    <label>Concentimiento de trato de datos: </label> {data.concent ? <Icon name="check" size={16} className="text-success" /> : <Icon name="times" size={16} className="text-danger ms-2" />} 
                     </div>
                 </div>
             </div>
@@ -105,15 +103,15 @@ export default function PROFESIONALS_MANAGE(props) {
             <div className='row my-1'>
                 <div className='col'>
                     <label>Hoja de Vida y Certificados</label>
-                    {data.attach_cv ? VIEWER_COMPONENT(data.id_number, `attach_cv.${data.attach_cv}`) : <i class="fas fa-times text-danger ms-2"></i>}
+                    {data.attach_cv ? VIEWER_COMPONENT(data.id_number, `attach_cv.${data.attach_cv}`) : <Icon name="times" size={16} className="text-danger ms-2" />}
                 </div>
                 <div className='col'>
                     <label>Documento de Identidad</label>
-                    {data.attach_id ? VIEWER_COMPONENT(data.id_number, `attach_id.${data.attach_id}`) : <i class="fas fa-times text-danger ms-2"></i>}
+                    {data.attach_id ? VIEWER_COMPONENT(data.id_number, `attach_id.${data.attach_id}`) : <Icon name="times" size={16} className="text-danger ms-2" />}
                 </div>
                 <div className='col'>
                     <label>Matricula</label>
-                    {data.attach_reg ? VIEWER_COMPONENT(data.id_number, `attach_reg.${data.attach_reg}`) : <i class="fas fa-times text-danger ms-2"></i>}
+                    {data.attach_reg ? VIEWER_COMPONENT(data.id_number, `attach_reg.${data.attach_reg}`) : <Icon name="times" size={16} className="text-danger ms-2" />}
                 </div>
             </div>
         </>
@@ -158,12 +156,7 @@ export default function PROFESIONALS_MANAGE(props) {
         let registration_date = document.getElementById("prof_registration_date").value;
         formData.set('registration_date', registration_date);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         if (!id) create(formData)
         if (id) return update(formData);
@@ -174,31 +167,15 @@ export default function PROFESIONALS_MANAGE(props) {
         profesionalsService.create(data)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.CLOSE();
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -206,31 +183,15 @@ export default function PROFESIONALS_MANAGE(props) {
         profesionalsService.update(id, data)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.UPDATE();
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -254,8 +215,8 @@ export default function PROFESIONALS_MANAGE(props) {
             <form onSubmit={manage} enctype="multipart/form-data">
                 {load == 1 ? FORM_COMPONENT() : ''}
                 <div className="text-start py-2">
-                    {id ? <button className="btn btn-sm btn-success" type='submit'><i class="fas fa-edit"></i>  GUARDAR</button>
-                        : <button className="btn btn-sm btn-success" type='submit'><i class="fas fa-plus-circle"></i> CREAR</button>}
+                    {id ? <Button size="sm" type='submit'><Icon name="edit" size={16} />  GUARDAR</Button>
+                        : <Button size="sm" type='submit'><Icon name="plus-circle" size={16} /> CREAR</Button>}
                 </div>
             </form>
 

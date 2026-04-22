@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "checkJs": true,
+    "strict": false,
+    "baseUrl": ".."
+  },
+  "include": [
+    "**/*.js",
+    "**/*.d.ts",
+    "../playwright.config.js"
+  ],
+  "exclude": [
+    "../node_modules"
+  ]
+}

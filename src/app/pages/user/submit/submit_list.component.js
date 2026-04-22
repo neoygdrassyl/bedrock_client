@@ -1,48 +1,33 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
 
 // LISTS
 import Fun6DocList from '../../../components/jsons/fun6DocsList.json'
 import { Lists } from '../../../components/jsons/lists_submit'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import DataTable from 'react-data-table-component';
+
+import DataTable from '@/components/data-table-bridge';
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
-import { MDBDataTable } from 'mdbreact';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
+function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshList }) {
+    const [lists, setLists] = useState(0);
+    const [extra_items, setExtraItems] = useState(0);
+    const [list_data_table, setListDataTable] = useState([]);
+    const [selected_list, setSelectedList] = useState([]);
+    const [list_new, setListNew] = useState(null);
+    const [isNew, setIsNew] = useState(false);
 
-class SUBMIT_LIST extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            lists: 0,
-            extra_items: 0,
-            list_data_table: [],
-            selected_list: [],
+    useEffect(() => {
+        // componentDidMount
+        //const interval = setInterval(() => {}, 1000);
+        return () => {
+            // componentWillUnmount cleanup
+            //clearInterval(interval);
         };
-    }
-    componentDidMount() {
-        //this.interval = setInterval(() => this.setState({ time: Date.now() }), 1000);
-    }
-    componentWillUnmount() {
-        //clearInterval(this.interval);
-    }
-    componentDidUpdate(prevState) {
-        /*if (this.state.selected_list !== prevState.selected_list && this.state.selected_list != []) {
-            for (var i = 0; i < this.state.selected_list.length; i++) {
-                let _split_value = this.state.selected_list[i].split(':');
-                if (document.getElementById(_split_value[1])) document.getElementById(_split_value[1]).value = _split_value[0];
-            }
-        }
-        */
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, list } = this.props;
-        const { } = this.state;
+    }, []);
 
         // DATA GETTERS
 
@@ -73,7 +58,7 @@ class SUBMIT_LIST extends Component {
                     break;
                 }
             }
-            this.setState({ list_new: items_set })
+            setListNew(items_set)
             //_update_doms();
         }
 
@@ -90,7 +75,7 @@ class SUBMIT_LIST extends Component {
             let isExtra = checkIfExtra(row.list_title)
             let _COMPONENT = [];
             _COMPONENT.push(<>
-                <div className="row bg-info text-white fw-bold d-flex py-2 text-center">
+                <div className="row bg-primary text-primary-foreground fw-bold d-flex py-2 text-center">
                     <div className="col-2">
                         <label>NOMENCLATURA</label>
                     </div>
@@ -99,7 +84,7 @@ class SUBMIT_LIST extends Component {
                     </div>
                     {!isExtra
                         ? <div className="col-4">
-                            <input type="text" class="form-control" id={"save_list_title_" + ID}
+                            <input type="text" className="form-control" id={"save_list_title_" + ID}
                                 placeholder="Titulo..." defaultValue={row.list_title} />
                         </div>
                         : <div className="col-4">
@@ -119,7 +104,7 @@ class SUBMIT_LIST extends Component {
                 _COMPONENT.push(<>
                     <div className="row border border-info py-1 text-center">
                         <div className="col-2">
-                            <select class="form-select" name={"submit_list_category_" + ID}
+                            <select className="form-select" name={"submit_list_category_" + ID}
                                 defaultValue={category[i]}>
                                 <option >DC</option>
                                 <option>DA-OA</option>
@@ -133,31 +118,30 @@ class SUBMIT_LIST extends Component {
                             </select>
                         </div>
                         <div className="col-2">
-                            <input type="text" class="form-control" name={"submit_list_code_" + ID} id={'edit_list_code_' + ID + "_" + i}
+                            <input type="text" className="form-control" name={"submit_list_code_" + ID} id={'edit_list_code_' + ID + "_" + i}
                                 defaultValue={code[i]} disabled={isExtra} />
                             {!isExtra ? <DOCS_LIST idRef={ID + "_" + i} setValues={setValuesEdit} text={"VER LISTA"} />
                                 : ""}
                         </div>
                         <div className="col-4 text-start">
-                            <textarea rows="2" class="form-control" name={"submit_list_name_" + ID} id={'edit_list_name_' + ID + "_" + i}
+                            <textarea rows="2" className="form-control" name={"submit_list_name_" + ID} id={'edit_list_name_' + ID + "_" + i}
                                 defaultValue={name[i]} disabled={isExtra} >
                             </textarea>
                         </div>
                         <div className="col-2">
-                            <select class="form-select" name={"submit_list_review_" + ID}
+                            <select className="form-select" name={"submit_list_review_" + ID}
                                 defaultValue={review[i]}>
                                 <option >NO</option>
                                 <option>SI</option>
                             </select>
                         </div>
                         <div className="col-2">
-                            <input type="number" min="0" step="1" class="form-control" name={"submit_list_pages_" + ID}
+                            <input type="number" min="0" step="1" className="form-control" name={"submit_list_pages_" + ID}
                                 defaultValue={page[i]} />
                         </div>
                     </div>
                 </>)
             }
-
 
             return <>{_COMPONENT}</>
         }
@@ -173,12 +157,12 @@ class SUBMIT_LIST extends Component {
 
         // DATA CONVERTERS FOR DATATABLE
         let _update_selected_list = (value, id) => {
-            let _array_selected_list = this.state.selected_list;
+            let _array_selected_list = [...selected_list];
             let _newEntry = value + ':' + id;
             let _searchIndex = _array_selected_list.findIndex(value => value.includes(id));
             if (_searchIndex < 0) _array_selected_list.push(_newEntry);
             else _array_selected_list[_searchIndex] = _newEntry;
-            this.setState({ selected_list: _array_selected_list });
+            setSelectedList(_array_selected_list);
         }
         let _update_doms = () => {
             /*for (var i = 0; i < this.state.selected_list.length; i++) {
@@ -187,12 +171,12 @@ class SUBMIT_LIST extends Component {
             }*/
         }
         let _GET_DATA_FOR_TITLE = () => {
-            let _LIST = this.state.list_new ? [this.state.list_new] : [Lists.list_61];
+            let _LIST = list_new ? [list_new] : [Lists.list_61];
             return <label className="fw-bold submit_list_title" id="new_list_title">
                 {Object.keys(_LIST[0])}</label>
         }
         let _GET_DATA_FOR_LIST = () => {
-            let _LIST = this.state.list_new ? [this.state.list_new] : [Lists.list_61];
+            let _LIST = list_new ? [list_new] : [Lists.list_61];
             for (var ITEM in _LIST) {
                 var items_set = Object.values(_LIST[ITEM]);
                 items_set = items_set[0] ?? [];
@@ -201,7 +185,7 @@ class SUBMIT_LIST extends Component {
                         id: value,
                         search_cod: value,
                         search_title: Fun6DocList[value],
-                        nome: <select class="form-select" name="submit_list_category" id={'select_' + value} onChange={(e) => _update_selected_list(e.target.value, 'select_' + value)}>
+                        nome: <select className="form-select" name="submit_list_category" id={'select_' + value} onChange={(e) => _update_selected_list(e.target.value, 'select_' + value)}>
                             <option >DC</option>
                             <option>DA-OA</option>
                             <option>DA-LC</option>
@@ -212,16 +196,16 @@ class SUBMIT_LIST extends Component {
                             <option>DBU</option>
                             <option>CCP</option>
                         </select>,
-                        cod: <input type="text" class="form-control" name="submit_list_code"
+                        cod: <input type="text" className="form-control" name="submit_list_code"
                             value={value} readOnly disabled id={'cod_' + value} onChange={(e) => _update_selected_list(e.target.value, 'cod_' + value)} />,
-                        title: <textarea rows="2" class="form-control" name="submit_list_name"
+                        title: <textarea rows="2" className="form-control" name="submit_list_name"
                             value={Fun6DocList[value]} readOnly disabled id={'title_' + value} onChange={(e) => _update_selected_list(e.target.value, 'title_' + value)} >
                         </textarea>,
-                        review: <select class="form-select" name="submit_list_review" id={'review_' + value} onChange={(e) => _update_selected_list(e.target.value, 'review_' + value)} >
+                        review: <select className="form-select" name="submit_list_review" id={'review_' + value} onChange={(e) => _update_selected_list(e.target.value, 'review_' + value)} >
                             <option >NO</option>
                             <option>SI</option>
                         </select>,
-                        pages: <input type="number" min="0" step="1" class="form-control" name="submit_list_pages" id={'pages_' + value} onChange={(e) => _update_selected_list(e.target.value, 'pages_' + value)} />,
+                        pages: <input type="number" min="0" step="1" className="form-control" name="submit_list_pages" id={'pages_' + value} onChange={(e) => _update_selected_list(e.target.value, 'pages_' + value)} />,
                     }
                 })
             }
@@ -263,8 +247,8 @@ class SUBMIT_LIST extends Component {
                         <label className="fw-bold">Listas Totales: {currentItem.sub_lists.length}</label>
                     </div>
                     <div className="text-end col-6">
-                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => this.setState({ new: true })}>
-                            <i class="fas fa-plus-circle"></i> NUEVA LISTA </MDBBtn>
+                        <Button variant="outline" size="sm" className="mx-3" onClick={() => setIsNew(true)}>
+                            <Icon name="plus-circle" size={16} /> NUEVA LISTA </Button>
                     </div>
                 </div>
             </>
@@ -273,7 +257,7 @@ class SUBMIT_LIST extends Component {
         let _COMPONENT_LIST = () => {
             const columns = [
                 {
-                    name: <label className="text-center">DOCUMENTOS</label>,
+                    name: 'Documentos',
                     selector: row => row.id, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
@@ -282,17 +266,15 @@ class SUBMIT_LIST extends Component {
                     cell: row => <div className="py-2">{_LIST_GEN(row)}</div>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'Acción',
                     button: true,
                     wrap: false,
                     minWidth: '100px',
                     cell: row => <>
-                        <MDBTooltip title='Guardar Cambios' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => save_list(row.id)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i class="far fa-save fa-2x" ></i></button></MDBTooltip>
-                        <MDBTooltip title='Eliminar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <button onClick={() => delete_list(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                                <i class="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
+ <Button variant="outline" size="sm" className="m-0 p-2" title="Guardar Cambios" onClick={() => save_list(row.id)} >
+                                <Icon name="save" size={16} /></Button>
+ <Button variant="destructive" size="sm" className="m-0 p-2" title="Eliminar" onClick={() => delete_list(row.id)} >
+                                <Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
@@ -313,39 +295,48 @@ class SUBMIT_LIST extends Component {
 
         let _COMPONENT_NEW = () => {
             let _COMPONENT = [];
-            let _LIST = this.state.list_new ? [this.state.list_new] : [Lists.list_61];
+            let _LIST = list_new ? [list_new] : [Lists.list_61];
 
             _COMPONENT.push(<>
                 <div className="row">
                     <div className="text-start col-6 my-3">
                         <label>NUEVA LISTA</label>
-                        <select class="form-select" required id={"submit_list_type"}
+                        <select className="form-select" required id={"submit_list_type"}
                             onChange={(e) => _SET_LIST(e)} >
                             {_LIST_COMPONENT()}
                         </select>
                     </div>
                     <div className="text-end col-6 my-3">
-                        <MDBBtn className="btn btn-info my-3 me-2" onClick={() => this.setState({ new: false })}>
-                            <i class="fas fa-times-circle"></i>  CANCELAR </MDBBtn>
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_list()}>
-                            <i class="far fa-edit"></i> GUARDAR LISTA </MDBBtn>
+                        <Button variant="outline" size="sm" className="my-3 me-2" onClick={() => setIsNew(false)}>
+                            <Icon name="times-circle" size={16} />  CANCELAR </Button>
+                        <Button size="sm" className="my-3" onClick={() => new_list()}>
+                            <Icon name="edit" size={16} /> GUARDAR LISTA </Button>
                     </div>
                 </div></>)
 
             for (var ITEM in _LIST) {
 
                 if (Object.keys(_LIST[ITEM])[0]) {
+                    const rows = _GET_DATA_FOR_LIST();
                     _COMPONENT.push(<>
-                        <MDBDataTable
-                            striped
-                            bordered
-                            small
-                            data={data}
-                            searchLabel={"Buscar..."}
-                            info={false}
-                            paging={false}
-                            onSearch={_update_doms}
-                        />
+                        <table className="table table-striped table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    {data.columns.map((col, idx) => (
+                                        <th key={idx} style={col.width ? { width: col.width } : {}}>{col.label}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows.map((row, idx) => (
+                                    <tr key={idx}>
+                                        {data.columns.map((col, cidx) => (
+                                            <td key={cidx}>{row[col.field]}</td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </>)
                 } else {
                     _COMPONENT.push(<>{_COMPONENT_EXTRA_LIST()}</>)
@@ -356,7 +347,6 @@ class SUBMIT_LIST extends Component {
         let _COMPONENT_EXTRA_LIST = () => {
             let _COMPONENT = [];
 
-
             _COMPONENT.push(<>
                 <div className="row text-center border border-secondary py-2 bg-secondary text-white">
                     <div className="col-2">
@@ -366,7 +356,7 @@ class SUBMIT_LIST extends Component {
                         <label className="fw-bold">COD</label>
                     </div>
                     <div className="col-4">
-                        <input type="text" class="form-control" id="new_list_title"
+                        <input type="text" className="form-control" id="new_list_title"
                             placeholder="Titulo..." />
                     </div>
                     <div className="col-2">
@@ -378,12 +368,11 @@ class SUBMIT_LIST extends Component {
                 </div>
             </>)
 
-
-            for (var i = 0; i < this.state.extra_items; i++) {
+            for (var i = 0; i < extra_items; i++) {
                 _COMPONENT.push(<>
                     <div className="row border border-secondary py-1 text-center">
                         <div className="col-2">
-                            <select class="form-select" name="submit_list_category" >
+                            <select className="form-select" name="submit_list_category" >
                                 <option >DC</option>
                                 <option>DA-OA</option>
                                 <option>DA-LC</option>
@@ -396,47 +385,44 @@ class SUBMIT_LIST extends Component {
                             </select>
                         </div>
                         <div className="col-2">
-                            <input type="text" class="form-control" name="submit_list_code"
+                            <input type="text" className="form-control" name="submit_list_code"
                                 id={"new_list_code_" + i} />
                             <DOCS_LIST idRef={i} setValues={setValues} text={"VER LISTA"} />
                         </div>
                         <div className="col-4 text-start">
-                            <textarea rows="2" class="form-control" name="submit_list_name"
+                            <textarea rows="2" className="form-control" name="submit_list_name"
                                 id={"new_list_name_" + i} >
                             </textarea>
                         </div>
                         <div className="col-2">
-                            <select class="form-select" name="submit_list_review" >
+                            <select className="form-select" name="submit_list_review" >
                                 <option >NO</option>
                                 <option>SI</option>
                             </select>
                         </div>
                         <div className="col-2">
-                            <input type="number" min="0" step="1" class="form-control" name="submit_list_pages" />
+                            <input type="number" min="0" step="1" className="form-control" name="submit_list_pages" />
                         </div>
                     </div>
                 </>)
 
             }
 
-
             _COMPONENT.push(<>
                 <div className="row text-center border border-secondary py-2 text-white">
                     <div className="col-6">
-                        <label className="fw-bold text-dark">ITEMS TOTALES: {this.state.extra_items}</label>
+                        <label className="fw-bold text-dark">ITEMS TOTALES: {extra_items}</label>
                     </div>
                     <div className="col-6 text-end">
-                        {this.state.extra_items > 0
-                            ? <MDBBtn className="btn btn-sm btn-secondary my-3 me-1" onClick={() => this.setState({ extra_items: this.state.extra_items - 1 })}>
-                                <i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                        {extra_items > 0
+                            ? <Button variant="outline" size="sm" className="my-3 me-1" onClick={() => setExtraItems(extra_items - 1)}>
+                                <Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                             : ""}
-                        <MDBBtn className="btn btn-sm btn-secondary my-3" onClick={() => this.setState({ extra_items: this.state.extra_items + 1 })}>
-                            <i class="fas fa-plus-circle"></i> AÑADIR ITEM </MDBBtn>
+                        <Button variant="outline" size="sm" className="my-3" onClick={() => setExtraItems(extra_items + 1)}>
+                            <Icon name="plus-circle" size={16} /> AÑADIR ITEM </Button>
                     </div>
                 </div>
             </>)
-
-
 
             return <>{_COMPONENT}</>
         }
@@ -449,13 +435,8 @@ class SUBMIT_LIST extends Component {
             formData.set('submitId', currentItem.id);
             let new_list_type = document.getElementById("submit_list_type").value;
 
-            if (new_list_type == "LISTA EXTRA" && this.state.extra_items == 0) {
-                MySwal.fire({
-                    title: "LISTA EXTRA VACIA",
-                    text: "Para crear una Lista Extra de documentos, debe añadir almenos un elemeno.",
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+            if (new_list_type == "LISTA EXTRA" && extra_items == 0) {
+                swalError({ title: "LISTA EXTRA VACIA", text: "Para crear una Lista Extra de documentos, debe añadir almenos un elemeno.", icon: 'warning' });
                 return 1
             }
 
@@ -486,42 +467,21 @@ class SUBMIT_LIST extends Component {
             formData.set('list_review', list_review.join(','));
             formData.set('list_pages', list_pages.join(','));
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             SubmitService.create_list(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshList();
-                        this.setState({ new: false })
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        refreshList();
+                        setIsNew(false)
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         };
@@ -558,89 +518,40 @@ class SUBMIT_LIST extends Component {
             formData.set('list_review', list_review.join(','));
             formData.set('list_pages', list_pages.join(','));
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             SubmitService.update_list(ID, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshList();
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        refreshList();
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
 
         };
 
         let delete_list = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     SubmitService.delete_list(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.refreshList();
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                refreshList();
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -649,7 +560,7 @@ class SUBMIT_LIST extends Component {
         return (
             <div className="py-3">
                 {_COMPONENT_ADD_LIS()}
-                {this.state.new
+                {isNew
                     ? <>{_COMPONENT_NEW()}</>
                     : ""}
                 <div className="row py-3">
@@ -659,7 +570,6 @@ class SUBMIT_LIST extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default SUBMIT_LIST;

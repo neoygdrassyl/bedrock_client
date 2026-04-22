@@ -1,42 +1,34 @@
-import React, { Component } from 'react';
-import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
+import { useState, useEffect } from 'react';
+
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import './fun_moduleNav_enhanced.css';
+import { Icon } from '@/components/icon';
 
-class FUN_MODULE_NAV extends Component {
-    constructor(props) {
-        super(props);
-        // Check if CSS variable is already set to determine initial state
-        const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
-        this.state = {
-            isCollapsed: currentWidth === '60px'
-        };
-    }
+function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGATION, pqrsxfun }) {
+    // Check if CSS variable is already set to determine initial state
+    const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
+    const [isCollapsed, setIsCollapsed] = useState(currentWidth === '60px');
 
-    componentDidMount() {
+    useEffect(() => {
         // Ensure CSS variable is set on mount if not already set
         const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
         if (!currentWidth || currentWidth === '') {
             document.documentElement.style.setProperty('--fun-sidebar-width', '240px');
         }
-    }
+    }, []);
 
-    toggleSidebar = () => {
-        this.setState(prevState => {
-            const newCollapsedState = !prevState.isCollapsed;
+    const toggleSidebar = () => {
+        setIsCollapsed(prevCollapsed => {
+            const newCollapsedState = !prevCollapsed;
             // Update CSS variable for dynamic modal positioning
             document.documentElement.style.setProperty(
                 '--fun-sidebar-width',
                 newCollapsedState ? '60px' : '240px'
             );
-            return { isCollapsed: newCollapsedState };
+            return newCollapsedState;
         });
     };
-
-    render() {
-        const { translation, currentItem, currentVersion, FROM } = this.props;
-        const { isCollapsed } = this.state;
 
         let _REGEX_MATCH_PH = (_string) => {
             let regex0 = /p\.\s+h/i;
@@ -47,8 +39,8 @@ class FUN_MODULE_NAV extends Component {
             return false;
         };
 
-        let version = currentItem.version;
-        let fun1 = currentItem.fun_1s[version - 1];
+        let version = currentItem.version || 1;
+        let fun1 = currentItem.fun_1s ? currentItem.fun_1s[version - 1] : null;
         let type = "";
         if (fun1) type = formsParser1(fun1);
 
@@ -64,26 +56,26 @@ class FUN_MODULE_NAV extends Component {
             id: 'details_time',
             color: 'info',
             items: [
-                { id: 'general', icon: 'far fa-folder-open', label: 'DETALLES', from: 'general' },
-                { id: 'clock', icon: 'far fa-clock', label: 'TIEMPOS', from: 'clock' }
+                { id: 'general', icon: 'FolderOpen', label: 'DETALLES', from: 'general' },
+                { id: 'clock', icon: 'Clock', label: 'TIEMPOS', from: 'clock' }
             ]
         });
 
         // Grupo 2: Documentos y Edición (solo si el estado lo permite)
         const editGroup = [];
-        editGroup.push({ id: 'archive', icon: 'fas fa-archive', label: 'DOCUMENTOS', from: 'archive' });
+        editGroup.push({ id: 'archive', icon: 'Archive', label: 'DOCUMENTOS', from: 'archive' });
         
         if (currentItem.state != 101 && currentItem.state <= 200) {
-            editGroup.push({ id: 'edit', icon: 'far fa-folder-open', label: 'ACTUALIZAR', from: 'edit' });
-            editGroup.push({ id: 'check', icon: 'far fa-check-square', label: 'CHECKEO', from: 'check' });
+            editGroup.push({ id: 'edit', icon: 'FolderOpen', label: 'ACTUALIZAR', from: 'edit' });
+            editGroup.push({ id: 'check', icon: 'CheckSquare', label: 'CHECKEO', from: 'check' });
             
             if (!isPH && !isOA && rules[0] != 1) {
                 editGroup.push({ 
                     id: 'alert', 
-                    icon: 'fas fa-sign', 
+                    icon: 'Signpost', 
                     label: 'PUBLICIDAD', 
                     from: 'alert',
-                    badge: this.props.pqrsxfun?.length ? 'PQRS' : null
+                    badge: pqrsxfun?.length ? 'PQRS' : null
                 });
             }
         }
@@ -101,17 +93,17 @@ class FUN_MODULE_NAV extends Component {
             const reportsItems = [];
 
             if (!isPH) {
-                reportsItems.push({ id: 'record_law', icon: 'fas fa-balance-scale', label: 'INF. JURÍDICO', from: 'record_law' });
+                reportsItems.push({ id: 'record_law', icon: 'Scale', label: 'INF. JURÍDICO', from: 'record_law' });
 
                 if (!isOA) {
-                    reportsItems.push({ id: 'record_arc', icon: 'far fa-building', label: 'INF. ARQ.', from: 'record_arc' });
+                    reportsItems.push({ id: 'record_arc', icon: 'Building', label: 'INF. ARQ.', from: 'record_arc' });
                     
                     if (rules[1] != 1) {
-                        reportsItems.push({ id: 'record_eng', icon: 'fas fa-cogs', label: 'INF. ESTRUCT.', from: 'record_eng' });
+                        reportsItems.push({ id: 'record_eng', icon: 'Settings', label: 'INF. ESTRUCT.', from: 'record_eng' });
                     }
                 }
             } else {
-                reportsItems.push({ id: 'record_ph', icon: 'fas fa-pencil-ruler', label: 'INFORME P.H.', from: 'record_ph' });
+                reportsItems.push({ id: 'record_ph', icon: 'PenTool', label: 'INFORME P.H.', from: 'record_ph' });
             }
 
             if (reportsItems.length > 0) {
@@ -126,10 +118,10 @@ class FUN_MODULE_NAV extends Component {
             const finalItems = [];
             
             if (!isPH && !isOA) {
-                finalItems.push({ id: 'record_review', icon: 'fas fa-file-contract', label: 'ACTA', from: 'record_review' });
+                finalItems.push({ id: 'record_review', icon: 'FileText', label: 'ACTA', from: 'record_review' });
             }
             
-            finalItems.push({ id: 'expedition', icon: 'far fa-file-alt', label: 'EXPEDICIÓN', from: 'expedition' });
+            finalItems.push({ id: 'expedition', icon: 'FileText', label: 'EXPEDICIÓN', from: 'expedition' });
 
             if (finalItems.length > 0) {
                 navGroups.push({
@@ -140,6 +132,8 @@ class FUN_MODULE_NAV extends Component {
             }
         }
 
+        console.log("=== NAV GROUPS GENERATED ===", "FROM:", FROM, "state:", currentItem.state, "items:", navGroups.map(g => g.items.map(i => i.label).join(',')).join(' | '));
+
         return (
             <>
                 {currentItem && (
@@ -147,10 +141,10 @@ class FUN_MODULE_NAV extends Component {
                         {/* Toggle Button */}
                         <button 
                             className="fun-nav-toggle"
-                            onClick={this.toggleSidebar}
+                            onClick={toggleSidebar}
                             aria-label={isCollapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'}
                         >
-                            <i className={`fas ${isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'}`}></i>
+                            <Icon name={isCollapsed ? 'chevron-right' : 'chevron-left'} size={16} />
                         </button>
 
                         {/* Header con información fija */}
@@ -158,7 +152,7 @@ class FUN_MODULE_NAV extends Component {
                             {!isCollapsed && (
                                 <>
                                     <div className="fun-nav-header-title">
-                                        <i className="fas fa-folder-open"></i>
+                                        <Icon name="folder-open" size={16} />
                                         <span className="ms-2">NAVEGACIÓN</span>
                                     </div>
                                     <div className="fun-nav-header-info">
@@ -169,20 +163,18 @@ class FUN_MODULE_NAV extends Component {
                                         {currentItem.state !== undefined && (
                                             <div className="fun-nav-info-item mt-2">
                                                 <small className="text-muted">Estado:</small>
-                                                <MDBBadge 
-                                                    color={
+                                                <span className={`badge bg-${
                                                         currentItem.state >= 100 ? 'success' :
                                                         currentItem.state >= 50 ? 'info' :
                                                         currentItem.state >= 5 ? 'warning' :
                                                         currentItem.state < 0 ? 'danger' : 'secondary'
-                                                    }
-                                                    className="d-block mt-1"
+                                                    } d-block mt-1`}
                                                 >
                                                     {currentItem.state >= 100 ? 'ARCHIVADO' :
                                                      currentItem.state >= 50 ? 'EXPEDICIÓN' :
                                                      currentItem.state >= 5 ? 'EVALUACIÓN' :
                                                      currentItem.state < 0 ? 'INCOMPLETO' : 'RADICACIÓN'}
-                                                </MDBBadge>
+                                                </span>
                                             </div>
                                         )}
                                     </div>
@@ -193,11 +185,11 @@ class FUN_MODULE_NAV extends Component {
                         {/* Botón de cerrar */}
                         <div className="fun-nav-section">
                             <button
-                                onClick={() => this.props.NAVIGATION(currentItem, "close", FROM)}
+                                onClick={() => NAVIGATION(currentItem, "close", FROM)}
                                 className={`fun-nav-item btn-close-module`}
                                 data-tooltip="CERRAR"
                             >
-                                <i className="fas fa-times-circle"></i>
+                                <Icon name="times-circle" size={16} />
                                 {!isCollapsed && <span className="fun-nav-label">CERRAR</span>}
                             </button>
                         </div>
@@ -212,19 +204,19 @@ class FUN_MODULE_NAV extends Component {
                                     return (
                                         <button
                                             key={item.id}
-                                            onClick={() => FROM !== item.from && this.props.NAVIGATION(currentItem, item.id, FROM)}
+                                            onClick={() => FROM !== item.from && NAVIGATION(currentItem, item.id, FROM)}
                                             className={`fun-nav-item ${isActive ? 'active' : ''} btn-${itemColor}`}
                                             disabled={isActive}
                                             data-tooltip={item.label}
                                         >
-                                            <i className={item.icon}></i>
+                                            <Icon name={item.icon} size={16} />
                                             {!isCollapsed && (
                                                 <span className="fun-nav-label">
                                                     {item.label}
                                                     {item.badge && (
-                                                        <MDBBadge color="primary" className="ms-2">
+                                                        <span className="badge bg-primary ms-2">
                                                             {item.badge}
-                                                        </MDBBadge>
+                                                        </span>
                                                     )}
                                                 </span>
                                             )}
@@ -237,7 +229,6 @@ class FUN_MODULE_NAV extends Component {
                 )}
             </>
         );
-    }
 }
 
 export default FUN_MODULE_NAV;

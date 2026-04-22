@@ -1,11 +1,10 @@
-import {React, useState} from 'react';
-import moment from 'moment';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import React, { useState, useCallback, useMemo, memo } from 'react';
+import dayjs from 'dayjs';
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
 import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
-
-const MySwal = withReactContent(Swal);
+import { Icon } from '@/components/icon';
+import { swalFormDialog } from '../../../../utils/swalAdapter';
+import { getIconSvg } from '../../../../utils/iconSvgString';
 
 // --- Anchos de columna centralizados ---
 const COL_WIDTHS = {
@@ -52,7 +51,7 @@ export const ClockTableHeader = () => {
                 flex: `0 0 ${COL_WIDTHS.EVENT}`, 
                 minWidth: COL_WIDTHS.EVENT 
             }}>
-                <i className="fas fa-list"></i> Evento
+                <Icon name="list" size={16} /> Evento
             </div>
             {/* Columna 2 Fija (Fecha Evento) */}
             <div style={{ 
@@ -62,47 +61,73 @@ export const ClockTableHeader = () => {
                 flex: `0 0 ${COL_WIDTHS.DATE}`, 
                 minWidth: COL_WIDTHS.DATE
             }}>
-                <i className="far fa-calendar"></i> Fecha evento
+                <Icon name="calendar" size={16} /> Fecha evento
             </div>
 
             {/* Columnas con scroll */}
             <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <i className="fas fa-gavel"></i> Límite legal
+                <Icon name="gavel" size={16} /> Límite legal
             </div>
             <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <i className="fas fa-exclamation-triangle"></i> Alarma legal
+                <Icon name="exclamation-triangle" size={16} /> Alarma legal
             </div>
             <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <i className="fas fa-calendar-check"></i> Límite programado
+                <Icon name="calendar-check" size={16} /> Límite programado
             </div>
             <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <i className="far fa-bell"></i> Alarma programada
+                <Icon name="bell" size={16} /> Alarma programada
             </div>
             <div style={{ ...colStyle, flex: '1', minWidth: '220px' }}>
-                <i className="fas fa-arrow-right"></i> Siguiente paso
+                <Icon name="arrow-right" size={16} /> Siguiente paso
             </div>
         </div>
     );
 };
 
 
-export const ClockRow = (props) => {
+// Componente ClockRow memoizado para evitar re-renders innecesarios
+export const ClockRow = memo((props) => {
     const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, isHighlighted } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
-    // ... (resto de la lógica del componente que no cambia)
-    // Resolver reloj según versión
-    const getClockScoped = (state) => {
+    // Resolver reloj según versión - memoizado
+    const getClockScoped = useCallback((state) => {
         if (value.version !== undefined) {
             return getClockVersion(state, value.version) || getClock(state);
         }
         return getClock(state);
-    };
+    }, [value.version, getClockVersion, getClock]);
 
     const [isHovered, setIsHovered] = useState(false);
+    
+    // SOLUCIÓN: Estado local para el input de fecha - evita re-renders del padre
+    const initialDate = clock?.date_start ?? value.manualDate ?? '';
+    const [localDateValue, setLocalDateValue] = useState(initialDate);
+    
+    // Sincronizar estado local cuando cambian las props (solo si es diferente)
+    React.useEffect(() => {
+        const newDate = clock?.date_start ?? value.manualDate ?? '';
+        if (newDate !== localDateValue) {
+            setLocalDateValue(newDate);
+        }
+    }, [clock?.date_start, value.manualDate]); // No incluir localDateValue para evitar ciclos
+
+    // SOLUCIÓN: Handler para cambios en el input de fecha - DEBE estar antes de cualquier return
+    const handleDateChange = useCallback((e) => {
+        setLocalDateValue(e.target.value);
+    }, []);
+    
+    // SOLUCIÓN: Handler para guardar solo cuando hay cambios reales - DEBE estar antes de cualquier return
+    const handleDateBlur = useCallback(() => {
+        const originalDate = clock?.date_start ?? value.manualDate ?? '';
+        // Solo guardar si el valor realmente cambió
+        if (localDateValue !== originalDate) {
+            onSave(value, i);
+        }
+    }, [localDateValue, clock?.date_start, value, i, onSave]);
 
     // Formateador textual MODIFICADO para usar formato de fecha corta (L)
-    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('DD/MM/YYYY') : '- -';
+    const formatDate = (dateStr) => dateStr ? dayjs(dateStr).format('DD/MM/YYYY') : '- -';
 
     // =====================================================
     // CÁLCULO DE ICONOS Y ESTADOS (SEMÁFORO)
@@ -111,14 +136,14 @@ export const ClockRow = (props) => {
         const currentDate = clock?.date_start ?? value.manualDate;
         
         if (currentDate) {
-            return <i className="fas fa-check-circle" style={{ color: '#2f9e44', fontSize: '0.9rem' }}></i>;
+            return <Icon name="check-circle" size={16} style={{ color: '#2f9e44', fontSize: '0.9rem' }} />;
         }
         
         if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) {
-             return <i className="fas fa-minus-circle" style={{ color: '#dee2e6', fontSize: '0.9rem' }}></i>;
+             return <Icon name="minus-circle" size={16} style={{ color: '#dee2e6', fontSize: '0.9rem' }} />;
         }
 
-        return <i className="fas fa-clock" style={{ color: '#fcc419', fontSize: '0.9rem' }}></i>;
+        return <Icon name="clock" size={16} style={{ color: '#fcc419', fontSize: '0.9rem' }} />;
     };
 
 
@@ -180,7 +205,7 @@ export const ClockRow = (props) => {
                 if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) totalDays += suspensionPreActa.days;
                 if (extension.exists && extension.end?.date_start && !extension.isActive) {
                     const acta1Date = getClockScoped(30)?.date_start;
-                    if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) totalDays += extension.days;
+                    if (!acta1Date || dayjs(extension.start.date_start).isBefore(acta1Date)) totalDays += extension.days;
                 }
                 limitDate = sumarDiasHabiles(ldf, totalDays);
                 tooltip = `Acta 1: ${totalDays} días hábiles desde LDF`;
@@ -258,9 +283,9 @@ export const ClockRow = (props) => {
     const getAlarmInfo = () => {
         if (!legalData || !legalData.limitDate) return null;
         const { limitDate } = legalData;
-        const limitMoment = moment(limitDate);
+        const limitMoment = dayjs(limitDate);
         const isCompleted = !!clock?.date_start;
-        const today = moment(systemDate);
+        const today = dayjs(systemDate);
         const state = value.state;
 
 
@@ -273,15 +298,15 @@ export const ClockRow = (props) => {
             if (isCompleted) {
                 text = `A tiempo`;
                 color = '#2f9e44';
-                icon = 'fa-check';
+                icon = 'Check';
             } else if (!isCompleted && actoAdministrativo?.date_start) {
                 text = 'Vencida';
                 color = '#e03131';
-                icon = 'fa-times-circle';
+                icon = 'XCircle';
             } else {
                 text = 'Pendiente';
                 color = '#f08c00';
-                icon = 'fa-hourglass-half';
+                icon = 'Hourglass';
             }
             return { text, color, icon };
         }
@@ -299,35 +324,38 @@ export const ClockRow = (props) => {
         let icon = null;
 
         if (isCompleted) {
-            const completionDate = moment(clock.date_start);
+            const completionDate = dayjs(clock.date_start);
             
             if (completionDate.isAfter(limitMoment, 'day')) {
-                const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                 text = `Retraso de ${delayDays} día(s)`;
                 color = '#e03131';
-                icon = 'fa-exclamation-circle';
+                icon = 'AlertCircle';
             } else {
                 text = `A tiempo`;
                 color = '#2f9e44';
-                icon = 'fa-check';
+                icon = 'Check';
             }
         } else {
             const isOverdue = today.isAfter(limitMoment, 'day');
             
             if (isOverdue) {
-                const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const overdueDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                 text = `Vencido por ${overdueDays} día(s)`;
                 color = '#e03131';
-                icon = 'fa-exclamation-circle';
+                icon = 'AlertCircle';
             } else {
-                const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const remainingDays = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                 text = `${remainingDays} día(s) restante(s)`;
                 color = '#f08c00';
-                icon = 'fa-hourglass-half';
+                icon = 'Hourglass';
                 
                 if (remainingDays <= 2) {
                     color = '#e03131';
-                    icon = 'fa-exclamation-triangle';
+                    icon = 'AlertTriangle';
                 }
             }
         }
@@ -340,7 +368,7 @@ export const ClockRow = (props) => {
         if (!alarmInfo) return null;
         return (
             <div className="d-flex align-items-center" style={{ color: alarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {alarmInfo.icon && <i className={`fas ${alarmInfo.icon} me-1`}></i>}
+                {alarmInfo.icon && <Icon name={alarmInfo.icon} size={16} className="me-1" />}
                 {alarmInfo.text}
             </div>
         );
@@ -352,44 +380,47 @@ export const ClockRow = (props) => {
     const getScheduledAlarmInfo = () => {
         if (!scheduledData || !scheduledData.limitDate) return null;
         
-        const limitMoment = moment(scheduledData.limitDate);
+        const limitMoment = dayjs(scheduledData.limitDate);
         const isCompleted = !!clock?.date_start;
-        const today = moment(systemDate);
+        const today = dayjs(systemDate);
 
         let text = '';
         let color = '';
         let icon = null;
 
         if (isCompleted) {
-            const completionDate = moment(clock.date_start);
+            const completionDate = dayjs(clock.date_start);
             
             if (completionDate.isAfter(limitMoment, 'day')) {
-                const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                 text = `Retraso de ${delayDays} día(s)`;
                 color = '#e03131';
-                icon = 'fa-exclamation-circle';
+                icon = 'AlertCircle';
             } else {
                 text = `A tiempo`;
                 color = '#2f9e44';
-                icon = 'fa-check';
+                icon = 'Check';
             }
         } else {
             const isOverdue = today.isAfter(limitMoment, 'day');
             
             if (isOverdue) {
-                const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const overdueDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                 text = `Vencido por ${overdueDays} día(s)`;
                 color = '#e03131';
-                icon = 'fa-exclamation-circle';
+                icon = 'AlertCircle';
             } else {
-                const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const remainingDays = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                 text = `${remainingDays} día(s) restante(s)`;
                 color = '#f08c00';
-                icon = 'fa-hourglass-half';
+                icon = 'Hourglass';
                 
                 if (remainingDays <= 2) {
                     color = '#e03131';
-                    icon = 'fa-exclamation-triangle';
+                    icon = 'AlertTriangle';
                 }
             }
         }
@@ -435,7 +466,7 @@ export const ClockRow = (props) => {
                     if (depClockDef) {
                         return {
                             text: `Espera: ${depClockDef.name || 'Evento previo'}`,
-                            icon: 'fa-pause-circle',
+                            icon: 'PauseCircle',
                             color: '#868e96'
                         };
                     }
@@ -446,7 +477,7 @@ export const ClockRow = (props) => {
         // Si no hay dependencias pendientes, este es el siguiente paso
         return {
             text: 'Acción requerida',
-            icon: 'fa-play-circle',
+            icon: 'PlayCircle',
             color: '#1971c2'
         };
     };
@@ -457,7 +488,7 @@ export const ClockRow = (props) => {
         if (!scheduledAlarmInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem' }}>- -</span>;
         return (
             <div style={{ display: 'flex', alignItems: 'center', color: scheduledAlarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {scheduledAlarmInfo.icon && <i className={`fas ${scheduledAlarmInfo.icon}`} style={{ marginRight: '0.35rem' }}></i>}
+                {scheduledAlarmInfo.icon && <Icon name={scheduledAlarmInfo.icon} size={16} className="me-1" />}
                 {scheduledAlarmInfo.text}
             </div>
         );
@@ -467,7 +498,7 @@ export const ClockRow = (props) => {
         if (!nextStepInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem', fontStyle: 'italic' }}>Completado</span>;
         return (
             <div style={{ display: 'flex', alignItems: 'center', color: nextStepInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {nextStepInfo.icon && <i className={`fas ${nextStepInfo.icon}`} style={{ marginRight: '0.35rem' }}></i>}
+                {nextStepInfo.icon && <Icon name={nextStepInfo.icon} size={16} className="me-1" />}
                 {nextStepInfo.text}
             </div>
         );
@@ -505,12 +536,12 @@ export const ClockRow = (props) => {
             existingObs = clock.desc.split('|| OBS:')[1].trim();
         }
 
-        MySwal.fire({
+        swalFormDialog({
             html: `
             <div class="time-detail-modal">
                 <div class="tdm-header">
                     <div class="tdm-title-group">
-                        <div class="tdm-icon-box"><i class="fas fa-calendar-day"></i></div>
+                        <div class="tdm-icon-box">${getIconSvg("fa-calendar-day")}</div>
                         <div>
                             <h5 class="tdm-title">${title}</h5>
                             <span class="tdm-subtitle">${systemDesc}</span>
@@ -521,15 +552,15 @@ export const ClockRow = (props) => {
 
                 <div class="tdm-grid">
                     <div class="tdm-card">
-                        <div class="tdm-card-header"><i class="fas fa-calendar-check text-primary"></i> Fecha Real</div>
+                        <div class="tdm-card-header">${getIconSvg("fa-calendar-check", 14, "text-primary")} Fecha Real</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${currentDate}</div>
-                            ${legalData.baseDate ? `<div class="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
+                            ${legalData.baseDate ? `<div className="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
                         </div>
                     </div>
 
                     <div class="tdm-card">
-                        <div class="tdm-card-header"><i class="fas fa-gavel text-danger"></i> Límite Legal</div>
+                        <div class="tdm-card-header">${getIconSvg("fa-gavel", 14, "text-danger")} Límite Legal</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${legalData.limitDate ? formatDate(legalData.limitDate) : 'N/A'}</div>
                             <div class="tdm-sub-value">${(state === 501 ? 'Límite legal con holgura de 2 días' : state === 502 ? 'Límite legal con holgura de 1 día' : '') || ''}</div>
@@ -537,7 +568,7 @@ export const ClockRow = (props) => {
                     </div>
 
                     <div class="tdm-card">
-                        <div class="tdm-card-header"><i class="fas fa-user-clock text-info"></i> Programado</div>
+                        <div class="tdm-card-header">${getIconSvg("fa-user-clock", 14, "text-info")} Programado</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : 'N/A'}</div>
                             <div class="tdm-sub-value">${scheduledData ? `${scheduledData.days} días hábiles previstos` : 'No programado'}</div>
@@ -546,27 +577,27 @@ export const ClockRow = (props) => {
                 </div>
 
                 ${value.legalSupport ? `
-                <div class="tdm-section">
-                    <div class="tdm-section-title"><i class="fas fa-balance-scale"></i> Soporte Legal</div>
-                    <div class="tdm-legal-text">
+                <div className="tdm-section">
+                    <div className="tdm-section-title"><Icon name="balance-scale" size={16} /> Soporte Legal</div>
+                    <div className="tdm-legal-text">
                         ${value.legalSupport}
                     </div>
                 </div>
                 ` : ''}
 
                 <div class="tdm-section">
-                    <div class="tdm-section-title"><i class="fas fa-comment-alt"></i> Observaciones / Notas</div>
+                    <div class="tdm-section-title">${getIconSvg("fa-comment-alt")} Observaciones / Notas</div>
                     <textarea id="swal-input-obs" class="form-control tdm-textarea" placeholder="Escribe aquí observaciones sobre este tiempo...">${existingObs}</textarea>
                 </div>
             </div>
             `,
             showCloseButton: true,
-            showCancelButton: true,
-            confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Observación',
-            confirmButtonColor: '#1971c2',
+            confirmButtonText: 'Guardar Observación',
             cancelButtonText: 'Cerrar',
             customClass: {
-                popup: 'tdm-popup',
+                popup: 'swal2-themed tdm-popup',
+                confirmButton: 'swal2-confirm-themed',
+                cancelButton: 'swal2-cancel-themed',
                 htmlContainer: 'tdm-container'
             },
             width: 600,
@@ -604,7 +635,8 @@ export const ClockRow = (props) => {
     const rowIcon = getRowIcon();
     
     const titleClassName = `row-title text-truncate sticky ${isHighlighted ? 'title-highlight' : ''}`;
-    const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${currentDate ? '' : 'padding-date-input'}`;
+    const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${localDateValue ? '' : 'padding-date-input'}`;
+    
     const ACTIVE_BG = 'rgba(245, 245, 245)';   // .active-row-container
     const ACTIVE_HOVER_BG = 'rgba(242, 242, 242)'; // .active-row-container:hover
 
@@ -659,7 +691,7 @@ export const ClockRow = (props) => {
                 >
                     {eventName}
                     {clock?.desc && clock.desc.includes('|| OBS:') && (
-                        <i className="fas fa-comment-dots ms-2 text-info" title="Tiene observaciones" style={{fontSize: '0.75rem'}}></i>
+                        <Icon name="comment-dots" size={12} className="ms-2 text-info" title="Tiene observaciones" />
                     )}
                 </div>
             </div>
@@ -679,17 +711,18 @@ export const ClockRow = (props) => {
                             className={dateInputClassName}
                             style={{fontSize: '0.85rem', color: '#495057', fontWeight: 500, flex: 1}}
                             id={'clock_exp_date_' + i} 
-                            defaultValue={currentDate} 
+                            value={localDateValue} 
                             max="2100-01-01" 
-                            onBlur={() => onSave(value, i)} 
+                            onChange={handleDateChange}
+                            onBlur={handleDateBlur} 
                         />
-                        {currentDate && (
+                        {localDateValue && (
                             <button 
                                 style={{ background: 'none', border: 'none', padding: '0 0.25rem', cursor: 'pointer', color: '#6c757d' }}
                                 onClick={() => onDelete(value)} 
                                 title="Eliminar fecha"
                             >
-                                <i className="fas fa-eraser fa-xs"></i>
+                                <Icon name="eraser" size={16} />
                             </button>
                         )}
                     </div>
@@ -726,4 +759,4 @@ export const ClockRow = (props) => {
             </div>
         </div>
     );
-};
+});

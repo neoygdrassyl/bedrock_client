@@ -1,5 +1,4 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Markdown from 'markdown-to-jsx';
 import { useLocation } from "react-router-dom"
@@ -40,17 +39,7 @@ export default function GUIDE_USER(props) {
     // ***************************  JXS *********************** //
     let _HEADER_COMPONENET = () => {
         return <>
-            <div className="col-12 d-flex justify-content-start p-0">
-                <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                    <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i class="fas fa-atlas"></i>  <label className="text-uppercase">MANUAL DEL USUARIO</label></MDBBreadcrumbItem>
-                </MDBBreadcrumb>
-            </div>
+            
             <div className="row mb-4 d-flex justify-content-center">
                 <div className="col-lg-11 col-md-12">
                     <h2 className='text-center text-danger'>EN CONSTRUCCIÓN...</h2>

@@ -1,12 +1,6 @@
-import React, { Component } from 'react';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 
-class SHORT_INFO extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+function SHORT_INFO({ translation, swaMsg, globals, currentItem, currentVersion }) {
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
             var _CURRENT_VERSION = currentVersion - 1;
@@ -119,7 +113,7 @@ class SHORT_INFO extends Component {
         // COMPONENTS JSX
         let _COMPONENT = () => {
             return <>
-                <div className='row py-1 text-center border border-dark bg-info text-light'>
+                <div className='row py-1 text-center border border-dark bg-primary text-primary-foreground'>
                     <div className='col'>Responsable de la solicitud</div>
                 </div>
                 <div className='row py-1 text-center border border-dark'>
@@ -142,7 +136,7 @@ class SHORT_INFO extends Component {
                     <div className='col'>Correo: </div>
                     <div className='col fw-bold'> {_GET_CHILD_53().item_535} </div>
                 </div>
-                <div className='row py-1 text-center border border-dark border-dark bg-info text-light'>
+                <div className='row py-1 text-center border border-dark border-dark bg-primary text-primary-foreground'>
                     <div className='col'>Titulares de Actuación</div>
                 </div>
                 <div className='row py-1 text-center border border-dark'>
@@ -157,7 +151,7 @@ class SHORT_INFO extends Component {
                         <div className='col'>{value.role} </div>
                     </div>
                 </>)}
-                <div className='row py-1 text-center border border-dark border-dark bg-info text-light'>
+                <div className='row py-1 text-center border border-dark border-dark bg-primary text-primary-foreground'>
                     <div className='col'>Informacion General</div>
                 </div>
                 <div className='row py-1 text-center border border-dark'>
@@ -191,7 +185,6 @@ class SHORT_INFO extends Component {
                 {_COMPONENT()}
             </div>
         );
-    }
 }
 
 export default SHORT_INFO;

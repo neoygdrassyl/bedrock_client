@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useEffect, useState } from 'react';
 import EmailsService from '../services/emails.service';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import DataTable from 'react-data-table-component';
-import moment from 'moment';
-import { Uploader } from 'rsuite';
+import { swalLoading, swalSuccess, swalError, swalConfirm } from '../utils/swalAdapter';
+import { MDBBtn, MDBTooltip } from './ui';
+import DataTable from '@/components/data-table-bridge';
+import dayjs from 'dayjs';
 import VIEWER from './viewer.component';
+import { Icon } from '@/components/icon';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const EMAIL_TPES = [
     { value: 'rad', label: 'REGISTRO de radicación' },
     { value: 'ldf', label: 'CERTIFICACIÓN de legal y debida forma' },
@@ -69,8 +67,8 @@ export default function EMAILS_COMPONENT(props) {
 
     // **************** COMPONENTS  **************** //
     let CheckMark = (bool) => {
-        if (bool) return <i class="fas fa-check text-success"></i>
-        else return <i class="fas fa-times text-danger"></i>
+        if (bool) return <Icon name="check" size={16} className="text-success" />
+        else return <Icon name="times" size={16} className="text-danger" />
     }
 
     function loadEmals() {
@@ -90,9 +88,9 @@ export default function EMAILS_COMPONENT(props) {
             <form onSubmit={onEmailSent} enctype="multipart/form-data">
                 <div className='row'>
                     <div className='col'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="far fa-envelope"></i> Para:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><Icon name="envelope" size={16} /> Para:</label>
                             </span>
                             <input className='form-control' id="to_email" defaultValue={""} required />
                             <button className='btn btn-sm btn-primary' type='button' onClick={() => loadEmals()}>CARGAR EMAILS</button>
@@ -101,17 +99,17 @@ export default function EMAILS_COMPONENT(props) {
                 </div>
                 <div className='row'>
                     <div className='col'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="far fa-envelope"></i> CC:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><Icon name="envelope" size={16} /> CC:</label>
                             </span>
                             <input className='form-control' id="cc" defaultValue={""} />
                         </div>
                     </div>
                     <div className='col'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="far fa-envelope"></i> BCC:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><Icon name="envelope" size={16} /> BCC:</label>
                             </span>
                             <input className='form-control' id="bcc" defaultValue={""} />
                         </div>
@@ -119,9 +117,9 @@ export default function EMAILS_COMPONENT(props) {
                 </div>
                 <div className='row'>
                     <div className='col'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="fas fa-star-of-life"></i> Asunto:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><Icon name="star-of-life" size={16} /> Asunto:</label>
                             </span>
                             <input className='form-control' id="subject" defaultValue={""} required />
                         </div>
@@ -129,9 +127,9 @@ export default function EMAILS_COMPONENT(props) {
                 </div>
                 <div className='row'>
                     <div className='col-6'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="fas fa-ellipsis-v"></i> Motivo:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><Icon name="ellipsis-v" size={16} /> Motivo:</label>
                             </span>
                             <select className='form-select' id="subprocess">
                                 {EMAIL_TPES.map(item => <option value={item.value}>{item.label}</option>)}
@@ -140,9 +138,9 @@ export default function EMAILS_COMPONENT(props) {
                     </div>
 
                     <div className='col-6'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="far fa-calendar-check"></i> Programar:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><Icon name="calendar-check" size={16} /> Programar:</label>
                             </span>
                             <input className='form-control' id="schedule_date" defaultValue={''} type="datetime-local" />
                         </div>
@@ -158,20 +156,30 @@ export default function EMAILS_COMPONENT(props) {
                 <div className='row'>
                     <div className='col'>
                         <label>Documentos</label>
-                        <Uploader fileList={files} onChange={setFiles}
-                            action="//jsonplaceholder.typicode.com/posts/" autoUpload={false}
-                            draggable>
-                            <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "2px dotted" }}>
-                                <span>Arrastre los documento a esta área</span>
-                            </div>
-                        </Uploader>
+                        <label
+                            className="d-flex align-items-center justify-content-center w-100"
+                            style={{ height: 200, border: '2px dashed var(--bs-border-color)', borderRadius: 'var(--dvl-radius-md)', cursor: 'pointer' }}
+                        >
+                            <span className="text-muted">
+                                <Icon name="cloud-upload-alt" size={16} className="me-2" />
+                                {files && files.length > 0
+                                    ? `${files.length} archivo(s) seleccionado(s)`
+                                    : 'Arrastre los documentos a esta área o haga clic'}
+                            </span>
+                            <input
+                                type="file"
+                                multiple
+                                className="d-none"
+                                onChange={(e) => setFiles(Array.from(e.target.files))}
+                            />
+                        </label>
                     </div>
                 </div>
 
 
                 <div className='row mt-2'>
                     <div className='col'>
-                        <button className='btn btn-sm btn-success' type='submit'><i class="far fa-paper-plane"></i> ENVIAR</button>
+                        <button className='btn btn-sm btn-success' type='submit'><Icon name="paper-plane" size={16} /> ENVIAR</button>
                     </div>
                 </div>
 
@@ -196,7 +204,7 @@ export default function EMAILS_COMPONENT(props) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{CheckMark(row.send)} {row.send_date ? moment(row.send_date).format('YYYY-MM-DD HH:mm') : ''}</label>,
+                cell: row => <label>{CheckMark(row.send)} {row.send_date ? dayjs(row.send_date).format('YYYY-MM-DD HH:mm') : ''}</label>,
             },
             {
                 name: <label>Abierto</label>,
@@ -204,7 +212,7 @@ export default function EMAILS_COMPONENT(props) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{CheckMark(row.open)} {row.open_date ? moment(row.open_date).format('YYYY-MM-DD HH:mm') : ''}</label>,
+                cell: row => <label>{CheckMark(row.open)} {row.open_date ? dayjs(row.open_date).format('YYYY-MM-DD HH:mm') : ''}</label>,
             },
             {
                 name: <label>Programado</label>,
@@ -212,7 +220,7 @@ export default function EMAILS_COMPONENT(props) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{CheckMark(row.schedule)} {row.schedule_date ? moment(row.schedule_date).format('YYYY-MM-DD HH:mm') : ''}</label>
+                cell: row => <label>{CheckMark(row.schedule)} {row.schedule_date ? dayjs(row.schedule_date).format('YYYY-MM-DD HH:mm') : ''}</label>
             },
             {
                 name: <label>Acción</label>,
@@ -221,7 +229,7 @@ export default function EMAILS_COMPONENT(props) {
                 cell: row => !row.send ?
                     <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                         <MDBBtn className="btn btn-danger btn-sm m-0 p-1 shadow-none" onClick={() => delete_email(row.id)}>
-                            <i class="far fa-trash-alt"></i></MDBBtn>
+                            <Icon name="trash-alt" size={16} /></MDBBtn>
                     </MDBTooltip>
                     : null
             },
@@ -296,12 +304,7 @@ export default function EMAILS_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
 
@@ -343,96 +346,42 @@ export default function EMAILS_COMPONENT(props) {
             formData.set("path", path.join(';'));
         }
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         EmailsService.create(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadList()
                     setNewEmail(false)
                     setFiles([])
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
 
     function delete_email(id) {
-        MySwal.fire({
-            title: "ELIMINAR ESTE ITEM",
-            text: "¿Esta seguro de eliminar de forma permanente este item?",
-            icon: 'question',
-            confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: "question", confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 EmailsService.delete(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             loadList()
                         } else if (response.data === 'SEND') {
-                            MySwal.fire({
-                                title: "CORREO ENVIADO",
-                                text: "Este correo ya fue enviado y no puede eliminarse.",
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "CORREO ENVIADO", text: "Este correo ya fue enviado y no puede eliminarse.", icon: "warning" });
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: "ERROR AL CARGAR",
-                            text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                            icon: 'error',
-                            confirmButtonText: props.swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                     });
             }
         });
@@ -443,7 +392,7 @@ export default function EMAILS_COMPONENT(props) {
                 <label className="app-p lead text-center fw-normal text-uppercase">Herramienta de correos electrónicos</label>
             </legend>
 
-            <MDBBtn rounded outline={!newEmail} color="success" sise="sm" onClick={() => setNewEmail(!newEmail)}><i class="fas fa-plus-circle"></i> NUEVO CORREO</MDBBtn>
+            <MDBBtn rounded outline={!newEmail} color="success" sise="sm" onClick={() => setNewEmail(!newEmail)}><Icon name="plus-circle" size={16} /> NUEVO CORREO</MDBBtn>
             {newEmail ? EMAIL_FORM() : null}
 
             {EMAIL_LIST()}

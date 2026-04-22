@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
 
 // Constantes compartidas
@@ -175,7 +175,7 @@ export const isTimeSchedulable = (clockValue, clock) => {
 export const buildSchedulePayload = (scheduleData, currentItem) => {
   return {
     expedienteId: currentItem.id,
-    updatedAt: moment().toISOString(),
+    updatedAt: dayjs().toISOString(),
     times: scheduleData
   };
 };
@@ -226,7 +226,7 @@ export const calculateScheduledLimitForDisplay = (
       return {
           limitDate,
           days: days,
-          display: `${moment(limitDate).format('DD/MM/YYYY')} (${days} de ${manager.viaTime}d restantes)`,
+          display: `${dayjs(limitDate).format('DD/MM/YYYY')} (${days} de ${manager.viaTime}d restantes)`,
           extensionDays: 0 
       };
   }
@@ -272,8 +272,8 @@ export const calculateScheduledLimitForDisplay = (
     extensionDays,
     display: limitDate 
       ? extensionDays > 0
-        ? `${moment(limitDate).format('DD/MM/YYYY')} (${days} días + ${extensionDays} ext.)`
-        : `${moment(limitDate).format('DD/MM/YYYY')} (${days} días)`
+        ? `${dayjs(limitDate).format('DD/MM/YYYY')} (${days} días + ${extensionDays} ext.)`
+        : `${dayjs(limitDate).format('DD/MM/YYYY')} (${days} días)`
       : `${days} días (pendiente fecha ref.)`
   };
 };
@@ -290,7 +290,7 @@ export const getTotalAvailableDaysWithExtensions = (clockState, manager, baseDay
     
     if (extension.exists && extension.end?.date_start && !extension.isActive) {
       const acta1Date = manager.getClock(30)?.date_start;
-      if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) {
+      if (!acta1Date || dayjs(extension.start.date_start).isBefore(acta1Date)) {
         totalDays += extension.days;
       }
     }
@@ -351,7 +351,7 @@ export const calculateLegalLimit = (clockState, clockValue, manager) => {
           if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) totalDays += suspensionPreActa.days;
           if (extension.exists && extension.end?.date_start && !extension.isActive) {
               const acta1Date = getClockScoped(30)?.date_start;
-              if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) totalDays += extension.days;
+              if (!acta1Date || dayjs(extension.start.date_start).isBefore(acta1Date)) totalDays += extension.days;
           }
           return sumarDiasHabiles(ldf, totalDays);
       }
@@ -428,7 +428,7 @@ export const getProgrammedExtensionDays = (clockState, scheduleConfig, manager) 
         
         if (extension.exists && extension.start?.date_start) {
             const acta1Date = getClock(30)?.date_start;
-            if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) {
+            if (!acta1Date || dayjs(extension.start.date_start).isBefore(acta1Date)) {
                  addDaysFromEvent(extension);
             }
         }

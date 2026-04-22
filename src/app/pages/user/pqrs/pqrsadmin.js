@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBBtn, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent, MDBBtnGroup, MDBTypography } from 'mdb-react-ui-kit';
+import { useState, useEffect, useCallback } from 'react';
+import { TabPane } from '@/components/ui/tab-pane';
+import { Button } from '@/components/ui/button';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../components/customClasses/typeParse'
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 // MODALS FOR PQRS
 import PQRSNEW from './newpqrs'
@@ -17,21 +16,6 @@ import PQRSINFORMAL from './infomalpqrs'
 import PQRSREPLY from './replypqrs'
 import PQRSLOCK from './lockpqrs'
 
-// IMGS
-// STEP BY STEP IMAGES
-import IMG_ASIGN from '../../../img/pqrs/asignarIconosbarra-01.png'
-import IMG_WORKER from '../../../img/pqrs/respuestaproIconosbarra-01.png'
-import IMG_REPLY from '../../../img/pqrs/respuestaoficioIconosbarra-01.png'
-import IMG_LOCK from '../../../img/pqrs/cerrarIconosbarra-01.png'
-import IMG_ARCHIVE from '../../../img/pqrs/archivarIconosbarra-01.png'
-// ICON IMGS
-import IMG_ASIGN_ICON from '../../../img/pqrs/asignarIconos-01.png'
-import IMG_WORKER_ICON from '../../../img/pqrs/respuestaproIconos-01.png'
-import IMG_REPLY_ICON from '../../../img/pqrs/respuestaoficioIconos-01.png'
-import IMG_LOCK_ICON from '../../../img/pqrs/cerrarIconos-01.png'
-import IMG_ARCHIVE_ICON from '../../../img/pqrs/archivarIconos-01.png'
-import IMG_SEARCH_ICON from '../../../img/pqrs/Buscaricono-01.png'
-
 // COMPONENTS
 import PQRS_EDIT from './pqrs_edit';
 import PQRS_MACROTABLE from './pqrs_macrotable';
@@ -39,106 +23,85 @@ import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
 import SUBMIT_X_FUN from '../submit/submit_x_fun.component';
 import PQRS_MANAGE_COMPONENT from './pqrs_manage.view';
 import { ACESS_EDIT } from './access_edit';
-import { MDBCollapse } from 'mdbreact';
 
 // JSONS
-//const momentHolydays = require('../../components/jsons/holydaysmoment.json')
+import dayjs from 'dayjs';
+import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
+import { Icon } from '@/components/icon';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
+function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums }) {
+    // State
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoadedAsign, setIsLoadedAsign] = useState(false);
+    const [isLoadedReply, setIsLoadedReply] = useState(false);
+    const [isloadedFormal, setIsloadedFormal] = useState(false);
+    const [isloadedSearch, setIsloadedSearch] = useState(false);
 
-const moment = require('moment');
-const momentB = require('moment-business-days');
-const MySwal = withReactContent(Swal);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [currentItemAsign, setCurrentItemAsign] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(-1);
 
-class PQRSADMIN extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshRequested = this.refreshRequested.bind(this);
-        this.refreshCurrentItem = this.refreshCurrentItem.bind(this);
-        this.setSubtmitRows = this.setSubtmitRows.bind(this);
-        this.retrievePending = this.retrievePending.bind(this);
-        this.state = {
-            error: null,
-            isLoaded: false,
-            isLoadedAsign: false,
-            isLoadedReply: false,
-            isloadedFormal: false,
-            isloadedSearch: false,
+    const [items, setItems] = useState([]);
+    const [itemsAsigned, setItemsAsigned] = useState([]);
+    const [itemsReply, setItemsReply] = useState([]);
+    const [itemsFormal, setItemsFormal] = useState([]);
+    const [itemsClose, setItemsClose] = useState([]);
+    const [itemsGeneral, setItemsGeneral] = useState([]);
+    const [itemsGeneral2, setItemsGeneral2] = useState([]);
+    const [itemsSearch, setItemsSearch] = useState([]);
 
-            currentItem: null,
-            currentItemAsign: null,
-            currentIndex: -1,
+    const [modalNew, setModalNew] = useState(false);
+    const [modalInfo, setModalInfo] = useState(false);
+    const [modalAsign, setModalAsign] = useState(false);
+    const [modalInformal, setModalInformal] = useState(false);
+    const [modalReply, setModalReply] = useState(false);
+    const [modalLock, setModalLock] = useState(false);
+    const [modalEdit, setModalEdit] = useState(false);
+    const [modal_macro, setModal_macro] = useState(false);
+    const [modalManage, setModalManage] = useState(false);
+    const [modalEditable, setModalEditable] = useState(false);
+    const [editMaster, setEditMaster] = useState(false);
 
-            items: [],
-            itemsAsigned: [],
-            itemsReply: [],
-            itemsFormal: [],
-            itemsClose: [],
-            itemsGeneral: [],
-            itemsGeneral2: [],
-            itemsSearch: [],
+    const [submitItems, setSubmitItemsState] = useState([]);
+    const [fillActive, setFillActive] = useState('1');
+    const [filterreply, setFilterreply] = useState(false);
+    const [filterreply2, setFilterreply2] = useState(false);
 
-            modalNew: false,
-            modalInfo: false,
-            modalAsign: false,
-            modalInformal: false,
-            modalReply: false,
-            modalLock: false,
-            modalEdit: false,
-            modal_macro: false,
-            modalManage: false,
-            modalEditable: false,
-            editMaster: false,
+    const [pending, setPending] = useState([]);
+    const [pending_open, setPending_open] = useState(false);
 
-            submitItems: [],
-            fillActive: '1',
-            filterreply: false,
-            filterreply2: false,
+    // Additional state from setItem / setItemAsign / refreshCurrentItem / navigation
+    const [currentId, setCurrentId] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [currentIdPublic, setCurrentIdPublic] = useState(null);
+    const [currentIdGlobal, setCurrentIdGlobal] = useState(null);
+    const [currentStatus, setCurrentStatus] = useState(null);
+    const [currentVersion, setCurrentVersion] = useState(null);
+    const [date_start, setDate_start] = useState(null);
+    const [date_end, setDate_end] = useState(null);
+    // --- Methods ---
 
-            pending: [],
-            pending_open: false,
-        };
-    }
-    componentDidMount() {
-        this.retrievePublish();
-        this.retrievePending();
-    }
-    retrievePublish() {
-        PQRS_Main.getAllPqrs()
-            .then(response => {
-                this.setState({
-                    itemsGeneral: response.data,
-                });
-                this.asignLists(response.data);
-                this.asignListsWorkers(response.data);
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
+    const asignListsLock = (_LIST) => {
+        let listNotReplyTo = [];
+        for (var i = 0; i < _LIST.length; i++) {
+            if (_LIST[i].pqrs_workers) {
+                for (var j = 0; j < _LIST[i].pqrs_workers.length; j++) {
+                    let worker = _LIST[i].pqrs_workers[j]
+                    if (worker.worker_id == window.user.id || (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2)) {
+                        listNotReplyTo.push(_LIST[i])
+                        break;
+                    }
+                }
+            }
+        }
+        setItemsFormal(listNotReplyTo);
+        setIsLoadedAsign(true);
+    };
 
-    retrievePending() {
-        PQRS_Main.getAllPqrsPending()
-            .then(response => {
-                this.setState({
-                    pending: response.data,
-                });
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
-
-    refreshList() {
-        this.retrievePending();
-        this.retrievePublish();
-        this.setState({
-            currentItem: null,
-            currentIndex: -1,
-        });
-    }
-
-    asignLists(_LIST) {
+    const asignLists = (_LIST) => {
         let littNoAsigned = [];
         let listReply = [];
         let listFormal = [];
@@ -154,17 +117,14 @@ class PQRSADMIN extends Component {
             } else if (_LIST[i].status == 1) {
                 listClose.push(_LIST[i])
             }
-
         }
-        this.asignListsLock(listFormal)
-        this.setState({
-            items: littNoAsigned,
-            //itemsReply: listReply,
-            itemsClose: listClose,
-            isLoaded: true,
-        });
-    }
-    asignListsWorkers(_LIST) {
+        asignListsLock(listFormal);
+        setItems(littNoAsigned);
+        setItemsClose(listClose);
+        setIsLoaded(true);
+    };
+
+    const asignListsWorkers = (_LIST) => {
         let listNotReplyTo = [];
         for (var i = 0; i < _LIST.length; i++) {
             if (_LIST[i].pqrs_workers) {
@@ -180,254 +140,235 @@ class PQRSADMIN extends Component {
                 }
             }
         }
-        this.setState({
-            itemsAsigned: listNotReplyTo,
-            isLoadedAsign: true,
-        });
-    }
-    asignListsLock(_LIST) {
+        setItemsAsigned(listNotReplyTo);
+        setIsLoadedAsign(true);
+    };
 
-        //READ IN EACH ITEM, IF ANY OF THE WORKERS IS THE CURRENT USER ID
-        let listNotReplyTo = [];
-        for (var i = 0; i < _LIST.length; i++) {
-            if (_LIST[i].pqrs_workers) {
-                for (var j = 0; j < _LIST[i].pqrs_workers.length; j++) {
-                    let worker = _LIST[i].pqrs_workers[j]
-                    if (worker.worker_id == window.user.id || (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2)) {
-                        listNotReplyTo.push(_LIST[i])
-                        break;
-                    }
-                }
-            }
-        }
-        this.setState({
-            itemsFormal: listNotReplyTo,
-            isLoadedAsign: true,
-        });
-    }
-    //  MODAL CONTROLS
-    toggle = () => {
-        this.setState({
-            modalNew: !this.state.modalNew,
-        });
-    }
-    getToggle = () => {
-        return this.state.modalNew;
-    }
-    toggleInfo = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalInfo: !this.state.modalInfo,
-            modal_macro: false,
-        });
-    }
-    getToggleInfo = () => {
-        return this.state.modalInfo;
-    }
-    toggleInfo2 = (item) => {
-        if (item) this.setItemAsign(item);
-        this.setState({
-            modalInfo: !this.state.modalInfo,
-            modal_macro: false,
-        });
-    }
-    toggleAsign = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalAsign: !this.state.modalAsign
-        });
-    }
-    getToggleAsign = () => {
-        return this.state.modalAsign;
-    }
-    toggleInformal = (item) => {
+    const retrievePublish = useCallback(() => {
+        PQRS_Main.getAllPqrs()
+            .then(response => {
+                setItemsGeneral(response.data);
+                asignLists(response.data);
+                asignListsWorkers(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }, []);
+
+    const retrievePending = useCallback(() => {
+        PQRS_Main.getAllPqrsPending()
+            .then(response => {
+                setPending(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }, []);
+
+    const refreshList = useCallback(() => {
+        retrievePending();
+        retrievePublish();
+        setCurrentItem(null);
+        setCurrentIndex(-1);
+    }, [retrievePending, retrievePublish]);
+    // MODAL CONTROLS
+    const toggle = () => {
+        setModalNew(prev => !prev);
+    };
+    const getToggle = () => {
+        return modalNew;
+    };
+
+    const setItemState = (item) => {
+        setCurrentId(item.id);
+        setSelectedRow(item.id);
+        setCurrentIdPublic(item.id_publico);
+        setCurrentIdGlobal(item.id_global);
+        setCurrentStatus(item.status);
+    };
+
+    const setItemAsignState = (item) => {
+        setCurrentItemAsign(item.id);
+        setCurrentId(item.id_master);
+        setSelectedRow(item.id_master);
+        setCurrentIdPublic(item.id_public);
+        setCurrentIdGlobal(item.id_global);
+    };
+
+    const toggleInfo = (item) => {
+        if (item) setItemState(item);
+        setModalInfo(prev => !prev);
+        setModal_macro(false);
+    };
+    const getToggleInfo = () => {
+        return modalInfo;
+    };
+    const toggleInfo2 = (item) => {
+        if (item) setItemAsignState(item);
+        setModalInfo(prev => !prev);
+        setModal_macro(false);
+    };
+    const toggleAsign = (item) => {
+        if (item) setItemState(item);
+        setModalAsign(prev => !prev);
+    };
+    const getToggleAsign = () => {
+        return modalAsign;
+    };
+    const toggleInformal = (item) => {
         if (item) {
-            this.setItemAsign(item);
+            setItemAsignState(item);
         }
-        this.setState({
-            modalInformal: !this.state.modalInformal
-        });
-    }
-    getToggleInformal = () => {
-        return this.state.modalInformal;
-    }
-    toggleReply = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalReply: !this.state.modalReply
-        });
-    }
-    getToggleReply = () => {
-        return this.state.modalReply;
-    }
-    toggleLock = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalLock: !this.state.modalLock
-        });
-    }
-    getToggleLock = () => {
-        return this.state.modalLock;
-    }
-    toggleEdit = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalEdit: !this.state.modalEdit
-        });
-    }
-    getToggleEdit = () => {
-        return this.state.modalEdit;
-    }
-    getToggle_macro = () => {
-        return this.state.modal_macro;
-    }
-    toggle_macro = (item) => {
-        this.setState({
-            modal_macro: !this.state.modal_macro,
-        });
-        if (item) this.setItem(item);
-    }
-    toggleManage = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalManage: !this.state.modalManage
-        });
-    }
-    toggleEditable = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalEditable: !this.state.modalEditable
-        });
-    }
-    funcion = () => {
-        var x = this.state.editMaster == true
-        return x
-    }
+        setModalInformal(prev => !prev);
+    };
+    const getToggleInformal = () => {
+        return modalInformal;
+    };
+    const toggleReply = (item) => {
+        if (item) setItemState(item);
+        setModalReply(prev => !prev);
+    };
+    const getToggleReply = () => {
+        return modalReply;
+    };
+    const toggleLock = (item) => {
+        if (item) setItemState(item);
+        setModalLock(prev => !prev);
+    };
+    const getToggleLock = () => {
+        return modalLock;
+    };
+    const toggleEdit = (item) => {
+        if (item) setItemState(item);
+        setModalEdit(prev => !prev);
+    };
+    const getToggleEdit = () => {
+        return modalEdit;
+    };
+    const getToggle_macro = () => {
+        return modal_macro;
+    };
+    const toggle_macro = (item) => {
+        setModal_macro(prev => !prev);
+        if (item) setItemState(item);
+    };
+    const toggleManage = (item) => {
+        if (item) setItemState(item);
+        setModalManage(prev => !prev);
+    };
+    const toggleEditable = (item) => {
+        if (item) setItemState(item);
+        setModalEditable(prev => !prev);
+    };
+    const funcion = () => {
+        var x = editMaster == true;
+        return x;
+    };
     // END MODAL CONTROLS
-    setItem(item) {
-        this.setState({
-            currentId: item.id,
-            selectedRow: item.id,
-            currentIdPublic: item.id_publico,
-            currentIdGlobal: item.id_global,
-            currentStatus: item.status,
-        });
-    }
-    setItemAsign(item) {
-        this.setState({
-            currentItemAsign: item.id,
-            currentId: item.id_master,
-            selectedRow: item.id_master,
-            currentIdPublic: item.id_public,
-            currentIdGlobal: item.id_global,
-        });
-    }
-    getFinalDate(item) {
+    const getFinalDate = (item) => {
         if (!item) return ""
         let startDate = item.legal
         let time = item.time;
-        let endate = momentB(startDate, 'YYYY-MM-DD').businessAdd(time)._d;
+        const _bd = new DiasHabilesColombia();
+        let endate = _bd.sumarDiasHabiles(startDate, time);
         let parseDate = dateParser(endate)
         return parseDate;
-    }
-    navigation = (item, TO, FROM) => {
+    };
+
+    const navigation = (item, TO, FROM) => {
 
         switch (FROM) {
             case "general":
-                this.toggleInfo(false)
-                this.setState({ editMaster: false })
+                toggleInfo(false);
+                setEditMaster(false);
                 break;
             case "edit":
-                this.toggleEdit(false)
+                toggleEdit(false);
                 break;
             case "start":
-                this.toggleAsign(false)
+                toggleAsign(false);
                 break;
             case "formal":
-                this.toggleReply(false)
+                toggleReply(false);
                 break;
             case "informal":
-                this.toggleInformal(false)
+                toggleInformal(false);
                 break;
             case "lock":
-                this.toggleLock(false)
+                toggleLock(false);
                 break;
             case "macro":
-                this.toggle_macro(false)
+                toggle_macro(false);
                 break;
             case "manage":
-                this.toggleManage(false)
-                this.setState({ editMaster: false })
+                toggleManage(false);
+                setEditMaster(false);
                 break;
             case "editable":
-                this.toggleEditable(false)
-                this.setState({ editMaster: false })
+                toggleEditable(false);
+                setEditMaster(false);
                 break;
 
         }
         switch (TO) {
             case "general":
-                this.toggleInfo(item)
+                toggleInfo(item);
                 break;
             case "edit":
-                this.toggleEdit(item)
+                toggleEdit(item);
                 break;
             case "start":
-                this.toggleAsign(item)
+                toggleAsign(item);
                 break;
             case "informal":
-                this.toggleInformal(item)
+                toggleInformal(item);
                 break;
             case "formal":
-                this.toggleReply(item)
+                toggleReply(item);
                 break;
             case "lock":
-                this.toggleLock(item)
+                toggleLock(item);
                 break;
             case "macro":
-                let base_date = moment(item.createdAt).format('YYYY-MM-DD');
-                this.setState({
-                    date_start: moment(base_date).subtract(6, 'months').format('YYYY-MM-DD'),
-                    date_end: moment(base_date).add(6, 'months').format('YYYY-MM-DD')
-                })
-                this.toggle_macro(item)
+                let base_date = dayjs(item.createdAt).format('YYYY-MM-DD');
+                setDate_start(dayjs(base_date).subtract(6, 'months').format('YYYY-MM-DD'));
+                setDate_end(dayjs(base_date).add(6, 'months').format('YYYY-MM-DD'));
+                toggle_macro(item);
                 break;
             case "manage":
-                this.toggleManage(item)
+                toggleManage(item);
                 break;
             case "editable":
-                this.toggleEditable(item)
+                toggleEditable(item);
                 break;
         }
-    }
-    // THIS FUNCTIONS IS CALLED BY THE CHILDREN COMPONENT TO TELL THE APP TO CLOSE THE MODAL AND REFRESH THE LIST
-    // THIS FUNCTIONS RECIEVES THE NAME OF THE MODAL TO BE CLOSED
-    refreshRequested() {
-        this.setState({
-            modalNew: false,
-            modalAsign: false,
-            modalInformal: false,
-            modalReply: false,
-            modalLock: false
-        })
-        this.refreshList();
-    }
-    refreshCurrentItem(id) {
+    };
+    const refreshRequested = () => {
+        setModalNew(false);
+        setModalAsign(false);
+        setModalInformal(false);
+        setModalReply(false);
+        setModalLock(false);
+        refreshList();
+    };
+    const refreshCurrentItem = useCallback((id) => {
         PQRS_Main.get(id).then(response => {
-            let item = response.data
-            this.setState({
-                currentItem: item,
-                currentVersion: item.version
-            })
-            this.retrievePublish();
-        })
-    }
-    setSubtmitRows(items) {
-        this.setState({ submitItems: items })
-    }
-    render() {
-        const { translation, translation_form, swaMsg, globals, breadCrums } = this.props;
-        const { currentItem, isLoaded, items } = this.state;
+            let item = response.data;
+            setCurrentItem(item);
+            setCurrentVersion(item.version);
+            retrievePublish();
+        });
+    }, [retrievePublish]);
+    const setSubtmitRows = (rowItems) => {
+        setSubmitItemsState(rowItems);
+    };
+
+    // componentDidMount
+    useEffect(() => {
+        retrievePublish();
+        retrievePending();
+    }, []);
 
         // COMPONENTS
         let _REPLIES_COMPONENT = (item) => {
@@ -451,32 +392,32 @@ class PQRSADMIN extends Component {
         let _STATUS_COMPONENT = (item) => {
             switch (item) {
                 case 0:
-                    return <label className="text-danger fw-bold">ACTIVO</label>
+                    return <Badge variant="destructive" className="text-[10px]">Activo</Badge>
                 case 1:
-                    return <label className="text-success fw-bold">CERRADO</label>
+                    return <Badge className="text-[10px] bg-accent text-accent-foreground">Cerrado</Badge>
                 case 2:
-                    return <label className="text-primary fw-bold">ARCHIVADO</label>
+                    return <Badge variant="secondary" className="text-[10px]">Archivado</Badge>
                 case 3:
-                    return <label className="text-secondary fw-bold">TRASLADADO</label>
+                    return <Badge variant="outline" className="text-[10px]">Trasladado</Badge>
                 default:
                     break;
             }
         }
         let _GET_STOPLIGHT_COLOR = (row) => {
-            if (!row) return <i class="fas fa-lightbulb fa-2x text-muted"></i>;
+            if (!row) return <Icon name="lightbulb" size={16} className="text-muted" />;
             let time = row.pqrs_time ? row.pqrs_time.time : 0;
             let legal = row.pqrs_time ? row.pqrs_time.legal : 0
             let ext = row.pqrs_law ? row.pqrs_law.extension ? 2 : 1 : 1;
             let days = dateParser_timeLeft(legal, time * (ext));
-            if (days <= 0) return <i class="fas fa-lightbulb fa-2x text-danger"></i>
-            if (days > 0 && days < 7) return <i class="fas fa-lightbulb fa-2x text-warning"></i>
-            if (days >= 7) return <i class="fas fa-lightbulb fa-2x text-success"></i>
+            if (days <= 0) return <Icon name="lightbulb" size={16} className="text-danger" />
+            if (days > 0 && days < 7) return <Icon name="lightbulb" size={16} className="text-warning" />
+            if (days >= 7) return <Icon name="lightbulb" size={16} className="text-success" />
         }
         let _GET_STOPLIGHT_COLOR_ASSIGNED = (row) => {
             let days = dateParser_timeLeft(row.legal, row.time / 2);
-            if (days <= 0) return <i class="fas fa-lightbulb fa-2x text-danger"></i>
-            if (days > 0 && days < 7) return <i class="fas fa-lightbulb fa-2x text-warning"></i>
-            if (days >= 7) return <i class="fas fa-lightbulb fa-2x text-success"></i>
+            if (days <= 0) return <Icon name="lightbulb" size={16} className="text-danger" />
+            if (days > 0 && days < 7) return <Icon name="lightbulb" size={16} className="text-warning" />
+            if (days >= 7) return <Icon name="lightbulb" size={16} className="text-success" />
         }
         let _CHECK_FOR_REVIEWS = (row) => {
             let _woerker_list = row.pqrs_workers;
@@ -488,9 +429,9 @@ class PQRSADMIN extends Component {
                     break;
                 }
             }
-            if (review == 1) return <label className="text-success fw-bold">VISTO BUENO</label>;
-            else if (review == 0) return <label className="text-warning fw-bold">VISTO NEGATIVO</label>;
-            else if (review == null) return <label className="text-danger fw-bold">DEBE DAR VISTO</label>;
+            if (review == 1) return <Badge className="text-[10px] bg-accent text-accent-foreground">Visto Bueno</Badge>;
+            else if (review == 0) return <Badge variant="outline" className="text-[10px] text-warning border-warning">Visto Negativo</Badge>;
+            else if (review == null) return <Badge variant="destructive" className="text-[10px]">Debe dar Visto</Badge>;
         }
 
         const dataFilter = (_items, _filterreply, _filterreply2) => {
@@ -540,80 +481,72 @@ class PQRSADMIN extends Component {
 
         }
 
-        const PENDING_COMPONENT = () => (
+    const PENDING_COMPONENT = () => (
             <div className="col-lg-11 col-md-12">
-                <MDBTypography note noteColor="warning">
+                <div className="alert alert-warning">
 
                     <div className="row">
                         <div className="col-10">
-                            <label className="fw-bold">PQRS PENDIENTES POR VENTANILLA ÚNICA: </label>
+                            <span className="font-semibold text-sm">PQRS PENDIENTES POR VENTANILLA ÚNICA: </span>
                         </div>
                         <div className="col text-end">
-                            <MDBTooltip title='Ver Listado' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                                <MDBBtn
-                                    color="info"
-                                    size="sm"
-                                    onClick={() => this.setState({ pending_open: !this.state.pending_open })}
-                                    className="px-2"
-                                > <i class="fas fa-info-circle fa-2x"></i>
-                                </MDBBtn>
-                            </MDBTooltip>
+                            <Button variant="ghost" size="sm" title="Ver Listado" onClick={() => setPending_open(prev => !prev)}>
+                                <Icon name="info-circle" size={16} />
+                            </Button>
                         </div>
                     </div>
-                    <MDBCollapse id='pending_list' isOpen={this.state.pending_open}>
+                    {pending_open && (
                         <div className="row">
                             <div className="col-10">
                                 <ul>
-                                    {this.state.pending.map((i) => <li>{i.id_pending}</li>)}
+                                    {pending.map((i) => <li>{i.id_pending}</li>)}
                                 </ul>
                             </div>
                         </div>
-                    </MDBCollapse>
-                </MDBTypography >
+                    )}
+                </div>
             </div >
         )
         // -----------------
         const rowSelectedStyle = [
             {
-                when: row => row.id == this.state.selectedRow,
+                when: row => row.id == selectedRow,
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];
         // -----------------
-
 
         const columns = [
             {
                 name: "",
                 right: true,
                 maxWidth: "40px",
-                cell: row => <label>{_GET_STOPLIGHT_COLOR(row)}</label>
+                cell: row => _GET_STOPLIGHT_COLOR(row)
             },
             {
-                name: <label>CONSECUTIVO ENTRADA</label>,
+                name: 'CONSECUTIVO ENTRADA',
                 selector: row => row.id_global ? row.id_global : row.id_publico ? row.id_publico : '',
                 sortable: true,
                 center: true,
                 filterable: true,
-                cell: row => <label>{row.id_global ? row.id_global : row.id_publico ? row.id_publico : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
+                cell: row => <span className="text-sm font-medium font-mono">{row.id_global ? row.id_global : row.id_publico ? row.id_publico : <Badge variant="destructive" className="text-[10px]">Sin consecutivo</Badge>}</span>
             },
             {
-                name: <label>¿PROFESIONAL ASIGNADO?</label>,
-                //center: true,
-                cell: row => <label>{row.pqrs_workers.length ? <label>{row.pqrs_workers.map(function (value) { return <h5 className='my-0 py-0 fw-normal'>{value.name}</h5> })}</label> : <label className="fw-bold text-warning">PENDIENTE</label>}</label>
+                name: '¿PROFESIONAL ASIGNADO?',
+                cell: row => <span className="text-xs">{row.pqrs_workers.length ? row.pqrs_workers.map((value, idx) => <span key={idx} className="block">{value.name}</span>) : <Badge variant="outline" className="text-[10px] text-warning border-warning">Pendiente</Badge>}</span>
             },
             {
-                name: <label>FECHA RADICACIÓN</label>,
+                name: 'FECHA RADICACIÓN',
                 selector: row => row.pqrs_time ? row.pqrs_time.legal : '',
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.pqrs_time ? row.pqrs_time.legal : false)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.pqrs_time ? row.pqrs_time.legal : ''}</span>
             },
             {
-                name: <label>TIEMPO RESTANTE</label>,
+                name: 'TIEMPO RESTANTE',
                 selector: row => {
                     let time = row.pqrs_time ? row.pqrs_time.time : 0;
                     let legal = row.pqrs_time ? row.pqrs_time.legal : 0;
@@ -623,17 +556,16 @@ class PQRSADMIN extends Component {
                 },
                 sortable: true,
                 center: true,
-                center: true,
                 cell: row => {
                     let time = row.pqrs_time ? row.pqrs_time.time : 0;
                     let legal = row.pqrs_time ? row.pqrs_time.legal : 0;
                     let ext = row.pqrs_law ? row.pqrs_law.extension ? 2 : 1 : 1;
                     let result = (dateParser_timeLeft(legal, time * (ext)))
-                    return <label>{result} d</label>
+                    return <span className="text-xs"><span className={cn('font-bold tabular-nums', result <= 0 ? 'text-destructive' : result < 7 ? 'text-warning' : '')}>{result}</span><span className="text-muted-foreground"> d</span></span>
                 }
             },
             {
-                name: <label>FECHA LIMITE</label>,
+                name: 'FECHA LÍMITE',
                 selector: row => {
                     let time = row.pqrs_time ? row.pqrs_time.time : 0;
                     let legal = row.pqrs_time ? row.pqrs_time.legal : 0;
@@ -648,89 +580,83 @@ class PQRSADMIN extends Component {
                     let legal = row.pqrs_time ? row.pqrs_time.legal : 0;
                     let ext = row.pqrs_law ? row.pqrs_law.extension ? 2 : 1 : 1;
                     let result = (dateParser_finalDate(legal, time * (ext)))
-                    return <label>{result}</label>
+                    return <span className="text-xs font-mono tabular-nums">{result}</span>
                 }
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 center: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
-                    </MDBTooltip>
+                    <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ? <>
-                            <MDBTooltip title='Gestionar peticion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                                <button className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => this.toggleManage(row)}><i class="fas fa-cog"></i></button>
-                            </MDBTooltip>
+                            <Button size="sm" className="m-0 px-2" title="Gestionar peticion" onClick={() => toggleManage(row)}><Icon name="cog" size={16} /></Button>
                         </> : ""}
                 </>,
             },
         ]
         const columnsArchive = [
             {
-                name: <h6>CONSECUTIVO ENTRADA</h6>,
+                name: 'CONSECUTIVO ENTRADA',
                 selector: row => row.id_publico ? row.id_publico : row.id_global ? row.id_global : '',
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
+                cell: row => <span className="text-sm font-medium font-mono">{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <Badge variant="destructive" className="text-[10px]">Sin consecutivo</Badge>}</span>
             },
             {
-                name: <h6>CONSECUTIVO SALIDA</h6>,
-                selector: 'id_reply',
+                name: 'CONSECUTIVO SALIDA',
+                selector: row => row.id_reply,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_reply}</label>
+                cell: row => <span className="text-sm font-mono">{row.id_reply}</span>
             },
             {
-                name: <h6>FECHA RADICACIÓN</h6>,
-                selector: 'pqrs_time.legal',
+                name: 'FECHA RADICACIÓN',
+                selector: row => row.pqrs_time?.legal,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser(row.pqrs_time.legal) ?? ''}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.pqrs_time.legal) ?? ''}</span>
 
             },
             {
-                name: <h6>FECHA LÍMITE RESPUESTA</h6>,
+                name: 'FECHA LÍMITE RESPUESTA',
                 minWidth: '150px',
                 selector: row => dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1)),
                 sortable: true,
                 center: true,
-                cell: row => <label>{dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1)))}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1)))}</span>
             },
             {
-                name: <h6>FECHA ENVIO RESPUESTA </h6>,
-                selector: 'pqrs_time.reply_formal',
+                name: 'FECHA ENVÍO RESPUESTA',
+                selector: row => row.pqrs_time?.reply_formal,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser(row.pqrs_time.reply_formal)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.pqrs_time.reply_formal)}</span>
             },
             {
-                name: <h6>TIEMPO REAL DE RESPUESTA</h6>,
+                name: 'TIEMPO REAL RESPUESTA',
                 selector: row => dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal),
                 sortable: true,
                 center: true,
-                cell: row => <label>{dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal) + ' | ' + (row.pqrs_time.time)} día(s) habiles</label>
+                cell: row => <span className="text-xs">{dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal)} | {row.pqrs_time.time} día(s) hábiles</span>
             },
 
             {
-                name: <p>ACCIÓN</p>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
                 center: true,
                 cell: row => <>
-                    <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
-                    </MDBTooltip>
+                    <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ?
                         <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItemId={row.id}
-                            refreshList={this.refreshList}
+                            refreshList={refreshList}
                         />
                         : ""}
 
@@ -739,117 +665,62 @@ class PQRSADMIN extends Component {
         ]
         const columnsSearch = [
             {
-                name: <label>CONSECUTIVO ENTRADA</label>,
+                name: 'CONSECUTIVO ENTRADA',
                 selector: row => row.id_publico ? row.id_publico : row.id_global ? row.id_global : '',
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
+                cell: row => <span className="text-sm font-medium font-mono">{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <Badge variant="destructive" className="text-[10px]">Sin consecutivo</Badge>}</span>
             },
             {
-                name: <label>CONSECUTIVO SALIDA</label>,
-                selector: 'id_reply',
+                name: 'CONSECUTIVO SALIDA',
+                selector: row => row.id_reply,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_reply}</label>
+                cell: row => <span className="text-sm font-mono">{row.id_reply}</span>
             },
             {
-                name: <label>ESTADO</label>,
-                selector: 'status',
+                name: 'ESTADO',
+                selector: row => row.status,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{_STATUS_COMPONENT(row.status)}</label>
+                cell: row => _STATUS_COMPONENT(row.status)
             },
             {
-                name: <label>FECHA RADICACIÓN</label>,
-                selector: 'pqrs_time.reply_legal',
+                name: 'FECHA RADICACIÓN',
+                selector: row => row.pqrs_time?.reply_legal,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.pqrs_time ? dateParser(row.pqrs_time.legal) : ''}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.pqrs_time ? dateParser(row.pqrs_time.legal) : ''}</span>
             },
             {
-                name: <label className="text-center">FECHA LIMITE RESPUESTA</label>,
-                selector: 'pqrs_time.legal',
+                name: 'FECHA LÍMITE RESPUESTA',
+                selector: row => row.pqrs_time?.legal,
                 sortable: true,
-
-                cell: row => <label>{row.pqrs_time ? dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1))) : ''}</label>
-
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.pqrs_time ? dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1))) : ''}</span>
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
-                cell: row => <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                    <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye "></i></button>
-
-                </MDBTooltip>,
+                cell: row => <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>,
 
             },
         ]
         // CUSTOM STYLES FOR THE MODAL
-        const customStyles = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 1050
-            },
-            content: {
-                position: 'absolute',
-                top: '40px',
-                left: '15%',
-                right: '5%',
-                bottom: '40px',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                marginRight: 'auto',
-            }
-        };
-        const customStylesForModalMacro = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 1050,
-            },
-            content: {
-                position: 'absolute',
-                top: '0px',
-                left: '0px',
-                right: '0px',
-                bottom: '0px',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                width: 'auto',
-            }
-        };
+        const customStylesForModalMacro = {};
         //NAVIGATION
         const handleFillClick = (state) => {
-            if (state === this.state.fillActive) {
+            if (state === fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setFillActive(state);
         };
         const handleFillClick2 = (state) => {
-            if (state === this.state.fillActive) {
+            if (state === fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setFillActive(state);
         };
-
 
         var formData = new FormData();
 
@@ -861,192 +732,181 @@ class PQRSADMIN extends Component {
             let serach_str = document.getElementById("search_1").value;
             formData.set('serach_str', serach_str);
             if (serach_str) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 PQRS_Main.search(formData)
                     .then(response => {
-                        //this.asignLists(response.data);
-                        // this.asignListsWorkers(response.data);
-                        this.setState({
-                            itemsSearch: response.data,
-                            isloadedSearch: true,
-                        });
-                        MySwal.close();
+                        //asignLists(response.data);
+                        // asignListsWorkers(response.data);
+                        setItemsSearch(response.data);
+                        setIsloadedSearch(true);
+                        swalClose();
                     })
                     .catch(e => {
                         console.log(e);
                     });
             } else {
-                this.refreshList();
-                this.setState({
-                    itemsSearch: [],
-                    isloadedSearch: false,
-                })
+                refreshList();
+                setItemsSearch([]);
+                setIsloadedSearch(false);
             }
         }
         let loadMacro = (event) => {
             event.preventDefault();
-            this.toggle_macro();
+            toggle_macro();
             let date_a = document.getElementById("load_macro_date_1").value;
             let date_b = document.getElementById("load_macro_date_2").value;
-            var date_start = date_a;
-            var date_end = date_b;
-            if (moment(date_a).diff(date_b) >= 0) {
-                date_start = date_b;
-                date_end = date_a;
+            var date_start_val = date_a;
+            var date_end_val = date_b;
+            if (dayjs(date_a).diff(date_b) >= 0) {
+                date_start_val = date_b;
+                date_end_val = date_a;
             }
-            this.setState({ date_start: date_start });
-            this.setState({ date_end: date_end })
+            setDate_start(date_start_val);
+            setDate_end(date_end_val)
         }
         return (
             <div className="Publish container">
-                <div className="col-12 d-flex justify-content-start p-0">
-                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u7}</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
+                <div>
+                    <h1 className="text-xl font-bold text-foreground">PQRS</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Gestión de peticiones, quejas, reclamos y sugerencias</p>
                 </div>
                 
                 <div className="row mb-4 d-flex justify-content-center">
 
-                    {this.state.pending.length > 0 ? PENDING_COMPONENT() : ''}
+                    {pending.length > 0 ? PENDING_COMPONENT() : ''}
 
                     <div className="col-lg-11 col-md-12">
-                        <h1 className="text-center my-4">GESTIÓN DE PQRS Y SOLICITUDES</h1>
-                        <hr />
-                        <MDBRow>
-                            <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
-                            <MDBCol md="4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>GENERAR PQRS</h4></MDBCardTitle>
-                                        <p className="app-text-primary text-justify"> Permite la digitalización de una solicitud PQRS</p>
-                                        <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-success" onClick={() => this.toggle()}><i class="fas fa-folder-plus"></i> NUEVA SOLICITUD </button>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>CONSULTAR PQRS</h4></MDBCardTitle>
-                                        <form onSubmit={search} id="app-form">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </span>
-                                                <select class="form-select" id="search_0" required>
-                                                    <option value="1">Consecutivo de Entrada</option>
-                                                    <option value="2">Consecutivo de Salida</option>
-                                                    <option value="3">Numero de radicación de Licencia</option>
-                                                    <option value="4">Nombre de Peticionario</option>
-                                                    <option value="5">Numero de Documento (C.C, NIT)</option>
-                                                    <option value="6">Profesional Asignado</option>
-                                                </select>
-                                            </div>
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="far fa-comment-dots"></i>
-                                                </span>
-                                                <input type="text" class="form-control" id="search_1" />
-                                            </div>
-                                            <div className="text-center py-4 mt-3">
-                                                <button className="btn btn-lg btn-secondary"><i class="fas fa-search-plus"></i> CONSULTAR </button>
-                                            </div>
-                                        </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>MACRO TABLA</h4></MDBCardTitle>
-                                        <form onSubmit={loadMacro} id="fun_form_macro_table_pqrs">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="far fa-calendar-alt"></i>
-                                                </span>
-                                                <input type="date" class="form-control" id="load_macro_date_1" required
-                                                    defaultValue={moment().subtract(6, 'months').format('YYYY-MM-DD')} />
-                                            </div>
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="far fa-calendar-alt"></i>
-                                                </span>
-                                                <input type="date" class="form-control" id="load_macro_date_2" required
-                                                    defaultValue={moment().format('YYYY-MM-DD')} />
-                                            </div>
-                                            <div className="text-center py-4 mt-3">
-                                                <button className="btn btn-lg btn-danger"><i class="fas fa-th"></i> CARGAR </button>
-                                            </div>
-                                        </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                        </MDBRow>
-                    </div>
-
-
-
-
-                    <div className="row d-flex justify-content-center">
-                        <div className="col-11">
-                            {this.state.isloadedSearch ? (<>
-                                <h2 class="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} class="" height="75px" alt="..." /></h2>
-
-                                <DataTable
-                                    title="TABLA DE BÚSQUEDA"
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    noDataComponent="No hay mensajes"
-                                    striped="true"
-                                    columns={columnsSearch}
-                                    data={this.state.itemsSearch}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={20}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    className="data-table-component"
-                                    Header
-                                    onRowClicked={(e) => this.setState({ selectedRow: e.id })}
-                                    conditionalRowStyles={rowSelectedStyle}
-                                /></>
-                            ) : ""}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                            <div className="rounded-lg border bg-card p-4">
+                                <h4 className="text-sm font-semibold text-center mb-2">Generar PQRS</h4>
+                                <p className="text-xs text-muted-foreground text-center mb-3">Digitalización de una solicitud PQRS</p>
+                                <div className="text-center">
+                                    <Button onClick={() => toggle()}>
+                                        <Icon name="FolderPlus" size={14} /> Nueva Solicitud
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="rounded-lg border bg-card p-4">
+                                <h4 className="text-sm font-semibold text-center mb-2">Consultar PQRS</h4>
+                                <form onSubmit={search} id="app-form">
+                                    <div className="input-group mb-2">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="Info" size={13} />
+                                        </span>
+                                        <select className="form-select" id="search_0" required>
+                                            <option value="1">Consecutivo de Entrada</option>
+                                            <option value="2">Consecutivo de Salida</option>
+                                            <option value="3">Numero de radicación de Licencia</option>
+                                            <option value="4">Nombre de Peticionario</option>
+                                            <option value="5">Numero de Documento (C.C, NIT)</option>
+                                            <option value="6">Profesional Asignado</option>
+                                        </select>
+                                    </div>
+                                    <div className="input-group mb-2">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="MessageCircle" size={13} />
+                                        </span>
+                                        <input type="text" className="form-control" id="search_1" placeholder="Buscar..." />
+                                    </div>
+                                    <div className="text-center">
+                                        <Button variant="secondary" size="sm" type="submit">
+                                            <Icon name="SearchCheck" size={13} /> Consultar
+                                        </Button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="rounded-lg border bg-card p-4">
+                                <h4 className="text-sm font-semibold text-center mb-2">Macro Tabla</h4>
+                                <form onSubmit={loadMacro} id="fun_form_macro_table_pqrs">
+                                    <div className="input-group mb-2">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="Calendar" size={13} />
+                                        </span>
+                                        <input type="date" className="form-control" id="load_macro_date_1" required
+                                            defaultValue={dayjs().subtract(6, 'months').format('YYYY-MM-DD')} />
+                                    </div>
+                                    <div className="input-group mb-2">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="Calendar" size={13} />
+                                        </span>
+                                        <input type="date" className="form-control" id="load_macro_date_2" required
+                                            defaultValue={dayjs().format('YYYY-MM-DD')} />
+                                    </div>
+                                    <div className="text-center">
+                                        <Button variant="destructive" size="sm" type="submit">
+                                            <Icon name="Table" size={13} /> Cargar
+                                        </Button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
 
-                    <MDBTabs fill pills className='mb-3'>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('1')} active={this.state.fillActive === '1'}>
-                                <label className="upper-case">PETICIONES ACTIVAS ({items.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('10')} active={this.state.fillActive === '10'}>
-                                <label className="upper-case">ARCHIVO ({this.state.itemsClose.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                    </MDBTabs>
+                    {isloadedSearch && (
+                        <div className="mb-4">
+                            <h3 className="text-sm font-semibold text-center mb-2">
+                                <Icon name="Search" size={14} className="inline mr-1" /> Resultado de la Búsqueda
+                            </h3>
+                            <DataTable
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="No hay mensajes"
+                                striped="true"
+                                columns={columnsSearch}
+                                data={itemsSearch}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={20}
+                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                                onRowClicked={(e) => setSelectedRow(e.id)}
+                                conditionalRowStyles={rowSelectedStyle}
+                            />
+                        </div>
+                    )}
 
+                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                        <button
+                            role="tab"
+                            aria-selected={fillActive === '1'}
+                            onClick={() => handleFillClick('1')}
+                            className={cn(
+                                'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                fillActive === '1'
+                                    ? 'border-b-primary text-primary'
+                                    : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                            )}
+                        >
+                            <Icon name="MessageSquare" size={14} />
+                            Peticiones Activas
+                            <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{items.length}</Badge>
+                        </button>
+                        <button
+                            role="tab"
+                            aria-selected={fillActive === '10'}
+                            onClick={() => handleFillClick('10')}
+                            className={cn(
+                                'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                fillActive === '10'
+                                    ? 'border-b-primary text-primary'
+                                    : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                            )}
+                        >
+                            <Icon name="Archive" size={14} />
+                            Archivo
+                            <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{itemsClose.length}</Badge>
+                        </button>
+                    </div>
 
-                    <MDBTabsContent>
-                        <MDBTabsPane show={this.state.fillActive === '1'}>
+                    <div>
+                        <TabPane show={fillActive === '1'}>
                             {isLoaded ? <>
-                                <div class="row">
+                                <div className="row">
                                     <div className='col ms-5 mb-3'>
-                                        <MDBBtnGroup >
-                                            <MDBBtn outline={!this.state.filterreply} onClick={() => this.setState({ filterreply: !this.state.filterreply })} size='sm'>VER POR RESPONDER: {dataFilter(items, true, false).length}</MDBBtn>
-                                            <MDBBtn outline={!this.state.filterreply2} onClick={() => this.setState({ filterreply2: !this.state.filterreply2 })} size='sm'>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</MDBBtn>
-                                        </MDBBtnGroup>
+                                        <div className="flex flex-wrap gap-1">
+                                            <Button variant={!filterreply ? "outline" : "default"} size="sm" onClick={() => setFilterreply(prev => !prev)}>VER POR RESPONDER: {dataFilter(items, true, false).length}</Button>
+                                            <Button variant={!filterreply2 ? "outline" : "default"} size="sm" onClick={() => setFilterreply2(prev => !prev)}>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</Button>
+                                        </div>
                                     </div>
                                 </div>
                                 <DataTable
@@ -1055,14 +915,14 @@ class PQRSADMIN extends Component {
                                     noDataComponent="No hay mensajes"
                                     striped="true"
                                     columns={columns}
-                                    data={dataFilter(items, this.state.filterreply, this.state.filterreply2)}
+                                    data={dataFilter(items, filterreply, filterreply2)}
                                     highlightOnHover
                                     pagination
                                     paginationPerPage={20}
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     Header
-                                    onRowClicked={(e) => this.setState({ selectedRow: e.id })}
+                                    onRowClicked={(e) => setSelectedRow(e.id)}
                                     conditionalRowStyles={rowSelectedStyle}
                                     dense
                                     defaultSortFieldId={1}
@@ -1072,8 +932,8 @@ class PQRSADMIN extends Component {
                                 <div>
                                     <h4>No hay información</h4>
                                 </div>}
-                        </MDBTabsPane>
-                        <MDBTabsPane show={this.state.fillActive === '10'}>
+                        </TabPane>
+                        <TabPane show={fillActive === '10'}>
                             {isLoaded ? <>
                                 <DataTable
                                     title="Lista de peticiones archivadas"
@@ -1081,14 +941,14 @@ class PQRSADMIN extends Component {
                                     noDataComponent="No hay mensajes"
                                     striped="true"
                                     columns={columnsArchive}
-                                    data={this.state.itemsClose}
+                                    data={itemsClose}
                                     highlightOnHover
                                     pagination
                                     paginationPerPage={20}
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     Header
-                                    onRowClicked={(e) => this.setState({ selectedRow: e.id })}
+                                    onRowClicked={(e) => setSelectedRow(e.id)}
                                     conditionalRowStyles={rowSelectedStyle}
                                     dense
                                     defaultSortFieldId={1}
@@ -1098,259 +958,299 @@ class PQRSADMIN extends Component {
                                 <div>
                                     <h4>No hay información</h4>
                                 </div>}
-                        </MDBTabsPane>
+                        </TabPane>
 
-                    </MDBTabsContent>
-
-
+                    </div>
 
                     <Modal contentLabel="GENERAR SOLCITUD PQRS"
-                        isOpen={this.state.modalNew}
-                        style={customStyles}
+                        isOpen={modalNew}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h2>CREAR NUEVA PETICIÓN</h2>
-
-                            <div className='btn-close' color='none' onClick={() => this.toggle()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="FolderPlus" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Crear Nueva Petición</h2>
+                            </div>
+                            <button type="button" onClick={() => toggle()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSNEW
                             translation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            refreshRequested={this.refreshRequested} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            refreshRequested={refreshRequested} />
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggle()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="INFORMACION PQRS"
-                        isOpen={this.state.modalInfo}
-                        style={customStyles}
+                        isOpen={modalInfo}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>INFORMACION PQRS - {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleInfo()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Info" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Información PQRS — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleInfo()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSINFO
                             ranslation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            NAVIGATION={this.navigation} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleInfo()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            currentId={currentId}
+                            NAVIGATION={navigation} />
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleInfo()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="ASIGNAR PROFESIONALES PQRS"
-                        isOpen={this.state.modalAsign}
-                        style={customStyles}
+                        isOpen={modalAsign}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>ASIGNAR PROFESIONALES -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleAsign()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="UserPlus" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Asignar Profesionales — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleAsign()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSASIGN
                             ranslation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleAsign()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation} />
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleAsign()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="RESPUESTA PROFESIONAL PQRS"
-                        isOpen={this.state.modalInformal}
-                        style={customStyles}
+                        isOpen={modalInformal}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>RESPUESTA PROFESIONAL -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleInformal()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="MessageSquare" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Respuesta Profesional — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleInformal()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSINFORMAL
                             ranslation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            currentItemAsign={this.state.currentItemAsign}
-                            NAVIGATION={this.navigation}
-                            closeModal={() => this.toggleInformal()} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleInformal()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            currentItemAsign={currentItemAsign}
+                            NAVIGATION={navigation}
+                            closeModal={() => toggleInformal()} />
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleInformal()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="RESPONDER PETICION PQRS"
-                        isOpen={this.state.modalReply}
-                        style={customStyles}
+                        isOpen={modalReply}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>RESPONDER A PETICIÓN -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleReply()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Reply" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Responder Petición — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleReply()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSREPLY
                             ranslation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation}
-                            closeModal={() => this.toggleReply()} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleReply()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation}
+                            closeModal={() => toggleReply()} />
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleReply()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="CERRAR PQRS"
-                        isOpen={this.state.modalLock}
-                        style={customStyles}
+                        isOpen={modalLock}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>CERRAR PETICIÓN -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleLock()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Lock" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Cerrar Petición — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleLock()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSLOCK
                             ranslation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleLock()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation} />
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleLock()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="EDIT PQRS"
-                        isOpen={this.state.modalEdit}
-                        style={customStyles}
+                        isOpen={modalEdit}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>MODIFICAR PETICIÓN -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleEdit()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Pencil" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Modificar Petición — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleEdit()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRS_EDIT
                             ranslation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleEdit()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation} />
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleEdit()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
                     <Modal contentLabel="MANAGE PQRS"
-                        isOpen={this.state.modalManage}
-                        style={customStyles}
+                        isOpen={modalManage}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>GESTIONAR PETICIÓN -  {this.state.currentIdGlobal || this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleManage()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Settings" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Gestionar Petición — {currentIdGlobal || currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleManage()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRS_MANAGE_COMPONENT
                             translation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation}
-                            closeModal={this.toggleManage}
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation}
+                            closeModal={toggleManage}
                             translation_form={translation_form}
-                            retrievePublish={this.retrievePublish}
+                            retrievePublish={retrievePublish}
                         />
-
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleManage()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleManage()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
                     <Modal contentLabel="EDIT PQRS"
-                        isOpen={this.state.modalEditable}
-                        style={customStyles}
+                        isOpen={modalEditable}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>EDITAR PETICIÓN -  {this.state.currentIdGlobal || this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleEditable()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="FileEdit" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Editar Petición — {currentIdGlobal || currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleEditable()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
-                        {this.state.editMaster == true ?
+                        {editMaster == true ?
                             <PQRS_MANAGE_COMPONENT
                                 translation={translation}
                                 swaMsg={swaMsg}
                                 globals={globals}
-                                currentId={this.state.currentId}
-                                refreshList={this.refreshList}
-                                NAVIGATION={this.navigation}
-                                closeModal={this.toggleEditable}
+                                currentId={currentId}
+                                refreshList={refreshList}
+                                NAVIGATION={navigation}
+                                closeModal={toggleEditable}
                                 translation_form={translation_form}
-                                retrievePublish={this.retrievePublish}
+                                retrievePublish={retrievePublish}
                             /> :
                             <ACESS_EDIT
                                 swaMsg={swaMsg}
-                                editMaster1={() => this.setState({ editMaster: !this.state.editMaster })}
-                                NAVIGATION={this.navigation}
+                                editMaster1={() => setEditMaster(prev => !prev)}
+                                NAVIGATION={navigation}
                                 translation={translation}
-                                currentId={this.state.currentId}
+                                currentId={currentId}
                             />
                         }
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleEditable()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleEditable()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="MACRO TABLE"
-                        isOpen={this.state.modal_macro}
-                        style={customStylesForModalMacro}
+                        isOpen={modal_macro}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <label><i class="fas fa-th"></i> Macro tabla de seguimiento: Desde {dateParser(this.state.date_start)} hasta {dateParser(this.state.date_end)}</label>
-                            <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_macro()}></MDBBtn>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Table" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Macro Tabla: {dateParser(date_start)} — {dateParser(date_end)}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggle_macro()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
 
                         <PQRS_MACROTABLE translation={translation} swaMsg={swaMsg} globals={globals}
-                            closeModal={this.toggle_macro}
-                            NAVIGATION={this.navigation}
-                            NAVIGATION_GEN={this.toggleInfo}
-                            date_start={this.state.date_start}
-                            date_end={this.state.date_end}
-                            selectedRow={this.state.selectedRow}
-                            setSelectedRow={(id) => this.setState({ selectedRow: id })}
+                            closeModal={toggle_macro}
+                            NAVIGATION={navigation}
+                            NAVIGATION_GEN={toggleInfo}
+                            date_start={date_start}
+                            date_end={date_end}
+                            selectedRow={selectedRow}
+                            setSelectedRow={(id) => setSelectedRow(id)}
                         />
 
                     </Modal>
@@ -1358,7 +1258,6 @@ class PQRSADMIN extends Component {
                 </div >
             </div >
         );
-    }
 }
 
 export default PQRSADMIN;

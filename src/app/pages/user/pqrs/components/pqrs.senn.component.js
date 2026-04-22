@@ -1,14 +1,8 @@
-import React from 'react'
 import PQRS_SERVICES from '../../../../services/pqrs_main.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
-const moment = require('moment');
-const MySwal = withReactContent(Swal);
-
-
-
-
+import { Button } from '@/components/ui/button';
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 export const SEEN_COMPONENT_FORM = (props) => {
     const { swaMsg, worker, retrieveItem, closeComponent, retrievePublish, currentItem, } = props;
 
@@ -33,8 +27,8 @@ export const SEEN_COMPONENT_FORM = (props) => {
         // se implementa la historia de usuario
 
         var _HISTORY = {
-            date: moment().format('YYYY-MM-DD'),
-            time: moment().format('hh-mm'),
+            date: dayjs().format('YYYY-MM-DD'),
+            time: dayjs().format('hh-mm'),
             id: worker.id,
             feedback_argument: pqrsvisto3,
             feedback: pqrsvisto1,
@@ -45,34 +39,18 @@ export const SEEN_COMPONENT_FORM = (props) => {
         PQRS_SERVICES.updateWorker(worker.id, form)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     retrieveItem()
                     closeComponent()
                     retrievePublish()
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }
@@ -80,11 +58,11 @@ export const SEEN_COMPONENT_FORM = (props) => {
         <div className="row">
             <div className="col-6">
                 <label>VISTO BUENO</label>
-                <div class="input-group my-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-envelope"></i>
+                <div className="input-group my-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="envelope" size={16} />
                     </span>
-                    <select class="form-control" id="pqrs_visto_worker_1" defaultValue={worker.feedback}>
+                    <select className="form-control" id="pqrs_visto_worker_1" defaultValue={worker.feedback}>
                         <option value={1}>SI</option>
                         <option value={0}>NO</option>
                     </select>
@@ -92,22 +70,22 @@ export const SEEN_COMPONENT_FORM = (props) => {
             </div>
             <div className="col-6">
                 <label>FECHA CONFIRMACION</label>
-                <div class="input-group my-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-calendar-alt"></i>
+                <div className="input-group my-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="calendar-alt" size={16} />
                     </span>
-                    <input type='date' class="form-control mb-" rows="3" id="pqrs_visto_worker_2" defaultValue={worker.feedback_date ?? moment().format('YYYY-MM-DD')} required></input>
+                    <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_2" defaultValue={worker.feedback_date ?? dayjs().format('YYYY-MM-DD')} required></input>
                 </div>
             </div>
         </div>
         <div className="row">
             <div className="col">
                 <label>ARGUMENTO</label>
-                <textarea class="form-control mb-3" rows="3" id="pqrs_visto_worker_3" defaultValue={worker.feedback_argument}></textarea>
+                <textarea className="form-control mb-3" rows="3" id="pqrs_visto_worker_3" defaultValue={worker.feedback_argument}></textarea>
             </div>
         </div>
         <div className='text-center'>
-            <button type="button" class="btn btn-sm btn-success" onClick={update}>Confirmar <i class="fas fa-check"></i></button>
+            <Button size="sm" onClick={update}>Confirmar <Icon name="check" size={16} /></Button>
         </div>
 
 

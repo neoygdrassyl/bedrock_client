@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
-import DataTable from 'react-data-table-component';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+
+import DataTable from '@/components/data-table-bridge';
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
     _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER, _FUN_101_PARSER, _FUN_102_PARSER, _FUN_24_PARSER, _FUN_25_PARSER
 } from '../../../components/customClasses/funCustomArrays'
+import { Icon } from '@/components/icon';
 import { dateParser, dateParser_yearsPassed, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
 import FUNG_CHECKLIST from './fun_g_checklist';
 import FUNG_NAV from './components/fun_g_nav';
@@ -21,53 +21,57 @@ import FUN_ARCHIVE from './components/fun_archive.component';
 import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.compoentn';
 import FUN_CHECKLIST_N from './components/fun_checklist_n';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
+import FUN_DUPLICATE from './components/fun_duplicate.component';
+import { swalError } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUNG extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            load: false,
-            currentItem: null,
-            pqrsxfun: false,
+const asInputValue = (value) => value ?? '';
+
+
+function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, NAVIGATION_VERSION, onDuplicateSuccess }) {
+    const [load, setLoad] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [showDuplicate, setShowDuplicate] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+        setLoad(false);
+        setCurrentItem(null);
+        setPqrsxfun(false);
+        retrieveItem(currentId, { isCancelled: () => cancelled });
+        return () => {
+            cancelled = true;
         };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+    }, [currentId]);
+
+    const retrieveItem = (id, options = {}) => {
+        const isCancelled = options.isCancelled || (() => false);
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
+                if (isCancelled()) return;
+                setCurrentItem(response.data);
+                setLoad(true);
+                retrievePQRSxFUN(response.data.id_public, { isCancelled });
             })
             .catch(e => {
+                if (isCancelled()) return;
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
-    }
-    retrievePQRSxFUN(id_public) {
+    };
+
+    const retrievePQRSxFUN = (id_public, options = {}) => {
+        const isCancelled = options.isCancelled || (() => false);
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                if (isCancelled()) return;
+                setPqrsxfun(response.data);
             })
             .catch(e => {
+                if (isCancelled()) return;
                 console.log(e);
             });
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { currentItem } = this.state;
+    };
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -146,35 +150,35 @@ class FUNG extends Component {
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
+            _COMPONENT.push(<span key="doc-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'far fa-id-card fa-2x'} color={'DeepSkyBlue'} />
-                : ""}</>)
+                    icon={'IdCard'} color={'DeepSkyBlue'} />
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[1] > 0
+            _COMPONENT.push(<span key="doc-1">{_array[1] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'DarkOrchid'} />
-                : ""}</>)
+                    icon={'FileText'} color={'DarkOrchid'} />
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[2] > 0
+            _COMPONENT.push(<span key="doc-2">{_array[2] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'GoldenRod'} />
-                : ""}</>)
+                    icon={'FileText'} color={'GoldenRod'} />
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[3] > 0
+            _COMPONENT.push(<span key="doc-3">{_array[3] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'LimeGreen'} />
-                : ""}</>)
+                    icon={'FileText'} color={'LimeGreen'} />
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[4] > 0
+            _COMPONENT.push(<span key="doc-4">{_array[4] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
-                    icon={'far fa-file-alt fa-2x'} color={'tomato'} />
-                : ""}</>)
+                    icon={'FileText'} color={'tomato'} />
+                : ""}</span>)
 
             return <>{_COMPONENT}</>
         }
@@ -208,17 +212,16 @@ class FUNG extends Component {
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
+            _COMPONENT.push(<span key="fun51-doc-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} />
-                : ""}</>)
+                    icon={'IdCard'} color={'DeepSkyBlue'} />
+                : ""}</span>)
 
-            _COMPONENT.push(<>{_array[1] > 0
+            _COMPONENT.push(<span key="fun51-doc-1">{_array[1] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
-                : ""}</>)
-
+                    icon={'BadgeCheck'} color={'DarkOrchid'} />
+                : ""}</span>)
 
             return <>{_COMPONENT}</>
         }
@@ -301,57 +304,57 @@ class FUNG extends Component {
                 <div className="row">
                     <div className="col-6">
                         <label>1.1 Tipo de Solicitud</label>
-                        <textarea class="form-control mb-3" rows="3" value={_CHILD_VARS.item_1} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_1)} disabled></textarea>
                     </div>
                     <div className="col-6">
                         <label>1.2 Objeto del Trámite</label>
-                        <input type="text" class="form-control" value={_CHILD_VARS.item_2} disabled />
+                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_2)} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.3 Modalidad Licencia de Urbanización</label>
-                        <input type="text" class="form-control" value={_CHILD_VARS.item_3} disabled />
+                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_3)} disabled />
                     </div>
                     <div className="col-6">
                         <label >1.4 Modalidad Licencia de Subdivisión</label>
-                        <input type="text" class="form-control" value={_CHILD_VARS.item_4} disabled />
+                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_4)} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.5 Modalidad Licencia de Construcción</label>
-                        <textarea class="form-control mb-3" rows="3" value={_CHILD_VARS.item_5} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_5)} disabled></textarea>
                     </div>
                     <div className="col-6">
                         <label>1.6 Usos</label>
-                        <textarea class="form-control mb-3" rows="3" value={_CHILD_VARS.item_6} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_6)} disabled></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.7 Área Construida</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_7} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_7)} disabled />
                     </div>
                     <div className="col-6">
                         <label>1.8 Tipo de Vivienda</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_8} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_8)} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.9  Bien de Interés Cultural</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_9} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_9)} disabled />
                     </div>
                     <div className="col-6">
                         <label>1.10.2  Zonificación Climática</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_101} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_101)} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-12">
                         <label>1.10.1  Declaración de medidas de construcción sostenible</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_102} disabled />
+                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_102)} disabled />
                     </div>
                 </div>
             </>
@@ -363,6 +366,7 @@ class FUNG extends Component {
                 item_212: "",
                 item_22: "",
                 item_23: "",
+                item_232: "",
                 item_24: "",
                 item_25: "",
                 item_261: "",
@@ -377,6 +381,7 @@ class FUNG extends Component {
                 _CHILD_VARS.item_212 = _CHILD.direccion_ant;
                 _CHILD_VARS.item_22 = _CHILD.matricula;
                 _CHILD_VARS.item_23 = _CHILD.catastral;
+                _CHILD_VARS.item_232 = _CHILD.catastral_2;
                 _CHILD_VARS.item_24 = _FUN_24_PARSER(_CHILD.suelo); // PARSER
                 _CHILD_VARS.item_25 = _FUN_25_PARSER(_CHILD.lote_pla);// PARSER
 
@@ -393,31 +398,31 @@ class FUNG extends Component {
                 <div className="row">
                     <div className="col-6">
                         <label>2.1 Dirección o Nomenclatura actual</label>
-                        <textarea type="text" class="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_211} disabled ></textarea>
+                        <textarea type="text" className="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_211} disabled ></textarea>
                     </div>
                     <div className="col-6">
                         <label>2.1 Dirección(es) Anterior(es)</label>
-                        <textarea type="text" class="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_212} disabled ></textarea>
+                        <textarea type="text" className="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_212} disabled ></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>2.2 No. Matrícula Inmobiliaria</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_22} disabled />
+                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_22} disabled />
                     </div>
                     <div className="col-6">
                         <label>2.3 Identificación Catastral</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_23} disabled />
+                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_232 || _CHILD_VARS.item_23} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>2.4 Clasificación del Suelo</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_24} id="p_24" disabled />
+                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_24} id="p_24" disabled />
                     </div>
                     <div className="col-6">
                         <label>2.5 Planimetria del Lote</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_25} id="p_25" disabled />
+                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_25} id="p_25" disabled />
                     </div>
                 </div>
                 <div className="row">
@@ -427,56 +432,56 @@ class FUNG extends Component {
                 </div>
                 <div className="row">
                     <div className="col-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Barrio o Urbanización
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Barrio o Urbanización
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_261} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_261} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Comuna
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Comuna
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_263} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_263} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Estrato
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Estrato
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_267} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_267} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Manzana No.
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Manzana No.
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_268} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_268} disabled />
                         </div>
                     </div>
 
                     <div className="col-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Vereda
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Vereda
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_262} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_262} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Sector
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Sector
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_264} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_264} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Corregimiento
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Corregimiento
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_265} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_265} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Lote No.
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Lote No.
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_266} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_266} disabled />
                         </div>
                     </div>
                 </div>
@@ -498,23 +503,23 @@ class FUNG extends Component {
             }
             const columns_4 = [
                 {
-                    name: <label>LINDEROS</label>,
+                    name: 'LINDEROS',
                     selector: row => row.coord, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.coord}</label>
+                    cell: row => <span className="text-sm">{row.coord}</span>
                 },
                 {
-                    name: <label>LONGITUD</label>,
+                    name: 'LONGITUD',
                     selector: row => row.longitud, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.longitud}</label>
+                    cell: row => <span className="text-sm">{row.longitud}</span>
                 },
                 {
-                    name: <label>COLINDA CON</label>,
+                    name: 'COLINDA CON',
                     selector: row => row.colinda, // FIX: react-data-table v7→v8
-                    cell: row => <label>{row.colinda}</label>
+                    cell: row => <span className="text-sm">{row.colinda}</span>
                 },
             ]
             return <DataTable
@@ -544,69 +549,69 @@ class FUNG extends Component {
             }
             const columns_51 = [
                 {
-                    name: <label>TIPO</label>,
+                    name: 'TIPO',
                     selector: row => row.type, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.type}</label>
+                    cell: row => <span className="text-sm">{row.type}</span>
                 },
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.name + " " + row.surname}</label>
+                    cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
                 {
-                    name: <label>CC/NIT</label>,
+                    name: 'CC/NIT',
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_number}</label>
+                    cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
-                    name: <label>NOMBRE REP. LEGAL</label>,
+                    name: 'NOMBRE REP. LEGAL',
                     selector: row => row.rep_name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.rep_name}</label>
+                    cell: row => <span className="text-sm">{row.rep_name}</span>
                 },
                 {
-                    name: <label>C.C. REP. LEGAL</label>,
+                    name: 'C.C. REP. LEGAL',
                     selector: row => row.rep_id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.rep_id_number}</label>
+                    cell: row => <span className="text-sm">{row.rep_id_number}</span>
                 },
                 {
-                    name: <label>TELÉFONO/ CELULAR</label>,
+                    name: 'TELÉFONO/ CELULAR',
                     selector: row => row.nunber, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label >{row.nunber}</label>
                 },
                 {
-                    name: <label>CORREO</label>,
+                    name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
-                    cell: row => <label>{row.email}</label>
+                    cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
-                    name: <label>ROL</label>,
+                    name: 'ROL',
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.role}</label>
+                    cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     center: true,
@@ -636,81 +641,81 @@ class FUNG extends Component {
             }
             const columns_52 = [
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.surname, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.name + " " + row.surname}</label>
+                    cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
                 {
-                    name: <label>CC/NIT</label>,
+                    name: 'CC/NIT',
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.id_number}</label>
+                    cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
-                    name: <label>TELÉFONO/ CELULAR</label>,
+                    name: 'TELÉFONO/ CELULAR',
                     selector: row => row.number, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.number}</label>
+                    cell: row => <span className="text-sm">{row.number}</span>
                 },
                 {
-                    name: <label>CORREO</label>,
+                    name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.email}</label>
+                    cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
-                    name: <label>PROFESIÓN</label>,
+                    name: 'PROFESIÓN',
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.role}</label>
+                    cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
-                    name: <label>MATRICULA</label>,
+                    name: 'MATRICULA',
                     selector: row => row.registration, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.registration}</label>
+                    cell: row => <span className="text-sm">{row.registration}</span>
                 },
                 {
-                    name: <label>EXP. MATRICULA</label>,
+                    name: 'EXP. MATRICULA',
                     selector: row => row.registration_date, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{dateParser(row.registration_date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.registration_date)}</span>
                 },
                 {
-                    name: <label>EXPERIENCIA</label>,
+                    name: 'EXPERIENCIA',
                     selector: row => row.expirience, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{Math.trunc(row.expirience / 12)} año(s)</label>
                 },
                 {
-                    name: <label>¿SANCIONADO?</label>,
+                    name: '¿SANCIONADO?',
                     selector: row => row.sanction, // FIX: react-data-table v7→v8
                     center: true,
-                    cell: row => <label>{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</label>
+                    cell: row => <span className="text-sm">{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</span>
                 },
                 {
-                    name: <label>SUPERVISIÓN</label>,
+                    name: 'SUPERVISIÓN',
                     selector: row => row.supervision, // FIX: react-data-table v7→v8
                     center: true,
-                    cell: row => <label>{row.supervision}</label>
+                    cell: row => <span className="text-sm">{row.supervision}</span>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     cell: row => <> {_GET_DOCS_BTNS(row.docs)}</>
@@ -817,67 +822,65 @@ class FUNG extends Component {
                 }
             }
             return <>
-                <legend className="my-2 px-3 text-uppercase bg-light" id="fung_c1"><h4 className="mt-2">C.1 IDENTIFICACIÓN DEL ENCARGADO DE LA REVISION</h4></legend>
+                <legend className="my-2 px-3 bg-light" id="fung_c1"><h4 className="mt-2">C.1 IDENTIFICACIÓN DEL ENCARGADO DE LA REVISION</h4></legend>
                 <div className="row">
                     <div className="col-6">
                         <label>Nombre Encargado de Revision</label>
-                        <input type="text" class="form-control mb-3" id="c_31" disabled
-                            value={_CHILD_VARS.item_c1} />
+                        <input type="text" className="form-control mb-3" id="c_31" disabled
+                            value={asInputValue(_CHILD_VARS.item_c1)} />
                     </div>
                     <div className="col-6">
                         <label>No. Radicado</label>
-                        <input type="text" class="form-control mb-3" id="c_33" disabled
-                            value={currentItem.id_public} />
+                        <input type="text" className="form-control mb-3" id="c_33" disabled
+                            value={asInputValue(currentItem.id_public)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>Fecha de Revision</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="c_32" disabled
-                            value={_CHILD_VARS.item_c2} />
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="c_32" disabled
+                            value={asInputValue(_CHILD_VARS.item_c2)} />
                     </div>
                 </div>
 
-
-
-                <legend className="my-2 px-3 text-uppercase bg-light" id="fung_c2"><h4 className="mt-2">C.2 CONDICIÓN DE LA RADICACIÓN</h4></legend>
+                <legend className="my-2 px-3 bg-light" id="fung_c2"><h4 className="mt-2">C.2 CONDICIÓN DE LA RADICACIÓN</h4></legend>
                 <div className="row  mb-3">
                     <div className="col-6">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="1" name="c_41" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="1" name="c_41" readOnly
                                 checked={_CHILD_VARS.item_c3 == '1' ? true : false} />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" htmlFor="flexCheckDefault">
                                 RADICACIÓN EN LEGAL Y DEBIDA FORA
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="0" name="c_41" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="0" name="c_41" readOnly
                                 checked={_CHILD_VARS.item_c3 == '0' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 RADICACIÓN INCOMPLETA
                             </label>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Actuador</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="A" name="c_42" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="A" name="c_42" readOnly
                                 checked={_CHILD_VARS.item_c8 == 'A' ? true : false} />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" htmlFor="flexCheckDefault">
                                 SOLICITANTE
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="B" name="c_42" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="B" name="c_42" readOnly
                                 checked={_CHILD_VARS.item_c8 == 'B' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 APODERADO
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="C" name="c_42" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="C" name="c_42" readOnly
                                 checked={_CHILD_VARS.item_c8 == 'C' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 MANDATARIO
                             </label>
                         </div>
@@ -886,30 +889,30 @@ class FUNG extends Component {
                 <div className="row">
                     <div className="col-6">
                         <label>Nombre</label>
-                        <input type="text" class="form-control mb-3" id="c_43" disabled
-                            value={_CHILD_VARS.item_c5} />
+                        <input type="text" className="form-control mb-3" id="c_43" disabled
+                            value={asInputValue(_CHILD_VARS.item_c5)} />
                     </div>
                     <div className="col-6">
                         <label>Fecha incompleto</label>
-                        <input type="date" class="form-control mb-3" id="c_44" max='2100-01-01' disabled
-                            value={_CHILD_VARS.item_c6} />
+                        <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01' disabled
+                            value={asInputValue(_CHILD_VARS.item_c6)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>CC/NIT</label>
-                        <input type="text" class="form-control mb-3" id="c_45" disabled
-                            value={_CHILD_VARS.item_c7} />
+                        <input type="text" className="form-control mb-3" id="c_45" disabled
+                            value={asInputValue(_CHILD_VARS.item_c7)} />
                     </div>
                     <div className="col-6">
                         <label>Fecha legal y debida forma</label>
-                        <input type="date" class="form-control mb-3" id="c_44" max='2100-01-01' disabled
-                            value={_CHILD_VARS.item_c9} />
+                        <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01' disabled
+                            value={asInputValue(_CHILD_VARS.item_c9)} />
                     </div>
                     <div className="col-12">
                         <label>Observaciones</label>
-                        <textarea class="form-control mb-3" rows="3" id="c_46" disabled
-                            value={_CHILD_VARS.item_c4}></textarea>
+                        <textarea className="form-control mb-3" rows="3" id="c_46" disabled
+                            value={asInputValue(_CHILD_VARS.item_c4)}></textarea>
                     </div>
                 </div>
 
@@ -923,12 +926,12 @@ class FUNG extends Component {
                 {currentItem != null ? <>
                     <h2 className="text-center">RESUMEN DE LA SOLICITUD</h2>
                     <fieldset className="p-3" id="fung_0">
-                        <legend className="my-2 px-3 text-uppercase bg-success">
-                            <label className="app-p lead fw-normal text-uppercase text-light">0. Metadatos de la Solicitud</label>
+                        <legend className="my-2 px-3 bg-success">
+                            <label className="app-p lead fw-normal text-light">0. Metadatos de la Solicitud</label>
                         </legend>
                         {_SET_CHILD_0()}
-                        <legend className="my-2 px-3 text-uppercase bg-light" id="fun_arch">
-                            <label className="app-p lead fw-normal text-uppercase">ARCHIVO</label>
+                        <legend className="my-2 px-3 bg-light" id="fun_arch">
+                            <label className="app-p lead fw-normal">ARCHIVO</label>
                         </legend>
                         <ARCHIVE_FUN_VIEW
                             translation={translation}
@@ -938,20 +941,20 @@ class FUNG extends Component {
                         />
                     </fieldset>
                     <fieldset className="p-3" id="fung_1">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead fw-normal text-uppercase">1. Identificación de la Solicitud</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead fw-normal">1. Identificación de la Solicitud</label>
                         </legend>
                         {_SET_CHILD_1()}
                     </fieldset>
                     <fieldset className="p-3" id="fung_2">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">2. Información del Predio</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">2. Información del Predio</label>
                         </legend>
                         {_SET_CHILD_2()}
                     </fieldset>
                     <fieldset className="p-3" id="fung_3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead fw-normal text-uppercase">3. Información de Vecinos Colindantes</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead fw-normal">3. Información de Vecinos Colindantes</label>
                         </legend>
                         <FUN_3_G_VIEW
                             _FUN_3={_SET_CHILD_3()}
@@ -959,49 +962,49 @@ class FUNG extends Component {
                         />
                     </fieldset>
                     <fieldset className="p-3" id="fung_4">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">4. Linderos, Dimensiones y Áreas</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">4. Linderos, Dimensiones y Áreas</label>
                         </legend>
                         {_SET_CHILD_4()}
                     </fieldset>
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
+                    <legend className="my-2 px-3 Collapsible" id="fun_pdf">
                         <label>5 Titulares y profesionales responsables </label>
                     </legend>
                     <fieldset className="p-3" id="fung_51">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">5.1 Titular(es) de la Licencia</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">5.1 Titular(es) de la Licencia</label>
                         </legend>
                         {_SET_CHILD_51()}
                         <div className="border p-2 m-2">
                             <label className="me-2">LEYENDA:</label>
-                            <label className="me-2"><i class="far fa-id-card fa-2x" style={{ color: "DeepSkyBlue" }}></i> : Documento de Identidad,</label>
-                            <label className="me-2"><i class="far fa-id-badge fa-2x" style={{ color: 'DarkOrchid' }}></i>: Certificado de Existencia y Representación Legal</label>
+                            <label className="me-2"><Icon name="id-card" size={16} style={{ color: "DeepSkyBlue" }} /> : Documento de Identidad,</label>
+                            <label className="me-2"><Icon name="id-badge" size={16} style={{ color: 'DarkOrchid' }} />: Certificado de Existencia y Representación Legal</label>
                         </div>
                     </fieldset>
                     <fieldset className="p-3" id="fung_52">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">5.2 Profesionales Responsables</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">5.2 Profesionales Responsables</label>
                         </legend>
                         {_SET_CHILD_52()}
                         <div className="border p-2 m-2">
                             <label className="me-2">LEYENDA:</label>
-                            <label className="me-2"><a><i class="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
-                            <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
-                            <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Vigencia Matricular,</label>
-                            <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
-                            <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "tomato" }}></i></a> : Estudios de postgrado</label>
+                            <label className="me-2"><a><Icon name="id-card" size={16} style={{ "color": "DeepSkyBlue" }} /></a> : C.C.,</label>
+                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "DarkOrchid" }} /></a> : Matrícula,</label>
+                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "GoldenRod" }} /></a> : Vigencia Matricular,</label>
+                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "LimeGreen" }} /></a> : Hoja de vida y Certificados</label>
+                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "tomato" }} /></a> : Estudios de postgrado</label>
                         </div>
                     </fieldset>
                     <fieldset className="p-3" id="fung_53">
-                        <legend className="my-2 px-3 text-uppercase Collapsible">
-                            <label className="app-p lead text-center fw-normal text-uppercase">5.3 Responsable de la Solicitud</label>
+                        <legend className="my-2 px-3 Collapsible">
+                            <label className="app-p lead text-center fw-normal">5.3 Responsable de la Solicitud</label>
                         </legend>
                         {_SET_CHILD_53()}
                     </fieldset>
 
                     <fieldset className="p-3" id="fung_c">
-                        <legend className="my-2 px-3 text-uppercase bg-success text-white">
-                            <label className="app-p lead text-center fw-normal text-uppercase">Lista de Checkeo</label>
+                        <legend className="my-2 px-3 bg-success text-white">
+                            <label className="app-p lead text-center fw-normal">Lista de Checkeo</label>
                         </legend>
                         {_SET_CHILD_C()}
                         <FUN_CHECKLIST_N
@@ -1010,7 +1013,7 @@ class FUNG extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.retrieveItem}
+                            requestUpdate={retrieveItem}
                             readOnly
                         />
                     </fieldset>
@@ -1037,6 +1040,26 @@ class FUNG extends Component {
                         nomenclature={'9.'}
                     />
 
+                    {/* Duplicate project section */}
+                    <fieldset className="p-3">
+                        <div className="text-center mb-3">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowDuplicate(prev => !prev)}
+                            >
+                                <Icon name={showDuplicate ? 'times' : 'copy'} size={16} className="me-2" />
+                                {showDuplicate ? 'Cerrar duplicación' : 'Duplicar proyecto'}
+                            </Button>
+                        </div>
+                        {showDuplicate && (
+                            <FUN_DUPLICATE
+                                swaMsg={swaMsg}
+                                currentItem={currentItem}
+                                onDuplicateSuccess={onDuplicateSuccess}
+                            />
+                        )}
+                    </fieldset>
 
                     {/* <FUNG_NAV
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1048,14 +1071,14 @@ class FUNG extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"general"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
+                        NAVIGATION_VERSION={NAVIGATION_VERSION}
                         ON
                     />
                 </> : <fieldset className="p-3" id="fung_0">
@@ -1063,7 +1086,6 @@ class FUNG extends Component {
                 </fieldset>}
             </div>
         );
-    }
 }
 
 export default FUNG;

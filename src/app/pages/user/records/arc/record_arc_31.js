@@ -1,26 +1,12 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
+import { Button } from '@/components/ui/button';
 
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-
-class RECORD_ARC_31 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    componentDidMount() {
-
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
 
         // DATA GETTERS
         let _GET_CHILD_FUN_52 = () => {
@@ -66,7 +52,7 @@ class RECORD_ARC_31 extends Component {
             return false;
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_arc_steps;
+            var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -85,7 +71,7 @@ class RECORD_ARC_31 extends Component {
         let _SELECT_PROFESIONAL = () => {
             return <>
                 <label>TRAER PROFESIONAL DE LA SOLICITUD</label>
-                <select class="form-select" required id="r_a_31_select_profesional" onChange={(e) => updateWorker(e.target.value)} >
+                <select className="form-select" required id="r_a_31_select_profesional" onChange={(e) => updateWorker(e.target.value)} >
                     <option value="0">NUEVO PROFESIONAL</option>
                     {_SELECT_FUN_52_ID()}
                 </select>
@@ -95,43 +81,43 @@ class RECORD_ARC_31 extends Component {
             return <>
                 <input type="hidden" name="s_31_values" defaultValue={value31[0]} />
                 <label >3.1.1 Arquitecto Responsable</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-user"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="user" size={16} />
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[1]} />
                 </div>
                 <label >3.1.2 Matricula Profesional</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-address-card"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="address-card" size={16} />
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[2]} />
                 </div>
                 <label >3.1.3 Teléfono Contacto</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-phone-alt"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="phone-alt" size={16} />
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[3]} />
                 </div>
                 <label >3.1.4 Email contacto</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-envelope"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="envelope" size={16} />
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[4]} />
                 </div>
                 <label >3.1.5 Dirección Contacto</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-map-marked-alt"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="map-marked-alt" size={16} />
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[5]} />
                 </div>
             </>
@@ -141,35 +127,35 @@ class RECORD_ARC_31 extends Component {
             let _CLOCK_11 = _GET_CLOCK_STATE_V(11, currentVersionR)
             return <>
                 <label >Fecha de Inicio</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-calendar-times"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="calendar-times" size={16} />
                     </span>
-                    <input type="text" class="form-control" id="r_a_31_date_1" disabled
+                    <input type="text" className="form-control" id="r_a_31_date_1" disabled
                         defaultValue={dateParser(currentItem.date)} />
                 </div>
                 <label >Fecha de Radicado</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-calendar-times"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="calendar-times" size={16} />
                     </span>
-                    <input type="text" class="form-control" id="r_a_31_date_2" disabled
+                    <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(_CLOCK_3.date_start)} />
                 </div>
                 <label >Fecha de Revision: {currentVersionR}</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-calendar-times"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="calendar-times" size={16} />
                     </span>
-                    <input type="text" class="form-control" id="r_a_31_date_2" disabled
+                    <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(_CLOCK_11.date_start)} />
                 </div>
                 <label >Fecha de Desistimiento</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-calendar-times"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="calendar-times" size={16} />
                     </span>
-                    <input type="text" class="form-control" id="r_a_31_date_2" disabled
+                    <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(dateParser_finalDate(_CLOCK_3.date_start, 45))} />
                 </div>
             </>
@@ -221,72 +207,35 @@ class RECORD_ARC_31 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ARCSERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ARCSERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -298,9 +247,9 @@ class RECORD_ARC_31 extends Component {
                         {_SELECT_PROFESIONAL()}
                         {_COMPONENT()}
                         <div className="text-center">
-                            <MDBBtn className="btn btn-success my-3" onClick={() => save_ra_31()}>
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
-                            </MDBBtn>
+                            <Button size="sm" className="my-3" onClick={() => save_ra_31()}>
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                            </Button>
                         </div>
                     </div>
                     <div className="col-6">
@@ -309,7 +258,6 @@ class RECORD_ARC_31 extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_31;

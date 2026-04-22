@@ -1,22 +1,12 @@
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import DataTable from '@/components/data-table-bridge';
+import Icon from '@/components/icon';
 import FUN_Service from '../../../../services/fun.service'
 import { dateParser, dateParser_yearsPassed } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-
-class RECORD_LAW_GEN_2_FUN51 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_LAW_GEN_2_FUN51(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
 
         // DATA GETTERS
         let _GET_CHILD_51 = () => {
@@ -70,12 +60,12 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
 
             _COMPONENT.push(<>{_array[0] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'} 
-                icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} />
+                icon={'IdCard'} color={'DeepSkyBlue'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[1] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'} 
-                icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
+                icon={'BadgeCheck'} color={'DarkOrchid'} />
                 : ""}</>)
 
             return <>{_COMPONENT}</>
@@ -86,7 +76,7 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
             let _LIST = _GET_CHILD_51();
             const columns_51 = [
                 {
-                    name: <label>EVALUACION</label>,
+                    name: 'EVALUACION',
                     button: true,
                     center: true,
                     minWidth: '150px',
@@ -97,69 +87,69 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                     </select></>
                 },
                 {
-                    name: <label>TIPO</label>,
-                    selector: 'type',
+                    name: 'TIPO',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.type}</label>
+                    cell: row => <span className="text-sm">{row.type}</span>
                 },
                 {
-                    name: <label>NOMBRE</label>,
-                    selector: 'name',
+                    name: 'NOMBRE',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.name + " " + row.surname}</label>
+                    cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
                 {
-                    name: <label>CC/NIT</label>,
-                    selector: 'id_number',
+                    name: 'CC/NIT',
+                    selector: row => row.id_number,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_number}</label>
+                    cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
-                    name: <label>NOMBRE REP. LEGAL</label>,
-                    selector: 'rep_name',
+                    name: 'NOMBRE REP. LEGAL',
+                    selector: row => row.rep_name,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.rep_name}</label>
+                    cell: row => <span className="text-sm">{row.rep_name}</span>
                 },
                 {
-                    name: <label>C.C. REP. LEGAL</label>,
-                    selector: 'rep_id_number',
+                    name: 'C.C. REP. LEGAL',
+                    selector: row => row.rep_id_number,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.rep_id_number}</label>
+                    cell: row => <span className="text-sm">{row.rep_id_number}</span>
                 },
                 {
-                    name: <label>TELEFONO/ CELULAR</label>,
-                    selector: 'nunber',
+                    name: 'TELEFONO/ CELULAR',
+                    selector: row => row.nunber,
                     center: true,
                     cell: row => <label >{row.nunber}</label>
                 },
                 {
-                    name: <label>CORREO</label>,
-                    selector: 'email',
+                    name: 'CORREO',
+                    selector: row => row.email,
                     center: true,
-                    cell: row => <label>{row.email}</label>
+                    cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
-                    name: <label>ROL</label>,
-                    selector: 'role',
+                    name: 'ROL',
+                    selector: row => row.role,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.role}</label>
+                    cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     center: true,
@@ -182,46 +172,25 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
 
         let manage_51 = (useMySwal, _id) => {
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             FUN_Service.update_51(_id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
-                        this.props.requestUpdate(currentItem.id)
+                        props.requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 });
         }
@@ -236,12 +205,11 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 {_COMPONENT_6_FUN_51()}
                 <div className="border p-2 m-2">
                     <label className="me-2">LEYENDA:</label>
-                    <label className="me-2"><i class="far fa-id-card fa-2x" style={{color: "DeepSkyBlue"}}></i> : Documento de Identidad,</label>
-                    <label className="me-2"><i class="far fa-id-badge fa-2x" style={{color: 'DarkOrchid'}}></i>: Certificado de Existencia y Representación Legal</label>
+                    <label className="me-2"><Icon name="id-card" size={24} style={{ color: 'DeepSkyBlue' }} /> : Documento de Identidad,</label>
+                    <label className="me-2"><Icon name="id-badge" size={24} style={{ color: 'DarkOrchid' }} />: Certificado de Existencia y Representación Legal</label>
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_LAW_GEN_2_FUN51;

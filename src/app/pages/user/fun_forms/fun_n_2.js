@@ -1,20 +1,9 @@
-import React, { Component } from 'react';
 import FUNService from '../../../services/fun.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUNN2 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
         var formData = new FormData();
 
@@ -111,41 +100,41 @@ class FUNN2 extends Component {
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.1 Dirección o Nomenclatura actual</label>
-                        <textarea class="form-control mb-3" rows="3" id="f_211"
+                        <textarea className="form-control mb-3" rows="3" id="f_211"
                             defaultValue={_CHILD_VARS.item_211}></textarea>
                     </div>
                     <div className="col-6">
                         <label>2.1 Dirección(es) Anterior(es)</label>
-                        <textarea class="form-control mb-3" rows="3" id="f_212"
+                        <textarea className="form-control mb-3" rows="3" id="f_212"
                             defaultValue={_CHILD_VARS.item_212}></textarea>
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >2.2 No. Matrícula Inmobiliaria</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_22"
+                            <input type="text" className="form-control" id="f_22"
                                 defaultValue={_CHILD_VARS.item_22} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>2.3.1 Identificación Catastral (Viejo)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="No. Catastral" id="f_23"
+                            <input type="text" className="form-control" placeholder="No. Catastral" id="f_23"
                                 defaultValue={_CHILD_VARS.item_23} />
                         </div>
                         <label>2.3.2 Identificación Catastral (Nuevo, 30 dígitos)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="No. Catastral nuevo" id="f_232"
+                            <input type="text" className="form-control" placeholder="No. Catastral nuevo" id="f_232"
                                 defaultValue={_CHILD_VARS.item_232} />
                         </div>
                     </div>
@@ -153,49 +142,49 @@ class FUNN2 extends Component {
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.4 Clasificación del Suelo</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="A" name="f_24"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="A" name="f_24"
                                 defaultChecked={_CHILD_VARS.item_24 == 'A' ? true : false} />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" htmlFor="flexCheckDefault">
                                 A. Urbano
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="B" name="f_24"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="B" name="f_24"
                                 defaultChecked={_CHILD_VARS.item_24 == 'B' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 B. Rural
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="C" name="f_24"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="C" name="f_24"
                                 defaultChecked={_CHILD_VARS.item_24 == 'C' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 C. De Expansión
                             </label>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>2.5 Planimetría del Lote</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="A" name="f_25"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="A" name="f_25"
                                 defaultChecked={_CHILD_VARS.item_25 == 'A' ? true : false} />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" htmlFor="flexCheckDefault">
                                 A. Plano del Lote
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="B" name="f_25"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="B" name="f_25"
                                 defaultChecked={_CHILD_VARS.item_25 == 'B' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 B. Plano Topográfico
                             </label>
                         </div>
-                        <div class="input-group my-3">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-question-circle"></i>
+                        <div className="input-group my-3">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="question-circle" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                            <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                                 id="f_25_o" defaultChecked={_CHILD_VARS.item_25 != 'A' && _CHILD_VARS.item_25 != 'B' ? _CHILD_VARS.item_25 : ""} />
                         </div>
 
@@ -205,55 +194,55 @@ class FUNN2 extends Component {
                 <label>2.6 Información General</label>
                 <div className="row mb-3">
                     <div className="col-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Barrio o Urbanzación
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Barrio o Urbanzación
                             </span>
-                            <input type="text" class="form-control" id="f_261" defaultValue={_CHILD_VARS.item_261} />
+                            <input type="text" className="form-control" id="f_261" defaultValue={_CHILD_VARS.item_261} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Comuna
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Comuna
                             </span>
-                            <input type="text" class="form-control" id="f_263" defaultValue={_CHILD_VARS.item_263} />
+                            <input type="text" className="form-control" id="f_263" defaultValue={_CHILD_VARS.item_263} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Estrato
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Estrato
                             </span>
-                            <input type="number" min="1" max="6" step="1" class="form-control" id="f_267" defaultValue={_CHILD_VARS.item_267} />
+                            <input type="number" min="1" max="6" step="1" className="form-control" id="f_267" defaultValue={_CHILD_VARS.item_267} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Manzana No.
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Manzana No.
                             </span>
-                            <input type="text" class="form-control" id="f_268" defaultValue={_CHILD_VARS.item_268} />
+                            <input type="text" className="form-control" id="f_268" defaultValue={_CHILD_VARS.item_268} />
                         </div>
                     </div>
                     <div className="col-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Vereda
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Vereda
                             </span>
-                            <input type="text" class="form-control" id="f_262" defaultValue={_CHILD_VARS.item_262} />
+                            <input type="text" className="form-control" id="f_262" defaultValue={_CHILD_VARS.item_262} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Sector
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Sector
                             </span>
-                            <input type="text" class="form-control" id="f_264" defaultValue={_CHILD_VARS.item_264} />
+                            <input type="text" className="form-control" id="f_264" defaultValue={_CHILD_VARS.item_264} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Corregimiento
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Corregimiento
                             </span>
-                            <input type="text" class="form-control" id="f_265" defaultValue={_CHILD_VARS.item_265} />
+                            <input type="text" className="form-control" id="f_265" defaultValue={_CHILD_VARS.item_265} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Lote No.
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Lote No.
                             </span>
-                            <input type="text" class="form-control" id="f_266" defaultValue={_CHILD_VARS.item_266} />
+                            <input type="text" className="form-control" id="f_266" defaultValue={_CHILD_VARS.item_266} />
                         </div>
                     </div>
                 </div>
@@ -334,57 +323,30 @@ class FUNN2 extends Component {
             } formData.set('lote_pla', lote_pla);
             otherOption = null;
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (currentItem.fun_2 == null) {
                 FUNService.create_fun2(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id)
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             } else {
                 FUNService.update_2(currentItem.fun_2.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id)
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id)
                         } else {
                             if (response.status == 500) {
-                                MySwal.close();
+                                swalClose();
                             }
                         }
                     })
@@ -397,21 +359,20 @@ class FUNN2 extends Component {
         return (<>
             {_CHILD_20()}
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_2">
-                    <label className="app-p lead text-center fw-normal text-uppercase">2. Información del Predio</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_2">
+                    <label className="app-p lead text-center fw-normal">2. Información del Predio</label>
                 </legend>
                 {_CHILD_2_COMPONENT()}
                 <div className="row mb-3 text-center">
                     <div className="col-6">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_2()}><i class="far fa-file-alt"></i> ACTUALIZAR </MDBBtn>
+                        <Button size="sm" className="my-3" onClick={() => new_2()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>
                     </div>
                     <div className="col-6">
-                            <MDBBtn className="btn btn-warning my-3" onClick={() => _RESET_FORM_2()}><i class="fas fa-eraser"></i> LIMPIAR (2.4 y 2.5) </MDBBtn>
+                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => _RESET_FORM_2()}><Icon name="eraser" size={16} /> LIMPIAR (2.4 y 2.5) </Button>
                         </div>
                 </div>
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN2;

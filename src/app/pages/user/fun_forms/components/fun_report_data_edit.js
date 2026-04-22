@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
 import { dateParser, dateParser_finalDate, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../../services/fun.service'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import FUN_REPORT_DATA_PDF from './fun_report_data_pdf.component';
@@ -9,40 +9,39 @@ import { infoCud } from '../../../../components/jsons/vars';
 import { FUN_REPORT_DATA_JODIT } from './fun_report_data_jodit.compoent';
 import SubmitService from '../../../../services/submit.service';
 import CubXVrDataService from '../../../../services/cubXvr.service';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class FUN_REPORT_DATA_EDIT extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    async retrieveItem() {
+function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected, setVrSelected] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [pdf, setPdf] = useState(false);
+
+    const retrieveItem = useCallback(async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
-            })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data);
+            });
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CONTROL DE DOCUMENTACION ESPECIAL');
 
-            if (data) document.getElementById("vr_selected").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            if (data) {
+                document.getElementById("vr_selected").value = data.vr;
+                setVrSelected(data.vr);
+                setCubSelected(data.cub);
+                setIdCUBxVr(data.id);
+            }
         } catch (error) {
             console.log(error);
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    }, [currentItem.id_public]);
+
+    useEffect(() => {
+        retrieveItem();
+    }, [retrieveItem]);
 
         // DATA GETERS
         let _GET_CHILD_6 = () => {
@@ -57,7 +56,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
             let _LIST = _GET_CHILD_6();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -93,12 +92,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -111,7 +105,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         <label>Curaduría notifico reconocimiento a la entidad interesada</label>
                     </div>
                     <div className="col-4 p-2">
-                        <select class="form-select" defaultValue={_CHILD[0]} id="fun_report_data_1">
+                        <select className="form-select" defaultValue={_CHILD[0]} id="fun_report_data_1">
                             <option value="0">SIN NOTIFICAR</option>
                             <option value="1">NOTIFICADO</option>
                         </select>
@@ -122,10 +116,10 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         <label>Identificación del oficio (Consecutivo {infoCud.serials.end})</label>
                     </div>
                     <div className="col-4 p-2">
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id="fun_report_data_2"
-                                defaultValue={_GET_CHILD_LAW().report_cub || this.state.cubSelected || ""} />
-                                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id="fun_report_data_2"
+                                defaultValue={_GET_CHILD_LAW().report_cub || cubSelected || ""} />
+                                <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                         </div>
                     </div>
                 </div>
@@ -134,10 +128,10 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         <label>Documento de entrada asociado({infoCud.serials.start})</label>
                     </div>
                     <div className="col-4 p-2 ">
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
+                                {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
@@ -151,7 +145,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         <label>Fecha de Radicación ante la entidad interesada</label>
                     </div>
                     <div className="col-4 p-2">
-                        <input type="date" max="2100-01-01" class="form-control" id="fun_report_data_3" defaultValue={_CHILD[2]} />
+                        <input type="date" max="2100-01-01" className="form-control" id="fun_report_data_3" defaultValue={_CHILD[2]} />
                     </div>
                 </div>
                 <div className="row">
@@ -159,7 +153,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         <label>Respuesta entidad interesada radicación</label>
                     </div>
                     <div className="col-4 p-2">
-                        <input type="text" class="form-control" id="fun_report_data_4" defaultValue={_CHILD[3]} />
+                        <input type="text" className="form-control" id="fun_report_data_4" defaultValue={_CHILD[3]} />
                     </div>
                 </div>
                 <div className="row">
@@ -175,7 +169,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         <label>Oficio de la entidad interesada</label>
                     </div>
                     <div className="col-4 p-2">
-                        <input type="text" class="form-control" id="fun_report_data_5" defaultValue={_CHILD[5]} />
+                        <input type="text" className="form-control" id="fun_report_data_5" defaultValue={_CHILD[5]} />
                     </div>
                 </div>
                 <div className="row">
@@ -183,7 +177,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         <label>Documento</label>
                     </div>
                     <div className="col-4 p-2">
-                        <select class="form-select" id="fun_report_data_6" defaultValue={_CHILD[6]} >
+                        <select className="form-select" id="fun_report_data_6" defaultValue={_CHILD[6]} >
                             <option value="-1">APORTADO FÍSICAMENTE</option>
                             <option value="0">SIN DOCUMENTO</option>
                             {_CHILD_6_SELECT()}
@@ -199,89 +193,42 @@ class FUN_REPORT_DATA_EDIT extends Component {
             let _CHILD = _GET_CHILD_LAW();
             formData.set('fun0Id', currentItem.id);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
 
                 FUN_SERVICE.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id)
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
             else {
                 FUN_SERVICE.create_law(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id)
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
         }
@@ -307,7 +254,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
 
             manage_law();
             createVRxCUB_relation(new_id)
-            this.retrieveItem();
+            retrieveItem();
         }
         let createVRxCUB_relation = (cub_selected) => {
             let vr = document.getElementById("vr_selected").value;
@@ -323,12 +270,12 @@ class FUN_REPORT_DATA_EDIT extends Component {
             let date = document.getElementById('fun_report_data_3').value;
             formatData.set('date', date);
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -340,7 +287,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -355,22 +302,22 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     {_COMPONENT()}
                     <div className="row text-center">
                         <div className="col-12">
-                            <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
-                            </button>
+                            <Button size="sm" className="my-3">
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                            </Button>
                         </div>
                     </div>
                 </form>
                 <div className="row">
                     <div className="col-12">
-                        <div class="form-check ms-3 px-5">
-                            <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ pdf: e.target.checked })} />
-                            <label class="form-check-label text-start" > Generar PDF</label>
+                        <div className="form-check ms-3 px-5">
+                            <input className="form-check-input" type="checkbox" onChange={(e) => setPdf(e.target.checked)} />
+                            <label className="form-check-label text-start" > Generar PDF</label>
                         </div>
                     </div>
                 </div>
                 <div className="row py-3">
-                    {this.state.pdf
+                    {pdf
                         ?
                         _GLOBAL_ID == 'cb1' ? <FUN_REPORT_DATA_PDF
                             translation={translation}
@@ -378,7 +325,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={() => this.props.requestUpdate(currentItem.id)} />
+                            requestUpdate={() => requestUpdate(currentItem.id)} />
                             : <FUN_REPORT_DATA_JODIT
                                 translation={translation}
                                 swaMsg={swaMsg}
@@ -394,7 +341,6 @@ class FUN_REPORT_DATA_EDIT extends Component {
 
             </div >
         );
-    }
 }
 
 export default FUN_REPORT_DATA_EDIT;

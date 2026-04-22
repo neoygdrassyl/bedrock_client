@@ -1,26 +1,18 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
-
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function ARCHIVE_MANAGE(props) {
     const { translation, swaMsg, globals, currentItem } = props;
 
-
     // ***************************  DATA CONVERTER *********************** //
-
 
     // ***************************  JXS *********************** //
 
-
     // ***************************  DATATABLES *********************** //
-
 
     // ***************************  APIS *********************** //
     function create() {
@@ -35,41 +27,20 @@ export default function ARCHIVE_MANAGE(props) {
         let box = document.getElementById("achr_3").value;
         formData.set('box', box);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         SERVICE_ARCHIVE.create(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.CLOSE();
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     function update() {
@@ -84,42 +55,20 @@ export default function ARCHIVE_MANAGE(props) {
         let box = document.getElementById("achr_3").value;
         formData.set('box', box);
 
-
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         SERVICE_ARCHIVE.update(currentItem.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.CLOSE();
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -127,23 +76,23 @@ export default function ARCHIVE_MANAGE(props) {
         <>
             <div className='row'>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Caja N°</label>
-                    <input type="number" step={1} defaultValue={currentItem ? currentItem.box : ''} class="form-control" id="achr_3" />
+                    <label htmlFor="exampleFormControlInput1">Caja N°</label>
+                    <input type="number" step={1} defaultValue={currentItem ? currentItem.box : ''} className="form-control" id="achr_3" />
                 </div>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Entrepaño</label>
-                    <input type="number" step={1} defaultValue={currentItem ? currentItem.row : ''} class="form-control" id="achr_2" />
+                    <label htmlFor="exampleFormControlInput1">Entrepaño</label>
+                    <input type="number" step={1} defaultValue={currentItem ? currentItem.row : ''} className="form-control" id="achr_2" />
                 </div>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Estante</label>
-                    <input type="number" step={1} defaultValue={currentItem ? currentItem.column : ''} class="form-control" id="achr_1" />
+                    <label htmlFor="exampleFormControlInput1">Estante</label>
+                    <input type="number" step={1} defaultValue={currentItem ? currentItem.column : ''} className="form-control" id="achr_1" />
                 </div>
             </div>
             <div className='row my-3'>
                 <div className='col text-end'>
                     {currentItem ?
-                        <MDBBtn className="btn btn-sm btn-success" onClick={() => update()}><i class="far fa-edit"></i> ACTUALIZAR</MDBBtn>
-                        : <MDBBtn className="btn btn-sm btn-success" onClick={() => create()}><i class="fas fa-plus-circle"></i> CREAR</MDBBtn>}
+                        <Button size="sm" onClick={() => update()}><Icon name="edit" size={16} /> ACTUALIZAR</Button>
+                        : <Button size="sm" onClick={() => create()}><Icon name="plus-circle" size={16} /> CREAR</Button>}
                 </div>
             </div>
         </>

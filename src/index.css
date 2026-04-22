@@ -1,16 +1,210 @@
+/* Tailwind CSS — base + utilities for shadcn/ui components.
+   preflight=false in tailwind.config.js avoids breaking Bootstrap 5. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design Tokens (Dovela redesign) ─────────────────────────────── */
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+    --radius: 0.5rem;
+    --sidebar: 222.2 47.4% 11.2%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-accent: 221 83% 53%;
+  }
+
+  .dark {
+    --background: 222.2 47.4% 11.2%;
+    --foreground: 210 40% 98%;
+    --card: 217.2 32.6% 17.5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217.2 32.6% 17.5%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 59.6%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --border: 217.2 25% 25%;
+    --input: 217.2 25% 25%;
+    --ring: 217.2 91.2% 59.8%;
+    --sidebar: 222.2 47.4% 11.2%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-accent: 217.2 91.2% 59.8%;
+  }
+}
+
+/* ── Global resets ── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
 body {
   margin: 0;
+  height: 100%;
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+#root, .App {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas,
+    'Courier New', monospace;
 }
 
-body { font-family: Roboto, Helvetica, Arial, sans-serif; 
+/* ── Button reset (preflight=false means browser defaults leak).
+   Zero-specificity :where() so any Tailwind/Bootstrap class overrides. ── */
+button:where(:not(.btn):not([class*="btn-"]):not(.Collapsible__trigger)) {
+  border: 0;
+  background: transparent;
 }
-html{
-  scroll-behavior: smooth;
+
+/* ── Legacy Global Styles (migrated from styled-components global.js) ──
+   These classes are used by ~50 legacy components. They reference
+   Bootstrap CSS variables for dark/light mode compatibility.
+   Remove individual rules as modules get fully migrated. ─────────── */
+
+/* Class aliases */
+.container-primary {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
+.container-secondary {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.app-text-primary { color: hsl(var(--foreground)); }
+.app-text-secondary { color: hsl(var(--muted-foreground)); }
+.bg-card {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.bg-card-2 {
+  background: hsl(var(--muted) / 0.3);
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.bg-dd { background: hsl(var(--muted) / 0.3); }
+
+/* Collapsible components (Enhanced v6 + v9 animation) */
+.Collapsible {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.Collapsible__contentInner {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 0.5rem 0.75rem;
+}
+.Collapsible__trigger {
+  color: hsl(var(--primary-foreground));
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s ease;
+}
+.Collapsible__trigger:hover {
+  opacity: 0.9;
+}
+
+/* Smooth open/close animation via CSS grid trick */
+.collapsible-grid-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease-out;
+}
+.collapsible-grid-wrapper[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.collapsible-grid-inner {
+  overflow: hidden;
+}
+
+/* Navigation button */
+.btn-nav {
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--primary));
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.btn-nav:hover {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--primary));
+}
+.btn-nav:focus {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+/* Font scales — tighter to match redesign density */
+p { font-size: 14px; }
+.app-p { font-size: 16px; }
+h1 { font-size: 22px; }
+h2 { font-size: 18px; }
+h3 { font-size: 15px; }
+h4 { font-size: 14px; }
+h5 { font-size: 12px; }
+h6 { font-size: 11px; }
+
+/* ── Legacy Bridge ──────────────────────────────────────────────────
+   Bootstrap component overrides now consolidated in
+   src/app/styles/legacy-bridge.css (imported via App.js).
+   ─────────────────────────────────────────────────────────────────── */

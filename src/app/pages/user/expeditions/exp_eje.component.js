@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import { Button } from '@/components/ui/button';
 import SubmitService from '../../../services/submit.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import Collapsible from 'react-collapsible';
-
+import Collapsible from '../../../components/Collapsible';
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -11,13 +9,14 @@ import FUN_SERVICE from '../../../services/fun.service';
 import '../../../../styles/docs-expediente.css';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_EJEC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -202,7 +201,7 @@ export default function EXP_EJEC(props) {
             <div className="row">
                 <div className="col">
                     <label className="mt-2">ACTO</label>
-                    <div class="input-group">
+                    <div className="input-group">
                         <select className="form-select" id="expedition_doc_eje_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model_exec(e.target.value)}}>
                             {models.map(model => {
                                 if (model.omit) return ''
@@ -261,7 +260,7 @@ export default function EXP_EJEC(props) {
             <div className="row">
                 <div className="col">
                     <label className="mt-2">Modalidad</label>
-                    <input type="text" class="form-control" id="expedition_eje_type"
+                    <input type="text" className="form-control" id="expedition_eje_type"
                         defaultValue={type} />
                 </div>
             </div>
@@ -312,29 +311,29 @@ export default function EXP_EJEC(props) {
                 
                 <div className="col">
                     <label className="mt-1">Consecutivo</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" disabled id="expedition_eje_id_res"
+                    <div className="input-group">
+                        <input type="text" className="form-control" disabled id="expedition_eje_id_res"
                             value={currentRecord.id_public} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">POT</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_eje_pot" disabled
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_eje_pot" disabled
                             value={reso_pot_dv} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">Estado</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_eje_state" disabled
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_eje_state" disabled
                             value={'EJECUTORIA'} readOnly />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1"># Radicacion</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_eje_id_public" disabled
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_eje_id_public" disabled
                             value={currentItem.id_public} readOnly />
                     </div>
                 </div>
@@ -355,7 +354,7 @@ export default function EXP_EJEC(props) {
                         </div>
                         <div className="field">
                         <label className="field_label">Inferior</label>
-                        <input type="number" defaultValue={1.2} className="form-control form-control-sm" id="record_maring_bot_exec" />
+                        <input type="number" defaultValue={1.7} className="form-control form-control-sm" id="record_maring_bot_exec" />
                         </div>
                         <div className="field">
                         <label className="field_label">Izquierdo</label>
@@ -426,8 +425,8 @@ export default function EXP_EJEC(props) {
                             <select size={1} className="form-select form-select-sm" id="logo_pages_exec">
                                 <option value="impar">Pág Impares</option>
                                 <option value="par">Pág Pares</option>
-                                <option value="all" selected>Todas las pág.</option>
-                                <option value="none">No mostrar</option>
+                                <option value="all">Todas las pág.</option>
+                                <option value="none" selected>No mostrar</option>
                             </select>
                         </div>
 
@@ -462,14 +461,14 @@ export default function EXP_EJEC(props) {
             <hr />
             <div className="row text-center">
                 <div className="col">
-                    <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+                    <Button size="sm" className="my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                 </div>
                 <div className="col">
-                    {process.env.REACT_APP_GLOBAL_ID === 'cb1' && (
-                        <MDBBtn className="btn my-3" color="primary" onClick={() => pd_eje(true)}>
-                            <i className="fas fa-edit me-2" />
+                    {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
+                        <Button size="sm" className="my-3" onClick={() => pd_eje(true)}>
+                            <Icon name="edit" size={16} className="me-2" />
                             Editar PDF
-                        </MDBBtn>
+                        </Button>
                     )}
                 </div>
             </div>
@@ -663,12 +662,7 @@ export default function EXP_EJEC(props) {
         formData.set('record_version', 1);
         formData.set('id', currentItem.id);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         let fd = Object.fromEntries(formData.entries())
 
         EXPEDITION_SERVICE.gen_doc_eje(formData)
@@ -681,30 +675,20 @@ export default function EXP_EJEC(props) {
                     formData: fd,
                 };
                 setResDocData(data);
-                MySwal.close();
+                swalClose();
                 } else {
-                MySwal.close();
+                swalClose();
                 window.open(
-                    process.env.REACT_APP_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf"
+                    import.meta.env.VITE_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf"
                 );
                 }
             } else {
-                MySwal.fire({
-                title: swaMsg.generic_eror_title,
-                text: swaMsg.generic_error_text,
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             }
             })
             .catch(e => {
             console.log(e);
-            MySwal.fire({
-                title: swaMsg.generic_eror_title,
-                text: swaMsg.generic_error_text,
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-            });
+            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     };
 
@@ -715,53 +699,26 @@ export default function EXP_EJEC(props) {
     };
 
     let manage_exp = () => {
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         EXPEDITION_SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 
                     props.requestUpdateRecord(currentItem.id);
                     props.requestUpdate(currentItem.id);
                 } else if (response.data === 'ERROR_DUPLICATE') {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     };
-
 
     return (
             <div>
@@ -771,7 +728,7 @@ export default function EXP_EJEC(props) {
                     {_COMPONENT_EJE()}
     
                     <div>
-                        {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
+                        {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
                             <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_exec || 'eje_open'}/>
                         )}
                     </div>  

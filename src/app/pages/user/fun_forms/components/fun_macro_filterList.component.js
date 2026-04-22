@@ -1,10 +1,9 @@
-import React, { Component, useState } from 'react';
-import { MDBBadge, MDBBtn, MDBCollapse, MDBTooltip } from 'mdb-react-ui-kit';
-import { MDBDataTable } from 'mdbreact';
-import Modal from 'react-modal';
+import { Component, useState } from 'react';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import './fun_modal_shared.css';
-
-
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 
 export default function FUN_MACROTABLE_FILTERLIST(props) {
     const { idRef, text } = props;
@@ -12,32 +11,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
     var [modalId, setModalId] = useState(null)
     var [collapsables, setCollapsables] = useState({})
 
-    const customStylesForModal = {
-        overlay: {
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            zIndex: 1050,
-        },
-        content: {
-            position: 'absolute',
-            top: '8%',
-            left: 'var(--fun-sidebar-width)',
-            right: '25%',
-            bottom: '8%',
-            border: '1px solid #ccc',
-            overflow: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            borderRadius: '4px',
-            outline: 'none',
-            padding: '20px',
-            marginRight: 'auto',
-
-        }
-    };
+    const customStylesForModal = {};
 
     const data = [
         {
@@ -283,10 +257,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
             ]
         },
 
-
-
     ];
-
 
     let toggle = (id) => {
         setModal(!modal)
@@ -294,32 +265,35 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
     }
 
     let _COMPONENT_LIST = () => {
-        let EX = (child) => <li class="list-group-item list-group-item-success"><label className='fw-bold'>EJEMPLO:</label> {child.ex}</li>
+        let EX = (child) => <li className="list-group-item list-group-item-success"><label className='fw-bold'>EJEMPLO:</label> {child.ex}</li>
 
         return <div className="row py-2">
             <div className="col">
                 {data.map((parent, i) => {
                     return <>
-                        <ul class="list-group">
-                            <MDBBtn tag='a' outline color={parent.color} className={'my-1 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
+                        <ul className="list-group">
+                            <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2 text-left transition-colors hover:bg-muted/60"
                                 onClick={(prevState) => setCollapsables({ ...prevState, [parent.title]: !collapsables[parent.title] })}>
-                                <label className="app-p lead fw-normal text-muted" >{i + 1}. {parent.title}</label>
-                            </MDBBtn>
-                            <MDBCollapse show={collapsables[parent.title]}>
+                                <span className="text-sm font-medium text-foreground/80">{i + 1}. {parent.title}</span>
+                                <Icon name={!collapsables[parent.title] ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                            </button>
+                            <Collapsible open={collapsables[parent.title]}>
+                            <CollapsibleContent>
                                 {parent.children.map(child => {
                                     if (child.badge) return <>{
-                                        child.filter ? <li class="list-group-item">
-                                            <MDBBadge color={parent.color}>
+                                        child.filter ? <li className="list-group-item">
+                                            <span className={`badge bg-${parent.color}`}>
                                                 <label className="fw-bold app-pointer" onClick={(e) => props.setValues(e.target.innerText)}>{child.filter}</label>
-                                            </MDBBadge> {child.label}</li>
+                                            </span> {child.label}</li>
                                             : ''
                                     }
                                         {child.ex ? EX(child) : ''}</>;
-                                    else return <>{child.filter ? <li class="list-group-item"><label className="fw-bold">{child.filter}</label> {child.label}</li>
+                                    else return <>{child.filter ? <li className="list-group-item"><label className="fw-bold">{child.filter}</label> {child.label}</li>
                                         : ''}
                                         {child.ex ? EX(child) : ''}</>
                                 })}
-                            </MDBCollapse>
+                            </CollapsibleContent>
+                            </Collapsible>
                         </ul>
                     </>
                 })}
@@ -328,24 +302,28 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
     }
     return (
         <div>
-            <MDBBtn className="btn btn-primary shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i class="fas fa-th-list"></i> {text}</MDBBtn>
+            <Button size="sm" id={idRef} onClick={(e) => toggle(e.target.id)}><Icon name="th-list" size={16} /> {text}</Button>
             <Modal contentLabel="GENERAL VIEW FUN"
                 isOpen={modal}
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
 
-                <div className="my-4 d-flex justify-content-between">
-                    <label><i class="fas fa-th-list"></i> LISTA DE FILTROS</label>
-                    <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="th-list" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Lista de filtros</h2>
+                    </div>
+                    <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
                 {_COMPONENT_LIST()}
 
-
-
-
-                <div className="text-end py-1 mt-2">
-                    <MDBBtn className="btn btn-lg btn-info" onClick={() => setModal(false)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModal(false)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
 

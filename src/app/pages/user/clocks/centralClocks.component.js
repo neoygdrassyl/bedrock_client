@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import ReactDOM from 'react-dom';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import moment from 'moment';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { createRoot } from 'react-dom/client';
+import dayjs from 'dayjs';
 
 import { useClocksManager, useScheduleConfig } from './hooks/useClocksManager';
 import { generateClocks } from './config/clocks.definitions';
@@ -12,20 +10,21 @@ import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
 import { ScheduleModal } from './components/ScheduleModal';
 import { AlarmsWidget } from './components/AlarmsWidget';
-import { ToolsMenu } from './components/ToolsMenu'; // Importamos el nuevo menú
+import { ToolsMenu } from './components/ToolsMenu';
 import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles, sumarDiasHabiles } from './hooks/useClocksManager';
+import { getIconSvg } from '../../../utils/iconSvgString';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
 import { GanttModal } from './components/gantt/GanttModal';
 
 import FUN_SERVICE from '../../../services/fun.service';
-import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
 
 import './centralClocks.css';
 import './gantt.css';
+import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose, swalFormDialog, Swal } from '../../../utils/swalAdapter';
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
   const { swaMsg, currentItem, currentVersion, outCodes } = props;
@@ -37,7 +36,7 @@ export default function EXP_CLOCKS(props) {
   const [showAlarms, setShowAlarms] = useState(true); // CAMBIO: true por defecto
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
+  const [systemDate, setSystemDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   // Estado para secciones colapsables (Acordeón)
   const [collapsedSections, setCollapsedSections] = useState({});
@@ -153,38 +152,77 @@ export default function EXP_CLOCKS(props) {
   // Estado para rastrear eliminaciones recientes y evitar re-sincronización inmediata
   const [recentDeletions, setRecentDeletions] = useState(new Set());
   const deletionTimeoutRef = useRef(null);
+  
+  // SOLUCIÓN: Ref para rastrear la última sincronización y evitar bucles
+  const lastSyncRef = useRef({ formDate: null, clockDate: null, syncing: false });
 
+  // SOLUCIÓN: useEffect mejorado para sincronización de valla
+  // Este efecto sincroniza bidireccionalemente la fecha de valla entre el formulario (fun_law.sign) y el clock 503
   useEffect(() => {
+    // No ejecutar si está en proceso de sincronización
+    if (lastSyncRef.current.syncing) return;
+    
     const syncVallaDate = () => {
       if (!currentItem || !currentItem.fun_law) return;
 
       const signArray = currentItem.fun_law.sign ? currentItem.fun_law.sign.split(',') : [];
-      const formDate = signArray.length > 1 && signArray[1] ? signArray[1] : null;
+      const formDate = (signArray.length > 1 && signArray[1] && signArray[1].trim()) ? signArray[1].trim() : null;
 
-      const clock503 = (clocksData || []).find(c => c.state == 503);
-      const clockDate = clock503 ? clock503.date_start : null;
+      const clock503 = (clocksData || []).find(c => String(c.state) === '503');
+      const clockDate = (clock503 && clock503.date_start) ? clock503.date_start : null;
 
       // SOLUCIÓN: No sincronizar si el reloj fue eliminado recientemente
       if (recentDeletions.has(503)) {
         console.log('⏸️ Sincronización de valla pausada - eliminación reciente detectada');
         return;
       }
+      
+      // SOLUCIÓN: Verificar si ya sincronizamos estos valores para evitar ciclos
+      if (lastSyncRef.current.formDate === formDate && lastSyncRef.current.clockDate === clockDate) {
+        return; // Ya sincronizado, no hacer nada
+      }
+      
+      // Actualizar ref con valores actuales
+      lastSyncRef.current.formDate = formDate;
+      lastSyncRef.current.clockDate = clockDate;
 
-      // CASO 1: Hay fecha en formulario pero no en reloj -> Crear reloj
-      if (formDate && (!clockDate || formDate !== clockDate)) {
+      // CASO 1: Las fechas son iguales - no hay nada que sincronizar
+      if (formDate === clockDate) {
+        return;
+      }
+
+      // CASO 2: Hay fecha en formulario pero no en reloj (o son diferentes) -> Crear/Actualizar reloj
+      // Prioridad al formulario si tiene fecha y el reloj no, o si son diferentes
+      if (formDate && formDate !== clockDate) {
         console.log('📝 Sincronizando valla: formulario → reloj', { formDate, clockDate });
+        lastSyncRef.current.syncing = true;
+        
         const formData = new FormData();
         formData.set('date_start', formDate);
         formData.set('state', 503);
         formData.set('name', 'Instalación y Registro de la Valla Informativa');
         formData.set('desc', 'Instalación de la valla informativa del proyecto');
+        
+        // Actualizar el ref después de la llamada
         manage_clock(false, 503, undefined, formData, true);
+        
+        // Resetear flag de sincronización después de un delay
+        setTimeout(() => {
+          lastSyncRef.current.syncing = false;
+        }, 500);
+        return;
       } 
-      // CASO 2: Hay fecha en reloj pero no en formulario -> Actualizar formulario
-      else if (clockDate && !formDate) {
+      
+      // CASO 3: Hay fecha en reloj pero no en formulario -> Actualizar formulario
+      if (clockDate && !formDate) {
         console.log('📝 Sincronizando valla: reloj → formulario', { clockDate, formDate });
+        lastSyncRef.current.syncing = true;
+        
         const funLawId = currentItem.fun_law.id;
-        if (!funLawId) return;
+        if (!funLawId) {
+          lastSyncRef.current.syncing = false;
+          return;
+        }
 
         const newSign = [signArray[0] || '-1', clockDate].join(',');
 
@@ -197,13 +235,19 @@ export default function EXP_CLOCKS(props) {
               props.requestUpdate(currentItem.id);
             }
           })
-          .catch(e => console.error("Error sincronizando formulario desde reloj:", e));
+          .catch(e => console.error("Error sincronizando formulario desde reloj:", e))
+          .finally(() => {
+            setTimeout(() => {
+              lastSyncRef.current.syncing = false;
+            }, 500);
+          });
       }
     };
 
-    const timer = setTimeout(syncVallaDate, 100);
+    // Usar un debounce más largo para evitar múltiples ejecuciones
+    const timer = setTimeout(syncVallaDate, 300);
     return () => clearTimeout(timer);
-  }, [currentItem, clocksData, props.requestUpdate, recentDeletions]);
+  }, [currentItem?.fun_law?.sign, clocksData, recentDeletions]);
 
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
 
@@ -274,14 +318,30 @@ export default function EXP_CLOCKS(props) {
     });
   };
 
+  // SOLUCIÓN: save_clock ahora lee el valor del DOM pero verifica cambios antes de guardar
   const save_clock = (value, i) => {
     if (value.state === false || value.state == null) return;
-    var formDataClock = new FormData();
-
+    
     const dateInput = document.getElementById("clock_exp_date_" + i);
     const dateVal = dateInput ? String(dateInput.value || '').trim() : '';
+    
+    // Obtener el valor actual del clock para comparar
+    const currentClock = value.version !== undefined
+      ? getClockVersion(value.state, value.version)
+      : getClock(value.state);
+    const currentDate = currentClock?.date_start ?? '';
+    
+    // SOLUCIÓN: Solo guardar si hay un cambio real en la fecha
+    if (dateVal === currentDate) {
+      console.log('⏭️ save_clock: Sin cambios, omitiendo guardado');
+      return;
+    }
+    
+    var formDataClock = new FormData();
 
     if (dateVal) formDataClock.set('date_start', dateVal);
+    else formDataClock.set('date_start', ''); // Permitir borrar fecha
+    
     formDataClock.set('state', value.state);
 
     if (value.version !== undefined) {
@@ -325,10 +385,10 @@ export default function EXP_CLOCKS(props) {
     var _CHILD = getClockVersion(findOne, version) || getClock(findOne);
     formDataClock.set('fun0Id', currentItem.id);
 
-    if (useMySwal) MySwal.fire({ title: swaMsg.title_wait, text: swaMsg.text_wait, icon: 'info', showConfirmButton: false });
+    if (useMySwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
     const onOk = () => {
-      if (useMySwal) MySwal.fire({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer, icon: 'success', confirmButtonText: swaMsg.text_btn });
+      if (useMySwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
       // SOLUCIÓN: Se mantiene una única llamada a requestUpdate para refrescar las props.
       if (triggerUpdate) {
         props.requestUpdate(currentItem.id);
@@ -336,7 +396,7 @@ export default function EXP_CLOCKS(props) {
     };
     const onErr = (e) => {
       console.error('Error guardando clock en backend:', e);
-      if (useMySwal) MySwal.fire({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning', confirmButtonText: swaMsg.text_btn });
+      if (useMySwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
     };
 
     if (_CHILD && _CHILD.id) {
@@ -347,15 +407,10 @@ export default function EXP_CLOCKS(props) {
   };
 
   const delete_clock = (value) => {
-    MySwal.fire({
+    swalConfirm({
       title: '¿Estás seguro?',
       text: `Se eliminará la fecha del evento "${value.name}". Esta acción no se puede deshacer.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
         const formDataClock = new FormData();
@@ -430,21 +485,20 @@ export default function EXP_CLOCKS(props) {
   const addTimeControl = (type) => {
     if (type === 'suspension') {
       const availableDays = 10 - totalSuspensionDays;
-      if (availableSuspensionTypes.length === 0) return MySwal.fire({ title: 'No disponible', text: 'No hay espacios para añadir suspensiones', icon: 'warning' });
+      if (availableSuspensionTypes.length === 0) return swalError({ title: 'No disponible', text: 'No hay espacios para añadir suspensiones', icon: 'warning' });
 
       const typeSelectHtml = availableSuspensionTypes.length > 1
         ? `<div class="col-12"><label class="form-label">Ubicación</label><select id="susp_type" class="form-select">${availableSuspensionTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}</select></div>`
         : `<input type="hidden" id="susp_type" value="${availableSuspensionTypes[0].value}">`;
 
-      MySwal.fire({
+      swalFormDialog({
         title: 'Nueva Suspensión de Términos',
         html: `<div class="row g-3">
-            <div class="col-12"><div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Días disponibles: <strong>${availableDays}</strong></div></div>
+            <div class="col-12"><div class="alert alert-info">${getIconSvg("fa-info-circle", 14, "me-2")}Días disponibles: <strong>${availableDays}</strong></div></div>
             ${typeSelectHtml}
             <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="susp_start" class="form-control" value="${systemDate}"/></div>
             <div class="col-12"><label class="form-label">Información Adicional</label><textarea id="susp_info" class="form-control" rows="3" placeholder="Detalles..."></textarea></div>
           </div>`,
-        showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
         preConfirm: () => {
           const suspType = document.getElementById('susp_type').value;
           const startDate = document.getElementById('susp_start').value;
@@ -467,19 +521,18 @@ export default function EXP_CLOCKS(props) {
       });
 
     } else if (type === 'extension') {
-      MySwal.fire({
+      swalFormDialog({
         title: 'Nueva Prórroga por Complejidad',
         html: `<div class="row g-3">
-                <div class="col-12"><div class="alert alert-info"><i class="fas fa-clock me-2"></i>Otorga hasta <strong>22 días hábiles</strong> adicionales.</div></div>
+                <div class="col-12"><div class="alert alert-info">${getIconSvg("fa-clock", 14, "me-2")}Otorga hasta <strong>22 días hábiles</strong> adicionales.</div></div>
                 <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="ext_start" class="form-control" value="${systemDate}"/></div>
                 <div class="col-12"><label class="form-label">Fecha de Fin (Opcional)</label><input type="date" id="ext_end" class="form-control"/></div>
             </div>`,
-        showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
         preConfirm: () => {
           const startDate = document.getElementById('ext_start').value;
           const endDate = document.getElementById('ext_end').value;
           if (!startDate) { Swal.showValidationMessage('La fecha de inicio es obligatoria'); return false; }
-          if (endDate && moment(endDate).isBefore(startDate)) {
+          if (endDate && dayjs(endDate).isBefore(startDate)) {
             Swal.showValidationMessage('La fecha de fin no puede ser anterior a la fecha de inicio');
             return false;
           }
@@ -498,11 +551,13 @@ export default function EXP_CLOCKS(props) {
           manage_clock(false, 400, false, formDataStart, true);
 
           if (endDate) {
-            const days = dateParser_dateDiff(startDate, endDate);
+            // CORRECCIÓN: Usar calcularDiasHabiles en lugar de dateParser_dateDiff
+            // para consistencia y correcta exclusión de festivos
+            const days = calcularDiasHabiles(startDate, endDate, true);
             const formDataEnd = new FormData();
             formDataEnd.set('state', 401);
             formDataEnd.set('date_start', endDate);
-            formDataEnd.set('desc', `Fin de prórroga (${days} días)`);
+            formDataEnd.set('desc', `Fin de prórroga (${days} día(s) hábiles)`);
             formDataEnd.set('name', 'Fin Prórroga por Complejidad');
             // SOLUCIÓN: Sin llamada a applyLocalClockChange. El setTimeout con requestUpdate() en la primera llamada será suficiente.
             setTimeout(() => manage_clock(false, 401, false, formDataEnd, true), 200);
@@ -537,20 +592,22 @@ export default function EXP_CLOCKS(props) {
       }
     });
 
-    MySwal.fire({
+    swalFormDialog({
       title: 'Programar Tiempos del Proceso',
       html: modalContainer,
-      width: '90vw', // Usamos un ancho relativo al viewport para mayor espacio
-      showCancelButton: true,
+      width: '90vw',
       showDenyButton: hasSchedule,
-      confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Programación',
-      cancelButtonText: 'Cancelar',
-      denyButtonText: '<i class="fas fa-trash me-2"></i>Eliminar Programación',
+      confirmButtonText: 'Guardar Programación',
+      denyButtonText: 'Eliminar Programación',
       customClass: {
-        popup: 'schedule-modal-popup', // Clase para control de altura y scroll
+        popup: 'swal2-themed schedule-modal-popup',
+        confirmButton: 'swal2-confirm-themed',
+        cancelButton: 'swal2-cancel-themed',
       },
       didOpen: () => {
-        ReactDOM.render(
+        const modalRoot = createRoot(modalContainer);
+        modalContainer._reactRoot = modalRoot;
+        modalRoot.render(
           <ScheduleModal
             clocksToShow={clocksToShow}
             currentItem={currentItem}
@@ -558,8 +615,7 @@ export default function EXP_CLOCKS(props) {
             scheduleConfig={scheduleConfig}
             onScheduleChange={handleScheduleChange}
             legalLimits={legalLimits}
-          />,
-          modalContainer
+          />
         );
       },
       preConfirm: () => {
@@ -570,17 +626,16 @@ export default function EXP_CLOCKS(props) {
         return localScheduleData;
       },
       willClose: () => {
-        ReactDOM.unmountComponentAtNode(modalContainer);
+        if (modalContainer._reactRoot) {
+          modalContainer._reactRoot.unmount();
+        }
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         const payload = buildSchedulePayload(result.value, currentItem);
-        MySwal.fire({
+        swalLoading({
           title: 'Guardando...',
           text: 'Por favor espera mientras guardamos la programación',
-          icon: 'info',
-          showConfirmButton: false,
-          allowOutsideClick: false
         });
         const formData = new FormData();
         formData.append('scheduleConfig', JSON.stringify(payload));
@@ -590,15 +645,9 @@ export default function EXP_CLOCKS(props) {
               saveScheduleConfig(payload);
               setRefreshTrigger(prev => prev + 1);
               const scheduledCount = Object.keys(result.value).length;
-              MySwal.fire({
+              swalSuccess({
                 title: 'Programación Guardada',
-                html: `<div class="text-start">
-                    <p><i class="fas fa-check-circle text-success me-2"></i><strong>${scheduledCount}</strong> tiempo${scheduledCount !== 1 ? 's' : ''} programado${scheduledCount !== 1 ? 's' : ''}</p>
-                    <p class="text-muted small mb-0">La columna "Límite Programado" mostrará las fechas calculadas.</p>
-                  </div>`,
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
+                text: `${scheduledCount} tiempo${scheduledCount !== 1 ? 's' : ''} programado${scheduledCount !== 1 ? 's' : ''}. La columna "Límite Programado" mostrará las fechas calculadas.`,
               });
             } else {
               throw new Error('Respuesta inesperada del servidor');
@@ -606,23 +655,16 @@ export default function EXP_CLOCKS(props) {
           })
           .catch(error => {
             console.error('Error guardando programación:', error);
-            MySwal.fire({
+            swalError({
               title: 'Error al Guardar',
               text: 'No se pudo guardar la programación. Por favor intenta nuevamente.',
-              icon: 'error',
-              confirmButtonText: 'OK'
             });
           });
       } else if (result.isDenied) {
-        MySwal.fire({
+        swalConfirm({
           title: '¿Estás seguro?',
           text: 'Se eliminará toda la programación de tiempos para este expediente.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#6c757d',
           confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
         }).then((confirmResult) => {
           if (confirmResult.isConfirmed) {
             const formData = new FormData();
@@ -633,20 +675,16 @@ export default function EXP_CLOCKS(props) {
                 clearScheduleConfig();
                 setRefreshTrigger(prev => prev + 1);
 
-                MySwal.fire({
+                swalSuccess({
                   title: 'Programación Eliminada',
                   text: 'Se ha eliminado la configuración de programación del proceso.',
-                  icon: 'info',
-                  timer: 2000,
-                  showConfirmButton: false
                 });
               })
               .catch(error => {
                 console.error('Error eliminando programación:', error);
-                MySwal.fire({
+                swalError({
                   title: 'Error',
                   text: 'No se pudo eliminar la programación.',
-                  icon: 'error'
                 });
               });
           }
@@ -674,8 +712,8 @@ export default function EXP_CLOCKS(props) {
     const formData = new FormData();
     formData.set('name', 'phase_options');
     formData.set('desc', newDesc);
-
-    manage_clock(false, '1001', undefined, formData, false);
+    formData.set('state', '1001');
+    manage_clock(false, '1001', undefined, formData, true);
   };
 
   const _FIND_6 = (id) => (currentItem.fun_6s || []).find(f => f.id == id) || null;
@@ -686,7 +724,7 @@ export default function EXP_CLOCKS(props) {
     states.forEach((element) => {
       const date = getClock(element)?.date_start;
       if (!newDate && date) newDate = date;
-      else if (date && moment(date).isAfter(newDate)) newDate = date;
+      else if (date && dayjs(date).isAfter(newDate)) newDate = date;
     });
     return newDate;
   };
@@ -696,11 +734,11 @@ export default function EXP_CLOCKS(props) {
   };
 
   const handleDateShift = (days) => {
-    setSystemDate(prevDate => moment(prevDate).add(days, 'days').format('YYYY-MM-DD'));
+    setSystemDate(prevDate => dayjs(prevDate).add(days, 'days').format('YYYY-MM-DD'));
   };
 
   const resetDate = () => {
-    setSystemDate(moment().format('YYYY-MM-DD'));
+    setSystemDate(dayjs().format('YYYY-MM-DD'));
   };
 
   const renderClockList = () => {
@@ -799,7 +837,7 @@ export default function EXP_CLOCKS(props) {
             onClick={() => toggleSection(value.title)}
           >
             <div className="d-flex align-items-center">
-              <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-1 text-muted`}></i>
+              <Icon name={isCollapsed ? 'chevron-right' : 'chevron-down'} size={16} className="me-1 text-muted" />
               <span className={titleClassName}>{value.title}</span>
             </div>
 
@@ -876,7 +914,7 @@ export default function EXP_CLOCKS(props) {
 
       {!showAlarms && notificationAlarms.length > 0 && ( // CAMBIO: Referencia a notificationAlarms
         <button className="alarms-fab" onClick={() => setShowAlarms(true)} title="Mostrar Alertas">
-          <i className="fas fa-bell"></i>
+          <Icon name="bell" size={16} />
           <span className="fab-badge">{notificationAlarms.length}</span>
         </button>
       )}

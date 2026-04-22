@@ -1,33 +1,26 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import DataTable from '@/components/data-table-bridge';
+
 import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUNN3 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
             document.getElementById("f_31_edit").value = _ITEM.direccion_1;
             document.getElementById("f_32_edit").value = _ITEM.direccion_2;
             document.getElementById("f_33a_edit").value = _ITEM.part;
             document.getElementById("f_33b_edit").value = _ITEM.part_id;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    }, [edit]);
 
         var formData = new FormData();
 
@@ -90,32 +83,32 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_1")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
                         <br />
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_2")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
                         <br />
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_3")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
                         <br />
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_4")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
                     </>);
                 }
             }
@@ -127,70 +120,70 @@ class FUNN3 extends Component {
             let _LIST = _SET_CHILD_3();
             const columns_3 = [
                 {
-                    name: <label>DIRECCION DEL PREDIO</label>,
+                    name: 'DIRECCION DEL PREDIO',
                     selector: row => row.direccion_1, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.direccion_1}</label>
+                    cell: row => <span className="text-sm">{row.direccion_1}</span>
                 },
                 {
-                    name: <label>DIRECCIÓN DE CORRESPONDENCIA</label>,
+                    name: 'DIRECCIÓN DE CORRESPONDENCIA',
                     selector: row => row.direccion_2, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.direccion_2}</label>
+                    cell: row => <span className="text-sm">{row.direccion_2}</span>
                 },
                 {
-                    name: <label>ORIGEN DATO</label>,
-                    cell: row => <label>{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</label>
+                    name: 'ORIGEN DATO',
+                    cell: row => <span className="text-sm">{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</span>
                 },
                 {
-                    name: <label>¿SE DECLARÓ PARTE?</label>,
+                    name: '¿SE DECLARÓ PARTE?',
                     cell: row => <label>{row.part} - {row.part_id}</label>
                 },
                 {
-                    name: <label>ESTADO CITACIÓN</label>,
+                    name: 'ESTADO CITACIÓN',
                     selector: row => row.state, // FIX: react-data-table v7→v8 (was 'row.state')
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_STATE(row.state)}</span>
                 },
                 {
-                    name: <label>CUB RELACIONADO</label>,
+                    name: 'CUB RELACIONADO',
                     selector: row => row.id_cub, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.id_cub}</label>
+                    cell: row => <span className="text-sm">{row.id_cub}</span>
                 },
                 {
-                    name: <label>GUIA DE CONFIRMACION</label>,
+                    name: 'GUIA DE CONFIRMACION',
                     selector: row => row.id_alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.id_alerted == "-1"
+                    cell: row => <span className="text-sm">{row.id_alerted == "-1"
                         ? ""
-                        : row.id_alerted}</label>
+                        : row.id_alerted}</span>
                 },
                 {
-                    name: <label>FECHA RECIBIDO</label>,
+                    name: 'FECHA RECIBIDO',
                     selector: row => row.alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>
+                    cell: row => <span className="text-sm">{row.state == 1 ? dateParser(row.alerted) : ""}</span>
                 },
                 {
-                    name: <label>METODOS DE PUBLICACION</label>,
+                    name: 'METODOS DE PUBLICACION',
                     minWidth: '250px',
-                    cell: row => <label>{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</span>
                 },
                 {
-                    name: <label>SOPORTES DE PUBLICACION</label>,
+                    name: 'SOPORTES DE PUBLICACION',
 
                     minWidth: '200px',
-                    cell: row => <label>{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</span>
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     button: true,
                     minWidth: '150px',
                     cell: row =>  <>
@@ -201,18 +194,14 @@ class FUNN3 extends Component {
                         : ""}</>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                        <MDBBtn className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}>
-                            <i class="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                        <MDBBtn className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_3(row.id)}>
-                            <i class="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}>
+                            <Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_3(row.id)}>
+                            <Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -231,40 +220,40 @@ class FUNN3 extends Component {
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >3.1 Dirección del Predio</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_31" />
+                            <input type="text" className="form-control" id="f_31" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>3.2 Dirección de correspondencia</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_32" />
+                            <input type="text" className="form-control" id="f_32" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >3.3 ¿Se declaró parte? Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_33a" />
+                            <input type="text" className="form-control" id="f_33a" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>3.3 ¿Se declaró parte? No. de CUB</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_33b" />
+                            <input type="text" className="form-control" id="f_33b" />
                         </div>
                     </div>
                 </div>
@@ -275,40 +264,40 @@ class FUNN3 extends Component {
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >3.1 Dirección del Predio</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_31_edit" />
+                            <input type="text" className="form-control" id="f_31_edit" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>3.2 Dirección de correspondencia</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_32_edit" />
+                            <input type="text" className="form-control" id="f_32_edit" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >3.3 ¿Se declaró parte? Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_33a_edit" />
+                            <input type="text" className="form-control" id="f_33a_edit" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>3.3 ¿Se declaró parte? No. Radicación</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="f_33b_edit" />
+                            <input type="text" className="form-control" id="f_33b_edit" />
                         </div>
                     </div>
                 </div>
@@ -332,88 +321,44 @@ class FUNN3 extends Component {
             let part_id = document.getElementById("f_33b").value;
             formData.set('part_id', part_id);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.create_fun3(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         document.getElementById('form_fun_3_new').reset();
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
         let delete_3 = (id) => {
-            MySwal.fire({
+            swalConfirm({
                 title: "ELIMINAR ESTE ITEM",
                 text: "¿Esta seguro de eliminar de forma permanente este item?",
                 icon: 'question',
                 confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     FUNService.delete_3(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdate(currentItem.id);
-                                this.setState({ edit: false });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdate(currentItem.id);
+                                setEdit(false);
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         });
                 }
             });
@@ -430,76 +375,55 @@ class FUNN3 extends Component {
             let part_id = document.getElementById("f_33b_edit").value;
             formData.set('part_id', part_id);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            FUNService.update_3(this.state.edit.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            FUNService.update_3(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdate(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdate(currentItem.id);
                         document.getElementById('form_fun_3_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_3">
-                    <label className="app-p lead text-center fw-normal text-uppercase">3. Información de Vecinos Colindantes</label>
+                <legend className="my-2 px-3 Collapsible" id="funn_3">
+                    <label className="app-p lead text-center fw-normal">3. Información de Vecinos Colindantes</label>
                 </legend>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Vecino Colidante
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_fun_3_new" onSubmit={new_3}>
                             {_COMPONENT_NEW_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3"><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
                     </> : ""}
                 {_CHILD_3_LIST()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_fun_3_edit" onSubmit={edit_3}>
                             <h3 className="my-3 text-center">Actualizar Vecino</h3>
                             {_COMPONENT_EDIT_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                             </div>
                         </form>
@@ -507,7 +431,6 @@ class FUNN3 extends Component {
                     : ""}
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN3;

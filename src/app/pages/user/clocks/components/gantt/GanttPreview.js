@@ -1,4 +1,3 @@
-import React from 'react';
 import { GanttChart } from './GanttChart';
 
 export const GanttPreview = ({

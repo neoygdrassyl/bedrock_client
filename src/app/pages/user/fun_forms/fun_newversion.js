@@ -1,24 +1,13 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import { MDBBtn } from 'mdb-react-ui-kit';
-import withReactContent from 'sweetalert2-react-content'
+
+import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
 
-
-class FUN_NEWVERSION extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, toCreate, aim } = this.props;
-        const { } = this.state;
-        var formData = new FormData();
-        const MySwal = withReactContent(Swal);
-
+const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVersion, toCreate, aim, requestUpdate }) => {
+    var formData = new FormData();
+    
         let _COPY_CHILD = () => {
             formData = new FormData();
 
@@ -245,52 +234,52 @@ class FUN_NEWVERSION extends Component {
             return <td>
                 <input type="hidden" id="f_10" defaultValue={_CHILD_VARS.item_0} />
                 <label>1.1 Tipo de Solicitud</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="f_11"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="f_11"
                         defaultChecked={_CHILD_VARS.item_1.includes('A') ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Licencia Urbanistica
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="f_11"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="f_11"
                         defaultChecked={_CHILD_VARS.item_1.includes('B') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Licencia de Parcelacion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="f_11"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="f_11"
                         defaultChecked={_CHILD_VARS.item_1.includes('C') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Licencia de Subdivicion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="f_11"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="f_11"
                         defaultChecked={_CHILD_VARS.item_1.includes('D') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         D. Licencia de Construccion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="f_11"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="f_11"
                         defaultChecked={_CHILD_VARS.item_1.includes('E') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         E. Intervencion y ocupacon del espacio Publico
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="F" name="f_11"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="F" name="f_11"
                         defaultChecked={_CHILD_VARS.item_1.includes('F') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         F. Reconocimiento de la existencia de una edificacion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="G" name="f_11"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="G" name="f_11"
                         defaultChecked={_CHILD_VARS.item_1.includes('G') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         G. Otras Actuaciones
                     </label>
                 </div>
@@ -301,39 +290,39 @@ class FUN_NEWVERSION extends Component {
 
             return <td>
                 <label>1.2 Objecto del Tramite</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="A" name="f_12"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="A" name="f_12"
                         defaultChecked={_CHILD_VARS.item_2 == 'A' ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Inicial
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="B" name="f_12"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="B" name="f_12"
                         defaultChecked={_CHILD_VARS.item_2 == 'B' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Prórroga
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="C" name="f_12"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="C" name="f_12"
                         defaultChecked={_CHILD_VARS.item_2 == 'C' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Modificacion de Licencia Vigente
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="D" name="f_12"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="D" name="f_12"
                         defaultChecked={_CHILD_VARS.item_2 == 'D' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         D. Revalidacion
                     </label>
                 </div>
-                <div class="input-group my-3">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-question-circle"></i>
+                <div className="input-group my-3">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="question-circle" size={16} />
                     </span>
-                    <input type="text" class="form-control" placeholder="Otras Actuaciones, ¿Cual?"
+                    <input type="text" className="form-control" placeholder="Otras Actuaciones, ¿Cual?"
                         defaultValue={_CHILD_VARS.item_2 != 'A' && _CHILD_VARS.item_2 != 'B' && _CHILD_VARS.item_2 != 'C'
                             && _CHILD_VARS.item_2 != 'D' ? _CHILD_VARS.item_2 : ""} id="f_12_o" />
                 </div>
@@ -344,24 +333,24 @@ class FUN_NEWVERSION extends Component {
 
             return <td>
                 <label>1.3 Modalidad Licencia de Urbanizacion</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="A" name="f_13"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="A" name="f_13"
                         defaultChecked={_CHILD_VARS.item_3 == 'A' ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Desarrollo
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="B" name="f_13"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="B" name="f_13"
                         defaultChecked={_CHILD_VARS.item_3 == 'B' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Saneamiento
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="C" name="f_13"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="C" name="f_13"
                         defaultChecked={_CHILD_VARS.item_3 == 'C' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Recuperacion
                     </label>
                 </div>
@@ -372,24 +361,24 @@ class FUN_NEWVERSION extends Component {
 
             return <td>
                 <label>1.4 Modalidad Licencia de Subdivicion</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="A" name="f_14"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="A" name="f_14"
                         defaultChecked={_CHILD_VARS.item_4 == 'A' ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Subdivision rural
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="B" name="f_14"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="B" name="f_14"
                         defaultChecked={_CHILD_VARS.item_4 == 'B' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Subdivision urbana
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="C" name="f_14"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="C" name="f_14"
                         defaultChecked={_CHILD_VARS.item_4 == 'C' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Reloteo
                     </label>
                 </div>
@@ -400,73 +389,73 @@ class FUN_NEWVERSION extends Component {
 
             return <td>
                 <label>1.5 Modalidad Licencia de Construccion</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('A') ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Obra Nueva
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('B') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Ampliacion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('C') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Adecuacion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('D') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         D. Modificacion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="E" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="E" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('E') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         E. Restauracion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="F" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="F" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('F') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         F. Reforzamiento Estructural
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="G" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="G" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('G') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         G.1 Demolicion: Total
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="g" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="g" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('g') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         G.2 Demolicion Parcial
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="H" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="H" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('H') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         H. Reconstruccion
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="I" name="f_15"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="I" name="f_15"
                         defaultChecked={_CHILD_VARS.item_5.includes('I') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         I. Cerramiento
                     </label>
                 </div>
@@ -494,39 +483,39 @@ class FUN_NEWVERSION extends Component {
             }
             return <td>
                 <label>1.6 Usos</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="A" name="f_16"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="A" name="f_16"
                         defaultChecked={_arrayPretty.includes('A') ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Vivienda
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="B" name="f_16"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="B" name="f_16"
                         defaultChecked={_arrayPretty.includes('B') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Comercio y/o Servicio
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="C" name="f_16"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="C" name="f_16"
                         defaultChecked={_arrayPretty.includes('C') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Institucional
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="D" name="f_16"
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="D" name="f_16"
                         defaultChecked={_arrayPretty.includes('D') ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         D. Industrial
                     </label>
                 </div>
-                <div class="input-group my-3">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-question-circle"></i>
+                <div className="input-group my-3">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="question-circle" size={16} />
                     </span>
-                    <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                    <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                         id="f_16_o" defaultValue={_otherValue} />
                 </div>
             </td>
@@ -536,24 +525,24 @@ class FUN_NEWVERSION extends Component {
 
             return <td>
                 <label>1.7 Area Construida</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="A" name="f_17"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="A" name="f_17"
                         defaultChecked={_CHILD_VARS.item_7 == 'A' ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Menor a 2000 m2
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="B" name="f_17"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="B" name="f_17"
                         defaultChecked={_CHILD_VARS.item_7 == 'B' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Igual o Mayor a 2000 m2
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="C" name="f_17"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="C" name="f_17"
                         defaultChecked={_CHILD_VARS.item_7 == 'C' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Alcanza o supera mmediamente apliacion los 2000 m2
                     </label>
                 </div>
@@ -564,24 +553,24 @@ class FUN_NEWVERSION extends Component {
 
             return <td>
                 <label>1.8 Tipo de Vivienda</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="A" name="f_18"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="A" name="f_18"
                         defaultChecked={_CHILD_VARS.item_8 == 'A' ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. VIP
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="B" name="f_18"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="B" name="f_18"
                         defaultChecked={_CHILD_VARS.item_8 == 'B' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. VIS
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="C" name="f_18"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="C" name="f_18"
                         defaultChecked={_CHILD_VARS.item_8 == 'C' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. NO VIS
                     </label>
                 </div>
@@ -592,17 +581,17 @@ class FUN_NEWVERSION extends Component {
 
             return <td>
                 <label>1.9  Bien de Interes Cultura</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="A" name="f_19"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="A" name="f_19"
                         defaultChecked={_CHILD_VARS.item_9 == 'A' ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. SI
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="B" name="f_19"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="B" name="f_19"
                         defaultChecked={_CHILD_VARS.item_9 == 'B' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. NO
                     </label>
                 </div>
@@ -613,24 +602,24 @@ class FUN_NEWVERSION extends Component {
 
             return <td colSpan="2">
                 <label >1.10.1  Declaracion sobre medidas de construccion sostenible</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="A" name="f_101"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="A" name="f_101"
                         defaultChecked={_CHILD_VARS.item_101 == 'A' ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Medidas Pasivas
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="B" name="f_101"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="B" name="f_101"
                         defaultChecked={_CHILD_VARS.item_101 == 'B' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Medidas Activas
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="C" name="f_101"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="C" name="f_101"
                         defaultChecked={_CHILD_VARS.item_101 == 'C' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Medidas Activas y Pasivas
                     </label>
                 </div>
@@ -641,39 +630,39 @@ class FUN_NEWVERSION extends Component {
 
             return <td>
                 <label >1.10.2  Zonificacion Climatica</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="A" name="f_102"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="A" name="f_102"
                         defaultChecked={_CHILD_VARS.item_102 == 'A' ? true : false} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         A. Frio
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="B" name="f_102"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="B" name="f_102"
                         defaultChecked={_CHILD_VARS.item_102 == 'B' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         B. Templado
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="C" name="f_102"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="C" name="f_102"
                         defaultChecked={_CHILD_VARS.item_102 == 'C' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         C. Calido Seco
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="D" name="f_102"
+                <div className="form-check">
+                    <input className="form-check-input" type="radio" value="D" name="f_102"
                         defaultChecked={_CHILD_VARS.item_102 == 'D' ? true : false} />
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <label className="form-check-label" htmlFor="flexCheckChecked">
                         D. Calido Humedo
                     </label>
                 </div>
-                <div class="input-group my-3">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-question-circle"></i>
+                <div className="input-group my-3">
+                    <span className="input-group-text bg-primary text-primary-foreground">
+                        <Icon name="question-circle" size={16} />
                     </span>
-                    <input type="text" class="form-control" placeholder="Otro clima, ¿Cual?" id="f_102_o"
+                    <input type="text" className="form-control" placeholder="Otro clima, ¿Cual?" id="f_102_o"
                         defaultValue={_CHILD_VARS.item_102 != 'A' && _CHILD_VARS.item_102 != 'B' && _CHILD_VARS.item_102 != 'C'
                             && _CHILD_VARS.item_102 != 'D' ? _CHILD_VARS.item_102 : ""} />
                 </div>
@@ -686,31 +675,15 @@ class FUN_NEWVERSION extends Component {
             FUNService.create_version(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdate(currentItem.id)
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdate(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -724,31 +697,15 @@ class FUN_NEWVERSION extends Component {
             FUNService.update_version(currentItem.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdate(currentItem.id)
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdate(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -837,13 +794,7 @@ class FUN_NEWVERSION extends Component {
                 value = "";
             }
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             switch (aim) {
                 case "NT":
@@ -858,7 +809,6 @@ class FUN_NEWVERSION extends Component {
                 default:
                     break;
             }
-
 
         }
 
@@ -892,12 +842,10 @@ class FUN_NEWVERSION extends Component {
                 </> : ""}
             <div className="row mb-3 text-center">
                 <div className="col-12">
-                    <MDBBtn className="btn btn-warning btn-lg my-3" onClick={() => manage_version()} ><i class="far fa-file-alt"></i> ACTUALIZAR VERSION</MDBBtn>
+                    <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => manage_version()}><Icon name="file-alt" size={14} /> Actualizar versión</Button>
                 </div>
             </div>
         </>);
-    }
-}
-
+};
 
 export default FUN_NEWVERSION;

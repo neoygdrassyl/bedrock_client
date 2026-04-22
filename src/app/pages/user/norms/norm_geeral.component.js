@@ -1,14 +1,14 @@
-import React, { Suspense, useEffect, useState, } from 'react';
+import { Suspense, useEffect, useState, } from 'react';
+import { Button } from '@/components/ui/button';
 import Norms_Service from "../../../services/norm.service"
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { NORM_GEN_DATA } from './norm.vars'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import VIEWER from '../../../components/viewer.component';
 import FICHA_NORM from "../../../components/jsons/FICHA_NORM_1.json"
 import { EJES, SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 const default_Item = {
     id: false,
     id_in: null,
@@ -89,12 +89,7 @@ export default function NORM_GENERAL(props) {
             })
             .catch(e => {
                 console.error(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     function updateForm(event) {
@@ -158,7 +153,7 @@ export default function NORM_GENERAL(props) {
         let eje = document.getElementById("norm_eje").value;
         formData.set('eje', eje);
 
-        let _creationYear = moment(item.createdAt).format('YY');
+        let _creationYear = dayjs(item.createdAt).format('YY');
         let _folder = item.id_in;
         let file = document.getElementById("norm_fun6id");
         if (file.files[0]) {
@@ -166,50 +161,24 @@ export default function NORM_GENERAL(props) {
             formData.append('file', file.files[0], "norm_" + _creationYear + "_" + _folder + "_" + file.files[0].name)
         }
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         Norms_Service.update_norm(id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadData()
                     setrRfresh(1)
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
                 if (e.response.data.message == "Validation error") {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             });
     };
@@ -222,12 +191,7 @@ export default function NORM_GENERAL(props) {
             })
             .catch(e => {
                 console.error(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -257,20 +221,20 @@ export default function NORM_GENERAL(props) {
             <div className="row">
                 <div className="col-6">
                     <label >1.1 Nr. Radicación</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-hashtag"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="hashtag" size={16} />
                         </span>
-                        <input type="text" class="form-control" id="norm_id_in" required disabled defaultValue={item.id_in} />
+                        <input type="text" className="form-control" id="norm_id_in" required disabled defaultValue={item.id_in} />
                     </div>
                 </div>
                 <div className="col-6">
                     <label >1.2 Nr. Expedición</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-hashtag"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="hashtag" size={16} />
                         </span>
-                        <input type="text" class="form-control" id="norm_id_out" defaultValue={item.id_out} />
+                        <input type="text" className="form-control" id="norm_id_out" defaultValue={item.id_out} />
                     </div>
                 </div>
             </div>
@@ -278,20 +242,20 @@ export default function NORM_GENERAL(props) {
             <div className="row">
                 <div className="col-3">
                     <label >1.3 Solicitante</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-user"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="user" size={16} />
                         </span>
-                        <input type="text" class="form-control" id="norm_solicitor" defaultValue={item.solicitor} />
+                        <input type="text" className="form-control" id="norm_solicitor" defaultValue={item.solicitor} />
                     </div>
                 </div>
                 <div className="col-3">
                     <label >1.4 Utilidad Publica</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-home"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="home" size={16} />
                         </span>
-                        <select class="form-select" id="norm_public_utility" defaultValue={item.public_utility}>
+                        <select className="form-select" id="norm_public_utility" defaultValue={item.public_utility}>
                             <option>SI</option>
                             <option>NO</option>
                         </select>
@@ -299,11 +263,11 @@ export default function NORM_GENERAL(props) {
                 </div>
                 <div className="col-3">
                     <label >1.5 Eje</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-home"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="home" size={16} />
                         </span>
-                        <select class="form-select" id="norm_eje" defaultValue={item.eje}>
+                        <select className="form-select" id="norm_eje" defaultValue={item.eje}>
                         <option>NO APLICA</option>
                             {EJES.map(eje => <option>{eje}</option>)}
                         </select>
@@ -311,11 +275,11 @@ export default function NORM_GENERAL(props) {
                 </div>
                 <div className="col-3">
                     <label >1.6 Imagen </label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-home"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="home" size={16} />
                         </span>
-                        <input type="file" class="form-control" id="norm_fun6id" accept="image/png, image/jpeg" />
+                        <input type="file" className="form-control" id="norm_fun6id" accept="image/png, image/jpeg" />
                         {item.fun6id ? <div><VIEWER API={getImage} params={[item.fun6id]} /></div> : null}
                     </div>
                 </div>
@@ -324,44 +288,44 @@ export default function NORM_GENERAL(props) {
             <div className="row">
                 <div className="col">
                     <label >1.7 Ficha</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <select class="form-select" id="norm_ficha" defaultValue={item.ficha} onChange={(e) => setFicha(e.target.value)}>
+                        <select className="form-select" id="norm_ficha" defaultValue={item.ficha} onChange={(e) => setFicha(e.target.value)}>
                             {fichas.map(ficha => <option>{ficha.ficha}</option>)}
                         </select>
                     </div>
                 </div>
                 <div className="col">
                     <label >1.8 Sector</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <select class="form-select" id="norm_sector" defaultValue={item.sector} onChange={(e) => setSector(e.target.value)}>
+                        <select className="form-select" id="norm_sector" defaultValue={item.sector} onChange={(e) => setSector(e.target.value)}>
                             {sectors.map(sector => <option>{sector.sector}</option>)}
                         </select>
                     </div>
                 </div>
                 <div className="col">
                     <label >1.9 Subsector</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <select class="form-select" id="norm_subsector" defaultValue={item.subsector} onChange={(e) => setSubsector(e.target.value)}>
+                        <select className="form-select" id="norm_subsector" defaultValue={item.subsector} onChange={(e) => setSubsector(e.target.value)}>
                             {subsectors.map(subsector => <option>{subsector.subsector}</option>)}
                         </select>
                     </div>
                 </div>
                 <div className="col">
                     <label >1.10 Frente Normativo</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <select class="form-select" id="norm_front" defaultValue={item.front}>
+                        <select className="form-select" id="norm_front" defaultValue={item.front}>
                             {fronts.map(front => <option>{front.front}</option>)}
                         </select>
                     </div>
@@ -371,11 +335,11 @@ export default function NORM_GENERAL(props) {
             <div className="row">
                 <div className="col-3">
                     <label >1.11 Tipo de frente</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <select class="form-select" id="norm_front_type" defaultValue={item.front_type} required>
+                        <select className="form-select" id="norm_front_type" defaultValue={item.front_type} required>
                             <option>Esquinero</option>
                             <option>Medianero</option>
                             <option>Manzana</option>
@@ -384,11 +348,11 @@ export default function NORM_GENERAL(props) {
                 </div>
                 <div className="col-3">
                     <label >1.12 Numero de frentes</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <select class="form-select" id="norm_front_n" defaultValue={item.front_n} required>
+                        <select className="form-select" id="norm_front_n" defaultValue={item.front_n} required>
                             <option value={1}>1 frente</option>
                             <option value={4}>4 frentes</option>
                             <option value={-1}>Frente de manzana</option>
@@ -398,12 +362,12 @@ export default function NORM_GENERAL(props) {
 
                 <div className="col-6">
                     <label >1.13 Georefenciación</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-map-marker-alt"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="map-marker-alt" size={16} />
                         </span>
-                        <input type="text" class="form-control" id="norm_geo_n" defaultValue={item.geo_n} placeholder='Norte' />
-                        <input type="text" class="form-control" id="norm_geo_e" defaultValue={item.geo_e} placeholder='Este' />
+                        <input type="text" className="form-control" id="norm_geo_n" defaultValue={item.geo_n} placeholder='Norte' />
+                        <input type="text" className="form-control" id="norm_geo_e" defaultValue={item.geo_e} placeholder='Este' />
                     </div>
                 </div>
             </div>
@@ -411,29 +375,29 @@ export default function NORM_GENERAL(props) {
             <div className="row">
                 <div className="col-3">
                     <label >1.14 Comuna</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <input type="text" class="form-control" id="norm_comuna" defaultValue={item.comuna} />
+                        <input type="text" className="form-control" id="norm_comuna" defaultValue={item.comuna} />
                     </div>
                 </div>
                 <div className="col-3">
                     <label >1.15 Barrio</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <input type="text" class="form-control" id="norm_barrio" defaultValue={item.barrio} />
+                        <input type="text" className="form-control" id="norm_barrio" defaultValue={item.barrio} />
                     </div>
                 </div>
                 <div className="col-3">
                     <label >1.16 Estrato</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <select class="form-select" id="norm_estrato" defaultValue={item.estrato} required>
+                        <select className="form-select" id="norm_estrato" defaultValue={item.estrato} required>
                             <option value={1}>Estrato 1</option>
                             <option value={2}>Estrato 2</option>
                             <option value={3}>Estrato 3</option>
@@ -445,9 +409,9 @@ export default function NORM_GENERAL(props) {
                 </div>
                 <div className="col-3">
                     <label >1.17 Clasificación Suelo</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_cla_suelo" defaultValue={item.cla_suelo}>
                             <option>Urbano</option>
@@ -461,9 +425,9 @@ export default function NORM_GENERAL(props) {
             <div className="row">
                 <div className="col-3">
                     <label >1.18 Área de actividad</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_area_act" defaultValue={item.area_act} >
                             {SUBMIT_ARC_AREA_ACTIVIDAD.map(op => <option>{op}</option>)}
@@ -472,9 +436,9 @@ export default function NORM_GENERAL(props) {
                 </div>
                 <div className="col-3">
                     <label >1.19 Tratamiento Urbanístico</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_trat_urb" defaultValue={item.trat_urb} >
                             {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map(op => <option>{op}</option>)}
@@ -483,9 +447,9 @@ export default function NORM_GENERAL(props) {
                 </div>
                 <div className="col-3">
                     <label >1.20 Zonif. Restricción Ocupación</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_zon_rest" defaultValue={item.zon_rest} >
                             {SUBMIT_ARC_ZONS_RESTRICCION.map(op => <option>{op}</option>)}
@@ -494,9 +458,9 @@ export default function NORM_GENERAL(props) {
                 </div>
                 <div className="col-3">
                     <label >1.21 Amenaza y Riesgo</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_amenaza" defaultValue={item.amenaza} >
                             {SUBMIT_ARC_AMENAZA.map(op => <option>{op}</option>)}
@@ -505,11 +469,11 @@ export default function NORM_GENERAL(props) {
                 </div>
                 <div className="col-3">
                     <label >1.22 Zona Normativa</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="star-of-life" size={16} />
                         </span>
-                        <input type="text" class="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} disabled />
+                        <input type="text" className="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} disabled />
                     </div>
                 </div>
             </div>
@@ -518,39 +482,39 @@ export default function NORM_GENERAL(props) {
                 <label >1.23 Usos</label>
 
                 <div className="col mx-3">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="norm_usos" value="VIVIENDA" defaultChecked={item.usos?.includes('VIVIENDA')} />
-                        <label class="form-check-label" for="inlineCheckbox1">VIVIENDA</label>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="checkbox" name="norm_usos" value="VIVIENDA" defaultChecked={item.usos?.includes('VIVIENDA')} />
+                        <label className="form-check-label" htmlFor="inlineCheckbox1">VIVIENDA</label>
                     </div>
                 </div>
                 <div className="col mx-3">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="norm_usos" value="COMERCIO" defaultChecked={item.usos?.includes('COMERCIO')} />
-                        <label class="form-check-label" for="inlineCheckbox1">COMERCIO</label>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="checkbox" name="norm_usos" value="COMERCIO" defaultChecked={item.usos?.includes('COMERCIO')} />
+                        <label className="form-check-label" htmlFor="inlineCheckbox1">COMERCIO</label>
                     </div>
                 </div>
                 <div className="col mx-3">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="norm_usos" value="SERIVCIO" defaultChecked={item.usos?.includes('SERIVCIO')} />
-                        <label class="form-check-label" for="inlineCheckbox1">SERIVCIO</label>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="checkbox" name="norm_usos" value="SERIVCIO" defaultChecked={item.usos?.includes('SERIVCIO')} />
+                        <label className="form-check-label" htmlFor="inlineCheckbox1">SERIVCIO</label>
                     </div>
                 </div>
                 <div className="col mx-3">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="norm_usos" value="DOTACIONAL" defaultChecked={item.usos?.includes('DOTACIONAL')} />
-                        <label class="form-check-label" for="inlineCheckbox1">DOTACIONAL</label>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="checkbox" name="norm_usos" value="DOTACIONAL" defaultChecked={item.usos?.includes('DOTACIONAL')} />
+                        <label className="form-check-label" htmlFor="inlineCheckbox1">DOTACIONAL</label>
                     </div>
                 </div>
                 <div className="col mx-3">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="norm_usos" value="INDUSTRIAL" defaultChecked={item.usos?.includes('INDUSTRIAL')} />
-                        <label class="form-check-label" for="inlineCheckbox1">INDUSTRIAL</label>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="checkbox" name="norm_usos" value="INDUSTRIAL" defaultChecked={item.usos?.includes('INDUSTRIAL')} />
+                        <label className="form-check-label" htmlFor="inlineCheckbox1">INDUSTRIAL</label>
                     </div>
                 </div>
             </div>
 
             <div className="text-center my-2">
-                <button className="btn btn-sm btn-success my-1" type='submit'><i class="fas fa-edit"></i> ACTUALIZAR </button>
+                <Button size="sm" className="my-1" type='submit'><Icon name="edit" size={16} /> ACTUALIZAR </Button>
             </div>
 
         </form>
@@ -559,7 +523,7 @@ export default function NORM_GENERAL(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 class="text-uppercase pb-2">1. INFORMACIÓN GENERAL:</h3>
+                <h3 className="pb-2">1. INFORMACIÓN GENERAL:</h3>
                 {load ? FORM_GENERAL() : null}
                 <hr />
             </Suspense>

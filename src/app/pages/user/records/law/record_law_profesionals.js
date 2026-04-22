@@ -1,21 +1,8 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge } from 'mdb-react-ui-kit';
 import { dateParser_yearsPassed } from '../../../../components/customClasses/typeParse';
-const MySwal = withReactContent(Swal);
 
-class RECORD_LAW_PROFESIONALS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, _FUN_1, _FUN_52 } = this.props;
-        const { } = this.state;
+function RECORD_LAW_PROFESIONALS(props) {
+        const { translation, swaMsg, globals, _FUN_1, _FUN_52 } = props;
 
         // DATA GETTERS
         /*  ROLES LIST
@@ -96,7 +83,7 @@ class RECORD_LAW_PROFESIONALS extends Component {
             let _COMPONENT = [];
             for (var i = 0; i < _roles.length; i++) {
                 _COMPONENT.push(<>
-                    <li class="list-group-item">{_PROFESIONAL_JSX(_roles[i])}</li>
+                    <li className="list-group-item">{_PROFESIONAL_JSX(_roles[i])}</li>
                 </>)
             }
             return <>{_COMPONENT}</>
@@ -104,79 +91,78 @@ class RECORD_LAW_PROFESIONALS extends Component {
         let _PROFESIONAL_JSX = (_role) => {
             return <>
                 <label> {_FIND_PROFESIOANL(_role)
-                    ? <MDBBadge color='success'>DILIGENCIADO</MDBBadge>
-                    : <MDBBadge color='danger'>SIN DILIGENCIAR</MDBBadge>} <label className="">{_role}</label> - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
+                    ? <span className="badge bg-success">DILIGENCIADO</span>
+                    : <span className="badge bg-danger">SIN DILIGENCIAR</span>} <label className="">{_role}</label> - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
             </>
         }
 
         return (
             <div className="record_lar_profesional_evaluation container">
                 {_FUN_1.item_1.includes('A')
-                    ? <><ul class="list-group mb-3">
-                        <li class="list-group-item"><label className="fw-bold">A. MODALIDAD DE LICENCIA URBANISTICA</label></li>
+                    ? <><ul className="list-group mb-3">
+                        <li className="list-group-item"><label className="fw-bold">A. MODALIDAD DE LICENCIA URBANISTICA</label></li>
                         {COMPONENT_PROFESIONAL_RULES(['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'ARQUITECTO PROYECTISTA', 'INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'])}
                     </ul> </> : ""}
                 {_FUN_1.item_1.includes('B')
-                    ? <><ul class="list-group mb-3">
-                        <li class="list-group-item"><label className="fw-bold">B. MODALIDAD DE PARCELACION</label></li>
+                    ? <><ul className="list-group mb-3">
+                        <li className="list-group-item"><label className="fw-bold">B. MODALIDAD DE PARCELACION</label></li>
                         {COMPONENT_PROFESIONAL_RULES(['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'ARQUITECTO PROYECTISTA', 'INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'])}
                     </ul> </> : ""}
                 {_FUN_1.item_1.includes('C')
-                    ? <><ul class="list-group mb-3">
-                        <li class="list-group-item"><label className="fw-bold">C. MODALIDAD DE SUBDIVICION</label></li>
+                    ? <><ul className="list-group mb-3">
+                        <li className="list-group-item"><label className="fw-bold">C. MODALIDAD DE SUBDIVICION</label></li>
                         {COMPONENT_PROFESIONAL_RULES(['ARQUITECTO PROYECTISTA', 'INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'])}
                     </ul> </> : ""}
                 {_FUN_1.item_1.includes('D')
-                    ? <><ul class="list-group mb-3">
-                        <li class="list-group-item"><label className="fw-bold">D. MODALIDAD DE CONSTRUCCION</label></li>
+                    ? <><ul className="list-group mb-3">
+                        <li className="list-group-item"><label className="fw-bold">D. MODALIDAD DE CONSTRUCCION</label></li>
                         {COMPONENT_PROFESIONAL_RULES(['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'ARQUITECTO PROYECTISTA', 'INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'])}
                         {_FUN_1.item_5.includes('A')
                             ? <>
-                                <li class="list-group-item"><label className="fw-bold">D. MODALIDAD DE CONSTRUCCION - A. OBRA NUEVA</label></li>
+                                <li className="list-group-item"><label className="fw-bold">D. MODALIDAD DE CONSTRUCCION - A. OBRA NUEVA</label></li>
                                 {COMPONENT_PROFESIONAL_RULES(['DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES', 'INGENIERO CIVIL GEOTECNISTA'])}
                             </> : ""}
                         {_FUN_1.item_5.includes('B')
                             ? <>
-                                <li class="list-group-item"><label className="fw-bold">D. MODALIDAD DE CONSTRUCCION - B. AMPLIACION</label></li>
+                                <li className="list-group-item"><label className="fw-bold">D. MODALIDAD DE CONSTRUCCION - B. AMPLIACION</label></li>
                                 {COMPONENT_PROFESIONAL_RULES(['DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES'])}
                             </> : ""}
                     </ul> </> : ""}
                     {(_FUN_1.item_1.includes('A') || _FUN_1.item_1.includes('D')) &&  (_FUN_1.item_7.includes('B') || _FUN_1.item_7.includes('C') )
-                    ? <><ul class="list-group mb-3">
-                        <li class="list-group-item"><label className="fw-bold">MODALIDADES DE URBANISTICA O CONSTRUCCION QUE SUPERA 2000 m2 DE AREA </label></li>
+                    ? <><ul className="list-group mb-3">
+                        <li className="list-group-item"><label className="fw-bold">MODALIDADES DE URBANISTICA O CONSTRUCCION QUE SUPERA 2000 m2 DE AREA </label></li>
                         {COMPONENT_PROFESIONAL_RULES(['REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES'])}
                     </ul> </> : ""}
                 {_FUN_1.item_1.includes('F') && !_FUN_1.item_1.includes('D')
-                    ? <><ul class="list-group mb-3">
-                        <li class="list-group-item"><label className="fw-bold">F. MODALIDAD DE RECONOCIMIENTO DE LA EXISTENCIA DE UNA EDIFICACION </label></li>
+                    ? <><ul className="list-group mb-3">
+                        <li className="list-group-item"><label className="fw-bold">F. MODALIDAD DE RECONOCIMIENTO DE LA EXISTENCIA DE UNA EDIFICACION </label></li>
                         {COMPONENT_PROFESIONAL_RULES(['ARQUITECTO PROYECTISTA', 'INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'])}
                     </ul> </> : ""}
                 {_FUN_1.item_1.includes('G')
-                    ? <> <ul class="list-group mb-3">
+                    ? <> <ul className="list-group mb-3">
                         {_FUN_1.item_2 == 'B' ? <>
-                            <li class="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - B. PRORROGA</label></li>
+                            <li className="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - B. PRORROGA</label></li>
                             {COMPONENT_PROFESIONAL_RULES(['URBANIZADOR O CONSTRUCTOR RESPONSABLE'])}
                         </> : ""}
                         {_FUN_1.item_2 == 'D' ? <>
-                            <li class="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - D. REVALISACION</label></li>
+                            <li className="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - D. REVALISACION</label></li>
                             {COMPONENT_PROFESIONAL_RULES(['URBANIZADOR O CONSTRUCTOR RESPONSABLE'])}
                         </> : ""}
                         {_REGEX_MATCH_PH(_FUN_1.item_2) ? <>
-                            <li class="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - OTRAS - P.H.</label></li>
+                            <li className="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - OTRAS - P.H.</label></li>
                             {COMPONENT_PROFESIONAL_RULES(['ARQUITECTO PROYECTISTA'])}
                         </> : ""}
                         {_REGEX_MATCH_MT(_FUN_1.item_2) ? <>
-                            <li class="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - OTRAS - MOVIMIENTO TIERRAS</label></li>
+                            <li className="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - OTRAS - MOVIMIENTO TIERRAS</label></li>
                             {COMPONENT_PROFESIONAL_RULES(['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'])}
                         </> : ""}
                         {_REGEX_MATCH_AP(_FUN_1.item_2) ? <>
-                            <li class="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - OTRAS - APROBACION PISCINAS</label></li>
+                            <li className="list-group-item"><label className="fw-bold">G. OTRAS ACTUACIONES - OTRAS - APROBACION PISCINAS</label></li>
                             {COMPONENT_PROFESIONAL_RULES(['ARQUITECTO PROYECTISTA', 'INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'])}
                         </> : ""}
                     </ul> </> : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_LAW_PROFESIONALS;

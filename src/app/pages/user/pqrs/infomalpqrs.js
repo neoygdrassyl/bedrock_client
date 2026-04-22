@@ -1,64 +1,52 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
+
 import PQRS_Service from '../../../services/pqrs_main.service';
 import PQRS_COMPONENT_INFO from './components/pqrs_gen.component';
 import PQRS_COMPONENT_CLOCKS from './components/pqrs_clock.component';
 import PQRS_COMPONENT_LICENCE from './components/pqrs_licence.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 
-const moment = require('moment');
-const MySwal = withReactContent(Swal);
-class PQRSINFORMAL extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            attachs: 0,
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentId, currentItemAsign, refreshList: refreshListProp, closeModal, NAVIGATION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+    const [attachs, setAttachs] = useState(0);
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este ítem, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-                this.setState({
-                    load: false
-                })
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este ítem, inténtelo nuevamente." });
+                setLoad(false);
             });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    clearForm() {
-        document.getElementById("app-formInformal").reset()
-    }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
-    }
+    };
 
-    render() {
-        const { translation, swaMsg, globals, translation_form, currentItemAsign } = this.props;
-        const { attachs, currentItem, load } = this.state;
+    const refreshList = () => {
+        refreshListProp();
+    };
+
+    const clearForm = () => {
+        document.getElementById("app-formInformal").reset()
+    };
+
+    const addAttach = () => {
+        setAttachs(attachs + 1);
+    };
+
+    const minusAttach = () => {
+        setAttachs(attachs - 1);
+    };
         var formData = new FormData();
 
         let _ATTACHS_COMPONENT = () => {
@@ -66,14 +54,14 @@ class PQRSINFORMAL extends Component {
             for (var i = 0; i < attachs; i++) {
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_informal" accept="image/png, image/jpeg application/pdf" />
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="file" className="form-control" name="files_informal" accept="image/png, image/jpeg application/pdf" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="text" class="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="text" className="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
                 </div>)
@@ -112,32 +100,17 @@ class PQRSINFORMAL extends Component {
                 console.log(pair[0] + ', ' + pair[1]);
             }
             */
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.informalReply(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.clearForm();
-                        this.retrieveItem(currentItem.id);
-                        this.refreshList();
-                        this.props.closeModal()
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                        clearForm();
+                        retrieveItem(currentItem.id);
+                        refreshList();
+                        closeModal()
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
@@ -150,8 +123,8 @@ class PQRSINFORMAL extends Component {
                     ? <>
                         {load ? <>
                             <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                    <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE LA PQRS</label>
+                                <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                    <label className="app-p lead fw-normal">INFORMACIÓN DE LA PQRS</label>
                                 </legend>
                                 <PQRS_COMPONENT_INFO
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -162,8 +135,8 @@ class PQRSINFORMAL extends Component {
                             <div className="row">
                                 <div className="col-6">
                                     <fieldset className="p-3">
-                                        <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                            <label className="app-p lead fw-normal text-uppercase">CONTROL DE TIEMPOS</label>
+                                        <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                            <label className="app-p lead fw-normal">CONTROL DE TIEMPOS</label>
                                         </legend>
                                         <PQRS_COMPONENT_CLOCKS
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -174,8 +147,8 @@ class PQRSINFORMAL extends Component {
                                 <div className="col-6">
                                     {currentItem.pqrs_fun ?
                                         <fieldset className="p-3">
-                                            <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                                <label className="app-p lead fw-normal text-uppercase">SOLICITUD RELACIONADA</label>
+                                            <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                                <label className="app-p lead fw-normal">SOLICITUD RELACIONADA</label>
                                             </legend>
                                             <PQRS_COMPONENT_LICENCE
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -188,10 +161,10 @@ class PQRSINFORMAL extends Component {
 
                             <form onSubmit={informalReplyPQRS} id="app-formInformal" className="py-3">
 
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="pqrs_info_1">
-                                    <label className="app-p lead fw-normal text-uppercase">RESPUESTA INFORMAL DE PETICIÓN</label>
+                                <legend className="my-2 px-3 Collapsible" id="pqrs_info_1">
+                                    <label className="app-p lead fw-normal">RESPUESTA INFORMAL DE PETICIÓN</label>
                                 </legend>
-                                <p className="app-p">ESTA RESPUESTA SERÁ DADA COMO EL PROFESIONAL : <label className="fw-bold text-uppercase">{currentItemAsign.name}</label></p>
+                                <p className="app-p">ESTA RESPUESTA SERÁ DADA COMO EL PROFESIONAL : <label className="fw-bold">{currentItemAsign.name}</label></p>
                                 <p className="app-p">Instrucciones para dar respuesta a la solicitud: </p>
                                 <ul>
                                     <li>Escribir la respuesta en la caja de texto seguida de las instrucciones.</li>
@@ -201,15 +174,15 @@ class PQRSINFORMAL extends Component {
                                     <li>Si la CUB1 no es competente orientar al peticionario y recomendar el traslado de la PQRS.</li>
                                 </ul>
                                 <div className="text-center m-3">
-                                    <textarea class="form-control m-3" rows="5" maxlength="4096" id="pqrs_informal_reply"></textarea>
+                                    <textarea className="form-control m-3" rows="5" maxlength="4096" id="pqrs_informal_reply"></textarea>
                                 </div>
                                 <hr className="my-3" />
-                                <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
+                                <label className="app-p lead text-start fw-bold">ANEXAR DOCUMENTO</label>
                                 <div className="text-end m-3">
                                     {attachs > 0
-                                        ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                        ? <Button type="button" variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={14} /> Remover último</Button>
                                         : ""}
-                                    <MDBBtn className="btn btn-lg btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                                    <Button type="button" variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={14} /> Añadir otro</Button>
                                 </div>
                                 {_ATTACHS_COMPONENT()}
 
@@ -217,17 +190,17 @@ class PQRSINFORMAL extends Component {
                                 <div className="row">
 
                                     <div className="col-lg-6 col-md-6">
-                                        <input type="text" class="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-calendar-alt"></i>
+                                        <input type="text" className="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="calendar-alt" size={16} />
                                             </span>
-                                            <input type="date" max="2100-01-01" class="form-control" id="pqrs_informal_time" defaultValue={moment().format('YYYY-MM-DD')} required />
+                                            <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={dayjs().format('YYYY-MM-DD')} required />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="text-center py-4 mt-3">
-                                    <button className="btn btn-lg btn-success"><i class="fas fa-reply"></i> RESPONDER </button>
+                                    <Button size="sm"><Icon name="reply" size={14} /> Responder</Button>
                                 </div>
                             </form></> : <fieldset className="p-3" id="fung_0">
                             <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORMACIÓN, INTÉNTELO NUEVAMENTE</h3></div>
@@ -240,11 +213,10 @@ class PQRSINFORMAL extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"informal"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );
-    }
 }
 
 export default PQRSINFORMAL;

@@ -1,14 +1,12 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
+import { Button } from '@/components/ui/button';
 import { ResoEngineTemplate } from "../../../utils/ResoEngineTemplate";
 import { ActDesistEngineTemp } from "../../../utils/ActDesistEngineTemp";
 import { ExecEngineTemp } from "../../../utils/ExecEngineTemp";
 import { TemplateEngine } from "../../../utils/TemplateEngine";
 import JoditEditor from "jodit-pro-react";
 import { saveAs } from "file-saver";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-const MySwal = withReactContent(Swal);
-
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 export default function EXP_RES_2(props) {
   const { data, swaMsg, currentItem, currentModel} = props;
 
@@ -101,17 +99,12 @@ export default function EXP_RES_2(props) {
 
   const handleDownloadPDFv2 = async () => {
     try {
-      MySwal.fire({
-        title: "Se está generando el PDF",
-        text: swaMsg.text_wait,
-        icon: 'info',
-        showConfirmButton: false,
-      });
+      swalLoading({ title: "Se está generando el PDF", text: swaMsg.text_wait });
 
       const editorHTML = editor.current?.value;
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/pdf-generate/generate-pdf`,
+        `${import.meta.env.VITE_API_URL}/pdf-generate/generate-pdf`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -124,14 +117,9 @@ export default function EXP_RES_2(props) {
       const blob = await response.blob();
       saveAs(blob, nameFile + " " + currentItem.id_public + ".pdf");
 
-      MySwal.close();
+      swalClose();
     } catch (err) {
-      MySwal.fire({
-        title: swaMsg.generic_eror_title,
-        text: swaMsg.generic_error_text,
-        icon: 'warning',
-        confirmButtonText: swaMsg.text_btn,
-      });
+      swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
       console.error("Error descargando PDF v2:", err);
     }
   };
@@ -145,9 +133,9 @@ export default function EXP_RES_2(props) {
         onChange={setContent}
       />
       <div className="mt-3 text-center">
-        <button className="btn btn-danger" onClick={handleDownloadPDFv2}>
+        <Button variant="destructive" size="sm" onClick={handleDownloadPDFv2}>
           Descargar PDF 🧾
-        </button>
+        </Button>
       </div>
 
       {htmlSizeKB && (

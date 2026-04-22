@@ -1,48 +1,39 @@
-import moment from 'moment';
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
+import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
 import FunService from '../../../services/fun.service';
 import SUBMIT_ANEX from './submit_anex.component';
 import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class SUBMIT_MANAGE extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshItem = this.refreshItem.bind(this);
-        this.state = {
-            list: [],
-            currentItem: false
-        };
-    }
-    componentDidMount() {
-        this.refreshItem()
-    }
-    refreshItem() {
-        if (this.props.currentId) {
-            SubmitService.get(this.props.currentId).then(response => {
-                let item = response.data
-                this.setState({
-                    currentItem: item,
-                })
-            })
+function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: propRefreshList, closeModal, edit }) {
+    const [currentItem, setCurrentItem] = useState(false);
+    const [verifyMSG, setVerifyMSG] = useState(null);
+    const [payment, setPayment] = useState(false);
+
+    useEffect(() => {
+        refreshItem();
+    }, []);
+
+    function refreshItem() {
+        if (currentId) {
+            SubmitService.get(currentId).then(response => {
+                let item = response.data;
+                setCurrentItem(item);
+            });
         }
     }
-    refreshList(id) {
-        this.props.refreshList(id);
+
+    function refreshList(id) {
+        propRefreshList(id);
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentId } = this.props;
-        const { currentItem } = this.state;
 
         // DATA GETTERS
         let GET_SUBMIT = () => {
@@ -54,8 +45,8 @@ class SUBMIT_MANAGE extends Component {
                 type: _CHILD ? _CHILD.type : null,
                 list_type: _CHILD ? _CHILD.list_type : null,
                 list_type_str: _CHILD ? _CHILD.list_type_str : null,
-                date: _CHILD ? _CHILD.date : moment().format('YYYY-MM-DD'),
-                time: _CHILD ? _CHILD.time : moment().format('HH:mm'),
+                date: _CHILD ? _CHILD.date : dayjs().format('YYYY-MM-DD'),
+                time: _CHILD ? _CHILD.time : dayjs().format('HH:mm'),
                 owner: _CHILD ? _CHILD.owner : null,
                 worker_reciever: _CHILD ? _CHILD.worker_reciever : window.user.name + " " + window.user.surname,
                 name_retriever: _CHILD ? _CHILD.name_retriever : null,
@@ -99,40 +90,35 @@ class SUBMIT_MANAGE extends Component {
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = new_id.split('-')[0] + "-" + concecutive
                             document.getElementById(htmlId).value = new_id;
-                        } else document.getElementById(htmlId).value = "VR" + moment().format('YY') + "-0001";
-                    } else document.getElementById(htmlId).value = "VR" + moment().format('YY') + "-0001";
+                        } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
+                    } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
         let _VERIFY_RELATED_ID = () => {
-            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-search-location text-info"></i> Buscando...</label> })
+            setVerifyMSG(<label className="fw-bold"><Icon name="search-location" size={16} className="text-info" /> Buscando...</label>)
             var id = document.getElementById('submit_2').value;
             if (id.length) {
                 _GET_TYPE(id)
                 SubmitService.verifyid(id)
                     .then(response => {
                         if (response.data.length) {
-                            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-check text-success"></i> Se encontro consecutivo</label> })
+                            setVerifyMSG(<label className="fw-bold"><Icon name="check" size={16} className="text-success" /> Se encontro consecutivo</label>)
                         } else {
-                            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> No se encontro consecutivo</label> })
+                            setVerifyMSG(<label className="fw-bold"><Icon name="exclamation" size={16} className="text-warning" /> No se encontro consecutivo</label>)
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> Se encontraron errores en el Codigo a buscar</label> })
+                        setVerifyMSG(<label className="fw-bold"><Icon name="exclamation" size={16} className="text-warning" /> Se encontraron errores en el Codigo a buscar</label>)
                     });
             } else {
                 document.getElementById('submit_4').value = ""
-                this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-times text-danger"></i> Debe especificar un consecutivo de Licencia o JUR.</label> })
+                setVerifyMSG(<label className="fw-bold"><Icon name="times" size={16} className="text-danger" /> Debe especificar un consecutivo de Licencia o JUR.</label>)
             }
         }
         let _GET_TYPE = (id_public) => {
@@ -184,17 +170,12 @@ class SUBMIT_MANAGE extends Component {
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${_id[1]}-${_id[2]}-${concecutive}`
                             document.getElementById('submit_2').value = new_id;
-                        } else document.getElementById('submit_2').value = "68001-1-" + moment().format('YY') + "-0001";
-                    } else document.getElementById('submit_2').value = "68001-1-" + moment().format('YY') + "-0001";
+                        } else document.getElementById('submit_2').value = "68001-1-" + dayjs().format('YY') + "-0001";
+                    } else document.getElementById('submit_2').value = "68001-1-" + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -213,17 +194,12 @@ class SUBMIT_MANAGE extends Component {
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${concecutive}`
                             document.getElementById('submit_2').value = new_id;
-                        } else document.getElementById('submit_2').value = "OA" + moment().format('YYYY') + "-0001";
-                    } else document.getElementById('submit_2').value = "OA" + moment().format('YYYY') + "-0001";
+                        } else document.getElementById('submit_2').value = "OA" + dayjs().format('YYYY') + "-0001";
+                    } else document.getElementById('submit_2').value = "OA" + dayjs().format('YYYY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -234,58 +210,57 @@ class SUBMIT_MANAGE extends Component {
                 <div className="row">
                     <div className="col-4">
                         <label >1. Número de radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="submit_1" required
+                            <input type="text" className="form-control" id="submit_1" required
                                 defaultValue={_CHILD.id_public} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col-5">
                         <label >2. Número de solicitud</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="submit_2"
+                            <input type="text" className="form-control" id="submit_2"
                                 defaultValue={_CHILD.id_related} />
-                            <button type="button" class="btn btn-warning shadow-none"
-                                onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</button>
+                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
                         </div>
-                        {this.state.verifyMSG}
+                        {verifyMSG}
                     </div>
                     <div className="col-3">
-                        {this.state.payment
+                        {payment
                             ? <>
                                 <label >2.1 Consecutivo Pago</label>
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-hashtag"></i>
+                                <div className="input-group mb-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="hashtag" size={16} />
                                     </span>
-                                    <input type="text" class="form-control" id="submit_21" required
+                                    <input type="text" className="form-control" id="submit_21" required
                                         defaultValue={_CHILD.id_related} />
                                 </div>
                             </>
                             : ""}
                     </div>
                 </div>
-                {!this.props.edit
+                {!edit
                     ? <div className="row text-end">
                         <div className="col-8">
-                            <div class="form-check my-3 px-5">
-                                <input class="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => this.setState({ payment: e.target.checked })} />
-                                <p class="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
+                            <div className="form-check my-3 px-5">
+                                <input className="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
+                                <p className="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
                             </div>
                         </div>
                         <div className="col-4">
-                            {this.state.payment
+                            {payment
                                 ? <>
-                                    <button type="button" class="btn btn-info shadow-none me-1"
-                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</button>
-                                    <button type="button" class="btn btn-info shadow-none"
-                                        onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</button>
+                                    <Button size="sm" className="me-1"
+                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
+                                    <Button size="sm"
+                                        onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
                                 </>
                                 : ""}
                         </div>
@@ -300,11 +275,11 @@ class SUBMIT_MANAGE extends Component {
                 <div className="row">
                     <div className="col-12">
                         <label >3.1 Tipo</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
-                            <input list="submit_type" class="form-control" id="submit_4"
+                            <input list="submit_type" className="form-control" id="submit_4"
                                 defaultValue={_CHILD.type} utocomplete="off" maxLength={250} />
                             <datalist id="submit_type">
                                 <option value="LICENCIA" />
@@ -324,18 +299,18 @@ class SUBMIT_MANAGE extends Component {
                 <div className="row">
                     <div className="col-6">
                         <label >3.2 Estado</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
+                            <input type="text" className="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label >3.3 Tipo de Radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className='form-select' id="submit_41" defaultValue={_CHILD.list_type}>
                                 <option value={1} selected={_CHILD.list_type == 1}>RADICACIÓN SOLICITUD</option>
@@ -367,24 +342,24 @@ class SUBMIT_MANAGE extends Component {
                 <div className="row">
                     <div className="col-6">
                         <label >4 Fecha y hora ingreso</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="submit_3" required
+                            <input type="date" max="2100-01-01" className="form-control" id="submit_3" required
                                 defaultValue={_CHILD.date} />
-                            <input type="time" class="form-control" id="submit_32"
+                            <input type="time" className="form-control" id="submit_32"
                                 defaultValue={_CHILD.time} />
                         </div>
                     </div>
 
                     <div className="col-6">
                         <label >5. Propietarios</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="submit_5" maxLength={250}
+                            <input type="text" className="form-control" id="submit_5" maxLength={250}
                                 defaultValue={_CHILD.owner} />
                         </div>
                     </div>
@@ -393,31 +368,31 @@ class SUBMIT_MANAGE extends Component {
                 <div className="row">
                     <div className="col-4">
                         <label >7. Funcionario que recibe</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="submit_7" disabled
+                            <input type="text" className="form-control" id="submit_7" disabled
                                 defaultValue={_CHILD.worker_reciever} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label >8. Persona que entrega</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="submit_8" maxLength={250}
+                            <input type="text" className="form-control" id="submit_8" maxLength={250}
                                 defaultValue={_CHILD.name_retriever} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label >8.1 C.C. Persona</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="submit_81" maxLength={250}
+                            <input type="text" className="form-control" id="submit_81" maxLength={250}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
                                 defaultValue={_CHILD.id_number_retriever} />
                         </div>
@@ -427,7 +402,7 @@ class SUBMIT_MANAGE extends Component {
                 <div className="row mt-2">
                     <div className="col-12">
                         <label >9. Observaciones y detalles (Maximo 2000 Caracteres)</label>
-                        <textarea class="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
+                        <textarea className="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
                             defaultValue={_CHILD.details}></textarea>
                     </div>
                 </div>
@@ -462,12 +437,7 @@ class SUBMIT_MANAGE extends Component {
             let id_public = document.getElementById("submit_1").value;
             formData.set('id_public', id_public);
 
-            if (false) return MySwal.fire({
-                title: "ERROR DE DUPLICACIÓN",
-                text: "(1. Número de radicación ) y (2. Número de Solicitud)  deben ser consecutivos diferentes",
-                icon: 'error',
-                confirmButtonText: swaMsg.text_btn,
-            });
+            if (false) return swalError({ title: "ERROR DE DUPLICACIÓN", text: "(1. Número de radicación ) y (2. Número de Solicitud)  deben ser consecutivos diferentes" });
 
             let date = document.getElementById("submit_3").value;
             if (date) formData.set('date', date);
@@ -491,12 +461,7 @@ class SUBMIT_MANAGE extends Component {
         let manage_submit = (id_public) => {
             let _CHILD = GET_SUBMIT();
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 formData.set('new_id', document.getElementById("submit_1").value);
                 formData.set('prev_id', _CHILD.id_public);
@@ -504,79 +469,37 @@ class SUBMIT_MANAGE extends Component {
                 SubmitService.update(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshList(currentItem.id);
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            propRefreshList(currentItem.id);
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACIÓN", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 SubmitService.create(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshList();
-                            this.props.closeModal();
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            propRefreshList();
+                            closeModal();
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACIÓN", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -585,16 +508,16 @@ class SUBMIT_MANAGE extends Component {
             <div className="Nomenclature_new container">
                 <>
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                            <label className="app-p lead fw-normal text-uppercase text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} ENTRADA</label>
+                        <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                            <label className="app-p lead fw-normal text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} ENTRADA</label>
                         </legend>
                         <form id="form_manage_submit" onSubmit={save_submit}>
                             {COMPONENT_NEW()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
                                     {currentItem
-                                        ? <button className="btn btn-success my-3"><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                                        : <button className="btn btn-success my-3"><i class="fas fa-plus-circle"></i> CREAR </button>}
+                                        ? <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                                        : <Button size="sm" className="my-3"><Icon name="plus-circle" size={16} /> CREAR </Button>}
 
                                 </div>
                             </div>
@@ -603,25 +526,25 @@ class SUBMIT_MANAGE extends Component {
                     {currentItem
                         ? <>
                             <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-uppercase text-light">LISTA DE DOCUMENTOS</label>
+                                <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                                    <label className="app-p lead fw-normal text-light">LISTA DE DOCUMENTOS</label>
                                 </legend>
 
                                 <SUBMIT_LIST
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
-                                    refreshList={this.refreshItem} />
+                                    refreshList={refreshItem} />
 
                             </fieldset>
                             <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-uppercase text-light">DOCUMENTO</label>
+                                <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                                    <label className="app-p lead fw-normal text-light">DOCUMENTO</label>
                                 </legend>
                                 <SUBMIT_ANEX
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
-                                    refreshList={this.refreshList}
-                                    refreshItem={this.refreshItem}
+                                    refreshList={refreshList}
+                                    refreshItem={refreshItem}
                                 />
                             </fieldset>
                         </>
@@ -629,7 +552,6 @@ class SUBMIT_MANAGE extends Component {
                 </>
             </div >
         );
-    }
 }
 
 export default SUBMIT_MANAGE;

@@ -1,15 +1,8 @@
-import React, { Component } from 'react';
 import JSONDATLIST from '../../../../components/jsons/fun6DocsList.json'
 
-class FUN6DATALIST extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
+function FUN6DATALIST() {
 
-        let _SETDATALISTOPTIONS = () => {
+    let _SETDATALISTOPTIONS = () => {
             let _COMPONENT = [];
             Object.entries(JSONDATLIST).forEach(([key, value]) => {
                 // FIX: Added key prop for list items
@@ -22,7 +15,6 @@ class FUN6DATALIST extends Component {
             {_SETDATALISTOPTIONS()}
         </datalist>
         );
-    }
 }
 
 export default FUN6DATALIST;

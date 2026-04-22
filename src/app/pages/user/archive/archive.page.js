@@ -1,75 +1,30 @@
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
-import { Tag, TagGroup } from 'rsuite';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Icon } from '@/components/icon';
+import { useEffect, useState } from 'react';
+const TagGroup = ({ children }) => <span className="flex flex-wrap gap-1">{children}</span>;
+const Tag = ({ color, children }) => (
+  <Badge variant={color === 'blue' ? 'secondary' : 'default'} className="text-[0.6875rem]">
+    {children}
+  </Badge>
+);
 
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import ARCHIVE_MANAGE from './archive_manage.component';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import ARCHIVE_X_FUN from './archive_x_fun.component';
 import { getJSON, getJSONFull, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import { nomens } from '../../../components/jsons/vars';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
-const customStylesForModal = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        zIndex: 2,
-    },
-    content: {
-        position: 'absolute',
-        top: '10%',
-        left: '28%',
-        right: '28%',
-        bottom: '10%',
-        border: '1px solid #ccc',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        borderRadius: '4px',
-        outline: 'none',
-        padding: '20px',
-        marginRight: 'auto',
-
-    }
-};
-const customStylesForModal2 = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        zIndex: 2,
-    },
-    content: {
-        position: 'absolute',
-        top: '10%',
-        left: '28%',
-        right: '28%',
-        bottom: '%',
-        border: '1px solid #ccc',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        borderRadius: '4px',
-        outline: 'none',
-        padding: '20px',
-        marginRight: 'auto',
-
-    }
-};
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const customStylesForModal = {};
+const customStylesForModal2 = {};
 const pptsLink = "https://curaduria1bucaramanga.com/public_docs/OTHERS/ARCHIVISTICA.pptx"
 export default function ARCHIVE(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
@@ -122,62 +77,42 @@ export default function ARCHIVE(props) {
     // ***************************  JXS *********************** //
     let _HEADER_COMPONENET = () => {
         return <>
-            <div className="col-12 d-flex justify-content-start p-0">
-                <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                    <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u12}</label></MDBBreadcrumbItem>
-                </MDBBreadcrumb>
-            </div>
-            <div className="row my-4 d-flex justify-content-center">
-                <div className="col-lg-11 col-md-12">
-                    <h1 className="text-center my-4">ARCHIVO</h1>
-                    <hr />
-                </div>
+            <div>
+                <h1 className="text-xl font-bold text-foreground">Archivo</h1>
+                <p className="text-sm text-muted-foreground mt-1">Gestión de cajas y expedientes archivados</p>
             </div>
         </>
     }
 
     let _BTNS_COMPONENT = () => {
         return <>
-            <div className='row'>
-                <div className='col-2'>
-                    {window.user.roleId != 1 && window.user.roleId != 3 ? '' : <MDBBtn color='success' onClick={() => setModal(!modal)}><i class="fas fa-plus-circle"></i> NUEVA CAJA</MDBBtn>}
+            <div className="flex flex-wrap items-center gap-3">
+                <div>
+                    {window.user.roleId != 1 && window.user.roleId != 3 ? '' : <Button onClick={() => setModal(!modal)}><Icon name="FolderPlus" size={16} /> Nueva Caja</Button>}
                 </div>
-                <div className='col'>
-                    <div class="row">
-                        <div className='col px-0'>
-                            <div class="input-group row">
-                                <select class="form-select col-2" id="search_param" style={{ height: '35px' }}>
-                                    <option value="box">Nr Caja</option>
-                                    <option value="id_public">Nr Radicado</option>
-                                    <option value="exp_id">Nr Resolución</option>
-                                    <option value="date">Fecha expedición</option>
-                                </select>
-                                <input type="text" class="form-control col" id="search_text" placeholder="Buscar..."></input>
-                                <MDBBtn color='secondary' className='col-2' onClick={() => filter_list()} onKeyPress={(e) => e.key === 'Enter' ? filter_list() : console.log(e)}><i class="fas fa-search"></i> BUSCAR</MDBBtn>
-                            </div>
-                        </div>
+                <div className="flex-1">
+                    <div className="input-group">
+                        <select className="form-select col-2" id="search_param" style={{ height: '35px' }}>
+                            <option value="box">Nr Caja</option>
+                            <option value="id_public">Nr Radicado</option>
+                            <option value="exp_id">Nr Resolución</option>
+                            <option value="date">Fecha expedición</option>
+                        </select>
+                        <input type="text" className="form-control col" id="search_text" placeholder="Buscar..."></input>
+                        <Button variant="secondary" onClick={() => filter_list()} onKeyPress={(e) => e.key === 'Enter' ? filter_list() : console.log(e)}><Icon name="Search" size={16} /> Buscar</Button>
                     </div>
                 </div>
-                <div className='col-2 text-end'>
-                    <MDBBtn color='primary' tag='a' href={pptsLink} target="_blank" ><i class="fas fa-cloud-download-alt"></i> INFORMACIÓN</MDBBtn>
+                <div>
+                    <Button variant="outline" asChild><a href={pptsLink} target="_blank"><Icon name="FileText" size={16} /> Información</a></Button>
                 </div>
             </div>
-
-
-
         </>
     }
 
     // ***************************  DATATABLES *********************** //
     const columns_a = [
         {
-            name: <label className="text-center">Estante</label>,
+            name: 'Estante',
             selector: row => row.column,
             sortable: true,
             filterable: true,
@@ -187,7 +122,7 @@ export default function ARCHIVE(props) {
 
         },
         {
-            name: <label className="text-center">Entrepaño</label>,
+            name: 'Entrepaño',
             selector: row => row.row,
             sortable: true,
             filterable: true,
@@ -197,7 +132,7 @@ export default function ARCHIVE(props) {
 
         },
         {
-            name: <label className="text-center">Caja N°</label>,
+            name: 'Caja N°',
             selector: row => row.box,
             sortable: true,
             filterable: true,
@@ -207,7 +142,7 @@ export default function ARCHIVE(props) {
 
         },
         {
-            name: <label className="text-center">Contenido</label>,
+            name: 'Contenido',
             center: true,
             cell: row => <TagGroup>
                 {row.process_x_archives.map(it => {
@@ -230,54 +165,53 @@ export default function ARCHIVE(props) {
             </TagGroup>
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'Acción',
             button: true,
             center: true,
             omit: window.user.roleId != 1 && window.user.roleId != 3,
             maxWidth: '120px',
-            cell: row => <>
-                <MDBTooltip title='Modificar Items en caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                    <MDBBtn color='primary' size='sm' className='px-1 py-1' onClick={() => { setItem(row); setModalAdd(!modalAdd) }}><i class="fas fa-file-import"></i></MDBBtn>
-                </MDBTooltip>
-                <MDBTooltip title='Modificar caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                    <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => { setItem(row); setModale(!modal) }}><i class="far fa-edit"></i></MDBBtn>
-                </MDBTooltip>
-                <MDBTooltip title='Eliminar caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                    <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => { delete_arch(row.id); }}><i class="far fa-trash-alt"></i></MDBBtn>
-                </MDBTooltip>
-            </>,
+            cell: row => <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="h-7 w-7" title="Modificar Items" onClick={() => { setItem(row); setModalAdd(!modalAdd) }}>
+                    <Icon name="FileInput" size={14} />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-7 w-7" title="Modificar caja" onClick={() => { setItem(row); setModale(!modal) }}>
+                    <Icon name="Pencil" size={14} />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" title="Eliminar caja" onClick={() => { delete_arch(row.id); }}>
+                    <Icon name="Trash2" size={14} />
+                </Button>
+            </div>,
         },
     ]
 
     const ExpandedComponent = ({ data }) => {
         let _x = data.process_x_archives;
         return <>
-            {_x.sort((p, n) => Number(p.folder) - Number(n.folder)).map(it => {
+            {[..._x].sort((p, n) => Number(p.folder) - Number(n.folder)).map(it => {
                 let json = getJSONFull(it.json);
-                return <div className='row border'>
-                    <div className='col'>
-                        <i class="fas fa-hashtag"></i> <label className='fw-bold'>{json.id_public}</label>
+                return <div key={it.id} className='grid grid-cols-12 gap-2 items-center py-1.5 px-2 border-b border-border/40 text-sm'>
+                    <div className='col-span-3'>
+                        <Icon name="Hash" size={13} /> <span className='font-semibold'>{json.id_public}</span>
                     </div>
-                    <div className='col-2'>
-                        <i class="fas fa-file-signature"></i> Resolución <label className='fw-bold'>{json.exp_id}</label>
+                    <div className='col-span-2'>
+                        <Icon name="FileSignature" size={13} /> Res. <span className='font-semibold'>{json.exp_id}</span>
                     </div>
-                    <div className='col-2'>
-                        <i class="far fa-folder"></i> Carpeta: <label className='fw-bold'>{it.folder}</label>
+                    <div className='col-span-2'>
+                        <Icon name="Folder" size={13} /> Carpeta: <span className='font-semibold'>{it.folder}</span>
                     </div>
-                    <div className='col-2'>
-                        <i class="far fa-file-alt"></i> Folios: <label className='fw-bold'>{it.pages}</label>
+                    <div className='col-span-2'>
+                        <Icon name="FileText" size={13} /> Folios: <span className='font-semibold'>{it.pages}</span>
                     </div>
-                    <div className='col'>
-                        <h5><i class="far fa-calendar-alt"></i> Fechas: <label className='fw-bold'>{(json.clocks_start).slice(-8)} - {(json.clocks_end).slice(-8)}</label></h5>
+                    <div className='col-span-2 text-xs tabular-nums'>
+                        <Icon name="Calendar" size={13} /> {(json.clocks_start).slice(-8)} — {(json.clocks_end).slice(-8)}
                     </div>
-                    <div className='col-1'>
-                        <MDBTooltip title='Ver documentos item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='info' size='sm' className='px-1 py-1' onClick={() => { setAnex(json); setModal_d(!modal_d) }}><i class="far fa-folder-open"></i></MDBBtn>
-                        </MDBTooltip>
+                    <div className='col-span-1 text-right'>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" title="Ver documentos" onClick={() => { setAnex(json); setModal_d(!modal_d) }}>
+                            <Icon name="FolderOpen" size={14} />
+                        </Button>
                     </div>
                 </div>
             })}
-
         </>
     };
 
@@ -294,7 +228,7 @@ export default function ARCHIVE(props) {
             data={LIST_A}
             highlightOnHover
             dense
-            title={<>LISTADO DE CAJAS  <i class="fas fa-archive"></i></>}
+            title={<>LISTADO DE CAJAS  <Icon name="archive" size={16} /></>}
 
             progressPending={!load}
             progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
@@ -320,86 +254,53 @@ export default function ARCHIVE(props) {
     }
 
     function delete_arch(id) {
-        MySwal.fire({
-            title: "ELIMINAR ESTE ITEM",
-            text: "¿Esta seguro de eliminar de forma permanente este item?",
-            icon: 'question',
-            confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 SERVICE_ARCHIVE.delete(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             loadLists();
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         });
     }
     return (
-        <>
+        <div className="space-y-6">
             {_HEADER_COMPONENET()}
-            <div className='row my-3 d-flex justify-content-center'>
-                <div className='col-10'>
-                    {_BTNS_COMPONENT()}
-                </div>
+            <div>
+                {_BTNS_COMPONENT()}
             </div>
-            <div className='row my-3 d-flex justify-content-center'>
-                <div className='col-10'>
-                    {_GLOBAL_ID == 'cb1' ? <h5 className='fw-bold'>NOTA: A partir del 2022, los OA proceden nombrarse VR</h5> : ''}
-                    {_ARCHIVE_LIST_COMPONENT()}
-                </div>
+            <div>
+                {_GLOBAL_ID == 'cb1' ? <h5 className='fw-bold'>NOTA: A partir del 2022, los OA proceden nombrarse VR</h5> : ''}
+                {_ARCHIVE_LIST_COMPONENT()}
             </div>
 
 
             <Modal contentLabel="NEW BOX"
                 isOpen={modal}
-                style={customStylesForModal2}
                 ariaHideApp={false}
             >
-                <div className="my-2 d-flex justify-content-between ">
-                    <div className='row'>
-                        <div class="input-group">
-                            <label className=''><i class="far fa-folder-open"></i> NUEVA CAJA DE ARCHIVO</label>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="FolderPlus" size={14} className="text-primary" />
                         </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Nueva Caja de Archivo</h2>
                     </div>
-
-
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
+                    <button type="button" onClick={() => setModal(!modal)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
-                <hr className='bg-success' style={{ height: '4px' }} />
 
                 <ARCHIVE_MANAGE
                     translation={translation}
@@ -409,29 +310,26 @@ export default function ARCHIVE(props) {
                     CLOSE={() => { setModal(!modal); loadLists() }}
                 />
 
-                <hr className='bg-success' style={{ height: '4px' }} />
-
-                <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModal(!modal)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
 
             <Modal contentLabel="EDIT BOX"
                 isOpen={modale}
-                style={customStylesForModal2}
                 ariaHideApp={false}
             >
-                <div className="my-2 d-flex justify-content-between">
-                    <div className='row'>
-                        <div class="input-group">
-                            <label className=''><i class="far fa-folder-open"></i> EDITAR CAJA: {currentItem ? currentItem.box : ''}</label>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="FolderOpen" size={14} className="text-primary" />
                         </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Editar Caja: {currentItem ? currentItem.box : ''}</h2>
                     </div>
-
-
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModale(!modale)}></MDBBtn>
+                    <button type="button" onClick={() => setModale(!modale)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
-                <hr className='bg-secondary' style={{ height: '4px' }} />
 
                 <ARCHIVE_MANAGE
                     translation={translation}
@@ -441,29 +339,26 @@ export default function ARCHIVE(props) {
                     CLOSE={() => { setModale(!modale); loadLists() }}
                 />
 
-                <hr className='bg-secondary' style={{ height: '4px' }} />
-                <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModale(!modale)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModale(!modale)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
 
             <Modal contentLabel="ADD TO BOX"
                 isOpen={modalAdd}
-                style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-2 d-flex justify-content-between ">
-                    <div className='row'>
-                        <div class="input-group">
-                            <label className=''><i class="fas fa-archive"></i> MODIFICAR ITEMS DE CAJA: {currentItem ? currentItem.box : ''}</label>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="Archive" size={14} className="text-primary" />
                         </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Modificar Items: {currentItem ? currentItem.box : ''}</h2>
                     </div>
-
-
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModalAdd(!modalAdd)}></MDBBtn>
+                    <button type="button" onClick={() => setModalAdd(!modalAdd)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
-                <hr className='bg-primary' style={{ height: '4px' }} />
-
 
                 <ARCHIVE_X_FUN
                     translation={translation}
@@ -473,23 +368,26 @@ export default function ARCHIVE(props) {
                     UPDATE={() => { loadLists() }}
                 />
 
-                <hr className='bg-primary' style={{ height: '4px' }} />
-
-                <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModalAdd(!modalAdd)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModalAdd(!modalAdd)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
 
             <Modal contentLabel="FUN DOC CONTROL"
                 isOpen={modal_d}
-                style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label><i class="fas fa-archive"></i> VISTA DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal_d(!modal_d)}></MDBBtn>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="FileText" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Vista Documental — Rad. {anex.id_public}</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal_d(!modal_d)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
-                <hr className='bg-info' style={{ height: '4px' }} />
 
                 <FUN_6_VIEW
                     translation={translation}
@@ -501,13 +399,10 @@ export default function ARCHIVE(props) {
                     title={'Documentos giditalizados'}
                     readOnly
                 />
-                <hr className='bg-info' style={{ height: '4px' }} />
-                <div className="text-end">
-                    <MDBBtn color='info' size='sm' onClick={() => setModal_d(!modal_d)}>
-                        <label ><i class="fas fa-times-circle"></i> CERRAR</label>
-                    </MDBBtn>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModal_d(!modal_d)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
-        </>
+        </div>
     );
 }

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
 import SubmitService from '../../../services/submit.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -11,13 +11,13 @@ import FUN_SERVICE from '../../../services/fun.service';
 import '../../../../styles/docs-expediente.css';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_ACT_DESIST(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -286,17 +286,10 @@ const restoreDocs = useCallback(() => {
   const tightInput = { width: "100%", height: 28, padding: "2px 6px", lineHeight: 1.1, borderRadius: 4 };
   const tightChk = { transform: "scale(0.95)", cursor: "pointer" };
   const tableTight = { fontSize: "0.86rem" };
-  const sortIcon = (active, dir) => <i className={`ms-1 fas ${!active ? "fa-sort" : dir === "asc" ? "fa-sort-up" : "fa-sort-down"}`} />;
+  const sortIcon = (active, dir) => <Icon name={!active ? "sort" : dir === "asc" ? "sort-up" : "sort-down"} size={14} className="ms-1" />;
 
   const confirmRestore = (msg, action) => {
-    MySwal.fire({
-      title: msg.title,
-      text: msg.text,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: msg.confirm,
-      cancelButtonText: "Cancelar",
-    }).then((res) => {
+    swalConfirm({ title: msg.title, text: msg.text, icon: 'warning', confirmButtonText: msg.confirm }).then((res) => {
       if (res.isConfirmed) action();
     });
   };
@@ -436,12 +429,7 @@ const restoreDocs = useCallback(() => {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente." });
             });
 
     }
@@ -574,27 +562,21 @@ const restoreDocs = useCallback(() => {
                             <span className="actions">
                                 {listDocsOpen ? (
                                 <>
-                                    <MDBBtn
-                                    size="sm"
-                                    color={showHiddenLD ? "info" : "light"}
+                                    <button type="button"
+                                    className={`btn btn-sm d-inline-flex align-items-center gap-2 me-2 btn-${showHiddenLD ? "info" : "light"}`}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setShowHiddenLD((v) => !v);
                                     }}
                                     title={showHiddenLD ? "Ocultar ocultos" : "Mostrar ocultos"}
-                                    className="d-inline-flex align-items-center gap-2 me-2"
                                     >
-                                    <i className={`fas ${showHiddenLD ? "fa-eye-slash" : "fa-eye"}`} />
+                                    <Icon name={showHiddenLD ? "eye-slash" : "eye"} size={16} />
                                     <span className="d-none d-sm-inline">
                                         {showHiddenLD ? "Ocultar ocultos" : "Mostrar ocultos"}
                                     </span>
-                                    </MDBBtn>
+                                    </button>
 
-                                    <MDBBtn
-                                    size="sm"
-                                    color="warning"
-                                    outline
-                                    onClick={(e) => {
+                                    <Button variant="outline" size="sm" className="d-inline-flex align-items-center gap-2 me-2" onClick={(e) => {
                                         e.stopPropagation();
                                         confirmRestore(
                                         {
@@ -606,16 +588,12 @@ const restoreDocs = useCallback(() => {
                                         );
                                     }}
                                     title="Restaurar lista inicial"
-                                    className="d-inline-flex align-items-center gap-2 me-2"
                                     >
-                                    <i className="fas fa-undo" />
+                                    <Icon name="undo" size={16} />
                                     <span className="d-none d-sm-inline">Restaurar</span>
-                                    </MDBBtn>
+                                    </Button>
 
-                                    <MDBBtn
-                                    size="sm"
-                                    color="primary"
-                                    onClick={(e) => {
+                                    <Button size="sm" className="d-inline-flex align-items-center gap-2" onClick={(e) => {
                                         e.stopPropagation();
                                         const uid = `new_${Date.now()}`;
                                         setListDocuments((prev) => [
@@ -635,17 +613,13 @@ const restoreDocs = useCallback(() => {
                                         ]);
                                     }}
                                     title="Agregar documento"
-                                    className="d-inline-flex align-items-center gap-2"
                                     >
-                                    <i className="fas fa-plus" />
+                                    <Icon name="plus" size={16} />
                                     <span className="d-none d-sm-inline">Agregar</span>
-                                    </MDBBtn>
+                                    </Button>
                                 </>
                                 ) : null}
-                                <i
-                                className={`fas fa-chevron-${listDocsOpen ? "up" : "down"} caret`}
-                                aria-hidden="true"
-                                />
+                                <Icon name={listDocsOpen ? "ChevronUp" : "ChevronDown"} size={14} />
                             </span>
                             </button>
 
@@ -660,7 +634,7 @@ const restoreDocs = useCallback(() => {
                             >
                                 <table className="table table-sm table-hover table-bordered align-middle mb-0">
                                 <thead
-                                    className="bg-light text-uppercase small"
+                                    className="bg-light small"
                                     style={{ position: "sticky", top: 0, zIndex: 1 }}
                                 >
                                     <tr>
@@ -852,7 +826,7 @@ const restoreDocs = useCallback(() => {
                                 </tbody>
                                 </table>
                             </div>
-                            <div className="card-footer bg-white py-2 small text-muted">
+                            <div className="card-footer bg-body-secondary py-2 small text-muted">
                                 Usa el check (columna derecha) para mostrar/ocultar. Los demás
                                 cambios se guardarán al confirmar.
                             </div>
@@ -879,31 +853,21 @@ const restoreDocs = useCallback(() => {
                                 <span className="actions">
                                 {docsOpen ? (
                                     <>
-                                    <MDBBtn
-                                        size="sm"
-                                        color={showHiddenDocs ? "info" : "light"}
+                                    <button type="button"
+                                        className={`btn btn-sm d-inline-flex align-items-center gap-2 me-2 btn-${showHiddenDocs ? "info" : "light"}`}
                                         onClick={(e) => {
                                         e.stopPropagation();
                                         setShowHiddenDocs((v) => !v);
                                         }}
                                         title={showHiddenDocs ? "Ocultar ocultos" : "Mostrar ocultos"}
-                                        className="d-inline-flex align-items-center gap-2 me-2"
                                     >
-                                        <i
-                                        className={`fas ${
-                                            showHiddenDocs ? "fa-eye-slash" : "fa-eye"
-                                        }`}
-                                        />
+                                        <Icon name={showHiddenDocs ? "EyeOff" : "Eye"} size={14} />
                                         <span className="d-none d-sm-inline">
                                         {showHiddenDocs ? "Ocultar ocultos" : "Mostrar ocultos"}
                                         </span>
-                                    </MDBBtn>
+                                    </button>
 
-                                    <MDBBtn
-                                        size="sm"
-                                        color="warning"
-                                        outline
-                                        onClick={(e) => {
+                                    <Button variant="outline" size="sm" className="d-inline-flex align-items-center gap-2 me-2" onClick={(e) => {
                                         e.stopPropagation();
                                         confirmRestore(
                                             {
@@ -915,29 +879,20 @@ const restoreDocs = useCallback(() => {
                                         );
                                         }}
                                         title="Restaurar documentos iniciales"
-                                        className="d-inline-flex align-items-center gap-2 me-2"
                                     >
-                                        <i className="fas fa-undo" />
+                                        <Icon name="undo" size={16} />
                                         <span className="d-none d-sm-inline">Restaurar</span>
-                                    </MDBBtn>
+                                    </Button>
 
-                                    <MDBBtn
-                                        size="sm"
-                                        color="primary"
-                                        onClick={addNewDoc}
-                                        title="Agregar documento"
-                                        className="d-inline-flex align-items-center gap-2"
-                                    >
-                                        <i className="fas fa-plus" />
+                                    <Button size="sm" className="d-inline-flex align-items-center gap-2" onClick={addNewDoc}
+                                        title="Agregar documento">
+                                        <Icon name="plus" size={16} />
                                         <span className="d-none d-sm-inline">Agregar</span>
-                                    </MDBBtn>
+                                    </Button>
                                     </>
                                 ) : null}
 
-                                <i
-                                    className={`fas fa-chevron-${docsOpen ? "up" : "down"} caret`}
-                                    aria-hidden="true"
-                                />
+                                <Icon name={docsOpen ? "ChevronUp" : "ChevronDown"} size={14} />
                                 </span>
                             </button>
 
@@ -952,7 +907,7 @@ const restoreDocs = useCallback(() => {
                                 >
                                 <table className="table table-sm table-hover table-bordered align-middle mb-0">
                                     <thead
-                                    className="bg-light text-uppercase small"
+                                    className="bg-light small"
                                     style={{ position: "sticky", top: 0, zIndex: 1 }}
                                     >
                                     <tr>
@@ -1107,7 +1062,7 @@ const restoreDocs = useCallback(() => {
                                 </table>
                                 </div>
 
-                                <div className="card-footer bg-white py-2 small text-muted">
+                                <div className="card-footer bg-body-secondary py-2 small text-muted">
                                 Usa el check (columna derecha) para mostrar/ocultar. Los cambios se
                                 guardan al confirmar en la pantalla principal.
                                 </div>
@@ -1123,7 +1078,7 @@ const restoreDocs = useCallback(() => {
                 { canSave ?
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3" onClick={save_exp_res}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                            <Button size="sm" className="my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                         </div>
                     </div>
                     : ''}
@@ -1260,14 +1215,14 @@ let _COMPONENT_DOC_RES_PDF = () => {
     <hr />
     <div className="row text-center">
         <div className="col">
-            <MDBBtn className="btn btn-success my-3" onClick={save_exp_res}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+            <Button size="sm" className="my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
         </div>
         <div className="col">
-            {process.env.REACT_APP_GLOBAL_ID === 'cb1' && (
-                <MDBBtn className="btn my-3" color="primary" onClick={() => pdf_gen_res(true)}>
-                    <i className="fas fa-edit me-2" />
+            {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
+                <Button size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
+                    <Icon name="edit" size={16} className="me-2" />
                     Editar PDF
-                </MDBBtn>
+                </Button>
             )}
         </div>
     </div>
@@ -1288,7 +1243,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
             <div className="row">
                 <div className="col">
                     <label className="mt-2">ACTO</label>
-                    <div class="input-group">
+                    <div className="input-group">
                         <select className="form-select" id="expedition_doc_res_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model(e.target.value)}}>
                             {models.map(model => {
                                 if (model.omit) return ''
@@ -1566,12 +1521,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
         formData.set('record_eje', document.getElementById('exp_pdf_reso_record_version').value);
         formData.set('id', currentItem.id);
         
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         EXPEDITION_SERVICE.gen_doc_res(formData)
             .then(response => {
@@ -1584,25 +1534,15 @@ let _COMPONENT_DOC_RES_PDF = () => {
                             internal_documents: documents,
                         };
                         setResDocData(data); 
-                        MySwal.close();
+                        swalClose();
                     }
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }
@@ -1941,50 +1881,24 @@ let _COMPONENT_DOC_RES_PDF = () => {
         manage_exp();
     }
     let manage_exp = () => {
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         EXPEDITION_SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 
                     props.requestUpdateRecord(currentItem.id);
                     props.requestUpdate(currentItem.id);
                 } else if (response.data === 'ERROR_DUPLICATE') {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     return (
@@ -1997,7 +1911,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
                
 
                 <div>
-                    {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
+                    {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
                         <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_des || 'delete'}/>
                     )}
                 </div>  

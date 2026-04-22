@@ -1,21 +1,23 @@
 import './dashBoardCardStyles.css';
 import { Link } from "react-router-dom";
+import { Icon } from '@/components/icon';
 
 export function DashBoardCard({ title, image, link }) {
     return (
         <Link to={link} style={{
             textDecoration: 'none',
-            color: 'royalblue',
+            color: 'var(--bs-primary)',
         }}>
-            <button class="dashboard-card">
-                <div class="image-container">
-                    <i class={image} />
+            <button className="dashboard-card">
+                <div className="image-container">
+                    {/* Use Icon bridge for FA/Lucide compatibility */}
+                    <Icon name={image} />
                 </div>
-                <div class="title-container">
-                    <h3 >{title}</h3>
+                <div className="title-container">
+                    <h3>{title}</h3>
                 </div>
             </button>
-        </Link >
+        </Link>
 
 
 
