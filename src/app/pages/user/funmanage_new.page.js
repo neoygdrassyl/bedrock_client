@@ -6,17 +6,11 @@ import { FunmanageDataTable } from './fun_forms/components/FunmanageDataTable';
 import { FunmanagePhaseChart } from './fun_forms/components/FunmanagePhaseChart';
 import { FunExpedienteDetail } from './fun_forms/components/FunExpedienteDetail';
 import { FunExpedienteWorkspace } from './fun_forms/components/FunExpedienteWorkspace';
+import { FilterPanel } from './fun_forms/components/FilterPanel';
 import { useDashboard } from './fun_forms/hooks/useDashboard';
 import { useAlarmConfig } from './fun_forms/hooks/useAlarmConfig';
 import { useBookmarks } from './fun_forms/hooks/useBookmarks';
 import { DEFAULT_FILTERS, mergeFilters, hasActiveFilters } from './fun_forms/utils/filters';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 
@@ -63,13 +57,14 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
   const handleKPIFilterChange = useCallback(({ status, phase, desistido, causal, key }) => {
     setKpiActiveFilterKey((prev) => {
       if (prev === key) {
-        setFilters((f) => mergeFilters(f, { status: null, fase: null, desistido: null, causal: null }));
+        setFilters((f) => mergeFilters(f, { status: null, fase: null, phase: null, desistido: null, causal: null }));
         return null;
       }
       setFilters((f) =>
         mergeFilters(f, {
           status: status || null,
-          fase: phase || null,
+          phase: phase || null,
+          fase: null,
           desistido: desistido || null,
           causal: causal || null,
         })
@@ -150,111 +145,12 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
         </div>
 
         <div className="col-12 px-1" data-testid="dashboard-section">
-          <div
-            className="rounded border px-3 py-2 mb-4 d-flex flex-wrap align-items-center gap-3"
-            style={{ backgroundColor: '#f8fafc', borderColor: '#e2e8f0' }}
-            data-testid="filter-bar"
-          >
-            <span className="text-sm font-semibold text-muted-foreground text-nowrap">
-              <Icon name="filter" size={16} className="me-1" /> Filtros:
-            </span>
-
-            <Select
-              value={filters.fase || '__all__'}
-              onValueChange={(val) => {
-                setFilters((f) => mergeFilters(f, { fase: val === '__all__' ? null : val, desistido: null, causal: null }));
-                setKpiActiveFilterKey(null);
-              }}
-            >
-              <SelectTrigger className="w-48" data-testid="filter-phase">
-                <SelectValue placeholder="Fase" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">Todas las fases</SelectItem>
-                <SelectItem value="RAD">Radicación LDF</SelectItem>
-                <SelectItem value="EST">Estudio y Observaciones</SelectItem>
-                <SelectItem value="NOT_OBS">Notificación Observaciones</SelectItem>
-                <SelectItem value="CORR">Correcciones</SelectItem>
-                <SelectItem value="VIA">Revisión y Viabilidad</SelectItem>
-                <SelectItem value="NOT_VIA">Notificación Viabilidad</SelectItem>
-                <SelectItem value="PAG">Liquidación y Pagos</SelectItem>
-                <SelectItem value="RES">Generación de Resolución</SelectItem>
-                <SelectItem value="NOT_RES">Notificación Resolución</SelectItem>
-                <SelectItem value="EJEC">Ejecutoria y Recurso</SelectItem>
-                <SelectItem value="ENT">Entrega de Licencia</SelectItem>
-                <SelectItem value="DESIST_RES">Resolución Desistida</SelectItem>
-                <SelectItem value="DESIST_NOTIF">Notificación Desistimiento</SelectItem>
-                <SelectItem value="DESIST_EJEC">Ejecutoria Desistimiento</SelectItem>
-                <SelectItem value="DESIST_CERRADO">Cerrado por Desistimiento</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={filters.status || '__all__'}
-              onValueChange={(val) => {
-                setFilters((f) => mergeFilters(f, { status: val === '__all__' ? null : val, desistido: null, causal: null }));
-                setKpiActiveFilterKey(null);
-              }}
-            >
-              <SelectTrigger className="w-44" data-testid="filter-status">
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">Todos los estados</SelectItem>
-                <SelectItem value="EN_TERMINO">En Término</SelectItem>
-                <SelectItem value="PRONTO_A_VENCER">Pronto a Vencer</SelectItem>
-                <SelectItem value="ALERTA_VENCIMIENTO">Alerta Vencimiento</SelectItem>
-                <SelectItem value="VENCIDO">Vencido</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={filters.bookmarked === true ? 'only' : '__all__'}
-              onValueChange={(val) => {
-                setFilters((f) => mergeFilters(f, { bookmarked: val === 'only' ? true : null }));
-              }}
-            >
-              <SelectTrigger className="w-40" data-testid="filter-bookmarked">
-                <SelectValue placeholder="Marcados" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">Todos</SelectItem>
-                <SelectItem value="only">Solo marcados</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={filters.vecinosState || '__all__'}
-              onValueChange={(val) => {
-                setFilters((f) => mergeFilters(f, { vecinosState: val === '__all__' ? null : val }));
-              }}
-            >
-              <SelectTrigger className="w-44" data-testid="filter-vecinos">
-                <SelectValue placeholder="Vecinos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">Todos</SelectItem>
-                <SelectItem value="pendiente">Pendientes</SelectItem>
-                <SelectItem value="enviada">Enviada</SelectItem>
-                <SelectItem value="respondida">Respondida</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <label className="d-flex align-items-center gap-1 text-sm text-muted-foreground" data-testid="filter-cerrados">
-              <input
-                type="checkbox"
-                checked={!!filters.incluirCerrados}
-                onChange={(e) => setFilters((f) => mergeFilters(f, { incluirCerrados: e.target.checked }))}
-              />
-              Incluir cerrados
-            </label>
-
-            {hasActiveFilters(filters) && (
-              <Button variant="ghost" size="sm" onClick={clearAllFilters} data-testid="filter-clear">
-                <Icon name="times" size={16} className="me-1" /> Limpiar filtros
-              </Button>
-            )}
-          </div>
+          <FilterPanel 
+            filters={filters} 
+            setFilters={setFilters} 
+            clearAllFilters={clearAllFilters} 
+            setKpiActiveFilterKey={setKpiActiveFilterKey} 
+          />
 
           <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
             <Icon name="arrow-left" size={14} className="shrink-0" />
@@ -321,7 +217,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                   porFase={kpis?.por_fase}
                   chartData={chartData}
                   loading={loading}
-                  dashboardFilter={{ status: filters.status, fase: filters.fase, desistido: filters.desistido, causal: filters.causal }}
+                  dashboardFilter={{ status: filters.status, fase: filters.fase || filters.phase, desistido: filters.desistido, causal: filters.causal }}
                   onPhaseClick={(phase) => {
                     const LABEL_TO_ID = {
                       'Radicación LDF': 'RAD', 'Estudio y Observaciones': 'EST',
@@ -334,7 +230,12 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                       'Ejecutoria Desistimiento': 'DESIST_EJEC', 'Cerrado por Desistimiento': 'DESIST_CERRADO',
                     };
                     const faseId = LABEL_TO_ID[phase] || null;
-                    setFilters((f) => mergeFilters(f, { fase: f.fase === faseId ? null : faseId, desistido: null, causal: null }));
+                    setFilters((f) => mergeFilters(f, { 
+                      phase: f.phase === faseId ? null : faseId, 
+                      fase: null,
+                      desistido: null, 
+                      causal: null 
+                    }));
                     setKpiActiveFilterKey(null);
                   }}
                 />
