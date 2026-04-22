@@ -49,7 +49,7 @@ const ARCHIVE = lazy(() => import('./pages/user/archive/archive.page'));
 const DICTIONARY = lazy(() => import('./pages/user/dictionary.page'));
 const FUN_MANAGE = lazy(() => import('./pages/user/funmanage.page'));
 const FUN_MANAGE_NEW = lazy(() => import('./pages/user/funmanage_new.page'));
-const FUN_EXPEDIENTE_DETAIL = lazy(() => import('./pages/user/fun_forms/components/FunExpedienteDetail').then((mod) => ({ default: mod.FunExpedienteDetail })));
+const FUN_EXPEDIENTE_DETAIL = lazy(() => import('./pages/user/fun_forms/components/FunExpedienteFullscreen').then((mod) => ({ default: mod.FunExpedienteFullscreen })));
 const PROFESIONALS = lazy(() => import('./pages/user/profesionals/profesionals.page'));
 const GUIDE_USER = lazy(() => import('./pages/user/guide_user/guide_user.page'));
 const DEV_GUIDE = lazy(() => import('./pages/user/dev_guide/dev_guide.page'));
