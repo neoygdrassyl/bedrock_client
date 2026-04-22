@@ -6,6 +6,7 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
+import { MissingDataBadge } from './MissingDataBadge';
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 const STATUS_META = {
@@ -51,29 +52,39 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
       id: 'radicado',
       header: 'Radicado',
       accessorFn: row => row.radicado ?? '—',
-      cell: info => (
-        <span className="font-mono text-[0.78rem] font-semibold text-slate-700">
-          {info.getValue() ?? '—'}
-        </span>
-      ),
+      cell: info => {
+        const val = info.getValue();
+        if (!val || val === '—') return <MissingDataBadge reason="fecha_radicacion" />;
+        return (
+          <span className="font-mono text-[0.78rem] font-semibold text-slate-700">
+            {val}
+          </span>
+        );
+      },
     },
     {
       id: 'fase',
       header: 'Fase Actual',
       accessorFn: row => row.fase_label ?? '—',
-      cell: info => (
-        <span className="text-sm text-slate-600">{info.getValue()}</span>
-      ),
+      cell: info => {
+        const val = info.getValue();
+        if (!val || val === '—') return <MissingDataBadge reason="termino" />;
+        return <span className="text-sm text-slate-600">{val}</span>;
+      },
     },
     {
       id: 'categoria',
       header: 'Cat.',
       accessorFn: row => row.categoria ?? '—',
-      cell: info => (
-        <span className="inline-flex items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-xs w-7 h-7">
-          {info.getValue()}
-        </span>
-      ),
+      cell: info => {
+        const val = info.getValue();
+        if (!val || val === '—') return <MissingDataBadge reason="categoria" />;
+        return (
+          <span className="inline-flex items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-xs w-7 h-7">
+            {val}
+          </span>
+        );
+      },
     },
     {
       id: 'dias_habiles_usados',
@@ -134,7 +145,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark) {
       accessorFn: row => row.responsable ?? row.responsable_nombre ?? '—',
       cell: info => {
         const v = info.getValue();
-        if (!v || v === '—') return <span className="text-xs text-slate-400">—</span>;
+        if (!v || v === '—') return <MissingDataBadge reason="actor" />;
         return <span className="text-sm text-slate-600">{v}</span>;
       },
     },
