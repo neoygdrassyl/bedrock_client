@@ -165,7 +165,7 @@ function FUN_CHART_MACRO_GRANTT(props) {
         }
         items.map(row => {
             if (row.clock_payment) {
-                let _x = dateParser_dateDiff(row.clock_payment, dayjs().format('YYYY-MM-DD')) > 200 ? 200 : dateParser_dateDiff(row.clock_payment, dayjs().format('YYYY-MM-DD'))
+                let _x = dateParser_dateDiff(dayjs().format('YYYY-MM-DD'), row.clock_payment) > 200 ? 200 : dateParser_dateDiff(dayjs().format('YYYY-MM-DD'), row.clock_payment)
 
                 let _y = 0;
                 if (row.type == 'iii' && row.state > -100) _y += 1;
@@ -607,6 +607,7 @@ function FUN_CHART_MACRO_GRANTT(props) {
                                 <ScatterChart margin={{ left: 36, right: 10, top: 10, bottom: 30 }}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis type="number" dataKey="x" domain={[0, 200]}
+                                        allowDataOverflow={true}
                                         ticks={_tickValues}
                                         tickFormatter={v => v}
                                         style={{ fontSize: 12 }} />
