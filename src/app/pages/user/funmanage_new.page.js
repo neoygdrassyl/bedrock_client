@@ -14,6 +14,61 @@ import { DEFAULT_FILTERS, mergeFilters, hasActiveFilters } from './fun_forms/uti
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 
+export function normalizeResponsibleActor(responsable) {
+  const normalized = String(responsable || '').trim().toLowerCase();
+  if (normalized.includes('curad')) return 'cur';
+  if (normalized.includes('sol')) return 'sol';
+  return 'cur';
+}
+
+function getExpedienteId(row) {
+  return row?.fun0Id ?? row?.fun_0_id ?? row?.id ?? null;
+}
+
+function createBookmarkState(state = {}) {
+  const personal = Boolean(state.personal);
+  const team = Boolean(state.team);
+
+  return {
+    personal,
+    team,
+    any: personal || team,
+    mode: personal && team ? 'both' : personal ? 'personal' : team ? 'team' : 'none',
+  };
+}
+
+function mergeBookmarkState(...states) {
+  return createBookmarkState(
+    states.reduce(
+      (acc, state) => ({
+        personal: acc.personal || Boolean(state?.personal),
+        team: acc.team || Boolean(state?.team),
+      }),
+      { personal: false, team: false }
+    )
+  );
+}
+
+export function buildCompactTableRow(row, bookmarkState) {
+  const rowId = row.fun0Id ?? row.fun_0_id ?? row.id;
+  const currentActor = normalizeResponsibleActor(row.responsable);
+  const usedDays = Number.isFinite(row.dias_habiles_usados) ? row.dias_habiles_usados : 0;
+  const limitDays = Number.isFinite(row.dias_habiles_limite) ? row.dias_habiles_limite : 0;
+  const actorValue = `${usedDays}/${limitDays}`;
+
+  return {
+    ...row,
+    rowId,
+    phaseText: row.fase_label ?? 'Sin fase',
+    phaseTooltip: row.fase_label ?? 'Sin fase',
+    currentActor,
+    curValue: currentActor === 'cur' ? actorValue : '0/0',
+    solValue: currentActor === 'sol' ? actorValue : '0/0',
+    _bookmarkState: bookmarkState,
+    _bookmarked: bookmarkState.any,
+  };
+}
+
 function useDebounce(value, delay = 400) {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {
@@ -38,7 +93,11 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
 
   const { kpis, chartData, table, loading, error, refetch } = useDashboard(filters);
   const { config: alarmConfig } = useAlarmConfig();
-  const { bookmarks, toggle: toggleBookmark } = useBookmarks();
+  const {
+    bookmarks,
+    error: bookmarkError,
+    setScope: setBookmarkScope,
+  } = useBookmarks();
 
   const scatterThresholds = useMemo(() => {
     const s = alarmConfig?.scatterThresholds;
@@ -49,9 +108,34 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
     };
   }, [alarmConfig]);
 
-  const bookmarkedSet = useMemo(
-    () => new Set((bookmarks || []).map((b) => b.fun0Id ?? b.fun_0_id ?? b.id)),
-    [bookmarks]
+  const bookmarkStateById = useMemo(() => {
+    const nextState = new Map();
+
+    (bookmarks || []).forEach((bookmark) => {
+      const rowId = getExpedienteId(bookmark);
+      if (!rowId) return;
+
+      const current = nextState.get(rowId) || createBookmarkState();
+      nextState.set(
+        rowId,
+        createBookmarkState({
+          personal: current.personal || bookmark.scope === 'personal' || bookmark.scope === 'user',
+          team: current.team || bookmark.scope === 'team',
+        })
+      );
+    });
+
+    return nextState;
+  }, [bookmarks]);
+
+  const getBookmarkState = useCallback(
+    (row) => {
+      const rowId = getExpedienteId(row);
+      const serverState = createBookmarkState(row?.isBookmarked);
+      const clientState = rowId ? bookmarkStateById.get(rowId) : null;
+      return mergeBookmarkState(serverState, clientState);
+    },
+    [bookmarkStateById]
   );
 
   const handleKPIFilterChange = useCallback(({ status, phase, desistido, causal, key, subfiltro, bookmarked, vecinos }) => {
@@ -113,23 +197,33 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
     setFilters((f) => ({ ...f, page }));
   }, []);
 
-  const handleToggleBookmark = useCallback(
-    (row) => {
-      const id = row.fun0Id ?? row.fun_0_id ?? row.id;
+  const handleToggleBookmarkScope = useCallback(
+    async (row, scope, shouldMark) => {
+      const id = getExpedienteId(row);
       if (!id) return;
-      toggleBookmark(id, 'user', bookmarkedSet.has(id)).then(() => refetch());
+
+      await setBookmarkScope(id, scope, shouldMark);
+      await refetch();
     },
-    [toggleBookmark, bookmarkedSet, refetch]
+    [refetch, setBookmarkScope]
   );
 
   const tableData = useMemo(
     () =>
-      (table.data || []).map((row) => ({
-        ...row,
-        _bookmarked: bookmarkedSet.has(row.fun0Id ?? row.fun_0_id ?? row.id),
-      })),
-    [table.data, bookmarkedSet]
+      (table.data || []).map((row) => buildCompactTableRow(row, getBookmarkState(row))),
+    [table.data, getBookmarkState]
   );
+
+  const selectedBookmarkState = useMemo(
+    () => getBookmarkState(selectedExpediente),
+    [getBookmarkState, selectedExpediente]
+  );
+
+  const tableErrorMessage = error
+    ? 'No se pudo cargar el dashboard.'
+    : bookmarkError
+      ? 'No se pudieron sincronizar los destacados.'
+      : null;
 
   const sortingState = useMemo(() => {
     if (!filters.sort || filters.sort === DEFAULT_FILTERS.sort) return [];
@@ -193,7 +287,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                   page={filters.page}
                   pageSize={filters.limit}
                   loading={loading}
-                  error={error ? 'No se pudo cargar el dashboard.' : null}
+                  error={tableErrorMessage}
                   search={searchInput}
                   onSearchChange={setSearchInput}
                   sorting={sortingState}
@@ -202,7 +296,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                   onRetry={refetch}
                   onViewDetail={setSelectedExpediente}
                   onOpenWorkspace={handleOpenWorkspace}
-                  onToggleBookmark={handleToggleBookmark}
+                  onToggleBookmarkScope={handleToggleBookmarkScope}
                 />
               </div>
             </div>
@@ -262,6 +356,9 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
       {selectedExpediente && (
         <FunExpedienteDetail
           expediente={selectedExpediente}
+          bookmarkState={selectedBookmarkState}
+          bookmarkError={bookmarkError}
+          onToggleBookmarkScope={handleToggleBookmarkScope}
           onClose={() => setSelectedExpediente(null)}
           onOpenWorkspace={handleOpenWorkspace}
         />

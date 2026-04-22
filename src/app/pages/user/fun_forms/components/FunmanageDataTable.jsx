@@ -1,240 +1,214 @@
 import React, { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Icon } from '@/components/icon';
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
 } from '@tanstack/react-table';
-import { Badge } from '@/components/ui/badge';
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { MissingDataBadge } from './MissingDataBadge';
-import { AlarmBell } from './AlarmBell';
 
-const VECINOS_META = {
-  pendiente: { label: 'Pendiente', className: 'bg-warning bg-opacity-10 text-warning border border-warning' },
-  enviada: { label: 'Notificado', className: 'bg-info bg-opacity-10 text-info border border-info' },
-  respondida: { label: 'Completo', className: 'bg-success bg-opacity-10 text-success border border-success' },
-};
+function getBookmarkVisualState(bookmarkState) {
+  if (bookmarkState?.personal && bookmarkState?.team) {
+    return {
+      iconClassName: 'text-accent',
+      label: 'Destacado para mi y para el equipo',
+    };
+  }
 
-const VALLA_META = {
-  pending: { label: 'Pendiente', className: 'bg-warning bg-opacity-10 text-warning border border-warning' },
-  installed: { label: 'Instalada', className: 'bg-success bg-opacity-10 text-success border border-success' },
-  expired: { label: 'Vencida', className: 'bg-danger bg-opacity-10 text-danger border border-danger' },
-};
+  if (bookmarkState?.team) {
+    return {
+      iconClassName: 'text-primary',
+      label: 'Destacado para el equipo',
+    };
+  }
 
-// ── Constantes ────────────────────────────────────────────────────────────────
-const STATUS_META = {
-  EN_TERMINO:          { label: 'En Término',          className: 'bg-success bg-opacity-10 text-success border border-success' },
-  PRONTO_A_VENCER:     { label: 'Pronto a Vencer',     className: 'bg-warning bg-opacity-10 text-warning border border-warning' },
-  ALERTA_VENCIMIENTO:  { label: 'Alerta Vencimiento',  className: 'bg-danger bg-opacity-10 text-danger border border-danger' },
-  VENCIDO:             { label: 'Vencido',             className: 'bg-secondary bg-opacity-10 text-secondary border border-secondary' },
-};
+  if (bookmarkState?.personal) {
+    return {
+      iconClassName: 'text-warning',
+      label: 'Destacado solo para mi',
+    };
+  }
 
-// Extrae el valor de un campo con fallback
-function field(row, a, b) {
-  return row[a] ?? row[b] ?? '—';
+  return {
+    iconClassName: 'text-muted-foreground opacity-40',
+    label: 'Marcar como destacado',
+  };
 }
 
-function getTrafficLightClass(diasRestantes) {
-  if (diasRestantes == null) return '';
-  if (diasRestantes > 7) return 'text-success font-weight-bold';
-  if (diasRestantes >= 3 && diasRestantes <= 7) return 'text-warning font-weight-bold';
-  if (diasRestantes >= 0 && diasRestantes < 3) return 'text-danger font-weight-bold';
-  return 'text-secondary font-weight-bold'; // Vencido (<0)
-}
-
-// ── Definición de columnas ────────────────────────────────────────────────────
-function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate) {
+function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
   return [
-    {
-      id: 'bookmark',
-      header: '',
-      enableSorting: false,
-      cell: info => {
-        const row = info.row.original;
-        const marked = !!row._bookmarked;
-        return (
-          <button
-            type="button"
-            className="btn btn-sm py-0 px-2 border-0"
-            title={marked ? 'Quitar marca' : 'Marcar expediente'}
-            onClick={(e) => { e.stopPropagation(); onToggleBookmark?.(row); }}
-            data-testid={`bookmark-toggle-${row.id ?? row.fun0Id ?? ''}`}
-          >
-            <Icon
-              name={marked ? 'star' : 'star-regular'}
-              size={16}
-              className={marked ? 'text-warning' : 'text-secondary'}
-            />
-          </button>
-        );
-      },
-    },
     {
       id: 'radicado',
       header: 'Radicado',
-      accessorFn: row => row.radicado ?? '—',
-      cell: info => {
-        const val = info.getValue();
-        if (!val || val === '—') return <MissingDataBadge reason="fecha_radicacion" />;
+      accessorFn: (row) => row.radicado ?? '—',
+      cell: (info) => {
+        const row = info.row.original;
+        const radicado = info.getValue();
+        const rowId = row.rowId ?? row.id ?? row.fun0Id ?? row.fun_0_id ?? '';
+        const bookmarkState = row._bookmarkState;
+        const bookmarkVisualState = getBookmarkVisualState(bookmarkState);
+        const isPersonalMarked = Boolean(bookmarkState?.personal);
+
         return (
-          <span className="font-monospace small fw-bold text-dark">
-            {val}
-          </span>
+          <div className="flex min-w-0 items-center gap-2">
+            <button
+              type="button"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-transparent bg-transparent transition-colors hover:border-border hover:bg-muted"
+              title={bookmarkVisualState.label}
+              aria-label={bookmarkVisualState.label}
+              data-testid={`bookmark-toggle-${rowId}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onToggleBookmarkScope?.(row, 'personal', !isPersonalMarked);
+              }}
+            >
+              <Icon name="star" size={16} className={bookmarkVisualState.iconClassName} />
+            </button>
+
+            {radicado && radicado !== '—' ? (
+              <span className="truncate font-mono text-sm font-semibold text-foreground" data-testid={`radicado-value-${rowId}`}>
+                {radicado}
+              </span>
+            ) : (
+              <MissingDataBadge reason="fecha_radicacion" />
+            )}
+          </div>
         );
       },
     },
     {
       id: 'fase',
-      header: 'Fase Actual',
-      accessorFn: row => row.fase_label ?? '—',
-      cell: info => {
-        const val = info.getValue();
-        if (!val || val === '—') return <MissingDataBadge reason="termino" />;
-        return <span className="small text-secondary">{val}</span>;
+      header: 'Fase',
+      accessorFn: (row) => row.phaseText ?? row.fase_label ?? 'Sin fase',
+      cell: (info) => {
+        const row = info.row.original;
+        const phaseText = row.phaseText ?? 'Sin fase';
+        const phaseTooltip = row.phaseTooltip ?? phaseText;
+
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className="block max-w-[14rem] cursor-help truncate text-sm text-muted-foreground"
+                data-testid={`phase-text-${row.rowId ?? row.id ?? info.row.id}`}
+                title={phaseTooltip}
+              >
+                {phaseText}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs text-xs">
+              {phaseTooltip}
+            </TooltipContent>
+          </Tooltip>
+        );
       },
     },
     {
       id: 'estado',
       header: 'Estado',
-      accessorFn: row => row.estado ?? '—',
-      cell: info => {
-        const val = info.getValue();
-        if (!val || val === '—') return <MissingDataBadge reason="estado" />;
-        return <span className="small text-secondary">{val}</span>;
-      },
-    },
-    {
-      id: 'alarma',
-      header: 'Alarma',
-      enableSorting: false,
-      accessorFn: row => row.alarms || [],
-      cell: info => {
-        const alarms = info.getValue();
-        const activeAlarms = alarms.filter(a => !a.attendedAt && !a.hiddenAt);
-        if (activeAlarms.length === 0) return null;
-        return (
-          <span className="badge bg-danger rounded-pill">
-            {activeAlarms.length}
-          </span>
-        );
-      },
-    },
-    {
-      id: 'dias_habiles_usados',
-      header: ({ column }) => (
-        <button
-          className="d-flex align-items-center gap-1 fw-bold text-uppercase border-0 bg-transparent p-0 text-decoration-none text-body"
-          onClick={() => column.toggleSorting()}
-          aria-label="Ordenar por días"
-        >
-          Días Restantes
-          <SortIcon direction={column.getIsSorted()} />
-        </button>
-      ),
-      accessorFn: row => row.dias_habiles_limite ? row.dias_habiles_limite - (row.dias_habiles_usados ?? 0) : null,
-      cell: info => {
-        const diasRestantes = info.getValue();
-        const row  = info.row.original;
-        
-        if (diasRestantes == null) return <MissingDataBadge reason="termino" />;
+      accessorFn: (row) => `${row.curValue ?? '0/0'}|${row.solValue ?? '0/0'}`,
+      cell: (info) => {
+        const row = info.row.original;
+        const rowId = row.rowId ?? row.id ?? info.row.id;
+        const currentActor = row.currentActor ?? 'cur';
+
+        const blocks = [
+          {
+            key: 'cur',
+            label: 'Cur',
+            icon: 'building',
+            value: row.curValue ?? '0/0',
+            active: currentActor === 'cur',
+          },
+          {
+            key: 'sol',
+            label: 'Sol',
+            icon: 'user',
+            value: row.solValue ?? '0/0',
+            active: currentActor === 'sol',
+          },
+        ];
 
         return (
-          <span className={`font-monospace small ${getTrafficLightClass(diasRestantes)}`}>
-            {diasRestantes}
-          </span>
-        );
-      },
-    },
-    {
-      id: 'status',
-      header: ({ column }) => (
-        <button
-          className="d-flex align-items-center gap-1 fw-bold text-uppercase border-0 bg-transparent p-0 text-decoration-none text-body"
-          onClick={() => column.toggleSorting()}
-          aria-label="Ordenar por estado"
-        >
-          Semáforo
-          <SortIcon direction={column.getIsSorted()} />
-        </button>
-      ),
-      accessorFn: row => row.status ?? '—',
-      cell: info => {
-        const s    = info.getValue();
-        const meta = STATUS_META[s];
-        if (!meta) return <span className="small text-secondary">{s}</span>;
-        return (
-          <span
-            className={`badge rounded-pill px-2 py-1 ${meta.className}`}
+          <div
+            className="grid min-w-[11rem] grid-cols-2 overflow-hidden rounded-lg border border-border bg-muted/30"
+            data-testid={`status-cell-${rowId}`}
           >
-            {meta.label}
-          </span>
-        );
-      },
-    },
-    {
-      id: 'solicitante',
-      header: 'Solicitante',
-      accessorFn: row => row.solicitante ?? '—',
-      cell: info => {
-        const val = info.getValue();
-        if (!val || val === '—') return <MissingDataBadge reason="actor" />;
-        return <span className="small text-secondary">{val}</span>;
-      },
-    },
-    {
-      id: 'vecinos_valla',
-      header: 'Vecinos / Valla',
-      enableSorting: false,
-      accessorFn: row => ({
-        vecinos:
-          row.vecinos?.stateLabel ??
-          row.vecinos?.state_label ??
-          row.vecinos_state ??
-          row.vecinosState ??
-          null,
-        valla: row.valla?.state ?? (row.sign ? 'installed' : 'pending'),
-      }),
-      cell: info => {
-        const { vecinos, valla } = info.getValue();
-        const vecinosKey = String(vecinos || '').trim().toLowerCase();
-        const vecinosMeta = VECINOS_META[vecinosKey] || VECINOS_META.pendiente;
-        const vallaKey = String(valla || '').trim().toLowerCase();
-        const vallaMeta = VALLA_META[vallaKey] || VALLA_META.pending;
-        
-        return (
-          <div className="d-flex flex-column gap-1">
-            <div className="d-flex align-items-center gap-1">
-              <span className="small text-secondary" style={{ width: '55px' }}>Vecinos:</span>
-              <Badge className={vecinosMeta.className}>{vecinosMeta.label}</Badge>
-            </div>
-            <div className="d-flex align-items-center gap-1">
-              <span className="small text-secondary" style={{ width: '55px' }}>Valla:</span>
-              <Badge className={vallaMeta.className}>{vallaMeta.label}</Badge>
-            </div>
+            {blocks.map((block, index) => (
+              <div
+                key={block.key}
+                className={[
+                  'flex min-w-0 items-center gap-2 px-3 py-2',
+                  index === 0 ? 'border-r border-border' : '',
+                  block.active ? 'bg-background text-foreground' : 'text-muted-foreground',
+                ].filter(Boolean).join(' ')}
+                data-testid={`status-${block.key}-${rowId}`}
+              >
+                <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                  <Icon name={block.icon} size={14} />
+                </span>
+                <span className="flex min-w-0 flex-col leading-none">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.08em]">
+                    {block.label}
+                  </span>
+                  <span className="font-mono text-xs font-semibold" data-testid={`status-${block.key}-value-${rowId}`}>
+                    {block.value}
+                  </span>
+                </span>
+              </div>
+            ))}
           </div>
         );
       },
     },
     {
       id: 'acciones',
-      header: '',
+      header: 'Acciones',
       enableSorting: false,
-      cell: info => {
+      cell: (info) => {
         const row = info.row.original;
+        const rowId = row.rowId ?? row.id ?? info.row.id;
+
         return (
-          <div className="d-flex gap-2 justify-content-end">
-            <button
+          <div className="flex items-center justify-end gap-2" data-testid={`row-actions-${rowId}`}>
+            <Button
               type="button"
-              className="btn btn-sm btn-outline-primary py-0 px-2"
-              title="Abrir expediente"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onViewDetail?.(row);
-                }}
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              title="Previsualizar expediente"
+              aria-label="Previsualizar expediente"
+              data-testid={`row-preview-${rowId}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onViewDetail?.(row);
+              }}
             >
               <Icon name="folder-open" size={16} />
-            </button>
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              title="Abrir gestión completa"
+              aria-label="Abrir gestión completa"
+              data-testid={`row-fullscreen-${rowId}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenWorkspace?.(row);
+              }}
+            >
+              <Icon name="expand-alt" size={16} />
+            </Button>
           </div>
         );
       },
@@ -242,20 +216,26 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate)
   ];
 }
 
-// ── Ícono de ordenamiento ─────────────────────────────────────────────────────
 function SortIcon({ direction }) {
-  if (direction === 'asc')  return <Icon name="sort-up" size={14} className="text-primary" />;
+  if (direction === 'asc') return <Icon name="sort-up" size={14} className="text-primary" />;
   if (direction === 'desc') return <Icon name="sort-down" size={14} className="text-primary" />;
-  return <Icon name="sort" size={14} className="text-secondary opacity-50" />;
+  return <Icon name="sort" size={14} className="text-muted-foreground opacity-60" />;
 }
 
-// ── Componente principal ──────────────────────────────────────────────────────
-/**
- * Tabla de gestión de solicitudes con paginación server-side.
- * Recibe data, paginación y callbacks del padre (que controla el fetch).
- *
- * @param {{ data: Array, totalRows: number, page: number, pageSize: number, loading: boolean, error: string|null, search: string, onSearchChange: Function, sorting: Array, onSortingChange: Function, onPageChange: Function, onRetry: Function }} props
- */
+function SortableHeader({ column, label, widthClass = '' }) {
+  return (
+    <button
+      type="button"
+      className={`inline-flex items-center gap-1 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground ${widthClass}`.trim()}
+      onClick={() => column.toggleSorting()}
+      aria-label={`Ordenar por ${label}`}
+    >
+      <span>{label}</span>
+      <SortIcon direction={column.getIsSorted()} />
+    </button>
+  );
+}
+
 export function FunmanageDataTable({
   data = [],
   totalRows = 0,
@@ -271,14 +251,24 @@ export function FunmanageDataTable({
   onRetry,
   onViewDetail,
   onOpenWorkspace,
-  onToggleBookmark,
+  onToggleBookmarkScope,
 }) {
-  const navigate = useNavigate();
+  const columns = useMemo(() => {
+    const baseColumns = buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope);
 
-  const columns = useMemo(
-    () => buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate),
-    [onViewDetail, onOpenWorkspace, onToggleBookmark, navigate]
-  );
+    return [
+      {
+        ...baseColumns[0],
+        header: ({ column }) => <SortableHeader column={column} label="Radicado" widthClass="w-full" />,
+      },
+      {
+        ...baseColumns[1],
+        header: ({ column }) => <SortableHeader column={column} label="Fase" widthClass="w-full" />,
+      },
+      baseColumns[2],
+      baseColumns[3],
+    ];
+  }, [onOpenWorkspace, onToggleBookmarkScope, onViewDetail]);
 
   const table = useReactTable({
     data,
@@ -291,134 +281,150 @@ export function FunmanageDataTable({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // ── Paginación ────────────────────────────────────────────────────────────────
-  const totalPages  = Math.max(1, Math.ceil(totalRows / pageSize));
-  const canPrev     = page > 1;
-  const canNext     = page < totalPages;
+  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
+  const canPrev = page > 1;
+  const canNext = page < totalPages;
 
-  // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div data-testid="data-table" className="w-100">
-
-      {/* Barra de búsqueda + contador */}
-      <div className="flex flex-wrap gap-3 mb-3 items-center justify-between">
-        <div className="relative flex-grow max-w-xs">
-          <Icon name="search" size={16} style={{ pointerEvents: 'none' }} />
-          <input
-            type="search"
-            className="form-control ps-5 py-1"
-            style={{ fontSize: '0.875rem' }}
-            placeholder="Buscar por radicado…"
-            value={search ?? ''}
-            onChange={e => onSearchChange?.(e.target.value)}
-            data-testid="table-search"
-          />
-        </div>
-        <span className="text-sm text-muted-foreground" data-testid="table-total">
-          {loading ? '…' : `${totalRows} solicitudes`}
-        </span>
-      </div>
-
-      {/* Error */}
-      {error && !loading && (
-        <div className="alert alert-warning d-flex align-items-center py-2 mb-3" role="alert">
-          <Icon name="exclamation-triangle" size={16} className="me-2" />{error}
-          <button className="btn btn-sm btn-link ms-auto" onClick={onRetry}>Reintentar</button>
-        </div>
-      )}
-
-      {/* Tabla */}
-      <div
-        className="table-responsive rounded border shadow-sm bg-white"
-        style={{
-          maxHeight: 'clamp(300px, calc(100vh - 340px), 900px)',
-          overflowY: 'auto',
-        }}
-      >
-        <table className="table table-hover table-sm mb-0 align-middle">
-          <thead className="table-light border-bottom border-2">
-            {table.getHeaderGroups().map(hg => (
-              <tr key={hg.id}>
-                {hg.headers.map(h => (
-                  <th
-                    key={h.id}
-                    className="px-3 py-2 text-secondary text-uppercase fw-bold"
-                    style={{ fontSize: '0.75rem', whiteSpace: 'nowrap', width: h.id === 'acciones' ? 64 : 'auto' }}
-                  >
-                    {h.isPlaceholder
-                      ? null
-                      : flexRender(h.column.columnDef.header, h.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody className="border-top-0">
-            {loading ? (
-              <tr>
-                <td colSpan={columns.length} className="text-center py-4 text-secondary">
-                  <div className="spinner-border spinner-border-sm me-2" role="status">
-                    <span className="visually-hidden">Cargando…</span>
-                  </div>
-                  Cargando datos…
-                </td>
-              </tr>
-            ) : table.getRowModel().rows.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="text-center py-4 text-secondary">
-                  <Icon name="inbox" size={16} className="me-2" />
-                  Sin resultados para los filtros aplicados.
-                </td>
-              </tr>
-            ) : (
-              table.getRowModel().rows.map((row, idx) => (
-                <tr
-                  key={row.id}
-                  className="cursor-pointer"
-                  data-testid={`table-row-${idx}`}
-                  onClick={() => onViewDetail?.(row.original)}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-3 py-2">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Paginación */}
-      {!loading && totalRows > 0 && (
-        <div className="flex items-center justify-between mt-3 flex-wrap gap-2">
-          <span className="text-sm text-muted-foreground">
-            Página <strong>{page}</strong> de <strong>{totalPages}</strong>
-            {' '}
-            <span className="text-slate-400">({totalRows} filas totales)</span>
-          </span>
-          <div className="flex gap-2">
-            <button
-              className="btn btn-sm btn-outline-secondary"
-              disabled={!canPrev || loading}
-              onClick={() => onPageChange?.(Math.max(1, page - 1))}
-              data-testid="pagination-prev"
-            >
-              <Icon name="chevron-left" size={16} className="me-1" /> Anterior
-            </button>
-            <button
-              className="btn btn-sm btn-outline-secondary"
-              disabled={!canNext || loading}
-              onClick={() => onPageChange?.(Math.min(totalPages, page + 1))}
-              data-testid="pagination-next"
-            >
-              Siguiente <Icon name="chevron-right" size={16} className="ms-1" />
-            </button>
+    <TooltipProvider delayDuration={150}>
+      <div data-testid="data-table" className="w-full">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="relative w-full max-w-xs">
+            <Icon
+              name="search"
+              size={16}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
+            <input
+              type="search"
+              className="form-control h-10 rounded-md border-border bg-background pl-10 text-sm"
+              placeholder="Buscar por radicado…"
+              value={search ?? ''}
+              onChange={(event) => onSearchChange?.(event.target.value)}
+              data-testid="table-search"
+            />
           </div>
+
+          <span className="text-sm text-muted-foreground" data-testid="table-total">
+            {loading ? '…' : `${totalRows} solicitudes`}
+          </span>
         </div>
-      )}
-    </div>
+
+        {error && !loading && (
+          <div className="mb-3 flex items-center gap-2 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-foreground" role="alert">
+            <Icon name="exclamation-triangle" size={16} className="text-warning" />
+            <span>{error}</span>
+            <Button type="button" variant="link" size="sm" className="ml-auto h-auto px-0" onClick={onRetry}>
+              Reintentar
+            </Button>
+          </div>
+        )}
+
+        <div
+          className="overflow-y-auto rounded-lg border border-border bg-card shadow-sm"
+          style={{ maxHeight: 'clamp(300px, calc(100vh - 340px), 900px)' }}
+          data-testid="funmanage-table-scroll-container"
+        >
+          <table className="w-full table-fixed border-collapse" data-testid="funmanage-table">
+            <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur-sm">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="border-b border-border">
+                  {headerGroup.headers.map((header) => {
+                    const widthClass =
+                      header.id === 'radicado'
+                        ? 'w-[26%]'
+                        : header.id === 'fase'
+                          ? 'w-[24%]'
+                          : header.id === 'estado'
+                            ? 'w-[32%]'
+                            : 'w-[18%]';
+
+                    return (
+                      <th key={header.id} className={`px-4 py-3 text-left align-middle ${widthClass}`.trim()}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-4 py-6 text-center text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-2">
+                      <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
+                      Cargando datos…
+                    </span>
+                  </td>
+                </tr>
+              ) : table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-4 py-6 text-center text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-2">
+                      <Icon name="inbox" size={16} />
+                      Sin resultados para los filtros aplicados.
+                    </span>
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row, idx) => (
+                  <tr
+                    key={row.id}
+                    className="cursor-pointer border-b border-border/70 transition-colors hover:bg-muted/40"
+                    data-testid={`table-row-${idx}`}
+                    onClick={() => onViewDetail?.(row.original)}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-3 align-middle">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {!loading && totalRows > 0 && (
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+            <span className="text-sm text-muted-foreground">
+              Página <strong>{page}</strong> de <strong>{totalPages}</strong>{' '}
+              <span className="text-muted-foreground/80">({totalRows} filas totales)</span>
+            </span>
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={!canPrev || loading}
+                onClick={() => onPageChange?.(Math.max(1, page - 1))}
+                data-testid="pagination-prev"
+              >
+                <Icon name="chevron-left" size={16} />
+                Anterior
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={!canNext || loading}
+                onClick={() => onPageChange?.(Math.min(totalPages, page + 1))}
+                data-testid="pagination-next"
+              >
+                Siguiente
+                <Icon name="chevron-right" size={16} />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </TooltipProvider>
   );
 }
+
+export default FunmanageDataTable;
