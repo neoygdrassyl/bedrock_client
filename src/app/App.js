@@ -53,7 +53,7 @@ const DEV_GUIDE = lazy(() => import('./pages/user/dev_guide/dev_guide.page'));
 const NORMS = lazy(() => import('./pages/user/norms/norms.page'));
 const CERTIFICATE_WORKER = lazy(() => import('./pages/user/certifications/certification.page'));
 const ZONE_USE = lazy(() => import('./pages/user/zone_use/zone_use.page'));
-const SETTINGS = lazy(() => import('./pages/user/settings.page'));
+const SETTINGS = lazy(() => import('./pages/user/SettingsPage'));
 import LEGAL_FLOW_GUIDE from './pages/user/legal_flow_guide/LegalFlowGuide.page';
 
 // ── Loading fallback for Suspense ───────────────────────────────────
