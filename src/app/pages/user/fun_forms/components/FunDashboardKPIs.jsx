@@ -1,293 +1,245 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
 import { Icon } from '@/components/icon';
 
-// ── Tarjetas simples ─────────────────────────────────────────────────────────
 const SIMPLE_KPIS = [
   {
-    key: 'total',
-    dataField: 'total',
-    label: 'Total Solicitudes',
-    icon: 'fas fa-layer-group',
-    colorClass: 'text-blue-600',
-    ringClass: 'ring-blue-500',
-    description: 'Solicitudes activas en el sistema',
-    filter: {},
+    key: 'radicacion',
+    getValue: (kpis) => kpis?.por_fase?.['Radicación LDF'] || 0,
+    label: 'Radicación',
+    icon: 'inbox',
+    colorClass: 'text-secondary',
+    description: 'En Radicación',
+    filter: { phase: 'RAD' },
   },
   {
-    key: 'en_riesgo',
-    dataField: 'en_riesgo',
-    label: 'En Riesgo',
-    icon: 'fas fa-exclamation-triangle',
-    colorClass: 'text-red-600',
-    ringClass: 'ring-red-500',
-    description: 'Alerta de vencimiento o vencido',
-    filter: { status: 'ALERTA_VENCIMIENTO' },
+    key: 'estudio',
+    getValue: (kpis) => kpis?.en_estudio_revision || 0,
+    label: 'Estudio',
+    icon: 'search',
+    colorClass: 'text-primary',
+    description: 'Estudio y Observ.',
+    filter: { phase: 'EST,NOT_OBS' },
   },
   {
     key: 'correcciones',
-    dataField: 'en_correcciones',
-    label: 'En Correcciones',
-    icon: 'fas fa-pencil-alt',
-    colorClass: 'text-yellow-600',
-    ringClass: 'ring-yellow-500',
-    description: 'Esperando respuesta de correcciones',
+    getValue: (kpis) => kpis?.en_correcciones || 0,
+    label: 'Correcciones',
+    icon: 'pencil-alt',
+    colorClass: 'text-warning',
+    description: 'Esperando respuesta',
     filter: { phase: 'CORR' },
   },
   {
-    key: 'en_expedicion',
-    dataField: 'en_expedicion',
-    label: 'En Expedición',
-    icon: 'fas fa-check-circle',
-    colorClass: 'text-green-600',
-    ringClass: 'ring-green-500',
-    description: 'Resolución, notificación o entrega',
-    filter: { phase: 'RES,NOT_RES,EJEC,ENT' },
+    key: 'viabilidad',
+    getValue: (kpis) => kpis?.en_estudio_viabilidad || 0,
+    label: 'Viabilidad',
+    icon: 'check-double',
+    colorClass: 'text-info',
+    description: 'Revisión y Viabilidad',
+    filter: { phase: 'VIA,NOT_VIA' },
   },
+  {
+    key: 'pagos',
+    getValue: (kpis) => kpis?.por_fase?.['Liquidación y Pagos'] || 0,
+    label: 'Pagos',
+    icon: 'file-invoice-dollar',
+    colorClass: 'text-success',
+    description: 'Liquidación y Pagos',
+    filter: { phase: 'PAG' },
+  },
+  {
+    key: 'resolucion',
+    getValue: (kpis) => (kpis?.por_fase?.['Generación de Resolución'] || 0) + (kpis?.por_fase?.['Notificación Resolución'] || 0) + (kpis?.por_fase?.['Ejecutoria y Recurso'] || 0),
+    label: 'Resolución',
+    icon: 'gavel',
+    colorClass: 'text-primary',
+    description: 'Generación y Notif.',
+    filter: { phase: 'RES,NOT_RES,EJEC' },
+  },
+  {
+    key: 'entrega',
+    getValue: (kpis) => kpis?.por_fase?.['Entrega de Licencia'] || 0,
+    label: 'Entrega',
+    icon: 'box-open',
+    colorClass: 'text-success',
+    description: 'Entrega de Licencia',
+    filter: { phase: 'ENT' },
+  },
+  {
+    key: 'vecinos',
+    getValue: (kpis) => kpis?.pendientes_vecinos || 0,
+    label: 'Vecinos',
+    icon: 'users',
+    colorClass: 'text-warning',
+    description: 'Pendientes vecinos',
+    filter: { subfiltro: 'pendiente_vecinos' },
+  },
+  {
+    key: 'valla',
+    getValue: (kpis) => kpis?.riesgo_valla || 0,
+    label: 'Valla',
+    icon: 'sign',
+    colorClass: 'text-danger',
+    description: 'Riesgo valla',
+    filter: { subfiltro: 'sin_valla' },
+  },
+  {
+    key: 'marcados',
+    getValue: (kpis) => kpis?.marcados_total || 0,
+    label: 'Marcados',
+    icon: 'bookmark',
+    colorClass: 'text-primary',
+    description: 'Marcados total',
+    filter: { bookmarked: 'any' },
+  }
 ];
 
-/**
- * Tarjetas de KPIs para el dashboard de Gestión de Licencias.
- *
- * @param {Object} props
- * @param {Object}       props.kpis
- * @param {boolean}      props.loading
- * @param {Function}     props.onFilterChange - ({ status?, phase?, desistido?, key }) → void
- * @param {string|null}  props.activeFilterKey
- */
 export function FunDashboardKPIs({ kpis, loading, onFilterChange, activeFilterKey }) {
   return (
     <div
-      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 my-4"
+      className="row g-2 my-3"
       data-testid="dashboard-kpis"
     >
-      {/* Tarjetas simples (Total, En Riesgo, Correcciones, Expedición) */}
       {SIMPLE_KPIS.map(cfg => (
-        <SimpleKPICard
-          key={cfg.key}
-          cfg={cfg}
-          value={kpis?.[cfg.dataField]}
-          loading={loading}
-          isActive={activeFilterKey === cfg.key}
-          onFilterChange={onFilterChange}
-        />
+        <div className="col-6 col-md-3 col-lg-2" key={cfg.key}>
+          <SimpleKPICard
+            cfg={cfg}
+            value={cfg.getValue(kpis)}
+            loading={loading}
+            isActive={activeFilterKey === cfg.key}
+            onFilterChange={onFilterChange}
+          />
+        </div>
       ))}
-
-      {/* Tarjeta compuesta: En Estudio */}
-      <EstudioKPICard
-        kpis={kpis}
-        loading={loading}
-        activeFilterKey={activeFilterKey}
-        onFilterChange={onFilterChange}
-      />
-
-      {/* Tarjeta unificada: Desistidos */}
-      <DesistidosKPICard
-        kpis={kpis}
-        loading={loading}
-        activeFilterKey={activeFilterKey}
-        onFilterChange={onFilterChange}
-      />
+      <div className="col-12 col-md-6 col-lg-4">
+        <SemaforoKPICard 
+          kpis={kpis} 
+          loading={loading} 
+          activeFilterKey={activeFilterKey} 
+          onFilterChange={onFilterChange} 
+        />
+      </div>
     </div>
   );
 }
 
-// ── Tarjeta KPI simple ───────────────────────────────────────────────────────
-
 function SimpleKPICard({ cfg, value, loading, isActive, onFilterChange }) {
   const handleClick = () => onFilterChange({ ...cfg.filter, key: cfg.key });
   return (
-    <Card
-      data-testid={`kpi-card-${cfg.key}`}
+    <div
+      className={`card h-100 shadow-sm transition-all select-none ${isActive ? 'border-primary border-2 bg-light' : 'border-light'}`}
       role="button"
       tabIndex={0}
       aria-pressed={isActive}
-      className={[
-        'cursor-pointer select-none transition-all duration-150',
-        'hover:shadow-md hover:-translate-y-0.5',
-        isActive ? `ring-2 ring-offset-2 ${cfg.ringClass} shadow-md` : '',
-      ].join(' ')}
       onClick={handleClick}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      style={{ cursor: 'pointer' }}
     >
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          {cfg.label}
-        </CardTitle>
-        <Icon name={cfg.icon} size={16} className={cfg.colorClass} aria-hidden="true" />
-      </CardHeader>
-      <CardContent>
-        <div className={`text-3xl font-bold ${cfg.colorClass}`}>
-          {loading ? <span className="text-muted-foreground text-xl">...</span> : (value ?? 0)}
+      <div className="card-body p-2 p-md-3 d-flex flex-column">
+        <div className="d-flex justify-content-between align-items-center mb-1">
+          <h6 className="card-title mb-0 text-muted fw-bold text-truncate" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }} title={cfg.label}>
+            {cfg.label}
+          </h6>
+          <Icon name={cfg.icon} size={14} className={cfg.colorClass} aria-hidden="true" />
         </div>
-        <p className="text-xs text-muted-foreground mt-1">{cfg.description}</p>
-      </CardContent>
-    </Card>
+        <h3 className={`fw-bold mb-1 ${cfg.colorClass}`}>
+          {loading ? <span className="text-muted fs-5">...</span> : (value ?? 0)}
+        </h3>
+        <p className="text-muted small mb-0 mt-auto text-truncate" style={{ fontSize: '0.65rem' }} title={cfg.description}>
+          {cfg.description}
+        </p>
+      </div>
+    </div>
   );
 }
 
-// ── Tarjeta compuesta: En Estudio ────────────────────────────────────────────
+function SemaforoKPICard({ kpis, loading, activeFilterKey, onFilterChange }) {
+  const verde = kpis?.semaforo?.verde ?? 0;
+  const amarillo = kpis?.semaforo?.amarillo ?? 0;
+  const rojo = kpis?.semaforo?.rojo ?? 0;
+  const total = verde + amarillo + rojo;
 
-function EstudioKPICard({ kpis, loading, activeFilterKey, onFilterChange }) {
-  const total = kpis?.en_estudio ?? 0;
-  const revision = kpis?.en_estudio_revision ?? 0;
-  const viabilidad = kpis?.en_estudio_viabilidad ?? 0;
-  const isMainActive = activeFilterKey === 'en_estudio';
-  const isRevActive = activeFilterKey === 'en_estudio_revision';
-  const isViaActive = activeFilterKey === 'en_estudio_viabilidad';
-  const isAnyActive = isMainActive || isRevActive || isViaActive;
+  const isVerdeActive = activeFilterKey === 'semaforo_verde';
+  const isAmarilloActive = activeFilterKey === 'semaforo_amarillo';
+  const isRojoActive = activeFilterKey === 'semaforo_rojo';
+  const isTotalActive = activeFilterKey === 'semaforo_total';
+  const isAnyActive = isVerdeActive || isAmarilloActive || isRojoActive || isTotalActive;
 
   return (
-    <Card
-      data-testid="kpi-card-en_estudio"
-      role="button"
-      tabIndex={0}
-      aria-pressed={isMainActive}
-      className={[
-        'cursor-pointer select-none transition-all duration-150',
-        'hover:shadow-md hover:-translate-y-0.5',
-        isAnyActive ? 'ring-2 ring-offset-2 ring-indigo-500 shadow-md' : '',
-      ].join(' ')}
-      onClick={() => onFilterChange({ phase: 'EST,NOT_OBS,VIA,NOT_VIA', key: 'en_estudio' })}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onFilterChange({ phase: 'EST,NOT_OBS,VIA,NOT_VIA', key: 'en_estudio' });
-        }
-      }}
+    <div
+      className={`card h-100 shadow-sm transition-all select-none ${isAnyActive ? 'border-secondary border-2 bg-light' : 'border-light'}`}
     >
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          En Estudio
-        </CardTitle>
-        <Icon name="search" size={16} className="text-indigo-600" aria-hidden="true" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold text-indigo-600">
-          {loading ? <span className="text-muted-foreground text-xl">...</span> : total}
+      <div className="card-body p-2 p-md-3 d-flex flex-column">
+        <div className="d-flex justify-content-between align-items-center mb-1">
+          <h6 className="card-title mb-0 text-muted fw-bold" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            Semáforo
+          </h6>
+          <Icon name="traffic-light" size={14} className="text-secondary" aria-hidden="true" />
         </div>
-        <div className="d-flex gap-2 mt-2">
-          <SubCard
-            label="Estudio y Obs."
-            value={revision}
+        
+        <div className="d-flex w-100 gap-1 mt-auto flex-nowrap" style={{ overflowX: 'auto' }}>
+          <SemaforoPill
+            label="Verde"
+            value={verde}
             loading={loading}
-            isActive={isRevActive}
-            onClick={e => {
-              e.stopPropagation();
-              onFilterChange({ phase: 'EST,NOT_OBS', key: 'en_estudio_revision' });
-            }}
-            color="#6366f1"
+            isActive={isVerdeActive}
+            color="#198754"
+            bg="#d1e7dd"
+            onClick={() => onFilterChange({ status: 'EN_TERMINO', key: 'semaforo_verde' })}
           />
-          <SubCard
-            label="Viabilidad"
-            value={viabilidad}
+          <SemaforoPill
+            label="Amarillo"
+            value={amarillo}
             loading={loading}
-            isActive={isViaActive}
-            onClick={e => {
-              e.stopPropagation();
-              onFilterChange({ phase: 'VIA,NOT_VIA', key: 'en_estudio_viabilidad' });
-            }}
-            color="#818cf8"
+            isActive={isAmarilloActive}
+            color="#fd7e14"
+            bg="#fff3cd"
+            onClick={() => onFilterChange({ status: 'PRONTO_A_VENCER', key: 'semaforo_amarillo' })}
+          />
+          <SemaforoPill
+            label="Rojo"
+            value={rojo}
+            loading={loading}
+            isActive={isRojoActive}
+            color="#dc3545"
+            bg="#f8d7da"
+            onClick={() => onFilterChange({ status: 'ALERTA_VENCIMIENTO', key: 'semaforo_rojo' })}
+          />
+          <SemaforoPill
+            label="Total"
+            value={total}
+            loading={loading}
+            isActive={isTotalActive}
+            color="#6c757d"
+            bg="#e9ecef"
+            onClick={() => onFilterChange({ status: null, key: 'semaforo_total' })}
           />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
-// ── Tarjeta unificada: Desistidos ────────────────────────────────────────────
-
-function DesistidosKPICard({ kpis, loading, activeFilterKey, onFilterChange }) {
-  const total = kpis?.desistidos_total ?? 0;
-  const porCausal = kpis?.por_causal || {};
-  const causales = Object.entries(porCausal).sort((a, b) => b[1] - a[1]);
-  const isActive = activeFilterKey === 'desistidos';
-
-  return (
-    <Card
-      data-testid="kpi-card-desistidos"
-      role="button"
-      tabIndex={0}
-      aria-pressed={isActive}
-      className={[
-        'cursor-pointer select-none transition-all duration-150',
-        'hover:shadow-md hover:-translate-y-0.5',
-        isActive ? 'ring-2 ring-offset-2 ring-rose-500 shadow-md' : '',
-      ].join(' ')}
-      onClick={() => onFilterChange({ desistido: true, key: 'desistidos' })}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onFilterChange({ desistido: true, key: 'desistidos' });
-        }
-      }}
-    >
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          Desistidos
-        </CardTitle>
-        <Icon name="times-circle" size={16} className="text-rose-600" aria-hidden="true" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold text-rose-600">
-          {loading ? <span className="text-muted-foreground text-xl">...</span> : total}
-        </div>
-        {causales.length > 0 && (
-          <div className="d-flex flex-wrap gap-1 mt-2">
-            {causales.map(([causal, count]) => (
-              <span
-                key={causal}
-                role="button"
-                tabIndex={0}
-                className="d-inline-flex align-items-center gap-1 rounded-pill px-2 py-0 text-xs cursor-pointer transition-all hover:shadow-sm"
-                style={{
-                  backgroundColor: '#fff1f2',
-                  color: '#9f1239',
-                  border: '1px solid #fecdd3',
-                  fontSize: '0.65rem',
-                  lineHeight: '1.6',
-                }}
-                onClick={e => {
-                  e.stopPropagation();
-                  onFilterChange({ desistido: true, causal, key: `desistidos_${causal}` });
-                }}
-                title={`Filtrar por causal: ${causal}`}
-              >
-                {causal} <strong>{count}</strong>
-              </span>
-            ))}
-          </div>
-        )}
-        <p className="text-xs text-muted-foreground mt-1">Todos los procesos de desistimiento</p>
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── Sub-tarjeta para En Estudio ──────────────────────────────────────────────
-
-function SubCard({ label, value, loading, isActive, onClick, color }) {
+function SemaforoPill({ label, value, loading, isActive, color, bg, onClick }) {
   return (
     <div
       role="button"
       tabIndex={0}
-      className={[
-        'flex-1 rounded px-2 py-1 text-center cursor-pointer transition-all',
-        'hover:shadow-sm',
-        isActive ? 'ring-2 ring-offset-1' : '',
-      ].join(' ')}
+      className={`flex-fill rounded text-center py-1 transition-all ${isActive ? 'shadow-sm' : ''}`}
       style={{
-        backgroundColor: `${color}11`,
-        border: `1px solid ${color}33`,
-        ...(isActive ? { ringColor: color } : {}),
+        backgroundColor: bg,
+        border: `1px solid ${isActive ? color : color + '40'}`,
+        cursor: 'pointer',
+        minWidth: '45px'
       }}
-      onClick={onClick}
-      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(e); } }}
+      onClick={e => { e.stopPropagation(); onClick(); }}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
     >
-      <span className="d-block text-xs text-muted-foreground" style={{ fontSize: '0.65rem' }}>
-        {label}
-      </span>
-      <span className="d-block font-bold text-sm" style={{ color }}>
+      <span className="d-block fw-bold" style={{ color, fontSize: '0.85rem' }}>
         {loading ? '...' : value}
+      </span>
+      <span className="d-block text-truncate px-1" style={{ color, fontSize: '0.6rem' }} title={label}>
+        {label}
       </span>
     </div>
   );
