@@ -285,16 +285,24 @@ export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActive
             </Select>
 
             <Select
-              value={filters.vallaState || '__all__'}
-              onValueChange={(val) => setFilters((f) => mergeFilters(f, { vallaState: val === '__all__' ? null : val }))}
+              value={filters.valla || filters.vallaState || '__all__'}
+              onValueChange={(val) => {
+                const nextValue = val === '__all__' ? null : val;
+                setFilters((f) => mergeFilters(f, {
+                  valla: nextValue,
+                  vallaState: nextValue,
+                }));
+                setKpiActiveFilterKey(null);
+              }}
             >
-              <SelectTrigger style={{ width: '120px', height: '31px', fontSize: '0.8rem' }}>
-                <SelectValue placeholder="Valla" />
+              <SelectTrigger style={{ width: '170px', height: '31px', fontSize: '0.8rem' }}>
+                <SelectValue placeholder="Valla publicitaria" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">Valla: Todas</SelectItem>
-                <SelectItem value="sin_valla">Sin valla</SelectItem>
-                <SelectItem value="con_valla">Con valla</SelectItem>
+                <SelectItem value="__all__">Valla publicitaria: Todas</SelectItem>
+                <SelectItem value="pending">Pendiente</SelectItem>
+                <SelectItem value="installed">Instalada</SelectItem>
+                <SelectItem value="expired">Vencida</SelectItem>
               </SelectContent>
             </Select>
 

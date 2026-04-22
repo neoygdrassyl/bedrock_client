@@ -16,6 +16,12 @@ const VECINOS_META = {
   respondida: { label: 'Completo', className: 'bg-success bg-opacity-10 text-success border border-success' },
 };
 
+const VALLA_META = {
+  pending: { label: 'Pendiente', className: 'bg-warning bg-opacity-10 text-warning border border-warning' },
+  installed: { label: 'Instalada', className: 'bg-success bg-opacity-10 text-success border border-success' },
+  expired: { label: 'Vencida', className: 'bg-danger bg-opacity-10 text-danger border border-danger' },
+};
+
 // ── Constantes ────────────────────────────────────────────────────────────────
 const STATUS_META = {
   EN_TERMINO:          { label: 'En Término',          className: 'bg-success bg-opacity-10 text-success border border-success' },
@@ -187,12 +193,14 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate)
           row.vecinos_state ??
           row.vecinosState ??
           null,
-        valla: row.sign,
+        valla: row.valla?.state ?? (row.sign ? 'installed' : 'pending'),
       }),
       cell: info => {
         const { vecinos, valla } = info.getValue();
         const vecinosKey = String(vecinos || '').trim().toLowerCase();
         const vecinosMeta = VECINOS_META[vecinosKey] || VECINOS_META.pendiente;
+        const vallaKey = String(valla || '').trim().toLowerCase();
+        const vallaMeta = VALLA_META[vallaKey] || VALLA_META.pending;
         
         return (
           <div className="d-flex flex-column gap-1">
@@ -202,11 +210,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate)
             </div>
             <div className="d-flex align-items-center gap-1">
               <span className="small text-secondary" style={{ width: '55px' }}>Valla:</span>
-              {valla ? (
-                <span className="text-success small fw-bold">✓ OK</span>
-              ) : (
-                <span className="badge bg-danger bg-opacity-10 text-danger border border-danger">Sin valla</span>
-              )}
+              <Badge className={vallaMeta.className}>{vallaMeta.label}</Badge>
             </div>
           </div>
         );

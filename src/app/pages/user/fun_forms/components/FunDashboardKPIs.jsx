@@ -76,12 +76,12 @@ const SIMPLE_KPIS = [
   },
   {
     key: 'valla',
-    getValue: (kpis) => kpis?.riesgo_valla || 0,
-    label: 'Valla',
+    getValue: (kpis) => kpis?.vallaPendientes || 0,
+    label: 'Valla publicitaria',
     icon: 'sign',
     colorClass: 'text-danger',
-    description: 'Riesgo valla',
-    filter: { subfiltro: 'sin_valla' },
+    description: 'Pendiente de instalación',
+    filter: { valla: 'pending' },
   },
   {
     key: 'marcados',
