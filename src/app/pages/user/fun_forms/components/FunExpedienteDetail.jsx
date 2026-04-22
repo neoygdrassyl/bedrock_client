@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectFlowModal from '../../legal_flow_guide/components/ProjectFlowModal';
 import { Icon } from '@/components/icon';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useAlarms } from '../hooks/useAlarms';
+import legalGuideService from '../../../../services/legalGuide.service';
 
 // ── Status visual config ─────────────────────────────────────────────────────
 const STATUS_META = {
@@ -58,9 +59,51 @@ function derivePhasesFromExpediente(exp) {
 // ── Componente principal ─────────────────────────────────────────────────────
 export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
   const [showFlowModal, setShowFlowModal] = useState(false);
+  const [isLegalGuideOpen, setIsLegalGuideOpen] = useState(true);
+  const [legalGuide, setLegalGuide] = useState(null);
+  const [legalGuideLoading, setLegalGuideLoading] = useState(false);
+  const [legalGuideError, setLegalGuideError] = useState('');
 
   const { bookmarks, toggle: toggleBookmark } = useBookmarks();
   const { alarms, attend, hide } = useAlarms({ includeAttended: true, includeHidden: true });
+  const currentPhaseCode = expediente?.fase_actual || '';
+
+  useEffect(() => {
+    let ignore = false;
+
+    if (!currentPhaseCode) {
+      setLegalGuide(null);
+      setLegalGuideError('');
+      setLegalGuideLoading(false);
+      return undefined;
+    }
+
+    setLegalGuideLoading(true);
+    setLegalGuideError('');
+
+    legalGuideService.getByPhase(currentPhaseCode)
+      .then((response) => {
+        if (ignore) return;
+        setLegalGuide(response.data?.data || response.data || null);
+      })
+      .catch((error) => {
+        if (ignore) return;
+        if (error?.response?.status === 404) {
+          setLegalGuide(null);
+          setLegalGuideError('');
+          return;
+        }
+        setLegalGuide(null);
+        setLegalGuideError('No fue posible cargar la guía legal de esta fase.');
+      })
+      .finally(() => {
+        if (!ignore) setLegalGuideLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentPhaseCode]);
 
   if (!expediente) return null;
 
@@ -215,6 +258,15 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
               />
             )}
           </div>
+
+          <LegalGuidePanel
+            expediente={expediente}
+            guide={legalGuide}
+            loading={legalGuideLoading}
+            error={legalGuideError}
+            isOpen={isLegalGuideOpen}
+            onToggle={() => setIsLegalGuideOpen(prev => !prev)}
+          />
 
           {/* Flags / Alertas */}
           {(expediente.esta_pausado || expediente.tiene_suspension || expediente.tiene_extension || expediente.es_desistido || expediente.intervalo_notificacion_activo) && (
@@ -545,6 +597,118 @@ function FlagBadge({ icon, label, bg, color }) {
       {label}
     </span>
   );
+}
+
+function LegalGuidePanel({ expediente, guide, loading, error, isOpen, onToggle }) {
+  const collapseId = `legal-guide-panel-${expediente?.id || 'current'}`;
+
+  return (
+    <div className="mb-4">
+      <div className="d-flex align-items-center justify-content-between mb-2 gap-2">
+        <span className="small fw-semibold text-uppercase text-muted d-block" style={{ letterSpacing: '0.06em' }}>
+          Guía de proceso legal
+        </span>
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-secondary"
+          onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-controls={collapseId}
+        >
+          {isOpen ? 'Ocultar panel' : 'Ver panel'}
+        </button>
+      </div>
+
+      <div id={collapseId} className={`collapse${isOpen ? ' show' : ''}`}>
+        <div className="card shadow-sm border-0" style={{ backgroundColor: '#f8fafc' }}>
+          <div className="card-body p-3" style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
+            {loading ? (
+              <div className="d-flex align-items-center gap-2 text-muted small">
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+                Cargando guía legal de la fase...
+              </div>
+            ) : error ? (
+              <div className="alert alert-warning mb-0 small" role="alert">
+                {error}
+              </div>
+            ) : !guide ? (
+              <div className="alert alert-secondary mb-0 small" role="alert">
+                Información legal no disponible para esta fase
+              </div>
+            ) : (
+              <>
+                <div className="d-flex flex-wrap gap-2 mb-3">
+                  <span className="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary-subtle">
+                    {expediente?.fase_label || guide.fase || 'Fase actual'}
+                  </span>
+                  <span className="badge rounded-pill bg-light text-dark border">
+                    Actor: {getActorLabel(guide.actor)}
+                  </span>
+                  <span className="badge rounded-pill bg-light text-dark border">
+                    Término: {formatLegalTerm(guide.terminoDias)}
+                  </span>
+                </div>
+
+                <div className="row g-3">
+                  <div className="col-12">
+                    <div className="small text-uppercase text-muted mb-1" style={{ letterSpacing: '0.05em' }}>
+                      Referencia normativa
+                    </div>
+                    <div className="small text-body-secondary">{guide.norma}</div>
+                  </div>
+
+                  <div className="col-12 col-lg-7">
+                    <div className="small text-uppercase text-muted mb-2" style={{ letterSpacing: '0.05em' }}>
+                      Pasos requeridos
+                    </div>
+                    <ol className="mb-0 ps-3 small text-body-secondary">
+                      {(guide.pasos || []).map((paso, index) => (
+                        <li key={`${guide.fase || expediente?.fase_actual || 'fase'}-${index}`} className="mb-2">
+                          {paso}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  <div className="col-12 col-lg-5">
+                    <div className="rounded p-3 h-100" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }}>
+                      <div className="small text-uppercase text-muted mb-1" style={{ letterSpacing: '0.05em' }}>
+                        Responsable principal
+                      </div>
+                      <div className="fw-semibold mb-3">{getActorLabel(guide.actor)}</div>
+
+                      <div className="small text-uppercase text-muted mb-1" style={{ letterSpacing: '0.05em' }}>
+                        Término legal
+                      </div>
+                      <div className="fw-semibold">{formatLegalTerm(guide.terminoDias)}</div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function getActorLabel(actor) {
+  const labels = {
+    CUR: 'Curaduría',
+    SOL: 'Solicitante',
+    PROF: 'Profesional responsable',
+    VEC: 'Vecino o tercero interesado',
+  };
+
+  return labels[actor] || actor || 'No definido';
+}
+
+function formatLegalTerm(days) {
+  if (days === null || days === undefined) return 'No definido';
+  if (Number(days) === 0) return 'Sin término fijo';
+  if (Number(days) === 1) return '1 día';
+  return `${days} días`;
 }
 
 function labelNotificacion(value) {
