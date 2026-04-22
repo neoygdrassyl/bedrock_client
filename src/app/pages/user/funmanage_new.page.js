@@ -54,10 +54,20 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
     [bookmarks]
   );
 
-  const handleKPIFilterChange = useCallback(({ status, phase, desistido, causal, key, subfiltro, bookmarked }) => {
+  const handleKPIFilterChange = useCallback(({ status, phase, desistido, causal, key, subfiltro, bookmarked, vecinos }) => {
     setKpiActiveFilterKey((prev) => {
       if (prev === key) {
-        setFilters((f) => mergeFilters(f, { status: null, fase: null, phase: null, desistido: null, causal: null, subfiltro: null, bookmarked: null }));
+        setFilters((f) => mergeFilters(f, {
+          status: null,
+          fase: null,
+          phase: null,
+          desistido: null,
+          causal: null,
+          subfiltro: null,
+          bookmarked: null,
+          vecinos: null,
+          vecinosState: null,
+        }));
         return null;
       }
       setFilters((f) =>
@@ -69,6 +79,8 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           causal: causal || null,
           subfiltro: subfiltro || null,
           bookmarked: bookmarked || null,
+          vecinos: vecinos || null,
+          vecinosState: vecinos || null,
         })
       );
       return key;

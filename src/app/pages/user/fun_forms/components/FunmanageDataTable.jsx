@@ -10,6 +10,12 @@ import { Badge } from '@/components/ui/badge';
 import { MissingDataBadge } from './MissingDataBadge';
 import { AlarmBell } from './AlarmBell';
 
+const VECINOS_META = {
+  pendiente: { label: 'Pendiente', className: 'bg-warning bg-opacity-10 text-warning border border-warning' },
+  enviada: { label: 'Notificado', className: 'bg-info bg-opacity-10 text-info border border-info' },
+  respondida: { label: 'Completo', className: 'bg-success bg-opacity-10 text-success border border-success' },
+};
+
 // ── Constantes ────────────────────────────────────────────────────────────────
 const STATUS_META = {
   EN_TERMINO:          { label: 'En Término',          className: 'bg-success bg-opacity-10 text-success border border-success' },
@@ -174,19 +180,25 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate)
       id: 'vecinos_valla',
       header: 'Vecinos / Valla',
       enableSorting: false,
-      accessorFn: row => ({ vecinos: row.vecinos_state ?? row.vecinosState ?? null, valla: row.sign }),
+      accessorFn: row => ({
+        vecinos:
+          row.vecinos?.stateLabel ??
+          row.vecinos?.state_label ??
+          row.vecinos_state ??
+          row.vecinosState ??
+          null,
+        valla: row.sign,
+      }),
       cell: info => {
         const { vecinos, valla } = info.getValue();
+        const vecinosKey = String(vecinos || '').trim().toLowerCase();
+        const vecinosMeta = VECINOS_META[vecinosKey] || VECINOS_META.pendiente;
         
         return (
           <div className="d-flex flex-column gap-1">
             <div className="d-flex align-items-center gap-1">
               <span className="small text-secondary" style={{ width: '55px' }}>Vecinos:</span>
-              {vecinos === 'Respondida' ? (
-                <span className="text-success small fw-bold">✓ OK</span>
-              ) : (
-                <span className="badge bg-warning bg-opacity-10 text-warning border border-warning">Pendiente</span>
-              )}
+              <Badge className={vecinosMeta.className}>{vecinosMeta.label}</Badge>
             </div>
             <div className="d-flex align-items-center gap-1">
               <span className="small text-secondary" style={{ width: '55px' }}>Valla:</span>

@@ -264,17 +264,23 @@ export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActive
             </Select>
 
             <Select
-              value={filters.vecinosState || '__all__'}
-              onValueChange={(val) => setFilters((f) => mergeFilters(f, { vecinosState: val === '__all__' ? null : val }))}
+              value={filters.vecinos || filters.vecinosState || '__all__'}
+              onValueChange={(val) => {
+                setFilters((f) => mergeFilters(f, {
+                  vecinos: val === '__all__' ? null : val,
+                  vecinosState: val === '__all__' ? null : val,
+                }));
+                setKpiActiveFilterKey(null);
+              }}
             >
               <SelectTrigger style={{ width: '130px', height: '31px', fontSize: '0.8rem' }}>
                 <SelectValue placeholder="Vecinos" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">Vecinos: Todos</SelectItem>
-                <SelectItem value="pendiente">Pendientes</SelectItem>
-                <SelectItem value="enviada">Enviada</SelectItem>
-                <SelectItem value="respondida">Respondida</SelectItem>
+                <SelectItem value="pending">Pendientes</SelectItem>
+                <SelectItem value="notified">Notificados</SelectItem>
+                <SelectItem value="complete">Completos</SelectItem>
               </SelectContent>
             </Select>
 

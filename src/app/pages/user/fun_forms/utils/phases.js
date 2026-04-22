@@ -1,3 +1,4 @@
+// Vecinos es una dimensión transversal de gestión/alarma/filtro; nunca debe agregarse como fase procesal.
 export const PHASES = [
   { id: 'RAD', code: 'RAD', label: 'Radicación', group: 'inicio' },
   { id: 'REV', code: 'REV', label: 'Revisión', group: 'estudio' },

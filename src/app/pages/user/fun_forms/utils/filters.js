@@ -17,6 +17,7 @@ export const DEFAULT_FILTERS = {
   causal: null,
   incluirCerrados: false,
   bookmarked: null,
+  vecinos: null,
   vecinosState: null,
   vallaState: null,
 };
@@ -47,7 +48,7 @@ export function clearFilter(filters, key) {
 export function hasActiveFilters(filters) {
   const keys = [
     'fase', 'phase', 'subfiltro', 'status', 'responsable', 'profesional', 
-    'search', 'desistido', 'causal', 'bookmarked', 'vecinosState', 'vallaState', 
+    'search', 'desistido', 'causal', 'bookmarked', 'vecinos', 'vecinosState', 'vallaState', 
     'desde', 'hasta'
   ];
   return keys.some((k) => {
