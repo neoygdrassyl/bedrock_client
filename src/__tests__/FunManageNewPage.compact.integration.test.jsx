@@ -126,7 +126,7 @@ describe('FunManageNewPage compact integration', () => {
     });
   });
 
-  it('toggles bookmark using personal scope from the compact table', async () => {
+  it('toggles bookmark using personal and team scopes from the compact table', async () => {
     const user = userEvent.setup();
     const setScope = vi.fn().mockResolvedValue(undefined);
     const refetch = vi.fn();
@@ -148,10 +148,24 @@ describe('FunManageNewPage compact integration', () => {
 
     renderPage();
 
-    await user.click(screen.getByTestId('bookmark-toggle-77'));
+    await user.click(screen.getByTestId('bookmark-menu-trigger-77'));
+    await user.click(screen.getByTestId('bookmark-menu-personal-77'));
 
     await waitFor(() => {
       expect(setScope).toHaveBeenCalledWith(77, 'personal', true);
+    });
+    await waitFor(() => {
+      expect(refetch).toHaveBeenCalled();
+    });
+
+    setScope.mockClear();
+    refetch.mockClear();
+
+    await user.click(screen.getByTestId('bookmark-menu-trigger-77'));
+    await user.click(screen.getByTestId('bookmark-menu-team-77'));
+
+    await waitFor(() => {
+      expect(setScope).toHaveBeenCalledWith(77, 'team', true);
     });
     await waitFor(() => {
       expect(refetch).toHaveBeenCalled();
