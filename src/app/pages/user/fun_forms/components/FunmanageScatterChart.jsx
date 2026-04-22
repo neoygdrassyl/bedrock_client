@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Icon } from '@/components/icon';
 import {
   ScatterChart,
@@ -7,44 +7,39 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   ReferenceLine,
+  Cell,
 } from 'recharts';
 
-// ── Mapeo categoría ↔ eje Y numérico ─────────────────────────────────────────
-const CAT_TO_NUM = { I: 1, II: 2, III: 3, IV: 4 };
-const NUM_TO_CAT = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV' };
+// ── Fases y orden ─────────────────────────────────────────
+const PHASES = [
+  'RAD', 'EST', 'NOT_OBS', 'CORR', 'VIA', 'NOT_VIA', 'PAG', 'RES', 'NOT_RES', 'EJEC', 'ENT'
+];
 
-// ── Paleta de colores por estado (nuevos nombres) ─────────────────────────────
-const STATUS_COLORS = {
-  EN_TERMINO:          '#22c55e',
-  PRONTO_A_VENCER:     '#eab308',
-  ALERTA_VENCIMIENTO:  '#ef4444',
-  VENCIDO:             '#991b1b',
+const PHASE_LABELS = {
+  'RAD': 'Radicación',
+  'EST': 'Estudio',
+  'NOT_OBS': 'Notificación Obs.',
+  'CORR': 'Correcciones',
+  'VIA': 'Viabilidad',
+  'NOT_VIA': 'Notif. Viabilidad',
+  'PAG': 'Pagos',
+  'RES': 'Resolución',
+  'NOT_RES': 'Notif. Res.',
+  'EJEC': 'Ejecutoria',
+  'ENT': 'Entrega'
 };
 
-const STATUS_LABELS = {
-  EN_TERMINO:          'En Término',
-  PRONTO_A_VENCER:     'Pronto a Vencer',
-  ALERTA_VENCIMIENTO:  'Alerta Vencimiento',
-  VENCIDO:             'Vencido',
-};
+const PHASE_TO_NUM = {};
+PHASES.forEach((p, i) => { PHASE_TO_NUM[p] = i + 1; });
 
 // ── Tick personalizado para el eje Y (categorías) ─────────────────────────────
-function CategoryTick({ x, y, payload }) {
+function PhaseTick({ x, y, payload }) {
   return (
     <g transform={`translate(${x},${y})`}>
-      <text
-        x={0}
-        y={0}
-        dy={4}
-        textAnchor="end"
-        fill="#6b7280"
-        fontSize={13}
-        fontWeight="600"
-      >
-        {NUM_TO_CAT[payload.value] ?? payload.value}
+      <text x={0} y={0} dy={4} textAnchor="end" fill="#6b7280" fontSize={11} fontWeight="600">
+        {PHASE_LABELS[PHASES[payload.value - 1]] || payload.value}
       </text>
     </g>
   );
@@ -56,10 +51,6 @@ function ScatterTooltip({ active, payload }) {
 
   const d = payload[0]?.payload;
   if (!d) return null;
-
-  const statusColor = STATUS_COLORS[d.status] ?? '#94a3b8';
-  const statusLabel = STATUS_LABELS[d.status] ?? d.status ?? '—';
-  const pctDisplay = d.x != null ? `${d.x}%` : '—';
 
   return (
     <div
@@ -73,221 +64,136 @@ function ScatterTooltip({ active, payload }) {
         pointerEvents: 'none',
       }}
     >
-      {/* Radicado */}
       <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: '#1e293b' }}>
-        <Icon name="file-alt" size={16} style={{ color: '#64748b' }} />
+        <Icon name="file-alt" size={16} style={{ color: '#64748b' }} className="me-1" />
         {d.radicado ?? '—'}
       </p>
-
-      {/* Fase */}
       <p style={{ margin: '5px 0 0', fontSize: 12, color: '#475569' }}>
         <strong>Fase:</strong> {d.fase_label ?? '—'}
       </p>
-
-      {/* Categoría */}
       <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
-        <strong>Categoría:</strong> {d.categoria ?? '—'}
+        <strong>Responsable:</strong> {d.responsable ?? '—'}
       </p>
-
-      {/* % del tiempo usado */}
       <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
-        <strong>Tiempo usado:</strong>{' '}
-        <span style={{ fontWeight: 600, color: statusColor }}>{pctDisplay}</span>
+        <strong>Días Transcurridos:</strong> <span style={{ fontWeight: 600 }}>{d.dias_habiles_usados ?? 0}</span>
       </p>
-
-      {/* Días hábiles detalle */}
       <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
-        <strong>Días:</strong>{' '}
-        <span style={{ fontWeight: 600 }}>{d.dias_habiles_usados ?? '—'}</span>
-        {d.dias_habiles_limite ? (
-          <span style={{ color: '#94a3b8' }}> / {d.dias_habiles_limite} días límite</span>
-        ) : null}
-      </p>
-
-      {/* Estado (badge) */}
-      <p style={{ margin: '6px 0 0' }}>
-        <span
-          style={{
-            backgroundColor: statusColor,
-            color: '#fff',
-            borderRadius: 4,
-            padding: '2px 9px',
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.02em',
-          }}
-        >
-          {statusLabel}
+        <strong>Estado:</strong>{' '}
+        <span style={{ color: d.fill, fontWeight: 700 }}>
+          {d.colorStatus === 'verde' ? 'En término' : d.colorStatus === 'amarillo' ? 'Pronto a vencer' : 'Vencido'}
         </span>
       </p>
-
-      {/* Responsable */}
-      {d.responsable && (
-        <p style={{ margin: '5px 0 0', fontSize: 11, color: '#94a3b8' }}>
-          <Icon name="user" size={16} className="me-1" />{d.responsable}
-        </p>
-      )}
     </div>
   );
 }
 
-// ── Componente principal ──────────────────────────────────────────────────────
-// Umbrales por defecto (fallback si no hay configuración de alarmas cargada).
-// La verdad operativa vive en el panel admin (alarm_config.configJson.scatterThresholds).
-const DEFAULT_THRESHOLDS = { warning: 80, critical: 95, overdue: 100 };
+export function FunmanageScatterChart({ data, loading }) {
+  const [responsableFilter, setResponsableFilter] = useState('curaduria');
 
-/**
- * Gráfico de dispersión de solicitudes de curaduría.
- *
- * @param {{
- *   data: Array,
- *   loading: boolean,
- *   thresholds?: { warning?: number, critical?: number, overdue?: number }
- * }} props
- */
-export function FunmanageScatterChart({ data, loading, thresholds }) {
-  const t = {
-    warning:  Number.isFinite(thresholds?.warning)  ? thresholds.warning  : DEFAULT_THRESHOLDS.warning,
-    critical: Number.isFinite(thresholds?.critical) ? thresholds.critical : DEFAULT_THRESHOLDS.critical,
-    overdue:  Number.isFinite(thresholds?.overdue)  ? thresholds.overdue  : DEFAULT_THRESHOLDS.overdue,
-  };
-  // Transformar datos del backend al formato del scatter chart
-  // X-axis: % del tiempo usado (dias_usados / dias_limite * 100)
   const plotData = useMemo(() => {
     if (!Array.isArray(data)) return [];
-    return data.map(d => ({
-      ...d,
-      x: d.dias_habiles_limite > 0
-        ? Math.round((d.dias_habiles_usados / d.dias_habiles_limite) * 100)
-        : 0,
-      yNum: CAT_TO_NUM[d.categoria] ?? 1,
-    }));
-  }, [data]);
+    
+    return data
+      .map(d => {
+        const isCuraduria = String(d.responsable || "").toLowerCase().includes("curad");
+        const respType = isCuraduria ? 'curaduria' : 'solicitante';
+        const phaseNum = PHASE_TO_NUM[d.fase_actual];
 
-  // Segmentar por estado para asignar color uniforme por serie
-  const byStatus = status => plotData.filter(d => d.status === status);
+        const used = d.dias_habiles_usados || 0;
+        const limit = d.dias_habiles_limite || 0;
+        const p = limit > 0 ? (used / limit) * 100 : (d.porcentaje_avance || 0);
+        
+        let colorStatus = 'verde';
+        let fill = '#22c55e';
+        if (p >= 100) {
+          colorStatus = 'rojo';
+          fill = '#ef4444';
+        } else if (p >= 80) {
+          colorStatus = 'amarillo';
+          fill = '#eab308';
+        }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+        return {
+          ...d,
+          x: used,
+          yNum: phaseNum,
+          respType,
+          colorStatus,
+          fill
+        };
+      })
+      .filter(d => d.yNum != null)
+      .filter(d => d.respType === responsableFilter);
+  }, [data, responsableFilter]);
+
+  const renderChart = (height = 300) => (
+    <ResponsiveContainer width="100%" height={height}>
+      <ScatterChart margin={{ top: 12, right: 24, bottom: 28, left: 24 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <XAxis
+          type="number"
+          dataKey="x"
+          name="Días"
+          domain={[0, 'auto']}
+          tickCount={8}
+          tick={{ fontSize: 11, fill: '#6b7280' }}
+          label={{
+            value: 'Días transcurridos en fase actual',
+            position: 'insideBottom',
+            offset: -14,
+            fontSize: 11,
+            fill: '#9ca3af',
+          }}
+        />
+        <YAxis
+          type="number"
+          dataKey="yNum"
+          name="Fase"
+          domain={[0.5, PHASES.length + 0.5]}
+          ticks={PHASES.map((_, i) => i + 1)}
+          tick={<PhaseTick />}
+          width={80}
+        />
+        <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '4 4', stroke: '#94a3b8' }} />
+        
+        <Scatter name="Expedientes" data={plotData} shape="circle">
+          {plotData.map((entry, index) => (
+            <Cell 
+              key={`cell-${index}`} 
+              fill={entry.fill} 
+            />
+          ))}
+        </Scatter>
+      </ScatterChart>
+    </ResponsiveContainer>
+  );
+
   if (loading) {
     return (
-      <div
-        className="d-flex flex-column justify-content-center gap-3 py-4"
-        style={{ minHeight: 300 }}
-        data-testid="scatter-chart-loading"
-      >
-        <div className="d-flex align-items-center">
-          <div className="spinner-border spinner-border-sm text-primary" role="status">
-            <span className="visually-hidden">Cargando gráfico…</span>
-          </div>
-          <div className="ms-3">
-            <div className="fw-semibold text-slate-700">Cargando gráfico…</div>
-            <div className="text-muted" style={{ fontSize: 13 }}>
-              Preparando la dispersión por categoría y sus divisiones.
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="progress overflow-hidden"
-          style={{ height: 10, backgroundColor: '#e2e8f0' }}
-          aria-label="Progreso de carga del gráfico"
-        >
-          <div
-            className="progress-bar progress-bar-striped progress-bar-animated bg-info"
-            role="progressbar"
-            style={{ width: '100%' }}
-            aria-valuenow={100}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          />
-        </div>
-
-        <div className="d-flex justify-content-between text-muted" style={{ fontSize: 12 }}>
-          <span>Consultando datos del dashboard</span>
-          <span>Renderizando puntos</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (plotData.length === 0) {
-    return (
-      <div
-        className="text-center text-muted py-4"
-        data-testid="scatter-chart-empty"
-      >
-        <Icon name="chart-bar" size={16} className="me-2" />
-        Sin datos para los filtros aplicados.
+      <div className="d-flex flex-column justify-content-center align-items-center py-4" style={{ minHeight: 300 }}>
+        <div className="spinner-border spinner-border-sm text-primary" role="status"></div>
+        <div className="mt-2 text-muted" style={{ fontSize: 13 }}>Cargando gráfico...</div>
       </div>
     );
   }
 
   return (
-    <div data-testid="scatter-chart" className="w-100">
-      <ResponsiveContainer width="100%" height={300}>
-        <ScatterChart margin={{ top: 12, right: 24, bottom: 28, left: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+    <div className="w-100 position-relative">
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div className="btn-group" role="group">
+          <input type="radio" className="btn-check" name="respRadio" id="respCuraduria" 
+            checked={responsableFilter === 'curaduria'} onChange={() => setResponsableFilter('curaduria')} />
+          <label className="btn btn-outline-primary btn-sm" htmlFor="respCuraduria">Curaduría</label>
 
-          {/* Líneas de referencia: umbrales de semáforo (configurables via panel admin) */}
-          <ReferenceLine x={t.warning}  stroke="#eab308" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: `${t.warning}%`,  position: 'top', fontSize: 9, fill: '#eab308' }} />
-          <ReferenceLine x={t.critical} stroke="#ef4444" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: `${t.critical}%`, position: 'top', fontSize: 9, fill: '#ef4444' }} />
-          <ReferenceLine x={t.overdue}  stroke="#991b1b" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: `${t.overdue}%`,  position: 'top', fontSize: 9, fill: '#991b1b' }} />
+          <input type="radio" className="btn-check" name="respRadio" id="respSolicitante" 
+            checked={responsableFilter === 'solicitante'} onChange={() => setResponsableFilter('solicitante')} />
+          <label className="btn btn-outline-primary btn-sm" htmlFor="respSolicitante">Solicitante</label>
+        </div>
+      </div>
 
-          <XAxis
-            type="number"
-            dataKey="x"
-            name="% Tiempo"
-            domain={[0, 'auto']}
-            tickCount={8}
-            tick={{ fontSize: 11, fill: '#6b7280' }}
-            unit="%"
-            label={{
-              value: '% Tiempo usado',
-              position: 'insideBottom',
-              offset: -14,
-              fontSize: 11,
-              fill: '#9ca3af',
-            }}
-          />
-
-          {/* Eje Y: categorías de curadurías */}
-          <YAxis
-            type="number"
-            dataKey="yNum"
-            name="Categoría"
-            domain={[0.5, 4.5]}
-            ticks={[1, 2, 3, 4]}
-            tick={<CategoryTick />}
-            width={38}
-          />
-
-          <Tooltip
-            content={<ScatterTooltip />}
-            cursor={{ strokeDasharray: '4 4', stroke: '#94a3b8' }}
-          />
-
-          <Legend
-            verticalAlign="top"
-            formatter={value => STATUS_LABELS[value] ?? value}
-            wrapperStyle={{ fontSize: 12, paddingBottom: 8 }}
-          />
-
-          {/* Una serie por estado → color uniforme */}
-          {Object.entries(STATUS_COLORS).map(([status, color]) => (
-            <Scatter
-              key={status}
-              name={status}
-              data={byStatus(status)}
-              fill={color}
-              fillOpacity={0.75}
-              stroke={color}
-              strokeWidth={1}
-              shape="circle"
-              r={5}
-            />
-          ))}
-        </ScatterChart>
-      </ResponsiveContainer>
+      {plotData.length === 0 ? (
+        <div className="text-center text-muted py-4"><Icon name="chart-bar" size={16} className="me-2" />Sin datos.</div>
+      ) : renderChart(300)}
     </div>
   );
 }
