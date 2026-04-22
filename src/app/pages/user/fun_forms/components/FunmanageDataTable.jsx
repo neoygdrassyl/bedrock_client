@@ -212,10 +212,10 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate)
               type="button"
               className="btn btn-sm btn-outline-primary py-0 px-2"
               title="Abrir expediente"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/funmanage/expediente/${row.radicado}`);
-              }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewDetail?.(row);
+                }}
             >
               <Icon name="folder-open" size={16} />
             </button>
@@ -361,7 +361,7 @@ export function FunmanageDataTable({
                   key={row.id}
                   className="cursor-pointer"
                   data-testid={`table-row-${idx}`}
-                  onClick={() => navigate(`/funmanage/expediente/${row.original.radicado}`)}
+                  onClick={() => onViewDetail?.(row.original)}
                 >
                   {row.getVisibleCells().map(cell => (
                     <td key={cell.id} className="px-3 py-2">
