@@ -3,9 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectFlowModal from '../../legal_flow_guide/components/ProjectFlowModal';
 import { Icon } from '@/components/icon';
-import { useBookmarks } from '../hooks/useBookmarks';
 import { useAlarms } from '../hooks/useAlarms';
 import legalGuideService from '../../../../services/legalGuide.service';
+import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 
 // ── Status visual config ─────────────────────────────────────────────────────
 const STATUS_META = {
@@ -57,14 +57,20 @@ function derivePhasesFromExpediente(exp) {
 }
 
 // ── Componente principal ─────────────────────────────────────────────────────
-export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
+export function FunExpedienteDetail({
+  expediente,
+  bookmarkState,
+  bookmarkError,
+  onToggleBookmarkScope,
+  onClose,
+  onOpenWorkspace,
+}) {
   const [showFlowModal, setShowFlowModal] = useState(false);
   const [isLegalGuideOpen, setIsLegalGuideOpen] = useState(true);
   const [legalGuide, setLegalGuide] = useState(null);
   const [legalGuideLoading, setLegalGuideLoading] = useState(false);
   const [legalGuideError, setLegalGuideError] = useState('');
 
-  const { bookmarks, toggle: toggleBookmark } = useBookmarks();
   const { alarms, attend, hide } = useAlarms({ includeAttended: true, includeHidden: true });
   const currentPhaseCode = expediente?.fase_actual || '';
 
@@ -110,7 +116,6 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
   const s = STATUS_META[expediente.status] || STATUS_META.EN_TERMINO;
   const pct = Math.min(expediente.porcentaje_avance ?? 0, 100);
 
-  const isBookmarked = bookmarks.some(b => String(b.fun0Id) === String(expediente.id) && b.scope === 'personal');
   const expedienteAlarms = alarms.filter(a => String(a.fun0Id) === String(expediente.id));
 
   return (
@@ -145,18 +150,14 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
               <span className="text-xs text-uppercase text-muted d-block" style={{ letterSpacing: '0.06em' }}>
                 Expediente
               </span>
-              <button
-                type="button"
-                className="btn btn-sm py-0 px-1 border-0"
-                title={isBookmarked ? 'Quitar marca' : 'Marcar expediente'}
-                onClick={() => toggleBookmark(expediente.id, 'personal', isBookmarked)}
-              >
-                <Icon
-                  name={isBookmarked ? 'star' : 'star-regular'}
-                  size={16}
-                  className={isBookmarked ? 'text-warning' : 'text-secondary'}
-                />
-              </button>
+              <BookmarkQuickMenu
+                rowId={expediente.id}
+                bookmarkState={bookmarkState}
+                triggerClassName="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted"
+                triggerTestIdPrefix="detail-bookmark-menu-trigger"
+                menuTestIdPrefix="detail-bookmark-menu"
+                onToggleScope={(scope, shouldMark) => onToggleBookmarkScope?.(expediente, scope, shouldMark)}
+              />
             </div>
             <div className="d-flex flex-wrap align-items-center gap-2">
               <span className="font-mono font-semibold text-lg me-2">{expediente.radicado}</span>
@@ -183,6 +184,15 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
 
         <div className="d-flex flex-grow-1 overflow-hidden">
           <div className="flex-grow-1 overflow-auto px-4 py-3" style={{ fontSize: '0.875rem' }}>
+            {bookmarkError && (
+              <div
+                className="mb-3 rounded border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-foreground"
+                role="alert"
+                data-testid="detail-bookmark-error"
+              >
+                No se pudieron sincronizar los destacados en este momento.
+              </div>
+            )}
 
             {/* Status + Progress */}
           <div className="mb-4">
