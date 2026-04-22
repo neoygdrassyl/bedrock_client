@@ -103,7 +103,7 @@ describe('FunManageNewPage compact integration', () => {
     expect(compactRow._bookmarked).toBe(true);
   });
 
-  it('opens preview from row click and opens workspace from explicit fullscreen action', async () => {
+  it('shows bookmark menu only in the approved detail drawer path, not in workspace', async () => {
     const user = userEvent.setup();
     renderPage();
 
@@ -112,6 +112,7 @@ describe('FunManageNewPage compact integration', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Detalle del expediente')).toBeInTheDocument();
     });
+    expect(screen.getByTestId('detail-bookmark-menu-trigger-77')).toBeInTheDocument();
 
     await user.click(screen.getByLabelText('Cerrar panel'));
 
@@ -124,6 +125,7 @@ describe('FunManageNewPage compact integration', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Detalle del expediente')).toBeInTheDocument();
     });
+    expect(screen.queryByTestId('detail-bookmark-menu-trigger-77')).not.toBeInTheDocument();
   });
 
   it('toggles bookmark using personal and team scopes from the compact table', async () => {

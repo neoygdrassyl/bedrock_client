@@ -115,6 +115,7 @@ export function FunExpedienteDetail({
 
   const s = STATUS_META[expediente.status] || STATUS_META.EN_TERMINO;
   const pct = Math.min(expediente.porcentaje_avance ?? 0, 100);
+  const showBookmarkQuickMenu = typeof onToggleBookmarkScope === 'function';
 
   const expedienteAlarms = alarms.filter(a => String(a.fun0Id) === String(expediente.id));
 
@@ -150,14 +151,16 @@ export function FunExpedienteDetail({
               <span className="text-xs text-uppercase text-muted d-block" style={{ letterSpacing: '0.06em' }}>
                 Expediente
               </span>
-              <BookmarkQuickMenu
-                rowId={expediente.id}
-                bookmarkState={bookmarkState}
-                triggerClassName="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted"
-                triggerTestIdPrefix="detail-bookmark-menu-trigger"
-                menuTestIdPrefix="detail-bookmark-menu"
-                onToggleScope={(scope, shouldMark) => onToggleBookmarkScope?.(expediente, scope, shouldMark)}
-              />
+              {showBookmarkQuickMenu && (
+                <BookmarkQuickMenu
+                  rowId={expediente.id}
+                  bookmarkState={bookmarkState}
+                  triggerClassName="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted"
+                  triggerTestIdPrefix="detail-bookmark-menu-trigger"
+                  menuTestIdPrefix="detail-bookmark-menu"
+                  onToggleScope={(scope, shouldMark) => onToggleBookmarkScope(expediente, scope, shouldMark)}
+                />
+              )}
             </div>
             <div className="d-flex flex-wrap align-items-center gap-2">
               <span className="font-mono font-semibold text-lg me-2">{expediente.radicado}</span>
