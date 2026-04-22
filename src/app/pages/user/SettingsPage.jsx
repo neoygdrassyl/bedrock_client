@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useAlarmConfig } from './fun_forms/hooks/useAlarmConfig';
+import DataService from '../../services/data.service.js';
 
 import { PHASES as PROCESS_PHASES } from './fun_forms/utils/phases';
 
 const ACTORS = ['CURADURIA', 'SOLICITANTE'];
+
+function formatLastLogin(value) {
+  if (!value) return 'No disponible';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return new Intl.DateTimeFormat('es-CO', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }).format(date);
+}
 
 function normalizeConfig(raw) {
   const cfg = raw || {};
@@ -31,6 +46,10 @@ export default function SettingsPage() {
   const [dirty, setDirty] = useState(false);
   const [activeTab, setActiveTab] = useState('alarmas');
   const [alertMsg, setAlertMsg] = useState(null);
+  const user = DataService.getUserData();
+  const fullName = [user?.name, user?.surname].filter(Boolean).join(' ') || 'No disponible';
+  const roleDesc = user?.roleDesc || 'No disponible';
+  const lastLogin = formatLastLogin(user?.lastLoginAt || user?.lastLogin);
 
   useEffect(() => {
     if (config) {
@@ -115,6 +134,25 @@ export default function SettingsPage() {
           <button type="button" className="btn-close" aria-label="Close" onClick={() => setAlertMsg(null)}></button>
         </div>
       )}
+
+      <div className="card shadow-sm mb-4">
+        <div className="card-body py-3">
+          <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+            <div>
+              <h2 className="h4 mb-1">Configuración de Alarmas</h2>
+              <p className="text-muted mb-0">Parámetros de tiempos y umbrales para las diferentes fases del proceso.</p>
+            </div>
+
+            <div className="d-flex flex-column align-items-lg-end gap-2">
+              <div className="d-flex flex-wrap justify-content-lg-end gap-2">
+                <span className="badge bg-primary">{fullName}</span>
+                <span className="badge bg-secondary">{roleDesc}</span>
+              </div>
+              <small className="text-muted">Última sesión: {lastLogin}</small>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="card shadow-sm">
         <div className="card-header bg-white pt-3 pb-0">
@@ -340,4 +378,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
