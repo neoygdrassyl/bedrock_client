@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useState, Suspense, lazy } from 'react';
+import React, { useContext, createContext, useEffect, useState, Suspense, lazy } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,10 +7,12 @@ import {
   Outlet,
   useNavigate,
   useLocation,
+  useParams,
 } from 'react-router-dom';
 
 // Auth
 import DataSerive from './services/data.service';
+import FUNService from './services/fun.service';
 
 // Translations
 import { useTranslation } from 'react-i18next';
@@ -47,6 +49,7 @@ const ARCHIVE = lazy(() => import('./pages/user/archive/archive.page'));
 const DICTIONARY = lazy(() => import('./pages/user/dictionary.page'));
 const FUN_MANAGE = lazy(() => import('./pages/user/funmanage.page'));
 const FUN_MANAGE_NEW = lazy(() => import('./pages/user/funmanage_new.page'));
+const FUN_EXPEDIENTE_DETAIL = lazy(() => import('./pages/user/fun_forms/components/FunExpedienteDetail').then((mod) => ({ default: mod.FunExpedienteDetail })));
 const PROFESIONALS = lazy(() => import('./pages/user/profesionals/profesionals.page'));
 const GUIDE_USER = lazy(() => import('./pages/user/guide_user/guide_user.page'));
 const DEV_GUIDE = lazy(() => import('./pages/user/dev_guide/dev_guide.page'));
@@ -226,6 +229,9 @@ export default function App() {
                       <Route path="/licencias/gestion" element={
                         <FUN_MANAGE translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
                       } />
+                      <Route path="/funmanage/expediente/:radicado" element={
+                        <FunmanageExpedienteRoute />
+                      } />
                       <Route path="/licencias/gestion-nueva" element={
                         <FUN_MANAGE_NEW translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
                       } />
@@ -316,6 +322,74 @@ function LoginPageWithAuth() {
   return auth.user
     ? <Navigate to="/dashboard" replace />
     : <LoginPage signin={auth.signin} />;
+}
+
+function FunmanageExpedienteRoute() {
+  const { radicado } = useParams();
+  const [expediente, setExpediente] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!radicado) {
+      setExpediente(null);
+      setError('No se encontró el radicado solicitado.');
+      setLoading(false);
+      return undefined;
+    }
+
+    setLoading(true);
+    setError('');
+
+    FUNService.get_fun_IdPublic(radicado)
+      .then((response) => {
+        if (cancelled) return;
+        const data = response?.data?.data ?? response?.data ?? null;
+        setExpediente(data);
+        if (!data) setError('No fue posible cargar el expediente solicitado.');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setExpediente(null);
+        setError('No fue posible cargar el expediente solicitado.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [radicado]);
+
+  if (loading) {
+    return <LoadingFallback />;
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto py-8 px-4">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
+          <h4 className="text-base font-semibold text-destructive">Expediente no disponible</h4>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-sm">
+            <a href="/licencias/gestion-nueva" className="text-primary hover:underline">
+              Volver a Gestión Licencias Nuevo
+            </a>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <FUN_EXPEDIENTE_DETAIL
+      expediente={expediente}
+      onClose={() => window.history.back()}
+    />
+  );
 }
 
 // ── Auth context (unchanged) ────────────────────────────────────────
