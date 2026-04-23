@@ -83,11 +83,11 @@ export default function EXP_RES_2(props) {
   const config = {
     readonly: false,
     language: "es",
-    minHeight: 700,
-    iframe: true,
+    // iframe:false → el editor usa el DOM principal, así hereda CSS global
+    // y no aparecen artefactos visuales por CSS/sprite no disponible dentro del iframe.
+    iframe: false,
     allowHTML: true,
-    minHeight: 0, // <= importante poner en 0 o eliminar
-    //iframe: false, // <= cambia esto a false
+    minHeight: 600,
     height: 600,
     defaultActionOnPaste: "insert_only_text",
     uploader: {
