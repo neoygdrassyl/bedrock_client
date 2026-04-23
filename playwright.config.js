@@ -31,8 +31,8 @@ export default defineConfig({
   /* Retry once on failure to reduce flakiness */
   retries: 1,
 
-  /* Single worker in CI for stability, parallel locally */
-  workers: process.env.CI ? 1 : undefined,
+  /* Forzar un único worker siempre para evitar colisiones con Vitest o el entorno */
+  workers: 1,
 
   /* Reporter */
   reporter: process.env.CI
@@ -43,11 +43,13 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
 
-    /* Capture screenshot only when a test fails */
-    screenshot: 'only-on-failure',
-
-    /* Record trace on first retry (gives a timeline + DOM snapshots) */
-    trace: 'on-first-retry',
+    /* Desactivar cualquier captura visual para evitar consumir tokens multimodales pesados */
+    screenshot: 'off',
+    trace: 'off',
+    video: 'off',
+    
+    /* Configurar resolución forzada de pantalla completa / 16:9 ideal para la UI de Dovela */
+    viewport: { width: 1920, height: 1080 },
 
     /* Reasonable navigation timeout */
     navigationTimeout: 30_000,
@@ -63,7 +65,10 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 }, // Sobreescribimos el viewport predeterminado de Desktop Chrome
+      },
     },
   ],
 
