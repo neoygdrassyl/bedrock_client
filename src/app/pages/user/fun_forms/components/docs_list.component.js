@@ -9,6 +9,7 @@ import './fun_modal_shared.css';
 
 function DOCS_LIST({ idRef, text, setValues }) {
         const [modalSearchList, setModalSearchList] = useState(false);
+    const [searchText, setSearchText] = useState('');
         const customStylesForModal = {
             overlay: {
                 position: 'fixed',
@@ -67,17 +68,42 @@ function DOCS_LIST({ idRef, text, setValues }) {
             }
         ]
         const docsData = _GET_DOCS_DATA();
+        const filteredDocsData = docsData.filter((item) => {
+            if (!searchText) return true;
 
-        let toggle = (id) => {
+            const normalizedSearch = searchText.toLowerCase().trim();
+            return item.cod.toLowerCase().includes(normalizedSearch) || item.desc.toLowerCase().includes(normalizedSearch);
+        });
+
+        let closeModal = () => {
+            setSearchText('');
+            setModalSearchList(false);
+        }
+        let toggle = () => {
+            setSearchText('');
             setModalSearchList(prev => !prev);
         }
         let _COPY_INFO = (_data) => {
             setValues(idRef, [_data.cod, _data.desc])
-            setModalSearchList(false)
+            closeModal()
         }
+        const searchHeader = (
+            <div className="input-group mb-3">
+                <span className="input-group-text bg-light">
+                    <i className="fas fa-search"></i>
+                </span>
+                <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Buscar codigo o nombre..."
+                    value={searchText}
+                    onChange={(event) => setSearchText(event.target.value)}
+                />
+            </div>
+        );
         return (
             <div>
-                <MDBBtn className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</MDBBtn>
+                <MDBBtn className="btn btn-info shadow-none" id={idRef} onClick={toggle}><i className="fas fa-th-list"></i> {text}</MDBBtn>
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modalSearchList}
                     style={customStylesForModal}
@@ -86,21 +112,23 @@ function DOCS_LIST({ idRef, text, setValues }) {
 
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-th-list"></i> CODIGOS TIPOLOGIA DOCUMENTAL</label>
-                        <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
+                        <MDBBtn className='btn-close' color='none' onClick={closeModal}></MDBBtn>
                     </div>
                     <DataTable
                         striped
                         columns={docsColumns}
-                        data={docsData}
+                        data={filteredDocsData}
                         pagination
                         paginationPerPage={10}
                         paginationComponentOptions={{ rowsPerPageText: 'Mostrar entradas', rangeSeparatorText: 'de' }}
                         dense
                         highlightOnHover
                         noDataComponent="No hay datos"
+                        subHeader
+                        subHeaderComponent={searchHeader}
                     />
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                        <MDBBtn className="btn btn-lg btn-info" onClick={closeModal}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                     </div>
                 </Modal>
 
