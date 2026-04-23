@@ -7,11 +7,9 @@ import { TemplateEngine } from "../../../utils/TemplateEngine";
 import JoditEditor from "jodit-pro-react";
 import { saveAs } from "file-saver";
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { Icon } from '@/components/icon';
 export default function EXP_RES_2(props) {
   const { data, swaMsg, currentItem, currentModel} = props;
-
-  console.log("EXP_RES_2 - currentModel:", currentModel);
-  console.log("EXP_RES_2 - data:", data);
 
   const _DATA = data?._DATA ?? {};
   data.reso_tipo = _DATA.reso?.tipo || _DATA.reso?.type  || "Modalidad no encontrada...";
@@ -31,8 +29,6 @@ export default function EXP_RES_2(props) {
     font_size_header: parseFloat(_DATA.reso?.font_size_header) || 10,
   };
 
-  console.log("MARGINS", margins);
-  
   const editor = useRef(null);
   const [content, setContent] = useState("<p>Cargando plantilla...</p>");
   const [htmlSizeKB, setHtmlSizeKB] = useState(null);
@@ -44,8 +40,6 @@ export default function EXP_RES_2(props) {
         data.model = currentModel;
         data.clocks = (currentItem?.fun_clocks ?? []).filter(Boolean);
         data.autenticidad = _DATA.reso?.autenticidad || 'Original';
-
-        console.log("Data: \n",data.clocks);
 
         const tpl = await TemplateEngine.buildTemplate(data, currentModel);
         let modifiedHTML;
@@ -75,12 +69,10 @@ export default function EXP_RES_2(props) {
   const config = {
     readonly: false,
     language: "es",
-    minHeight: 700,
     iframe: true,
     allowHTML: true,
-    minHeight: 0, // <= importante poner en 0 o eliminar
-    //iframe: false, // <= cambia esto a false
-    height: 600,
+    minHeight: 0,
+    height: 640,
     defaultActionOnPaste: "insert_only_text",
     uploader: {
       url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
@@ -125,21 +117,33 @@ export default function EXP_RES_2(props) {
   };
 
   return (
-    <div>
-      <JoditEditor
-        ref={editor}
-        value={content}
-        config={config}
-        onChange={setContent}
-      />
-      <div className="mt-3 text-center">
+    <div className="mt-4 rounded-xl border border-border bg-card p-4 shadow-sm" data-testid="exp-res-editor">
+      <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1">
+          <h3 className="m-0 text-sm font-semibold text-foreground">Editor PDF de resolución</h3>
+          <p className="m-0 text-sm text-muted-foreground">
+            Revisa el contenido generado, ajusta el texto y descarga el PDF cuando la vista previa quede correcta.
+          </p>
+        </div>
+
         <Button variant="destructive" size="sm" onClick={handleDownloadPDFv2}>
-          Descargar PDF 🧾
+          <Icon name="file-pdf" size={16} className="me-2" />
+          Descargar PDF
         </Button>
       </div>
 
+      <div className="overflow-hidden rounded-lg border border-border/70 bg-background">
+        <JoditEditor
+          ref={editor}
+          value={content}
+          config={config}
+          tabIndex={1}
+          onChange={setContent}
+        />
+      </div>
+
       {htmlSizeKB && (
-        <div className="mt-2 text-muted">
+        <div className="mt-2 text-xs text-muted-foreground">
           Tamaño del HTML generado: <strong>{htmlSizeKB} KB</strong>
         </div>
       )}

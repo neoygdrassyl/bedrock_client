@@ -56,6 +56,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
                     isOpen={modalSearchList}
                     style={customStylesForModal}
                     ariaHideApp={false}
+                    className="fun-modal-content"
                 >
 
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">

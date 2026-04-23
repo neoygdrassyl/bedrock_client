@@ -11,13 +11,14 @@ describe('LegacyModal compatibility', () => {
       </LegacyModal>,
     );
 
-    expect(container.querySelector('.ReactModal__Overlay')).not.toBeNull();
-    expect(container.querySelector('.ReactModal__Content')).not.toBeNull();
+    expect(container.querySelector('.ReactModal__Overlay')).toBeNull();
+    expect(document.body.querySelector('.ReactModal__Overlay')).not.toBeNull();
+    expect(document.body.querySelector('.ReactModal__Content')).not.toBeNull();
   });
 
   it('applies overlayClassName to the overlay element for react-modal compatibility', () => {
     const onRequestClose = vi.fn();
-    const { container } = render(
+    render(
       <LegacyModal
         isOpen
         onRequestClose={onRequestClose}
@@ -28,13 +29,13 @@ describe('LegacyModal compatibility', () => {
       </LegacyModal>,
     );
 
-    const overlay = container.querySelector('.ReactModal__Overlay');
+    const overlay = document.body.querySelector('.ReactModal__Overlay');
     expect(overlay).toHaveClass('macro-modal-overlay');
   });
 
   it('keeps overlay click working when overlayClassName is present', () => {
     const onRequestClose = vi.fn();
-    const { container } = render(
+    render(
       <LegacyModal
         isOpen
         onRequestClose={onRequestClose}
@@ -45,7 +46,7 @@ describe('LegacyModal compatibility', () => {
       </LegacyModal>,
     );
 
-    fireEvent.click(container.querySelector('.ReactModal__Overlay > div'));
+    fireEvent.click(document.body.querySelector('.ReactModal__Overlay > div'));
     expect(onRequestClose).toHaveBeenCalledTimes(1);
   });
 });
