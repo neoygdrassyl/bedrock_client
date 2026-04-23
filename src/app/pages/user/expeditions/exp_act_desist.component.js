@@ -15,6 +15,7 @@ import { MDBBtn } from '../../../components/ui';
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
+import { getDesistActState } from './expeditionVisibility';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -515,7 +516,7 @@ const restoreDocs = useCallback(() => {
         let type = reso.type || _RES_PARSER_1(_CHILD_1);
 
         const reso_date_dv = _GET_CLOCK_STATE(-6).date_start || _GET_CLOCK_STATE(70).date_start;
-        const reso_state_dv = reso.state ?? '';
+        const reso_state_dv = getDesistActState(model, reso.state);
         const reso_pot_dv = reso.pot ?? infoCud.pot;
 
         return (
@@ -547,6 +548,13 @@ const restoreDocs = useCallback(() => {
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_res_pot" required
                                 defaultValue={reso_pot_dv} />
+                        </div>
+                    </div>
+                    <div className="col">
+                        <label className="mt-1">Estado</label>
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_res_state"
+                                defaultValue={reso_state_dv} readOnly />
                         </div>
                     </div>
                     <div className="col">
@@ -1134,6 +1142,8 @@ const restoreDocs = useCallback(() => {
 let _COMPONENT_DOC_RES_PDF = () => {
   const reso = _GET_EXPEDITION_JSON('reso') || {};
   const canGenPDF = true;
+    const canSave = (window.user.id === 1 || window.user.roleId === 3 || window.user.roleId === 5 || window.user.roleId === 2) || _GLOBAL_ID === 'cb1';
+    const reso_header_text = reso.header_text ?? '';
   if (!canGenPDF) return '';
 
   return (
@@ -1221,10 +1231,10 @@ let _COMPONENT_DOC_RES_PDF = () => {
             <div className="fields vertical">
                 <div className="field">
                     <label className="field_label">Mostrar logo</label>
-                    <select size={1} className="form-select form-select-sm" id="logo_pages_desist">
+                    <select size={1} className="form-select form-select-sm" id="logo_pages_desist" defaultValue="all">
                         <option value="impar">Pág Impares</option>
                         <option value="par">Pág Pares</option>
-                        <option value="all" selected>Todas las pág.</option>
+                        <option value="all">Todas las pág.</option>
                         <option value="none">No mostrar</option>
                     </select>
                 </div>
@@ -1241,14 +1251,95 @@ let _COMPONENT_DOC_RES_PDF = () => {
 
                 <div className="field">
                     <label className="field_label">Autenticidad</label>
-                    <select size={1} className="form-select form-select-sm" id="autenticidad_desist">
+                    <select size={1} className="form-select form-select-sm" id="autenticidad_desist" defaultValue="Vacio">
                         <option value="Original">Original</option>
                         <option value="Copia">Copia</option>
-                        <option value="Vacio" selected>Vacío</option>
+                        <option value="Vacio">Vacío</option>
                     </select>
                 </div>
             </div>
             </section>
+        </div>
+
+        <div className="row g-3 mt-1">
+            <div className="col-lg-4">
+                <label className="field_label mb-1">Tipo de notificacion</label>
+                <select className="form-select form-select-sm" id="type_not" defaultValue={reso.type_not ?? '0'}>
+                    <option value="0">NO USAR</option>
+                    <option value="1">NOTIFICACION PRESENCIAL</option>
+                    <option value="2">NOTIFICACION ELECTRONICA - SIN RECURSO</option>
+                    <option value="3">NOTIFICACION ELECTRONICA - CON RECURSO</option>
+                </select>
+            </div>
+            <div className="col-lg-4">
+                <label className="field_label mb-1">Alineacion firma curador</label>
+                <select className="form-select form-select-sm" id="exp_pdf_reso_1" defaultValue={reso.r_sign_align ?? 'center'}>
+                    <option value="center">CENTRO</option>
+                    <option value="left">IZQUIERDA</option>
+                    <option value="right">DERECHA</option>
+                </select>
+            </div>
+            <div className="col-lg-4">
+                <label className="field_label mb-1">Vigencia</label>
+                <select className="form-select form-select-sm" id="exp_pdf_reso_record_version" defaultValue={reso.eje || 0}>
+                    <option value={0}>NO USAR EJECUTORIA Y FECHA</option>
+                    <option value={1}>NO USAR FECHA</option>
+                    <option>DOCE (12) MESES</option>
+                    <option>VEINTE Y CUATRO (24) MESES</option>
+                    <option>TREINTA Y SEIS (36) MESES</option>
+                    <option>CUARENTA Y OCHO (48) MESES</option>
+                </select>
+            </div>
+        </div>
+
+        <div className="row g-3 mt-1">
+            <div className="col-lg-4">
+                <label className="field_label mb-1">Logo del documento</label>
+                <select className="form-select form-select-sm" id="exp_pdf_reso_logo" defaultValue={reso.logo ?? 'no'}>
+                    <option value="no">SIN LOGO</option>
+                    <option value="left">IZQUIERDA</option>
+                    <option value="left2">IZQUIERDA ENTRESALTO</option>
+                    <option value="right">DERECHA</option>
+                    <option value="right2">DERECHA ENTRESALTO</option>
+                </select>
+            </div>
+            <div className="col-lg-8">
+                <label className="field_label mb-1">Texto de cabezera</label>
+                <input className="form-control form-control-sm" id="expedition_doc_header_text" defaultValue={reso_header_text} />
+            </div>
+        </div>
+
+        <div className="row g-3 mt-1">
+            <div className="col-sm-6 col-lg-3">
+                <label className="field d-flex align-items-center gap-2">
+                    <input type="checkbox" className="form-check-input" id="record_rew_simple" defaultChecked={false} />
+                    <span className="field_label mb-0">Usar nombre revisor</span>
+                </label>
+            </div>
+            <div className="col-sm-6 col-lg-3">
+                <label className="field d-flex align-items-center gap-2">
+                    <input type="checkbox" className="form-check-input" id="record_rew_signs" defaultChecked={false} />
+                    <span className="field_label mb-0">Usar firma profesionales</span>
+                </label>
+            </div>
+            <div className="col-sm-6 col-lg-2">
+                <label className="field d-flex align-items-center gap-2">
+                    <input type="checkbox" className="form-check-input" id="record_rew_pagesi" defaultChecked={false} />
+                    <span className="field_label mb-0">Pie de pagina</span>
+                </label>
+            </div>
+            <div className="col-sm-6 col-lg-2">
+                <label className="field d-flex align-items-center gap-2">
+                    <input type="checkbox" className="form-check-input" id="record_rew_pagesn" defaultChecked />
+                    <span className="field_label mb-0">Paginacion</span>
+                </label>
+            </div>
+            <div className="col-sm-6 col-lg-2">
+                <label className="field d-flex align-items-center gap-2">
+                    <input type="checkbox" className="form-check-input" id="record_rew_pagesx" defaultChecked={false} />
+                    <span className="field_label mb-0">Paginacion arriba</span>
+                </label>
+            </div>
         </div>
 
         {/* Mensaje + botón */}
@@ -1259,10 +1350,16 @@ let _COMPONENT_DOC_RES_PDF = () => {
 
     <hr />
     <div className="row text-center">
-        <div className="col">
-            <MDBBtn className="btn btn-success my-3" onClick={save_exp_res}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+        <div className="col-lg-4">
+            {canSave ? <MDBBtn className="btn btn-success my-3" onClick={save_exp_res}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn> : null}
         </div>
-        <div className="col">
+        <div className="col-lg-4">
+            <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
+                <i className="far fa-file-pdf me-2"></i>
+                Generar PDF
+            </MDBBtn>
+        </div>
+        <div className="col-lg-4">
             {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
                 <MDBBtn className="btn my-3" color="primary" onClick={() => pdf_gen_res(true)}>
                     <i className="fas fa-edit me-2" />
@@ -1309,21 +1406,21 @@ let _COMPONENT_DOC_RES_PDF = () => {
     let pdf_gen_res = (editDocument = null) => {
         formData = new FormData();
 
-        formData.set('type_not', document.getElementById("type_not").value);
+        formData.set('type_not', document.getElementById("type_not")?.value ?? '0');
 
         let date_payment = _GET_CLOCK_STATE(3).date_start || '';
-        let r_simple = document.getElementById("record_rew_simple").checked;
+        let r_simple = document.getElementById("record_rew_simple")?.checked ?? false;
         formData.set('r_simple', r_simple);
         let rew_name = String(window.user.role_short + ' ' + window.user.name_full).toUpperCase();
         formData.set('r_simple_name', rew_name);
-        let r_signs = document.getElementById("record_rew_signs").checked;
+        let r_signs = document.getElementById("record_rew_signs")?.checked ?? false;
         formData.set('r_signs', r_signs);
-        formData.set('r_pagesi', document.getElementById("record_rew_pagesi").checked);
-        formData.set('r_pagesn', document.getElementById("record_rew_pagesn").checked);
-        formData.set('r_pagesx', document.getElementById("record_rew_pagesx").checked);
-        formData.set('logo', document.getElementById('exp_pdf_reso_logo').value);
+        formData.set('r_pagesi', document.getElementById("record_rew_pagesi")?.checked ?? false);
+        formData.set('r_pagesn', document.getElementById("record_rew_pagesn")?.checked ?? true);
+        formData.set('r_pagesx', document.getElementById("record_rew_pagesx")?.checked ?? false);
+        formData.set('logo', document.getElementById('exp_pdf_reso_logo')?.value ?? 'no');
         formData.set('model', document.getElementById('expedition_doc_res_model').value);
-        formData.set('header_text', document.getElementById('expedition_doc_header_text').value);
+        formData.set('header_text', document.getElementById('expedition_doc_header_text')?.value ?? '');
 
         // Método para obtener configuracion de PDF nueva
         function applyPdfFormData(formData, suffix = 'desist') {
@@ -1400,7 +1497,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
         formData.set('reso_id', document.getElementById('expedition_doc_res_id').value);
         formData.set('id_public', document.getElementById('expedition_doc_res_3').value);
         formData.set('reso_pot', document.getElementById('expedition_doc_res_pot').value);
-        formData.set('reso_state', document.getElementById('expedition_doc_res_state').value);
+        formData.set('reso_state', document.getElementById('expedition_doc_res_state')?.value ?? getDesistActState(model, _GET_EXPEDITION_JSON('reso').state));
         formData.set('special_rule_1', infoCud.res_extras.art1p);
 
         if (document.getElementById('expedition_doc_res_old_lic')) formData.set('old_lic', document.getElementById('expedition_doc_res_old_lic').value);
@@ -1559,11 +1656,11 @@ let _COMPONENT_DOC_RES_PDF = () => {
         }
         formData.set('open_cb', values.join(','));
 
-        formData.set('r_sign_align', document.getElementById('exp_pdf_reso_1').value);
+        formData.set('r_sign_align', document.getElementById('exp_pdf_reso_1')?.value ?? 'center');
         formData.set('curaduria', infoCud.job);
         formData.set('ciudad', infoCud.city);
         formData.set('record_version', 1);
-        formData.set('record_eje', document.getElementById('exp_pdf_reso_record_version').value);
+        formData.set('record_eje', document.getElementById('exp_pdf_reso_record_version')?.value ?? 0);
         formData.set('id', currentItem.id);
         
         MySwal.fire({
@@ -1622,10 +1719,10 @@ let _COMPONENT_DOC_RES_PDF = () => {
         reso.type = document.getElementById('expedition_doc_res_1').value;
         reso.reso_date_desist = document.getElementById("expedition_doc_res_2_des").value;
         reso.date = reso.date || '';
-        reso.state = document.getElementById("expedition_doc_res_state").value;
+        reso.state = document.getElementById("expedition_doc_res_state")?.value ?? getDesistActState(model, reso.state);
         reso.pot = document.getElementById("expedition_doc_res_pot").value;
-        reso.eje = document.getElementById('exp_pdf_reso_record_version').value;
-        reso.header_text = document.getElementById('expedition_doc_header_text').value;
+        reso.eje = document.getElementById('exp_pdf_reso_record_version')?.value ?? 0;
+        reso.header_text = document.getElementById('expedition_doc_header_text')?.value ?? '';
 
         reso.primero = document.getElementById("expedition_doc_res_primero") ? document.getElementById("expedition_doc_res_primero").value : '';
         reso.primero_1 = document.getElementById("expedition_doc_res_primero_1") ? document.getElementById("expedition_doc_res_primero_1").value : '';

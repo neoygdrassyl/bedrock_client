@@ -8,11 +8,9 @@ import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import RECORD_LAW_SERVICE from '../../../services/record_law.service';
 import FUN_VERSION_NAV from '../fun_forms/components/fun_versionNav';
 import FUN_MODULE_NAV from '../fun_forms/components/fun_moduleNav';
-import CUSTOM_DATA_SERVICE from '../../../services/custom.service';
 import EXP_1 from './exp_1.component';
 import EXP_AREAS from './exp_areas.component';
 import EXP_DOCS from './exp_docs.component';
-import EXP_CLOCKS from './exp_clocks.component';
 import EXP_LIC from './exp_lic.component';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
@@ -29,17 +27,15 @@ function EXPEDITION(props) {
     const [loaded, setLoaded] = useState(false);
     const [pqrsxfun, setPqrsxfun] = useState(false);
     const [recordArc, setRecordArc] = useState(null);
-    const [outCodes, setOutCodes] = useState([]);
     const [currentItem, setCurrentItem] = useState(null);
 
-    const requestOutCodes = (id) => {
-        CUSTOM_DATA_SERVICE.loadDictionary_cub_id(id)
-            .then(response => {
-                setOutCodes(response.data);
-            })
-            .catch(e => {
-                console.log(e);
-            });
+    const handleOpenClocksModule = () => {
+        if (!currentItem) return;
+
+        const shouldNavigate = window.confirm('Se abrira el submodulo TIEMPOS del proyecto. Guarda cualquier cambio pendiente en Expedicion antes de continuar.');
+        if (!shouldNavigate) return;
+
+        NAVIGATION(currentItem, 'clock', 'expedition');
     };
 
     const retrievePQRSxFUN = (id_public) => {
@@ -57,7 +53,6 @@ function EXPEDITION(props) {
             .then(response => {
                 setCurrentItem(response.data);
                 retrievePQRSxFUN(response.data.id_public);
-                requestOutCodes(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -262,15 +257,24 @@ function EXPEDITION(props) {
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
 
-                                            <EXP_CLOCKS
-                                                translation={translation} swaMsg={swaMsg} globals={globals}
-                                                currentItem={currentItem}
-                                                currentVersion={currentVersion}
-                                                currentRecord={currentRecord}
-                                                currentVersionR={currentVersionR}
-                                                requestUpdate={requestUpdate}
-                                                outCodes={outCodes}
-                                            />
+                                            <fieldset className="p-3" id="nav_expedition_3">
+                                                <legend className="px-3 text-uppercase bg-light text-center">
+                                                    <h6>TIEMPOS</h6>
+                                                </legend>
+                                                <div className="alert alert-info d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-0">
+                                                    <div>
+                                                        <strong>El control de tiempos ahora se ajusta desde el submódulo del proyecto.</strong>
+                                                        <div>Usa el acceso directo para abrir TIEMPOS y gestionar allí suspensiones, prórrogas y flujo legal.</div>
+                                                    </div>
+                                                    <MDBBtn
+                                                        className="btn btn-info"
+                                                        onClick={handleOpenClocksModule}
+                                                        disabled={!currentItem}
+                                                    >
+                                                        Ir a tiempos del proyecto
+                                                    </MDBBtn>
+                                                </div>
+                                            </fieldset>
 
                                             <EXP_LIC
                                                 translation={translation} swaMsg={swaMsg} globals={globals}

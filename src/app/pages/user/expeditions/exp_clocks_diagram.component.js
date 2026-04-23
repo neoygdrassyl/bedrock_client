@@ -5,6 +5,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
+import { getExpeditionPaymentVisibility } from './expeditionVisibility';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -49,6 +50,11 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
   let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : false)
   let conGI = _GLOBAL_ID === 'cb1'
   let namePayment = _GLOBAL_ID === 'cb1' ? 'Impuestos Municipales' : 'Impuesto Delineacion'
+  const paymentVisibility = getExpeditionPaymentVisibility({
+    globalId: _GLOBAL_ID,
+    isOtherActuation: conOA(),
+    strata: currentItem?.fun_2?.estrato,
+  });
 
   // *************** CONVERTERS ****************** //
   let _GET_CLOCK_STATE = (_state) => {
@@ -241,10 +247,10 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
   }
 
   const paymentsClocks = [
-    { state: 62, name: 'Expensas Variables', desc: "Pago de Expensas Variables", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: conOA(), actor: ACTOR.SOLICITANTE },
-    { state: 63, name: namePayment, desc: "Pago de Impuestos Municipales", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: conOA(), actor: ACTOR.SOLICITANTE },
+    { state: 62, name: 'Expensas Variables', desc: "Pago de Expensas Variables", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: paymentVisibility.showVariableFees, actor: ACTOR.SOLICITANTE },
+    { state: 63, name: namePayment, desc: "Pago de Impuestos Municipales", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: paymentVisibility.showTaxPayment, actor: ACTOR.SOLICITANTE },
     { state: 64, name: 'Estampilla PRO-UIS', desc: "Pago de Estampilla PRO-UIS", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], actor: ACTOR.SOLICITANTE },
-    { state: 65, name: 'Deberes Urbanísticos', desc: "Pago de Deberes Urbanísticos", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: !conGI, actor: ACTOR.SOLICITANTE },
+    { state: 65, name: 'Deberes Urbanísticos', desc: "Pago de Deberes Urbanísticos", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: paymentVisibility.showUrbanDuties, actor: ACTOR.SOLICITANTE },
     { state: 69, name: 'Radicacion de último pago', desc: "Último pago realizado", limit: [[56, 57], 30], actor: ACTOR.SOLICITANTE },
     ...desistClocks(-4),
   ];

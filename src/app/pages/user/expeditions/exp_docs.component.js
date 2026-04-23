@@ -15,6 +15,7 @@ import EXP_RES_2 from './exp_res_2.component';
 import EXP_EJEC from './exp_eje.component';
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
+import { getExpeditionPaymentVisibility } from './expeditionVisibility';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -206,6 +207,11 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             return false;
         }
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : false)
+        const paymentVisibility = getExpeditionPaymentVisibility({
+            globalId: _GLOBAL_ID,
+            isOtherActuation: conOA(),
+            strata: _GET_CHILD_2().item_267,
+        });
         //  DATA CONVERTERS
 
         let _GET_FUN_51_BY_TITLE = (_role) => {
@@ -2641,7 +2647,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </fieldset>
                 </MDBCollapse>
 
-                {_GLOBAL_ID === 'cp1' ?
+                {_GLOBAL_ID === 'cp1' && paymentVisibility.showVariableFees ?
                     <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_27"
                             onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
@@ -2663,7 +2669,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     : ''}
 
 
-                {!conOA() && _GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2' ? <>
+                {(_GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2') && paymentVisibility.showVariableFees ? <>
                     <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_22"
                         onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
                         <label className="app-p lead fw-normal text-info">Liquidacion de Expensas</label>
@@ -2682,7 +2688,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </MDBCollapse>
                 </> : null}
 
-                {!conOA() && _GLOBAL_ID === 'cb1' ? <>
+                {_GLOBAL_ID === 'cb1' && paymentVisibility.showTaxPayment ? <>
                     <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
                         onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
                         <label className="app-p lead fw-normal text-info">Impuestos Municipales</label>
@@ -2720,7 +2726,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </fieldset>
                 </MDBCollapse>
 
-                {_GET_CHILD_2().item_267 > 2 && _GLOBAL_ID === 'cb1'
+                {paymentVisibility.showUrbanDuties
                     ? <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_25"
                             onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
@@ -2744,7 +2750,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </>
                     : ""}
 
-                {_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2' ?
+                {(_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2') && paymentVisibility.showTaxPayment ?
                     <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_26"
                             onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
