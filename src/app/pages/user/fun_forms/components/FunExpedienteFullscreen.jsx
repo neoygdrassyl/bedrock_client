@@ -373,7 +373,12 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
   const moduleContent = renderModuleContent(activeSection, activeReport, moduleProps);
 
   return (
-    <div className="fixed inset-0 z-[1200] bg-background text-foreground">
+    <div
+      className="fixed inset-0 z-[1200] bg-background text-foreground"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Detalle del expediente"
+    >
       <div className="flex h-full min-h-0 flex-col bg-background">
         <header className="border-b border-border bg-background/95 px-4 py-4 backdrop-blur sm:px-6">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
