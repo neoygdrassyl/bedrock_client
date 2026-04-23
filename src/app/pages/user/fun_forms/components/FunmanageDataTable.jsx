@@ -227,10 +227,10 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmark, navigate)
             <button
               type="button"
               className="btn btn-sm btn-outline-primary py-0 px-2"
-              title="Abrir expediente"
+              title="Abrir gestión completa"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onViewDetail?.(row);
+                  onOpenWorkspace?.(row);
                 }}
             >
               <Icon name="folder-open" size={16} />

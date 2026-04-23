@@ -49,7 +49,7 @@ const ARCHIVE = lazy(() => import('./pages/user/archive/archive.page'));
 const DICTIONARY = lazy(() => import('./pages/user/dictionary.page'));
 const FUN_MANAGE = lazy(() => import('./pages/user/funmanage.page'));
 const FUN_MANAGE_NEW = lazy(() => import('./pages/user/funmanage_new.page'));
-const FUN_EXPEDIENTE_DETAIL = lazy(() => import('./pages/user/fun_forms/components/FunExpedienteDetail').then((mod) => ({ default: mod.FunExpedienteDetail })));
+const FUN_EXPEDIENTE_FULLSCREEN = lazy(() => import('./pages/user/fun_forms/components/FunExpedienteFullscreen').then((mod) => ({ default: mod.FunExpedienteFullscreen })));
 const PROFESIONALS = lazy(() => import('./pages/user/profesionals/profesionals.page'));
 const GUIDE_USER = lazy(() => import('./pages/user/guide_user/guide_user.page'));
 const DEV_GUIDE = lazy(() => import('./pages/user/dev_guide/dev_guide.page'));
@@ -230,7 +230,7 @@ export default function App() {
                         <FUN_MANAGE translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
                       } />
                       <Route path="/funmanage/expediente/:radicado" element={
-                        <FunmanageExpedienteRoute />
+                        <FunmanageExpedienteRoute translation={titleT} globals={globalsT} swaMsg={swaMsg} />
                       } />
                       <Route path="/licencias/gestion-nueva" element={
                         <FUN_MANAGE_NEW translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
@@ -324,7 +324,7 @@ function LoginPageWithAuth() {
     : <LoginPage signin={auth.signin} />;
 }
 
-function FunmanageExpedienteRoute() {
+function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
   const { radicado } = useParams();
   const [expediente, setExpediente] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -385,8 +385,11 @@ function FunmanageExpedienteRoute() {
   }
 
   return (
-    <FUN_EXPEDIENTE_DETAIL
+    <FUN_EXPEDIENTE_FULLSCREEN
       expediente={expediente}
+      translation={translation}
+      globals={globals}
+      swaMsg={swaMsg}
       onClose={() => window.history.back()}
     />
   );

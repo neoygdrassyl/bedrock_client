@@ -1,14 +1,16 @@
 import React from 'react';
-import { FunExpedienteDetail } from './FunExpedienteDetail';
+import { FunExpedienteFullscreen } from './FunExpedienteFullscreen';
 
-export function FunExpedienteWorkspace({ expediente, onClose, onRefresh }) {
+export function FunExpedienteWorkspace({ expediente, translation, globals, swaMsg, onClose, onRefresh }) {
   return (
-    <div className="fixed inset-0 z-[1050] bg-background">
-      <FunExpedienteDetail
-        expediente={expediente}
-        onClose={onClose}
-      />
-    </div>
+    <FunExpedienteFullscreen
+      expediente={expediente}
+      translation={translation}
+      globals={globals}
+      swaMsg={swaMsg}
+      onClose={onClose}
+      onRefresh={onRefresh}
+    />
   );
 }
 

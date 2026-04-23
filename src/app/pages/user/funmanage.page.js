@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LegacyPageWrapper } from '@/app/layouts/LegacyPageWrapper';
 import { swalLoading, swalError, swalClose } from '@/app/utils/swalAdapter';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
@@ -41,6 +41,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
+    const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isLoadedSearch, setIsLoadedSearch] = useState(false);
@@ -337,6 +338,14 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     }
     // NAVIGATION
     const navigation = (item, TO, FROM) => {
+        if (FROM === '' && TO === 'general') {
+            const radicado = item?.id_public ?? item?.radicado;
+            if (radicado) {
+                navigate(`/funmanage/expediente/${radicado}`);
+                return;
+            }
+        }
+
         switch (FROM) {
             case "general":
                 toggle(false)
