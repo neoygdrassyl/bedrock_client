@@ -175,6 +175,9 @@ export function FunExpedienteDetail({
                 </span>
               )}
             </div>
+            <p className="mt-2 mb-0 text-xs text-muted-foreground">
+              Revise el expediente sin salir de la tabla.
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -255,7 +258,7 @@ export function FunExpedienteDetail({
             <InfoField label="Responsable" value={expediente.responsable} icon="fas fa-user" />
             <InfoField label="Categoría" value={expediente.categoria} icon="fas fa-layer-group" />
             <InfoField label="Tipo de licencia" value={expediente.tipo_licencia || '—'} icon="fas fa-file-alt" />
-            <InfoField label="Trámite" value={expediente.tramite || '—'} icon="fas fa-clipboard-list" />
+            <InfoField label="Tipo de trámite" value={expediente.tramite || '—'} icon="fas fa-clipboard-list" />
             <InfoField label="Fecha radicación" value={expediente.fecha_radicacion || '—'} icon="fas fa-calendar" />
             <InfoField label="Fecha límite" value={expediente.fecha_limite || '—'} icon="fas fa-calendar-times" />
             <InfoField
@@ -556,7 +559,7 @@ export function FunExpedienteDetail({
           {onOpenWorkspace && (
             <Button size="sm" onClick={() => onOpenWorkspace(expediente)}>
               <Icon name="expand-alt" size={16} className="me-1" />
-              Abrir gestión completa
+              Abrir detalles
             </Button>
           )}
           <Button variant="outline" size="sm" onClick={onClose}>

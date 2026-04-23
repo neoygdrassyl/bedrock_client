@@ -241,6 +241,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     isOpen={modal}
                     style={customStylesForModal}
                     ariaHideApp={false}
+                    className="fun-modal-content"
                 >
 
                     <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">

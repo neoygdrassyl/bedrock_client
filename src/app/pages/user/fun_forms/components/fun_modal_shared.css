@@ -4,9 +4,9 @@
    ============================================ */
 
 /* Modal content positioning - synchronized with sidebar width */
-.ReactModal__Content {
-    left: var(--fun-sidebar-width) !important;
-    transition: left 0.15s ease;
+.fun-modal-content {
+  left: var(--fun-sidebar-width) !important;
+  transition: left 0.15s ease;
 }
 
 .macro-modal-overlay {
@@ -16,7 +16,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 2;
+  z-index: 1050;
 }
 
 .macro-modal-content {
@@ -39,7 +39,7 @@
 
 /* Ensure modal content respects the sidebar positioning */
 .fun-modal-content {
-    position: absolute;
-    left: var(--fun-sidebar-width);
-    transition: left 0.15s ease;
+  position: absolute;
+  left: var(--fun-sidebar-width);
+  transition: left 0.15s ease;
 }

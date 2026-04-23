@@ -6,7 +6,7 @@
  *   2. Carga de datos desde EXPEDITION_SERVICE.getRecord(), FUN_SERVICE.get(), RECORD_LAW_SERVICE.getRecord()
  *   3. Muestra "CARGANDO INFORMACION..." mientras carga
  *   4. Botón "GENERAR EXPEDICION EN BLANCO" cuando no hay record
- *   5. Secciones del expediente: EXP_1, EXP_AREAS, EXP_2, EXP_DOCS, EXP_CLOCKS, EXP_LIC
+ *   5. Secciones del expediente: EXP_1, EXP_AREAS, EXP_2, EXP_DOCS, acceso a TIEMPOS, EXP_LIC
  *   6. Navegación de versiones (FUN_VERSION_NAV)
  *   7. Navegación de módulos (FUN_MODULE_NAV)
  *   8. Creación de expedición en blanco llama EXPEDITION_SERVICE.create()
@@ -317,8 +317,27 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
     expect(screen.getByTestId('exp-areas')).toBeInTheDocument();
     expect(screen.getByTestId('exp-2')).toBeInTheDocument();
     expect(screen.getByTestId('exp-docs')).toBeInTheDocument();
-    expect(screen.getByTestId('exp-clocks')).toBeInTheDocument();
+    expect(screen.getByTestId('exp-clocks-link')).toBeInTheDocument();
+    expect(screen.getByText('Este registro se gestiona desde el submódulo de tiempos.')).toBeInTheDocument();
     expect(screen.getByTestId('exp-lic')).toBeInTheDocument();
+  });
+
+  test('8.1. El acceso de tiempos reutiliza la navegación canónica del expediente', async () => {
+    const EXPEDITION_SERVICE = (await import('../app/services/expedition.service')).default;
+    const navigation = vi.fn();
+
+    EXPEDITION_SERVICE.getRecord.mockResolvedValueOnce({
+      data: [{ id: 1, fun0Id: 1, version: 1 }],
+    });
+
+    await act(async () => {
+      renderExpedition({ NAVIGATION: navigation });
+    });
+
+    const button = await screen.findByRole('button', { name: /abrir submódulo de tiempos/i });
+    fireEvent.click(button);
+
+    expect(navigation).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }), 'clock', 'expedition');
   });
 
   test('9. Navigation components presentes con record existente', async () => {
