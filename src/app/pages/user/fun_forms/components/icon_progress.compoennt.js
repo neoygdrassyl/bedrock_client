@@ -17,8 +17,7 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
             const isOA = regexChecker_isOA_2(row)
             var _COMPONENT = [];
             var iconSize = small ? 16 : 24;
-            var iconSpacing = 'me-1';
-            const fontSize = '150%';
+            var iconSpacing = small ? '' : 'me-1';
             let rules = row.rules ? row.rules.split(';') : [];
 
             if (row.id_payment && row.clock_payment) _COMPONENT.push(<span title="EXPENSAS FIJA PAGADAS"><Icon name="dollar-sign" size={iconSize} className={iconSpacing} style={{ color: 'Green' }} /></span>)
@@ -139,7 +138,7 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
             return <>{_COMPONENT.map((item, i) => React.cloneElement(item, { key: i }))}</>
         }
         return (
-            <div>
+            <div className={small ? "flex min-w-max flex-nowrap items-center gap-1 whitespace-nowrap" : "flex flex-wrap items-center gap-1"}>
                 {_PROGRESS_COMPONENT(currentItem)}
             </div>
         );

@@ -8,6 +8,13 @@ import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from '@/components/ui/sheet';
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
@@ -107,6 +114,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             currentDate: undefined,
             currentPublic: undefined,
             currentItems: undefined,
+            quickPreviewItem: null,
             load: undefined,
             date_start: undefined,
             date_end: undefined,
@@ -614,7 +622,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         return false
     }
     // --- RENDER ---
-        const { currentItemAsignProf, currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search, worker_list } = state;
+        const { currentItemAsignProf, currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search, worker_list, quickPreviewItem } = state;
 
         const modalHeader = null; // Legacy variable — replaced by FunModalHeader below
 
@@ -709,6 +717,27 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             },
         ];
 
+        const renderCompactProgress = (row) => (
+            <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} small />
+        );
+
+        const tableBaseProps = {
+            conditionalRowStyles: rowSelectedStyle,
+            paginationComponentOptions: { rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' },
+            noDataComponent: 'NO HAY SOLICITUDES',
+            striped: true,
+            highlightOnHover: true,
+            pagination: true,
+            paginationPerPage: 50,
+            paginationRowsPerPageOptions: [25, 50, 100],
+            className: 'data-table-component',
+            noHeader: true,
+            dense: true,
+            progressPending: !isLoaded,
+            progressComponent: <span className='text-sm text-muted-foreground'>Cargando...</span>,
+            onRowClicked: openQuickPreview,
+        };
+
         // ---------------------
         const columns = [
             {
@@ -766,7 +795,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -819,7 +848,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -862,7 +891,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -905,7 +934,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -956,7 +985,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -1009,7 +1038,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 center: true,
                 minWidth: '330px',
                 ignoreCSV: true,
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -1055,7 +1084,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -1160,7 +1189,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="fun-action-toggle h-8 w-8">
+                        <Button variant="ghost" size="icon" className="fun-action-toggle h-8 w-8" onClick={(event) => event.stopPropagation()}>
                             <Icon name="MoreVertical" size={16} />
                         </Button>
                     </DropdownMenuTrigger>
@@ -1168,6 +1197,10 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <DropdownMenuLabel className="flex items-center gap-2">
                             <Icon name="Eye" size={14} /> Consulta
                         </DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => openQuickPreview(row)}>
+                            <Icon name="PanelRightOpen" size={14} className="text-primary" />
+                            Vista rápida
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggle(row)}>
                             <Icon name="FolderOpen" size={14} className="text-primary" />
                             Detalles
@@ -1326,8 +1359,33 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             if (value === state.fillActive) {
                 return;
             }
-            setState({ fillActive: value });
+            setState({ fillActive: value, quickPreviewItem: null });
         };
+
+        function openQuickPreview(item) {
+            if (!item) {
+                return;
+            }
+
+            setState({
+                selectedRow: item.id,
+                quickPreviewItem: item,
+            });
+        }
+
+        function closeQuickPreview() {
+            setState({ quickPreviewItem: null });
+        }
+
+        function openFullDetailFromPreview() {
+            if (!state.quickPreviewItem) {
+                return;
+            }
+
+            const previewItem = state.quickPreviewItem;
+            closeQuickPreview();
+            toggle(previewItem);
+        }
 
         let generateCVS = (_data, _name) => {
             var rows = [];
@@ -1368,10 +1426,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         return (
             
             <div className="space-y-6">
-                <div className="space-y-1 text-center md:text-left max-w-4xl mx-auto">
-                    <h1 className="text-2xl font-bold tracking-tight">RADICACIÓN DE SOLICITUDES</h1>
-                    <p className="text-sm text-muted-foreground">Gestione la radicación, consulta y seguimiento de licencias urbanísticas.</p>
-                </div>
                 <FUN_WORKER_ASIGN translation={translation} globals={globals}
                     type={"law"}
                     openModal={openModal} />
@@ -1382,121 +1436,138 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     type={"eng"}
                     openModal={openModal} />
 
-                {/* ── Actions: New license + Search ──────────────── */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <Icon name="FilePlus" size={18} className="text-primary" />
-                                Generar Nueva Radicación
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleSubmit} id="app-form" className="space-y-3">
-                                <div className="flex gap-2">
-                                    <div className="flex-1">
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="Calendar" size={14} />
-                                            </span>
-                                            <input type="date" className="form-control" id="f_01" required />
-                                        </div>
+                <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+                    <div className="flex flex-col gap-3 border-b border-border/70 bg-muted/20 px-4 py-3 md:px-5">
+                        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                            <div className="min-w-0 space-y-1">
+                                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Licencias · Radicar</span>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <h1 className="text-lg font-semibold tracking-tight text-foreground">RADICACIÓN DE SOLICITUDES</h1>
+                                    <Badge variant="secondary" className="text-[10px] uppercase tracking-[0.12em]">Operación diaria</Badge>
+                                </div>
+                                <p className="max-w-2xl text-xs text-muted-foreground">Genere, consulte y revise expedientes desde una sola barra de trabajo, con mayor densidad visible y acceso lateral rápido.</p>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2">
+                                <Badge variant="outline" className="h-7 rounded-full px-2.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                                    Activas {list_started.length + state.list_legal.length + state.list_expedition.length + state.list_profesional.length + list_incomplete.length}
+                                </Badge>
+                                <Badge variant="outline" className="h-7 rounded-full px-2.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                                    Archivadas {state.list_archive.length}
+                                </Badge>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid gap-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+                        <section className="border-b border-border/70 px-4 py-3 lg:border-b-0 lg:border-r lg:px-5">
+                            <div className="mb-2 flex items-center gap-2">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                    <Icon name="FilePlus" size={15} />
+                                </div>
+                                <div>
+                                    <h2 className="text-sm font-semibold tracking-tight text-foreground">Generar Nueva Radicación</h2>
+                                    <p className="text-[11px] text-muted-foreground">Consecutivo y fecha en una fila compacta.</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSubmit} id="app-form" className="grid gap-2 xl:grid-cols-[160px_minmax(0,1fr)_auto] xl:items-end">
+                                <div className="space-y-1">
+                                    <label htmlFor="f_01" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Fecha</label>
+                                    <div className="input-group input-group-sm">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="Calendar" size={13} />
+                                        </span>
+                                        <input type="date" className="form-control" id="f_01" required />
                                     </div>
-                                    <div className="flex-[2]">
-                                        <div className="input-group">
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label htmlFor="f_02" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Radicado</label>
+                                    <div className="flex gap-2">
+                                        <div className="input-group input-group-sm flex-1">
                                             <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="Hash" size={14} />
+                                                <Icon name="Hash" size={13} />
                                             </span>
                                             <input type="text" className="form-control" defaultValue={nomens} id="f_02" required />
-                                            <Button type="button" variant="outline" size="sm" className="rounded-l-none"
-                                                onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
                                         </div>
+                                        <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={() => _GET_LAST_ID_PUBLIC()}>
+                                            Generar LIC
+                                        </Button>
                                     </div>
                                 </div>
-                                <div className="text-center">
-                                    <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                        <Icon name="FolderPlus" size={14} /> Crear
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
 
-                    <Card>
-                        <CardHeader className="py-2.5 px-3">
-                            <CardTitle className="text-sm flex items-center gap-2">
-                                <Icon name="Search" size={15} className="text-primary" />
-                                Consultar Solicitud
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-3 pb-3">
-                            <form onSubmit={search} id="app-form" className="space-y-2">
-                                <div className="flex gap-2">
-                                    <div className="flex-1">
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="Info" size={13} />
-                                            </span>
-                                            <select className="form-select" id="search_0" required>
-                                                <option value="1">Número de Radicado</option>
-                                                <option value="2">Número de Matricula Inmobiliaria</option>
-                                                <option value="3">Número de Indentificacion Predial/Catastral</option>
-                                                <option value="4">Dirección Actual</option>
-                                                <option value="5">C.C o NIT</option>
-                                                <option value="6">Nombre</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="MessageCircle" size={13} />
-                                            </span>
-                                            <input type="text" className="form-control" id="search_1" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <Button type="submit" variant="secondary" size="sm">
-                                        <Icon name="SearchCheck" size={13} /> Consultar
-                                    </Button>
-                                </div>
+                                <Button type="submit" size="sm" className="h-9 bg-accent text-accent-foreground hover:bg-accent/90 xl:min-w-[112px]">
+                                    <Icon name="FolderPlus" size={13} /> Crear
+                                </Button>
                             </form>
-                        </CardContent>
-                    </Card>
+                        </section>
+
+                        <section className="px-4 py-3 lg:px-5">
+                            <div className="mb-2 flex items-center gap-2">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                    <Icon name="Search" size={15} />
+                                </div>
+                                <div>
+                                    <h2 className="text-sm font-semibold tracking-tight text-foreground">Consultar Solicitud</h2>
+                                    <p className="text-[11px] text-muted-foreground">Filtro de consulta rápida sin salir de la pantalla.</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={search} id="app-form" className="grid gap-2 xl:grid-cols-[minmax(0,220px)_minmax(0,1fr)_auto] xl:items-end">
+                                <div className="space-y-1">
+                                    <label htmlFor="search_0" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Buscar por</label>
+                                    <div className="input-group input-group-sm">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="Info" size={13} />
+                                        </span>
+                                        <select className="form-select" id="search_0" required>
+                                            <option value="1">Número de Radicado</option>
+                                            <option value="2">Número de Matricula Inmobiliaria</option>
+                                            <option value="3">Número de Indentificacion Predial/Catastral</option>
+                                            <option value="4">Dirección Actual</option>
+                                            <option value="5">C.C o NIT</option>
+                                            <option value="6">Nombre</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label htmlFor="search_1" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Valor</label>
+                                    <div className="input-group input-group-sm">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="MessageCircle" size={13} />
+                                        </span>
+                                        <input type="text" className="form-control" id="search_1" placeholder="Ej. 68001-1-25-0292" />
+                                    </div>
+                                </div>
+
+                                <Button type="submit" variant="secondary" size="sm" className="h-9 xl:min-w-[112px]">
+                                    <Icon name="SearchCheck" size={13} /> Consultar
+                                </Button>
+                            </form>
+                        </section>
+                    </div>
                 </div>
 
                 {/* ── Search results ─────────────────────────────── */}
                 {state.hasSearchResult && (
-                    <div>
-                        <h3 className="text-sm font-semibold text-center mb-2 flex items-center justify-center gap-2">
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-semibold text-center mb-0 flex items-center justify-center gap-2">
                             <Icon name="SearchCheck" size={15} className="text-primary" />
                             Resultado de la Búsqueda
                         </h3>
                         <DataTable
-                            conditionalRowStyles={rowSelectedStyle}
-                            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                            noDataComponent="NO HAY SOLICITUDES"
-                            striped="true"
+                            {...tableBaseProps}
                             columns={columns_search}
                             data={list_search}
-                            highlightOnHover
-                            pagination
-                            paginationPerPage={20}
-                            paginationRowsPerPageOptions={[20, 50, 100]}
-                            className="data-table-component"
-                            noHeader
-                            onRowClicked={(e) => setState({ selectedRow: e.id })}
-                            dense
-                            progressPending={!isLoaded}
-                            progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                         />
                     </div>
                 )}
 
                 {/* ── Tab navigation ─────────────────────────────── */}
                 <div>
-                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                    <div className="flex gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1 shadow-sm" role="tablist">
                         {[
                             { key: '1', label: 'Radicación', count: list_started.length, icon: 'FileInput' },
                             { key: '5', label: 'Evaluación', count: state.list_legal.length, icon: 'ClipboardCheck' },
@@ -1511,10 +1582,10 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 aria-selected={state.fillActive === tab.key}
                                 onClick={() => handleFillClick(tab.key)}
                                 className={cn(
-                                    'flex items-center gap-1.5 px-3 py-2 text-[0.8125rem] font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                    'flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap border-0 bg-transparent',
                                     state.fillActive === tab.key
-                                        ? 'border-b-primary text-primary'
-                                        : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                                        ? 'bg-primary/10 text-primary shadow-sm'
+                                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
                                 )}
                             >
                                 <Icon name={tab.icon} size={14} />
@@ -1530,102 +1601,37 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     <div className="mt-2">
                         <TabPane show={state.fillActive === '1'}>
                             <DataTable
-                                conditionalRowStyles={rowSelectedStyle}
-                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                noDataComponent="NO HAY SOLICITUDES"
-                                striped="true"
+                                {...tableBaseProps}
                                 columns={columns}
                                 data={list_started}
-                                highlightOnHover
-                                pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
-                                className="data-table-component"
-                                noHeader
-                                dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
-                                progressPending={!isLoaded}
-                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '-1'}>
                             <DataTable
-                                conditionalRowStyles={rowSelectedStyle}
-                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                noDataComponent="NO HAY SOLICITUDES"
-                                striped="true"
+                                {...tableBaseProps}
                                 columns={columns_missing}
                                 data={list_incomplete}
-                                highlightOnHover
-                                pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
-                                className="data-table-component"
-                                noHeader
-                                dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
-                                progressPending={!isLoaded}
-                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '5'}>
                             <DataTable
-                                conditionalRowStyles={rowSelectedStyle}
-                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                noDataComponent="NO HAY SOLICITUDES"
-                                striped="true"
+                                {...tableBaseProps}
                                 columns={columns_legal}
                                 data={state.list_legal}
-                                highlightOnHover
-                                pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
-                                className="data-table-component"
-                                noHeader
-                                dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
-                                progressPending={!isLoaded}
-                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '10'}>
                             <DataTable
-                                conditionalRowStyles={rowSelectedStyle}
-                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                noDataComponent="NO HAY SOLICITUDES"
-                                striped="true"
+                                {...tableBaseProps}
                                 columns={columns_profesional}
                                 data={state.list_profesional}
-                                highlightOnHover
-                                pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
-                                className="data-table-component"
-                                noHeader
-                                dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
-                                progressPending={!isLoaded}
-                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '50'}>
                             <DataTable
-                                conditionalRowStyles={rowSelectedStyle}
-                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                noDataComponent="NO HAY SOLICITUDES"
-                                striped="true"
+                                {...tableBaseProps}
                                 columns={columns_exp}
                                 data={state.list_expedition}
-                                highlightOnHover
-                                pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
-                                className="data-table-component"
-                                noHeader
-                                dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
-                                progressPending={!isLoaded}
-                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '100'}>
@@ -1635,26 +1641,83 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 </Button>
                             </div>
                             <DataTable
-                                conditionalRowStyles={rowSelectedStyle}
-                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                noDataComponent="NO HAY SOLICITUDES"
-                                striped="true"
+                                {...tableBaseProps}
                                 columns={columns_archive}
                                 data={state.list_archive}
-                                highlightOnHover
-                                pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
-                                className="data-table-component"
-                                noHeader
-                                dense
-                                onRowClicked={(e) => setState({ selectedRow: e.id })}
-                                progressPending={!isLoaded}
-                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                     </div>
                 </div>
+
+                <Sheet open={Boolean(quickPreviewItem)} onOpenChange={(open) => { if (!open) closeQuickPreview(); }}>
+                    <SheetContent side="right" className="w-full border-l border-border bg-background px-0 sm:max-w-md">
+                        {quickPreviewItem && (
+                            <div className="flex h-full flex-col">
+                                <SheetHeader className="gap-2 border-b border-border/70 px-5 pb-4 pt-2 text-left">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <Badge variant="outline" className="text-[10px] uppercase tracking-[0.12em]">Consulta rápida</Badge>
+                                        {_GET_STATE_STR(quickPreviewItem.state, false, quickPreviewItem)}
+                                    </div>
+                                    <SheetTitle className="text-lg tracking-tight">{quickPreviewItem.id_public}</SheetTitle>
+                                    <SheetDescription className="text-xs leading-5">
+                                        Revise el expediente sin salir de la tabla y abra la gestión completa cuando lo necesite.
+                                    </SheetDescription>
+                                </SheetHeader>
+
+                                <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
+                                    <Card className="border-border/70 shadow-none">
+                                        <CardHeader className="pb-2">
+                                            <CardTitle className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Tipo de trámite</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="pt-0 text-sm leading-5 text-foreground">
+                                            {formsParser1(quickPreviewItem, true)}
+                                        </CardContent>
+                                    </Card>
+
+                                    <div className="grid gap-3 sm:grid-cols-2">
+                                        <Card className="border-border/70 shadow-none">
+                                            <CardHeader className="pb-2">
+                                                <CardTitle className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Categoría</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="pt-0">
+                                                <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[quickPreviewItem.type] ?? quickPreviewItem.type ?? '—'}</Badge>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card className="border-border/70 shadow-none">
+                                            <CardHeader className="pb-2">
+                                                <CardTitle className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Fecha clave</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="pt-0 text-sm font-mono tabular-nums text-foreground">
+                                                {quickPreviewItem.clock_pay2 || quickPreviewItem.clock_date || quickPreviewItem.clock_payment || _GET_MISSING_DATE(quickPreviewItem) || quickPreviewItem.clock_archive || 'Sin fecha'}
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+
+                                    <Card className="border-border/70 shadow-none">
+                                        <CardHeader className="pb-2">
+                                            <CardTitle className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Progresión</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="pt-0">
+                                            {renderCompactProgress(quickPreviewItem)}
+                                        </CardContent>
+                                    </Card>
+                                </div>
+
+                                <div className="border-t border-border/70 px-5 py-4">
+                                    <div className="grid gap-2 sm:grid-cols-2">
+                                        <Button type="button" size="sm" onClick={openFullDetailFromPreview}>
+                                            <Icon name="FolderOpen" size={14} /> Abrir detalles
+                                        </Button>
+                                        <Button type="button" variant="outline" size="sm" onClick={closeQuickPreview}>
+                                            <Icon name="TableProperties" size={14} /> Seguir en tabla
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </SheetContent>
+                </Sheet>
 
                 {/* ── Modals (react-modal — kept during migration) ── */}
                 <Modal contentLabel="GENERAL VIEW FUN"
