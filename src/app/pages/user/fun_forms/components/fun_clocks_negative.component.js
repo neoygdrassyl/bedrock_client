@@ -12,7 +12,7 @@ import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
 
-function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg }) {
+function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg, translation, currentVersion }) {
         const [fillActive, setFillActive] = useState(null);
         const [edit, setEdit] = useState(false);
 

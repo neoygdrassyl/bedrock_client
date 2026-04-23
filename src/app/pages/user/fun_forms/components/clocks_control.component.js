@@ -482,6 +482,7 @@ function CLOCKS_CONTROL(props) {
                                     {...props}
                                     requestUpdate={requestUpdate}
                                     requestRefresh={requestRefresh}
+                                    translation={translation}
                                 />
                             </>
                         )}

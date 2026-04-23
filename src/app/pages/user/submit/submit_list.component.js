@@ -122,7 +122,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         <div className="col-2">
                             <input type="text" className="form-control" name={"submit_list_code_" + ID} id={'edit_list_code_' + ID + "_" + i}
                                 defaultValue={code[i]} disabled={isExtra} />
-                            {!isExtra ? <DOCS_LIST idRef={ID + "_" + i} setValues={setValuesEdit} text={"VER LISTA"} />
+                            {!isExtra ? <DOCS_LIST idRef={ID + "_" + i} setValues={setValuesEdit} text={"VER LISTA"}/>
                                 : ""}
                         </div>
                         <div className="col-4 text-start">

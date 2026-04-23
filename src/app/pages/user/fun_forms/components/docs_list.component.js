@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import DataTable from 'react-data-table-component';
 import Modal from 'react-modal';
@@ -6,6 +6,25 @@ import ListJson from '../../../../components/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
 
 
+let _GET_DOCS_DATA = (filter) => {
+    let data = [];
+    for (var item in ListJson) {
+        if (filter) {
+            let v1 = ListJson[item].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            let v2 = filter.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (v1.includes(v2)) data.push({
+                cod: item,
+                desc: ListJson[item],
+            })
+        }
+        else data.push({
+            cod: item,
+            desc: ListJson[item],
+        })
+
+    }
+    return data;
+}
 
 function DOCS_LIST({ idRef, text, setValues }) {
         const [modalSearchList, setModalSearchList] = useState(false);
@@ -34,17 +53,6 @@ function DOCS_LIST({ idRef, text, setValues }) {
                 padding: '20px',
                 marginRight: 'auto',
 
-            }
-        };
-        let _GET_DOCS_DATA = () => {
-            let data = [];
-            for (var item in ListJson) {
-                data.push({
-                    cod: item,
-                    desc: ListJson[item],
-                })
-            }
-            return data;
         }
         const docsColumns = [
             {
@@ -132,8 +140,50 @@ function DOCS_LIST({ idRef, text, setValues }) {
                     </div>
                 </Modal>
 
-            </div>
-        );
+    let toggle = (id) => {
+        setModalSearchList(prev => !prev);
+    }
+    let _COPY_INFO = (_data) => {
+        setValues(idRef, [_data.cod, _data.desc])
+        setModalSearchList(false)
+    }
+
+    useEffect(() => {
+        setDocsData(_GET_DOCS_DATA(filter))
+    }, [filter]);
+
+    return (
+        <div>
+            <MDBBtn className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</MDBBtn>
+            <Modal contentLabel="GENERAL VIEW FUN"
+                isOpen={modalSearchList}
+                style={customStylesForModal}
+                ariaHideApp={false}
+            >
+
+                <div className="my-4 d-flex justify-content-between">
+                    <label><i className="fas fa-th-list"></i> CODIGOS TIPOLOGIA DOCUMENTAL</label>
+                    <input className="form-control form-control-sm" id="code_list_filter" onChange={(v) => setFilter(v.target.value)} />
+                    <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
+                </div>
+                <DataTable
+                    striped
+                    columns={docsColumns}
+                    data={docsData}
+                    pagination
+                    paginationPerPage={10}
+                    paginationComponentOptions={{ rowsPerPageText: 'Mostrar entradas', rangeSeparatorText: 'de' }}
+                    dense
+                    highlightOnHover
+                    noDataComponent="No hay datos"
+                />
+                <div className="text-end py-4 mt-3">
+                    <MDBBtn className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                </div>
+            </Modal>
+
+        </div>
+    );
 }
 
 export default DOCS_LIST;
