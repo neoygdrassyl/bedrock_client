@@ -666,36 +666,74 @@ function LoginPage() {
 
 
   return (
-    <div className="Login container py-3">
-      <div className="row my-4 d-flex justify-content-center">
-        <div className="col-lg-8 col-md-12">
-          <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
-          <div className="d-flex justify-content-center mt-5">
-            <div className="w-75 rounded">
-              <div className="card-body" style={{backgroundColor: '#d3d3d3'}}>
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="email" className="form-label text-black">{t('login.str_user')}</label>
-                    <input type="email" className="form-control" id="email"
-                      onChange={(e) => { credentialsRef.current.email = e.target.value; }} />
+    <div className="login-page container-fluid py-4 py-lg-5">
+      <div className="row justify-content-center align-items-center g-4 mx-0">
+        <div className="col-12 col-xl-10">
+          <section className="login-card">
+            <div className="row g-0">
+              <div className="col-lg-5">
+                <div className="login-card__intro">
+                  <span className="login-badge">Acceso institucional</span>
+                  <h2 className="login-title">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
+                  <p className="login-copy mb-0">
+                    Ingrese para gestionar expedientes, trámites y módulos internos desde una vista más clara y enfocada.
+                  </p>
+                  <div className="login-detail-grid">
+                    <div className="login-detail-card">
+                      <span className="login-detail-card__label">Entidad</span>
+                      <strong>{infoCud.name}</strong>
+                    </div>
+                    <div className="login-detail-card">
+                      <span className="login-detail-card__label">Ciudad</span>
+                      <strong>{infoCud.city}</strong>
+                    </div>
                   </div>
-                  <div className="mb-3">
-                    <label htmlFor="password" className="form-label text-black">{t('login.str_pass')}</label>
-                    <input type="password" className="form-control" id="password"
-                      onChange={(e) => { credentialsRef.current.password = e.target.value; }} />
-                  </div>
-                  <div className="text-center pt-4 mt-3">
-                    <button type="submit" className="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
-                  </div>
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    size="invisible"
-                    sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
-                  />
-                </form>
+                </div>
+              </div>
+              <div className="col-lg-7">
+                <div className="login-card__form">
+                  <p className="login-eyebrow mb-2">Acceso seguro</p>
+                  <h3 className="login-form__title">Bienvenido</h3>
+                  <p className="login-form__copy">
+                    Use sus credenciales institucionales para continuar al panel de trabajo.
+                  </p>
+                  <form onSubmit={handleSubmit} className="login-form">
+                    <div className="login-field mb-3">
+                      <label htmlFor="email" className="form-label login-label">{t('login.str_user')}</label>
+                      <input
+                        type="email"
+                        className="form-control login-input"
+                        id="email"
+                        autoComplete="username"
+                        placeholder="usuario@dominio.com"
+                        onChange={(e) => { credentialsRef.current.email = e.target.value; }}
+                      />
+                    </div>
+                    <div className="login-field mb-3">
+                      <label htmlFor="password" className="form-label login-label">{t('login.str_pass')}</label>
+                      <input
+                        type="password"
+                        className="form-control login-input"
+                        id="password"
+                        autoComplete="current-password"
+                        placeholder="Ingrese su contraseña"
+                        onChange={(e) => { credentialsRef.current.password = e.target.value; }}
+                      />
+                    </div>
+                    <div className="login-actions pt-2 mt-3">
+                      <button type="submit" className="btn login-submit">{t('login.str_btn')}</button>
+                    </div>
+                    <p className="login-footnote mb-0">Acceso protegido mediante validación segura de sesión.</p>
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      size="invisible"
+                      sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
+                    />
+                  </form>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>
