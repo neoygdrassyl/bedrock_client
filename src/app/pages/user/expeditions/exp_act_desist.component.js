@@ -1354,14 +1354,20 @@ let _COMPONENT_DOC_RES_PDF = () => {
             {canSave ? <MDBBtn className="btn btn-success my-3" onClick={save_exp_res}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn> : null}
         </div>
         <div className="col-lg-4">
-            <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
+            <MDBBtn type="button" data-skip-form-submit="true" className="btn btn-danger my-3" onClick={(event) => {
+                event.preventDefault();
+                pdf_gen_res();
+            }}>
                 <i className="far fa-file-pdf me-2"></i>
                 Generar PDF
             </MDBBtn>
         </div>
         <div className="col-lg-4">
             {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
-                <MDBBtn className="btn my-3" color="primary" onClick={() => pdf_gen_res(true)}>
+                <MDBBtn type="button" data-skip-form-submit="true" className="btn my-3" color="primary" onClick={(event) => {
+                    event.preventDefault();
+                    pdf_gen_res(true);
+                }}>
                     <i className="fas fa-edit me-2" />
                     Editar PDF
                 </MDBBtn>
@@ -1706,6 +1712,12 @@ let _COMPONENT_DOC_RES_PDF = () => {
 
     let save_exp_res = (e) => {
         e.preventDefault();
+
+        const submitterText = String(e?.nativeEvent?.submitter?.textContent || '').toUpperCase();
+        if (submitterText.includes('GENERAR PDF') || submitterText.includes('EDITAR PDF')) {
+            return;
+        }
+
         setResDocData(null);
 
         var _CHILD_1 = _GET_CHILD_1();
@@ -2095,7 +2107,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
 
                 <div>
                     {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
-                        <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_des || 'delete'}/>
+                        <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_des || 'delete'} onClose={() => setResDocData(null)} />
                     )}
                 </div>  
                 

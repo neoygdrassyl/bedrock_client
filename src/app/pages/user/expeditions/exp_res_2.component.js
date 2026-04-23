@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content'
 const MySwal = withReactContent(Swal);
 
 export default function EXP_RES_2(props) {
-  const { data, swaMsg, currentItem, currentModel} = props;
+  const { data, swaMsg, currentItem, currentModel, onClose } = props;
 
   console.log("EXP_RES_2 - currentModel:", currentModel);
   console.log("EXP_RES_2 - data:", data);
@@ -40,6 +40,15 @@ export default function EXP_RES_2(props) {
   const [content, setContent] = useState("<p>Cargando plantilla...</p>");
   const [htmlSizeKB, setHtmlSizeKB] = useState(null);
   const [nameFile, setNameFile] = useState(null);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
 
   useEffect(() => {
     const loadTemplate = async () => {
@@ -74,21 +83,38 @@ export default function EXP_RES_2(props) {
     loadTemplate();
   }, [data, currentModel]);
 
-  useEffect(() => {
-    if (!data || !containerRef.current) return;
-    containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [data, currentModel]);
+  const getEditorHtml = () => {
+    const editorContainer = containerRef.current;
+    const iframe = editorContainer?.querySelector('iframe');
+    const iframeHtml = iframe?.contentDocument?.body?.innerHTML || iframe?.contentDocument?.documentElement?.outerHTML || '';
+    if (iframeHtml.trim()) return iframeHtml;
+
+    const wysiwygHtml = editorContainer?.querySelector('.jodit-wysiwyg')?.innerHTML || '';
+    if (wysiwygHtml.trim()) return wysiwygHtml;
+
+    try {
+      const editorValue = typeof editor.current?.value === 'string' ? editor.current.value : '';
+      if (editorValue.trim()) return editorValue;
+    } catch (error) {
+      console.warn('No fue posible leer editor.current.value, usando fallbacks del DOM.', error);
+    }
+
+    if (typeof content === 'string' && content.trim()) return content;
+
+    return '';
+  };
 
 
   const config = {
     readonly: false,
     language: "es",
-    // iframe:false → el editor usa el DOM principal, así hereda CSS global
-    // y no aparecen artefactos visuales por CSS/sprite no disponible dentro del iframe.
-    iframe: false,
+    loadExternalConfig: false,
+    // El contenido generado trae estilos de documento propios.
+    // Mantenerlo dentro del iframe evita que reestilice o redimensione el modal padre.
+    iframe: true,
     allowHTML: true,
-    minHeight: 600,
-    height: 600,
+    minHeight: typeof window !== "undefined" ? Math.max(window.innerHeight - 320, 520) : 640,
+    height: typeof window !== "undefined" ? Math.max(window.innerHeight - 320, 520) : 640,
     defaultActionOnPaste: "insert_only_text",
     uploader: {
       url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
@@ -105,6 +131,33 @@ export default function EXP_RES_2(props) {
     }
   };
 
+  const overlayStyle = {
+    position: "fixed",
+    inset: 0,
+    zIndex: 2000,
+    backgroundColor: "rgba(15, 23, 42, 0.58)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "24px",
+  };
+
+  const panelStyle = {
+    width: "min(1400px, calc(100vw - 3rem))",
+    maxHeight: "calc(100vh - 3rem)",
+    backgroundColor: "#ffffff",
+    borderRadius: "18px",
+    boxShadow: "0 24px 80px rgba(15, 23, 42, 0.28)",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  };
+
+  const bodyStyle = {
+    padding: "1rem 1.25rem 1.25rem",
+    overflow: "auto",
+  };
+
   const handleDownloadPDFv2 = async () => {
     try {
       MySwal.fire({
@@ -114,7 +167,10 @@ export default function EXP_RES_2(props) {
         showConfirmButton: false,
       });
 
-      const editorHTML = editor.current?.value;
+      const editorHTML = getEditorHtml();
+      if (!editorHTML) {
+        throw new Error("No se pudo obtener el HTML actual del editor.");
+      }
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/pdf-generate/generate-pdf`,
@@ -125,16 +181,28 @@ export default function EXP_RES_2(props) {
         }
       );
 
-      if (!response.ok) throw new Error("Error generando el PDF");
+      if (!response.ok) {
+        let detail = '';
+        try {
+          detail = await response.clone().text();
+        } catch (_) {
+          detail = '';
+        }
+        throw new Error(`Error generando el PDF (${response.status})${detail ? `: ${detail}` : ''}`);
+      }
 
       const blob = await response.blob();
+      if (!blob.size) {
+        throw new Error("El backend respondió sin contenido PDF.");
+      }
+
       saveAs(blob, nameFile + " " + currentItem.id_public + ".pdf");
 
       MySwal.close();
     } catch (err) {
       MySwal.fire({
         title: swaMsg.generic_eror_title,
-        text: swaMsg.generic_error_text,
+        text: err?.message || swaMsg.generic_error_text,
         icon: 'warning',
         confirmButtonText: swaMsg.text_btn,
       });
@@ -143,24 +211,47 @@ export default function EXP_RES_2(props) {
   };
 
   return (
-    <div ref={containerRef}>
-      <JoditEditor
-        ref={editor}
-        value={content}
-        config={config}
-        onChange={setContent}
-      />
-      <div className="mt-3 text-center">
-        <button className="btn btn-danger" onClick={handleDownloadPDFv2}>
-          Descargar PDF 🧾
-        </button>
-      </div>
-
-      {htmlSizeKB && (
-        <div className="mt-2 text-muted">
-          Tamaño del HTML generado: <strong>{htmlSizeKB} KB</strong>
+    <div style={overlayStyle} onClick={onClose}>
+      <section
+        style={panelStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Editor PDF de expedición"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom px-4 py-3">
+          <div>
+            <h5 className="mb-1">Editor PDF</h5>
+            <div className="text-muted small">
+              {(nameFile || "Documento") + (currentItem?.id_public ? ` · ${currentItem.id_public}` : "")}
+            </div>
+          </div>
+          <div className="d-flex flex-wrap gap-2">
+            <button type="button" className="btn btn-danger" onClick={handleDownloadPDFv2}>
+              Descargar PDF 🧾
+            </button>
+            <button type="button" className="btn btn-outline-secondary" onClick={onClose}>
+              Cerrar
+            </button>
+          </div>
         </div>
-      )}
+
+        <div ref={containerRef} style={bodyStyle}>
+          <JoditEditor
+            ref={editor}
+            value={content}
+            config={config}
+            onBlur={setContent}
+            onChange={() => {}}
+          />
+
+          {htmlSizeKB && (
+            <div className="mt-2 text-muted">
+              Tamaño del HTML generado: <strong>{htmlSizeKB} KB</strong>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

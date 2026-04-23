@@ -466,7 +466,10 @@ export default function EXP_EJEC(props) {
                 </div>
                 <div className="col">
                     {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
-                        <MDBBtn className="btn my-3" color="primary" onClick={() => pd_eje(true)}>
+                        <MDBBtn type="button" className="btn my-3" color="primary" onClick={(event) => {
+                            event.preventDefault();
+                            pd_eje(true);
+                        }}>
                             <i className="fas fa-edit me-2" />
                             Editar PDF
                         </MDBBtn>
@@ -772,7 +775,7 @@ export default function EXP_EJEC(props) {
     
                     <div>
                         {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
-                            <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_exec || 'eje_open'}/>
+                            <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_exec || 'eje_open'} onClose={() => setResDocData(null)} />
                         )}
                     </div>  
                     

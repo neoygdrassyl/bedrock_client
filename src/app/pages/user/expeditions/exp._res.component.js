@@ -3351,11 +3351,17 @@ export default function EXP_RES(props) {
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
                     <div className="d-flex gap-3"> {/* Espaciado entre botones */}
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
+                        <MDBBtn type="button" data-skip-form-submit="true" className="btn btn-danger my-3" onClick={(event) => {
+                            event.preventDefault();
+                            pdf_gen_res();
+                        }}>
                             <i className="far fa-file-pdf"></i> GENERAR PDF
                         </MDBBtn>
                         {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
-                            <MDBBtn className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
+                            <MDBBtn type="button" data-skip-form-submit="true" className="btn btn-secondary my-3" onClick={(event) => {
+                                event.preventDefault();
+                                pdf_gen_res(true);
+                            }}>
                                 <i className="fas fa-edit"></i> EDITAR PDF
                             </MDBBtn>
                         )}
@@ -3843,6 +3849,11 @@ export default function EXP_RES(props) {
     let save_exp_res = (e) => {
         e.preventDefault();
 
+        const submitterText = String(e?.nativeEvent?.submitter?.textContent || '').toUpperCase();
+        if (submitterText.includes('GENERAR PDF') || submitterText.includes('EDITAR PDF')) {
+            return;
+        }
+
         var _CHILD_1 = _GET_CHILD_1();
 
         let id_public = document.getElementById("expedition_doc_res_id").value;
@@ -4096,7 +4107,7 @@ export default function EXP_RES(props) {
             </div>
             <div>
                 {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
-                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'} />
+                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'} onClose={() => setResDocData(null)} />
                 )}
             </div>
         </div>

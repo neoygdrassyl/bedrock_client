@@ -123,6 +123,15 @@ npm run test:e2e
 npm run build
 ```
 
+## 9.1 Playwright MCP y acceso autenticado
+
+- Para inspección visual, debugging manual y recorridos de rutas protegidas desde Copilot usa solo Playwright MCP/browser tools. No uses automatización alternativa del navegador ni scripts ad hoc por terminal para simular clicks.
+- Flujo recomendado para entrar al frontend protegido en `http://localhost:3000`:
+   1. Intenta primero el login UI con `test@gmail.com` / `test123` solo como smoke rápido. Esas credenciales son las canónicas del page object E2E en `e2e/pages/login.page.js`.
+   2. No asumas que ese usuario existe en el backend real. Estado observado el `2026-04-23`: `POST /api/login` respondió `401 Credenciales inválidas` y el submit además puede quedar bloqueado por el ReCAPTCHA invisible.
+   3. Si el login UI no progresa por ReCAPTCHA o por ausencia del seed en backend, usa Playwright MCP para inyectar sesión siguiendo el patrón de `e2e/fixtures/auth.fixture.js`: setea `localStorage.dovela_token`, `localStorage.dovela_user` y `window.user` antes de navegar a `/dashboard`, `/fun` o la ruta protegida a validar.
+- Cuando el objetivo sea revisar fallas reales del runtime, reutiliza el servidor ya vivo y los datos del entorno actual. No levantes un frontend paralelo ni un backend mock si la sesión ya tiene `:3000` disponible.
+
 ## 10. Regla de lectura progresiva
 
 AGENTS.md solo debe darte lo necesario para arrancar. Si el cambio escala, lee la referencia adecuada en vez de inflar este archivo:
