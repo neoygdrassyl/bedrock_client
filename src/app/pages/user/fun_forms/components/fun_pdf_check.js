@@ -218,7 +218,6 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }, '');
     };
     const getPdfForm = async () => {
-        let swaMsg = swaMsg;
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -247,7 +246,6 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
 
         var _child = null;
         var _array = null;
-        const currentItem = currentItem;
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
