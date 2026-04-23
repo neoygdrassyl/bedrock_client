@@ -1,7 +1,6 @@
 import ChartErrorBoundary from '../../components/ChartErrorBoundary';
 import { useReducer, useEffect, useRef } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
-import { useNavigate } from 'react-router-dom';
 import { swalLoading, swalSuccess, swalError, swalClose } from '@/app/utils/swalAdapter';
 import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
@@ -55,7 +54,6 @@ import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/ta
 import dayjs from 'dayjs';
 
 function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
-    const navigate = useNavigate();
     const [state, setState] = useReducer(
         (prev, next) => ({ ...prev, ...next }),
         {
@@ -143,7 +141,9 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     function openFullscreenWorkspace(item) {
         const radicado = item?.id_public ?? item?.radicado;
         if (radicado) {
-            navigate(`/funmanage/expediente/${radicado}`);
+            const nextPath = `/funmanage/expediente/${radicado}`;
+            window.history.pushState({}, '', nextPath);
+            window.dispatchEvent(new PopStateEvent('popstate'));
         }
     }
 
