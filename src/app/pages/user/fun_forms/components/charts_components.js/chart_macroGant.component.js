@@ -164,7 +164,9 @@ function FUN_CHART_MACRO_GRANTT(props) {
         }
         items.map(row => {
             if (row.clock_payment) {
-                let _x = dateParser_dateDiff(row.clock_payment, dayjs().format('YYYY-MM-DD')) > 200 ? 200 : dateParser_dateDiff(row.clock_payment, dayjs().format('YYYY-MM-DD'))
+                let today = dayjs().format('YYYY-MM-DD');
+                let elapsedDays = row.clock_payment > today ? 0 : dateParser_dateDiff(row.clock_payment, today, true);
+                let _x = elapsedDays > 200 ? 200 : elapsedDays
 
                 let _y = 0;
                 if (row.type == 'iii' && row.state > -100) _y += 1;
@@ -536,7 +538,7 @@ function FUN_CHART_MACRO_GRANTT(props) {
                     fill="rgba(255, 215, 0, 0.70)" fillOpacity={1} />
             );
             areas.push(
-                <ReferenceArea key={`blank2-${i}`} x1={rad_time + v[0] + eva_time + eva_time + blank_time + v[1] + eva_time_2 + 10} x2={rad_time + v[0] + eva_time + eva_time + blank_time + v[1] + eva_time_2 + 10 + blank_time_2} y1={i} y2={i + 1}
+                <ReferenceArea key={`blank2-${i}`} x1={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 10} x2={rad_time + v[0] + eva_time + blank_time + v[1] + eva_time_2 + 10 + blank_time_2} y1={i} y2={i + 1}
                     fill="rgba(220, 220, 220, 0.70)" fillOpacity={1} />
             );
             areas.push(

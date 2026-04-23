@@ -6,7 +6,7 @@ const { renderedScatterProps } = vi.hoisted(() => ({
 }));
 
 vi.mock('../app/components/ui', () => ({
-  MDBBtn: ({ children, onClick, ...props }) => React.createElement('button', { onClick, ...props }, children),
+  MDBBtn: ({ children, onClick, outline: _outline, ...props }) => React.createElement('button', { onClick, ...props }, children),
 }));
 
 vi.mock('../app/components/customClasses/typeParse', () => ({
