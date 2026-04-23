@@ -13,6 +13,7 @@ import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components
 import EXP_RES_2 from './exp_res_2.component';
 import dayjs from "dayjs";
 import { Icon } from '@/components/icon';
+import '../../../../styles/docs-expediente.css';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -3163,20 +3164,26 @@ export default function EXP_RES(props) {
         var reso = _GET_EXPEDITION_JSON('reso');
         let canGenPDF = true; // window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5;
         const reso_header_text = reso.header_text ?? '';
+        const isEnabled = (value, fallback = false) => {
+            if (value === undefined || value === null || value === '') return fallback;
+            return value === true || value === 1 || value === '1' || value === 'true';
+        };
 
-        if (canGenPDF) return <>
+        if (!canGenPDF) return '';
+
+        return <>
             <hr />
             <div className="row my-3 text-center">
                 <label className='fw-bold my-2'>GENERAR PDFS</label>
             </div>
-            <div className="row mb-2">
 
+            <div className="row mb-3 g-3">
                 {_NOTY_TYPE_COMPONENENT()}
 
-                <div className="col">
-                    <label>Alineción firma curador</label>
+                <div className="col-md-4 col-xl-3">
+                    <label>Alineación firma curador</label>
                     <div className="input-group my-1">
-                        <select className="form-select me-1" id={"exp_pdf_reso_1"}>
+                        <select className="form-select me-1" id={"exp_pdf_reso_1"} defaultValue={reso.r_sign_align ?? 'center'}>
                             <option value={'center'}>CENTRO</option>
                             <option value={'left'}>IZQUIERDA</option>
                             <option value={'right'}>DERECHA</option>
@@ -3184,141 +3191,161 @@ export default function EXP_RES(props) {
                     </div>
                 </div>
 
-                <div className="col">
+                <div className="col-md-4 col-xl-3">
                     <label>Vigencia</label>
                     <div className="input-group my-1">
-                        <select className="form-select" id="exp_pdf_reso_record_version" defaultValue={reso.eje || 0}>
+                        <select className="form-select" id="exp_pdf_reso_record_version" defaultValue={reso.eje ?? 0}>
                             <option value={0}>NO USAR EJECUTORIA Y FECHA</option>
                             <option value={1}>NO USAR FECHA</option>
-                            <option>DOCE (12) MESES</option>
-                            <option>VEINTE Y CUATRO (24) MESES</option>
-                            <option>TREINTA Y SEIS (36) MESES</option>
-                            <option>CUARENTA Y OCHO (48) MESES</option>
+                            <option value={2}>DOCE (12) MESES</option>
+                            <option value={3}>VEINTE Y CUATRO (24) MESES</option>
+                            <option value={4}>TREINTA Y SEIS (36) MESES</option>
+                            <option value={5}>CUARENTA Y OCHO (48) MESES</option>
                         </select>
                     </div>
                 </div>
-                <div className="col">
-                    <label>Logo</label>
+
+                <div className="col-md-4 col-xl-3">
+                    <label>Logo cabecera</label>
                     <div className="input-group my-1">
-                        <select className="form-select me-1" id={"exp_pdf_reso_logo"}>
+                        <select className="form-select me-1" id={"exp_pdf_reso_logo"} defaultValue={reso.logo ?? 'no'}>
                             <option value={'no'}>SIN LOGO</option>
                             <option value={'left'}>IZQUIERDA</option>
                             <option value={'left2'}>IZQUIERDA ENTRESALTO</option>
                             <option value={'right'}>DERECHA</option>
                             <option value={'right2'}>DERECHA ENTRESALTO</option>
-
                         </select>
                     </div>
                 </div>
-            </div>
-            <div className="row">
-                <div className="col-4">
+
+                <div className="col-12 col-xl-3">
                     <label className="mt-2">Texto de cabezera</label>
                     <input className="form-control" id="expedition_doc_header_text" defaultValue={reso_header_text} />
                 </div>
             </div>
-            <div className="row m-3">
-                <div className="col d-flex justify-content-center">
-                    <div className="form-check">
-                        <input type="checkbox" className="form-check-input" id="record_rew_simple" />
-                        <label className="form-check-label">Usar nombre revisor</label>
-                    </div>
-                </div>
 
-                <div className="col d-flex justify-content-center">
-                    <div className="form-check">
-                        <input type="checkbox" className="form-check-input" id="record_rew_signs" />
-                        <label className="form-check-label">Usar firma profesionales</label>
-                    </div>
-                </div>
-
-                <div className="col d-flex justify-content-center">
-                    <div className="form-check">
-                        <input type="checkbox" className="form-check-input" id="record_rew_pagesi" />
-                        <label className="form-check-label">Usar pie de pagina</label>
-                    </div>
-                </div>
-
-                <div className="col d-flex justify-content-center">
-                    <div className="form-check">
-                        <input type="checkbox" className="form-check-input" id="record_rew_pagesn" defaultChecked="true" />
-                        <label className="form-check-label">Usar paginación</label>
-                    </div>
-                </div>
-
-            </div>
-            <div className="row m-3">
-                <div className="col d-flex justify-content-center">
-                    <div className="form-check">
-                        <input type="checkbox" className="form-check-input" id="record_rew_pagesx" defaultChecked={false} />
-                        <label className="form-check-label">Paginacion Arriba</label>
-                    </div>
-                </div>
-            </div>
-
-            <div className="row mb-2 text-center">
-
-                <div className="col ">
-                    <div className="input-group-sm my-1">
-                        <label className="form-check-label">Margen Superior (cm)</label>
-                        <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_top" defaultValue={1.2} />
-                    </div>
-                </div>
-
-                <div className="col d-flex justify-content-center">
-                    <div className="input-group-sm my-1">
-                        <label className="form-check-label">Margen Inferior (cm)</label>
-                        <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_bot" defaultValue={1.5} />
-                    </div>
-                </div>
-
-                <div className="col d-flex justify-content-center">
-                    <div className="input-group-sm my-1">
-                        <label className="form-check-label">Margen Izquierdo (cm)</label>
-                        <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_left" defaultValue={1.9} />
-                    </div>
-                </div>
-
-                <div className="col d-flex justify-content-center">
-                    <div className="input-group-sm my-1">
-                        <label className="form-check-label">Margen Derecho (cm)</label>
-                        <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_right" defaultValue={1.9} />
-                    </div>
-                </div>
-                {import.meta.env.VITE_GLOBAL_ID == 'cb1' ? (
-                    <>
-                        <div className="col d-flex justify-content-center">
-                            <div className="input-group-sm my-1">
-                                <label className="form-check-label">Saltos entre párrafos</label>
-                                <input
-                                    type="number"
-                                    min={1}
-                                    step={1}
-                                    className="form-control-sm"
-                                    id="record_page_step"
-                                    defaultValue={1}
-                                />
+            <div className="pdf-config clean-ui card p-3 shadow-sm pdf-edit">
+                <div className="row-equal">
+                    <section className="card-box">
+                        <header className="card-title">Márgenes (cm)</header>
+                        <div className="fields vertical">
+                            <div className="field">
+                                <label className="field_label">Superior</label>
+                                <input type="number" min={0} step={0.01} className="form-control form-control-sm" id="record_maring_top" defaultValue={reso.m_top ?? 1.2} />
+                            </div>
+                            <div className="field">
+                                <label className="field_label">Inferior</label>
+                                <input type="number" min={0} step={0.01} className="form-control form-control-sm" id="record_maring_bot" defaultValue={reso.m_bot ?? 1.5} />
+                            </div>
+                            <div className="field">
+                                <label className="field_label">Izquierdo</label>
+                                <input type="number" min={0} step={0.01} className="form-control form-control-sm" id="record_maring_left" defaultValue={reso.m_left ?? 1.9} />
+                            </div>
+                            <div className="field">
+                                <label className="field_label">Derecho</label>
+                                <input type="number" min={0} step={0.01} className="form-control form-control-sm" id="record_maring_right" defaultValue={reso.m_right ?? 1.9} />
                             </div>
                         </div>
-                        <div className="col d-flex justify-content-center">
-                            <div className="input-group-sm my-1">
-                                <label className="form-check-label">Espaciado encabezado</label>
-                                <input
-                                    type="number"
-                                    min={0}
-                                    step={0.01}
-                                    className="form-control-sm"
-                                    id="record_header_spacing"
-                                    defaultValue={6}
-                                />
+                    </section>
+
+                    <section className="card-box">
+                        <header className="card-title">Opciones</header>
+                        <div className="fields vertical">
+                            <label className="field">
+                                <span className="field_label">Usar nombre revisor</span>
+                                <input type="checkbox" className="form-check-input" id="record_rew_simple" defaultChecked={isEnabled(reso.r_simple)} />
+                            </label>
+
+                            <label className="field">
+                                <span className="field_label">Firmas profesionales</span>
+                                <input type="checkbox" className="form-check-input" id="record_rew_signs" defaultChecked={isEnabled(reso.r_signs)} />
+                            </label>
+
+                            <label className="field">
+                                <span className="field_label">Pie de página</span>
+                                <input type="checkbox" className="form-check-input" id="record_rew_pagesi" defaultChecked={isEnabled(reso.r_pagesi)} />
+                            </label>
+
+                            <label className="field">
+                                <span className="field_label">Paginación visible</span>
+                                <input type="checkbox" className="form-check-input" id="record_rew_pagesn" defaultChecked={isEnabled(reso.r_pagesn, true)} />
+                            </label>
+
+                            <label className="field">
+                                <span className="field_label">Paginación arriba</span>
+                                <input type="checkbox" className="form-check-input" id="record_rew_pagesx" defaultChecked={isEnabled(reso.r_pagesx)} />
+                            </label>
+                        </div>
+                    </section>
+
+                    <section className="card-box">
+                        <header className="card-title">Formato</header>
+                        <div className="fields vertical">
+                            <div className="field">
+                                <label className="field_label">Saltos entre párrafos</label>
+                                <input type="number" min={1} step={1} className="form-control form-control-sm" id="record_page_step" defaultValue={reso.r_pages ?? 1} />
+                            </div>
+
+                            <div className="field">
+                                <label className="field_label">Espaciado encabezado</label>
+                                <input type="number" min={0} step={0.01} className="form-control form-control-sm" id="record_header_spacing" defaultValue={reso.record_header_spacing ?? 6} />
+                            </div>
+
+                            <div className="field">
+                                <label className="field_label">Fuente cuerpo</label>
+                                <input type="number" min={8} step={0.1} className="form-control form-control-sm" id="record_font_size_body" defaultValue={reso.font_size_body ?? 14} />
+                            </div>
+
+                            <div className="field">
+                                <label className="field_label">Fuente encabezado</label>
+                                <input type="number" min={8} step={0.1} className="form-control form-control-sm" id="record_font_size_header" defaultValue={reso.font_size_header ?? 10} />
                             </div>
                         </div>
-                    </>
-                ) : null}
+                    </section>
+
+                    <section className="card-box">
+                        <header className="card-title">Logo y sello</header>
+                        <div className="fields vertical">
+                            <div className="field">
+                                <label className="field_label">Páginas con logo</label>
+                                <select size={1} className="form-select form-select-sm" id="logo_pages" defaultValue={reso.logo_pages ?? 'par'}>
+                                    <option value="impar">Pág. impares</option>
+                                    <option value="par">Pág. pares</option>
+                                    <option value="all">Todas las pág.</option>
+                                    <option value="none">No mostrar</option>
+                                </select>
+                            </div>
+
+                            <div className="field">
+                                <label className="field_label">Espaciado horizontal</label>
+                                <input type="number" min={0} step={0.1} className="form-control form-control-sm" id="distance_icon_x" defaultValue={reso.distance_icon_x ?? 55} />
+                            </div>
+
+                            <div className="field">
+                                <label className="field_label">Espaciado vertical</label>
+                                <input type="number" min={0} step={0.1} className="form-control form-control-sm" id="distance_icon_y" defaultValue={reso.distance_icon_y ?? 66} />
+                            </div>
+
+                            <div className="field">
+                                <label className="field_label">Autenticidad</label>
+                                <select size={1} className="form-select form-select-sm" id="autenticidad" defaultValue={reso.autenticidad ?? 'Original'}>
+                                    <option value="Original">Original</option>
+                                    <option value="Copia">Copia</option>
+                                    <option value="Vacio">Vacío</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <p className="text-muted small mt-3 mb-2 text-center">
+                    Ajusta las opciones y usa “Editar PDF” para revisar el resultado antes de descargarlo.
+                </p>
             </div>
+
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
-                    <div className="d-flex gap-3"> {/* Espaciado entre botones */}
+                    <div className="d-flex flex-wrap justify-content-center gap-3">
                         <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_res()}>
                             <Icon name="file-pdf" size={16} /> GENERAR PDF
                         </Button>
@@ -3331,7 +3358,6 @@ export default function EXP_RES(props) {
                 </div>
             </div>
         </>
-        else return ''
     }
     let _MODEL_SELECTOR = () => {
         var default_model = currentRecord.model || 'open';
@@ -3458,6 +3484,12 @@ export default function EXP_RES(props) {
         formData.set('m_left', document.getElementById('record_maring_left').value ? document.getElementById("record_maring_left").value : 1.7);
         formData.set('m_right', document.getElementById('record_maring_right').value ? document.getElementById("record_maring_right").value : 1.7);
         formData.set('r_pages', document.getElementById('record_page_step') ? document.getElementById("record_page_step").value : 1);
+        formData.set('logo_pages', document.getElementById('logo_pages') ? document.getElementById('logo_pages').value : 'par');
+        formData.set('autenticidad', document.getElementById('autenticidad') ? document.getElementById('autenticidad').value : 'Original');
+        formData.set('font_size_body', document.getElementById('record_font_size_body') ? document.getElementById('record_font_size_body').value : 14);
+        formData.set('font_size_header', document.getElementById('record_font_size_header') ? document.getElementById('record_font_size_header').value : 10);
+        formData.set('distance_icon_x', document.getElementById('distance_icon_x') ? document.getElementById('distance_icon_x').value : 55);
+        formData.set('distance_icon_y', document.getElementById('distance_icon_y') ? document.getElementById('distance_icon_y').value : 66);
         const spacingInput = document.getElementById("record_header_spacing");
         formData.set(
             "record_header_spacing",
@@ -3811,6 +3843,20 @@ export default function EXP_RES(props) {
         reso.pot = document.getElementById("expedition_doc_res_pot").value;
         reso.eje = document.getElementById('exp_pdf_reso_record_version').value;
         reso.header_text = document.getElementById('expedition_doc_header_text').value;
+        reso.logo = document.getElementById('exp_pdf_reso_logo') ? document.getElementById('exp_pdf_reso_logo').value : 'no';
+        reso.r_sign_align = document.getElementById('exp_pdf_reso_1') ? document.getElementById('exp_pdf_reso_1').value : 'center';
+        reso.m_top = document.getElementById('record_maring_top') ? document.getElementById('record_maring_top').value : 1.2;
+        reso.m_bot = document.getElementById('record_maring_bot') ? document.getElementById('record_maring_bot').value : 1.5;
+        reso.m_left = document.getElementById('record_maring_left') ? document.getElementById('record_maring_left').value : 1.9;
+        reso.m_right = document.getElementById('record_maring_right') ? document.getElementById('record_maring_right').value : 1.9;
+        reso.r_pages = document.getElementById('record_page_step') ? document.getElementById('record_page_step').value : 1;
+        reso.record_header_spacing = document.getElementById('record_header_spacing') ? document.getElementById('record_header_spacing').value : 6;
+        reso.logo_pages = document.getElementById('logo_pages') ? document.getElementById('logo_pages').value : 'par';
+        reso.autenticidad = document.getElementById('autenticidad') ? document.getElementById('autenticidad').value : 'Original';
+        reso.font_size_body = document.getElementById('record_font_size_body') ? document.getElementById('record_font_size_body').value : 14;
+        reso.font_size_header = document.getElementById('record_font_size_header') ? document.getElementById('record_font_size_header').value : 10;
+        reso.distance_icon_x = document.getElementById('distance_icon_x') ? document.getElementById('distance_icon_x').value : 55;
+        reso.distance_icon_y = document.getElementById('distance_icon_y') ? document.getElementById('distance_icon_y').value : 66;
 
         reso.primero = document.getElementById("expedition_doc_res_primero") ? document.getElementById("expedition_doc_res_primero").value : '';
         reso.primero_1 = document.getElementById("expedition_doc_res_primero_1") ? document.getElementById("expedition_doc_res_primero_1").value : '';

@@ -138,6 +138,15 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         // Placeholder — urlParams is not currently passed to this component
     }
 
+    function openFullscreenWorkspace(item) {
+        const radicado = item?.id_public ?? item?.radicado;
+        if (radicado) {
+            const nextPath = `/funmanage/expediente/${radicado}`;
+            window.history.pushState({}, '', nextPath);
+            window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+    }
+
     function retrieveWorkers() {
         USER_SERVICE.getAll()
             .then(response => {
@@ -809,6 +818,26 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             },
         ];
 
+        const compactTextCellClass = 'text-[11px] leading-5 text-foreground';
+        const compactNumericCellClass = 'text-[11px] font-mono tabular-nums tracking-tight text-foreground';
+        const compactRadicadoCellClass = 'text-xs font-semibold font-mono tabular-nums tracking-tight text-foreground';
+        const compactCategoryBadgeClass = 'px-1.5 py-0 text-[10px] font-mono leading-4';
+        const renderCompactProgress = (row) => (
+            <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} small />
+        );
+        const renderRemainingTime = (row) => {
+            const time = 30 - dateParser_timePassed(row.clock_payment);
+
+            return (
+                <span className="text-[11px] font-mono tabular-nums tracking-tight">
+                    <span className={cn('font-semibold', time <= 0 ? 'text-destructive' : time <= 5 ? 'text-warning' : 'text-foreground')}>
+                        {time}
+                    </span>
+                    <span className="text-muted-foreground"> / 30</span>
+                </span>
+            );
+        };
+
         // ---------------------
         const columns = [
             {
@@ -818,12 +847,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -832,7 +861,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'FECHA PAGO EXPENSAS',
@@ -840,7 +869,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
                 name: 'FECHA LÍMITE LyDF',
@@ -848,7 +877,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser_finalDate(row.clock_payment, 30)}</span>
+                cell: row => <span className={compactNumericCellClass}>{dateParser_finalDate(row.clock_payment, 30)}</span>
             },
             {
                 name: 'TIEMPO RESTANTE',
@@ -856,23 +885,20 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => {
-                    let time = 30 - dateParser_timePassed(row.clock_payment)
-                    return <span className="text-xs"><span className={cn('font-bold tabular-nums', time <= 0 ? 'text-destructive' : time <= 5 ? 'text-warning' : '')}>{time}</span><span className="text-muted-foreground"> / 30</span></span>
-                }
+                cell: row => renderRemainingTime(row)
             },
 
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '320px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                minWidth: '260px',
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
                 center: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -883,12 +909,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -897,7 +923,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'MOTIVO',
@@ -913,18 +939,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '320px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                minWidth: '260px',
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -934,12 +960,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -948,7 +974,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'FECHA LyDF',
@@ -956,18 +982,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_date}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_date}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '330px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                minWidth: '260px',
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -977,12 +1003,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -991,7 +1017,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'FECHA VIABILIDAD',
@@ -999,18 +1025,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_pay2}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_pay2}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '330px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                minWidth: '260px',
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -1020,12 +1046,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -1034,7 +1060,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'FECHA PAGO EXPENSAS',
@@ -1042,7 +1068,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
                 name: 'FECHA LyDF',
@@ -1050,18 +1076,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_date}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_date}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '330px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                minWidth: '260px',
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -1071,12 +1097,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>,
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>,
             },
             {
                 name: 'CAT.',
@@ -1085,7 +1111,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'ESTADO',
@@ -1102,19 +1128,19 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_archive}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_archive}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '330px',
+                minWidth: '260px',
                 ignoreCSV: true,
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 ignoreCSV: true,
                 cell: row => _MODULE_ACTION_MENU(row),
             },
@@ -1127,12 +1153,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -1141,7 +1167,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'ESTADO',
@@ -1154,14 +1180,14 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '320px',
-                cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
+                minWidth: '260px',
+                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
                 center: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -1271,6 +1297,10 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <DropdownMenuItem onClick={() => openQuickPreview(row)}>
                             <Icon name="Eye" size={14} className="text-primary" />
                             Consulta rápida
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row)}>
+                            <Icon name="Maximize2" size={14} className="text-primary" />
+                            Gestión completa
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggle_clock(row)}>
                             <Icon name="Clock" size={14} className="text-muted-foreground" />
@@ -1467,42 +1497,43 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
         return (
             
-            <div className="space-y-4">
-                <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-                    <div className="grid gap-0 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-                        <div className="border-b border-border p-4 lg:border-b-0 lg:border-r">
-                            <div className="mb-3 flex items-start gap-3">
-                                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                    <Icon name="FilePlus" size={18} />
+            <div className="space-y-3">
+                <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-lg border border-border/70 bg-card shadow-sm">
+                    <div className="grid gap-0 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.95fr)]">
+                        <div className="border-b border-border/70 p-3 xl:border-b-0 xl:border-r">
+                            <div className="mb-2.5 flex items-start gap-2.5">
+                                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                                    <Icon name="FilePlus" size={16} />
                                 </span>
                                 <div className="min-w-0">
-                                    <h1 className="text-xl font-bold tracking-tight">RADICACIÓN DE SOLICITUDES</h1>
-                                    <p className="mt-1 text-xs text-muted-foreground">
-                                        Frente operativo compacto para radicar, consultar y seguir expedientes sin perder altura útil en la tabla.
+                                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Licencias</p>
+                                    <h1 className="text-lg font-semibold tracking-tight">RADICACIÓN DE SOLICITUDES</h1>
+                                    <p className="mt-0.5 text-[11px] text-muted-foreground">
+                                        Radica, consulta y abre expedientes sin perder altura útil en la tabla.
                                     </p>
                                 </div>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="grid gap-2 md:grid-cols-[minmax(0,10rem)_minmax(0,1fr)_auto]">
+                            <form onSubmit={handleSubmit} className="grid gap-1.5 lg:grid-cols-[minmax(0,9rem)_minmax(0,1fr)_auto]">
                                 <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
-                                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
                                         <Icon name="Calendar" size={14} />
                                     </span>
                                     <input
                                         type="date"
-                                        className="h-10 min-w-0 flex-1 border-0 bg-transparent px-3 text-sm text-foreground outline-none"
+                                        className="h-9 min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] text-foreground outline-none"
                                         id="f_01"
                                         required
                                     />
                                 </label>
 
                                 <div className="flex min-w-0 items-stretch overflow-hidden rounded-md border border-border bg-background shadow-sm">
-                                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
                                         <Icon name="Hash" size={14} />
                                     </span>
                                     <input
                                         type="text"
-                                        className="h-10 min-w-0 flex-1 border-0 bg-transparent px-3 text-sm text-foreground outline-none"
+                                        className="h-9 min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] font-mono tabular-nums tracking-tight text-foreground outline-none"
                                         defaultValue={nomens}
                                         id="f_02"
                                         required
@@ -1511,31 +1542,31 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                         type="button"
                                         variant="ghost"
                                         size="sm"
-                                        className="h-10 rounded-none border-l border-border px-3 text-[11px] font-semibold uppercase tracking-[0.08em]"
+                                        className="h-9 rounded-none border-l border-border px-2.5 text-[10px] font-semibold uppercase tracking-[0.12em]"
                                         onClick={() => _GET_LAST_ID_PUBLIC()}
                                     >
                                         Generar
                                     </Button>
                                 </div>
 
-                                <Button type="submit" className="h-10 whitespace-nowrap bg-accent text-accent-foreground hover:bg-accent/90">
+                                <Button type="submit" className="h-9 whitespace-nowrap bg-accent px-3.5 text-xs font-semibold text-accent-foreground hover:bg-accent/90">
                                     <Icon name="FolderPlus" size={14} /> Crear
                                 </Button>
                             </form>
                         </div>
 
-                        <div className="p-4">
-                            <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                        <div className="p-3">
+                            <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                                 <Icon name="Search" size={14} />
                                 Consultar Solicitud
                             </div>
 
-                            <form onSubmit={search} className="grid gap-2 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)_auto]">
+                            <form onSubmit={search} className="grid gap-1.5 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)_auto]">
                                 <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
-                                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
                                         <Icon name="Info" size={13} />
                                     </span>
-                                    <select className="h-10 min-w-0 flex-1 border-0 bg-transparent px-3 text-sm text-foreground outline-none" id="search_0" required>
+                                    <select className="h-9 min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] text-foreground outline-none" id="search_0" required>
                                         <option value="1">Número de Radicado</option>
                                         <option value="2">Número de Matricula Inmobiliaria</option>
                                         <option value="3">Número de Indentificacion Predial/Catastral</option>
@@ -1546,17 +1577,17 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 </label>
 
                                 <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
-                                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
                                         <Icon name="MessageCircle" size={13} />
                                     </span>
                                     <input
                                         type="text"
-                                        className="h-10 min-w-0 flex-1 border-0 bg-transparent px-3 text-sm text-foreground outline-none"
+                                        className="h-9 min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] text-foreground outline-none"
                                         id="search_1"
                                     />
                                 </label>
 
-                                <Button type="submit" variant="secondary" className="h-10 whitespace-nowrap px-4">
+                                <Button type="submit" variant="secondary" className="h-9 whitespace-nowrap px-3.5 text-xs font-semibold">
                                     <Icon name="SearchCheck" size={13} /> Consultar
                                 </Button>
                             </form>
@@ -1576,7 +1607,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 {/* ── Search results ─────────────────────────────── */}
                 {state.hasSearchResult && (
                     <div>
-                        <h3 className="text-sm font-semibold text-center mb-2 flex items-center justify-center gap-2">
+                        <h3 className="mb-1.5 flex items-center justify-center gap-1.5 text-xs font-semibold text-center">
                             <Icon name="SearchCheck" size={15} className="text-primary" />
                             Resultado de la Búsqueda
                         </h3>
@@ -1618,7 +1649,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 aria-selected={state.fillActive === tab.key}
                                 onClick={() => handleFillClick(tab.key)}
                                 className={cn(
-                                    'flex items-center gap-1.5 px-3 py-2 text-[0.8125rem] font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                    'flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
                                     state.fillActive === tab.key
                                         ? 'border-b-primary text-primary'
                                         : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
@@ -1626,7 +1657,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             >
                                 <Icon name={tab.icon} size={14} />
                                 {tab.label}
-                                <Badge variant={tab.variant === 'destructive' ? 'destructive' : 'secondary'} className="ml-1 text-[10px] px-1.5 py-0">
+                                <Badge variant={tab.variant === 'destructive' ? 'destructive' : 'secondary'} className="ml-1 px-1.5 py-0 text-[9px] leading-4">
                                     {tab.count}
                                 </Badge>
                             </button>

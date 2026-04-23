@@ -505,52 +505,65 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
         }
 
         return (
-            <div className="Nomenclature_new container">
-                <>
-                    <fieldset className="p-3">
-                        <legend className="my-2 px-3 Collapsible" id="fun_pdf">
-                            <label className="app-p lead fw-normal text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} ENTRADA</label>
-                        </legend>
-                        <form id="form_manage_submit" onSubmit={save_submit}>
-                            {COMPONENT_NEW()}
-                            <div className="row mb-3 text-center">
-                                <div className="col-12">
-                                    {currentItem
-                                        ? <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
-                                        : <Button size="sm" className="my-3"><Icon name="plus-circle" size={16} /> CREAR </Button>}
+            <div className="space-y-5">
+                <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+                    <div className="border-b border-border/60 bg-muted/20 px-4 py-3 md:px-5">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Información general
+                        </p>
+                        <h3 className="text-base font-semibold text-foreground">
+                            {currentItem ? 'Actualizar entrada' : 'Nueva entrada'}
+                        </h3>
+                    </div>
 
-                                </div>
+                    <form id="form_manage_submit" onSubmit={save_submit} className="space-y-4 p-4 md:p-5">
+                        {COMPONENT_NEW()}
+                        <div className="flex justify-end border-t border-border/60 pt-4">
+                            {currentItem
+                                ? <Button size="sm"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                                : <Button size="sm"><Icon name="plus-circle" size={16} /> CREAR </Button>}
+                        </div>
+                    </form>
+                </section>
+
+                {currentItem
+                    ? <>
+                        <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+                            <div className="border-b border-border/60 bg-muted/20 px-4 py-3 md:px-5">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                                    Documentos adjuntos
+                                </p>
+                                <h3 className="text-base font-semibold text-foreground">Listas documentales</h3>
                             </div>
-                        </form>
-                    </fieldset>
-                    {currentItem
-                        ? <>
-                            <fieldset className="p-3">
-                                <legend className="my-2 px-3 Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-light">LISTA DE DOCUMENTOS</label>
-                                </legend>
 
+                            <div className="p-4 md:p-5">
                                 <SUBMIT_LIST
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
                                     refreshList={refreshItem} />
+                            </div>
+                        </section>
 
-                            </fieldset>
-                            <fieldset className="p-3">
-                                <legend className="my-2 px-3 Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-light">DOCUMENTO</label>
-                                </legend>
+                        <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+                            <div className="border-b border-border/60 bg-muted/20 px-4 py-3 md:px-5">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                                    Digitalización
+                                </p>
+                                <h3 className="text-base font-semibold text-foreground">Documento principal</h3>
+                            </div>
+
+                            <div className="p-4 md:p-5">
                                 <SUBMIT_ANEX
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
                                     refreshList={refreshList}
                                     refreshItem={refreshItem}
                                 />
-                            </fieldset>
-                        </>
-                        : ""}
-                </>
-            </div >
+                            </div>
+                        </section>
+                    </>
+                    : ""}
+            </div>
         );
 }
 

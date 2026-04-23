@@ -1,5 +1,38 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
+
+const MIN_OVERLAY_Z_INDEX = 1050;
+const MIN_CONTENT_Z_INDEX = 1051;
+
+function getSafeZIndex(value, fallback) {
+  const parsedValue = Number.parseInt(`${value ?? ''}`, 10);
+  return Number.isFinite(parsedValue) ? Math.max(parsedValue, fallback) : fallback;
+}
+
+function lockDocumentScroll() {
+  const currentLockCount = Number.parseInt(document.body.dataset.legacyModalLockCount || '0', 10) || 0;
+
+  if (currentLockCount === 0) {
+    document.body.dataset.legacyModalPrevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+  }
+
+  document.body.dataset.legacyModalLockCount = String(currentLockCount + 1);
+}
+
+function unlockDocumentScroll() {
+  const currentLockCount = Number.parseInt(document.body.dataset.legacyModalLockCount || '0', 10) || 0;
+
+  if (currentLockCount <= 1) {
+    document.body.style.overflow = document.body.dataset.legacyModalPrevOverflow || '';
+    delete document.body.dataset.legacyModalPrevOverflow;
+    delete document.body.dataset.legacyModalLockCount;
+    return;
+  }
+
+  document.body.dataset.legacyModalLockCount = String(currentLockCount - 1);
+}
 
 /**
  * Drop-in replacement for react-modal.
@@ -22,6 +55,13 @@ export function LegacyModal({
   shouldCloseOnOverlayClick = true,
   ...rest
 }) {
+  const portalNodeRef = useRef(null);
+
+  if (typeof document !== 'undefined' && portalNodeRef.current === null) {
+    portalNodeRef.current = document.createElement('div');
+    portalNodeRef.current.setAttribute('data-legacy-modal-root', 'true');
+  }
+
   // ESC key handler
   const handleKeyDown = useCallback(
     (e) => {
@@ -33,25 +73,49 @@ export function LegacyModal({
   );
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || typeof document === 'undefined') return undefined;
+
+    const portalNode = portalNodeRef.current;
+
+    if (portalNode && !portalNode.isConnected) {
+      document.body.appendChild(portalNode);
+    }
+
     document.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
+    lockDocumentScroll();
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
+      unlockDocumentScroll();
+
+      if (portalNode && portalNode.isConnected) {
+        portalNode.remove();
+      }
     };
   }, [isOpen, handleKeyDown]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    return () => {
+      if (portalNodeRef.current?.isConnected) {
+        portalNodeRef.current.remove();
+      }
+    };
+  }, []);
+
+  if (!isOpen || typeof document === 'undefined' || portalNodeRef.current === null) return null;
 
   const contentStyle = style?.content ?? {};
+  const overlayStyle = style?.overlay ?? {};
 
-  return (
+  return createPortal(
     <div
       className={cn('ReactModal__Overlay fixed inset-0 z-50', overlayClassName)}
       role="dialog"
       aria-modal="true"
       aria-label={contentLabel}
+      style={{
+        zIndex: getSafeZIndex(overlayStyle.zIndex, MIN_OVERLAY_Z_INDEX),
+      }}
       {...rest}
     >
       {/* Overlay */}
@@ -74,12 +138,14 @@ export function LegacyModal({
           maxWidth: '1400px',
           margin: '0 auto',
           ...contentStyle,
+          zIndex: getSafeZIndex(contentStyle.zIndex, MIN_CONTENT_Z_INDEX),
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
       </div>
-    </div>
+    </div>,
+    portalNodeRef.current,
   );
 }
 

@@ -307,6 +307,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
                 isOpen={modal}
                 style={customStylesForModal}
                 ariaHideApp={false}
+                className="fun-modal-content"
             >
 
                 <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
