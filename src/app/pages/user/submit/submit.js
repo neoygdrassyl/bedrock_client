@@ -20,6 +20,17 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     const [newModal, setNewModal] = useState(false);
     const [list, setList] = useState([]);
 
+    const submitModalStyles = {
+        content: {
+            top: '6%',
+            left: '15%',
+            right: '15%',
+            bottom: '6%',
+            maxWidth: '1120px',
+            padding: '0',
+        },
+    };
+
     useEffect(() => {
         retrievePublish();
     }, []);
@@ -366,9 +377,10 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
 
                 <Modal contentLabel="VIEW/EDIT"
                     isOpen={modal}
+                    style={submitModalStyles}
                     ariaHideApp={false}
                 >
-                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-5 py-4 backdrop-blur-sm">
                         <div className="flex items-center gap-2.5">
                             <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
                                 <Icon name="Pencil" size={14} className="text-primary" />
@@ -379,13 +391,15 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                             <Icon name="X" size={16} className="text-muted-foreground" />
                         </button>
                     </div>
-                    <SUBTMIT_MANAGE
-                        translation={translation} swaMsg={swaMsg} globals={globals}
-                        refreshList={refreshList}
-                        closeModal={toggle_new}
-                        currentId={currentId}
-                        edit />
-                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <div className="max-h-[calc(100dvh-12rem)] overflow-y-auto px-5 py-5">
+                        <SUBTMIT_MANAGE
+                            translation={translation} swaMsg={swaMsg} globals={globals}
+                            refreshList={refreshList}
+                            closeModal={toggle_new}
+                            currentId={currentId}
+                            edit />
+                    </div>
+                    <div className="flex justify-end border-t border-border/60 bg-background/95 px-5 py-4">
                         <Button variant="outline" size="sm" onClick={() => toggle()}>
                             <Icon name="X" size={14} /> Cerrar
                         </Button>
@@ -394,9 +408,10 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
 
                 <Modal contentLabel="NEW VIEW"
                     isOpen={newModal}
+                    style={submitModalStyles}
                     ariaHideApp={false}
                 >
-                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-5 py-4 backdrop-blur-sm">
                         <div className="flex items-center gap-2.5">
                             <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
                                 <Icon name="PlusCircle" size={14} className="text-primary" />
@@ -407,11 +422,13 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                             <Icon name="X" size={16} className="text-muted-foreground" />
                         </button>
                     </div>
-                    <SUBTMIT_MANAGE
-                        translation={translation} swaMsg={swaMsg} globals={globals}
-                        refreshList={refreshList}
-                        closeModal={toggle_new} />
-                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <div className="max-h-[calc(100dvh-12rem)] overflow-y-auto px-5 py-5">
+                        <SUBTMIT_MANAGE
+                            translation={translation} swaMsg={swaMsg} globals={globals}
+                            refreshList={refreshList}
+                            closeModal={toggle_new} />
+                    </div>
+                    <div className="flex justify-end border-t border-border/60 bg-background/95 px-5 py-4">
                         <Button variant="outline" size="sm" onClick={() => toggle_new()}>
                             <Icon name="X" size={14} /> Cerrar
                         </Button>

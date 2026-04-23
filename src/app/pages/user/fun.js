@@ -7,14 +7,6 @@ import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-} from '@/components/ui/sheet';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,6 +22,7 @@ import { cn } from '@/lib/utils';
 
 // SERVICES
 import FUNService from '../../services/fun.service'
+import FunManageDashboardService from '../../services/funmanage_dashboard.service';
 import USER_SERVICE from '../../services/users.service';
 
 // FUN FAMILY!
@@ -53,6 +46,7 @@ import FUN_WORKER_ASIGN from './fun_forms/components/fun_worker_asign.component'
 import RECORD_REVIEW from './records/record_review';
 import EXPEDITION from './expeditions/expedition.page';
 import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
+import { FunExpedienteDetail } from './fun_forms/components/FunExpedienteDetail';
 import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
@@ -110,13 +104,14 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             clocks: [],
 
             worker_list: [],
+            previewExpediente: null,
+            previewSourceRow: null,
 
             currentId: undefined,
             currentLastVersion: undefined,
             currentDate: undefined,
             currentPublic: undefined,
             currentItems: undefined,
-            quickPreviewItem: null,
             load: undefined,
             date_start: undefined,
             date_end: undefined,
@@ -124,6 +119,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     );
 
     const prevUrlParamsRef = useRef(urlParams);
+    const detailRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrievePublish();
@@ -631,7 +627,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         return false
     }
     // --- RENDER ---
-        const { currentItemAsignProf, currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search, worker_list, quickPreviewItem } = state;
+        const { currentItemAsignProf, currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search, worker_list } = state;
 
         const modalHeader = null; // Legacy variable — replaced by FunModalHeader below
 
@@ -710,6 +706,102 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         }
         const _fun_0_type = { '0': 'NC', 'i': 'I', 'ii': "II", 'iii': "III", 'iv': "IV", 'oa': "OA" }
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
+        const buildQuickPreviewSeed = (item) => {
+            const totalDays = _fun_0_type_time[item?.type] ?? 30;
+            const parsedUsedDays = Number(item?.clock_payment ? dateParser_timePassed(item.clock_payment) : 0);
+            const usedDays = Number.isFinite(parsedUsedDays) ? Math.max(parsedUsedDays, 0) : 0;
+            const remainingDays = totalDays - usedDays;
+            const status = remainingDays <= 0 ? 'VENCIDO' : remainingDays <= 5 ? 'PRONTO_A_VENCER' : 'EN_TERMINO';
+
+            return {
+                id: item?.id,
+                radicado: item?.id_public ?? '—',
+                fase_actual: '',
+                fase_label: _GET_STATE_STR(item?.state, true, item) || 'Sin fase',
+                responsable: item?.responsable || '—',
+                categoria: _fun_0_type[item?.type] || item?.type || '—',
+                tipo_licencia: formsParser1(item, true),
+                tramite: item?.tramite || '—',
+                fecha_radicacion: item?.date || item?.clock_payment || '—',
+                fecha_limite: item?.clock_payment ? dateParser_finalDate(item.clock_payment, totalDays) : '—',
+                dias_habiles_usados: usedDays,
+                dias_habiles_limite: totalDays,
+                dias_habiles_totales: totalDays,
+                porcentaje_avance: totalDays > 0 ? Math.min(100, Math.round((usedDays / totalDays) * 100)) : 0,
+                status,
+                sugerencia: null,
+                bitacora: [],
+                state_raw: item?.state,
+                clocks_count: 0,
+                __sourceRow: item,
+            };
+        };
+        const closeQuickPreview = () => {
+            detailRequestIdRef.current += 1;
+            setState({
+                previewExpediente: null,
+                previewSourceRow: null,
+            });
+        };
+        const openDetailedManagement = (expediente) => {
+            const sourceRow = expediente?.__sourceRow ?? state.previewSourceRow;
+
+            closeQuickPreview();
+            if (sourceRow) {
+                toggle(sourceRow);
+            }
+        };
+        const openQuickPreview = (item) => {
+            if (!item) {
+                return;
+            }
+
+            const previewSeed = buildQuickPreviewSeed(item);
+            const requestId = ++detailRequestIdRef.current;
+
+            setState({
+                selectedRow: item.id,
+                previewSourceRow: item,
+                previewExpediente: previewSeed,
+            });
+
+            FunManageDashboardService.getExpedientes({
+                search: item.id_public || item.id,
+                page: 1,
+                limit: 10,
+            })
+                .then((response) => {
+                    if (requestId !== detailRequestIdRef.current) {
+                        return;
+                    }
+
+                    const rows = response.data?.data ?? [];
+                    const match = rows.find((candidate) => (
+                        String(candidate?.id ?? candidate?.fun0Id ?? candidate?.fun_0_id ?? '') === String(item.id)
+                        || candidate?.radicado === item.id_public
+                        || candidate?.id_public === item.id_public
+                    ));
+
+                    if (!match) {
+                        return;
+                    }
+
+                    setState({
+                        previewExpediente: {
+                            ...previewSeed,
+                            ...match,
+                            radicado: match.radicado ?? match.id_public ?? previewSeed.radicado,
+                            __sourceRow: item,
+                        },
+                        previewSourceRow: item,
+                    });
+                })
+                .catch(() => {
+                    if (requestId !== detailRequestIdRef.current) {
+                        return;
+                    }
+                });
+        };
         // ----------------------
         const rowSelectedStyle = [
             {
@@ -726,25 +818,24 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             },
         ];
 
+        const compactTextCellClass = 'text-[11px] leading-5 text-foreground';
+        const compactNumericCellClass = 'text-[11px] font-mono tabular-nums tracking-tight text-foreground';
+        const compactRadicadoCellClass = 'text-xs font-semibold font-mono tabular-nums tracking-tight text-foreground';
+        const compactCategoryBadgeClass = 'px-1.5 py-0 text-[10px] font-mono leading-4';
         const renderCompactProgress = (row) => (
             <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} small />
         );
+        const renderRemainingTime = (row) => {
+            const time = 30 - dateParser_timePassed(row.clock_payment);
 
-        const tableBaseProps = {
-            conditionalRowStyles: rowSelectedStyle,
-            paginationComponentOptions: { rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' },
-            noDataComponent: 'NO HAY SOLICITUDES',
-            striped: true,
-            highlightOnHover: true,
-            pagination: true,
-            paginationPerPage: 50,
-            paginationRowsPerPageOptions: [25, 50, 100],
-            className: 'data-table-component',
-            noHeader: true,
-            dense: true,
-            progressPending: !isLoaded,
-            progressComponent: <span className='text-sm text-muted-foreground'>Cargando...</span>,
-            onRowClicked: openQuickPreview,
+            return (
+                <span className="text-[11px] font-mono tabular-nums tracking-tight">
+                    <span className={cn('font-semibold', time <= 0 ? 'text-destructive' : time <= 5 ? 'text-warning' : 'text-foreground')}>
+                        {time}
+                    </span>
+                    <span className="text-muted-foreground"> / 30</span>
+                </span>
+            );
         };
 
         // ---------------------
@@ -756,12 +847,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -770,7 +861,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'FECHA PAGO EXPENSAS',
@@ -778,7 +869,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
                 name: 'FECHA LÍMITE LyDF',
@@ -786,7 +877,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser_finalDate(row.clock_payment, 30)}</span>
+                cell: row => <span className={compactNumericCellClass}>{dateParser_finalDate(row.clock_payment, 30)}</span>
             },
             {
                 name: 'TIEMPO RESTANTE',
@@ -794,23 +885,20 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => {
-                    let time = 30 - dateParser_timePassed(row.clock_payment)
-                    return <span className="text-xs"><span className={cn('font-bold tabular-nums', time <= 0 ? 'text-destructive' : time <= 5 ? 'text-warning' : '')}>{time}</span><span className="text-muted-foreground"> / 30</span></span>
-                }
+                cell: row => renderRemainingTime(row)
             },
 
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '320px',
+                minWidth: '260px',
                 cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
                 center: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -821,12 +909,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -835,7 +923,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'MOTIVO',
@@ -851,18 +939,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '320px',
+                minWidth: '260px',
                 cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -872,12 +960,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -886,7 +974,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'FECHA LyDF',
@@ -894,18 +982,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_date}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_date}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '330px',
+                minWidth: '260px',
                 cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -915,12 +1003,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -929,7 +1017,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'FECHA VIABILIDAD',
@@ -937,18 +1025,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_pay2}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_pay2}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '330px',
+                minWidth: '260px',
                 cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -958,12 +1046,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -972,7 +1060,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'FECHA PAGO EXPENSAS',
@@ -980,7 +1068,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
                 name: 'FECHA LyDF',
@@ -988,18 +1076,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_date}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_date}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '330px',
+                minWidth: '260px',
                 cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -1009,12 +1097,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>,
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>,
             },
             {
                 name: 'CAT.',
@@ -1023,7 +1111,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'ESTADO',
@@ -1040,19 +1128,19 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_archive}</span>
+                cell: row => <span className={compactNumericCellClass}>{row.clock_archive}</span>
             },
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '330px',
+                minWidth: '260px',
                 ignoreCSV: true,
                 cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 ignoreCSV: true,
                 cell: row => _MODULE_ACTION_MENU(row),
             },
@@ -1065,12 +1153,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
+                cell: row => <span className={compactRadicadoCellClass}>{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
+                cell: row => <span className={compactTextCellClass}>{formsParser1(row, true)}</span>
             },
             {
                 name: 'CAT.',
@@ -1079,7 +1167,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
+                cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
                 name: 'ESTADO',
@@ -1092,14 +1180,14 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             {
                 name: 'PROGRESIÓN',
                 center: true,
-                minWidth: '320px',
+                minWidth: '260px',
                 cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
                 button: true,
                 center: true,
-                minWidth: '80px',
+                minWidth: '72px',
                 cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
@@ -1198,7 +1286,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="fun-action-toggle h-8 w-8" onClick={(event) => event.stopPropagation()}>
+                        <Button variant="ghost" size="icon" className="fun-action-toggle h-8 w-8">
                             <Icon name="MoreVertical" size={16} />
                         </Button>
                     </DropdownMenuTrigger>
@@ -1207,16 +1295,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <Icon name="Eye" size={14} /> Consulta
                         </DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => openQuickPreview(row)}>
-                            <Icon name="PanelRightOpen" size={14} className="text-primary" />
-                            Vista rápida
+                            <Icon name="Eye" size={14} className="text-primary" />
+                            Consulta rápida
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => openFullscreenWorkspace(row)}>
                             <Icon name="Maximize2" size={14} className="text-primary" />
                             Gestión completa
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toggle(row)}>
-                            <Icon name="FolderOpen" size={14} className="text-primary" />
-                            Detalle rápido
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggle_clock(row)}>
                             <Icon name="Clock" size={14} className="text-muted-foreground" />
@@ -1372,33 +1456,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             if (value === state.fillActive) {
                 return;
             }
-            setState({ fillActive: value, quickPreviewItem: null });
+            setState({ fillActive: value });
         };
-
-        function openQuickPreview(item) {
-            if (!item) {
-                return;
-            }
-
-            setState({
-                selectedRow: item.id,
-                quickPreviewItem: item,
-            });
-        }
-
-        function closeQuickPreview() {
-            setState({ quickPreviewItem: null });
-        }
-
-        function openFullDetailFromPreview() {
-            if (!state.quickPreviewItem) {
-                return;
-            }
-
-            const previewItem = state.quickPreviewItem;
-            closeQuickPreview();
-            toggle(previewItem);
-        }
 
         let generateCVS = (_data, _name) => {
             var rows = [];
@@ -1438,7 +1497,103 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
         return (
             
-            <div className="space-y-6">
+            <div className="space-y-3">
+                <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-lg border border-border/70 bg-card shadow-sm">
+                    <div className="grid gap-0 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.95fr)]">
+                        <div className="border-b border-border/70 p-3 xl:border-b-0 xl:border-r">
+                            <div className="mb-2.5 flex items-start gap-2.5">
+                                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                                    <Icon name="FilePlus" size={16} />
+                                </span>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Licencias</p>
+                                    <h1 className="text-lg font-semibold tracking-tight">RADICACIÓN DE SOLICITUDES</h1>
+                                    <p className="mt-0.5 text-[11px] text-muted-foreground">
+                                        Radica, consulta y abre expedientes sin perder altura útil en la tabla.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="grid gap-1.5 lg:grid-cols-[minmax(0,9rem)_minmax(0,1fr)_auto]">
+                                <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
+                                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                        <Icon name="Calendar" size={14} />
+                                    </span>
+                                    <input
+                                        type="date"
+                                        className="h-9 min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] text-foreground outline-none"
+                                        id="f_01"
+                                        required
+                                    />
+                                </label>
+
+                                <div className="flex min-w-0 items-stretch overflow-hidden rounded-md border border-border bg-background shadow-sm">
+                                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                        <Icon name="Hash" size={14} />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="h-9 min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] font-mono tabular-nums tracking-tight text-foreground outline-none"
+                                        defaultValue={nomens}
+                                        id="f_02"
+                                        required
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-9 rounded-none border-l border-border px-2.5 text-[10px] font-semibold uppercase tracking-[0.12em]"
+                                        onClick={() => _GET_LAST_ID_PUBLIC()}
+                                    >
+                                        Generar
+                                    </Button>
+                                </div>
+
+                                <Button type="submit" className="h-9 whitespace-nowrap bg-accent px-3.5 text-xs font-semibold text-accent-foreground hover:bg-accent/90">
+                                    <Icon name="FolderPlus" size={14} /> Crear
+                                </Button>
+                            </form>
+                        </div>
+
+                        <div className="p-3">
+                            <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                                <Icon name="Search" size={14} />
+                                Consultar Solicitud
+                            </div>
+
+                            <form onSubmit={search} className="grid gap-1.5 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)_auto]">
+                                <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
+                                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                        <Icon name="Info" size={13} />
+                                    </span>
+                                    <select className="h-9 min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] text-foreground outline-none" id="search_0" required>
+                                        <option value="1">Número de Radicado</option>
+                                        <option value="2">Número de Matricula Inmobiliaria</option>
+                                        <option value="3">Número de Indentificacion Predial/Catastral</option>
+                                        <option value="4">Dirección Actual</option>
+                                        <option value="5">C.C o NIT</option>
+                                        <option value="6">Nombre</option>
+                                    </select>
+                                </label>
+
+                                <label className="flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background shadow-sm">
+                                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center border-r border-border bg-muted/60 text-muted-foreground">
+                                        <Icon name="MessageCircle" size={13} />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="h-9 min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] text-foreground outline-none"
+                                        id="search_1"
+                                    />
+                                </label>
+
+                                <Button type="submit" variant="secondary" className="h-9 whitespace-nowrap px-3.5 text-xs font-semibold">
+                                    <Icon name="SearchCheck" size={13} /> Consultar
+                                </Button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <FUN_WORKER_ASIGN translation={translation} globals={globals}
                     type={"law"}
                     openModal={openModal} />
@@ -1449,138 +1604,37 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     type={"eng"}
                     openModal={openModal} />
 
-                <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-                    <div className="flex flex-col gap-3 border-b border-border/70 bg-muted/20 px-4 py-3 md:px-5">
-                        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                            <div className="min-w-0 space-y-1">
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Licencias · Radicar</span>
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <h1 className="text-lg font-semibold tracking-tight text-foreground">RADICACIÓN DE SOLICITUDES</h1>
-                                    <Badge variant="secondary" className="text-[10px] uppercase tracking-[0.12em]">Operación diaria</Badge>
-                                </div>
-                                <p className="max-w-2xl text-xs text-muted-foreground">Genere, consulte y revise expedientes desde una sola barra de trabajo, con mayor densidad visible y acceso lateral rápido.</p>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-2">
-                                <Badge variant="outline" className="h-7 rounded-full px-2.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                                    Activas {list_started.length + state.list_legal.length + state.list_expedition.length + state.list_profesional.length + list_incomplete.length}
-                                </Badge>
-                                <Badge variant="outline" className="h-7 rounded-full px-2.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                                    Archivadas {state.list_archive.length}
-                                </Badge>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid gap-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-                        <section className="border-b border-border/70 px-4 py-3 lg:border-b-0 lg:border-r lg:px-5">
-                            <div className="mb-2 flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                    <Icon name="FilePlus" size={15} />
-                                </div>
-                                <div>
-                                    <h2 className="text-sm font-semibold tracking-tight text-foreground">Generar Nueva Radicación</h2>
-                                    <p className="text-[11px] text-muted-foreground">Consecutivo y fecha en una fila compacta.</p>
-                                </div>
-                            </div>
-
-                            <form onSubmit={handleSubmit} id="app-form" className="grid gap-2 xl:grid-cols-[160px_minmax(0,1fr)_auto] xl:items-end">
-                                <div className="space-y-1">
-                                    <label htmlFor="f_01" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Fecha</label>
-                                    <div className="input-group input-group-sm">
-                                        <span className="input-group-text bg-primary text-primary-foreground">
-                                            <Icon name="Calendar" size={13} />
-                                        </span>
-                                        <input type="date" className="form-control" id="f_01" required />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-1">
-                                    <label htmlFor="f_02" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Radicado</label>
-                                    <div className="flex gap-2">
-                                        <div className="input-group input-group-sm flex-1">
-                                            <span className="input-group-text bg-primary text-primary-foreground">
-                                                <Icon name="Hash" size={13} />
-                                            </span>
-                                            <input type="text" className="form-control" defaultValue={nomens} id="f_02" required />
-                                        </div>
-                                        <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={() => _GET_LAST_ID_PUBLIC()}>
-                                            Generar LIC
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <Button type="submit" size="sm" className="h-9 bg-accent text-accent-foreground hover:bg-accent/90 xl:min-w-[112px]">
-                                    <Icon name="FolderPlus" size={13} /> Crear
-                                </Button>
-                            </form>
-                        </section>
-
-                        <section className="px-4 py-3 lg:px-5">
-                            <div className="mb-2 flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                    <Icon name="Search" size={15} />
-                                </div>
-                                <div>
-                                    <h2 className="text-sm font-semibold tracking-tight text-foreground">Consultar Solicitud</h2>
-                                    <p className="text-[11px] text-muted-foreground">Filtro de consulta rápida sin salir de la pantalla.</p>
-                                </div>
-                            </div>
-
-                            <form onSubmit={search} id="app-form" className="grid gap-2 xl:grid-cols-[minmax(0,220px)_minmax(0,1fr)_auto] xl:items-end">
-                                <div className="space-y-1">
-                                    <label htmlFor="search_0" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Buscar por</label>
-                                    <div className="input-group input-group-sm">
-                                        <span className="input-group-text bg-primary text-primary-foreground">
-                                            <Icon name="Info" size={13} />
-                                        </span>
-                                        <select className="form-select" id="search_0" required>
-                                            <option value="1">Número de Radicado</option>
-                                            <option value="2">Número de Matricula Inmobiliaria</option>
-                                            <option value="3">Número de Indentificacion Predial/Catastral</option>
-                                            <option value="4">Dirección Actual</option>
-                                            <option value="5">C.C o NIT</option>
-                                            <option value="6">Nombre</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-1">
-                                    <label htmlFor="search_1" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Valor</label>
-                                    <div className="input-group input-group-sm">
-                                        <span className="input-group-text bg-primary text-primary-foreground">
-                                            <Icon name="MessageCircle" size={13} />
-                                        </span>
-                                        <input type="text" className="form-control" id="search_1" placeholder="Ej. 68001-1-25-0292" />
-                                    </div>
-                                </div>
-
-                                <Button type="submit" variant="secondary" size="sm" className="h-9 xl:min-w-[112px]">
-                                    <Icon name="SearchCheck" size={13} /> Consultar
-                                </Button>
-                            </form>
-                        </section>
-                    </div>
-                </div>
-
                 {/* ── Search results ─────────────────────────────── */}
                 {state.hasSearchResult && (
-                    <div className="space-y-2">
-                        <h3 className="text-sm font-semibold text-center mb-0 flex items-center justify-center gap-2">
+                    <div>
+                        <h3 className="mb-1.5 flex items-center justify-center gap-1.5 text-xs font-semibold text-center">
                             <Icon name="SearchCheck" size={15} className="text-primary" />
                             Resultado de la Búsqueda
                         </h3>
                         <DataTable
-                            {...tableBaseProps}
+                            conditionalRowStyles={rowSelectedStyle}
+                            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                            noDataComponent="NO HAY SOLICITUDES"
+                            striped="true"
                             columns={columns_search}
                             data={list_search}
+                            highlightOnHover
+                            pagination
+                            paginationPerPage={50}
+                            paginationRowsPerPageOptions={[25, 50, 100]}
+                            className="data-table-component"
+                            noHeader
+                            onRowClicked={openQuickPreview}
+                            dense
+                            progressPending={!isLoaded}
+                            progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                         />
                     </div>
                 )}
 
                 {/* ── Tab navigation ─────────────────────────────── */}
                 <div>
-                    <div className="flex gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1 shadow-sm" role="tablist">
+                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
                         {[
                             { key: '1', label: 'Radicación', count: list_started.length, icon: 'FileInput' },
                             { key: '5', label: 'Evaluación', count: state.list_legal.length, icon: 'ClipboardCheck' },
@@ -1595,15 +1649,15 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 aria-selected={state.fillActive === tab.key}
                                 onClick={() => handleFillClick(tab.key)}
                                 className={cn(
-                                    'flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap border-0 bg-transparent',
+                                    'flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
                                     state.fillActive === tab.key
-                                        ? 'bg-primary/10 text-primary shadow-sm'
-                                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                                        ? 'border-b-primary text-primary'
+                                        : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
                                 )}
                             >
                                 <Icon name={tab.icon} size={14} />
                                 {tab.label}
-                                <Badge variant={tab.variant === 'destructive' ? 'destructive' : 'secondary'} className="ml-1 text-[10px] px-1.5 py-0">
+                                <Badge variant={tab.variant === 'destructive' ? 'destructive' : 'secondary'} className="ml-1 px-1.5 py-0 text-[9px] leading-4">
                                     {tab.count}
                                 </Badge>
                             </button>
@@ -1614,37 +1668,102 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     <div className="mt-2">
                         <TabPane show={state.fillActive === '1'}>
                             <DataTable
-                                {...tableBaseProps}
+                                conditionalRowStyles={rowSelectedStyle}
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="NO HAY SOLICITUDES"
+                                striped="true"
                                 columns={columns}
                                 data={list_started}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                                dense
+                                onRowClicked={openQuickPreview}
+                                progressPending={!isLoaded}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '-1'}>
                             <DataTable
-                                {...tableBaseProps}
+                                conditionalRowStyles={rowSelectedStyle}
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="NO HAY SOLICITUDES"
+                                striped="true"
                                 columns={columns_missing}
                                 data={list_incomplete}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                                dense
+                                onRowClicked={openQuickPreview}
+                                progressPending={!isLoaded}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '5'}>
                             <DataTable
-                                {...tableBaseProps}
+                                conditionalRowStyles={rowSelectedStyle}
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="NO HAY SOLICITUDES"
+                                striped="true"
                                 columns={columns_legal}
                                 data={state.list_legal}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                                dense
+                                onRowClicked={openQuickPreview}
+                                progressPending={!isLoaded}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '10'}>
                             <DataTable
-                                {...tableBaseProps}
+                                conditionalRowStyles={rowSelectedStyle}
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="NO HAY SOLICITUDES"
+                                striped="true"
                                 columns={columns_profesional}
                                 data={state.list_profesional}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                                dense
+                                onRowClicked={openQuickPreview}
+                                progressPending={!isLoaded}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '50'}>
                             <DataTable
-                                {...tableBaseProps}
+                                conditionalRowStyles={rowSelectedStyle}
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="NO HAY SOLICITUDES"
+                                striped="true"
                                 columns={columns_exp}
                                 data={state.list_expedition}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                                dense
+                                onRowClicked={openQuickPreview}
+                                progressPending={!isLoaded}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                         <TabPane show={state.fillActive === '100'}>
@@ -1654,83 +1773,34 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 </Button>
                             </div>
                             <DataTable
-                                {...tableBaseProps}
+                                conditionalRowStyles={rowSelectedStyle}
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="NO HAY SOLICITUDES"
+                                striped="true"
                                 columns={columns_archive}
                                 data={state.list_archive}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={50}
+                                paginationRowsPerPageOptions={[25, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                                dense
+                                onRowClicked={openQuickPreview}
+                                progressPending={!isLoaded}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                     </div>
                 </div>
 
-                <Sheet open={Boolean(quickPreviewItem)} onOpenChange={(open) => { if (!open) closeQuickPreview(); }}>
-                    <SheetContent side="right" className="w-full border-l border-border bg-background px-0 sm:max-w-md">
-                        {quickPreviewItem && (
-                            <div className="flex h-full flex-col">
-                                <SheetHeader className="gap-2 border-b border-border/70 px-5 pb-4 pt-2 text-left">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <Badge variant="outline" className="text-[10px] uppercase tracking-[0.12em]">Consulta rápida</Badge>
-                                        {_GET_STATE_STR(quickPreviewItem.state, false, quickPreviewItem)}
-                                    </div>
-                                    <SheetTitle className="text-lg tracking-tight">{quickPreviewItem.id_public}</SheetTitle>
-                                    <SheetDescription className="text-xs leading-5">
-                                        Revise el expediente sin salir de la tabla y abra la gestión completa cuando lo necesite.
-                                    </SheetDescription>
-                                </SheetHeader>
-
-                                <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-                                    <Card className="border-border/70 shadow-none">
-                                        <CardHeader className="pb-2">
-                                            <CardTitle className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Tipo de trámite</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="pt-0 text-sm leading-5 text-foreground">
-                                            {formsParser1(quickPreviewItem, true)}
-                                        </CardContent>
-                                    </Card>
-
-                                    <div className="grid gap-3 sm:grid-cols-2">
-                                        <Card className="border-border/70 shadow-none">
-                                            <CardHeader className="pb-2">
-                                                <CardTitle className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Categoría</CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="pt-0">
-                                                <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[quickPreviewItem.type] ?? quickPreviewItem.type ?? '—'}</Badge>
-                                            </CardContent>
-                                        </Card>
-
-                                        <Card className="border-border/70 shadow-none">
-                                            <CardHeader className="pb-2">
-                                                <CardTitle className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Fecha clave</CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="pt-0 text-sm font-mono tabular-nums text-foreground">
-                                                {quickPreviewItem.clock_pay2 || quickPreviewItem.clock_date || quickPreviewItem.clock_payment || _GET_MISSING_DATE(quickPreviewItem) || quickPreviewItem.clock_archive || 'Sin fecha'}
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-
-                                    <Card className="border-border/70 shadow-none">
-                                        <CardHeader className="pb-2">
-                                            <CardTitle className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Progresión</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="pt-0">
-                                            {renderCompactProgress(quickPreviewItem)}
-                                        </CardContent>
-                                    </Card>
-                                </div>
-
-                                <div className="border-t border-border/70 px-5 py-4">
-                                    <div className="grid gap-2 sm:grid-cols-2">
-                                        <Button type="button" size="sm" onClick={openFullDetailFromPreview}>
-                                            <Icon name="FolderOpen" size={14} /> Abrir detalles
-                                        </Button>
-                                        <Button type="button" variant="outline" size="sm" onClick={closeQuickPreview}>
-                                            <Icon name="TableProperties" size={14} /> Seguir en tabla
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </SheetContent>
-                </Sheet>
+                {state.previewExpediente && (
+                    <FunExpedienteDetail
+                        expediente={state.previewExpediente}
+                        onClose={closeQuickPreview}
+                        onOpenWorkspace={openDetailedManagement}
+                    />
+                )}
 
                 {/* ── Modals (react-modal — kept during migration) ── */}
                 <Modal contentLabel="GENERAL VIEW FUN"

@@ -10,11 +10,38 @@ import CUSTOM_DATA_SERVICE from '../../../services/custom.service';
 import EXP_1 from './exp_1.component';
 import EXP_AREAS from './exp_areas.component';
 import EXP_DOCS from './exp_docs.component';
-import EXP_CLOCKS from './exp_clocks.component';
 import EXP_LIC from './exp_lic.component';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+
+function EXP_CLOCKS_ACCESS({ currentItem, NAVIGATION }) {
+    const canOpenTimes = currentItem && typeof NAVIGATION === 'function';
+
+    return (
+        <fieldset className="p-3" data-testid="exp-clocks-link" id="nav_expedition_clock_redirect">
+            <div className="rounded-lg border border-warning/30 bg-warning/10 p-4">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="space-y-1">
+                        <h3 className="m-0 text-sm font-semibold text-foreground">TIEMPOS</h3>
+                        <p className="m-0 text-sm text-muted-foreground">
+                            Este registro se gestiona desde el submódulo de tiempos.
+                        </p>
+                    </div>
+
+                    <Button
+                        size="sm"
+                        type="button"
+                        onClick={() => canOpenTimes && NAVIGATION(currentItem, 'clock', 'expedition')}
+                        disabled={!canOpenTimes}
+                    >
+                        Abrir submódulo de tiempos
+                    </Button>
+                </div>
+            </div>
+        </fieldset>
+    );
+}
 
 function EXPEDITION(props) {
     const { currentId, currentVersion, swaMsg, translation, globals, closeModal: closeModalProp, requesRefresh, NAVIGATION } = props;
@@ -230,14 +257,9 @@ function EXPEDITION(props) {
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
 
-                                            <EXP_CLOCKS
-                                                translation={translation} swaMsg={swaMsg} globals={globals}
+                                            <EXP_CLOCKS_ACCESS
                                                 currentItem={currentItem}
-                                                currentVersion={currentVersion}
-                                                currentRecord={currentRecord}
-                                                currentVersionR={currentVersionR}
-                                                requestUpdate={requestUpdate}
-                                                outCodes={outCodes}
+                                                NAVIGATION={NAVIGATION}
                                             />
 
                                             <EXP_LIC
