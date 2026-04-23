@@ -29,13 +29,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
     const [cubSelected, setCubSelected] = useState(null);
     const [idCUBxVr, setIdCUBxVr] = useState(null);
     const [tn, setTn] = useState(undefined);
-    const [showCollapse_expedition_21, setShowCollapse_expedition_21] = useState(false);
-    const [showCollapse_expedition_22, setShowCollapse_expedition_22] = useState(false);
-    const [showCollapse_expedition_23, setShowCollapse_expedition_23] = useState(false);
-    const [showCollapse_expedition_24, setShowCollapse_expedition_24] = useState(false);
-    const [showCollapse_expedition_25, setShowCollapse_expedition_25] = useState(false);
-    const [showCollapse_expedition_26, setShowCollapse_expedition_26] = useState(false);
-    const [showCollapse_expedition_27, setShowCollapse_expedition_27] = useState(false);
+    const [activePaymentSection, setActivePaymentSection] = useState(null);
 
     const retrieveItem = async () => {
         try {
@@ -64,6 +58,12 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
     useEffect(() => {
         retrieveItem();
     }, []);
+
+        const isPaymentSectionOpen = (sectionId) => activePaymentSection === sectionId;
+        const togglePaymentSection = (sectionId) => {
+            setActivePaymentSection((currentSection) => currentSection === sectionId ? null : sectionId);
+        };
+
         // DATA GETTERS
 
 
@@ -2631,10 +2631,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
 
                 <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_21"
-                    onClick={() => setShowCollapse_expedition_21(!showCollapse_expedition_21)}>
+                    onClick={() => togglePaymentSection('expedition_21')}>
                     <label className="app-p lead fw-normal text-info">Acto de tramite de licencia</label>
                 </MDBBtn>
-                <MDBCollapse show={showCollapse_expedition_21}>
+                <MDBCollapse show={isPaymentSectionOpen('expedition_21')}>
                     <fieldset className="p-3">
                         <form id="form_expedition_1" onSubmit={pdf_gen_1}>
                             {_COMPONENT_DOC_1()}
@@ -2650,10 +2650,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 {_GLOBAL_ID === 'cp1' && paymentVisibility.showVariableFees ?
                     <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_27"
-                            onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
+                            onClick={() => togglePaymentSection('expedition_27')}>
                             <label className="app-p lead fw-normal text-info">Liquidación de Expensas</label>
                         </MDBBtn>
-                        <MDBCollapse show={showCollapse_expedition_27}>
+                        <MDBCollapse show={isPaymentSectionOpen('expedition_27')}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_7}>
                                     {_COMPONENT_DOC_7()}
@@ -2671,10 +2671,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 {(_GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2') && paymentVisibility.showVariableFees ? <>
                     <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_22"
-                        onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
+                        onClick={() => togglePaymentSection('expedition_22')}>
                         <label className="app-p lead fw-normal text-info">Liquidacion de Expensas</label>
                     </MDBBtn>
-                    <MDBCollapse show={showCollapse_expedition_22}>
+                    <MDBCollapse show={isPaymentSectionOpen('expedition_22')}>
                         <fieldset className="p-3">
                             <form id="form_expedition_2" onSubmit={pdf_gen_2}>
                                 {_COMPONENT_DOC_2()}
@@ -2690,10 +2690,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 {_GLOBAL_ID === 'cb1' && paymentVisibility.showTaxPayment ? <>
                     <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
-                        onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
+                        onClick={() => togglePaymentSection('expedition_23')}>
                         <label className="app-p lead fw-normal text-info">Impuestos Municipales</label>
                     </MDBBtn>
-                    <MDBCollapse show={showCollapse_expedition_23}>
+                    <MDBCollapse show={isPaymentSectionOpen('expedition_23')}>
 
                         <fieldset className="p-3">
                             <form id="form_expedition_3" onSubmit={pdf_gen_3}>
@@ -2710,10 +2710,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
 
                 <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_24"
-                    onClick={() => setShowCollapse_expedition_24(!showCollapse_expedition_24)}>
+                    onClick={() => togglePaymentSection('expedition_24')}>
                     <label className="app-p lead fw-normal text-info">Estampilla PRO-UIS</label>
                 </MDBBtn>
-                <MDBCollapse show={showCollapse_expedition_24}>
+                <MDBCollapse show={isPaymentSectionOpen('expedition_24')}>
                     <fieldset className="p-3">
                         <form id="form_expedition_4" onSubmit={pdf_gen_4}>
                             {_COMPONENT_DOC_4()}
@@ -2729,10 +2729,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 {paymentVisibility.showUrbanDuties
                     ? <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_25"
-                            onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
+                            onClick={() => togglePaymentSection('expedition_25')}>
                             <label className="app-p lead fw-normal text-info">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</label>
                         </MDBBtn>
-                        <MDBCollapse show={showCollapse_expedition_25}>
+                        <MDBCollapse show={isPaymentSectionOpen('expedition_25')}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_5}>
                                     {_COMPONENT_DOC_5()}
@@ -2753,10 +2753,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 {(_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2') && paymentVisibility.showTaxPayment ?
                     <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_26"
-                            onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
+                            onClick={() => togglePaymentSection('expedition_26')}>
                             <label className="app-p lead fw-normal text-info">Impuesto Delineación Urbana</label>
                         </MDBBtn>
-                        <MDBCollapse show={showCollapse_expedition_26}>
+                        <MDBCollapse show={isPaymentSectionOpen('expedition_26')}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_6}>
                                     {_COMPONENT_DOC_6()}

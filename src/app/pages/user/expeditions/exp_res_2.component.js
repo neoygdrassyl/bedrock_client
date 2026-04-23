@@ -34,17 +34,15 @@ export default function EXP_RES_2(props) {
   };
 
   console.log("MARGINS", margins);
-  
+
   const editor = useRef(null);
   const containerRef = useRef(null);
   const [content, setContent] = useState("<p>Cargando plantilla...</p>");
-  const [isTemplateReady, setIsTemplateReady] = useState(false);
   const [htmlSizeKB, setHtmlSizeKB] = useState(null);
   const [nameFile, setNameFile] = useState(null);
 
   useEffect(() => {
     const loadTemplate = async () => {
-      setIsTemplateReady(false);
       try {
         data.model = currentModel;
         data.clocks = (currentItem?.fun_clocks ?? []).filter(Boolean);
@@ -67,11 +65,9 @@ export default function EXP_RES_2(props) {
         }
 
         setContent(modifiedHTML);
-        setIsTemplateReady(true);
       } catch (err) {
         console.error("Error cargando plantilla:", err);
         setContent("<p>Error cargando la plantilla.</p>");
-        setIsTemplateReady(false);
       }
     };
 
@@ -118,15 +114,7 @@ export default function EXP_RES_2(props) {
         showConfirmButton: false,
       });
 
-      const editorHTML = content;
-
-      if (!isTemplateReady) {
-        throw new Error('La plantilla todavia no termina de cargar.');
-      }
-
-      if (!editorHTML || !editorHTML.trim()) {
-        throw new Error('El editor no tiene contenido para exportar.');
-      }
+      const editorHTML = editor.current?.value;
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/pdf-generate/generate-pdf`,
