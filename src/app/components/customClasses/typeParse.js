@@ -742,11 +742,11 @@ export function dateParser_timeLeft(startDate, time) {
     if (!checkDate(startDate)) return ""
     const today = dayjs().format('YYYY-MM-DD');
     const endDate = _businessDays.sumarDiasHabiles(startDate, time);
-    // absolute diff: always positive regardless of direction
-    if (endDate >= today) {
+    if (endDate === today) return 0;
+    if (endDate > today) {
         return _businessDays.contarDiasHabiles(today, endDate);
     } else {
-        return _businessDays.contarDiasHabiles(endDate, today);
+        return -_businessDays.contarDiasHabiles(endDate, today);
     }
 }
 
@@ -766,14 +766,14 @@ export function dateParser_dateDiff(dateA, dateB, absolute = false) {
     let con1 = dateA === false || dateA === null || dateA === undefined || dateA === '';
     let con2 = dateB === false || dateB === null || dateB === undefined || dateB === '';
     if (con1 || con2) return ""
-    // Signed diff: dateA - dateB in business days
+    // Preserva el contrato legacy: positivo si dateB ocurre despues de dateA.
     if (dateA === dateB) return 0;
     if (dateA > dateB) {
         const count = _businessDays.contarDiasHabiles(dateB, dateA);
-        return absolute ? count : count;
+        return absolute ? count : -count;
     } else {
         const count = _businessDays.contarDiasHabiles(dateA, dateB);
-        return absolute ? count : -count;
+        return absolute ? count : count;
     }
 }
 
@@ -783,12 +783,11 @@ export function dateParser_timePassed(date) {
     let con1 = date === false || date === null || date === undefined || date === '';
     if (con1) return ""
     const today = dayjs().format('YYYY-MM-DD');
-    // Signed diff: date - today (negative when date is in the past)
     if (date === today) return 0;
     if (date > today) {
-        return _businessDays.contarDiasHabiles(today, date);
+        return -_businessDays.contarDiasHabiles(today, date);
     } else {
-        return -_businessDays.contarDiasHabiles(date, today);
+        return _businessDays.contarDiasHabiles(date, today);
     }
 }
 
