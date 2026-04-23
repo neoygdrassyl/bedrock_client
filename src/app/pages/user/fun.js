@@ -1,6 +1,7 @@
 import ChartErrorBoundary from '../../components/ChartErrorBoundary';
 import { useReducer, useEffect, useRef } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
+import { useNavigate } from 'react-router-dom';
 import { swalLoading, swalSuccess, swalError, swalClose } from '@/app/utils/swalAdapter';
 import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
@@ -53,6 +54,7 @@ import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/ta
 import dayjs from 'dayjs';
 
 function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
+    const navigate = useNavigate();
     const [state, setState] = useReducer(
         (prev, next) => ({ ...prev, ...next }),
         {
@@ -132,6 +134,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
     function LOAD_BY_URL() {
         // Placeholder — urlParams is not currently passed to this component
+    }
+
+    function openFullscreenWorkspace(item) {
+        const radicado = item?.id_public ?? item?.radicado;
+        if (radicado) {
+            navigate(`/funmanage/expediente/${radicado}`);
+        }
     }
 
     function retrieveWorkers() {
@@ -1168,9 +1177,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <DropdownMenuLabel className="flex items-center gap-2">
                             <Icon name="Eye" size={14} /> Consulta
                         </DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row)}>
+                            <Icon name="Maximize2" size={14} className="text-primary" />
+                            Gestión completa
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggle(row)}>
                             <Icon name="FolderOpen" size={14} className="text-primary" />
-                            Detalles
+                            Detalle rápido
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggle_clock(row)}>
                             <Icon name="Clock" size={14} className="text-muted-foreground" />
