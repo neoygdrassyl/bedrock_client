@@ -76,10 +76,34 @@ body {
   margin: 0;
   height: 100%;
   font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+}
+
+input,
+select,
+textarea,
+table,
+.font-mono {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+}
+
+/* Fullscreen de expediente: remover shell/menús legacy durante la sesión activa */
+body.workspace-fullscreen-open .app-shell-rail,
+body.workspace-fullscreen-open .app-shell-context,
+body.workspace-fullscreen-open .app-shell-header,
+body.workspace-fullscreen-open .fun-nav-sidebar,
+body.workspace-fullscreen-open .fun-nav-toggle {
+  display: none !important;
+}
+
+body.workspace-fullscreen-open {
+  --fun-sidebar-width: 0px;
 }
 
 #root, .App {

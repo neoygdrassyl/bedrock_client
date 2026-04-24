@@ -90,16 +90,26 @@ function ScatterTooltip({ active, payload }) {
   );
 }
 
-export function FunmanageScatterChart({ data, loading }) {
+export function FunmanageScatterChart({ data, loading, scatterThresholds, thresholds: thresholdsProp }) {
   const [responsableFilter, setResponsableFilter] = useState('curaduria');
   const [showVencidos, setShowVencidos] = useState(true);
   const [selectedExpediente, setSelectedExpediente] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const navigate = useNavigate();
 
+  // Thresholds desde alarmConfigV2 (configurable por curaduria). Fallback a 70/90/100.
+  const thresholds = useMemo(() => {
+    const src = scatterThresholds || thresholdsProp || {};
+    return {
+      warning: Number(src.warning ?? 70),
+      critical: Number(src.critical ?? 90),
+      overdue: Number(src.overdue ?? 100),
+    };
+  }, [scatterThresholds, thresholdsProp]);
+
   const plotData = useMemo(() => {
     if (!Array.isArray(data)) return [];
-    
+
     return data
       .map(d => {
         const isCuraduria = String(d.responsable || "").toLowerCase().includes("curad");
@@ -109,13 +119,16 @@ export function FunmanageScatterChart({ data, loading }) {
         const used = d.dias_habiles_usados || 0;
         const limit = d.dias_habiles_limite || 0;
         const p = limit > 0 ? (used / limit) * 100 : (d.porcentaje_avance || 0);
-        
+
         let colorStatus = 'verde';
         let fill = '#22c55e';
-        if (p >= 100) {
+        if (p >= thresholds.overdue) {
+          colorStatus = 'rojo';
+          fill = '#991b1b'; // rojo oscuro (vencido)
+        } else if (p >= thresholds.critical) {
           colorStatus = 'rojo';
           fill = '#ef4444';
-        } else if (p >= 80) {
+        } else if (p >= thresholds.warning) {
           colorStatus = 'amarillo';
           fill = '#eab308';
         }
@@ -132,7 +145,7 @@ export function FunmanageScatterChart({ data, loading }) {
       .filter(d => d.yNum != null)
       .filter(d => d.respType === responsableFilter)
       .filter(d => showVencidos || d.colorStatus !== 'rojo');
-  }, [data, responsableFilter, showVencidos]);
+  }, [data, responsableFilter, showVencidos, thresholds]);
 
   const handleNavigateDetail = (exp) => {
     setSelectedExpediente(null);

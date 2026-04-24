@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-table';
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Tooltip,
   TooltipContent,
@@ -254,24 +255,25 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
     return (
       <TooltipProvider delayDuration={150}>
         <div data-testid="data-table" className="w-full">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <div className="relative w-full max-w-xs">
+          <div className="mb-2 flex flex-col gap-2 rounded-lg border border-border bg-muted/20 px-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative min-w-0 flex-1 sm:max-w-sm">
               <Icon
                 name="search"
-                size={16}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={14}
+                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
               />
-              <input
+              <Input
                 type="search"
-                className="form-control h-10 rounded-md border-border bg-background pl-10 text-sm"
-                placeholder="Buscar por radicado…"
+                className="h-8 rounded-lg border-border bg-background/90 pl-8 pr-2 text-xs"
+                placeholder="Buscar radicado…"
                 value={search ?? ''}
                 onChange={(event) => onSearchChange?.(event.target.value)}
                 data-testid="table-search"
               />
             </div>
 
-            <span className="text-sm text-muted-foreground" data-testid="table-total">
+            <span className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-background/80 px-2.5 text-xs font-medium text-muted-foreground" data-testid="table-total">
+              <Icon name="database" size={14} />
               {loading ? '…' : `${totalRows} solicitudes`}
             </span>
           </div>
@@ -306,7 +308,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
                               : 'w-[18%]';
 
                       return (
-                        <th key={header.id} className={`px-4 py-3 text-left align-middle ${widthClass}`.trim()}>
+                        <th key={header.id} className={`px-4 py-2.5 text-left align-middle ${widthClass}`.trim()}>
                           {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                         </th>
                       );
@@ -343,7 +345,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
                       onClick={() => onViewDetail?.(row.original)}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3 align-middle">
+                        <td key={cell.id} className="px-4 py-2.5 align-middle">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}

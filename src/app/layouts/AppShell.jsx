@@ -88,6 +88,7 @@ export function AppShell({ user, onLogout, children }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground">
+      <div className="app-shell-rail">
       <IconRail
         items={navItems}
         activeId={activeRailId}
@@ -95,20 +96,25 @@ export function AppShell({ user, onLogout, children }) {
         logo={logo}
         collapsed={sidebarCollapsed}
       />
+      </div>
 
+      <div className="app-shell-context">
       <ContextPanel
         title={selectedItem?.label || ''}
         items={panelItems}
         collapsed={sidebarCollapsed || panelItems.length === 0}
       />
+      </div>
 
       <div className="flex flex-col flex-1 min-w-0">
+        <div className="app-shell-header">
         <HeaderBar
           user={user}
           onLogout={onLogout}
           sidebarCollapsed={sidebarCollapsed}
           onToggleSidebar={toggleSidebar}
         />
+        </div>
 
         <ScrollArea className="flex-1">
           <main id="main-content" className="p-4 md:p-5">

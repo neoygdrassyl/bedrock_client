@@ -25,10 +25,15 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
             const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CARTA AMPLIACION DE TERMINOS');
 
-            if(data) document.getElementById("vr_selected1").value = data.vr
-            setVrSelected(data.vr);
-            setCubSelected(data.cub);
-            setIdCUBxVr(data.id);
+            if (data) {
+                const selectEl = document.getElementById('vr_selected1');
+                if (selectEl) {
+                    selectEl.value = data.vr || '';
+                }
+                setVrSelected(data.vr || null);
+                setCubSelected(data.cub || null);
+                setIdCUBxVr(data.id || null);
+            }
         } catch (error) {
             console.log(error);
         }
@@ -63,7 +68,10 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
     useEffect(() => {
         if (currentVersion != null) {
             var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
-            document.getElementById('gena_type').value = formsParser1(_CHILD_1);
+            const typeInput = document.getElementById('gena_type');
+            if (typeInput) {
+                typeInput.value = formsParser1(_CHILD_1);
+            }
         }
     }, [currentVersion]);
 

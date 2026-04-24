@@ -273,6 +273,7 @@ export default function App() {
                       } />
                       <Route path="/legal-flow-guide" element={<LEGAL_FLOW_GUIDE />} />
                       <Route path="/configuracion" element={<SETTINGS />} />
+                      <Route path="/user/settings" element={<SETTINGS />} />
                       <Route path="/sellos" element={
                         <Seals translation={titleT} swaMsg={swaMsg} breadCrums={breadCrums} />
                       } />

@@ -26,11 +26,10 @@ export default function ARCHIVE_FUN_VIEW(props) {
             </div>
         </div>
 
-        return LIST_A.map(li => {
+        return LIST_A.map((li, index) => {
             let box = li.fun_archive ?? {};
             //let json = getJSONFull(li.json ?? false);
-            return <>
-                <div className='row border py-1'>
+            return <div key={li.id || `${li.folder || 'folder'}-${index}`} className='row border py-1'>
                     <div className='row'>
                         <div className='col'>
                             <label><Icon name="border-all" size={16} /> Estante: <label className='fw-bold'>{box.column}</label></label>
@@ -49,7 +48,6 @@ export default function ARCHIVE_FUN_VIEW(props) {
                         </div>
                     </div>
                 </div>
-            </>
         })
     }
 
