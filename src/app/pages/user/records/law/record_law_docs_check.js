@@ -6,13 +6,31 @@ import DataTable from '@/components/data-table-bridge';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/components/ui/button';
 
 function RECORD_LAW_DOCSCHECK(props) {
     const [VRDocs, setVRDocs] = useState([]);
     const [load, setLoad] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
+    const [hideNotApplicable, setHideNotApplicable] = useState(Boolean(props.hideNotApplicableDefault));
 
-    const { translation, swaMsg, globals, currentItem, _FUN_1, _FUN_R, _FUN_6, readOnly, docsScope } = props;
+    const {
+        translation,
+        swaMsg,
+        globals,
+        currentItem,
+        _FUN_1,
+        _FUN_R,
+        _FUN_6,
+        readOnly,
+        docsScope,
+        showFilters = false,
+        title = 'Inventario de Informacion Aportada',
+    } = props;
+
+    useEffect(() => {
+        setHideNotApplicable(Boolean(props.hideNotApplicableDefault));
+    }, [props.hideNotApplicableDefault]);
 
     useEffect(() => {
         setVRList(currentItem ? currentItem.id_public : false);
@@ -146,8 +164,19 @@ function RECORD_LAW_DOCSCHECK(props) {
         if (row.value == 1) bg = { color: 'success', text: 'APORTO', value: 2 }
         if (row.value == 2) bg = { color: 'warning', text: 'NO APLICA', value: 0 }
         let editable = _GET_EDIT_POWERS(row);
+        const badgeClass = {
+            dark: 'border-border bg-muted text-foreground',
+            success: 'border-accent/20 bg-accent/10 text-accent',
+            danger: 'border-destructive/20 bg-destructive/10 text-destructive',
+            warning: 'border-warning/20 bg-warning/10 text-warning',
+        }[bg.color] || 'border-border bg-background text-foreground';
 
-        return <a href="#!" onClick={() => { if (editable) save_fun_r_2(bg.value, row.code) }}> <span className={`badge bg-${bg.color}`}>{bg.text}</span></a>
+        if (editable) {
+            return <button type="button" className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${badgeClass}`}
+                onClick={() => save_fun_r_2(bg.value, row.code)}>{bg.text}</button>;
+        }
+
+        return <span className={`inline-flex rounded-full border px-2 py-1 text-[11px] font-semibold ${badgeClass}`}>{bg.text}</span>;
     }
     let _GET_EVA_VAKUE = (row) =>{
         if(row.value == 1) return true;
@@ -258,29 +287,29 @@ function RECORD_LAW_DOCSCHECK(props) {
     const columns = [
         {
             name: 'MODALIDAD',
-            minWidth: '350px',
+            minWidth: '240px',
             cell: row => <span className="text-sm">{row.parent}</span>
         },
         {
             name: 'DOCUMENTO',
-            minWidth: '350px',
+            minWidth: '280px',
             cell: row => <span className="text-sm">{row.name ?? FUN6JSON[row.code]}</span>
         },
         {
             name: 'CODIGO',
             center: true,
-            minWidth: '60px',
+            minWidth: '80px',
             cell: row => <span className="text-sm">{(row.code)}</span>
         },
         {
             name: 'ESTATUS',
             center: true,
-            minWidth: '60px',
+            minWidth: '110px',
             cell: row => _GET_VALUE_BADGE(row)
         },
         {
             name: 'EVALUACION',
-            minWidth: '150px',
+            minWidth: '130px',
             cell: row => _GET_EVA_VAKUE(row) ? <div className="input-group input-group-sm">
                 <input type="hidden" value={row.doc} name={'r_l_g2_doc_code'} />
                 <select className={_GET_SELECT_COLOR_VALUE(_GET_REVIEW(row.code))} name="r_l_g2_doc_review"
@@ -292,7 +321,7 @@ function RECORD_LAW_DOCSCHECK(props) {
         {
             name: 'ANEXO',
             center: true,
-            minWidth: '150px',
+            minWidth: '140px',
             cell: row => <div className="input-group input-group-sm"><select className='form-select' name="r_l_g2_doc_id6" disabled={readOnly ? true : !_GET_EDIT_POWERS(row)}
                 defaultValue={_GET_ID6(row.doc) || _GET_ID6_NAME(row.doc)} onChange={() => save_fun_r()}>
                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -303,7 +332,7 @@ function RECORD_LAW_DOCSCHECK(props) {
         {
             name: 'VER',
             center: true,
-            minWidth: '100px',
+            minWidth: '70px',
             cell: row => {
                 let id6 = _GET_ID6(row.doc) || _GET_ID6_NAME(row.doc);
                 if (id6 > 0) return <VIZUALIZER
@@ -317,6 +346,9 @@ function RECORD_LAW_DOCSCHECK(props) {
             }
         },
     ]
+    const allRows = _COMPONENT_TABLE_LIST();
+    const visibleRows = hideNotApplicable ? allRows.filter((row) => row.value != 2) : allRows;
+    const notApplicableRows = allRows.filter((row) => row.value == 2).length;
     let save_fun_r = () => {
         let _reivews = document.getElementsByName('r_l_g2_doc_review');
         let _id6s = document.getElementsByName('r_l_g2_doc_id6');
@@ -379,7 +411,28 @@ function RECORD_LAW_DOCSCHECK(props) {
     }
 
     return (
-        <div className="record_lar_doc_check container">
+        <div className="record_lar_doc_check container space-y-3">
+            {showFilters ? <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <p className="text-sm font-semibold text-foreground">{title}</p>
+                        <p className="text-xs text-muted-foreground">Lista compacta para revisar aporte, evaluación y soporte asociado.</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span className="rounded-full border border-border bg-background px-3 py-1.5">Visibles: {visibleRows.length}</span>
+                        <span className="rounded-full border border-border bg-background px-3 py-1.5">No aplica: {notApplicableRows}</span>
+                        <Button
+                            type="button"
+                            variant={hideNotApplicable ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setHideNotApplicable((currentValue) => !currentValue)}
+                        >
+                            {hideNotApplicable ? 'Mostrar "No aplica"' : 'Ocultar "No aplica"'}
+                        </Button>
+                    </div>
+                </div>
+            </div> : null}
+
             <DataTable
                 conditionalRowStyles={conditionalRowStyles}
 
@@ -389,14 +442,14 @@ function RECORD_LAW_DOCSCHECK(props) {
                 columns={columns}
                 dense
 
-                load={true}
-                //progressPending={!true}
+                load={load}
+                progressPending={!load}
                 progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
 
                 fixedHeader
-                fixedHeaderScrollHeight="500px"
+                fixedHeaderScrollHeight={showFilters ? '360px' : '500px'}
 
-                data={_COMPONENT_TABLE_LIST()}
+                data={visibleRows}
                 highlightOnHover
 
                 className="data-table-component"
