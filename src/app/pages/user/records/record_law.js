@@ -24,11 +24,11 @@ import RECORD_LAW_FUN_51 from './law/record_law_fun_51.component';
 import RECORD_LAW_FUN_52 from './law/record_law_fun_52.component';
 import RECORD_LAW_FUN_53 from './law/record_law_fun_53.component';
 import RECORD_LAW_FUN_LAW from './law/record_law_fun_law.component';
-import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 
 // RECORDS
 
@@ -292,39 +292,34 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     readOnly />
 
                                 <legend className="my-2 px-3 bg-light" id="record_law_22">
-                                    <label className="app-p lead fw-normal">2.2 Inventario de Información Aportada</label>
+                                    <label className="app-p lead fw-normal">2.2 Revisión documental</label>
                                 </legend>
-
-                                <RECORD_LAW_DOCSCHECK
-                                    _FUN_1={_GET_CHILD_1()}
-                                    _FUN_6={_GET_CHILD_6()}
-                                    _FUN_R={_GET_CHILD_REVIEW()}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                    requestUpdate={requestUpdate}
-                                    docsScope={'law'} />
-
-                                <legend className="my-2 px-3 bg-light" id="record_law_23">
-                                    <label className="app-p lead fw-normal">2.3 DOCUMENTOS DIGITALIZADOS</label>
-                                </legend>
-
-                                <FUN_6_VIEW
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentId={currentId}
-                                    currentVersion={currentVersion}
-                                    requestUpdate={requestUpdate}
-                                    readOnly
-                                />
-
-                                <legend className="my-2 px-3 bg-light" id="record_law_24">
-                                    <label className="app-p lead fw-normal">2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
-                                </legend>
-                                <SUBMIT_SINGLE_VIEW
-                                    translation={translation} swaMsg={swaMsg} globals={globals}
-                                    id_related={currentItem.id_public}
+                                <RecordReviewWorkspace
+                                    inventoryLabel="2.2 Inventario de Información Aportada"
+                                    documentsLabel="2.3 Expediente documental"
+                                    documentsId="record_law_23"
+                                    inventoryContent={<RECORD_LAW_DOCSCHECK
+                                        _FUN_1={_GET_CHILD_1()}
+                                        _FUN_6={_GET_CHILD_6()}
+                                        _FUN_R={_GET_CHILD_REVIEW()}
+                                        currentItem={currentItem}
+                                        currentVersion={currentVersion}
+                                        requestUpdate={requestUpdate}
+                                        docsScope={'law'}
+                                        hideNotApplicableDefault
+                                        showFilters
+                                    />}
+                                    documentsContent={<FUN_6_VIEW
+                                        translation={translation}
+                                        swaMsg={swaMsg}
+                                        globals={globals}
+                                        currentItem={currentItem}
+                                        currentId={currentId}
+                                        currentVersion={currentVersion}
+                                        requestUpdate={requestUpdate}
+                                        readOnly
+                                        mergeVentanilla
+                                    />}
                                 />
 
                                 <legend className="my-2 px-3 bg-light" id="record_law_25">
@@ -520,19 +515,13 @@ const NAV_FUNA = (_CHILD) => {
                         <br />
                         <a href="#record_law_22">
                             <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
-                                <h6>2.2 Inventario de Información Aportada</h6>
+                                <h6>2.2 REVISIÓN DOCUMENTAL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_law_23">
                             <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
-                                <h6>2.3 DOCUMENTOS DIGITALIZADOS</h6>
-                            </legend>
-                        </a>
-                        <br />
-                        <a href="#record_law_24">
-                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
-                                <h6>2.4 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</h6>
+                                <h6>2.3 EXPEDIENTE DOCUMENTAL</h6>
                             </legend>
                         </a>
                         <br />

@@ -1,6 +1,7 @@
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import DataTable from '@/components/data-table-bridge';
 const profs = [
     ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
     ['ARQUITECTO PROYECTISTA'],
@@ -143,56 +144,78 @@ function RECORD_ENG_PROFESIONALS(props) {
             value = value.split(';');
             return value
         }
-        // COMPONENT JSX
-        let _PROFESIOAL_INFO_COMPONENT = () => {
-            var PROFESIONAL = _FIND_PROFESIOANL('INGENIERO CIVIL GEOTECNISTA');
-            if (PROFESIONAL) {
-                return <>
-                    <div className="row border p-2">
-                        <div className="col-6">
-                            <label className="fw-bold"> {PROFESIONAL.name + " " + PROFESIONAL.surname} {_GET_DOCS_BTNS(PROFESIONAL.docs)}</label>
-                        </div>
-                        <div className="col-2">Matricula: <label className="fw-bold">{PROFESIONAL.registration_date} </label></div>
-                        <div className="col-2">¿Vigente?:
-                            <select className='form-select' name="review_check_2" defaultValue={_GET_CHILD_REVIEW_GEN()[0]} >
-                                <option value="1" className="text-success">SI</option>
-                                <option value="0" className="text-danger">NO</option>
-                            </select>
-                        </div>
-                        <div className="col-2">¿Sancionado?: <label className="fw-bold">{PROFESIONAL.sanction ? "SI" : "NO"} </label></div>
+        const resolveRole = (roles) => {
+            const roleList = Array.isArray(roles) ? roles : [roles];
+            const matchingRole = roleList.find((role) => _FIND_PROFESIOANL(role));
+            return matchingRole || roleList[0];
+        }
+        const getStatusClass = (isCompleted) => isCompleted
+            ? 'border-accent/20 bg-accent/10 text-accent'
+            : 'border-destructive/20 bg-destructive/10 text-destructive';
+        const buildProfessionalRows = () => {
+            const checks = _GET_STEP_TYPE('cb_profs', 'check');
+
+            return profs.map((roles, index) => {
+                const role = resolveRole(roles);
+                const professional = _FIND_PROFESIOANL(role);
+
+                return {
+                    id: `${role}-${index}`,
+                    role,
+                    professional,
+                    checked: checks[index] == 1,
+                    statusText: professional ? 'DILIGENCIADO' : 'SIN DILIGENCIAR',
+                };
+            });
+        }
+        const columns = [
+            {
+                name: 'OK',
+                omit: !useCB,
+                minWidth: '56px',
+                cell: (row) => <input className="form-check-input" type="checkbox" value={row.role} name="cb_profs"
+                    defaultChecked={row.checked || false} onChange={() => manage_step()} />
+            },
+            {
+                name: 'ROL',
+                minWidth: '240px',
+                cell: (row) => <span className="text-sm font-medium">{row.role}</span>
+            },
+            {
+                name: 'PROFESIONAL',
+                minWidth: '220px',
+                cell: (row) => row.professional
+                    ? <div>
+                        <div className="text-sm font-medium">{row.professional.name} {row.professional.surname}</div>
+                        <div className="text-xs text-muted-foreground">{row.professional.sanction ? 'Con sanciones registradas' : 'Sin sanciones registradas'}</div>
                     </div>
-                </>
-            }
-            return ""
-        }
-        let COMPONENT_PROFESIONAL_RULES = (_rolesArray) => {
-            return <>
-                {_rolesArray.map((roles, i) => {
-                    if (roles.length > 1) {
-                        let role = roles[0];
-                        roles.map(r => { if (_FIND_PROFESIOANL(r)) role = r });
-                        return <li className="list-group-item">{_PROFESIONAL_JSX(role, i)}</li>
-                    } else {
-                        return <li className="list-group-item">{_PROFESIONAL_JSX(roles[0], i)}</li>
-                    }
-                })}
-            </>
-        }
-        let _PROFESIONAL_JSX = (_role, i) => {
-            let VALUES = _GET_STEP_TYPE('cb_profs', 'value');
-            let CHECKS = _GET_STEP_TYPE('cb_profs', 'check');
-            let dc = CHECKS[i] == 1 ? true : false;
-            return <>
-                {useCB ? <input className="form-check-input mx-2" type="checkbox" value={_role} name="cb_profs" defaultChecked={dc || false}
-                    onChange={() => manage_step()} /> : ''}
-                {_FIND_PROFESIOANL(_role)
-                    ? <span className="badge bg-success">DILIGENCIADO</span>
-                    : <span className="badge bg-danger">SIN DILIGENCIAR</span>}
-                <label>&nbsp;{_role}:</label>
-                <label className='fw-bold'>&nbsp;{_FIND_PROFESIOANL(_role).name} {_FIND_PROFESIOANL(_role).surname}</label>
-                <label>&nbsp; - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
-            </>
-        }
+                    : <span className="text-sm text-muted-foreground">Sin profesional asignado</span>
+            },
+            {
+                name: 'MATRICULA',
+                minWidth: '120px',
+                cell: (row) => <span className="text-xs font-mono">{row.professional?.registration_date || '—'}</span>
+            },
+            {
+                name: 'EXPERIENCIA',
+                minWidth: '220px',
+                cell: (row) => _CECK_EXPERIENCE(row.role)
+            },
+            {
+                name: 'SOPORTES',
+                minWidth: '140px',
+                cell: (row) => row.professional?.docs
+                    ? <div className="flex flex-wrap gap-1">{_GET_DOCS_BTNS(row.professional.docs)}</div>
+                    : <span className="text-xs text-muted-foreground">Sin soportes</span>
+            },
+            {
+                name: 'ESTADO',
+                minWidth: '120px',
+                cell: (row) => <span className={`inline-flex rounded-full border px-2 py-1 text-[11px] font-semibold ${getStatusClass(Boolean(row.professional))}`}>
+                    {row.statusText}
+                </span>
+            },
+        ]
 
         // APIS
         let manage_step = (e) => {
@@ -251,10 +274,23 @@ function RECORD_ENG_PROFESIONALS(props) {
             }
         }
         return (
-            <div className="record_ph_profesional_evaluation container">
-                <li className="list-group-item"><label className="fw-bold">PROFESIONALES</label></li>
-                {COMPONENT_PROFESIONAL_RULES(profs)}
-                {_PROFESIOAL_INFO_COMPONENT()}
+            <div className="record_ph_profesional_evaluation container space-y-3">
+                <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
+                    <p className="text-sm font-semibold text-foreground">Profesionales de la solicitud</p>
+                    <p className="text-xs text-muted-foreground">Tabla compacta para validar responsables, experiencia y soportes visibles en el informe.</p>
+                </div>
+
+                <DataTable
+                    paginationComponentOptions={{ rowsPerPageText: 'Filas por pagina:', rangeSeparatorText: 'de' }}
+                    noDataComponent="No hay profesionales configurados"
+                    striped="true"
+                    columns={columns}
+                    data={buildProfessionalRows()}
+                    dense
+                    highlightOnHover
+                    className="data-table-component"
+                    noHeader
+                />
             </div >
         );
 }
