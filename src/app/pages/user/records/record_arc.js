@@ -24,7 +24,6 @@ import RECORD_ARC_37 from './arc/record_arc_37';
 import RECORD_ENG_PROFESIONALS from './eng/record_eng_profesionals.component';
 import RECORD_LAW_DOCSCHECK from './law/record_law_docs_check';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
-import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import RECORD_ARC_GEN_REVIEW from './arc/record_arc_gen_review.component';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import RECORD_ARC_AREAS from './arc/record_arc_areas.component';
@@ -32,6 +31,7 @@ import RECORD_ARC_DESC from './arc/record_arc_desc';
 import RECORD_ARC_CONTROL from './arc/record_arc_control.component';
 import RECORD_ARC_GEN_2_REVIEW from './arc/record_arc_gem2_review.component';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -321,49 +321,45 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                     <legend className="my-2 px-3 Collapsible" id="record_arc_31">
                                         <label className="app-p lead fw-normal">3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</label>
                                     </legend>
-                                    <RECORD_LAW_DOCSCHECK
-                                        _FUN_1={_GET_CHILD_1()}
-                                        _FUN_6={_GET_CHILD_6()}
-                                        _FUN_R={_GET_CHILD_REVIEW()}
-                                        currentItem={currentItem}
-                                        currentVersion={currentVersion}
-                                        requestUpdate={requestUpdate}
-                                        requestUpdateRecord={requestUpdateRecord}
-                                        readOnly={false}
-                                        docsScope={'arc'} />
+                                    <RecordReviewWorkspace
+                                        inventoryLabel="3.1.1 Inventario de Información Aportada"
+                                        documentsLabel="3.1.2 Expediente documental"
+                                        inventoryContent={<RECORD_LAW_DOCSCHECK
+                                            _FUN_1={_GET_CHILD_1()}
+                                            _FUN_6={_GET_CHILD_6()}
+                                            _FUN_R={_GET_CHILD_REVIEW()}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            readOnly={false}
+                                            docsScope={'arc'}
+                                            hideNotApplicableDefault
+                                            showFilters
+                                        />}
+                                        documentsContent={<div className="space-y-4">
+                                            <RECORD_ENG_PROFESIONALS
+                                                _FUN_52={_GET_CHILD_52()}
+                                                _FUN_6={_GET_CHILD_6()}
+                                                currentRecord={currentRecord}
+                                                profs={[
+                                                    ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
+                                                    ['ARQUITECTO PROYECTISTA'],
+                                                ]}
+                                            />
 
-                                    <RECORD_ENG_PROFESIONALS
-                                        _FUN_52={_GET_CHILD_52()}
-                                        _FUN_6={_GET_CHILD_6()}
-                                        currentRecord={currentRecord}
-                                        profs={[
-                                            ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
-                                            ['ARQUITECTO PROYECTISTA'],
-                                        ]}
-                                    />
-
-                                    <legend className="my-2 px-3 bg-light" id="record_eng_411">
-                                        <label className="app-p lead fw-normal">DOCUMENTOS DIGITALIZADOS</label>
-                                    </legend>
-
-                                    <FUN_6_VIEW
-                                        translation={translation}
-                                        swaMsg={swaMsg}
-                                        globals={globals}
-                                        currentItem={currentItem}
-                                        currentId={currentId}
-                                        currentVersion={currentVersion}
-                                        requestUpdate={requestUpdate}
-                                        readOnly
-                                    />
-
-                                    <legend className="my-2 px-3 bg-light" id="record_eng_411">
-                                        <label className="app-p lead fw-normal">DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
-                                    </legend>
-
-                                    <SUBMIT_SINGLE_VIEW
-                                        translation={translation} swaMsg={swaMsg} globals={globals}
-                                        id_related={currentItem.id_public}
+                                            <FUN_6_VIEW
+                                                translation={translation}
+                                                swaMsg={swaMsg}
+                                                globals={globals}
+                                                currentItem={currentItem}
+                                                currentId={currentId}
+                                                currentVersion={currentVersion}
+                                                requestUpdate={requestUpdate}
+                                                readOnly
+                                                mergeVentanilla
+                                            />
+                                        </div>}
                                     />
 
                                 </fieldset>

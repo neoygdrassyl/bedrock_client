@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import FUNService from '../../../services/fun.service'
 
 import DataTable from '@/components/data-table-bridge';
@@ -11,8 +11,40 @@ import submitService from '../../../services/submit.service';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { Button } from '@/components/ui/button';
+import {
+    buildUnifiedDocumentRows,
+    filterUnifiedDocumentRows,
+    normalizeVentanillaDocs,
+    summarizeUnifiedDocumentRows,
+} from '../shared/expediente-documental.utils';
 
-function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, readOnly, title, VREdit, parentLoad, updateParentLoad }) {
+const SOURCE_META = {
+    all: { label: 'Todo', className: 'border-border bg-background text-foreground' },
+    both: { label: 'Ambas', className: 'border-primary/20 bg-primary/10 text-primary' },
+    digital: { label: 'Solo digitalizados', className: 'border-accent/20 bg-accent/10 text-accent' },
+    ventanilla: { label: 'Solo ventanilla', className: 'border-warning/20 bg-warning/10 text-warning' },
+};
+
+const DIGITIZATION_META = {
+    all: { label: 'Todos' },
+    digitized: { label: 'Digitalizados' },
+    pending: { label: 'Pendientes' },
+};
+
+function FUN_6_VIEW({
+    translation,
+    swaMsg,
+    globals,
+    currentItem,
+    currentId,
+    readOnly,
+    title,
+    VREdit,
+    parentLoad,
+    updateParentLoad,
+    mergeVentanilla = false,
+    onVentanillaRowsChange,
+}) {
     const [attachs, setAttachs] = useState(0);
     const [edit, setEdit] = useState(false);
     const [item, setItem] = useState(null);
@@ -20,73 +52,325 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
     const [modal_searchList, setModalSearchList] = useState(false);
     const [currentItem6, setCurrentItem6] = useState([]);
     const [VRList, setVRList] = useState([]);
-    const [load, setLoad] = useState(false);
+    const [ventanillaDocs, setVentanillaDocs] = useState([]);
+    const [documentsLoaded, setDocumentsLoaded] = useState(false);
+    const [ventanillaLoaded, setVentanillaLoaded] = useState(false);
+    const [sourceFilter, setSourceFilter] = useState('all');
+    const [digitizationFilter, setDigitizationFilter] = useState('all');
+    const [searchValue, setSearchValue] = useState('');
 
-    const prevItemRef = useRef(item);
-    const prevCurrentItemRef = useRef(currentItem);
+    const isLoaded = documentsLoaded && ventanillaLoaded;
+    const unifiedRows = useMemo(
+        () => buildUnifiedDocumentRows(currentItem6, ventanillaDocs),
+        [currentItem6, ventanillaDocs]
+    );
+    const filteredUnifiedRows = useMemo(
+        () => filterUnifiedDocumentRows(unifiedRows, {
+            source: sourceFilter,
+            digitization: digitizationFilter,
+            search: searchValue,
+        }),
+        [unifiedRows, sourceFilter, digitizationFilter, searchValue]
+    );
+    const unifiedSummary = useMemo(() => summarizeUnifiedDocumentRows(unifiedRows), [unifiedRows]);
 
     const requestUpdate = (id) => {
         retrieveItem(id);
     };
     const retrieveItemVR = (id) => {
-        submitService.getIdRelated(id).then(response => {
-            let newList = [];
-            let List = response.data
-            if (!List) return;
-            List.map((value, i) => {
-                let vr = value.id_public;
-                if (!newList.includes(vr)) newList.push(vr)
+        submitService.getIdRelated(id)
+            .then((response) => {
+                const currentList = Array.isArray(response.data) ? response.data : [];
+                const normalizedDocs = normalizeVentanillaDocs(currentList);
+                const vrList = currentList
+                    .map((value) => value?.id_public)
+                    .filter(Boolean)
+                    .filter((value, index, list) => list.indexOf(value) === index);
+
+                setVRList(vrList);
+                setVentanillaDocs(normalizedDocs);
+                setVentanillaLoaded(true);
+                if (onVentanillaRowsChange) {
+                    onVentanillaRowsChange(normalizedDocs);
+                }
             })
-            setVRList(newList);
-            setLoad(true);
-        })
+            .catch((error) => {
+                console.log(error);
+                setVRList([]);
+                setVentanillaDocs([]);
+                setVentanillaLoaded(true);
+                if (onVentanillaRowsChange) {
+                    onVentanillaRowsChange([]);
+                }
+            });
     };
     const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
                 setCurrentItem6(response.data.fun_6s);
-                setLoad(true);
+                setDocumentsLoaded(true);
             })
             .catch(e => {
                 console.log(e);
+                setCurrentItem6([]);
+                setDocumentsLoaded(true);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     };
 
     useEffect(() => {
+        if (!currentId) {
+            return;
+        }
+
+        setDocumentsLoaded(false);
         retrieveItem(currentId);
-        retrieveItemVR(currentItem.id_public);
-    }, []);
+    }, [currentId]);
 
     useEffect(() => {
-        if (item !== prevItemRef.current && item != null) {
+        if (item != null) {
             document.getElementById('fun6_descriptions_edit').value = item.description;
             document.getElementById('fun6_codes_edit').value = item.id_public;
             document.getElementById('fun6_pages_edit').value = item.pages;
             document.getElementById('fun6_dates_edit').value = item.date;
         }
-        prevItemRef.current = item;
     }, [item]);
 
     useEffect(() => {
-        if (currentItem !== prevCurrentItemRef.current && currentItem != null) {
-            retrieveItem(currentId);
+        if (!currentItem?.id_public) {
+            setVRList([]);
+            setVentanillaDocs([]);
+            setVentanillaLoaded(true);
+            if (onVentanillaRowsChange) {
+                onVentanillaRowsChange([]);
+            }
+            return;
         }
-        prevCurrentItemRef.current = currentItem;
-    }, [currentItem]);
+
+        setVentanillaLoaded(false);
+        retrieveItemVR(currentItem.id_public);
+    }, [currentItem?.id_public, onVentanillaRowsChange]);
 
     useEffect(() => {
         if (parentLoad == 0 && parentLoad != undefined) {
+            setDocumentsLoaded(false);
             retrieveItem(currentId);
+            if (currentItem?.id_public) {
+                setVentanillaLoaded(false);
+                retrieveItemVR(currentItem.id_public);
+            }
             updateParentLoad(1);
         }
-    }, [parentLoad]);
+    }, [parentLoad, currentId, currentItem?.id_public, updateParentLoad]);
 
         var formData = new FormData();
 
+        const isRewDoc = (id) => (id || '').includes('law') || (id || '').includes('eng') || (id || '').includes('arc');
+
+        const renderActionButtons = (digitalDoc) => {
+            if (!digitalDoc) {
+                return <span className="text-xs font-semibold text-warning">Pendiente de digitalizar</span>;
+            }
+
+            return <>
+                <VIZUALIZER url={digitalDoc.path + "/" + digitalDoc.filename} apipath={'/files/'}
+                    icon='Search'
+                    iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
+                    iconStyle={{ fontSize: '150%' }} />
+                <FUN_6_HISTORY translation={translation}
+                    swaMsg={swaMsg}
+                    globals={globals}
+                    fun6={digitalDoc} />
+                {readOnly ? '' :
+                    window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2 ?
+                        <>
+                            <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => set_edit_6(digitalDoc)}>
+                                    <Icon name="edit" size={16} style={{ fontSize: '150%' }} /></Button></span>
+                            <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_6(digitalDoc.id)}>
+                                    <Icon name="trash-alt" size={16} style={{ fontSize: '150%' }} /></Button></span>
+                        </>
+                        : ''
+                }
+            </>;
+        };
+
+        const renderReferenceCell = (row) => {
+            if (row.digitalDoc && VREdit && !isRewDoc(row.digitalDoc.id_replace || '')) {
+                return <div className="space-y-1">
+                    <select className='form-select form-select-sm' id="f_6_vr" defaultValue={row.digitalDoc.id_replace || ''}
+                        onChange={(event) => edit_6_vr(row.digitalDoc.id, event.target.value)}>
+                        <option value="">SIN VR</option>
+                        {VRList.map((vr) => <option key={vr}>{vr}</option>)}
+                    </select>
+                    {row.ventanillaEntries.length ? <div className="text-xs text-muted-foreground">VU: {row.ventanillaEntries.map((entry) => entry.id_public).join(', ')}</div> : null}
+                </div>;
+            }
+
+            if (row.digitalDoc && isRewDoc(row.digitalDoc.id_replace || '')) {
+                return <span className="text-xs font-semibold text-muted-foreground">INFORME</span>;
+            }
+
+            return <div className="space-y-1">
+                <div className="text-sm font-medium">{row.vrValues.length ? row.vrValues.join(', ') : 'Sin referencia'}</div>
+                {!row.isDigitized ? <div className="text-xs text-warning">Sin soporte digitalizado</div> : null}
+            </div>;
+        };
+
+        const _UNIFIED_LIST = () => {
+            const columns = [
+                {
+                    name: 'DOCUMENTO',
+                    selector: (row) => row.documentName,
+                    sortable: true,
+                    filterable: true,
+                    minWidth: '260px',
+                    cell: (row) => <div>
+                        <div className="text-sm font-medium">{row.documentName}</div>
+                        {row.ventanillaEntries[0]?.category ? <div className="text-xs text-muted-foreground">{row.ventanillaEntries[0].category}</div> : null}
+                    </div>
+                },
+                {
+                    name: 'ORIGEN',
+                    selector: (row) => row.source,
+                    sortable: true,
+                    filterable: true,
+                    minWidth: '120px',
+                    cell: (row) => <span className={`inline-flex rounded-full border px-2 py-1 text-[11px] font-semibold ${SOURCE_META[row.source].className}`}>
+                        {SOURCE_META[row.source].label}
+                    </span>
+                },
+                {
+                    name: 'VR / VU',
+                    selector: (row) => row.vrValues.join(', '),
+                    sortable: true,
+                    filterable: true,
+                    minWidth: '190px',
+                    cell: (row) => renderReferenceCell(row)
+                },
+                {
+                    name: 'CODIGO',
+                    selector: (row) => row.code,
+                    sortable: true,
+                    filterable: true,
+                    minWidth: '90px',
+                    cell: (row) => <span className="text-sm font-mono">{row.code || '—'}</span>
+                },
+                {
+                    name: 'FOLIOS',
+                    selector: (row) => row.digitalPages ?? row.ventanillaPages,
+                    sortable: true,
+                    minWidth: '90px',
+                    cell: (row) => <div className="space-y-1 text-xs font-mono">
+                        {row.digitalPages != null ? <div>DG {row.digitalPages}</div> : null}
+                        {row.ventanillaPages != null ? <div className="text-muted-foreground">VU {row.ventanillaPages}</div> : null}
+                    </div>
+                },
+                {
+                    name: 'FECHA',
+                    selector: (row) => row.digitalDate || row.ventanillaDate,
+                    sortable: true,
+                    minWidth: '120px',
+                    cell: (row) => <div className="space-y-1 text-xs font-mono">
+                        {row.digitalDate ? <div>DG {row.digitalDate}</div> : null}
+                        {row.ventanillaDate ? <div className="text-muted-foreground">VU {row.ventanillaDate}</div> : null}
+                    </div>
+                },
+                {
+                    name: 'ACCION',
+                    button: true,
+                    minWidth: '170px',
+                    cell: (row) => renderActionButtons(row.digitalDoc)
+                },
+            ];
+
+            return <div className="space-y-3">
+                <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
+                    <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                        <div>
+                            <p className="text-sm font-semibold text-foreground">Expediente documental unificado</p>
+                            <p className="text-xs text-muted-foreground">Una sola tabla para digitalizados y ventanilla única, con filtros visibles y foco operativo.</p>
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+                            <div className="rounded-lg border border-border bg-background px-3 py-2 text-xs">
+                                <div className="text-muted-foreground">Total</div>
+                                <div className="text-sm font-semibold">{unifiedSummary.total}</div>
+                            </div>
+                            <div className="rounded-lg border border-border bg-background px-3 py-2 text-xs">
+                                <div className="text-muted-foreground">Ambas</div>
+                                <div className="text-sm font-semibold">{unifiedSummary.both}</div>
+                            </div>
+                            <div className="rounded-lg border border-border bg-background px-3 py-2 text-xs">
+                                <div className="text-muted-foreground">Solo digital</div>
+                                <div className="text-sm font-semibold">{unifiedSummary.digital}</div>
+                            </div>
+                            <div className="rounded-lg border border-border bg-background px-3 py-2 text-xs">
+                                <div className="text-muted-foreground">Solo ventanilla</div>
+                                <div className="text-sm font-semibold">{unifiedSummary.ventanilla}</div>
+                            </div>
+                            <div className="rounded-lg border border-border bg-background px-3 py-2 text-xs">
+                                <div className="text-muted-foreground">Pendientes</div>
+                                <div className="text-sm font-semibold text-warning">{unifiedSummary.pendingDigitization}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex flex-wrap gap-2">
+                            {Object.entries(SOURCE_META).map(([key, value]) => <button
+                                key={key}
+                                type="button"
+                                onClick={() => setSourceFilter(key)}
+                                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${sourceFilter === key ? value.className : 'border-border bg-background text-muted-foreground hover:text-foreground'}`}
+                            >
+                                {value.label}
+                            </button>)}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {Object.entries(DIGITIZATION_META).map(([key, value]) => <button
+                                key={key}
+                                type="button"
+                                onClick={() => setDigitizationFilter(key)}
+                                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${digitizationFilter === key ? 'border-primary/20 bg-primary/10 text-primary' : 'border-border bg-background text-muted-foreground hover:text-foreground'}`}
+                            >
+                                {value.label}
+                            </button>)}
+                        </div>
+                    </div>
+
+                    <div className="mt-3">
+                        <input
+                            type="search"
+                            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none ring-0"
+                            placeholder="Buscar por documento, codigo o VR"
+                            value={searchValue}
+                            onChange={(event) => setSearchValue(event.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <DataTable
+                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                    noDataComponent="No hay documentos registrados"
+                    striped="true"
+                    columns={columns}
+                    data={filteredUnifiedRows}
+                    highlightOnHover
+                    pagination
+                    paginationPerPage={12}
+                    paginationRowsPerPageOptions={[12, 24, 48]}
+                    className="data-table-component"
+                    noHeader
+
+                    load={isLoaded}
+                    progressPending={!isLoaded}
+                    progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                    dense
+                />
+            </div>;
+        };
+
         let _CHILD_6_LIST = () => {
             let _LIST = currentItem6;
-            let isRewDoc = (id) => id.includes('law')  || id.includes('eng') || id.includes('arc')
             const columns = [
                 {
                     name: 'DESCRIPCIÓN',
@@ -105,7 +389,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     cell: row => VREdit && !isRewDoc(row.id_replace || '') ? <select className='form-select form-select-sm' id="f_6_vr" defaultValue={row.id_replace || ''}
                         onChange={(e) => edit_6_vr(row.id, e.target.value)}>
                         <option value="">SIN VR</option>
-                        {VRList.map(vr => <option>{vr}</option>)}
+                        {VRList.map(vr => <option key={vr}>{vr}</option>)}
                     </select> : isRewDoc(row.id_replace || '') ? 'INFORME' : <label>{row.id_replace}</label>
                 },
                 {
@@ -149,27 +433,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
-                    cell: row => <>
-                        <VIZUALIZER url={row.path + "/" + row.filename} apipath={'/files/'}
-                            icon='Search'
-                            iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
-                            iconStyle={{ fontSize: '150%' }} />
-                        <FUN_6_HISTORY translation={translation}
-                            swaMsg={swaMsg}
-                            globals={globals}
-                            fun6={row} />
-                        {readOnly ? '' :
-                            window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
-                                <>
-                                    <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => set_edit_6(row)}>
-                                            <Icon name="edit" size={16} style={{ fontSize: '150%' }} /></Button></span>
-                                    <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_6(row.id)}>
-                                            <Icon name="trash-alt" size={16} style={{ fontSize: '150%' }} /></Button></span>
-                                </>
-                                : ''
-                        }
-
-                    </>
+                    cell: row => renderActionButtons(row)
                 },
             ]
             return <DataTable
@@ -186,8 +450,8 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                 title={'DOCUMENTOS DIGITALIZADOS'}
                 noHeader={!title}
 
-                load={load}
-                progressPending={!load}
+                load={isLoaded}
+                progressPending={!isLoaded}
                 progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
 
                 dense
@@ -345,7 +609,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
 
         return (
             <div>
-                {_CHILD_6_LIST()}
+                {mergeVentanilla ? _UNIFIED_LIST() : _CHILD_6_LIST()}
                 {edit
                     ? <>
                         <form id="fun_6_d_edit" onSubmit={edit_6} className="py-3">

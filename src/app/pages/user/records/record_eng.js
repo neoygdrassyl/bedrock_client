@@ -26,13 +26,13 @@ import FUN_G_REPORTS from '../fun_forms/components/fun_g_reports.component';
 import RECORD_LAW_DOCSCHECK from './law/record_law_docs_check';
 import RECORD_ENG_DOCS_DESC from './eng/record_eng_docsDetail.component';
 import RECORD_ENG_STEP_430 from './eng/record_eng_430.component';
-import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
 import { ENG_MANPOSTERIA } from './eng/recprd_eng_mamporteria';
 import { ENG_FUEGO } from './eng/record_eng_fuego.component';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 
 // RECORDS
 
@@ -332,58 +332,52 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     <label className="app-p lead fw-normal">4.1 Revisión Documentos y profesionales requeridos para la actuación urbanística solicitada.</label>
                                 </legend>
 
-                                <legend className="my-2 px-3 bg-light" id="record_eng_410">
-                                    <label className="app-p lead fw-normal">4.1.1 LISTA DE CHECKEO</label>
-                                </legend>
+                                <RecordReviewWorkspace
+                                    inventoryLabel="4.1.1 Inventario de Información Aportada"
+                                    documentsLabel="4.1.2 Expediente documental"
+                                    inventoryId="record_eng_410"
+                                    documentsId="record_eng_411"
+                                    inventoryContent={<RECORD_LAW_DOCSCHECK
+                                        _FUN_1={_GET_CHILD_1()}
+                                        _FUN_6={_GET_CHILD_6()}
+                                        _FUN_R={_GET_CHILD_REVIEW()}
+                                        currentItem={currentItem}
+                                        currentVersion={currentVersion}
+                                        requestUpdate={requestUpdate}
+                                        readOnly={false}
+                                        docsScope={'eng'}
+                                        hideNotApplicableDefault
+                                        showFilters
+                                    />}
+                                    documentsContent={<div className="space-y-4">
+                                        <RECORD_ENG_PROFESIONALS
+                                            _FUN_52={_GET_CHILD_52()}
+                                            _FUN_6={_GET_CHILD_6()}
+                                            currentItem={currentItem}
+                                            currentRecord={currentRecord}
+                                            requestUpdate={requestUpdate}
+                                            useCB
+                                            profs={[
+                                                ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'],
+                                                ['DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES'],
+                                                ['INGENIERO CIVIL GEOTECNISTA'],
+                                                ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'],
+                                                ['REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES'],
+                                            ]}
+                                        />
 
-                                <RECORD_LAW_DOCSCHECK
-                                    _FUN_1={_GET_CHILD_1()}
-                                    _FUN_6={_GET_CHILD_6()}
-                                    _FUN_R={_GET_CHILD_REVIEW()}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                    requestUpdate={requestUpdate}
-                                    readOnly={false}
-                                    docsScope={'eng'} />
-
-                                <RECORD_ENG_PROFESIONALS
-                                    _FUN_52={_GET_CHILD_52()}
-                                    _FUN_6={_GET_CHILD_6()}
-                                    currentItem={currentItem}
-                                    currentRecord={currentRecord}
-                                    requestUpdate={requestUpdate}
-                                    useCB
-                                    profs={[
-                                        ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'],
-                                        ['DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES'],
-                                        ['INGENIERO CIVIL GEOTECNISTA'],
-                                        ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'],
-                                        ['REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES'],
-                                    ]}
-                                />
-
-                                <legend className="my-2 px-3 bg-light" id="record_eng_411">
-                                    <label className="app-p lead fw-normal">4.1.2 DOCUMENTOS DIGITALIZADOS</label>
-                                </legend>
-
-                                <FUN_6_VIEW
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentId={currentId}
-                                    currentVersion={currentVersion}
-                                    requestUpdate={requestUpdate}
-                                    readOnly
-                                />
-
-                                <legend className="my-2 px-3 bg-light" id="record_eng_412">
-                                    <label className="app-p lead fw-normal">4.1.3 DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
-                                </legend>
-
-                                <SUBMIT_SINGLE_VIEW
-                                    translation={translation} swaMsg={swaMsg} globals={globals}
-                                    id_related={currentItem.id_public}
+                                        <FUN_6_VIEW
+                                            translation={translation}
+                                            swaMsg={swaMsg}
+                                            globals={globals}
+                                            currentItem={currentItem}
+                                            currentId={currentId}
+                                            currentVersion={currentVersion}
+                                            requestUpdate={requestUpdate}
+                                            readOnly
+                                            mergeVentanilla
+                                        />
+                                    </div>}
                                 />
 
                                 <FUN_G_REPORTS
