@@ -1,5 +1,6 @@
 
 import VIZUALIZER from '../../../../components/vizualizer.component';
+import DataTable from '@/components/data-table-bridge';
 
 function RECORD_PH_PROFESIONALS(props) {
         const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentRecord } = props;
@@ -119,50 +120,79 @@ function RECORD_PH_PROFESIONALS(props) {
             return _CHILD;
         }
 
-        // COMPONENT JSX
-        let _PROFESIOAL_INFO_COMPONENT = () =>{
-            var PROFESIONAL = _FIND_PROFESIOANL('ARQUITECTO PROYECTISTA');
-            if(PROFESIONAL){
-               return <>
-                    <div className="row border p-2">
-                        <div className="col-6">
-                            <label className="fw-bold"> {PROFESIONAL.name + " " + PROFESIONAL.surname} {_GET_DOCS_BTNS(PROFESIONAL.docs)}</label>
-                        </div>
-                        <div className="col-2">Matricula: <label className="fw-bold">{PROFESIONAL.registration_date} </label></div>
-                        <div className="col-2">¿Vigente?: 
-                        <select className='form-select' name="review_check_2" defaultValue={_GET_CHILD_REVIEW_GEN()[0]} >
-                                    <option value="1" className="text-success">SI</option>
-                                    <option value="0" className="text-danger">NO</option>
-                                </select>
-                        </div>
-                        <div className="col-2">¿Sancionado?: <label className="fw-bold">{PROFESIONAL.sanction ? "SI": "NO"} </label></div>
+        const getStatusClass = (isCompleted) => isCompleted
+            ? 'border-accent/20 bg-accent/10 text-accent'
+            : 'border-destructive/20 bg-destructive/10 text-destructive';
+        const buildRows = () => ['ARQUITECTO PROYECTISTA'].map((role) => {
+            const professional = _FIND_PROFESIOANL(role);
+
+            return {
+                id: role,
+                role,
+                professional,
+                statusText: professional ? 'DILIGENCIADO' : 'SIN DILIGENCIAR',
+            };
+        });
+        const columns = [
+            {
+                name: 'ROL',
+                minWidth: '220px',
+                cell: (row) => <span className="text-sm font-medium">{row.role}</span>
+            },
+            {
+                name: 'PROFESIONAL',
+                minWidth: '220px',
+                cell: (row) => row.professional
+                    ? <div>
+                        <div className="text-sm font-medium">{row.professional.name} {row.professional.surname}</div>
+                        <div className="text-xs text-muted-foreground">{row.professional.sanction ? 'Con sanciones registradas' : 'Sin sanciones registradas'}</div>
                     </div>
-               </>
-            }
-            return ""
-        }
-        let COMPONENT_PROFESIONAL_RULES = (_roles) => {
-            let _COMPONENT = [];
-            for (var i = 0; i < _roles.length; i++) {
-                _COMPONENT.push(<>
-                    <li className="list-group-item">{_PROFESIONAL_JSX(_roles[i])}</li>
-                </>)
-            }
-            return <>{_COMPONENT}</>
-        }
-        let _PROFESIONAL_JSX = (_role) => {
-            return <>
-                <label> {_FIND_PROFESIOANL(_role)
-                    ? <span className="badge bg-success">DILIGENCIADO</span>
-                    : <span className="badge bg-danger">SIN DILIGENCIAR</span>} <label className="">{_role}</label> - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
-            </>
-        }
+                    : <span className="text-sm text-muted-foreground">Sin profesional asignado</span>
+            },
+            {
+                name: 'MATRICULA',
+                minWidth: '120px',
+                cell: (row) => <span className="text-xs font-mono">{row.professional?.registration_date || '—'}</span>
+            },
+            {
+                name: 'EXPERIENCIA',
+                minWidth: '220px',
+                cell: (row) => _CECK_EXPERIENCE(row.role)
+            },
+            {
+                name: 'SOPORTES',
+                minWidth: '120px',
+                cell: (row) => row.professional?.docs
+                    ? <div className="flex flex-wrap gap-1">{_GET_DOCS_BTNS(row.professional.docs)}</div>
+                    : <span className="text-xs text-muted-foreground">Sin soportes</span>
+            },
+            {
+                name: 'ESTADO',
+                minWidth: '120px',
+                cell: (row) => <span className={`inline-flex rounded-full border px-2 py-1 text-[11px] font-semibold ${getStatusClass(Boolean(row.professional))}`}>
+                    {row.statusText}
+                </span>
+            },
+        ]
 
         return (
-            <div className="record_ph_profesional_evaluation container">
-                <li className="list-group-item"><label className="fw-bold">PROFESIONAL RESPONSABLE DE LOS PLANOS</label></li>
-                {COMPONENT_PROFESIONAL_RULES(['ARQUITECTO PROYECTISTA'])}
-                {_PROFESIOAL_INFO_COMPONENT()}
+            <div className="record_ph_profesional_evaluation container space-y-3">
+                <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
+                    <p className="text-sm font-semibold text-foreground">Profesional responsable de los planos</p>
+                    <p className="text-xs text-muted-foreground">Recuperado como tabla compacta para mantener jerarquía visual y lectura operativa.</p>
+                </div>
+
+                <DataTable
+                    paginationComponentOptions={{ rowsPerPageText: 'Filas por pagina:', rangeSeparatorText: 'de' }}
+                    noDataComponent="No hay profesional configurado"
+                    striped="true"
+                    columns={columns}
+                    data={buildRows()}
+                    dense
+                    highlightOnHover
+                    className="data-table-component"
+                    noHeader
+                />
             </div >
         );
 }

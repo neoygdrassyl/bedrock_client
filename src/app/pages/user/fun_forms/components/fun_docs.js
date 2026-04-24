@@ -17,7 +17,6 @@ import FUN_PDF from './fun_pdf';
 import FUN_SERVICE from '../../../../services/fun.service';
 import FUN_PDF_CHECK from './fun_pdf_check';
 import FUN_SEAL from './fun_seals';
-import SUBMIT_SINGLE_VIEW from '../../submit/submit_view.component';
 import FUN_SIGN_PDF from './fun_sign_pdf.component';
 import DOCS_LIST from './docs_list.component';
 import FUN_D_CONTROL from './fun_d_control.component';
@@ -265,7 +264,16 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                 </legend>
 
                 <legend className="my-2 px-3">
-                    <label className="app-p lead fw-normal" id="fund_11">1.1 DOCUMENTOS DIGITALIZADOS</label>
+                    <div className='row my-2 align-items-center'>
+                        <div className='col'>
+                            <label className="app-p lead fw-normal" id="fund_11">1.1 EXPEDIENTE DOCUMENTAL UNIFICADO</label>
+                        </div>
+                        <div className='col text-end'>
+                            <Button variant="outline" size="sm" disabled={!funVRList.length} onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
+                                <Icon name="file-csv" size={16} /> DESCARGAR CSV
+                            </Button>
+                        </div>
+                    </div>
                 </legend>
                 {currentItem != null ? <>
 
@@ -278,25 +286,8 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         currentVersion={currentVersion}
                         requestUpdate={requestUpdate}
                         VREdit
-                    />
-
-                    <legend className="my-2 px-3">
-                        <div className='row my-2'>
-                            <div className='col'> 
-                                <label className="app-p lead fw-normal" id="fund_12">1.2 DOCUMENTOS DE VENTANILLA ÚNICA</label>
-                            </div>
-                            <div className='col text-end'>
-                                <Button variant="outline" size="sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
-                                <Icon name="file-csv" size={16} /> DESCARGAR CSV</Button>
-                            </div>
-                        </div>
-
-                       
-                    </legend>
-
-                    <SUBMIT_SINGLE_VIEW
-                        translation={translation} swaMsg={swaMsg} globals={globals}
-                        id_related={currentItem.id_public} setVRList={(data) => setFunVRList(data)}
+                        mergeVentanilla
+                        onVentanillaRowsChange={setFunVRList}
                     />
 
                     <fieldset className="p-3">

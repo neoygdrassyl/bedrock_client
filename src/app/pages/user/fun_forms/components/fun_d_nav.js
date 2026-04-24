@@ -3,8 +3,7 @@
 function FUND_NAV({ translation, swaMsg, globals, currentItem, currentVersion }) {
         const navItems = [
             { href: '#fund_1', label: '1. Gestión documental', variant: 'primary' },
-            { href: '#fund_11', label: '1.1 Documentos digitalizados', variant: 'muted' },
-            { href: '#fund_12', label: '1.2 Documentos de ventanilla única', variant: 'muted' },
+            { href: '#fund_11', label: '1.1 Expediente documental unificado', variant: 'muted' },
             { href: '#fund_2', label: '2. Anexar documentos', variant: 'primary' },
             ...(currentItem.state >= 5 ? [
                 { href: '#fund_3', label: '3. Lista de chequeo', variant: 'primary' },
