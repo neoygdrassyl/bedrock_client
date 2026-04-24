@@ -9,6 +9,7 @@ import { FunExpedienteWorkspace } from './fun_forms/components/FunExpedienteWork
 import { FilterPanel } from './fun_forms/components/FilterPanel';
 import { useDashboard } from './fun_forms/hooks/useDashboard';
 import { useAlarmConfig } from './fun_forms/hooks/useAlarmConfig';
+import { useAlarmConfigV2 } from './fun_forms/hooks/useAlarmConfigV2';
 import { useBookmarks } from './fun_forms/hooks/useBookmarks';
 import { DEFAULT_FILTERS, mergeFilters, hasActiveFilters } from './fun_forms/utils/filters';
 import { Button } from '@/components/ui/button';
@@ -93,6 +94,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
 
   const { kpis, chartData, table, loading, error, refetch } = useDashboard(filters);
   const { config: alarmConfig } = useAlarmConfig();
+  const { scatterThresholds: scatterThresholdsV2 } = useAlarmConfigV2();
   const {
     bookmarks,
     error: bookmarkError,
@@ -100,13 +102,13 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
   } = useBookmarks();
 
   const scatterThresholds = useMemo(() => {
-    const s = alarmConfig?.scatterThresholds;
+    const s = scatterThresholdsV2 || alarmConfig?.scatterThresholds;
     return {
-      warning: Number.isFinite(s?.warning) ? s.warning : 80,
-      critical: Number.isFinite(s?.critical) ? s.critical : 95,
+      warning: Number.isFinite(s?.warning) ? s.warning : 70,
+      critical: Number.isFinite(s?.critical) ? s.critical : 90,
       overdue: Number.isFinite(s?.overdue) ? s.overdue : 100,
     };
-  }, [alarmConfig]);
+  }, [alarmConfig, scatterThresholdsV2]);
 
   const bookmarkStateById = useMemo(() => {
     const nextState = new Map();

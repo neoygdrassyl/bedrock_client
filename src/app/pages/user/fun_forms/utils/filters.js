@@ -21,6 +21,10 @@ export const DEFAULT_FILTERS = {
   vecinosState: null,
   valla: null,
   vallaState: null,
+  alarmLevel: null,
+  alarmActor: null,
+  alarmAction: null,
+  soloConAlarmas: false,
 };
 
 export function serializeFilters(filters) {
@@ -49,11 +53,12 @@ export function clearFilter(filters, key) {
 export function hasActiveFilters(filters) {
   const keys = [
     'fase', 'phase', 'subfiltro', 'status', 'responsable', 'profesional', 
-    'search', 'desistido', 'causal', 'bookmarked', 'vecinos', 'vecinosState', 'valla', 'vallaState', 
+    'search', 'desistido', 'causal', 'bookmarked', 'vecinos', 'vecinosState', 'valla', 'vallaState',
+    'alarmLevel', 'alarmActor', 'alarmAction',
     'desde', 'hasta'
   ];
   return keys.some((k) => {
     const v = filters?.[k];
     return v !== null && v !== undefined && v !== '';
-  }) || filters?.asignado_a_mi || filters?.incluirCerrados;
+  }) || filters?.asignado_a_mi || filters?.incluirCerrados || filters?.soloConAlarmas;
 }

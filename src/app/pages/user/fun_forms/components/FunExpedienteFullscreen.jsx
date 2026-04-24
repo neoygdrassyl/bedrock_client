@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -101,6 +102,77 @@ function normalizeBitacoraEntries(expediente) {
     .filter((entry) => entry.note);
 }
 
+// ── Fases derivadas del expediente para mini-timeline ─────────────────────
+const STANDARD_PHASES_FS = [
+  { phaseId: 'RAD',     label: 'Radicación' },
+  { phaseId: 'EST',     label: 'Estudio' },
+  { phaseId: 'NOT_OBS', label: 'Notif. Obs.' },
+  { phaseId: 'CORR',    label: 'Correcciones' },
+  { phaseId: 'VIA',     label: 'Viabilidad' },
+  { phaseId: 'NOT_VIA', label: 'Notif. Via.' },
+  { phaseId: 'PAG',     label: 'Pagos' },
+  { phaseId: 'RES',     label: 'Resolución' },
+  { phaseId: 'NOT_RES', label: 'Notif. Res.' },
+  { phaseId: 'EJEC',    label: 'Ejecutoria' },
+  { phaseId: 'ENT',     label: 'Entrega' },
+];
+
+function deriveMiniPhases(exp) {
+  if (!exp?.fase_actual) return [];
+  const currentId = exp.fase_actual;
+  if (currentId.startsWith('DESIST_') || currentId === 'COMPLETADO' || currentId === 'SIN_INICIAR') {
+    return [{ phaseId: currentId, label: exp.fase_label || currentId, status: 'activo', pct: Math.min(exp.porcentaje_avance ?? 0, 100) }];
+  }
+  const idx = STANDARD_PHASES_FS.findIndex(p => p.phaseId === currentId);
+  if (idx < 0) return [];
+  return STANDARD_PHASES_FS.slice(0, idx + 2).map((p, i) => ({
+    phaseId: p.phaseId,
+    label: p.label,
+    status: i < idx ? 'completado' : i === idx ? 'activo' : 'pendiente',
+    pct: i === idx ? Math.min(exp.porcentaje_avance ?? 0, 100) : (i < idx ? 100 : 0),
+  }));
+}
+
+function MiniTimeline({ expediente, onGoToTimes }) {
+  const phases = deriveMiniPhases(expediente);
+  if (!phases.length) {
+    return <p className="text-xs text-muted-foreground">Sin datos de fase disponibles.</p>;
+  }
+  return (
+    <div className="space-y-1.5">
+      {phases.map((phase) => {
+        const isActive = phase.status === 'activo';
+        const isDone = phase.status === 'completado';
+        const barColor = isDone ? 'bg-accent' : isActive ? 'bg-primary' : 'bg-muted-foreground/20';
+        const textColor = isDone ? 'text-accent' : isActive ? 'text-primary' : 'text-muted-foreground/50';
+        return (
+          <div key={phase.phaseId} className="flex items-center gap-2">
+            <div className={cn('h-1.5 w-1.5 shrink-0 rounded-full', isDone ? 'bg-accent' : isActive ? 'bg-primary' : 'bg-border')} />
+            <span className={cn('min-w-0 flex-1 truncate text-[11px]', textColor, isActive && 'font-semibold')}>{phase.label}</span>
+            {isActive && (
+              <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                <span className="font-mono">{phase.pct}%</span>
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <div className="mt-2 overflow-hidden rounded-full bg-muted h-1.5">
+        {phases.filter(p => p.status === 'activo').map(p => (
+          <div
+            key="bar"
+            className="h-full rounded-full bg-primary transition-all duration-300"
+            style={{ width: `${p.pct}%` }}
+          />
+        ))}
+      </div>
+      <Button variant="ghost" size="sm" className="mt-1 w-full text-xs h-7" onClick={onGoToTimes}>
+        <Icon name="Clock" size={12} className="mr-1" /> Ver tiempos completos
+      </Button>
+    </div>
+  );
+}
+
 function SummaryItem({ icon, label, value }) {
   return (
     <div className="rounded-lg border border-border bg-card/70 px-3 py-2.5">
@@ -199,6 +271,8 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
   const [currentVersion, setCurrentVersion] = useState(getExpedienteVersion(expediente));
   const [currentPublic, setCurrentPublic] = useState(getExpedienteRadicado(expediente));
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [headerExpanded, setHeaderExpanded] = useState(false);
+  const [rightPanelOpen, setRightPanelOpen] = useState(true);
 
   const { alarms } = useAlarms({ includeAttended: true, includeHidden: true });
 
@@ -211,11 +285,19 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
 
   useEffect(() => {
     const { overflow } = document.body.style;
+    document.body.classList.add('workspace-fullscreen-open');
     document.body.style.overflow = 'hidden';
     return () => {
+      document.body.classList.remove('workspace-fullscreen-open');
       document.body.style.overflow = overflow;
     };
   }, []);
+
+  useEffect(() => {
+    if (activeSection === 'tiempos') {
+      setRightPanelOpen(false);
+    }
+  }, [activeSection]);
 
   const refreshSummary = useCallback(
     async (radicadoOverride) => {
@@ -372,212 +454,211 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
 
   const moduleContent = renderModuleContent(activeSection, activeReport, moduleProps);
 
-  return (
+  const content = (
     <div
-      className="fixed inset-0 z-[1200] bg-background text-foreground"
+      className="expediente-fullscreen fixed inset-0 z-[9999] bg-background text-foreground flex flex-col overflow-hidden"
       role="dialog"
       aria-modal="true"
       aria-label="Detalle del expediente"
     >
-      <div className="flex h-full min-h-0 flex-col bg-background">
-        <header className="border-b border-border bg-background/95 px-4 py-4 backdrop-blur sm:px-6">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-            <div className="min-w-0 flex-1 space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={onClose} aria-label="Cerrar gestión completa">
-                  <Icon name="ArrowLeft" size={17} />
-                </Button>
-                <Badge variant="outline" className="border-primary/30 bg-primary/5 text-primary">
-                  Gestión completa del expediente
-                </Badge>
-                <Badge className={cn('border text-xs font-semibold', summaryStatus.badgeClass)}>{summaryStatus.label}</Badge>
-                {remainingDays != null ? (
-                  <Badge variant="outline" className="font-mono text-xs">
-                    {remainingDays} días restantes
-                  </Badge>
-                ) : null}
-                <Badge variant="secondary" className="font-mono text-xs">
-                  v{currentVersion}
-                </Badge>
-              </div>
+      {/* ── Header compacto ──────────────────────────────────────────── */}
+      <header className="shrink-0 border-b border-border bg-background/98 backdrop-blur">
+        {/* Fila principal compacta */}
+        <div className="flex items-center gap-2 px-3 py-2 sm:px-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            onClick={onClose}
+            aria-label="Volver"
+          >
+            <Icon name="ArrowLeft" size={15} />
+          </Button>
 
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-end gap-3">
-                  <h1 className="min-w-0 truncate text-2xl font-semibold tracking-tight sm:text-3xl">{currentPublic}</h1>
-                  <p className="text-sm text-muted-foreground">{summary?.fase_label || 'Sin fase activa registrada'}</p>
-                </div>
-                <p className="max-w-4xl text-sm text-muted-foreground">
-                  Superficie única de trabajo para revisar detalles, tiempos, chequeo, documentos, informes, acta y expedición sin perder el contexto del expediente.
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <SummaryItem icon="User" label="Solicitante" value={getExpedienteApplicant(summary)} />
-                <SummaryItem icon="Layers" label="Categoría" value={summary?.categoria || 'Sin categoría'} />
-                <SummaryItem icon="Calendar" label="Radicación" value={summary?.fecha_radicacion || 'Sin fecha'} />
-                <SummaryItem icon="CalendarDays" label="Fecha límite" value={summary?.fecha_limite || 'Sin fecha límite'} />
-              </div>
-            </div>
-
-            <div className="flex shrink-0 flex-wrap items-center gap-2 xl:justify-end">
-              <Button variant="outline" size="sm" onClick={() => refreshSummary()} disabled={isRefreshing}>
-                <Icon name="RefreshCw" size={14} className={cn(isRefreshing && 'animate-spin')} />
-                {isRefreshing ? 'Actualizando' : 'Actualizar'}
-              </Button>
-              <Button size="sm" onClick={() => handleSectionChange('tiempos')}>
-                <Icon name="Clock" size={14} />
-                Ir a tiempos
-              </Button>
-            </div>
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 overflow-hidden">
+            <span className="font-mono text-sm font-semibold truncate max-w-[160px] sm:max-w-xs">
+              {currentPublic}
+            </span>
+            <Badge className={cn('border text-[10px] font-semibold shrink-0', summaryStatus.badgeClass)}>
+              {summaryStatus.label}
+            </Badge>
+            {remainingDays != null ? (
+              <Badge variant="outline" className="font-mono text-[10px] shrink-0">
+                {remainingDays}d restantes
+              </Badge>
+            ) : null}
+            <Badge variant="secondary" className="font-mono text-[10px] shrink-0">
+              v{currentVersion}
+            </Badge>
           </div>
 
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span className="font-mono">
-                {usedDays} / {limitDays || 0} días hábiles
-              </span>
-              <span className="font-mono">{progressPercent}%</span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-muted">
-              <div className={cn('h-full rounded-full transition-all duration-300', summaryStatus.barClass)} style={{ width: `${progressPercent}%` }} />
-            </div>
-          </div>
-        </header>
-
-        <div className="border-b border-border bg-card/50 px-2 sm:px-4">
-          <div className="flex overflow-x-auto">
-            {SECTION_ITEMS.map((item) => (
-              <SectionButton key={item.id} item={item} active={activeSection === item.id} onClick={handleSectionChange} />
-            ))}
+          {/* Acciones + toggle detalle + cerrar */}
+          <div className="flex shrink-0 items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden h-7 text-xs sm:flex"
+              onClick={() => refreshSummary()}
+              disabled={isRefreshing}
+            >
+              <Icon name="RefreshCw" size={12} className={cn(isRefreshing && 'animate-spin')} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => setHeaderExpanded(p => !p)}
+              aria-label={headerExpanded ? 'Colapsar datos' : 'Expandir datos'}
+              title={headerExpanded ? 'Colapsar datos' : 'Expandir datos'}
+            >
+              <Icon name={headerExpanded ? 'ChevronUp' : 'ChevronDown'} size={14} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={onClose}
+              aria-label="Cerrar"
+            >
+              <Icon name="X" size={15} />
+            </Button>
           </div>
         </div>
 
-        <div className="flex min-h-0 flex-1">
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <ScrollArea className="flex-1">
-              <div className="space-y-5 p-4 sm:p-6">
-                {activeSection === 'informes' ? (
-                  <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card/80 p-2 shadow-sm">
-                    {REPORT_ITEMS.map((item) => (
-                      <Button
-                        key={item.id}
-                        type="button"
-                        variant={activeReport === item.id ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setActiveReport(item.id)}
-                      >
-                        <Icon name={item.icon} size={14} />
-                        {item.label}
-                      </Button>
-                    ))}
-                  </div>
-                ) : null}
+        {/* Franja de progreso siempre visible (fina) */}
+        <div className="h-0.5 w-full bg-muted">
+          <div
+            className={cn('h-full transition-all duration-300', summaryStatus.barClass)}
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
 
-                <div className="rounded-2xl border border-border bg-card/90 p-3 shadow-sm sm:p-5">
-                  {moduleContent}
+        {/* Detalle expandible */}
+        {headerExpanded && (
+          <div className="border-t border-border/60 px-3 py-3 sm:px-4">
+            <p className="mb-2 text-xs text-muted-foreground">
+              {summary?.fase_label || 'Sin fase activa'} &nbsp;·&nbsp;
+              <span className="font-mono">{usedDays}/{limitDays || 0} días hábiles ({progressPercent}%)</span>
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+              <SummaryItem icon="User" label="Solicitante" value={getExpedienteApplicant(summary)} />
+              <SummaryItem icon="Layers" label="Categoría" value={summary?.categoria || 'Sin categoría'} />
+              <SummaryItem icon="Calendar" label="Radicación" value={summary?.fecha_radicacion || 'Sin fecha'} />
+              <SummaryItem icon="CalendarDays" label="Fecha límite" value={summary?.fecha_limite || 'Sin fecha límite'} />
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* ── Navegación de submódulos ─────────────────────────────────── */}
+      <div className="shrink-0 border-b border-border bg-card/50 px-2 sm:px-4">
+        <div className="flex overflow-x-auto">
+          {SECTION_ITEMS.map((item) => (
+            <SectionButton key={item.id} item={item} active={activeSection === item.id} onClick={handleSectionChange} />
+          ))}
+        </div>
+      </div>
+
+      {/* ── Área de trabajo ──────────────────────────────────────────── */}
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        {/* Contenido principal */}
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <ScrollArea className="flex-1">
+            <div className="space-y-4 p-3 sm:p-5">
+              {activeSection === 'informes' ? (
+                <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card/80 p-2 shadow-sm">
+                  {REPORT_ITEMS.map((item) => (
+                    <Button
+                      key={item.id}
+                      type="button"
+                      variant={activeReport === item.id ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setActiveReport(item.id)}
+                    >
+                      <Icon name={item.icon} size={14} />
+                      {item.label}
+                    </Button>
+                  ))}
                 </div>
+              ) : null}
 
-                <div className="space-y-4 xl:hidden">
-                  <SupportCard title="Trazabilidad operativa">
+              <div
+                className={cn(
+                  'rounded-2xl border border-border bg-card/90 shadow-sm',
+                  activeSection === 'tiempos' ? 'p-1 sm:p-2' : 'p-3 sm:p-5'
+                )}
+              >
+                {moduleContent}
+              </div>
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* ── Panel derecho colapsable ─────────────────────────────── */}
+        <div className="relative flex shrink-0">
+          {/* Botón para mostrar/ocultar panel */}
+          <button
+            type="button"
+            onClick={() => setRightPanelOpen(p => !p)}
+            className={cn(
+              'absolute top-3 -left-5 z-10 flex h-8 w-5 items-center justify-center rounded-l-md border border-border bg-card/90 text-muted-foreground shadow-sm transition-colors hover:text-foreground',
+              !rightPanelOpen && '-left-5'
+            )}
+            aria-label={rightPanelOpen ? 'Ocultar panel lateral' : 'Mostrar panel lateral'}
+            title={rightPanelOpen ? 'Ocultar panel' : 'Mostrar panel'}
+          >
+            <Icon name={rightPanelOpen ? 'ChevronRight' : 'ChevronLeft'} size={12} />
+          </button>
+
+          {rightPanelOpen && (
+            <aside className="w-72 shrink-0 border-l border-border bg-card/50 overflow-hidden flex flex-col">
+              <ScrollArea className="flex-1">
+                <div className="space-y-4 p-4">
+
+                  {/* Mini-timeline / Gantt preview */}
+                  <SupportCard title="Cronograma del proceso">
+                    <MiniTimeline
+                      expediente={summary}
+                      onGoToTimes={() => handleSectionChange('tiempos')}
+                    />
+                  </SupportCard>
+
+                  {/* Alarmas activas */}
+                  <SupportCard title="Alarmas activas">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant={currentAlarms.length ? 'destructive' : 'secondary'} className="text-xs">
+                        {currentAlarms.length} alarma{currentAlarms.length !== 1 ? 's' : ''}
+                      </Badge>
+                    </div>
+                    {currentAlarms.length === 0 ? (
+                      <p className="text-xs text-muted-foreground">Sin alarmas activas para este expediente.</p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {currentAlarms.slice(0, 5).map((alarm) => (
+                          <li key={alarm.id} className="rounded-md border border-border/70 bg-background/80 px-3 py-2">
+                            <p className="text-xs font-medium text-foreground">{alarm.title || alarm.radicado || `Alarma ${alarm.id}`}</p>
+                            {alarm.message ? <p className="mt-0.5 text-[11px] text-muted-foreground">{alarm.message}</p> : null}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </SupportCard>
+
+                  {/* Bitácora operativa */}
+                  <SupportCard title="Bitácora operativa">
                     <BitacoraList entries={bitacoraEntries} />
                   </SupportCard>
-                  <SupportCard title="Alertas y tiempos">
-                    <div className="space-y-3 text-sm">
-                      <div className="grid grid-cols-2 gap-3">
-                        <SummaryItem icon="Clock" label="Días usados" value={`${usedDays}`} />
-                        <SummaryItem icon="CalendarDays" label="Días límite" value={`${limitDays || 0}`} />
-                      </div>
-                      <div className="rounded-lg border border-border/70 bg-background/80 p-3">
-                        <div className="mb-2 flex items-center justify-between gap-2">
-                          <span className="font-medium text-foreground">Alarmas activas</span>
-                          <Badge variant={currentAlarms.length ? 'destructive' : 'secondary'}>{currentAlarms.length}</Badge>
-                        </div>
-                        {currentAlarms.length ? (
-                          <ul className="space-y-2 text-sm text-muted-foreground">
-                            {currentAlarms.slice(0, 4).map((alarm) => (
-                              <li key={alarm.id} className="rounded-md border border-border/70 bg-card px-3 py-2">
-                                <p className="font-medium text-foreground">{alarm.title || alarm.radicado || `Alarma ${alarm.id}`}</p>
-                                {alarm.message ? <p className="mt-1 text-muted-foreground">{alarm.message}</p> : null}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-muted-foreground">No hay alarmas activas para este expediente.</p>
-                        )}
-                      </div>
-                    </div>
-                  </SupportCard>
+
                 </div>
-              </div>
-            </ScrollArea>
-          </div>
-
-          <aside className="hidden w-[320px] shrink-0 border-l border-border bg-card/50 xl:block">
-            <ScrollArea className="h-full">
-              <div className="space-y-4 p-5">
-                <SupportCard title="Contexto del expediente">
-                  <div className="space-y-3 text-sm text-muted-foreground">
-                    <div className="flex items-start justify-between gap-3">
-                      <span>Submódulo activo</span>
-                      <span className="font-medium text-foreground">
-                        {SECTION_ITEMS.find((item) => item.id === activeSection)?.label || 'Detalles'}
-                      </span>
-                    </div>
-                    <div className="flex items-start justify-between gap-3">
-                      <span>Tipo de licencia</span>
-                      <span className="text-right font-medium text-foreground">{summary?.tipo_licencia || 'Sin dato'}</span>
-                    </div>
-                    <div className="flex items-start justify-between gap-3">
-                      <span>Responsable actual</span>
-                      <span className="text-right font-medium text-foreground">{summary?.responsable || 'Sin responsable'}</span>
-                    </div>
-                    <div className="flex items-start justify-between gap-3">
-                      <span>Comentarios registrados</span>
-                      <span className="font-medium text-foreground">{bitacoraEntries.length}</span>
-                    </div>
-                  </div>
-                </SupportCard>
-
-                <SupportCard title="Alertas y tiempos">
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <SummaryItem icon="Clock" label="Días usados" value={`${usedDays}`} />
-                      <SummaryItem icon="CalendarDays" label="Días límite" value={`${limitDays || 0}`} />
-                    </div>
-                    <div className="rounded-lg border border-border/70 bg-background/80 p-3">
-                      <div className="mb-2 flex items-center justify-between gap-2">
-                        <span className="font-medium text-foreground">Alarmas activas</span>
-                        <Badge variant={currentAlarms.length ? 'destructive' : 'secondary'}>{currentAlarms.length}</Badge>
-                      </div>
-                      {currentAlarms.length ? (
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                          {currentAlarms.slice(0, 4).map((alarm) => (
-                            <li key={alarm.id} className="rounded-md border border-border/70 bg-card px-3 py-2">
-                              <p className="font-medium text-foreground">{alarm.title || alarm.radicado || `Alarma ${alarm.id}`}</p>
-                              {alarm.message ? <p className="mt-1 text-muted-foreground">{alarm.message}</p> : null}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">No hay alarmas activas para este expediente.</p>
-                      )}
-                    </div>
-                  </div>
-                </SupportCard>
-
-                <SupportCard title="Bitácora operativa">
-                  <p className="mb-3 text-sm text-muted-foreground">
-                    Este espacio resume comentarios y observaciones registradas por los profesionales durante la evaluación del expediente.
-                  </p>
-                  <BitacoraList entries={bitacoraEntries} />
-                </SupportCard>
-              </div>
-            </ScrollArea>
-          </aside>
+              </ScrollArea>
+            </aside>
+          )}
         </div>
       </div>
     </div>
   );
+
+  return createPortal(content, document.body);
 }
 
 export default FunExpedienteFullscreen;
