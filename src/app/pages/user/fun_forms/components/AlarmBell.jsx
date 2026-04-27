@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Bell, Mail, Archive, Inbox, ExternalLink } from 'lucide-react';
 import {
   DropdownMenu,
@@ -15,9 +16,28 @@ export function AlarmBell() {
   const { alarms: openAlarms, unread, loading, markRead, archive, attend, refetch } = useAlarmsBell({
     pollMs: 60000,
     includeRead: true,
+    assignedOnly: false,
   });
   const [modalOpen, setModalOpen] = useState(false);
   const [tab, setTab] = useState('current');
+
+  useEffect(() => {
+    if (!modalOpen) return undefined;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setModalOpen(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [modalOpen]);
 
   const currentAlarms = useMemo(
     () => (openAlarms || []).filter((a) => !a.archivedAt),
@@ -69,7 +89,7 @@ export function AlarmBell() {
           <DropdownMenuLabel className="flex items-center justify-between">
             <span>Alarmas</span>
             <span className="text-xs text-muted-foreground font-normal">
-              {loading ? 'Actualizando…' : `${unreadCount} sin leer / ${count} activas`}
+              {loading ? 'Actualizando…' : `${unreadCount} sin leer / ${count} activas · todos`}
             </span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -96,7 +116,7 @@ export function AlarmBell() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {modalOpen && (
+      {modalOpen && typeof document !== 'undefined' && createPortal(
         <AlarmsModal
           onClose={() => setModalOpen(false)}
           tab={tab}
@@ -107,7 +127,8 @@ export function AlarmBell() {
           archive={archive}
           attend={attend}
           onOpenExpediente={handleOpenExpediente}
-        />
+        />,
+        document.body
       )}
     </>
   );
@@ -181,7 +202,7 @@ function AlarmsModal({ onClose, tab, setTab, currentAlarms, refetch, markRead, a
 
   return (
     <div
-      className="fixed inset-0 z-[1060] bg-black/50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1200] bg-black/50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       data-testid="alarms-modal"
