@@ -154,9 +154,10 @@ function SimpleKPICard({ cfg, value, loading, isActive, onFilterChange }) {
 }
 
 function SemaforoKPICard({ kpis, loading, activeFilterKey, onFilterChange }) {
-  const verde = kpis?.semaforo?.verde ?? 0;
-  const amarillo = kpis?.semaforo?.amarillo ?? 0;
-  const rojo = kpis?.semaforo?.rojo ?? 0;
+  const semaforo = kpis?.semaforo_curaduria || kpis?.semaforo || {};
+  const verde = semaforo.verde ?? 0;
+  const amarillo = semaforo.amarillo ?? 0;
+  const rojo = semaforo.rojo ?? 0;
   const total = verde + amarillo + rojo;
 
   const isVerdeActive = activeFilterKey === 'semaforo_verde';
@@ -176,6 +177,9 @@ function SemaforoKPICard({ kpis, loading, activeFilterKey, onFilterChange }) {
           </h6>
           <Icon name="traffic-light" size={14} className="text-secondary" aria-hidden="true" />
         </div>
+        <p className="mb-2 text-muted" style={{ fontSize: '0.62rem', lineHeight: 1.2 }}>
+          Alarmas visibles de Curaduría
+        </p>
         
         <div className="d-flex w-100 gap-1 mt-auto flex-nowrap" style={{ overflowX: 'auto' }}>
           <SemaforoPill
@@ -183,36 +187,36 @@ function SemaforoKPICard({ kpis, loading, activeFilterKey, onFilterChange }) {
             value={verde}
             loading={loading}
             isActive={isVerdeActive}
-            color="#198754"
-            bg="#d1e7dd"
-            onClick={() => onFilterChange({ status: 'EN_TERMINO', key: 'semaforo_verde' })}
+            color="hsl(var(--accent))"
+            bg="hsl(var(--accent) / 0.12)"
+            onClick={() => onFilterChange({ alarmTraffic: 'green', key: 'semaforo_verde' })}
           />
           <SemaforoPill
             label="Amarillo"
             value={amarillo}
             loading={loading}
             isActive={isAmarilloActive}
-            color="#fd7e14"
-            bg="#fff3cd"
-            onClick={() => onFilterChange({ status: 'PRONTO_A_VENCER', key: 'semaforo_amarillo' })}
+            color="hsl(var(--warning))"
+            bg="hsl(var(--warning) / 0.14)"
+            onClick={() => onFilterChange({ alarmTraffic: 'yellow', alarmActor: 'CUR', alarmAction: 'show_alarm', alarmLevel: '1', soloConAlarmas: true, key: 'semaforo_amarillo' })}
           />
           <SemaforoPill
             label="Rojo"
             value={rojo}
             loading={loading}
             isActive={isRojoActive}
-            color="#dc3545"
-            bg="#f8d7da"
-            onClick={() => onFilterChange({ status: 'ALERTA_VENCIMIENTO', key: 'semaforo_rojo' })}
+            color="hsl(var(--destructive))"
+            bg="hsl(var(--destructive) / 0.12)"
+            onClick={() => onFilterChange({ alarmTraffic: 'red', alarmActor: 'CUR', alarmAction: 'show_alarm', alarmLevel: '2,3', soloConAlarmas: true, key: 'semaforo_rojo' })}
           />
           <SemaforoPill
             label="Total"
             value={total}
             loading={loading}
             isActive={isTotalActive}
-            color="#6c757d"
-            bg="#e9ecef"
-            onClick={() => onFilterChange({ status: null, key: 'semaforo_total' })}
+            color="hsl(var(--muted-foreground))"
+            bg="hsl(var(--muted))"
+            onClick={() => onFilterChange({ alarmTraffic: null, key: 'semaforo_total' })}
           />
         </div>
       </div>
@@ -228,7 +232,7 @@ function SemaforoPill({ label, value, loading, isActive, color, bg, onClick }) {
       className={`flex-fill rounded text-center py-1 transition-all ${isActive ? 'shadow-sm' : ''}`}
       style={{
         backgroundColor: bg,
-        border: `1px solid ${isActive ? color : color + '40'}`,
+        border: `1px solid ${isActive ? color : 'hsl(var(--border))'}`,
         cursor: 'pointer',
         minWidth: '45px'
       }}
