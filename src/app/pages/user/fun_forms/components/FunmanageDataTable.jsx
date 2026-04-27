@@ -16,6 +16,70 @@ import {
 import { MissingDataBadge } from './MissingDataBadge';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 
+const TRAFFIC_STYLES = {
+  green: {
+    label: 'Verde',
+    phaseClass: 'border-accent/30 bg-accent/10 text-accent',
+    chipClass: 'border-accent/30 bg-accent/10 text-accent',
+    blockClass: 'border-accent/30 bg-accent/10 text-accent',
+    dotClass: 'bg-accent',
+  },
+  yellow: {
+    label: 'Amarillo',
+    phaseClass: 'border-warning/40 bg-warning/10 text-warning',
+    chipClass: 'border-warning/40 bg-warning/10 text-warning',
+    blockClass: 'border-warning/40 bg-warning/10 text-warning',
+    dotClass: 'bg-warning',
+  },
+  red: {
+    label: 'Rojo',
+    phaseClass: 'border-destructive/40 bg-destructive/10 text-destructive',
+    chipClass: 'border-destructive/40 bg-destructive/10 text-destructive',
+    blockClass: 'border-destructive/40 bg-destructive/10 text-destructive',
+    dotClass: 'bg-destructive',
+  },
+};
+
+function normalizeAlarmLevel(alarm) {
+  const explicit = Number.parseInt(String(alarm?.level ?? ''), 10);
+  if (Number.isInteger(explicit)) return explicit;
+
+  switch (String(alarm?.severity || '').toLowerCase()) {
+    case 'warning':
+      return 1;
+    case 'critical':
+      return 2;
+    case 'expired':
+      return 3;
+    default:
+      return 0;
+  }
+}
+
+function getActorTraffic(row, actor) {
+  const alarms = Array.isArray(row?.activeAlarms) ? row.activeAlarms : [];
+  const normalizedActor = String(actor || '').toUpperCase();
+  let maxLevel = 0;
+
+  alarms.forEach((alarm) => {
+    const alarmActor = String(alarm?.actor || '').toUpperCase();
+    const action = String(alarm?.action || 'show_alarm');
+    if (alarmActor !== normalizedActor || action !== 'show_alarm') return;
+    maxLevel = Math.max(maxLevel, normalizeAlarmLevel(alarm));
+  });
+
+  if (maxLevel >= 2) return 'red';
+  if (maxLevel === 1) return 'yellow';
+  return 'green';
+}
+
+function getOverallTraffic(row) {
+  const actorStates = [getActorTraffic(row, 'CUR'), getActorTraffic(row, 'SOL')];
+  if (actorStates.includes('red')) return 'red';
+  if (actorStates.includes('yellow')) return 'yellow';
+  return 'green';
+}
+
 function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
   return [
     {
@@ -40,7 +104,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
               />
 
               {radicado && radicado !== '—' ? (
-                <span className="truncate font-mono text-sm font-semibold text-foreground" data-testid={`radicado-value-${rowId}`}>
+                <span className="truncate font-sans text-sm font-medium text-foreground" data-testid={`radicado-value-${rowId}`}>
                   {radicado}
                 </span>
               ) : (
@@ -58,20 +122,43 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
           const row = info.row.original;
           const phaseText = row.phaseText ?? 'Sin fase';
           const phaseTooltip = row.phaseTooltip ?? phaseText;
+          const rowId = row.rowId ?? row.id ?? info.row.id;
+          const traffic = getOverallTraffic(row);
+          const trafficStyle = TRAFFIC_STYLES[traffic] || TRAFFIC_STYLES.green;
+          const curTraffic = getActorTraffic(row, 'CUR');
+          const solTraffic = getActorTraffic(row, 'SOL');
+          const curStyle = TRAFFIC_STYLES[curTraffic] || TRAFFIC_STYLES.green;
+          const solStyle = TRAFFIC_STYLES[solTraffic] || TRAFFIC_STYLES.green;
 
           return (
             <Tooltip>
               <TooltipTrigger asChild>
                 <span
-                  className="block max-w-[14rem] cursor-help truncate text-sm text-muted-foreground"
-                  data-testid={`phase-text-${row.rowId ?? row.id ?? info.row.id}`}
+                  className={`inline-flex max-w-[11rem] cursor-help flex-col gap-1 rounded-lg border px-2 py-1 ${trafficStyle.phaseClass}`}
+                  data-testid={`phase-text-${rowId}`}
                   title={phaseTooltip}
                 >
-                  {phaseText}
+                  <span className="block truncate text-sm font-semibold leading-tight">
+                    {phaseText}
+                  </span>
+                  <span className="flex min-w-0 items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.06em]">
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 ${curStyle.chipClass}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${curStyle.dotClass}`} />
+                      Cur {curStyle.label}
+                    </span>
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 ${solStyle.chipClass}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${solStyle.dotClass}`} />
+                      Sol {solStyle.label}
+                    </span>
+                  </span>
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs text-xs">
-                {phaseTooltip}
+                <div className="space-y-1">
+                  <p className="mb-0 font-semibold">{phaseTooltip}</p>
+                  <p className="mb-0">Curaduría: {curStyle.label}</p>
+                  <p className="mb-0">Solicitante: {solStyle.label}</p>
+                </div>
               </TooltipContent>
             </Tooltip>
           );
@@ -85,6 +172,8 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
           const row = info.row.original;
           const rowId = row.rowId ?? row.id ?? info.row.id;
           const currentActor = row.currentActor ?? 'cur';
+          const curTraffic = getActorTraffic(row, 'CUR');
+          const solTraffic = getActorTraffic(row, 'SOL');
 
           const blocks = [
             {
@@ -93,6 +182,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
               icon: 'building',
               value: row.curValue ?? '0/0',
               active: currentActor === 'cur',
+              traffic: curTraffic,
             },
             {
               key: 'sol',
@@ -100,6 +190,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
               icon: 'user',
               value: row.solValue ?? '0/0',
               active: currentActor === 'sol',
+              traffic: solTraffic,
             },
           ];
 
@@ -109,27 +200,33 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
               data-testid={`status-cell-${rowId}`}
             >
               {blocks.map((block, index) => (
+                (() => {
+                  const style = TRAFFIC_STYLES[block.traffic] || TRAFFIC_STYLES.green;
+                  return (
                 <div
                   key={block.key}
                   className={[
-                    'flex min-w-0 items-center gap-2 px-3 py-2',
+                    'flex min-w-0 items-center gap-2 px-3 py-2 transition-colors',
                     index === 0 ? 'border-r border-border' : '',
-                    block.active ? 'bg-background text-foreground' : 'text-muted-foreground',
+                    block.active ? style.blockClass : 'text-muted-foreground',
                   ].filter(Boolean).join(' ')}
                   data-testid={`status-${block.key}-${rowId}`}
+                  title={`${block.label}: ${style.label}`}
                 >
-                  <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                  <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${block.active ? 'bg-background/80' : 'bg-muted text-muted-foreground'}`}>
                     <Icon name={block.icon} size={14} />
                   </span>
                   <span className="flex min-w-0 flex-col leading-none">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.08em]">
                       {block.label}
                     </span>
-                    <span className="font-mono text-xs font-semibold" data-testid={`status-${block.key}-value-${rowId}`}>
+                    <span className="font-sans text-xs font-semibold" data-testid={`status-${block.key}-value-${rowId}`}>
                       {block.value}
                     </span>
                   </span>
                 </div>
+                  );
+                })()
               ))}
             </div>
           );
@@ -300,15 +397,15 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
                     {headerGroup.headers.map((header) => {
                       const widthClass =
                         header.id === 'radicado'
-                          ? 'w-[26%]'
+                          ? 'w-[24%]'
                           : header.id === 'fase'
-                            ? 'w-[24%]'
+                            ? 'w-[22%]'
                             : header.id === 'estado'
-                              ? 'w-[32%]'
-                              : 'w-[18%]';
+                              ? 'w-[34%]'
+                              : 'w-[20%]';
 
                       return (
-                        <th key={header.id} className={`px-4 py-2.5 text-left align-middle ${widthClass}`.trim()}>
+                        <th key={header.id} className={`px-3 py-2 text-left align-middle ${widthClass}`.trim()}>
                           {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                         </th>
                       );
@@ -345,7 +442,7 @@ function buildColumns(onViewDetail, onOpenWorkspace, onToggleBookmarkScope) {
                       onClick={() => onViewDetail?.(row.original)}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-2.5 align-middle">
+                        <td key={cell.id} className="px-3 py-2 align-middle">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
