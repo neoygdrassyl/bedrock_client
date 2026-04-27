@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -14,7 +14,6 @@ export const PQRS_SET_REPLY1 = (props) => {
 
     const [state, setState] = useState({});
     const editor = useRef(null)
-    const [content, setContent] = useState('')
     const funcion3 = () => {
         const x = currentItem.pqrs_solocitors.map(function (value) { return ` ${value.name}` })
         return x.join(', ');
@@ -89,19 +88,27 @@ export const PQRS_SET_REPLY1 = (props) => {
     
     `)
 
-    const [cargar, setCargar] = useState(currentItem.pqrs_info ? currentItem.pqrs_info.reply ?? textdefauld('') : textdefauld(''))
+    const initialReply = currentItem.pqrs_info ? currentItem.pqrs_info.reply ?? textdefauld('') : textdefauld('');
+    const [cargar, setCargar] = useState(initialReply)
+    const [content, setContent] = useState(initialReply)
 
     const funcion5 = () => {
         var y = currentItem.pqrs_workers.map(function (value) { return ` ${value.reply ?? ' '} ` })
         y = y.join('.<br> ')
-        setCargar(textdefauld(y))
+        const nextContent = textdefauld(y);
+        setCargar(nextContent)
+        setContent(nextContent)
     }
 
 
-
-
-    const config = {
+    const config = useMemo(() => ({
         readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+        language: 'es',
+        iframe: true,
+        allowHTML: true,
+        minHeight: 0,
+        height: 600,
+        defaultActionOnPaste: "insert_only_text",
         uploader: {
             url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
         },
@@ -111,15 +118,17 @@ export const PQRS_SET_REPLY1 = (props) => {
             },
             height: 580,
         },
-        language: 'es',
-        "readonly": false,
+        cleanHTML: {
+            removeEmptyElements: false,
+            fillEmptyParagraph: false
+        },
         controls: {
             lineHeight: {
                 list: ([0.5, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 3.5])
 
             }
         }
-    }
+    }), [])
 
     const componentDidMount = () => {
         retrieveItem(props.currentId);
@@ -156,11 +165,10 @@ export const PQRS_SET_REPLY1 = (props) => {
         formData.set('id_master', currentItem.id);
         formData.set('info_id', currentItem.pqrs_info.id);
         formData.set('time_id', currentItem.pqrs_time.id);
-        console.log(currentItem.id, currentItem.pqrs_info.id, currentItem.pqrs_time.id)
 
         let reply_doc_date = document.getElementById("pqrs_reply_time_formalReply").value;
         if (reply_doc_date) formData.set('reply_doc_date', reply_doc_date);
-        let info_reply = document.getElementById("pqrs_info_reply").value;
+        let info_reply = content || cargar || '';
         formData.set('info_reply', info_reply);
 
         let prev_id = currentItem.id_reply;
@@ -285,8 +293,8 @@ export const PQRS_SET_REPLY1 = (props) => {
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" defaultValue={currentItem.id_reply}
-                                id="pqrs_master_idreply" require />
-                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
+                                id="pqrs_master_idreply" required />
+                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
 
@@ -298,36 +306,36 @@ export const PQRS_SET_REPLY1 = (props) => {
                             </span>
                             <input type="date" max="2100-01-01" className="form-control"
                                 defaultValue={validar ?? dayjs().format('YYYY-MM-DD')}
-                                id="pqrs_reply_time_formalReply" require />
+                                id="pqrs_reply_time_formalReply" required />
                         </div>
                     </div>
 
                 </div>
 
+                <div className="mb-3">
                 <JoditEditor
                     ref={editor}
                     value={cargar}
                     config={config}
-                    disabled={true}
                     tabIndex={1} // tabIndex of textarea
-                    onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
-                    onChange={newContent => { }}
-                    className="form-control mb-3"
+                    onBlur={setContent}
+                    onChange={setContent}
                     rows="5"
                     maxlength="4096"
                     id="pqrs_info_reply"
                 />
+                </div>
 
                 <div className="container">
                     <div className="row justify-content-center">
                         <div className="col-3">
                             <div className="text-center m-3">
-                                <Button size="sm" onClick={funcion5}><Icon name="exchange-alt" size={16} /> CARGAR INFORMACIÓN</Button>
+                                <Button type="button" size="sm" onClick={funcion5}><Icon name="exchange-alt" size={16} /> CARGAR INFORMACIÓN</Button>
                             </div>
                         </div>
                         <div className="col-3">
                             <div className="text-center m-3">
-                                <Button size="sm"><Icon name="edit" size={16} /> GUARDAR RESPUESTA </Button>
+                                <Button type="submit" size="sm"><Icon name="edit" size={16} /> GUARDAR RESPUESTA </Button>
                             </div>
                         </div>
                     </div>
