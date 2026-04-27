@@ -89,6 +89,9 @@ select,
 textarea,
 table,
 .font-mono {
+  /* Dovela muestra radicados, fases y códigos operativos con la fuente base.
+     Evita la apariencia técnica de monoespaciada, conservando alineación numérica. */
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: 'tnum' 1, 'lnum' 1;
 }
