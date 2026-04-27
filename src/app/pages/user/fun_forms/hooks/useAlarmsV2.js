@@ -95,9 +95,9 @@ export function useAlarmsV2({
 
 /**
  * useAlarmsBell - hook dedicado a la campana de notificaciones.
- * Filtra automaticamente por action=show_alarm + actor=CUR + asignado al usuario.
+ * Filtra automaticamente por action=show_alarm + actor=CUR; assignedOnly es opcional.
  */
-export function useAlarmsBell({ pollMs = 60000, includeRead = false, limit = 50 } = {}) {
+export function useAlarmsBell({ pollMs = 60000, includeRead = false, assignedOnly = false, limit = 50 } = {}) {
   const [alarms, setAlarms] = useState([]);
   const [unread, setUnread] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -108,7 +108,7 @@ export function useAlarmsBell({ pollMs = 60000, includeRead = false, limit = 50 
     setLoading(true);
     setError(null);
     try {
-      const resp = await AlarmService.bell({ includeRead, limit });
+      const resp = await AlarmService.bell({ includeRead, assignedOnly, limit });
       const payload = resp.data?.data ?? resp.data ?? [];
       setAlarms(Array.isArray(payload) ? payload : []);
       setUnread(Number(resp.data?.unread) || 0);
@@ -117,7 +117,7 @@ export function useAlarmsBell({ pollMs = 60000, includeRead = false, limit = 50 
     } finally {
       setLoading(false);
     }
-  }, [includeRead, limit]);
+  }, [includeRead, assignedOnly, limit]);
 
   const markRead = useCallback(async (id) => { await AlarmService.markRead(id); await refetch(); }, [refetch]);
   const archive = useCallback(async (id) => { await AlarmService.archive(id); await refetch(); }, [refetch]);
