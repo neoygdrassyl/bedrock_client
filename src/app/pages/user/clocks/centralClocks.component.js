@@ -902,6 +902,8 @@ export default function EXP_CLOCKS(props) {
 
   const radDate = currentItem?.date;
   const totalTableWidth = 1350 - 80;
+  const normalizedSidebarHeight = Number.isFinite(sidebarHeight) ? Math.min(Math.max(sidebarHeight, 420), 720) : 520;
+  const tableScrollHeight = `min(${normalizedSidebarHeight}px, calc(100vh - 18rem))`;
 
   return (
     <div className="exp-wrapper">
@@ -961,7 +963,7 @@ export default function EXP_CLOCKS(props) {
               <div className="top-scroll-content" style={{ width: `${totalTableWidth}px` }}></div>
             </div>
             
-            <div ref={tableScrollRef} className="exp-scroll" style={{ height: sidebarHeight, maxHeight: sidebarHeight }}>
+            <div ref={tableScrollRef} className="exp-scroll" style={{ height: tableScrollHeight, maxHeight: tableScrollHeight }}>
                <div ref={contentRef} style={{ minWidth: `${totalTableWidth}px` }}>
                   <ClockTableHeader />
                   {renderClockList()}

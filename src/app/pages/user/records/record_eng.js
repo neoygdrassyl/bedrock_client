@@ -349,24 +349,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                         hideNotApplicableDefault
                                         showFilters
                                     />}
-                                    documentsContent={<div className="space-y-4">
-                                        <RECORD_ENG_PROFESIONALS
-                                            _FUN_52={_GET_CHILD_52()}
-                                            _FUN_6={_GET_CHILD_6()}
-                                            currentItem={currentItem}
-                                            currentRecord={currentRecord}
-                                            requestUpdate={requestUpdate}
-                                            useCB
-                                            profs={[
-                                                ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'],
-                                                ['DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES'],
-                                                ['INGENIERO CIVIL GEOTECNISTA'],
-                                                ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'],
-                                                ['REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES'],
-                                            ]}
-                                        />
-
-                                        <FUN_6_VIEW
+                                    documentsContent={<FUN_6_VIEW
                                             translation={translation}
                                             swaMsg={swaMsg}
                                             globals={globals}
@@ -376,8 +359,23 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             requestUpdate={requestUpdate}
                                             readOnly
                                             mergeVentanilla
-                                        />
-                                    </div>}
+                                        />}
+                                    professionalsLabel="Profesionales del proyecto"
+                                    professionalsContent={<RECORD_ENG_PROFESIONALS
+                                        _FUN_52={_GET_CHILD_52()}
+                                        _FUN_6={_GET_CHILD_6()}
+                                        currentItem={currentItem}
+                                        currentRecord={currentRecord}
+                                        requestUpdate={requestUpdate}
+                                        useCB
+                                        profs={[
+                                            ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'],
+                                            ['DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES'],
+                                            ['INGENIERO CIVIL GEOTECNISTA'],
+                                            ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'],
+                                            ['REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES'],
+                                        ]}
+                                    />}
                                 />
 
                                 <FUN_G_REPORTS

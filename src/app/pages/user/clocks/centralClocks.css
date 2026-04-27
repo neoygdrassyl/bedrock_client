@@ -7509,3 +7509,47 @@ from { opacity: 0; transform: translateY(-5px); }
   scrollbar-width: thin;
   scrollbar-color: #d0d3d6 #f1f3f5;
 }
+
+.exp-wrapper {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.exp-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
+  gap: 1rem;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.exp-main-content,
+.exp-card,
+.top-scroll-wrapper,
+.exp-scroll {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.exp-main-content {
+  overflow: hidden;
+}
+
+.exp-sidebar {
+  min-width: 0;
+  width: 100%;
+  max-width: 22rem;
+  position: sticky;
+  top: 0.75rem;
+}
+
+@media (max-width: 1200px) {
+  .exp-container {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .exp-sidebar {
+    max-width: 100%;
+    position: static;
+  }
+}

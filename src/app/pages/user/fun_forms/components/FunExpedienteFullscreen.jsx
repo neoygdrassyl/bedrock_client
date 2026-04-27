@@ -263,16 +263,34 @@ function renderModuleContent(activeSection, activeReport, moduleProps) {
   }
 }
 
-export function FunExpedienteFullscreen({ expediente, translation, globals, swaMsg, onClose, onRefresh }) {
+function normalizeInitialSection(section) {
+  return SECTION_ITEMS.some((item) => item.id === section) ? section : 'detalles';
+}
+
+function normalizeInitialReport(report) {
+  return REPORT_ITEMS.some((item) => item.id === report) ? report : 'juridico';
+}
+
+export function FunExpedienteFullscreen({
+  expediente,
+  translation,
+  globals,
+  swaMsg,
+  onClose,
+  onRefresh,
+  initialSection = 'detalles',
+  initialReport = 'juridico',
+  defaultRightPanelOpen = false,
+}) {
   const [summary, setSummary] = useState(expediente);
-  const [activeSection, setActiveSection] = useState('detalles');
-  const [activeReport, setActiveReport] = useState('juridico');
+  const [activeSection, setActiveSection] = useState(() => normalizeInitialSection(initialSection));
+  const [activeReport, setActiveReport] = useState(() => normalizeInitialReport(initialReport));
   const [currentId, setCurrentId] = useState(getExpedienteId(expediente));
   const [currentVersion, setCurrentVersion] = useState(getExpedienteVersion(expediente));
   const [currentPublic, setCurrentPublic] = useState(getExpedienteRadicado(expediente));
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [headerExpanded, setHeaderExpanded] = useState(false);
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(defaultRightPanelOpen);
 
   const { alarms } = useAlarms({ includeAttended: true, includeHidden: true });
 
@@ -282,6 +300,26 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
     setCurrentVersion(getExpedienteVersion(expediente));
     setCurrentPublic(getExpedienteRadicado(expediente));
   }, [expediente]);
+
+  useEffect(() => {
+    setActiveSection(normalizeInitialSection(initialSection));
+    setActiveReport(normalizeInitialReport(initialReport));
+  }, [initialReport, initialSection]);
+
+  useEffect(() => {
+    setRightPanelOpen(defaultRightPanelOpen);
+  }, [defaultRightPanelOpen]);
+
+  useEffect(() => {
+    const previousTitle = document.title;
+    if (currentPublic) {
+      document.title = `${currentPublic} · DOVELA`;
+    }
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [currentPublic]);
 
   useEffect(() => {
     const { overflow } = document.body.style;
@@ -562,9 +600,9 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
       {/* ── Área de trabajo ──────────────────────────────────────────── */}
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Contenido principal */}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <ScrollArea className="flex-1">
-            <div className="space-y-4 p-3 sm:p-5">
+        <div className={cn('flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden transition-[max-width] duration-200', rightPanelOpen ? 'max-w-[calc(100%_-_18rem)]' : 'max-w-full')}>
+          <ScrollArea className="min-w-0 flex-1">
+            <div className="w-full min-w-0 space-y-4 p-3 sm:p-5">
               {activeSection === 'informes' ? (
                 <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card/80 p-2 shadow-sm">
                   {REPORT_ITEMS.map((item) => (
@@ -584,7 +622,7 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
 
               <div
                 className={cn(
-                  'rounded-2xl border border-border bg-card/90 shadow-sm',
+                  'w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm',
                   activeSection === 'tiempos' ? 'p-1 sm:p-2' : 'p-3 sm:p-5'
                 )}
               >
