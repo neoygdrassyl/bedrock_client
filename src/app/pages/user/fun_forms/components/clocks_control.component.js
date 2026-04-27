@@ -13,6 +13,9 @@ const styles = {
         marginBottom: '0', // Se quita el margen para unir con el contenido
         paddingLeft: '0',
         display: 'flex',
+        maxWidth: '100%',
+        overflowX: 'auto',
+        overflowY: 'hidden',
         listStyle: 'none',
         borderBottom: '1px solid var(--bs-border-color)',
     },
@@ -43,6 +46,9 @@ const styles = {
         marginBottom: '-1px', // Compensa el borde inferior del contenedor
     },
     tabPane: {
+        width: '100%',
+        maxWidth: '100%',
+        overflow: 'hidden',
         padding: '1.5rem',
         border: '1px solid var(--bs-border-color)',
         borderTop: 'none',
@@ -429,7 +435,7 @@ function CLOCKS_CONTROL(props) {
         ];
 
         return (
-            <div className="mb-5">
+            <div className="mb-5 w-full min-w-0 overflow-hidden">
                 <ul style={styles.tabsContainer}>
                     {tabs.map(tab => (
                         <li key={tab.id} style={styles.tabItem}>
@@ -444,7 +450,7 @@ function CLOCKS_CONTROL(props) {
                     ))}
                 </ul>
 
-                <div className="tab-content">
+                <div className="tab-content w-full min-w-0 overflow-hidden">
                     <div style={styles.tabPane}>
                         {activeTab === 'tiempos' && (
                             <EXP_CLOCKS 
