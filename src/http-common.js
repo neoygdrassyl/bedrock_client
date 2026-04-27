@@ -24,7 +24,9 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   (response) => response,
   (error) => {
-    captureDovelaHttpError(error);
+    if (!error?.config?.skipDovelaErrorCapture) {
+      captureDovelaHttpError(error);
+    }
     if (
       error.response &&
       error.response.status === 401 &&

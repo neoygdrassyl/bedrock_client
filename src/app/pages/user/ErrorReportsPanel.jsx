@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Bug, Copy, Download, Eye, RefreshCw, Search, ShieldAlert } from 'lucide-react';
+import { Bug, CheckCircle2, Copy, Download, Eye, RefreshCw, Search, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +30,27 @@ const STATUS_VARIANTS = {
   reviewing: 'secondary',
   resolved: 'default',
   ignored: 'outline',
+};
+
+const PANEL_COPY = {
+  mine: {
+    title: 'Mis reportes',
+    description: 'Consulta el estado y la nota de gestion de los reportes que has enviado.',
+    badge: 'Tus reportes',
+    empty: 'No has enviado reportes con el filtro actual.',
+  },
+  management: {
+    title: 'Gestion de reportes',
+    description: 'Seguimiento operativo para revisar reportes, cambiar estado y dejar nota visible al usuario.',
+    badge: 'Gestion ADM',
+    empty: 'No hay reportes para gestionar con el filtro actual.',
+  },
+  technical: {
+    title: 'Reportes tecnicos',
+    description: 'Bandeja de desarrollo con JSON seguro para aislar fallas y resolverlas.',
+    badge: 'Detalle tecnico',
+    empty: 'No hay reportes tecnicos para el filtro actual.',
+  },
 };
 
 function normalizeListResponse(response) {
@@ -94,29 +115,39 @@ function DetailRow({ label, value }) {
   );
 }
 
-export default function ErrorReportsPanel() {
+export default function ErrorReportsPanel({ mode = 'technical' }) {
   const [reports, setReports] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
-  const [status, setStatus] = useState('open');
+  const [status, setStatus] = useState(mode === 'mine' ? '' : 'open');
   const [selected, setSelected] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const copy = PANEL_COPY[mode] || PANEL_COPY.technical;
+  const canManage = mode === 'management' || mode === 'technical';
+  const showTechnical = mode === 'technical';
 
   const stats = useMemo(() => {
     const open = reports.filter((report) => report.status === 'open').length;
     const reviewing = reports.filter((report) => report.status === 'reviewing').length;
-    const automatic = reports.filter((report) => report.source && report.source !== 'manual-report' && report.source !== 'global-floating-report').length;
-    return { open, reviewing, automatic };
+    const resolved = reports.filter((report) => report.status === 'resolved').length;
+    return { open, reviewing, resolved };
   }, [reports]);
 
   const fetchReports = async () => {
     setLoading(true);
     setError('');
     try {
-      const response = await ErrorReportService.list({ q: query, status, limit: 50 });
+      const response = await ErrorReportService.list({
+        q: query,
+        status,
+        limit: 50,
+        scope: mode === 'mine' ? 'mine' : 'all',
+      });
       const next = normalizeListResponse(response);
       setReports(next.data);
       setTotal(next.total);
@@ -129,7 +160,7 @@ export default function ErrorReportsPanel() {
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [mode]);
 
   const openDetail = async (report) => {
     setSelected(report);
@@ -147,20 +178,30 @@ export default function ErrorReportsPanel() {
     }
   };
 
-  const updateStatus = async (report, nextStatus) => {
+  const saveManagement = async (nextStatus) => {
+    if (!selected) return;
+    setSaving(true);
     try {
-      await ErrorReportService.updateStatus(report.id, nextStatus);
-      toast.success('Estado actualizado');
+      const payload = {
+        managementNote: selected.managementNote || '',
+      };
+      if (nextStatus) payload.status = nextStatus;
+      const response = await ErrorReportService.updateReport(selected.id, payload);
+      const updated = response?.data?.data || { ...selected, ...payload };
+      setSelected(updated);
+      toast.success('Reporte actualizado');
       fetchReports();
-      if (selected?.id === report.id) setSelected((prev) => ({ ...prev, status: nextStatus }));
     } catch (err) {
-      toast.error('No fue posible actualizar el estado', {
+      toast.error('No fue posible actualizar el reporte', {
         description: err?.response?.data?.message || 'Intenta nuevamente.',
       });
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleCopy = async () => {
+    if (!showTechnical) return;
     try {
       await copyPayload(selected);
       toast.success('Payload copiado');
@@ -172,44 +213,44 @@ export default function ErrorReportsPanel() {
   return (
     <div className="space-y-4">
       <div className="settings-panel__header">
-        <h2>Reportes de errores</h2>
-        <p>Bandeja técnica para aislar fallas capturadas por Dovela 2.0.</p>
+        <h2>{copy.title}</h2>
+        <p>{copy.description}</p>
       </div>
 
       <dl className="grid gap-2 sm:grid-cols-3">
         <SummaryStat label="Abiertos visibles" value={stats.open} />
         <SummaryStat label="Aislados" value={stats.reviewing} />
-        <SummaryStat label="Automáticos" value={stats.automatic} />
+        <SummaryStat label="Resueltos" value={stats.resolved} />
       </dl>
 
       <div className="rounded-lg border border-border/70 bg-card p-3 shadow-sm">
         <div className="flex flex-col gap-2 lg:flex-row lg:items-end">
           <div className="grid flex-1 gap-1.5">
-            <Label htmlFor="error-report-search">Buscar</Label>
+            <Label htmlFor={`error-report-search-${mode}`}>Buscar</Label>
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                id="error-report-search"
+                id={`error-report-search-${mode}`}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Ruta, módulo, usuario, expediente o mensaje"
+                placeholder="Ruta, modulo, usuario, expediente o mensaje"
                 className="pl-9"
               />
             </div>
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="error-report-status">Estado</Label>
+            <Label htmlFor={`error-report-status-${mode}`}>Estado</Label>
             <select
-              id="error-report-status"
+              id={`error-report-status-${mode}`}
               value={status}
               onChange={(event) => setStatus(event.target.value)}
               className="h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground"
             >
+              <option value="">Todos</option>
               <option value="open">Abiertos</option>
               <option value="reviewing">Aislados</option>
               <option value="resolved">Resueltos</option>
               <option value="ignored">Ignorados</option>
-              <option value="">Todos</option>
             </select>
           </div>
           <Button type="button" onClick={fetchReports} disabled={loading}>
@@ -228,7 +269,7 @@ export default function ErrorReportsPanel() {
       <div className="overflow-hidden rounded-lg border border-border/70 bg-card shadow-sm">
         <div className="flex items-center justify-between border-b border-border/60 px-3 py-2 text-xs text-muted-foreground">
           <span>{loading ? 'Cargando...' : `${reports.length} de ${total} reportes`}</span>
-          <Badge variant="secondary" className="rounded-full text-[10px]">Solo desarrolladores</Badge>
+          <Badge variant="secondary" className="rounded-full text-[10px]">{copy.badge}</Badge>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[860px] text-sm">
@@ -236,18 +277,18 @@ export default function ErrorReportsPanel() {
               <tr>
                 <th className="px-3 py-2 font-semibold">Estado</th>
                 <th className="px-3 py-2 font-semibold">Origen</th>
-                <th className="px-3 py-2 font-semibold">Módulo / ruta</th>
+                <th className="px-3 py-2 font-semibold">Modulo / ruta</th>
                 <th className="px-3 py-2 font-semibold">Mensaje</th>
                 <th className="px-3 py-2 font-semibold">Usuario</th>
                 <th className="px-3 py-2 font-semibold">Fecha</th>
-                <th className="px-3 py-2 text-right font-semibold">Acción</th>
+                <th className="px-3 py-2 text-right font-semibold">Accion</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
               {reports.length === 0 && !loading ? (
                 <tr>
                   <td colSpan={7} className="px-3 py-8 text-center text-sm text-muted-foreground">
-                    No hay reportes para el filtro actual.
+                    {copy.empty}
                   </td>
                 </tr>
               ) : reports.map((report) => (
@@ -257,12 +298,13 @@ export default function ErrorReportsPanel() {
                   </td>
                   <td className="px-3 py-2 align-top text-xs text-muted-foreground">{report.source || 'manual'}</td>
                   <td className="max-w-[220px] px-3 py-2 align-top">
-                    <div className="font-medium text-foreground">{report.module || 'Sin módulo'}</div>
+                    <div className="font-medium text-foreground">{report.module || 'Sin modulo'}</div>
                     <div className="truncate text-xs text-muted-foreground" title={report.path}>{report.path || 'Sin ruta'}</div>
                     {report.expediente ? <div className="mt-1 font-mono text-[11px] text-primary">{report.expediente}</div> : null}
                   </td>
                   <td className="max-w-[280px] px-3 py-2 align-top text-xs text-foreground">
                     <span className="line-clamp-3">{report.message || 'Sin mensaje'}</span>
+                    {report.managementNote ? <div className="mt-1 text-[11px] text-muted-foreground">Con nota de gestion</div> : null}
                   </td>
                   <td className="px-3 py-2 align-top text-xs text-muted-foreground">{report.userName || report.userRole || 'Sin usuario'}</td>
                   <td className="px-3 py-2 align-top text-xs text-muted-foreground">{formatDate(report.createdAt)}</td>
@@ -288,7 +330,7 @@ export default function ErrorReportsPanel() {
               </span>
               <div>
                 <DialogTitle>Reporte #{selected?.id}</DialogTitle>
-                <DialogDescription>Detalle técnico capturado para análisis de desarrollo.</DialogDescription>
+                <DialogDescription>{showTechnical ? 'Detalle tecnico capturado para analisis de desarrollo.' : 'Seguimiento operativo del reporte.'}</DialogDescription>
               </div>
             </div>
           </DialogHeader>
@@ -301,7 +343,7 @@ export default function ErrorReportsPanel() {
                 <DetailRow label="Estado" value={STATUS_LABELS[selected.status] || selected.status} />
                 <DetailRow label="Origen" value={selected.source} />
                 <DetailRow label="Severidad" value={selected.severity} />
-                <DetailRow label="Módulo" value={selected.module} />
+                <DetailRow label="Modulo" value={selected.module} />
                 <DetailRow label="Ruta" value={selected.path} />
                 <DetailRow label="Usuario" value={selected.userName || selected.userRole} />
               </dl>
@@ -314,36 +356,68 @@ export default function ErrorReportsPanel() {
               </div>
 
               <div className="grid gap-2">
-                <Label>Payload JSON</Label>
-                <Textarea
-                  readOnly
-                  value={JSON.stringify(getPayload(selected) || {}, null, 2)}
-                  className="min-h-[20rem] font-mono text-xs"
-                />
+                <Label htmlFor={`error-report-note-${mode}`}>Nota de gestion</Label>
+                {canManage ? (
+                  <Textarea
+                    id={`error-report-note-${mode}`}
+                    value={selected.managementNote || ''}
+                    onChange={(event) => setSelected((prev) => ({ ...prev, managementNote: event.target.value }))}
+                    placeholder="Resumen visible para el usuario sobre avance, solucion o siguiente paso."
+                    className="min-h-24"
+                  />
+                ) : (
+                  <div className="rounded-md border border-border/60 bg-muted/20 px-3 py-2 text-sm text-foreground">
+                    {selected.managementNote || 'Sin nota de gestion todavía.'}
+                  </div>
+                )}
+                {selected.managedAt ? <p className="text-xs text-muted-foreground">Ultima gestion: {formatDate(selected.managedAt)}</p> : null}
               </div>
+
+              {showTechnical ? (
+                <div className="grid gap-2">
+                  <Label>Payload JSON</Label>
+                  <Textarea
+                    readOnly
+                    value={JSON.stringify(getPayload(selected) || {}, null, 2)}
+                    className="min-h-[20rem] font-mono text-xs"
+                  />
+                </div>
+              ) : null}
             </div>
           ) : null}
 
           <DialogFooter className="gap-2 sm:justify-between sm:space-x-0">
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="outline" onClick={() => selected && updateStatus(selected, 'reviewing')}>
-                <ShieldAlert className="h-4 w-4" />
-                Aislar
+            {canManage ? (
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="outline" onClick={() => saveManagement('reviewing')} disabled={saving || !selected}>
+                  <ShieldAlert className="h-4 w-4" />
+                  Aislar
+                </Button>
+                <Button type="button" variant="outline" onClick={() => saveManagement('resolved')} disabled={saving || !selected}>
+                  <CheckCircle2 className="h-4 w-4" />
+                  Marcar resuelto
+                </Button>
+                <Button type="button" variant="outline" onClick={() => saveManagement()} disabled={saving || !selected}>
+                  Guardar nota
+                </Button>
+              </div>
+            ) : <span />}
+            {showTechnical ? (
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="outline" onClick={handleCopy} disabled={!selected}>
+                  <Copy className="h-4 w-4" />
+                  Copiar JSON
+                </Button>
+                <Button type="button" onClick={() => selected && downloadJson(selected)} disabled={!selected}>
+                  <Download className="h-4 w-4" />
+                  Descargar
+                </Button>
+              </div>
+            ) : (
+              <Button type="button" variant="outline" onClick={() => setDetailOpen(false)}>
+                Cerrar
               </Button>
-              <Button type="button" variant="outline" onClick={() => selected && updateStatus(selected, 'resolved')}>
-                Marcar resuelto
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="outline" onClick={handleCopy} disabled={!selected}>
-                <Copy className="h-4 w-4" />
-                Copiar JSON
-              </Button>
-              <Button type="button" onClick={() => selected && downloadJson(selected)} disabled={!selected}>
-                <Download className="h-4 w-4" />
-                Descargar
-              </Button>
-            </div>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

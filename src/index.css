@@ -109,6 +109,18 @@ body.workspace-fullscreen-open {
   --fun-sidebar-width: 0px;
 }
 
+.expediente-fullscreen .container {
+  width: 100%;
+  max-width: none;
+}
+
+.expediente-fullscreen [data-radix-scroll-area-viewport] > div {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
 #root, .App {
   width: 100%;
   max-width: 100%;
