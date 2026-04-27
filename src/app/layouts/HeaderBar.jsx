@@ -13,6 +13,7 @@ import { useTheme } from '@/components/theme-provider';
 import { Sun, Moon, LogOut, Search, PanelLeftClose, PanelLeft, ChevronRight } from 'lucide-react';
 import { Icon } from '@/components/icon';
 import { AlarmBell } from '../pages/user/fun_forms/components/AlarmBell';
+import ChatLauncher from '../pages/user/chat/ChatLauncher';
 import {
   Tooltip,
   TooltipContent,
@@ -114,7 +115,8 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
         <kbd className="ml-3 text-[9px] bg-background/80 border border-border/40 px-1 py-0.5 rounded font-mono">⌘K</kbd>
       </button>
 
-      {/* Notifications */}
+      {/* Chat & notifications */}
+      <ChatLauncher />
       <AlarmBell />
 
       {/* Theme toggle */}
