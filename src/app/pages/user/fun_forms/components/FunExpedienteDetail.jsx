@@ -163,7 +163,7 @@ export function FunExpedienteDetail({
               )}
             </div>
             <div className="d-flex flex-wrap align-items-center gap-2">
-              <span className="font-mono font-semibold text-lg me-2">{expediente.radicado}</span>
+              <span className="font-sans font-medium text-lg me-2">{expediente.radicado}</span>
               {expediente.fase_label && (
                 <span className="badge bg-light text-secondary border">
                   {expediente.fase_label}

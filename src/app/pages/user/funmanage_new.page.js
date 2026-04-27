@@ -50,12 +50,28 @@ function mergeBookmarkState(...states) {
   );
 }
 
+function getActorAlarmValue(row, actor) {
+  const normalizedActor = String(actor || '').toUpperCase();
+  const alarms = Array.isArray(row?.activeAlarms) ? row.activeAlarms : [];
+  const selectedAlarm = alarms
+    .filter((alarm) => String(alarm?.actor || '').toUpperCase() === normalizedActor)
+    .filter((alarm) => String(alarm?.action || 'show_alarm') === 'show_alarm')
+    .sort((a, b) => Number(b?.level || 0) - Number(a?.level || 0))[0];
+
+  const used = Number(selectedAlarm?.daysUsed);
+  const total = Number(selectedAlarm?.daysTotal);
+  if (!Number.isFinite(used) || !Number.isFinite(total) || total <= 0) return null;
+  return `${used}/${total}`;
+}
+
 export function buildCompactTableRow(row, bookmarkState) {
   const rowId = row.fun0Id ?? row.fun_0_id ?? row.id;
   const currentActor = normalizeResponsibleActor(row.responsable);
   const usedDays = Number.isFinite(row.dias_habiles_usados) ? row.dias_habiles_usados : 0;
   const limitDays = Number.isFinite(row.dias_habiles_limite) ? row.dias_habiles_limite : 0;
   const actorValue = `${usedDays}/${limitDays}`;
+  const curAlarmValue = getActorAlarmValue(row, 'CUR');
+  const solAlarmValue = getActorAlarmValue(row, 'SOL');
 
   return {
     ...row,
@@ -63,8 +79,8 @@ export function buildCompactTableRow(row, bookmarkState) {
     phaseText: row.fase_label ?? 'Sin fase',
     phaseTooltip: row.fase_label ?? 'Sin fase',
     currentActor,
-    curValue: currentActor === 'cur' ? actorValue : '0/0',
-    solValue: currentActor === 'sol' ? actorValue : '0/0',
+    curValue: currentActor === 'cur' ? actorValue : (curAlarmValue || '0/0'),
+    solValue: currentActor === 'sol' ? actorValue : (solAlarmValue || '0/0'),
     _bookmarkState: bookmarkState,
     _bookmarked: bookmarkState.any,
   };
@@ -140,7 +156,22 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
     [bookmarkStateById]
   );
 
-  const handleKPIFilterChange = useCallback(({ status, phase, desistido, causal, key, subfiltro, bookmarked, vecinos }) => {
+  const handleKPIFilterChange = useCallback(({
+    status,
+    phase,
+    desistido,
+    causal,
+    key,
+    subfiltro,
+    bookmarked,
+    vecinos,
+    valla,
+    alarmTraffic,
+    alarmLevel,
+    alarmActor,
+    alarmAction,
+    soloConAlarmas,
+  }) => {
     setKpiActiveFilterKey((prev) => {
       if (prev === key) {
         setFilters((f) => mergeFilters(f, {
@@ -153,6 +184,13 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           bookmarked: null,
           vecinos: null,
           vecinosState: null,
+          valla: null,
+          vallaState: null,
+          alarmTraffic: null,
+          alarmLevel: null,
+          alarmActor: null,
+          alarmAction: null,
+          soloConAlarmas: false,
         }));
         return null;
       }
@@ -167,6 +205,13 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           bookmarked: bookmarked || null,
           vecinos: vecinos || null,
           vecinosState: vecinos || null,
+          valla: valla || null,
+          vallaState: valla || null,
+          alarmTraffic: alarmTraffic || null,
+          alarmLevel: alarmLevel || null,
+          alarmActor: alarmActor || null,
+          alarmAction: alarmAction || null,
+          soloConAlarmas: Boolean(soloConAlarmas),
         })
       );
       return key;
@@ -276,7 +321,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           />
 
           <div className="row g-3 mb-4" data-testid="main-content-row">
-            <div className="col-12 col-lg-7 col-xl-8" data-testid="table-section">
+            <div className="col-12 col-lg-7 col-xl-7" data-testid="table-section">
               <div className="rounded border p-3 h-100" style={{ borderColor: '#e2e8f0', background: '#fff' }}>
                 <div className="d-flex flex-wrap align-items-center justify-content-between mb-3">
                   <h6 className="text-muted mb-0" style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}>
@@ -303,14 +348,14 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
               </div>
             </div>
 
-            <div className="col-12 col-lg-5 col-xl-4 d-flex flex-column gap-3" data-testid="charts-col">
+            <div className="col-12 col-lg-5 col-xl-5 d-flex flex-column gap-3" data-testid="charts-col">
               <div
                 className="rounded border p-3"
                 style={{ borderColor: '#e2e8f0', background: '#fff' }}
                 data-testid="scatter-section"
               >
                 <h6 className="text-muted mb-2" style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}>
-                  <Icon name="circle-nodes" size={16} className="me-2" />Tiempo por Categoría
+                  <Icon name="circle-nodes" size={16} className="me-2" />Tiempo por Fase
                 </h6>
                 <FunmanageScatterChart data={chartData} loading={loading} thresholds={scatterThresholds} />
               </div>
