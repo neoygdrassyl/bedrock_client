@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Bell, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Bell, Bug, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
 import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
+import ErrorReportsPanel from './ErrorReportsPanel.jsx';
+import { isDeveloperUser } from '../../utils/developerAccess.js';
 import './SettingsPage.css';
 
 const NAV_ITEMS = [
@@ -32,6 +34,18 @@ function formatLastLogin(value) {
 export default function SettingsPage() {
   const [active, setActive] = useState('alarmas');
   const user = DataService.getUserData();
+  const canSeeErrorReports = isDeveloperUser(user);
+  const navItems = canSeeErrorReports
+    ? [
+        ...NAV_ITEMS,
+        {
+          key: 'errorReports',
+          label: 'Reportes de errores',
+          description: 'Bandeja técnica de desarrollo',
+          icon: Bug,
+        },
+      ]
+    : NAV_ITEMS;
   const fullName = [user?.name, user?.surname].filter(Boolean).join(' ') || 'No disponible';
   const roleDesc = user?.roleDesc || 'No disponible';
   const lastLogin = formatLastLogin(user?.lastLoginAt || user?.lastLogin);
@@ -51,7 +65,7 @@ export default function SettingsPage() {
       <div className="settings-shell__body">
         <aside className="settings-nav" aria-label="Secciones de configuración">
           <ul className="settings-nav__list">
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = active === item.key;
               return (
@@ -77,6 +91,7 @@ export default function SettingsPage() {
 
         <main className="settings-panel" role="main">
           {active === 'alarmas' && <AlarmsV2ConfigPanel />}
+          {active === 'errorReports' && canSeeErrorReports && <ErrorReportsPanel />}
           {active === 'cuenta' && (
             <AccountPanel fullName={fullName} roleDesc={roleDesc} lastLogin={lastLogin} />
           )}
