@@ -75,6 +75,46 @@ export function swalLoading(opts = {}) {
   }, opts));
 }
 
+/**
+ * Modal con barra de progreso para operaciones de descarga/generación de archivos.
+ * Usa swalUpdateProgress() para actualizar el porcentaje mientras avanza.
+ */
+export function swalProgressPDF(opts = {}) {
+  return Swal.fire(mergeSwalOptions({
+    ...BASE,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    html: `
+      <div style="text-align:left;margin-top:0.5rem">
+        <div
+          id="swal-pdf-label"
+          style="font-size:0.75rem;color:hsl(var(--muted-foreground));margin-bottom:0.5rem;min-height:1.1em"
+        >Preparando documento...</div>
+        <div style="height:6px;background:hsl(var(--muted));border-radius:9999px;overflow:hidden">
+          <div
+            id="swal-pdf-bar"
+            style="height:100%;width:0%;background:hsl(var(--primary));border-radius:9999px;transition:width 0.35s ease"
+          ></div>
+        </div>
+        <div
+          id="swal-pdf-pct"
+          style="font-size:0.7rem;color:hsl(var(--muted-foreground));margin-top:0.375rem;text-align:right"
+        >0%</div>
+      </div>
+    `,
+  }, opts));
+}
+
+/** Actualiza la barra de progreso abierta por swalProgressPDF. */
+export function swalUpdateProgress(pct, label) {
+  const bar = document.getElementById('swal-pdf-bar');
+  const pctEl = document.getElementById('swal-pdf-pct');
+  const labelEl = document.getElementById('swal-pdf-label');
+  if (bar) bar.style.width = `${pct}%`;
+  if (pctEl) pctEl.textContent = `${pct}%`;
+  if (label && labelEl) labelEl.textContent = label;
+}
+
 export function swalClose() {
   Swal.close();
 }
