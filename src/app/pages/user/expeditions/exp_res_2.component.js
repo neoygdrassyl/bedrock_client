@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import { Button } from '@/components/ui/button';
 import { ResoEngineTemplate } from "../../../utils/ResoEngineTemplate";
 import { ActDesistEngineTemp } from "../../../utils/ActDesistEngineTemp";
@@ -6,7 +6,7 @@ import { ExecEngineTemp } from "../../../utils/ExecEngineTemp";
 import { TemplateEngine } from "../../../utils/TemplateEngine";
 import JoditEditor from "jodit-pro-react";
 import { saveAs } from "file-saver";
-import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { swalClose, swalError, swalProgressPDF, swalUpdateProgress } from '@/app/utils/swalAdapter';
 import { Icon } from '@/components/icon';
 export default function EXP_RES_2(props) {
   const { data, swaMsg, currentItem, currentModel} = props;
@@ -31,11 +31,13 @@ export default function EXP_RES_2(props) {
 
   const editor = useRef(null);
   const [content, setContent] = useState("<p>Cargando plantilla...</p>");
+  const [isTemplateReady, setIsTemplateReady] = useState(false);
   const [htmlSizeKB, setHtmlSizeKB] = useState(null);
   const [nameFile, setNameFile] = useState(null);
 
   useEffect(() => {
     const loadTemplate = async () => {
+      setIsTemplateReady(false);
       try {
         data.model = currentModel;
         data.clocks = (currentItem?.fun_clocks ?? []).filter(Boolean);
@@ -56,9 +58,11 @@ export default function EXP_RES_2(props) {
         }
 
         setContent(modifiedHTML);
+        setIsTemplateReady(true);
       } catch (err) {
         console.error("Error cargando plantilla:", err);
         setContent("<p>Error cargando la plantilla.</p>");
+        setIsTemplateReady(false);
       }
     };
 
@@ -66,10 +70,11 @@ export default function EXP_RES_2(props) {
   }, [data, currentModel]);
 
 
-  const config = {
+  const config = useMemo(() => ({
     readonly: false,
     language: "es",
     iframe: true,
+    editHTMLDocumentMode: true,
     allowHTML: true,
     minHeight: 0,
     height: 640,
@@ -87,32 +92,84 @@ export default function EXP_RES_2(props) {
       removeEmptyElements: false,
       fillEmptyParagraph: false
     }
-  };
+  }), []);
 
   const handleDownloadPDFv2 = async () => {
+    let progressInterval = null;
     try {
-      swalLoading({ title: "Se está generando el PDF", text: swaMsg.text_wait });
+      if (!isTemplateReady) {
+        swalError({ title: swaMsg.generic_eror_title, text: 'La plantilla todavía no ha terminado de cargar.', icon: 'warning' });
+        return;
+      }
 
-      const editorHTML = editor.current?.value;
+      if (!content || !content.trim()) {
+        swalError({ title: swaMsg.generic_eror_title, text: 'El editor no tiene contenido para exportar.', icon: 'warning' });
+        return;
+      }
+
+      // ── Fase 1: abrir modal y mostrar progreso inicial ─────────────
+      swalProgressPDF({ title: 'Generando PDF' });
+      // Pequeña pausa para que el DOM del modal esté listo
+      await new Promise(r => setTimeout(r, 80));
+      swalUpdateProgress(5, 'Preparando documento...');
+
+      await new Promise(r => setTimeout(r, 150));
+      swalUpdateProgress(15, 'Enviando al servidor...');
+
+      // ── Fase 2: simular generación en servidor (15 → 80 %) ─────────
+      let currentPct = 15;
+      progressInterval = setInterval(() => {
+        if (currentPct < 80) {
+          currentPct += 1;
+          swalUpdateProgress(currentPct, 'Generando PDF en el servidor...');
+        }
+      }, 280); // ~18 s para llegar al 80 %
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/pdf-generate/generate-pdf`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ html: editorHTML, margins }),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ html: content, margins }),
         }
       );
 
-      if (!response.ok) throw new Error("Error generando el PDF");
+      if (!response.ok) throw new Error('Error generando el PDF');
 
-      const blob = await response.blob();
-      saveAs(blob, nameFile + " " + currentItem.id_public + ".pdf");
+      // ── Fase 3: descarga real del blob (80 → 100 %) ─────────────────
+      clearInterval(progressInterval);
+      progressInterval = null;
+      swalUpdateProgress(82, 'Descargando archivo...');
+
+      const contentLength = response.headers.get('Content-Length');
+      const total = contentLength ? parseInt(contentLength, 10) : null;
+      let loaded = 0;
+      const chunks = [];
+
+      const reader = response.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        loaded += value.length;
+        if (total) {
+          // Mapear descarga al rango 82–98 %
+          const dlPct = 82 + Math.round((loaded / total) * 16);
+          swalUpdateProgress(Math.min(dlPct, 98), 'Descargando archivo...');
+        }
+      }
+
+      swalUpdateProgress(100, 'Listo. Guardando archivo...');
+      await new Promise(r => setTimeout(r, 350));
+
+      const blob = new Blob(chunks, { type: 'application/pdf' });
+      saveAs(blob, nameFile + ' ' + currentItem.id_public + '.pdf');
 
       swalClose();
     } catch (err) {
+      if (progressInterval) clearInterval(progressInterval);
       swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-      console.error("Error descargando PDF v2:", err);
+      console.error('Error descargando PDF v2:', err);
     }
   };
 
@@ -126,7 +183,7 @@ export default function EXP_RES_2(props) {
           </p>
         </div>
 
-        <Button variant="destructive" size="sm" onClick={handleDownloadPDFv2}>
+        <Button variant="destructive" size="sm" onClick={handleDownloadPDFv2} disabled={!isTemplateReady}>
           <Icon name="file-pdf" size={16} className="me-2" />
           Descargar PDF
         </Button>
@@ -139,6 +196,7 @@ export default function EXP_RES_2(props) {
           config={config}
           tabIndex={1}
           onChange={setContent}
+          onBlur={setContent}
         />
       </div>
 
