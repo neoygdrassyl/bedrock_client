@@ -5,13 +5,13 @@ import { FunmanageScatterChart } from './fun_forms/components/FunmanageScatterCh
 import { FunmanageDataTable } from './fun_forms/components/FunmanageDataTable';
 import { FunmanagePhaseChart } from './fun_forms/components/FunmanagePhaseChart';
 import { FunExpedienteDetail } from './fun_forms/components/FunExpedienteDetail';
-import { FunExpedienteWorkspace } from './fun_forms/components/FunExpedienteWorkspace';
 import { FilterPanel } from './fun_forms/components/FilterPanel';
 import { useDashboard } from './fun_forms/hooks/useDashboard';
 import { useAlarmConfig } from './fun_forms/hooks/useAlarmConfig';
 import { useAlarmConfigV2 } from './fun_forms/hooks/useAlarmConfigV2';
 import { useBookmarks } from './fun_forms/hooks/useBookmarks';
 import { DEFAULT_FILTERS, mergeFilters, hasActiveFilters } from './fun_forms/utils/filters';
+import { openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 
@@ -102,7 +102,6 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
 
   const [kpiActiveFilterKey, setKpiActiveFilterKey] = useState(null);
   const [selectedExpediente, setSelectedExpediente] = useState(null);
-  const [workspaceExpediente, setWorkspaceExpediente] = useState(null);
 
   useEffect(() => {
     setFilters((prev) => (prev.search === debouncedSearch ? prev : mergeFilters(prev, { search: debouncedSearch })));
@@ -226,11 +225,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
 
   const handleOpenWorkspace = useCallback((expediente) => {
     setSelectedExpediente(null);
-    setWorkspaceExpediente(expediente);
-  }, []);
-
-  const handleCloseWorkspace = useCallback(() => {
-    setWorkspaceExpediente(null);
+    openExpedienteWorkspace(expediente, { module: 'general' });
   }, []);
 
   const handleSortingChange = useCallback((updater) => {
@@ -411,16 +406,6 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
         />
       )}
 
-      {workspaceExpediente && (
-        <FunExpedienteWorkspace
-          expediente={workspaceExpediente}
-          translation={translation}
-          globals={globals}
-          swaMsg={swaMsg}
-          onClose={handleCloseWorkspace}
-          onRefresh={refetch}
-        />
-      )}
     </div>
   );
 }
