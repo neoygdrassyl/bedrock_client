@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useEffect, useState, Suspense, lazy } from 'react';
+import React, { useContext, createContext, useEffect, useMemo, useState, Suspense, lazy } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -25,6 +25,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { getRouteRedirects } from './layouts/navigation-config';
 import { ErrorReportInlineTrigger } from './components/DovelaSupportLayer';
 import { captureDovelaError } from './utils/errorReporting';
+import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from './pages/user/fun_forms/utils/expedienteWorkspaceRoute';
 
 // CSS: loaded after Bootstrap (imported in index.js) so our overrides win
 import './App.css';
@@ -336,9 +337,18 @@ function LoginPageWithAuth() {
 
 function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
   const { radicado } = useParams();
+  const location = useLocation();
   const [expediente, setExpediente] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const workspaceTarget = useMemo(
+    () => parseExpedienteWorkspaceSearch(location.search),
+    [location.search]
+  );
+
+  const closeExpedienteWindow = () => {
+    window.location.assign('/dashboard');
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -373,6 +383,16 @@ function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
       cancelled = true;
     };
   }, [radicado]);
+
+  useEffect(() => {
+    if (!expediente) return;
+
+    rememberRecentExpediente(expediente, {
+      section: workspaceTarget.section,
+      report: workspaceTarget.report,
+      limit: 6,
+    });
+  }, [expediente, workspaceTarget.report, workspaceTarget.section]);
 
   if (loading) {
     return <LoadingFallback />;
@@ -409,7 +429,10 @@ function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
       translation={translation}
       globals={globals}
       swaMsg={swaMsg}
-      onClose={() => window.history.back()}
+      initialSection={workspaceTarget.section}
+      initialReport={workspaceTarget.report}
+      defaultRightPanelOpen={workspaceTarget.rightPanel}
+      onClose={closeExpedienteWindow}
     />
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { LegacyPageWrapper } from '@/app/layouts/LegacyPageWrapper';
 import { swalLoading, swalError, swalClose } from '@/app/utils/swalAdapter';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
@@ -39,9 +39,9 @@ import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
 
 function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
-    const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isLoadedSearch, setIsLoadedSearch] = useState(false);
@@ -125,7 +125,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
         FUNService.get(id)
             .then(response => {
                 swalClose()
-                toggle_d(response.data);
+                openExpedienteWorkspace(response.data, { module: 'archive' });
             })
             .catch(e => {
                 swalError({
@@ -338,14 +338,6 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     }
     // NAVIGATION
     const navigation = (item, TO, FROM) => {
-        if (FROM === '' && TO === 'general') {
-            const radicado = item?.id_public ?? item?.radicado;
-            if (radicado) {
-                navigate(`/funmanage/expediente/${radicado}`);
-                return;
-            }
-        }
-
         switch (FROM) {
             case "general":
                 toggle(false)
@@ -388,6 +380,12 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 break;
 
         }
+
+        if (Object.prototype.hasOwnProperty.call(LEGACY_MODULE_TO_WORKSPACE, TO)) {
+            openExpedienteWorkspace(item, { module: TO });
+            return;
+        }
+
         switch (TO) {
             case "general":
                 toggle(item)

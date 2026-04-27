@@ -6,7 +6,6 @@ import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import InternalChatPanel from './chat/InternalChatPanel';
 
 import FUNService from '../../services/fun.service';
 import PqrsMainService from '../../services/pqrs_main.service';
@@ -14,6 +13,7 @@ import SubmitService from '../../services/submit.service';
 import MailboxService from '../../services/mailbox.service';
 import AppointmentsService from '../../services/appointments.service';
 import BookmarkService from '../../services/bookmark.service';
+import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from './fun_forms/utils/expedienteWorkspaceRoute';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -132,6 +132,7 @@ function Dashboard({ breadCrums }) {
   const [counts, setCounts] = useState({});
   const [loadingCounts, setLoadingCounts] = useState(true);
   const [trackedExpedientes, setTrackedExpedientes] = useState({ personal: [], team: [] });
+  const [recentExpedientes, setRecentExpedientes] = useState(() => getRecentExpedientes());
   const [loadingTracked, setLoadingTracked] = useState(true);
   const [trackedError, setTrackedError] = useState(null);
 
@@ -184,6 +185,19 @@ function Dashboard({ breadCrums }) {
     return () => { cancelled = true; };
   }, []);
 
+  useEffect(() => {
+    const refreshRecentExpedientes = () => setRecentExpedientes(getRecentExpedientes());
+
+    refreshRecentExpedientes();
+    window.addEventListener('storage', refreshRecentExpedientes);
+    window.addEventListener(RECENT_EXPEDIENTES_CHANGED_EVENT, refreshRecentExpedientes);
+
+    return () => {
+      window.removeEventListener('storage', refreshRecentExpedientes);
+      window.removeEventListener(RECENT_EXPEDIENTES_CHANGED_EVENT, refreshRecentExpedientes);
+    };
+  }, []);
+
   const workModules = [
     { title: 'Radicar Licencias', icon: 'FileText', desc: 'Nuevas solicitudes', link: '/licencias' },
     { title: 'Gestionar Licencias', icon: 'FolderOpen', desc: 'Seguimiento y trámite', link: '/licencias/gestion' },
@@ -214,12 +228,12 @@ function Dashboard({ breadCrums }) {
   ];
 
   return (
-    <div className="space-y-5 max-w-7xl animate-fade-in-up">
+    <div className="w-full space-y-5 animate-fade-in-up">
       {/* Greeting */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-col gap-0.5">
           <h1 className="text-xl font-semibold tracking-tight text-foreground">
-            {getGreeting()}, <span className="text-xl inline">{userName}</span>
+            {getGreeting()}, {userName}
           </h1>
           <p className="text-xs text-muted-foreground/70">{getFormattedDate()} · Resumen operativo personal</p>
         </div>
@@ -239,14 +253,14 @@ function Dashboard({ breadCrums }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 xl:items-start">
-        <div className="space-y-4 xl:col-span-2">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-start">
+        <div className="space-y-4 xl:w-full xl:max-w-[58rem] xl:flex-none">
           <QuickActionsPanel />
 
           {/* Operation & Management */}
           <section className="space-y-2.5">
             <SectionHeader title="Operación y Gestión" count={workModules.length} />
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
               {workModules.map((mod) => {
                 const hasCount = Object.prototype.hasOwnProperty.call(counts, mod.link);
                 return (
@@ -265,7 +279,7 @@ function Dashboard({ breadCrums }) {
           {/* Utilities */}
           <section className="space-y-2.5">
             <SectionHeader title="Utilidades y Documentación" />
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
               {utilityModules.map((mod) => (
                 <ModuleCard key={mod.link} {...mod} />
               ))}
@@ -273,7 +287,8 @@ function Dashboard({ breadCrums }) {
           </section>
         </div>
 
-        <aside className="space-y-4 xl:sticky xl:top-4 xl:col-span-1">
+        <aside className="space-y-4 xl:sticky xl:top-4 xl:ml-auto xl:w-[26rem] xl:flex-none">
+          <RecentExpedientesSummary items={recentExpedientes} />
           <TrackedExpedientesSummary
             personal={trackedExpedientes.personal}
             team={trackedExpedientes.team}
@@ -281,14 +296,50 @@ function Dashboard({ breadCrums }) {
             error={trackedError}
             stacked
           />
-          <InternalChatPanel
-            compact
-            title="Chat del equipo"
-            subtitle="Comunicación interna sin salir del panel"
-          />
         </aside>
       </div>
     </div>
+  );
+}
+
+function RecentExpedientesSummary({ items }) {
+  return (
+    <Card className="border-border/60 shadow-sm">
+      <CardContent className="p-0">
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
+              <Icon name="History" size={15} />
+            </span>
+            <div className="min-w-0">
+              <h2 className="truncate text-sm font-semibold text-foreground">Vistos recientemente</h2>
+            </div>
+          </div>
+          <Badge variant="secondary" className="rounded-full text-[10px]">
+            {items.length}
+          </Badge>
+        </div>
+
+        {items.length === 0 ? (
+          <div className="px-4 py-5 text-center text-xs text-muted-foreground">
+            Aún no hay expedientes recientes.
+          </div>
+        ) : (
+          <div className="grid gap-1.5 p-2">
+            {items.map((item) => (
+              <Link
+                key={item.radicado}
+                to={item.href}
+                className="flex items-center justify-between rounded-md px-2.5 py-2 no-underline transition-colors hover:bg-muted/50"
+              >
+                <span className="truncate text-xs font-semibold text-foreground">{item.radicado}</span>
+                <Icon name="ArrowUpRight" size={13} className="text-muted-foreground" />
+              </Link>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -326,19 +377,19 @@ function QuickActionsPanel() {
           </div>
           <Badge variant="secondary" className="rounded-full text-[10px]">Inicio</Badge>
         </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
           {actions.map((action) => (
             <Button
               key={action.link}
               asChild
               variant={action.primary ? 'default' : 'outline'}
-              className="h-auto justify-start px-3 py-2.5 text-left"
+              className="h-auto min-h-[3.15rem] justify-start px-3.5 py-2.5 text-left"
             >
               <Link to={action.link} className="no-underline">
                 <Icon name={action.icon} size={15} className="shrink-0" />
                 <span className="min-w-0">
-                  <span className="block truncate text-xs font-semibold">{action.label}</span>
-                  <span className="block truncate text-[10px] opacity-75">{action.description}</span>
+                  <span className="block truncate text-[13px] font-semibold">{action.label}</span>
+                  <span className="block truncate text-[11px] opacity-75">{action.description}</span>
                 </span>
               </Link>
             </Button>
@@ -457,25 +508,25 @@ function ModuleCard({ title, icon, desc, link, count, hasCount = false, loadingC
         'border-l-2',
         borderColor
       )}>
-        <CardContent className="flex items-start gap-3 p-3.5 min-h-[4.5rem]">
+        <CardContent className="flex items-start gap-3.5 p-4 min-h-[5.4rem]">
           <div className={cn(
-            'flex items-center justify-center w-8 h-8 rounded-md shrink-0 transition-all duration-200 group-hover:scale-105',
+            'flex items-center justify-center w-9 h-9 rounded-md shrink-0 transition-all duration-200 group-hover:scale-105',
             iconColor
           )}>
-            <Icon name={icon} size={16} />
+            <Icon name={icon} size={17} />
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-1.5">
-              <h3 className="text-[13px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors duration-150 line-clamp-1">{title}</h3>
+          <div className="min-w-0 flex-1 flex flex-col justify-between gap-1.5">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-[14px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors duration-150 line-clamp-2">{title}</h3>
               {loadingCount && hasCount ? (
                 <Skeleton className="h-5 w-7 rounded" />
               ) : hasCount && count != null ? (
-                <span className="text-base font-semibold text-foreground tabular-nums leading-none">
+                <span className="text-lg font-semibold text-foreground tabular-nums leading-none">
                   {count}
                 </span>
               ) : null}
             </div>
-            <p className="text-[11px] text-muted-foreground/60 mt-0.5 truncate">{desc}</p>
+            <p className="text-[12px] text-muted-foreground/70 line-clamp-2">{desc}</p>
             {!loadingCount && hasCount && count == null ? (
               <p className="text-[10px] text-warning mt-1">Conteo no disponible</p>
             ) : null}
