@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -37,7 +37,6 @@ import {
   getLastDovelaAction,
   getLastDovelaError,
   isDashboardGuideDismissed,
-  saveLocalDovelaErrorReport,
 } from '@/app/utils/errorReporting';
 import ErrorReportService from '@/app/services/error_report.service';
 
@@ -108,12 +107,14 @@ function ContextRow({ label, value, multiline = false }) {
 function ErrorReportDialog({ open, onOpenChange, context, source = 'manual-report' }) {
   const [form, setForm] = useState(() => getInitialForm(context));
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const snapshot = useMemo(() => getContextSnapshot(context), [context]);
 
   useEffect(() => {
     if (open) {
       setForm(getInitialForm(context));
       setSubmitting(false);
+      setSubmitError('');
     }
   }, [context, open]);
 
@@ -133,17 +134,22 @@ function ErrorReportDialog({ open, onOpenChange, context, source = 'manual-repor
   const handleSubmit = async () => {
     const report = buildReport();
     setSubmitting(true);
+    setSubmitError('');
     try {
-      await ErrorReportService.create(report);
-      saveLocalDovelaErrorReport(report);
+      const response = await ErrorReportService.create(report);
+      const reportId = response?.data?.data?.id;
       toast.success('Reporte enviado', {
-        description: 'El equipo de desarrollo tendrá el contexto necesario para revisarlo.',
+        description: reportId ? `Quedó registrado con el número #${reportId}.` : 'Quedó registrado para seguimiento.',
       });
       onOpenChange(false);
-    } catch {
-      saveLocalDovelaErrorReport(report);
-      toast.warning('Reporte guardado localmente', {
-        description: 'No fue posible enviarlo al servidor. Dovela lo conservó en este navegador.',
+    } catch (err) {
+      const isSessionError = err?.response?.status === 401 || err?.response?.status === 403;
+      const message = isSessionError
+        ? 'No fue posible validar tu sesión para guardar el reporte. Vuelve a iniciar sesión y reintenta.'
+        : 'No se pudo guardar en la base de datos. El formulario sigue abierto para reintentar cuando el servicio esté disponible.';
+      setSubmitError(message);
+      toast.error('Reporte no enviado', {
+        description: 'No se creó ningún registro alterno en este navegador.',
       });
     } finally {
       setSubmitting(false);
@@ -152,7 +158,7 @@ function ErrorReportDialog({ open, onOpenChange, context, source = 'manual-repor
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-3xl">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-3xl" data-dovela-report-ui="true">
         <DialogHeader>
           <div className="flex items-start gap-3 pr-6">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-destructive/10 text-destructive">
@@ -217,6 +223,12 @@ function ErrorReportDialog({ open, onOpenChange, context, source = 'manual-repor
               className="min-h-28"
             />
           </div>
+
+          {submitError ? (
+            <div data-dovela-report-ui="true" role="status" className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {submitError}
+            </div>
+          ) : null}
 
           <div className="rounded-lg border border-border/70 bg-muted/10 p-3">
             <div className="mb-3 flex items-center justify-between gap-3">
@@ -358,14 +370,10 @@ export function ErrorReportInlineTrigger({ context, label = 'Reportar error', si
   );
 }
 
-function getCapturedErrorMessage(detail = {}) {
-  return detail.error?.message || detail.http?.responseMessage || detail.info?.text || detail.message || 'Error capturado';
-}
-
 function shouldCaptureVisibleText(text) {
   const normalized = String(text || '').replace(/\s+/g, ' ').trim();
   if (normalized.length < 12 || normalized.length > 900) return false;
-  if (/reportar error|reporte de dovela|payload json/i.test(normalized)) return false;
+  if (/reportar error|reporte de dovela|payload json|reporte no enviado|no se pudo guardar en la base de datos/i.test(normalized)) return false;
   return /error|fall[oó]|no fue posible|no se pudo|failed|exception|rechazad|inv[aá]lid/i.test(normalized);
 }
 
@@ -375,6 +383,7 @@ function getVisibleAlertCandidate(node) {
     ? node
     : node.querySelector?.('[role="alert"], .alert-danger, .text-danger, .invalid-feedback, [data-error]');
   if (!candidate) return null;
+  if (candidate.closest?.('[data-dovela-report-ui="true"], [data-sonner-toaster]')) return null;
   const text = candidate.textContent || '';
   if (!shouldCaptureVisibleText(text)) return null;
   return {
@@ -390,37 +399,10 @@ export function DovelaSupportLayer({ user }) {
   const [reportOpen, setReportOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [reportContext, setReportContext] = useState({});
-  const autoSubmitCacheRef = useRef(new Map());
 
   const openReportDialog = useCallback((context = {}) => {
     setReportContext(getContextSnapshot(context));
     setReportOpen(true);
-  }, []);
-
-  const persistAutomaticReport = useCallback(async (detail = {}) => {
-    const message = getCapturedErrorMessage(detail);
-    const path = detail.location?.pathname || window.location.pathname;
-    const fingerprint = `${detail.source || 'auto'}:${path}:${message}`.slice(0, 520);
-    const now = Date.now();
-    const previous = autoSubmitCacheRef.current.get(fingerprint);
-    if (previous && now - previous < 30000) return null;
-    autoSubmitCacheRef.current.set(fingerprint, now);
-
-    const report = buildDovelaErrorReport({
-      severity: detail.source === 'console-warn' ? 'Advertencia' : 'Error funcional',
-    }, {
-      source: detail.source || 'automatic-report',
-      lastError: detail,
-    });
-
-    try {
-      await ErrorReportService.create(report);
-      saveLocalDovelaErrorReport(report);
-      return report;
-    } catch {
-      saveLocalDovelaErrorReport(report);
-      return null;
-    }
   }, []);
 
   useEffect(() => {
@@ -494,10 +476,9 @@ export function DovelaSupportLayer({ user }) {
 
     const handleCapturedError = (event) => {
       const detail = event.detail || {};
-      persistAutomaticReport(detail);
       if (detail.notify === false) return;
       toast.error('Dovela detectó un error', {
-        description: 'Ya quedó registrado para revisión y puedes agregar más contexto.',
+        description: 'Puedes enviar un reporte con el contexto capturado.',
         action: {
           label: 'Reportar error',
           onClick: () => openReportDialog({ lastError: detail }),
@@ -513,7 +494,7 @@ export function DovelaSupportLayer({ user }) {
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
       window.removeEventListener('dovela:error-captured', handleCapturedError);
     };
-  }, [openReportDialog, persistAutomaticReport]);
+  }, [openReportDialog]);
 
   useEffect(() => {
     if (location.pathname !== '/dashboard' || isDashboardGuideDismissed(user)) return undefined;

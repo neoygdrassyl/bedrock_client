@@ -1,7 +1,8 @@
 const LAST_ERROR_STORAGE_KEY = 'dovela-last-error-context-v2';
 const LAST_ACTION_STORAGE_KEY = 'dovela-last-user-action-v2';
-const LOCAL_REPORTS_STORAGE_KEY = 'dovela-local-error-reports-v2';
 const CONSOLE_ENTRIES_STORAGE_KEY = 'dovela-console-entries-v2';
+const SENSITIVE_KEY_PATTERN = /(password|passwd|contrase|token|authorization|cookie|secret|api[-_]?key|jwt|session|credential|credencial)/i;
+const SENSITIVE_QUERY_PATTERN = /((?:password|passwd|token|authorization|secret|api[-_]?key|jwt|session|cookie)=)[^&\s]+/gi;
 
 const MODULE_LABELS = {
   dashboard: 'Dashboard principal',
@@ -50,7 +51,31 @@ function writeStorage(key, value) {
 
 function safeText(value, maxLength = 420) {
   if (value == null) return '';
-  return String(value).replace(/\s+/g, ' ').trim().slice(0, maxLength);
+  return String(value)
+    .replace(SENSITIVE_QUERY_PATTERN, '$1[REDACTED]')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+}
+
+function redactObject(value, depth = 0, seen = new WeakSet()) {
+  if (value == null) return value;
+  if (depth > 4) return '[TRUNCATED]';
+  if (typeof value === 'string') return safeText(value, 1200);
+  if (typeof value === 'number' || typeof value === 'boolean') return value;
+  if (value instanceof Error) return `${value.name}: ${value.message}`;
+  if (Array.isArray(value)) return value.slice(0, 20).map((item) => redactObject(item, depth + 1, seen));
+
+  if (typeof value === 'object') {
+    if (seen.has(value)) return '[CIRCULAR]';
+    seen.add(value);
+    return Object.entries(value).slice(0, 50).reduce((acc, [key, item]) => {
+      acc[key] = SENSITIVE_KEY_PATTERN.test(key) ? '[REDACTED]' : redactObject(item, depth + 1, seen);
+      return acc;
+    }, {});
+  }
+
+  return safeText(value, 1200);
 }
 
 function getPageSnapshot() {
@@ -113,7 +138,7 @@ function normalizeConsoleArgs(args = []) {
   return args.map((arg) => {
     if (arg instanceof Error) return `${arg.name}: ${arg.message}\n${arg.stack || ''}`;
     if (typeof arg === 'object') {
-      try { return JSON.stringify(arg); } catch { return String(arg); }
+      try { return JSON.stringify(redactObject(arg)); } catch { return String(arg); }
     }
     return String(arg);
   }).join(' ');
@@ -310,13 +335,6 @@ export function buildDovelaErrorReport(userInput = {}, overrides = {}) {
     },
     source: overrides.source || 'manual-report',
   };
-}
-
-export function saveLocalDovelaErrorReport(report) {
-  const reports = readStorage(LOCAL_REPORTS_STORAGE_KEY, []);
-  const nextReports = [report, ...(Array.isArray(reports) ? reports : [])].slice(0, 20);
-  writeStorage(LOCAL_REPORTS_STORAGE_KEY, nextReports);
-  return nextReports;
 }
 
 export async function copyReportToClipboard(report) {

@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/components/theme-provider';
-import { Sun, Moon, LogOut, Search, PanelLeftClose, PanelLeft, ChevronRight } from 'lucide-react';
+import { Sun, Moon, LogOut, Search, PanelLeftClose, PanelLeft, ChevronRight, FileText, UserCircle2 } from 'lucide-react';
 import { Icon } from '@/components/icon';
 import { AlarmBell } from '../pages/user/fun_forms/components/AlarmBell';
 import ChatLauncher from '../pages/user/chat/ChatLauncher';
@@ -151,6 +151,19 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
             <p className="text-sm font-medium">{user?.name} {user?.surname}</p>
             <p className="text-xs text-muted-foreground">{user?.role_short || 'Usuario'}</p>
           </div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link to="/configuracion?tab=cuenta">
+              <UserCircle2 className="h-4 w-4 mr-2" />
+              Mi perfil
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/configuracion?tab=misReportes">
+              <FileText className="h-4 w-4 mr-2" />
+              Mis reportes
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onLogout} className="text-destructive">
             <LogOut className="h-4 w-4 mr-2" />
