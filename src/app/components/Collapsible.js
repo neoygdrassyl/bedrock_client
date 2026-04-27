@@ -9,13 +9,13 @@ export default function Collapsible({
     children,
     className = '',
     openedClassName = '',
-    open = false,
+    open,
     lazyRender = false,
 }) {
     const [isOpen, setIsOpen] = useState(open);
 
     return (
-        <div className={isOpen ? (openedClassName || className) : className}>
+        <div className={(isOpen || open) ? (openedClassName || className) : className}>
             <div
                 onClick={() => setIsOpen(prev => !prev)}
                 style={{ cursor: 'pointer' }}
@@ -24,7 +24,7 @@ export default function Collapsible({
             >
                 {trigger}
             </div>
-            {(!lazyRender || isOpen) && (
+            {(!lazyRender || isOpen || open) && (
                 <div style={{ display: isOpen ? 'block' : 'none' }}>
                     {children}
                 </div>

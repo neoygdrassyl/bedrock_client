@@ -10,6 +10,7 @@ import { getJSONFull, getJSON_Simple } from '../../../../components/customClasse
 import FUNService from '../../../../services/fun.service'
 import RECORD_ARC_AREAS_RESUME from './record_arc_areas_resumen.component';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
+import Collapsible from '../../../../components/Collapsible';
 
 export default function RECORD_ARC_AREAS_2(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
@@ -307,7 +308,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         var _NET_IDEX = Number(areaToBuild) - Number(destroy);
         return (_NET_IDEX).toFixed(2);
     }
-    
+
     let _GET_TOTAL_AREAS = (_field, _index, ss) => {
         let areas = _GET_CHILD_33_AREAS();
         let sum = 0;
@@ -1123,7 +1124,8 @@ export default function RECORD_ARC_AREAS_2(props) {
         ]
         const json34 = _GET_STEP_TYPE_JSON('s34');
         return <>
-            <MDBCollapse show={openConfig}>
+
+            {openConfig ?
                 <div className='row border p-2'>
                     <div className='row mb-1'>
                         <div className='col'>
@@ -1236,7 +1238,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                     <div className="form-group row">
                         <label className="col-sm-2 col-form-label">Tipo</label>
                         <div className="col-sm-4">
-                            <input type="text" className="form-control" id="r_a_34_a-1" defaultValue={json34.tipo}  onBlur={() => manage_ra_34()} />
+                            <input type="text" className="form-control" id="r_a_34_a-1" defaultValue={json34.tipo} onBlur={() => manage_ra_34()} />
                         </div>
                     </div>
                     <div className='row'>
@@ -1248,8 +1250,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                         </div>
                     </div>
                 </div>
-            </MDBCollapse>
-
+                : ''}
         </>
     }
     // ******************************* APIS **************************** // 
