@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import USERS_Service from '../../../services/users.service'
@@ -58,9 +58,12 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         if (!load) loadData()
     }, [currentItem]);
 
-    const config = (edit) => {
+    const createJoditConfig = (edit) => {
         return {
             readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+            language: 'es',
+            iframe: true,
+            allowHTML: true,
             uploader: {
                 url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
             },
@@ -70,11 +73,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 },
                 height: 580,
             },
-            language: 'es',
             "readonly": edit,
             "toolbar": !edit,
-            "disablePlugins": "clipboard",
-            "disablePlugins": "xpath",
+            "disablePlugins": "clipboard,xpath",
             minHeight: edit ? 150 : 400,
             removeButtons: ['xpath'],
             controls: {
@@ -84,6 +85,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             }
         }
     }
+
+    const readonlyJoditConfig = useMemo(() => createJoditConfig(true), []);
+    const editableJoditConfig = useMemo(() => createJoditConfig(false), []);
+    const getJoditConfig = (edit) => edit ? readonlyJoditConfig : editableJoditConfig;
 
     // ** DATA GETTERS ** //
     // CALL THE API FUNCTIONS TO LOAD DATA
@@ -1007,12 +1012,11 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         ref={editor}
                                         value={value.reply}
                                         key={funcion2()}
-                                        config={config(edit)}
+                                        config={getJoditConfig(edit)}
                                         name="pqrs_informal_reply"
                                         tabIndex={1} // tabIndex of textarea
                                         onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                                         onChange={newContent => { }}
-                                        className="form-control mb-3"
                                         rows="5"
                                         maxlength="409675"
 
