@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 
 const EXP_A = { id: 101, radicado: 'EXP-101', id_public: '68001-101', version: 3, fase_label: 'Estudio' };
 const EXP_B = { id: 202, radicado: 'EXP-202', id_public: '68001-202', version: 5, fase_label: 'Viabilidad' };
@@ -61,7 +62,10 @@ vi.mock('@/components/ui/select', () => ({
 }));
 
 vi.mock('@/components/ui/button', () => ({
-  Button: ({ children, ...props }) => <button type="button" {...props}>{children}</button>,
+  Button: ({ children, asChild, ...props }) => {
+    if (asChild && React.isValidElement(children)) return React.cloneElement(children, props);
+    return <button type="button" {...props}>{children}</button>;
+  },
 }));
 
 vi.mock('@/components/icon', () => ({
@@ -78,19 +82,17 @@ describe('FunManageNewPage workspace behavior', () => {
     });
   });
 
-  test('opens preview in detail drawer and workspace as separate fullscreen flow', async () => {
-    render(<FunManageNewPage translation={{}} globals={{}} swaMsg={{}} breadCrums={{}} />);
+  test('mantiene la pantalla nueva cerrada en estado de desarrollo', () => {
+    render(
+      <MemoryRouter>
+        <FunManageNewPage translation={{}} globals={{}} swaMsg={{}} breadCrums={{}} />
+      </MemoryRouter>
+    );
 
-    await waitFor(() => expect(dashboardServiceMock.getExpedientes).toHaveBeenCalled());
-
-    fireEvent.click(screen.getByText('Abrir preview A'));
-    expect(screen.getByTestId('workspace-summary')).toHaveTextContent('drawer:EXP-101');
-    expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('Abrir workspace B'));
-
-    expect(screen.getByTestId('workspace-state')).toHaveTextContent('EXP-202:workspace');
-    expect(screen.queryByTestId('workspace-summary')).not.toBeInTheDocument();
+    expect(screen.getByTestId('gestion-nueva-development-state')).toBeInTheDocument();
+    expect(dashboardServiceMock.getExpedientes).not.toHaveBeenCalled();
+    expect(screen.queryByText('Abrir preview A')).not.toBeInTheDocument();
+    expect(screen.queryByText('Abrir workspace B')).not.toBeInTheDocument();
     expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
   });
 });
