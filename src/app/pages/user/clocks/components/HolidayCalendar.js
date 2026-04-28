@@ -67,7 +67,7 @@ const CalendarContentInternal = React.memo(({
                         {day.date()}
                     </div>
                 );
-                day.add(1, 'day');
+                day = day.add(1, 'day');
             }
             rows.push(<div className="calendar-grid" key={`week-${rows.length}`}>{daysInWeek}</div>);
         }
