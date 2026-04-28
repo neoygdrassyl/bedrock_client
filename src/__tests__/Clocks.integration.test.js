@@ -36,6 +36,18 @@ vi.mock('../app/services/fun.service.js', () => ({
 }));
 
 vi.mock('../app/pages/user/clocks/components/ClockRow', () => ({
+  DEFAULT_CLOCK_COLUMN_VISIBILITY: {
+    scheduledLimit: false,
+    scheduledAlarm: false,
+    nextStep: false,
+  },
+  getClockTableWidth: (visibleColumns = {}) => {
+    let width = 750;
+    if (visibleColumns.scheduledLimit) width += 150;
+    if (visibleColumns.scheduledAlarm) width += 150;
+    if (visibleColumns.nextStep) width += 220;
+    return width;
+  },
   ClockTableHeader: () => <div data-testid='clock-table-header'>Clock table header</div>,
   ClockRow: ({ value, clock }) => {
     if (value?.title) return null;
