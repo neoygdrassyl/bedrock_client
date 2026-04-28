@@ -1,0 +1,120 @@
+import React from 'react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+const { setScopeMock, getFunByPublicMock, getFunMock } = vi.hoisted(() => ({
+  setScopeMock: vi.fn(),
+  getFunByPublicMock: vi.fn(),
+  getFunMock: vi.fn(),
+}));
+
+vi.mock('../app/pages/user/fun_forms/hooks/useBookmarks', () => ({
+  useBookmarks: () => ({
+    bookmarks: [{ fun0Id: 123, scope: 'personal' }],
+    error: null,
+    setScope: setScopeMock,
+  }),
+}));
+
+vi.mock('../app/pages/user/fun_forms/hooks/useAlarms', () => ({
+  useAlarms: () => ({ alarms: [] }),
+}));
+
+vi.mock('../app/services/fun.service', () => ({
+  __esModule: true,
+  default: {
+    get_fun_IdPublic: getFunByPublicMock,
+    get: getFunMock,
+  },
+}));
+
+vi.mock('@/components/ui/dropdown-menu', () => ({
+  DropdownMenu: ({ children }) => <div>{children}</div>,
+  DropdownMenuTrigger: ({ children }) => <>{children}</>,
+  DropdownMenuContent: ({ children }) => <div>{children}</div>,
+  DropdownMenuLabel: ({ children }) => <div>{children}</div>,
+  DropdownMenuSeparator: () => <hr />,
+  DropdownMenuCheckboxItem: ({ checked, onCheckedChange, children, ...props }) => (
+    <button type="button" aria-pressed={checked} onClick={() => onCheckedChange?.(!checked)} {...props}>
+      {children}
+    </button>
+  ),
+}));
+
+vi.mock('@/components/ui/button', () => ({
+  Button: ({ children, asChild, ...props }) => {
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children, props);
+    }
+    return <button type="button" {...props}>{children}</button>;
+  },
+}));
+
+vi.mock('@/components/ui/badge', () => ({
+  Badge: ({ children, ...props }) => <span {...props}>{children}</span>,
+}));
+
+vi.mock('@/components/ui/scroll-area', () => ({
+  ScrollArea: ({ children, className }) => <div className={className}>{children}</div>,
+}));
+
+vi.mock('@/components/icon', () => ({
+  Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
+}));
+
+vi.mock('../app/pages/user/fun_forms/fun_g', () => ({ __esModule: true, default: () => <div data-testid="module-detalles" /> }));
+vi.mock('../app/pages/user/fun_forms/fun_c', () => ({ __esModule: true, default: () => <div data-testid="module-chequeo" /> }));
+vi.mock('../app/pages/user/fun_forms/components/fun_docs', () => ({ __esModule: true, default: () => <div data-testid="module-documentos" /> }));
+vi.mock('../app/pages/user/fun_forms/fun_clock', () => ({ __esModule: true, default: () => <div data-testid="module-tiempos" /> }));
+vi.mock('../app/pages/user/records/record_arc', () => ({ __esModule: true, default: () => <div data-testid="module-arc" /> }));
+vi.mock('../app/pages/user/records/record_law', () => ({ __esModule: true, default: () => <div data-testid="module-law" /> }));
+vi.mock('../app/pages/user/records/record_eng', () => ({ __esModule: true, default: () => <div data-testid="module-eng" /> }));
+vi.mock('../app/pages/user/records/record_review', () => ({ __esModule: true, default: () => <div data-testid="module-review" /> }));
+vi.mock('../app/pages/user/expeditions/expedition.page', () => ({ __esModule: true, default: () => <div data-testid="module-expedition" /> }));
+
+import { FunExpedienteFullscreen } from '../app/pages/user/fun_forms/components/FunExpedienteFullscreen';
+
+const expediente = {
+  id: 123,
+  id_public: '2026-00123',
+  version: 1,
+  fase_label: 'Estudio y Observaciones',
+  status: 'EN_TERMINO',
+  porcentaje_avance: 35,
+  dias_habiles_usados: 7,
+  dias_habiles_limite: 20,
+  fecha_radicacion: '2026-04-01',
+  fecha_limite: '2026-05-01',
+};
+
+describe('FunExpedienteFullscreen bookmarks', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    document.body.className = '';
+    document.body.style.overflow = '';
+  });
+
+  it('permite marcar el expediente desde el header fijo del detalle completo', async () => {
+    const user = userEvent.setup();
+    setScopeMock.mockResolvedValue(undefined);
+    getFunByPublicMock.mockResolvedValue({ data: expediente });
+
+    render(
+      <FunExpedienteFullscreen
+        expediente={expediente}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('fullscreen-bookmark-menu-trigger-123')).toHaveAttribute('title', 'Destacado solo para mí');
+
+    await user.click(screen.getByTestId('fullscreen-bookmark-menu-team-123'));
+
+    expect(setScopeMock).toHaveBeenCalledWith(123, 'team', true);
+    expect(getFunByPublicMock).toHaveBeenCalledWith('2026-00123');
+  });
+});
