@@ -152,6 +152,11 @@ export default function RECORD_ARC_AREAS_2(props) {
     var [openConfig, setOc] = useState(false);
     var [tagsH, setTagH] = useState([]);
     var [tagsE, setTagE] = useState([]);
+    const gridRef = useRef(null);
+    const didDragSelectRef = useRef(false);
+    const [selectedRange, setSelectedRange] = useState(null);
+    const [dragAnchor, setDragAnchor] = useState(null);
+    const [editingCell, setEditingCell] = useState(null);
     var saveCounter = 0;
 
     useEffect(() => {
@@ -955,12 +960,182 @@ export default function RECORD_ARC_AREAS_2(props) {
         change_areas(changes);
     };
 
+    let _GET_ROW_REF = (row, rowIdx) => {
+        if (!Array.isArray(row)) return 'cell_' + rowIdx;
+        return row[0]?.id || 'cell_' + rowIdx;
+    }
+
+    let _NORMALIZE_RANGE = (range) => {
+        if (!range) return null;
+        return {
+            startRow: Math.min(range.startRow, range.endRow),
+            endRow: Math.max(range.startRow, range.endRow),
+            startCol: Math.min(range.startCol, range.endCol),
+            endCol: Math.max(range.startCol, range.endCol),
+        };
+    }
+
+    let _IS_CELL_SELECTED = (rowIdx, colIdx) => {
+        let range = _NORMALIZE_RANGE(selectedRange);
+        if (!range) return false;
+        return rowIdx >= range.startRow && rowIdx <= range.endRow && colIdx >= range.startCol && colIdx <= range.endCol;
+    }
+
+    let _IS_ACTIVE_CELL = (rowIdx, colIdx) => {
+        return selectedRange?.startRow === rowIdx && selectedRange?.startCol === colIdx;
+    }
+
+    let _BUILD_CHANGES = (entries) => {
+        return entries.filter((entry) => {
+            if (!Number.isInteger(entry.rowIdx) || !Number.isInteger(entry.colIdx)) return false;
+            let row = data[entry.rowIdx];
+            let cell = row?.[entry.colIdx];
+            if (!cell || cell.readOnly || !cell.name) return false;
+            return true;
+        }).map((entry) => {
+            let row = data[entry.rowIdx];
+            let cell = row[entry.colIdx];
+            return {
+                previousCell: { name: cell.name, ref: _GET_ROW_REF(row, entry.rowIdx) },
+                newCell: { text: entry.value },
+            };
+        });
+    }
+
+    let _GET_SELECTED_TEXT = () => {
+        let range = _NORMALIZE_RANGE(selectedRange);
+        if (!range) return '';
+
+        return data.slice(range.startRow, range.endRow + 1).map((row) => {
+            let safeRow = Array.isArray(row) ? row : [];
+            return safeRow.slice(range.startCol, range.endCol + 1).map((cell) => cell?.value ?? '').join('\t');
+        }).join('\n');
+    }
+
+    let _PASTE_SELECTED_TEXT = (text) => {
+        let range = _NORMALIZE_RANGE(selectedRange);
+        if (!range || !text) return;
+
+        let values = text.replace(/\r/g, '').split('\n').filter((row, index, source) => row || index < source.length - 1).map((row) => row.split('\t'));
+        if (!values.length) return;
+
+        let changes = _BUILD_CHANGES(values.flatMap((rowValues, rowOffset) => rowValues.map((value, colOffset) => ({
+            rowIdx: range.startRow + rowOffset,
+            colIdx: range.startCol + colOffset,
+            value,
+        }))));
+
+        if (!changes.length) return;
+        change_areas(changes);
+    }
+
+    let _CLEAR_SELECTED_CELLS = () => {
+        let range = _NORMALIZE_RANGE(selectedRange);
+        if (!range) return;
+
+        let changes = _BUILD_CHANGES(Array.from({ length: range.endRow - range.startRow + 1 }, (_, rowOffset) => {
+            return Array.from({ length: range.endCol - range.startCol + 1 }, (_, colOffset) => ({
+                rowIdx: range.startRow + rowOffset,
+                colIdx: range.startCol + colOffset,
+                value: '',
+            }));
+        }).flat());
+
+        if (!changes.length) return;
+        change_areas(changes);
+    }
+
+    let _ACTIVATE_CELL = (rowIdx, colIdx) => {
+        gridRef.current?.focus();
+        setSelectedRange({ startRow: rowIdx, endRow: rowIdx, startCol: colIdx, endCol: colIdx });
+    }
+
+    let _HANDLE_GRID_KEY_DOWN = (event) => {
+        if (editingCell) return;
+        if ((event.ctrlKey || event.metaKey) && ['c', 'v'].includes(event.key.toLowerCase())) return;
+
+        if ((event.key === 'Delete' || event.key === 'Backspace') && selectedRange) {
+            event.preventDefault();
+            _CLEAR_SELECTED_CELLS();
+            return;
+        }
+
+        if (event.key === 'Enter' && selectedRange) {
+            let cell = data[selectedRange.startRow]?.[selectedRange.startCol];
+            if (!cell || cell.readOnly) return;
+            event.preventDefault();
+            setEditingCell({ row: selectedRange.startRow, col: selectedRange.startCol });
+        }
+    }
+
+    let _HANDLE_CELL_MOUSE_DOWN = (event, rowIdx, colIdx) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        didDragSelectRef.current = false;
+        setEditingCell(null);
+        _ACTIVATE_CELL(rowIdx, colIdx);
+        setDragAnchor({ row: rowIdx, col: colIdx });
+    }
+
+    let _HANDLE_CELL_MOUSE_ENTER = (rowIdx, colIdx) => {
+        if (!dragAnchor) return;
+        didDragSelectRef.current = true;
+        setSelectedRange({ startRow: dragAnchor.row, startCol: dragAnchor.col, endRow: rowIdx, endCol: colIdx });
+    }
+
+    let _HANDLE_CELL_CLICK = (event, rowIdx, colIdx) => {
+        if (didDragSelectRef.current) {
+            didDragSelectRef.current = false;
+            return;
+        }
+
+        gridRef.current?.focus();
+        if (event.shiftKey && selectedRange) {
+            setSelectedRange({
+                startRow: selectedRange.startRow,
+                startCol: selectedRange.startCol,
+                endRow: rowIdx,
+                endCol: colIdx,
+            });
+            return;
+        }
+
+        _ACTIVATE_CELL(rowIdx, colIdx);
+    }
+
+    let _HANDLE_CELL_DOUBLE_CLICK = (rowIdx, colIdx, isReadOnly) => {
+        if (isReadOnly) return;
+        _ACTIVATE_CELL(rowIdx, colIdx);
+        setEditingCell({ row: rowIdx, col: colIdx });
+    }
+
     let _COMPONENT_TABLE_2 = () => {
         const safeData = Array.isArray(data) ? data : [];
         const safeHeader = Array.isArray(Header) ? Header : [];
 
         return (
-            <div className='ovx' style={{ overflowX: 'auto' }}>
+            <div
+                ref={gridRef}
+                className='ovx'
+                style={{ overflowX: 'auto', userSelect: editingCell ? 'text' : 'none' }}
+                tabIndex={0}
+                onMouseUp={() => setDragAnchor(null)}
+                onMouseLeave={() => setDragAnchor(null)}
+                onKeyDown={_HANDLE_GRID_KEY_DOWN}
+                onCopy={(event) => {
+                    let text = _GET_SELECTED_TEXT();
+                    if (!text) return;
+                    event.preventDefault();
+                    event.clipboardData.setData('text/plain', text);
+                }}
+                onPaste={(event) => {
+                    if (editingCell) return;
+                    let text = event.clipboardData.getData('text/plain');
+                    if (!text) return;
+                    event.preventDefault();
+                    _PASTE_SELECTED_TEXT(text);
+                }}
+            >
                 <table className='table table-bordered table-sm' style={{ minWidth: safeHeader.length * 150, tableLayout: 'fixed' }}>
                     <thead>
                         <tr>
@@ -990,16 +1165,22 @@ export default function RECORD_ARC_AREAS_2(props) {
                                     {safeRow.map((cell, colIdx) => {
                                         const isReadOnly = cell.readOnly || false;
                                         const cellValue = cell.value != null ? String(cell.value) : '';
-                                        const cellId = cell.id || null;
+                                        const cellId = _GET_ROW_REF(safeRow, rowIdx);
                                         const cellName = cell.name || '';
+                                        const isSelected = _IS_CELL_SELECTED(rowIdx, colIdx);
+                                        const isActive = _IS_ACTIVE_CELL(rowIdx, colIdx);
+                                        const isEditing = editingCell?.row === rowIdx && editingCell?.col === colIdx && !isReadOnly;
+
                                         return (
                                             <td key={'cell_' + rowIdx + '_' + colIdx}
+                                                data-arc-row={rowIdx}
+                                                data-arc-col={colIdx}
                                                 style={{
                                                     width: colIdx === 0 ? 50 : 150,
                                                     position: colIdx < 2 ? 'sticky' : undefined,
                                                     left: colIdx === 0 ? 0 : colIdx === 1 ? 50 : undefined,
                                                     zIndex: colIdx < 2 ? 1 : undefined,
-                                                    background: isReadOnly ? 'gainsboro' : '#fff',
+                                                    background: isSelected ? 'rgba(37, 99, 235, 0.14)' : isReadOnly ? 'gainsboro' : '#fff',
                                                     color: cell.color || undefined,
                                                     fontSize: '0.8rem',
                                                     padding: '2px 4px',
@@ -1008,14 +1189,20 @@ export default function RECORD_ARC_AREAS_2(props) {
                                                     whiteSpace: 'nowrap',
                                                     minWidth: colIdx === 0 ? 50 : 150,
                                                     maxWidth: colIdx === 0 ? 50 : 150,
+                                                    outline: isActive ? '2px solid #2563eb' : undefined,
+                                                    outlineOffset: isActive ? '-2px' : undefined,
+                                                    cursor: isReadOnly ? 'default' : 'cell',
                                                 }}
-                                                className={cell.className || ''}
+                                                className={`${cell.className || ''} ${isSelected ? 'arc-areas-selection-cell' : ''} ${isActive ? 'arc-areas-selection-active' : ''}`.trim()}
+                                                onMouseDown={(event) => _HANDLE_CELL_MOUSE_DOWN(event, rowIdx, colIdx)}
+                                                onMouseEnter={() => _HANDLE_CELL_MOUSE_ENTER(rowIdx, colIdx)}
+                                                onClick={(event) => _HANDLE_CELL_CLICK(event, rowIdx, colIdx)}
+                                                onDoubleClick={() => _HANDLE_CELL_DOUBLE_CLICK(rowIdx, colIdx, isReadOnly)}
                                             >
-                                                {isReadOnly ? (
-                                                    <span>{cellValue}</span>
-                                                ) : (
+                                                {isEditing ? (
                                                     <input
                                                         type='text'
+                                                        autoFocus
                                                         defaultValue={cellValue}
                                                         style={{
                                                             width: '100%',
@@ -1026,17 +1213,29 @@ export default function RECORD_ARC_AREAS_2(props) {
                                                             fontSize: 'inherit',
                                                             padding: 0,
                                                         }}
+                                                        onFocus={(e) => e.target.select()}
                                                         onBlur={(e) => {
                                                             if (e.target.value !== cellValue) {
                                                                 _handleCellEdit(rowIdx, cellName, cellId, e.target.value);
                                                             }
+                                                            setEditingCell(null);
                                                         }}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter') {
+                                                                e.preventDefault();
                                                                 e.target.blur();
+                                                            }
+                                                            if (e.key === 'Escape') {
+                                                                e.preventDefault();
+                                                                setEditingCell(null);
+                                                                gridRef.current?.focus();
                                                             }
                                                         }}
                                                     />
+                                                ) : isReadOnly ? (
+                                                    <span>{cellValue}</span>
+                                                ) : (
+                                                    <span>{cellValue}</span>
                                                 )}
                                             </td>
                                         );
@@ -1245,11 +1444,12 @@ export default function RECORD_ARC_AREAS_2(props) {
         let old_data = Array.isArray(data) ? data : [];
         let new_data = [];
 
-        new_data = old_data.map(od => {
+        new_data = old_data.map((od, rowIdx) => {
             if (!Array.isArray(od)) return od;
+            let rowRef = _GET_ROW_REF(od, rowIdx);
             return od.map(cell => {
                 let newCell = {};
-                let findCell = changes.find(f => cell.name === f.previousCell.name && cell.id === f.previousCell.ref)
+                let findCell = changes.find(f => cell.name === f.previousCell.name && rowRef === f.previousCell.ref)
                 if (findCell) newCell = { ...cell, value: findCell.newCell.text, }
                 else newCell = cell
                 return newCell;
