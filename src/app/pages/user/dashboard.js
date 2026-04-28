@@ -198,23 +198,48 @@ function Dashboard({ breadCrums }) {
     };
   }, []);
 
-  const workModules = [
-    { title: 'Radicar Licencias', icon: 'FileText', desc: 'Nuevas solicitudes', link: '/licencias' },
-    { title: 'Gestionar Licencias', icon: 'FolderOpen', desc: 'Seguimiento y trámite', link: '/licencias/gestion' },
-    { title: 'Gestión Licencias Nuevo', icon: 'Layers', desc: 'Nueva gestión', link: '/licencias/gestion-nueva' },
+  const operationGroups = [
+    {
+      key: 'radicacion',
+      title: 'Radicación',
+      description: 'Ingreso y recepción de solicitudes',
+      items: [
+        { title: 'V.U.', icon: 'FileInput', desc: 'Ventanilla Única', link: '/ventanilla' },
+        { title: 'Radicación', icon: 'FileText', desc: 'Nueva solicitud', link: '/licencias' },
+      ],
+    },
+    {
+      key: 'gestion',
+      title: 'Gestión',
+      description: 'Seguimiento operativo de licencias',
+      items: [
+        { title: 'LIC. Nuevo', icon: 'Layers', desc: 'Centro operativo', link: '/licencias/gestion-nueva' },
+        { title: 'LIC. Clásico', icon: 'FolderOpen', desc: 'Gestión actual', link: '/licencias/gestion' },
+      ],
+    },
+    {
+      key: 'otras-actuaciones',
+      title: 'Otras actuaciones',
+      description: 'Consultas y trámites complementarios',
+      items: [
+        ...(_GLOBAL_ID === 'cb1'
+          ? [
+              { title: 'Normas', icon: 'Home', desc: 'Consulta normativa', link: '/normas' },
+              { title: 'Usos', icon: 'MapPin', desc: 'Uso de suelo', link: '/uso-suelo' },
+            ]
+          : []),
+        { title: 'Nomenclaturas', icon: 'Signpost', desc: 'Asignación predial', link: '/nomenclatura' },
+      ],
+    },
+  ].filter((group) => group.items.length > 0);
+
+  const supportModules = [
     { title: 'Peticiones PQRS', icon: 'FileSpreadsheet', desc: 'Quejas, reclamos y sugerencias', link: '/peticiones' },
-    { title: 'Ventanilla Única', icon: 'FileInput', desc: 'Radicación de documentos', link: '/ventanilla' },
     { title: 'Mensajes y Chat', icon: 'Mail', desc: 'Chat interno y buzón externo', link: '/mensajes' },
     { title: 'Calendario de Citas', icon: 'Calendar', desc: 'Agenda y programación', link: '/calendario' },
     { title: 'Publicaciones', icon: 'Newspaper', desc: 'Novedades y resoluciones', link: '/publicaciones' },
-    { title: 'Nomenclaturas', icon: 'Signpost', desc: 'Asignación predial', link: '/nomenclatura' },
     { title: 'Archivo', icon: 'Archive', desc: 'Expedientes y documentos', link: '/archivo' },
   ];
-
-  if (_GLOBAL_ID === 'cb1') {
-    workModules.push({ title: 'Normas Urbanas', icon: 'Home', desc: 'Consulta normativa', link: '/normas' });
-    workModules.push({ title: 'Uso de Suelo', icon: 'MapPin', desc: 'Certificados de uso', link: '/uso-suelo' });
-  }
 
   const userName = useMemo(() => getUserDisplayName(), []);
 
@@ -259,9 +284,25 @@ function Dashboard({ breadCrums }) {
 
           {/* Operation & Management */}
           <section className="space-y-2.5">
-            <SectionHeader title="Operación y Gestión" count={workModules.length} />
+            <SectionHeader title="Operación y Gestión" count={operationGroups.length} />
+            <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
+              {operationGroups.map((group) => (
+                <GroupedActionCard
+                  key={group.key}
+                  title={group.title}
+                  description={group.description}
+                  items={group.items}
+                  counts={counts}
+                  loadingCounts={loadingCounts}
+                />
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-2.5">
+            <SectionHeader title="Coordinación y Soporte" count={supportModules.length} />
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
-              {workModules.map((mod) => {
+              {supportModules.map((mod) => {
                 const hasCount = Object.prototype.hasOwnProperty.call(counts, mod.link);
                 return (
                   <ModuleCard
@@ -394,6 +435,58 @@ function QuickActionsPanel() {
               </Link>
             </Button>
           ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function GroupedActionCard({ title, description, items, counts, loadingCounts }) {
+  return (
+    <Card className="border-border/60 shadow-sm">
+      <CardContent className="p-3.5">
+        <div className="mb-3">
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <p className="text-xs text-muted-foreground">{description}</p>
+        </div>
+        <div className="grid grid-cols-1 gap-2">
+          {items.map((item) => {
+            const iconColor = ICON_COLORS[item.link] || DEFAULT_ICON_COLOR;
+            const hasCount = Object.prototype.hasOwnProperty.call(counts, item.link);
+            const count = counts[item.link];
+
+            return (
+              <Button
+                key={item.link}
+                asChild
+                variant="outline"
+                className="h-auto min-h-[3.2rem] justify-start px-3 py-2.5"
+              >
+                <Link to={item.link} className="flex w-full items-center justify-between gap-3 no-underline">
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-md', iconColor)}>
+                      <Icon name={item.icon} size={15} />
+                    </span>
+                    <span className="min-w-0 text-left">
+                      <span className="block truncate text-[13px] font-semibold text-foreground">{item.title}</span>
+                      <span className="block truncate text-[11px] text-muted-foreground">{item.desc}</span>
+                    </span>
+                  </span>
+                  <span className="shrink-0">
+                    {loadingCounts && hasCount ? (
+                      <Skeleton className="h-5 w-7 rounded" />
+                    ) : hasCount && count != null ? (
+                      <Badge variant="secondary" className="rounded-full px-2 text-[10px] font-normal tabular-nums">
+                        {count}
+                      </Badge>
+                    ) : (
+                      <Icon name="ArrowUpRight" size={14} className="text-muted-foreground" />
+                    )}
+                  </span>
+                </Link>
+              </Button>
+            );
+          })}
         </div>
       </CardContent>
     </Card>

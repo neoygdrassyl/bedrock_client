@@ -89,30 +89,27 @@ describe('Dashboard — Integración del panel principal', () => {
     expect(heading.textContent).toMatch(/Buen[oa]s?\s+(días|tardes|noches)/i);
   });
 
-  it('muestra sección de módulos de trabajo con al menos 2 widgets', () => {
+  it('muestra los grupos operativos reorganizados para licencias', () => {
     render(
       <MemoryRouter>
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
+
     expect(screen.getByText('Operación y Gestión')).toBeInTheDocument();
 
-    // Verificar que al menos 9 cards de módulos de trabajo están visibles
-    const expectedTitles = [
-      'Buzón de Mensajes',
-      'Calendario de Citas',
-      'Ventanilla Única',
-      'Publicaciones',
-      'Peticiones PQRS',
-      'Nomenclaturas',
-      'Archivo',
-      'Radicar Licencias',
-      'Gestionar Licencias',
-    ];
-    const renderedCards = expectedTitles.filter(
-      (title) => screen.queryByText(title) !== null
-    );
-    expect(renderedCards.length).toBeGreaterThanOrEqual(9);
+    expect(screen.getByRole('heading', { level: 3, name: 'Radicación' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'Gestión' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'Otras actuaciones' })).toBeInTheDocument();
+
+    expect(screen.getByRole('link', { name: /V\.U\..*Ventanilla Única/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Radicación.*Nueva solicitud/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /LIC\. Nuevo.*Centro operativo/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /LIC\. Clásico.*Gestión actual/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Nomenclaturas.*Asignación predial/i })).toBeInTheDocument();
+
+    expect(screen.getByText('Coordinación y Soporte')).toBeInTheDocument();
+    expect(screen.getByText('Mensajes y Chat')).toBeInTheDocument();
   });
 
   it('muestra sección de utilidades y documentación', () => {
