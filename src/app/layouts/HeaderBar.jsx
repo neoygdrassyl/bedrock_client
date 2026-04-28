@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +15,7 @@ import { Sun, Moon, LogOut, Search, PanelLeftClose, PanelLeft, ChevronRight, Fil
 import { Icon } from '@/components/icon';
 import { AlarmBell } from '../pages/user/fun_forms/components/AlarmBell';
 import ChatLauncher from '../pages/user/chat/ChatLauncher';
+import { GlobalSearchDialog } from './GlobalSearchDialog';
 import {
   Tooltip,
   TooltipContent,
@@ -48,6 +50,7 @@ const MODULE_ICONS = {
 export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar }) {
   const { resolvedTheme, setTheme } = useTheme();
   const location = useLocation();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const segments = location.pathname.split('/').filter(Boolean);
   const breadcrumb = segments.map((seg, i) => ({
@@ -59,6 +62,18 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
   const initials = user
     ? (user.name?.[0] || '') + (user.surname?.[0] || '')
     : '?';
+
+  useEffect(() => {
+    const handleSearchShortcut = (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleSearchShortcut);
+    return () => window.removeEventListener('keydown', handleSearchShortcut);
+  }, []);
 
   return (
     <header className="flex items-center h-11 px-2.5 border-b border-border/60 bg-card/50 backdrop-blur-sm gap-1.5 select-none">
@@ -107,12 +122,14 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
 
       {/* Search trigger */}
       <button
-        className="hidden md:flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-border/50 bg-muted/30 text-xs text-muted-foreground/60 hover:bg-muted/60 hover:text-muted-foreground transition-colors"
+        type="button"
+        onClick={() => setSearchOpen(true)}
+        className="flex h-7 w-7 items-center justify-center rounded-md border border-border/50 bg-muted/30 text-xs text-muted-foreground/60 transition-colors hover:bg-muted/60 hover:text-muted-foreground md:w-auto md:justify-start md:gap-1.5 md:px-2.5"
         aria-label="Buscar"
       >
         <Search className="h-3 w-3" />
-        <span>Buscar...</span>
-        <kbd className="ml-3 text-[9px] bg-background/80 border border-border/40 px-1 py-0.5 rounded font-mono">⌘K</kbd>
+        <span className="hidden md:inline">Buscar...</span>
+        <kbd className="ml-3 hidden rounded border border-border/40 bg-background/80 px-1 py-0.5 font-mono text-[9px] lg:inline">⌘K</kbd>
       </button>
 
       {/* Chat & notifications */}
@@ -171,6 +188,8 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <GlobalSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
   );
 }
