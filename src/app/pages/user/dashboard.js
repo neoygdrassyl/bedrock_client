@@ -17,30 +17,27 @@ import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from './fun_fo
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-const CARD_COLORS = {
-  '/licencias': 'border-l-primary',
-  '/licencias/gestion': 'border-l-primary',
-  '/licencias/gestion-nueva': 'border-l-primary',
-  '/peticiones': 'border-l-warning',
-  '/ventanilla': 'border-l-accent',
-  '/mensajes': 'border-l-[hsl(var(--muted-foreground))]',
-  '/calendario': 'border-l-accent',
-  '/publicaciones': 'border-l-[hsl(var(--muted-foreground))]',
-  '/nomenclatura': 'border-l-warning',
-  '/archivo': 'border-l-[hsl(var(--muted-foreground))]',
-  '/normas': 'border-l-primary',
-  '/uso-suelo': 'border-l-accent',
-};
-
 const ICON_COLORS = {
   '/licencias': 'bg-primary/8 text-primary',
   '/licencias/gestion': 'bg-primary/8 text-primary',
   '/licencias/gestion-nueva': 'bg-primary/8 text-primary',
   '/peticiones': 'bg-warning/8 text-warning',
   '/ventanilla': 'bg-accent/8 text-accent',
+  '/configuracion?tab=alarmas': 'bg-warning/8 text-warning',
   '/calendario': 'bg-accent/8 text-accent',
   '/normas': 'bg-primary/8 text-primary',
   '/uso-suelo': 'bg-accent/8 text-accent',
+  '/nomenclatura': 'bg-warning/8 text-warning',
+  '/archivo': 'bg-muted/60 text-muted-foreground',
+  '/documentos': 'bg-primary/8 text-primary',
+  '/consecutivos': 'bg-muted/60 text-muted-foreground',
+  '/publicaciones': 'bg-muted/60 text-muted-foreground',
+  '/mensajes': 'bg-muted/60 text-muted-foreground',
+  '/calculadora': 'bg-accent/8 text-accent',
+  '/profesionales': 'bg-warning/8 text-warning',
+  '/certificados': 'bg-muted/60 text-muted-foreground',
+  '/ayuda': 'bg-muted/60 text-muted-foreground',
+  '/sellos': 'bg-primary/8 text-primary',
 };
 
 const DEFAULT_ICON_COLOR = 'bg-muted/60 text-muted-foreground';
@@ -160,6 +157,7 @@ function Dashboard({ breadCrums }) {
         setCounts({
           '/licencias': pendingFun,
           '/licencias/gestion': activeFun,
+          '/licencias/gestion-nueva': activeFun,
           '/peticiones': len(results[1]),
           '/ventanilla': len(results[2]),
           '/mensajes': len(results[3]),
@@ -197,59 +195,77 @@ function Dashboard({ breadCrums }) {
     };
   }, []);
 
-  const operationGroups = [
+  const dashboardGroups = [
     {
       key: 'radicacion',
       title: 'Radicación',
-      description: 'Ingreso y recepción de solicitudes',
+      description: 'Ingreso, recepción y consulta inicial de solicitudes',
       items: [
-        { title: 'V.U.', icon: 'FileInput', desc: 'Ventanilla Única', link: '/ventanilla' },
-        { title: 'Radicación', icon: 'FileText', desc: 'Nueva solicitud', link: '/licencias' },
+        { title: 'Nueva radicación', icon: 'FileText', desc: 'Crear y revisar radicaciones realizadas', link: '/licencias' },
+        { title: 'Ventanilla Única', icon: 'FileInput', desc: 'Recepción documental completa', link: '/ventanilla' },
       ],
     },
     {
-      key: 'gestion',
-      title: 'Gestión',
-      description: 'Seguimiento operativo de licencias',
+      key: 'gestion-curaduria',
+      title: 'Gestión Curaduría',
+      description: 'Control operativo de expedientes, PQRS y alarmas',
       items: [
-        { title: 'LIC. Nuevo', icon: 'Layers', desc: 'En desarrollo', link: '/licencias/gestion-nueva', status: 'En desarrollo' },
-        { title: 'LIC. Clásico', icon: 'FolderOpen', desc: 'Gestión actual', link: '/licencias/gestion' },
+        { title: 'Gestionar Licencias Nuevo', icon: 'Layers', desc: 'Dashboard operativo en desarrollo', link: '/licencias/gestion-nueva', status: 'En desarrollo' },
+        { title: 'Gestionar Licencias', icon: 'FolderOpen', desc: 'Gestión clásica de expedientes', link: '/licencias/gestion' },
+        { title: 'Peticiones PQRS', icon: 'FileSpreadsheet', desc: 'Quejas, reclamos y solicitudes', link: '/peticiones' },
+        { title: 'Alarmas', icon: 'BellRing', desc: 'Configuración y seguimiento SLA', link: '/configuracion?tab=alarmas', status: 'En desarrollo' },
       ],
     },
     {
       key: 'otras-actuaciones',
       title: 'Otras actuaciones',
-      description: 'Consultas y trámites complementarios',
+      description: 'Normas, usos y nomenclaturas según curaduría',
       items: [
         ...(_GLOBAL_ID === 'cb1'
           ? [
-              { title: 'Normas', icon: 'Home', desc: 'Consulta normativa', link: '/normas' },
-              { title: 'Usos', icon: 'MapPin', desc: 'Uso de suelo', link: '/uso-suelo' },
+              { title: 'Normas Urbanas', icon: 'Home', desc: 'Disponible para esta curaduría', link: '/normas' },
+              { title: 'Usos del suelo', icon: 'MapPin', desc: 'Disponible para esta curaduría', link: '/uso-suelo' },
             ]
           : []),
-        { title: 'Nomenclaturas', icon: 'Signpost', desc: 'Asignación predial', link: '/nomenclatura' },
+        { title: 'Nomenclaturas', icon: 'Signpost', desc: 'Asignación y consulta predial', link: '/nomenclatura' },
+      ],
+    },
+    {
+      key: 'archivo-expedicion',
+      title: 'Archivo y Expedición',
+      description: 'Repositorio, consecutivos y documentos de soporte',
+      items: [
+        { title: 'Archivo', icon: 'Archive', desc: 'Repositorio principal de expedientes', link: '/archivo' },
+        { title: 'Diccionario de consecutivos', icon: 'Book', desc: 'Consulta de radicados y series', link: '/consecutivos' },
+        { title: 'Documentos', icon: 'FileText', desc: 'Plantillas, formatos e instrumentos', link: '/documentos' },
+      ],
+    },
+    {
+      key: 'comunicaciones',
+      title: 'Comunicaciones',
+      description: 'Publicación, mensajería, citas y chat interno',
+      items: [
+        { title: 'Publicaciones', icon: 'Newspaper', desc: 'Novedades y resoluciones', link: '/publicaciones' },
+        { title: 'Buzón de mensajes', icon: 'Mail', desc: 'Mensajes y correspondencia externa', link: '/mensajes' },
+        { title: 'Calendario de citas', icon: 'Calendar', desc: 'Agenda y programación', link: '/calendario' },
+        { key: 'chat-curaduria', title: 'Chat curaduría', icon: 'MessageCircle', desc: 'Conversaciones internas del equipo', link: '/mensajes', showCount: false },
+      ],
+    },
+    {
+      key: 'utilidades',
+      title: 'Utilidades',
+      description: 'Herramientas auxiliares y consultas de apoyo',
+      items: [
+        { title: 'Calculadora de expensas', icon: 'Calculator', desc: 'Liquidación de costos', link: '/calculadora' },
+        { title: 'Base de datos profesionales', icon: 'HardHat', desc: 'Profesionales registrados', link: '/profesionales' },
+        { title: 'Historial de profesionales', icon: 'Contact', desc: 'Certificaciones emitidas', link: '/certificados' },
+        { title: 'Manual de usuario', icon: 'BookOpen', desc: 'Guía de uso del sistema', link: '/ayuda' },
+        { title: 'Sellos', icon: 'Stamp', desc: 'Consulta y generación de sellos', link: '/sellos' },
       ],
     },
   ].filter((group) => group.items.length > 0);
 
-  const supportModules = [
-    { title: 'Peticiones PQRS', icon: 'FileSpreadsheet', desc: 'Quejas, reclamos y sugerencias', link: '/peticiones' },
-    { title: 'Mensajes y Chat', icon: 'Mail', desc: 'Chat interno y buzón externo', link: '/mensajes' },
-    { title: 'Calendario de Citas', icon: 'Calendar', desc: 'Agenda y programación', link: '/calendario' },
-    { title: 'Publicaciones', icon: 'Newspaper', desc: 'Novedades y resoluciones', link: '/publicaciones' },
-    { title: 'Archivo', icon: 'Archive', desc: 'Expedientes y documentos', link: '/archivo' },
-  ];
-
   const userName = useMemo(() => getUserDisplayName(), []);
-
-  const utilityModules = [
-    { title: 'Documentos', icon: 'FileText', desc: 'Plantillas y formatos', link: '/documentos' },
-    { title: 'Calculadora de Expensas', icon: 'Calculator', desc: 'Liquidación de costos', link: '/calculadora' },
-    { title: 'Consecutivos', icon: 'Book', desc: 'Diccionario de radicados', link: '/consecutivos' },
-    { title: 'Manual de Usuario', icon: 'BookOpen', desc: 'Guía de uso del sistema', link: '/ayuda' },
-    { title: 'Base de Datos Profesionales', icon: 'HardHat', desc: 'Profesionales registrados', link: '/profesionales' },
-    { title: 'Historial de Profesionales', icon: 'Contact', desc: 'Certificaciones emitidas', link: '/certificados' },
-  ];
 
   return (
     <div className="w-full space-y-5 animate-fade-in-up" data-dovela-tour-id="dashboard-main">
@@ -261,31 +277,14 @@ function Dashboard({ breadCrums }) {
           </h1>
           <p className="text-xs text-muted-foreground/70">{getFormattedDate()} · Resumen operativo personal</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button asChild size="sm" variant="outline">
-            <Link to="/mensajes" className="no-underline">
-              <Icon name="MessageCircle" size={14} />
-              Abrir chat completo
-            </Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link to="/licencias/gestion-nueva" className="no-underline">
-              <Icon name="Layers" size={14} />
-              Gestión nueva
-            </Link>
-          </Button>
-        </div>
       </div>
 
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start">
         <div className="space-y-4 xl:w-full xl:max-w-[58rem] xl:flex-none">
-          <QuickActionsPanel />
-
-          {/* Operation & Management */}
           <section className="space-y-2.5" data-dovela-tour-id="dashboard-operations">
-            <SectionHeader title="Operación y Gestión" count={operationGroups.length} />
-            <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
-              {operationGroups.map((group) => (
+            <SectionHeader title="Módulos agrupados" count={dashboardGroups.length} />
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-3">
+              {dashboardGroups.map((group) => (
                 <GroupedActionCard
                   key={group.key}
                   title={group.title}
@@ -294,34 +293,6 @@ function Dashboard({ breadCrums }) {
                   counts={counts}
                   loadingCounts={loadingCounts}
                 />
-              ))}
-            </div>
-          </section>
-
-          <section className="space-y-2.5" data-dovela-tour-id="dashboard-support">
-            <SectionHeader title="Coordinación y Soporte" count={supportModules.length} />
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
-              {supportModules.map((mod) => {
-                const hasCount = Object.prototype.hasOwnProperty.call(counts, mod.link);
-                return (
-                  <ModuleCard
-                    key={mod.link}
-                    {...mod}
-                    count={counts[mod.link]}
-                    hasCount={hasCount}
-                    loadingCount={loadingCounts}
-                  />
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Utilities */}
-          <section className="space-y-2.5" data-dovela-tour-id="dashboard-utilities">
-            <SectionHeader title="Utilidades y Documentación" />
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
-              {utilityModules.map((mod) => (
-                <ModuleCard key={mod.link} {...mod} />
               ))}
             </div>
           </section>
@@ -399,47 +370,6 @@ function SectionHeader({ title, count }) {
   );
 }
 
-function QuickActionsPanel() {
-  const actions = [
-    { label: 'Nueva radicación', description: 'Crear solicitud', icon: 'FilePlus', link: '/licencias', primary: true },
-    { label: 'Gestionar licencias', description: 'En desarrollo', icon: 'Layers', link: '/licencias/gestion-nueva' },
-    { label: 'Chat interno', description: 'Hablar con el equipo', icon: 'MessageCircle', link: '/mensajes' },
-    { label: 'Alarmas', description: 'Configurar y revisar', icon: 'BellRing', link: '/configuracion' },
-  ];
-
-  return (
-    <Card className="border-border/60 shadow-sm" data-dovela-tour-id="dashboard-quick-actions">
-      <CardContent className="p-3.5">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">Acciones principales</h2>
-            <p className="text-xs text-muted-foreground">Atajos de operación diaria</p>
-          </div>
-          <Badge variant="secondary" className="rounded-full text-[10px]">Inicio</Badge>
-        </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
-          {actions.map((action) => (
-            <Button
-              key={action.link}
-              asChild
-              variant={action.primary ? 'default' : 'outline'}
-              className="h-auto min-h-[3.15rem] justify-start px-3.5 py-2.5 text-left"
-            >
-              <Link to={action.link} className="no-underline">
-                <Icon name={action.icon} size={15} className="shrink-0" />
-                <span className="min-w-0">
-                  <span className="block truncate text-[13px] font-semibold">{action.label}</span>
-                  <span className="block truncate text-[11px] opacity-75">{action.description}</span>
-                </span>
-              </Link>
-            </Button>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 function GroupedActionCard({ title, description, items, counts, loadingCounts }) {
   return (
     <Card className="border-border/60 shadow-sm">
@@ -451,13 +381,14 @@ function GroupedActionCard({ title, description, items, counts, loadingCounts })
         <div className="grid grid-cols-1 gap-2">
           {items.map((item) => {
             const iconColor = ICON_COLORS[item.link] || DEFAULT_ICON_COLOR;
-            const hasCount = Object.prototype.hasOwnProperty.call(counts, item.link);
-            const count = counts[item.link];
+            const countKey = item.countKey || item.link;
+            const hasCount = item.showCount !== false && Object.prototype.hasOwnProperty.call(counts, countKey);
+            const count = counts[countKey];
             const status = item.status || null;
 
             return (
               <Button
-                key={item.link}
+                key={item.key || item.link}
                 asChild
                 variant="outline"
                 className="h-auto min-h-[3.2rem] justify-start px-3 py-2.5"
@@ -590,46 +521,6 @@ function TrackedExpedienteRow({ item }) {
           <Icon name="ArrowUpRight" size={13} className="text-muted-foreground" />
         </div>
       </div>
-    </Link>
-  );
-}
-
-function ModuleCard({ title, icon, desc, link, count, hasCount = false, loadingCount }) {
-  const borderColor = CARD_COLORS[link] || 'border-l-border';
-  const iconColor = ICON_COLORS[link] || DEFAULT_ICON_COLOR;
-
-  return (
-    <Link to={link} className="no-underline group h-full">
-      <Card className={cn(
-        'hover:shadow-md hover:border-border/60 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer border-border/40 h-full',
-        'border-l-2',
-        borderColor
-      )}>
-        <CardContent className="flex items-start gap-3.5 p-4 min-h-[5.4rem]">
-          <div className={cn(
-            'flex items-center justify-center w-9 h-9 rounded-md shrink-0 transition-all duration-200 group-hover:scale-105',
-            iconColor
-          )}>
-            <Icon name={icon} size={17} />
-          </div>
-          <div className="min-w-0 flex-1 flex flex-col justify-between gap-1.5">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="text-[14px] font-medium text-foreground leading-tight group-hover:text-primary transition-colors duration-150 line-clamp-2">{title}</h3>
-              {loadingCount && hasCount ? (
-                <Skeleton className="h-5 w-7 rounded" />
-              ) : hasCount && count != null ? (
-                <span className="text-lg font-semibold text-foreground tabular-nums leading-none">
-                  {count}
-                </span>
-              ) : null}
-            </div>
-            <p className="text-[12px] text-muted-foreground/70 line-clamp-2">{desc}</p>
-            {!loadingCount && hasCount && count == null ? (
-              <p className="text-[10px] text-warning mt-1">Conteo no disponible</p>
-            ) : null}
-          </div>
-        </CardContent>
-      </Card>
     </Link>
   );
 }
