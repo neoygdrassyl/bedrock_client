@@ -160,7 +160,6 @@ function Dashboard({ breadCrums }) {
         setCounts({
           '/licencias': pendingFun,
           '/licencias/gestion': activeFun,
-          '/licencias/gestion-nueva': activeFun,
           '/peticiones': len(results[1]),
           '/ventanilla': len(results[2]),
           '/mensajes': len(results[3]),
@@ -213,7 +212,7 @@ function Dashboard({ breadCrums }) {
       title: 'Gestión',
       description: 'Seguimiento operativo de licencias',
       items: [
-        { title: 'LIC. Nuevo', icon: 'Layers', desc: 'Centro operativo', link: '/licencias/gestion-nueva' },
+        { title: 'LIC. Nuevo', icon: 'Layers', desc: 'En desarrollo', link: '/licencias/gestion-nueva', status: 'En desarrollo' },
         { title: 'LIC. Clásico', icon: 'FolderOpen', desc: 'Gestión actual', link: '/licencias/gestion' },
       ],
     },
@@ -253,9 +252,9 @@ function Dashboard({ breadCrums }) {
   ];
 
   return (
-    <div className="w-full space-y-5 animate-fade-in-up">
+    <div className="w-full space-y-5 animate-fade-in-up" data-dovela-tour-id="dashboard-main">
       {/* Greeting */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between" data-dovela-tour-id="dashboard-hero">
         <div className="flex flex-col gap-0.5">
           <h1 className="text-xl font-semibold tracking-tight text-foreground">
             {getGreeting()}, {userName}
@@ -283,7 +282,7 @@ function Dashboard({ breadCrums }) {
           <QuickActionsPanel />
 
           {/* Operation & Management */}
-          <section className="space-y-2.5">
+          <section className="space-y-2.5" data-dovela-tour-id="dashboard-operations">
             <SectionHeader title="Operación y Gestión" count={operationGroups.length} />
             <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
               {operationGroups.map((group) => (
@@ -299,7 +298,7 @@ function Dashboard({ breadCrums }) {
             </div>
           </section>
 
-          <section className="space-y-2.5">
+          <section className="space-y-2.5" data-dovela-tour-id="dashboard-support">
             <SectionHeader title="Coordinación y Soporte" count={supportModules.length} />
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
               {supportModules.map((mod) => {
@@ -318,7 +317,7 @@ function Dashboard({ breadCrums }) {
           </section>
 
           {/* Utilities */}
-          <section className="space-y-2.5">
+          <section className="space-y-2.5" data-dovela-tour-id="dashboard-utilities">
             <SectionHeader title="Utilidades y Documentación" />
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
               {utilityModules.map((mod) => (
@@ -328,7 +327,7 @@ function Dashboard({ breadCrums }) {
           </section>
         </div>
 
-        <aside className="space-y-4 xl:sticky xl:top-4 xl:ml-auto xl:w-[26rem] xl:flex-none">
+        <aside className="space-y-4 xl:sticky xl:top-4 xl:ml-auto xl:w-[26rem] xl:flex-none" data-dovela-tour-id="dashboard-tracking">
           <RecentExpedientesSummary items={recentExpedientes} />
           <TrackedExpedientesSummary
             personal={trackedExpedientes.personal}
@@ -403,13 +402,13 @@ function SectionHeader({ title, count }) {
 function QuickActionsPanel() {
   const actions = [
     { label: 'Nueva radicación', description: 'Crear solicitud', icon: 'FilePlus', link: '/licencias', primary: true },
-    { label: 'Gestionar licencias', description: 'Centro operativo', icon: 'Layers', link: '/licencias/gestion-nueva' },
+    { label: 'Gestionar licencias', description: 'En desarrollo', icon: 'Layers', link: '/licencias/gestion-nueva' },
     { label: 'Chat interno', description: 'Hablar con el equipo', icon: 'MessageCircle', link: '/mensajes' },
     { label: 'Alarmas', description: 'Configurar y revisar', icon: 'BellRing', link: '/configuracion' },
   ];
 
   return (
-    <Card className="border-border/60 shadow-sm">
+    <Card className="border-border/60 shadow-sm" data-dovela-tour-id="dashboard-quick-actions">
       <CardContent className="p-3.5">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div>
@@ -454,6 +453,7 @@ function GroupedActionCard({ title, description, items, counts, loadingCounts })
             const iconColor = ICON_COLORS[item.link] || DEFAULT_ICON_COLOR;
             const hasCount = Object.prototype.hasOwnProperty.call(counts, item.link);
             const count = counts[item.link];
+            const status = item.status || null;
 
             return (
               <Button
@@ -473,7 +473,11 @@ function GroupedActionCard({ title, description, items, counts, loadingCounts })
                     </span>
                   </span>
                   <span className="shrink-0">
-                    {loadingCounts && hasCount ? (
+                    {status ? (
+                      <Badge variant="outline" className="rounded-full px-2 text-[10px] font-normal">
+                        {status}
+                      </Badge>
+                    ) : loadingCounts && hasCount ? (
                       <Skeleton className="h-5 w-7 rounded" />
                     ) : hasCount && count != null ? (
                       <Badge variant="secondary" className="rounded-full px-2 text-[10px] font-normal tabular-nums">

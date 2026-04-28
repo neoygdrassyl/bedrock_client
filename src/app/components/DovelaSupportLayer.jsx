@@ -45,29 +45,54 @@ const SEVERITIES = ['Error funcional', 'Bloqueo', 'Dato incorrecto', 'Solicitud 
 const TUTORIAL_STEPS = [
   {
     icon: 'LayoutDashboard',
-    title: 'Dashboard principal',
-    body: 'El panel de inicio concentra accesos a operación diaria, módulos de consulta y seguimiento de expedientes marcados.',
-    bullets: ['Acciones principales para iniciar trabajo', 'Bloques de operación y utilidades', 'Resumen de expedientes marcados para revisión'],
+    title: 'Inicio operativo',
+    body: 'Este es el punto de entrada para ubicar el trabajo del día y abrir los centros de control más usados.',
+    bullets: ['Resumen personal', 'Accesos rápidos', 'Ruta de regreso al panel'],
+    target: '[data-dovela-tour-id="dashboard-hero"]',
+    focusLabel: 'Encabezado del dashboard',
   },
   {
     icon: 'Layers',
-    title: 'Gestión Licencias Nuevo',
-    body: 'El centro operativo de licencias permite consultar expedientes, revisar alarmas, usar filtros y abrir la gestión completa cuando sea necesario.',
-    bullets: ['KPI y semáforo operativo', 'Tabla de expedientes con contexto legal', 'Paneles de detalle y navegación por submódulos'],
+    title: 'Acciones principales',
+    body: 'Los atajos superiores concentran las tareas frecuentes para iniciar una radicación, gestionar licencias, coordinar chat o revisar alarmas.',
+    bullets: ['Nueva radicación', 'Gestión de licencias', 'Alarmas y configuración'],
+    target: '[data-dovela-tour-id="dashboard-quick-actions"]',
+    focusLabel: 'Atajos de operación diaria',
   },
   {
-    icon: 'BellRing',
-    title: 'Alarmas, marcados y comunicación',
-    body: 'La campana, los marcados personales/equipo y el chat ayudan a priorizar lo que necesita atención durante el lanzamiento de Dovela 2.0.',
-    bullets: ['Alarmas visibles desde la barra superior', 'Marcados para seguimiento personal o de equipo', 'Chat interno para coordinación rápida'],
+    icon: 'BriefcaseBusiness',
+    title: 'Centros de control',
+    body: 'La sección de operación separa radicación, gestión y actuaciones complementarias para que cada equipo llegue a su flujo sin buscar entre módulos sueltos.',
+    bullets: ['Radicación', 'Gestión clásica', 'Otras actuaciones'],
+    target: '[data-dovela-tour-id="dashboard-operations"]',
+    focusLabel: 'Operación y Gestión',
+  },
+  {
+    icon: 'Bookmark',
+    title: 'Seguimiento del expediente',
+    body: 'El carril lateral reúne expedientes recientes y marcados para retomar lo importante sin volver a filtrar desde cero.',
+    bullets: ['Vistos recientemente', 'Marcados para mí', 'Marcados del equipo'],
+    target: '[data-dovela-tour-id="dashboard-tracking"]',
+    focusLabel: 'Seguimiento personal y de equipo',
   },
   {
     icon: 'Bug',
-    title: 'Reportar error',
-    body: 'El botón flotante queda siempre disponible. Al reportar, Dovela captura contexto técnico seguro y permite añadir la explicación del usuario.',
-    bullets: ['Ruta, módulo, navegador y usuario activo', 'Último botón, enlace o control usado', 'Radicado o expediente si la pantalla lo expone'],
+    title: 'Soporte y reporte',
+    body: 'Los botones flotantes permiten volver a abrir esta guía o reportar un error con contexto técnico seguro cuando algo no se comporta como debería.',
+    bullets: ['Tutorial práctico', 'Reporte con contexto', 'Seguimiento por desarrollo'],
+    target: '[data-dovela-tour-id="support-actions"]',
+    focusLabel: 'Ayuda flotante',
   },
 ];
+
+const TUTORIAL_HIGHLIGHT_CLASS = 'dovela-tour-highlight';
+
+function clearTutorialHighlights() {
+  if (typeof document === 'undefined') return;
+  document.querySelectorAll(`.${TUTORIAL_HIGHLIGHT_CLASS}`).forEach((element) => {
+    element.classList.remove(TUTORIAL_HIGHLIGHT_CLASS);
+  });
+}
 
 function getContextSnapshot(overrideContext = {}) {
   const lastError = overrideContext.lastError || overrideContext.errorSnapshot || getLastDovelaError();
@@ -273,7 +298,29 @@ function DashboardTutorialDialog({ open, onOpenChange, user }) {
     if (open) setStepIndex(0);
   }, [open]);
 
+  useEffect(() => {
+    if (!open) {
+      clearTutorialHighlights();
+      return undefined;
+    }
+
+    const target = step?.target ? document.querySelector(step.target) : null;
+    if (!target) return undefined;
+
+    clearTutorialHighlights();
+    const timer = window.setTimeout(() => {
+      target.classList.add(TUTORIAL_HIGHLIGHT_CLASS);
+      target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+    }, 80);
+
+    return () => {
+      window.clearTimeout(timer);
+      target.classList.remove(TUTORIAL_HIGHLIGHT_CLASS);
+    };
+  }, [open, step?.target]);
+
   const dismiss = () => {
+    clearTutorialHighlights();
     dismissDashboardGuide(user);
     onOpenChange(false);
   };
@@ -300,6 +347,11 @@ function DashboardTutorialDialog({ open, onOpenChange, user }) {
             <Badge variant="outline" className="rounded-full text-[10px]">
               Paso {stepIndex + 1} de {TUTORIAL_STEPS.length}
             </Badge>
+            {step.focusLabel ? (
+              <Badge variant="secondary" className="rounded-full text-[10px]">
+                Mostrando: {step.focusLabel}
+              </Badge>
+            ) : null}
             <div className="flex gap-1">
               {TUTORIAL_STEPS.map((item, index) => (
                 <span
@@ -504,7 +556,17 @@ export function DovelaSupportLayer({ user }) {
 
   return (
     <>
-      <div className="fixed bottom-8 right-3 z-40 flex max-w-[calc(100vw-1.5rem)] flex-col items-end gap-2 sm:right-5">
+      <style>{`
+        .${TUTORIAL_HIGHLIGHT_CLASS} {
+          position: relative;
+          border-radius: 0.75rem;
+          box-shadow: 0 0 0 3px hsl(var(--primary) / 0.45), 0 18px 48px hsl(var(--primary) / 0.18);
+          scroll-margin: 7rem;
+          transition: box-shadow 180ms ease, transform 180ms ease;
+        }
+      `}</style>
+
+      <div data-dovela-tour-id="support-actions" className="fixed bottom-8 right-3 z-40 flex max-w-[calc(100vw-1.5rem)] flex-col items-end gap-2 sm:right-5">
         <Button
           type="button"
           variant="outline"

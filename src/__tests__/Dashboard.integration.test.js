@@ -104,12 +104,25 @@ describe('Dashboard — Integración del panel principal', () => {
 
     expect(screen.getByRole('link', { name: /V\.U\..*Ventanilla Única/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Radicación.*Nueva solicitud/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /LIC\. Nuevo.*Centro operativo/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /LIC\. Nuevo.*En desarrollo/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /LIC\. Clásico.*Gestión actual/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Nomenclaturas.*Asignación predial/i })).toBeInTheDocument();
 
     expect(screen.getByText('Coordinación y Soporte')).toBeInTheDocument();
     expect(screen.getByText('Mensajes y Chat')).toBeInTheDocument();
+  });
+
+  it('expone anclas para el tutorial guiado del dashboard', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <Dashboard {...defaultProps} />
+      </MemoryRouter>
+    );
+
+    expect(container.querySelector('[data-dovela-tour-id="dashboard-hero"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-dovela-tour-id="dashboard-quick-actions"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-dovela-tour-id="dashboard-operations"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-dovela-tour-id="dashboard-tracking"]')).toBeInTheDocument();
   });
 
   it('muestra sección de utilidades y documentación', () => {
