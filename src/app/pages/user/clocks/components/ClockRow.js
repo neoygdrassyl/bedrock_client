@@ -7,13 +7,38 @@ import { swalFormDialog } from '../../../../utils/swalAdapter';
 import { getIconSvg } from '../../../../utils/iconSvgString';
 
 // --- Anchos de columna centralizados ---
-const COL_WIDTHS = {
-    EVENT: '300px',
-    DATE: '150px', 
-    OTHERS: '150px' 
+export const DEFAULT_CLOCK_COLUMN_VISIBILITY = {
+    scheduledLimit: false,
+    scheduledAlarm: false,
+    nextStep: false,
 };
 
-export const ClockTableHeader = () => {
+export const CLOCK_COLUMN_WIDTHS = {
+    EVENT: 300,
+    DATE: 150,
+    LEGAL_LIMIT: 150,
+    LEGAL_ALARM: 150,
+    SCHEDULED_LIMIT: 150,
+    SCHEDULED_ALARM: 150,
+    NEXT_STEP: 220,
+};
+
+const px = (value) => `${value}px`;
+
+export const getClockTableWidth = (visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY) => {
+    let width = CLOCK_COLUMN_WIDTHS.EVENT
+        + CLOCK_COLUMN_WIDTHS.DATE
+        + CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT
+        + CLOCK_COLUMN_WIDTHS.LEGAL_ALARM;
+
+    if (visibleColumns.scheduledLimit) width += CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT;
+    if (visibleColumns.scheduledAlarm) width += CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM;
+    if (visibleColumns.nextStep) width += CLOCK_COLUMN_WIDTHS.NEXT_STEP;
+
+    return width;
+};
+
+export const ClockTableHeader = ({ visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY }) => {
     const headerStyle = {
         display: 'flex',
         alignItems: 'center',
@@ -48,8 +73,8 @@ export const ClockTableHeader = () => {
                 ...colStyle, 
                 ...stickyColStyle,
                 left: 0, // Pegado a la izquierda
-                flex: `0 0 ${COL_WIDTHS.EVENT}`, 
-                minWidth: COL_WIDTHS.EVENT 
+                flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.EVENT)}`, 
+                minWidth: px(CLOCK_COLUMN_WIDTHS.EVENT) 
             }}>
                 <Icon name="list" size={16} /> Evento
             </div>
@@ -57,29 +82,35 @@ export const ClockTableHeader = () => {
             <div style={{ 
                 ...colStyle, 
                 ...stickyColStyle,
-                left: COL_WIDTHS.EVENT, // Desplazado por el ancho de la primera columna
-                flex: `0 0 ${COL_WIDTHS.DATE}`, 
-                minWidth: COL_WIDTHS.DATE
+                left: px(CLOCK_COLUMN_WIDTHS.EVENT), // Desplazado por el ancho de la primera columna
+                flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.DATE)}`, 
+                minWidth: px(CLOCK_COLUMN_WIDTHS.DATE)
             }}>
                 <Icon name="calendar" size={16} /> Fecha evento
             </div>
 
             {/* Columnas con scroll */}
-            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+            <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT) }}>
                 <Icon name="gavel" size={16} /> Límite legal
             </div>
-            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+            <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.LEGAL_ALARM)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.LEGAL_ALARM) }}>
                 <Icon name="exclamation-triangle" size={16} /> Alarma legal
             </div>
-            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <Icon name="calendar-check" size={16} /> Límite programado
-            </div>
-            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <Icon name="bell" size={16} /> Alarma programada
-            </div>
-            <div style={{ ...colStyle, flex: '1', minWidth: '220px' }}>
-                <Icon name="arrow-right" size={16} /> Siguiente paso
-            </div>
+            {visibleColumns.scheduledLimit && (
+                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT) }}>
+                    <Icon name="calendar-check" size={16} /> Límite programado
+                </div>
+            )}
+            {visibleColumns.scheduledAlarm && (
+                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM) }}>
+                    <Icon name="bell" size={16} /> Alarma programada
+                </div>
+            )}
+            {visibleColumns.nextStep && (
+                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.NEXT_STEP)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.NEXT_STEP) }}>
+                    <Icon name="arrow-right" size={16} /> Siguiente paso
+                </div>
+            )}
         </div>
     );
 };
@@ -87,7 +118,19 @@ export const ClockTableHeader = () => {
 
 // Componente ClockRow memoizado para evitar re-renders innecesarios
 export const ClockRow = memo((props) => {
-    const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, isHighlighted } = props;
+    const {
+        value,
+        i,
+        clock,
+        onSave,
+        onDelete,
+        helpers,
+        scheduleConfig,
+        systemDate,
+        isHighlighted,
+        visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY,
+        onDateDraftChange,
+    } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
     // Resolver reloj según versión - memoizado
@@ -101,8 +144,8 @@ export const ClockRow = memo((props) => {
     const [isHovered, setIsHovered] = useState(false);
     
     // SOLUCIÓN: Estado local para el input de fecha - evita re-renders del padre
-    const initialDate = clock?.date_start ?? value.manualDate ?? '';
-    const [localDateValue, setLocalDateValue] = useState(initialDate);
+    const originalDate = clock?.date_start ?? value.manualDate ?? '';
+    const [localDateValue, setLocalDateValue] = useState(originalDate);
     
     // Sincronizar estado local cuando cambian las props (solo si es diferente)
     React.useEffect(() => {
@@ -114,15 +157,17 @@ export const ClockRow = memo((props) => {
 
     // SOLUCIÓN: Handler para cambios en el input de fecha - DEBE estar antes de cualquier return
     const handleDateChange = useCallback((e) => {
-        setLocalDateValue(e.target.value);
-    }, []);
+        const nextDate = e.target.value;
+        setLocalDateValue(nextDate);
+        onDateDraftChange?.(value, i, nextDate, originalDate);
+    }, [i, onDateDraftChange, originalDate, value]);
     
     // SOLUCIÓN: Handler para guardar solo cuando hay cambios reales - DEBE estar antes de cualquier return
     const handleDateBlur = useCallback(() => {
         const originalDate = clock?.date_start ?? value.manualDate ?? '';
         // Solo guardar si el valor realmente cambió
         if (localDateValue !== originalDate) {
-            onSave(value, i);
+            onSave(value, i, localDateValue);
         }
     }, [localDateValue, clock?.date_start, value, i, onSave]);
 
@@ -677,8 +722,8 @@ export const ClockRow = memo((props) => {
                 ...colStyle, 
                 ...stickyColStyle,
                 left: 0,
-                flex: `0 0 ${COL_WIDTHS.EVENT}`, 
-                minWidth: COL_WIDTHS.EVENT 
+                flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.EVENT)}`, 
+                minWidth: px(CLOCK_COLUMN_WIDTHS.EVENT) 
             }}>
                 <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.5rem' }}>
                     {rowIcon}
@@ -700,9 +745,9 @@ export const ClockRow = memo((props) => {
             <div style={{ 
                 ...colStyle,
                 ...stickyColStyle,
-                left: COL_WIDTHS.EVENT,
-                flex: `0 0 ${COL_WIDTHS.DATE}`, 
-                minWidth: COL_WIDTHS.DATE,
+                left: px(CLOCK_COLUMN_WIDTHS.EVENT),
+                flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.DATE)}`, 
+                minWidth: px(CLOCK_COLUMN_WIDTHS.DATE),
             }}>
                 {canEditDate ? (
                     <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
@@ -734,29 +779,35 @@ export const ClockRow = memo((props) => {
             </div>
 
             {/* Columnas con scroll */}
-            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+            <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT) }}>
                 <span style={{ fontSize: '0.85rem', color: '#495057' }}>
                     {legalData.limitDate ? formatDate(legalData.limitDate) : '- -'}
                 </span>
             </div>
 
-            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+            <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.LEGAL_ALARM)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.LEGAL_ALARM) }}>
                 {renderAlarmColumn()}
             </div>
 
-            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <span style={{ fontSize: '0.85rem', color: '#495057' }}>
-                    {scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '- -'}
-                </span>
-            </div>
+            {visibleColumns.scheduledLimit && (
+                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT) }}>
+                    <span style={{ fontSize: '0.85rem', color: '#495057' }}>
+                        {scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '- -'}
+                    </span>
+                </div>
+            )}
 
-            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                {renderScheduledAlarmColumn()}
-            </div>
+            {visibleColumns.scheduledAlarm && (
+                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM) }}>
+                    {renderScheduledAlarmColumn()}
+                </div>
+            )}
 
-            <div style={{ ...colStyle, flex: '1', minWidth: '220px' }}>
-                {renderNextStepColumn()}
-            </div>
+            {visibleColumns.nextStep && (
+                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.NEXT_STEP)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.NEXT_STEP) }}>
+                    {renderNextStepColumn()}
+                </div>
+            )}
         </div>
     );
 });

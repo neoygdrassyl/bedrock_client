@@ -7553,3 +7553,66 @@ from { opacity: 0; transform: translateY(-5px); }
     position: static;
   }
 }
+
+/* ============================================================
+   CONTROLES INFERIORES DE TABLA Y CAPAS FULLSCREEN
+   ============================================================ */
+
+.clock-table-footer-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  padding: 0.65rem 0.85rem;
+}
+
+.clock-save-group,
+.clock-column-selector,
+.clock-column-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.clock-save-group {
+  gap: 0.65rem;
+}
+
+.clock-save-status,
+.clock-column-selector-label {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.clock-column-selector {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.clock-column-toggle {
+  gap: 0.4rem;
+  color: hsl(var(--foreground));
+  font-size: 0.78rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.clock-column-toggle label {
+  cursor: pointer;
+  margin: 0;
+}
+
+body.workspace-fullscreen-open .swal2-container {
+  z-index: 10080 !important;
+}
+
+body.workspace-fullscreen-open .calendar-widget.floating-mode {
+  z-index: 10030;
+}
+
+.expediente-fullscreen .gantt-modal-overlay {
+  z-index: 10020;
+}
