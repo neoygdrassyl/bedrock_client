@@ -11,6 +11,53 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useAlarmsBell } from '../hooks/useAlarmsV2';
+import FUNService from '../../../../services/fun.service';
+import { buildExpedienteWorkspaceUrl } from '../utils/expedienteWorkspaceRoute';
+
+function looksLikePublicId(value) {
+  if (typeof value !== 'string') return false;
+  const normalized = value.trim();
+  if (!normalized) return false;
+  return /[A-Za-z-]/.test(normalized);
+}
+
+function pickAlarmPublicId(alarm) {
+  const candidates = [
+    alarm?.id_public,
+    alarm?.idPublic,
+    alarm?.radicado,
+    alarm?.currentPublic,
+  ];
+
+  const explicit = candidates.find((value) => typeof value === 'string' && looksLikePublicId(value));
+  if (explicit) return explicit;
+
+  return '';
+}
+
+async function resolveAlarmExpedienteUrl(alarm) {
+  const directPublicId = pickAlarmPublicId(alarm);
+  if (directPublicId) {
+    return buildExpedienteWorkspaceUrl({ id_public: directPublicId });
+  }
+
+  const fun0Id = alarm?.fun0Id;
+  if (!fun0Id) return '';
+
+  try {
+    const response = await FUNService.get(fun0Id);
+    const payload = response?.data;
+    const expediente = Array.isArray(payload) ? payload[0] : payload;
+    const resolvedPublicId = expediente?.id_public || expediente?.radicado || '';
+    if (resolvedPublicId) {
+      return buildExpedienteWorkspaceUrl({ id_public: resolvedPublicId });
+    }
+  } catch (_error) {
+    // Si no se logra resolver por id, no forzamos una URL inválida al workspace.
+  }
+
+  return '';
+}
 
 export function AlarmBell() {
   const { alarms: openAlarms, unread, loading, markRead, archive, attend, refetch } = useAlarmsBell({
@@ -50,10 +97,10 @@ export function AlarmBell() {
     [currentAlarms]
   );
 
-  const handleOpenExpediente = (a) => {
-    const rad = a.radicado || a.fun0Id;
-    if (!rad) return;
-    window.open(`/funmanage/expediente/${rad}`, '_blank', 'noopener,noreferrer');
+  const handleOpenExpediente = async (a) => {
+    const url = await resolveAlarmExpedienteUrl(a);
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleOpenModal = () => {
@@ -102,7 +149,7 @@ export function AlarmBell() {
               <AlarmDropdownItem
                 key={a.id}
                 alarm={a}
-                onOpen={() => handleOpenExpediente(a)}
+                onOpen={async () => handleOpenExpediente(a)}
                 onMarkRead={() => markRead(a.id)}
                 onAttend={() => attend(a.id)}
               />
@@ -273,7 +320,7 @@ function AlarmsModal({ onClose, tab, setTab, currentAlarms, refetch, markRead, a
                       <td className="small text-muted">{a.message}</td>
                       <td className="text-end">
                         <div className="btn-group btn-group-sm">
-                          <button type="button" className="btn btn-outline-primary" onClick={() => onOpenExpediente(a)} title="Abrir expediente en nueva pestaña">
+                          <button type="button" className="btn btn-outline-primary" onClick={async () => onOpenExpediente(a)} title="Abrir expediente en nueva pestaña">
                             <ExternalLink className="h-3 w-3" />
                           </button>
                           {tab === 'current' && !a.readAt && (
