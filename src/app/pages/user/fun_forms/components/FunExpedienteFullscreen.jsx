@@ -16,6 +16,8 @@ import RECORD_LAW from '../../records/record_law';
 import RECORD_ENG from '../../records/record_eng';
 import RECORD_REVIEW from '../../records/record_review';
 import EXPEDITION from '../../expeditions/expedition.page';
+import { BookmarkQuickMenu } from './BookmarkQuickMenu';
+import { useBookmarks } from '../hooks/useBookmarks';
 
 const SECTION_ITEMS = [
   { id: 'detalles', label: 'Detalles', icon: 'FolderOpen' },
@@ -58,6 +60,34 @@ const STATUS_META = {
 
 function getExpedienteId(expediente) {
   return expediente?.id ?? expediente?.fun0Id ?? expediente?.fun_0_id ?? null;
+}
+
+function getBookmarkExpedienteId(bookmark) {
+  return bookmark?.fun0Id ?? bookmark?.fun_0_id ?? bookmark?.fun_0?.id ?? bookmark?.id ?? null;
+}
+
+function createBookmarkState(state = {}) {
+  const personal = Boolean(state.personal);
+  const team = Boolean(state.team);
+
+  return {
+    personal,
+    team,
+    any: personal || team,
+    mode: personal && team ? 'both' : personal ? 'personal' : team ? 'team' : 'none',
+  };
+}
+
+function mergeBookmarkState(...states) {
+  return createBookmarkState(
+    states.reduce(
+      (acc, state) => ({
+        personal: acc.personal || Boolean(state?.personal),
+        team: acc.team || Boolean(state?.team),
+      }),
+      { personal: false, team: false }
+    )
+  );
 }
 
 function getExpedienteVersion(expediente) {
@@ -293,6 +323,11 @@ export function FunExpedienteFullscreen({
   const [rightPanelOpen, setRightPanelOpen] = useState(defaultRightPanelOpen);
 
   const { alarms } = useAlarms({ includeAttended: true, includeHidden: true });
+  const {
+    bookmarks,
+    error: bookmarkError,
+    setScope: setBookmarkScope,
+  } = useBookmarks();
 
   useEffect(() => {
     setSummary(expediente);
@@ -472,6 +507,26 @@ export function FunExpedienteFullscreen({
     [alarms, currentId]
   );
 
+  const bookmarkState = useMemo(() => {
+    const serverState = createBookmarkState(summary?.isBookmarked);
+    const matchedBookmarks = (bookmarks || []).filter((bookmark) => String(getBookmarkExpedienteId(bookmark)) === String(currentId));
+    const clientState = createBookmarkState({
+      personal: matchedBookmarks.some((bookmark) => bookmark.scope === 'personal' || bookmark.scope === 'user'),
+      team: matchedBookmarks.some((bookmark) => bookmark.scope === 'team'),
+    });
+
+    return mergeBookmarkState(serverState, clientState);
+  }, [bookmarks, currentId, summary?.isBookmarked]);
+
+  const handleToggleBookmarkScope = useCallback(
+    async (scope, shouldMark) => {
+      if (!currentId) return;
+      await setBookmarkScope(currentId, scope, shouldMark);
+      await refreshSummary();
+    },
+    [currentId, refreshSummary, setBookmarkScope]
+  );
+
   const noop = useCallback(() => {}, []);
 
   const moduleProps = useMemo(
@@ -532,6 +587,21 @@ export function FunExpedienteFullscreen({
 
           {/* Acciones + toggle detalle + cerrar */}
           <div className="flex shrink-0 items-center gap-1">
+            <BookmarkQuickMenu
+              rowId={currentId || currentPublic || 'actual'}
+              bookmarkState={bookmarkState}
+              triggerClassName="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              triggerTestIdPrefix="fullscreen-bookmark-menu-trigger"
+              menuTestIdPrefix="fullscreen-bookmark-menu"
+              align="end"
+              disabled={!currentId}
+              onToggleScope={handleToggleBookmarkScope}
+            />
+            {bookmarkError ? (
+              <span title="No se pudieron sincronizar los marcajes" className="inline-flex h-7 w-7 items-center justify-center rounded-md text-warning">
+                <Icon name="AlertCircle" size={13} />
+              </span>
+            ) : null}
             <Button
               variant="ghost"
               size="sm"
