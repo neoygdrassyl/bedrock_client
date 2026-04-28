@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import dayjs from 'dayjs';
 
 import { useClocksManager, useScheduleConfig } from './hooks/useClocksManager';
 import { generateClocks } from './config/clocks.definitions';
-import { ClockRow, ClockTableHeader } from './components/ClockRow';
+import { ClockRow, ClockTableHeader, DEFAULT_CLOCK_COLUMN_VISIBILITY, getClockTableWidth } from './components/ClockRow';
 import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
@@ -21,10 +21,20 @@ import FUN_SERVICE from '../../../services/fun.service';
 
 import './centralClocks.css';
 import './gantt.css';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Icon } from '@/components/icon';
 
 import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose, swalFormDialog, Swal } from '../../../utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+
+const getClockEditKey = (value, rowIndex) => `${String(value?.state ?? 'none')}::${String(value?.version ?? 'base')}::${rowIndex}`;
+
+const OPTIONAL_CLOCK_COLUMNS = [
+  { key: 'nextStep', label: 'Siguiente paso' },
+  { key: 'scheduledAlarm', label: 'Alarma programada' },
+  { key: 'scheduledLimit', label: 'Límite programado' },
+];
 
 export default function EXP_CLOCKS(props) {
   const { swaMsg, currentItem, currentVersion, outCodes } = props;
@@ -44,6 +54,9 @@ export default function EXP_CLOCKS(props) {
   // ID fase activa para el resaltado
   const [activePhaseId, setActivePhaseId] = useState(null);
   const [showGanttModal, setShowGanttModal] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState(() => ({ ...DEFAULT_CLOCK_COLUMN_VISIBILITY }));
+  const [pendingDateEdits, setPendingDateEdits] = useState({});
+  const [isSavingPendingDates, setIsSavingPendingDates] = useState(false);
 
   const sidebarRef = useRef(null);
   
@@ -53,6 +66,53 @@ export default function EXP_CLOCKS(props) {
   const contentRef = useRef(null); // Ref para el contenido que define el ancho
 
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
+
+  useEffect(() => {
+    setPendingDateEdits({});
+  }, [currentItem?.id]);
+
+  const clearPendingDateEdit = useCallback((value, rowIndex) => {
+    const editKey = getClockEditKey(value, rowIndex);
+    setPendingDateEdits(prev => {
+      if (!prev[editKey]) return prev;
+      const next = { ...prev };
+      delete next[editKey];
+      return next;
+    });
+  }, []);
+
+  const updatePendingDateEdit = useCallback((value, rowIndex, nextDate, originalDate) => {
+    if (value?.state === false || value?.state == null) return;
+
+    const editKey = getClockEditKey(value, rowIndex);
+    const normalizedNext = String(nextDate || '').trim();
+    const normalizedOriginal = String(originalDate || '').trim();
+
+    setPendingDateEdits(prev => {
+      if (normalizedNext === normalizedOriginal) {
+        if (!prev[editKey]) return prev;
+        const next = { ...prev };
+        delete next[editKey];
+        return next;
+      }
+
+      return {
+        ...prev,
+        [editKey]: {
+          value,
+          rowIndex,
+          dateValue: normalizedNext,
+        },
+      };
+    });
+  }, []);
+
+  const toggleOptionalColumn = useCallback((columnKey) => {
+    setVisibleColumns(prev => ({
+      ...prev,
+      [columnKey]: !prev[columnKey],
+    }));
+  }, []);
 
   // --- NUEVO: useEffect para sincronizar los scrolls ---
   useEffect(() => {
@@ -318,12 +378,14 @@ export default function EXP_CLOCKS(props) {
     });
   };
 
-  // SOLUCIÓN: save_clock ahora lee el valor del DOM pero verifica cambios antes de guardar
-  const save_clock = (value, i) => {
-    if (value.state === false || value.state == null) return;
+  // SOLUCIÓN: save_clock ahora puede recibir valor explícito desde el botón global o leer el DOM en blur.
+  const save_clock = (value, i, dateOverride) => {
+    if (value.state === false || value.state == null) return Promise.resolve(false);
     
     const dateInput = document.getElementById("clock_exp_date_" + i);
-    const dateVal = dateInput ? String(dateInput.value || '').trim() : '';
+    const dateVal = dateOverride !== undefined
+      ? String(dateOverride || '').trim()
+      : dateInput ? String(dateInput.value || '').trim() : '';
     
     // Obtener el valor actual del clock para comparar
     const currentClock = value.version !== undefined
@@ -334,7 +396,8 @@ export default function EXP_CLOCKS(props) {
     // SOLUCIÓN: Solo guardar si hay un cambio real en la fecha
     if (dateVal === currentDate) {
       console.log('⏭️ save_clock: Sin cambios, omitiendo guardado');
-      return;
+      clearPendingDateEdit(value, i);
+      return Promise.resolve(false);
     }
     
     var formDataClock = new FormData();
@@ -378,7 +441,11 @@ export default function EXP_CLOCKS(props) {
     // SOLUCIÓN: No llamamos a applyLocalClockChange aquí.
     // La UI se actualizará cuando las props cambien después de requestUpdate().
     // Esto evita la condición de carrera y el "parpadeo".
-    manage_clock(false, value.state, value.version, formDataClock, true);
+    return manage_clock(false, value.state, value.version, formDataClock, true)
+      .then((saved) => {
+        if (saved) clearPendingDateEdit(value, i);
+        return saved;
+      });
   };
 
   const manage_clock = (useMySwal, findOne, version, formDataClock, triggerUpdate = false) => {
@@ -393,16 +460,40 @@ export default function EXP_CLOCKS(props) {
       if (triggerUpdate) {
         props.requestUpdate(currentItem.id);
       }
+      return true;
     };
     const onErr = (e) => {
       console.error('Error guardando clock en backend:', e);
       if (useMySwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+      return false;
     };
 
     if (_CHILD && _CHILD.id) {
-      FUN_SERVICE.update_clock(_CHILD.id, formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
+      return FUN_SERVICE.update_clock(_CHILD.id, formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
     } else {
-      FUN_SERVICE.create_clock(formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
+      return FUN_SERVICE.create_clock(formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
+    }
+  };
+
+  const savePendingDateChanges = async () => {
+    const pendingChanges = Object.values(pendingDateEdits);
+    if (pendingChanges.length === 0 || isSavingPendingDates) return;
+
+    setIsSavingPendingDates(true);
+    try {
+      const results = await Promise.all(
+        pendingChanges.map((change) => save_clock(change.value, change.rowIndex, change.dateValue))
+      );
+      const savedCount = results.filter(Boolean).length;
+
+      if (savedCount > 0) {
+        swalSuccess({
+          title: 'Cambios guardados',
+          text: `${savedCount} fecha${savedCount !== 1 ? 's' : ''} sincronizada${savedCount !== 1 ? 's' : ''}.`,
+        });
+      }
+    } finally {
+      setIsSavingPendingDates(false);
     }
   };
 
@@ -866,6 +957,8 @@ export default function EXP_CLOCKS(props) {
           scheduleConfig={scheduleConfig}
           systemDate={systemDate}
           isHighlighted={isRowInActivePhase}
+          visibleColumns={visibleColumns}
+          onDateDraftChange={updatePendingDateEdit}
         />
       );
     });
@@ -901,7 +994,8 @@ export default function EXP_CLOCKS(props) {
 
 
   const radDate = currentItem?.date;
-  const totalTableWidth = 1350 - 80;
+  const totalTableWidth = getClockTableWidth(visibleColumns);
+  const pendingDateCount = Object.keys(pendingDateEdits).length;
   const normalizedSidebarHeight = Number.isFinite(sidebarHeight) ? Math.min(Math.max(sidebarHeight, 420), 720) : 520;
   const tableScrollHeight = `min(${normalizedSidebarHeight}px, calc(100vh - 18rem))`;
 
@@ -965,9 +1059,47 @@ export default function EXP_CLOCKS(props) {
             
             <div ref={tableScrollRef} className="exp-scroll" style={{ height: tableScrollHeight, maxHeight: tableScrollHeight }}>
                <div ref={contentRef} style={{ minWidth: `${totalTableWidth}px` }}>
-                  <ClockTableHeader />
+                  <ClockTableHeader visibleColumns={visibleColumns} />
                   {renderClockList()}
                </div>
+            </div>
+
+            <div className="clock-table-footer-tools" aria-label="Herramientas de guardado y columnas de la tabla de tiempos">
+              <div className="clock-save-group">
+                <Button
+                  type="button"
+                  size="sm"
+                  className="h-8"
+                  disabled={pendingDateCount === 0 || isSavingPendingDates}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={savePendingDateChanges}
+                >
+                  <Icon name={isSavingPendingDates ? 'Loader2' : 'Save'} size={14} className={isSavingPendingDates ? 'animate-spin' : ''} />
+                  Guardar cambios
+                </Button>
+                <span className="clock-save-status" aria-live="polite">
+                  {pendingDateCount > 0
+                    ? `${pendingDateCount} fecha${pendingDateCount !== 1 ? 's' : ''} pendiente${pendingDateCount !== 1 ? 's' : ''}`
+                    : 'Sin cambios pendientes'}
+                </span>
+              </div>
+
+              <div className="clock-column-selector" aria-label="Columnas opcionales">
+                <span className="clock-column-selector-label">Mostrar columnas</span>
+                {OPTIONAL_CLOCK_COLUMNS.map((column) => {
+                  const checkboxId = `clock-column-${column.key}`;
+                  return (
+                    <div className="clock-column-toggle" key={column.key}>
+                      <Checkbox
+                        id={checkboxId}
+                        checked={visibleColumns[column.key]}
+                        onCheckedChange={() => toggleOptionalColumn(column.key)}
+                      />
+                      <label htmlFor={checkboxId}>{column.label}</label>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
