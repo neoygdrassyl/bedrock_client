@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 import { FunDashboardKPIs } from './fun_forms/components/FunDashboardKPIs';
 import { FunmanageScatterChart } from './fun_forms/components/FunmanageScatterChart';
@@ -14,6 +15,8 @@ import { DEFAULT_FILTERS, mergeFilters, hasActiveFilters } from './fun_forms/uti
 import { openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
+
+const GESTION_NUEVA_IN_DEVELOPMENT = true;
 
 export function normalizeResponsibleActor(responsable) {
   const normalized = String(responsable || '').trim().toLowerCase();
@@ -95,7 +98,40 @@ function useDebounce(value, delay = 400) {
   return debounced;
 }
 
-function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
+function FunManageNewDevelopmentNotice() {
+  return (
+    <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center px-3 py-8" data-testid="gestion-nueva-development-state">
+      <section className="w-full max-w-2xl rounded-xl border border-border bg-card/95 p-6 text-center shadow-sm">
+        <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10 text-warning">
+          <Icon name="Construction" size={24} />
+        </span>
+        <div className="mb-2 inline-flex rounded-full border border-warning/30 bg-warning/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-warning">
+          En desarrollo
+        </div>
+        <h1 className="text-xl font-semibold text-foreground">Gestión Licencias Nuevo está en desarrollo</h1>
+        <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+          Esta superficie permanece cerrada mientras se termina la validación operativa. Por ahora no muestra expedientes, KPI, gráficos ni información del dashboard.
+        </p>
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <Button asChild size="sm">
+            <Link to="/licencias/gestion" className="no-underline">
+              <Icon name="FolderOpen" size={14} />
+              Abrir gestión clásica
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link to="/dashboard" className="no-underline">
+              <Icon name="LayoutDashboard" size={14} />
+              Volver al dashboard
+            </Link>
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function FunManageNewDashboard({ translation, globals, swaMsg, breadCrums }) {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebounce(searchInput, 450);
@@ -408,6 +444,14 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
 
     </div>
   );
+}
+
+function FunManageNewPage(props) {
+  if (GESTION_NUEVA_IN_DEVELOPMENT) {
+    return <FunManageNewDevelopmentNotice />;
+  }
+
+  return <FunManageNewDashboard {...props} />;
 }
 
 export default FunManageNewPage;
