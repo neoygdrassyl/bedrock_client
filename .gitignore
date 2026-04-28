@@ -69,3 +69,4 @@ test-output-full.log
 .github/
 .vscode/
 ai/
+scripts/
