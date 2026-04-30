@@ -12,8 +12,8 @@ import {
   ReferenceLine,
   Cell,
 } from 'recharts';
-import { ExpedientePanelDrawer } from './ExpedientePanelDrawer';
-import { useNavigate } from 'react-router-dom';
+import { FunExpedienteDetail } from './FunExpedienteDetail';
+import { openExpedienteWorkspace } from '../utils/expedienteWorkspaceRoute';
 
 // ── Fases y orden ─────────────────────────────────────────
 const PHASES = [
@@ -36,6 +36,45 @@ const PHASE_LABELS = {
 
 const PHASE_TO_NUM = {};
 PHASES.forEach((p, i) => { PHASE_TO_NUM[p] = i + 1; });
+
+const TRAFFIC_COLORS = {
+  green: 'hsl(var(--accent))',
+  yellow: 'hsl(var(--warning))',
+  red: 'hsl(var(--destructive))',
+  overdue: 'hsl(var(--destructive))',
+};
+
+function normalizeAlarmLevel(alarm) {
+  const explicit = Number.parseInt(String(alarm?.level ?? ''), 10);
+  if (Number.isInteger(explicit)) return explicit;
+  switch (String(alarm?.severity || '').toLowerCase()) {
+    case 'warning': return 1;
+    case 'critical': return 2;
+    case 'expired': return 3;
+    default: return 0;
+  }
+}
+
+function getActorTraffic(d, actor) {
+  const alarms = Array.isArray(d?.activeAlarms) ? d.activeAlarms : [];
+  const normalizedActor = String(actor || '').toUpperCase();
+  let maxLevel = 0;
+
+  alarms.forEach((alarm) => {
+    const alarmActor = String(alarm?.actor || '').toUpperCase();
+    const action = String(alarm?.action || 'show_alarm');
+    if (alarmActor !== normalizedActor || action !== 'show_alarm') return;
+    maxLevel = Math.max(maxLevel, normalizeAlarmLevel(alarm));
+  });
+
+  if (maxLevel >= 2) return 'red';
+  if (maxLevel === 1) return 'yellow';
+  return null;
+}
+
+function hasActorAlarm(d, actor) {
+  return getActorTraffic(d, actor) != null;
+}
 
 // ── Tick personalizado para el eje Y (categorías) ─────────────────────────────
 function PhaseTick({ x, y, payload }) {
@@ -81,9 +120,12 @@ function ScatterTooltip({ active, payload }) {
         <strong>Días Transcurridos:</strong> <span style={{ fontWeight: 600 }}>{d.dias_habiles_usados ?? 0}</span>
       </p>
       <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
+        <strong>Consumido:</strong> <span style={{ fontWeight: 600 }}>{Math.round(d.percentUsed ?? 0)}%</span>
+      </p>
+      <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
         <strong>Estado:</strong>{' '}
         <span style={{ color: d.fill, fontWeight: 700 }}>
-          {d.colorStatus === 'verde' ? 'En término' : d.colorStatus === 'amarillo' ? 'Pronto a vencer' : 'Vencido'}
+          {d.colorStatus === 'verde' ? 'En término' : d.colorStatus === 'amarillo' ? 'Alerta preventiva' : d.isOverdue ? 'Vencido' : 'Crítico'}
         </span>
       </p>
     </div>
@@ -95,7 +137,6 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
   const [showVencidos, setShowVencidos] = useState(true);
   const [selectedExpediente, setSelectedExpediente] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const navigate = useNavigate();
 
   // Thresholds desde alarmConfigV2 (configurable por curaduria). Fallback a 70/90/100.
   const thresholds = useMemo(() => {
@@ -111,46 +152,73 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
     if (!Array.isArray(data)) return [];
 
     return data
-      .map(d => {
+      .reduce((items, d) => {
         const isCuraduria = String(d.responsable || "").toLowerCase().includes("curad");
-        const respType = isCuraduria ? 'curaduria' : 'solicitante';
+        const respTypes = new Set([isCuraduria ? 'curaduria' : 'solicitante']);
+        if (hasActorAlarm(d, 'CUR')) respTypes.add('curaduria');
+        if (hasActorAlarm(d, 'SOL')) respTypes.add('solicitante');
+        if (d.fase_actual === 'EST') {
+          respTypes.add('curaduria');
+          respTypes.add('solicitante');
+        }
+
         const phaseNum = PHASE_TO_NUM[d.fase_actual];
 
         const used = d.dias_habiles_usados || 0;
         const limit = d.dias_habiles_limite || 0;
         const p = limit > 0 ? (used / limit) * 100 : (d.porcentaje_avance || 0);
 
-        let colorStatus = 'verde';
-        let fill = '#22c55e';
-        if (p >= thresholds.overdue) {
-          colorStatus = 'rojo';
-          fill = '#991b1b'; // rojo oscuro (vencido)
-        } else if (p >= thresholds.critical) {
-          colorStatus = 'rojo';
-          fill = '#ef4444';
-        } else if (p >= thresholds.warning) {
-          colorStatus = 'amarillo';
-          fill = '#eab308';
-        }
+        respTypes.forEach((respType) => {
+          const actor = respType === 'curaduria' ? 'CUR' : 'SOL';
+          const alarmTraffic = getActorTraffic(d, actor);
+          const isOverdue = p >= thresholds.overdue || (alarmTraffic === 'red' && (d.activeAlarms || []).some((alarm) => String(alarm.actor).toUpperCase() === actor && normalizeAlarmLevel(alarm) >= 3));
 
-        return {
-          ...d,
-          x: used,
-          yNum: phaseNum,
-          respType,
-          colorStatus,
-          fill
-        };
-      })
+          let colorStatus = alarmTraffic || 'verde';
+          let fill = TRAFFIC_COLORS.green;
+          if (isOverdue) {
+            colorStatus = 'rojo';
+            fill = TRAFFIC_COLORS.overdue;
+          } else if (alarmTraffic === 'red' || p >= thresholds.critical) {
+            colorStatus = 'rojo';
+            fill = TRAFFIC_COLORS.red;
+          } else if (alarmTraffic === 'yellow' || p >= thresholds.warning) {
+            colorStatus = 'amarillo';
+            fill = TRAFFIC_COLORS.yellow;
+          }
+
+          items.push({
+            ...d,
+            x: Math.min(Math.max(p, 0), Math.max(100, thresholds.overdue)),
+            percentUsed: p,
+            yNum: phaseNum,
+            respType,
+            colorStatus,
+            fill,
+            isOverdue,
+          });
+        });
+
+        return items;
+      }, [])
       .filter(d => d.yNum != null)
       .filter(d => d.respType === responsableFilter)
-      .filter(d => showVencidos || d.colorStatus !== 'rojo');
+      .filter(d => showVencidos || !d.isOverdue);
   }, [data, responsableFilter, showVencidos, thresholds]);
 
-  const handleNavigateDetail = (exp) => {
+  const handlePreviewExpediente = (eventOrExpediente) => {
+    const expediente = eventOrExpediente?.payload || eventOrExpediente;
+    if (!expediente) return;
+
+    if (isFullscreen) {
+      setIsFullscreen(false);
+    }
+
+    setSelectedExpediente(expediente);
+  };
+
+  const handleOpenWorkspace = (expediente) => {
     setSelectedExpediente(null);
-    if (isFullscreen) setIsFullscreen(false);
-    navigate(`/licencias/gestion/${exp.id || exp.radicado}`);
+    openExpedienteWorkspace(expediente, { module: 'general' });
   };
 
   React.useEffect(() => {
@@ -170,12 +238,12 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
         <XAxis
           type="number"
           dataKey="x"
-          name="Días"
-          domain={[0, 'auto']}
+          name="% consumido"
+          domain={[0, Math.max(100, thresholds.overdue)]}
           tickCount={8}
           tick={{ fontSize: 11, fill: '#6b7280' }}
           label={{
-            value: 'Días transcurridos en fase actual',
+            value: '% consumido de la fase actual',
             position: 'insideBottom',
             offset: -14,
             fontSize: 11,
@@ -198,7 +266,7 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
           name="Expedientes" 
           data={plotData} 
           shape="circle"
-          onClick={(e) => setSelectedExpediente(e?.payload || e)}
+          onClick={handlePreviewExpediente}
         >
           {plotData.map((entry, index) => (
             <Cell 
@@ -214,8 +282,13 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
 
   if (loading) {
     return (
-      <div className="d-flex flex-column justify-content-center align-items-center py-4" style={{ minHeight: 300 }}>
-        <div className="spinner-border spinner-border-sm text-primary" role="status"></div>
+      <div
+        className="d-flex flex-column justify-content-center align-items-center py-4"
+        style={{ minHeight: 300 }}
+        data-testid="scatter-chart-loading"
+        aria-live="polite"
+      >
+        <div className="spinner-border spinner-border-sm text-primary" role="progressbar" aria-label="Cargando gráfico de fases"></div>
         <div className="mt-2 text-muted" style={{ fontSize: 13 }}>Cargando gráfico...</div>
       </div>
     );
@@ -252,12 +325,13 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
         <div className="text-center text-muted py-4"><Icon name="chart-bar" size={16} className="me-2" />Sin datos.</div>
       ) : renderChart(300)}
 
-      <ExpedientePanelDrawer 
-        show={!!selectedExpediente} 
-        expediente={selectedExpediente} 
-        onClose={() => setSelectedExpediente(null)}
-        onNavigateDetail={handleNavigateDetail}
-      />
+      {selectedExpediente ? (
+        <FunExpedienteDetail
+          expediente={selectedExpediente}
+          onClose={() => setSelectedExpediente(null)}
+          onOpenWorkspace={handleOpenWorkspace}
+        />
+      ) : null}
 
       {isFullscreen && (
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>

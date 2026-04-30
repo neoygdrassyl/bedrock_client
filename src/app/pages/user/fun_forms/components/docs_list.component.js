@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
@@ -6,11 +6,13 @@ import ListJson from '../../../../components/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 function DOCS_LIST({ idRef, text, setValues }) {
         const [modalSearchList, setModalSearchList] = useState(false);
+        const [filter, setFilter] = useState('');
         const customStylesForModal = {};
-        let _GET_DOCS_DATA = () => {
+        const docsData = useMemo(() => {
             let data = [];
             for (var item in ListJson) {
                 data.push({
@@ -19,7 +21,17 @@ function DOCS_LIST({ idRef, text, setValues }) {
                 })
             }
             return data;
-        }
+        }, []);
+        const filteredDocsData = useMemo(() => {
+            const normalizedFilter = filter.trim().toLowerCase();
+
+            if (!normalizedFilter) return docsData;
+
+            return docsData.filter((item) => {
+                return item.cod.toLowerCase().includes(normalizedFilter)
+                    || item.desc.toLowerCase().includes(normalizedFilter);
+            });
+        }, [docsData, filter]);
         const docsColumns = [
             {
                 name: 'CODIGO',
@@ -40,13 +52,31 @@ function DOCS_LIST({ idRef, text, setValues }) {
                         <Icon name="copy" size={16} /></Button>,
             }
         ]
-        const docsData = _GET_DOCS_DATA();
+
+        const searchHeader = (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="relative w-full sm:max-w-sm">
+                    <Icon name="search" size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        type="text"
+                        value={filter}
+                        onChange={(event) => setFilter(event.target.value)}
+                        placeholder="Buscar por código o nombre"
+                        className="pl-9"
+                    />
+                </div>
+                <span className="text-xs text-muted-foreground">
+                    {filteredDocsData.length} resultado{filteredDocsData.length === 1 ? '' : 's'}
+                </span>
+            </div>
+        );
 
         let toggle = (id) => {
             setModalSearchList(prev => !prev);
         }
         let _COPY_INFO = (_data) => {
             setValues(idRef, [_data.cod, _data.desc])
+            setFilter('')
             setModalSearchList(false)
         }
         return (
@@ -73,16 +103,21 @@ function DOCS_LIST({ idRef, text, setValues }) {
                     <DataTable
                         striped
                         columns={docsColumns}
-                        data={docsData}
+                        data={filteredDocsData}
                         pagination
                         paginationPerPage={10}
                         paginationComponentOptions={{ rowsPerPageText: 'Mostrar entradas', rangeSeparatorText: 'de' }}
                         dense
                         highlightOnHover
                         noDataComponent="No hay datos"
+                        subHeader
+                        subHeaderComponent={searchHeader}
                     />
                     <div className="flex justify-end py-3 mt-3 border-t border-border/60">
-                        <Button variant="outline" size="sm" onClick={() => setModalSearchList(false)}><Icon name="X" size={14} /> Cerrar</Button>
+                        <Button variant="outline" size="sm" onClick={() => {
+                            setFilter('')
+                            setModalSearchList(false)
+                        }}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 

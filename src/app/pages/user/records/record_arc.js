@@ -337,18 +337,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                             hideNotApplicableDefault
                                             showFilters
                                         />}
-                                        documentsContent={<div className="space-y-4">
-                                            <RECORD_ENG_PROFESIONALS
-                                                _FUN_52={_GET_CHILD_52()}
-                                                _FUN_6={_GET_CHILD_6()}
-                                                currentRecord={currentRecord}
-                                                profs={[
-                                                    ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
-                                                    ['ARQUITECTO PROYECTISTA'],
-                                                ]}
-                                            />
-
-                                            <FUN_6_VIEW
+                                        documentsContent={<FUN_6_VIEW
                                                 translation={translation}
                                                 swaMsg={swaMsg}
                                                 globals={globals}
@@ -358,8 +347,17 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                                 requestUpdate={requestUpdate}
                                                 readOnly
                                                 mergeVentanilla
-                                            />
-                                        </div>}
+                                            />}
+                                        professionalsLabel="Profesionales del proyecto"
+                                        professionalsContent={<RECORD_ENG_PROFESIONALS
+                                            _FUN_52={_GET_CHILD_52()}
+                                            _FUN_6={_GET_CHILD_6()}
+                                            currentRecord={currentRecord}
+                                            profs={[
+                                                ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
+                                                ['ARQUITECTO PROYECTISTA'],
+                                            ]}
+                                        />}
                                     />
 
                                 </fieldset>

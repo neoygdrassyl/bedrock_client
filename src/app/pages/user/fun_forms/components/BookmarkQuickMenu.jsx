@@ -49,6 +49,7 @@ export function BookmarkQuickMenu({
   triggerTestIdPrefix = 'bookmark-menu-trigger',
   menuTestIdPrefix = 'bookmark-menu',
   disabled = false,
+  align = 'start',
 }) {
   const visualState = getVisualState(bookmarkState);
 
@@ -75,7 +76,7 @@ export function BookmarkQuickMenu({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        align="start"
+        align={align}
         className="w-56"
         onClick={(event) => {
           event.stopPropagation();

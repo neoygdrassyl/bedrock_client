@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { dateParser, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
 import Collapsible from '../../../../components/Collapsible';
@@ -10,9 +10,11 @@ export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
     const [content, setContent] = useState('')
 
 
-    const config = () => {
-        return {
+    const config = useMemo(() => ({
             readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+            language: 'es',
+            iframe: true,
+            allowHTML: true,
             uploader: {
                 url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
             },
@@ -22,11 +24,9 @@ export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
                 },
                 height: 580,
             },
-            language: 'es',
             "readonly": true,
             "toolbar": false,
-            "disablePlugins": "clipboard",
-            "disablePlugins": "xpath",
+            "disablePlugins": "clipboard,xpath",
             minHeight: 150,
             removeButtons: ['xpath'],
             controls: {
@@ -36,8 +36,7 @@ export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
 
                 }
             }
-        }
-    }
+        }), [])
 
 
 
@@ -75,11 +74,10 @@ export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
                         <JoditEditor
                             ref={editor}
                             value={currentItem.pqrs_info.reply}
-                            config={config()}
+                            config={config}
                             tabIndex={1} // tabIndex of textarea
                             onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                             onChange={newContent => { }}
-                            className="form-control mb-3"
                             rows="5"
                             maxlength="409675"
                         />

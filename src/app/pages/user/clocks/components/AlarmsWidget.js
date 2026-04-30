@@ -157,7 +157,11 @@ export const AlarmsWidget = ({ alarms, onClose }) => {
             </div>
         </div>
         <Dialog open={showExpanded} onOpenChange={setShowExpanded}>
-            <DialogContent className="alarm-modal-popup" style={{ maxWidth: '90vw', width: '90vw' }}>
+            <DialogContent
+                overlayClassName="z-[10040]"
+                className="alarm-modal-popup z-[10050]"
+                style={{ maxWidth: '90vw', width: '90vw' }}
+            >
                 <ExpandedAlarmsModal alarms={alarms} />
             </DialogContent>
         </Dialog>

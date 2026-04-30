@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useEffect, useState, Suspense, lazy } from 'react';
+import React, { useContext, createContext, useEffect, useMemo, useState, Suspense, lazy } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -23,6 +23,9 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { AppShell } from './layouts/AppShell';
 import { Toaster } from '@/components/ui/sonner';
 import { getRouteRedirects } from './layouts/navigation-config';
+import { ErrorReportInlineTrigger } from './components/DovelaSupportLayer';
+import { captureDovelaError } from './utils/errorReporting';
+import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from './pages/user/fun_forms/utils/expedienteWorkspaceRoute';
 
 // CSS: loaded after Bootstrap (imported in index.js) so our overrides win
 import './App.css';
@@ -89,7 +92,7 @@ function LoadingFallback() {
 class RouteErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorSnapshot: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -99,11 +102,17 @@ class RouteErrorBoundary extends React.Component {
   componentDidUpdate(prevProps) {
     // Reset error when user navigates away from the broken route
     if (this.props.pathname !== prevProps.pathname && this.state.hasError) {
-      this.setState({ hasError: false, error: null });
+      this.setState({ hasError: false, error: null, errorSnapshot: null });
     }
   }
 
   componentDidCatch(error, info) {
+    const errorSnapshot = captureDovelaError(error, {
+      source: 'route-error-boundary',
+      componentStack: info?.componentStack,
+      notify: false,
+    });
+    this.setState({ errorSnapshot });
     console.error('Route subtree error captured:', error, info);
   }
 
@@ -114,11 +123,12 @@ class RouteErrorBoundary extends React.Component {
           <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
             <h4 className="text-base font-semibold text-destructive">Error en este módulo</h4>
             <p className="text-sm text-muted-foreground">La vista actual presentó un error y se detuvo para evitar una pantalla en blanco.</p>
-            <p className="text-sm">
+            <div className="flex flex-wrap items-center gap-2 pt-2 text-sm">
+              <ErrorReportInlineTrigger context={{ lastError: this.state.errorSnapshot }} />
               <a href="/dashboard" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/dashboard'); window.location.reload(); }} className="text-primary hover:underline">
                 Volver al panel
               </a>
-            </p>
+            </div>
           </div>
         </div>
       );
@@ -327,9 +337,18 @@ function LoginPageWithAuth() {
 
 function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
   const { radicado } = useParams();
+  const location = useLocation();
   const [expediente, setExpediente] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const workspaceTarget = useMemo(
+    () => parseExpedienteWorkspaceSearch(location.search),
+    [location.search]
+  );
+
+  const closeExpedienteWindow = () => {
+    window.location.assign('/dashboard');
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -365,6 +384,16 @@ function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
     };
   }, [radicado]);
 
+  useEffect(() => {
+    if (!expediente) return;
+
+    rememberRecentExpediente(expediente, {
+      section: workspaceTarget.section,
+      report: workspaceTarget.report,
+      limit: 6,
+    });
+  }, [expediente, workspaceTarget.report, workspaceTarget.section]);
+
   if (loading) {
     return <LoadingFallback />;
   }
@@ -375,11 +404,20 @@ function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
         <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
           <h4 className="text-base font-semibold text-destructive">Expediente no disponible</h4>
           <p className="text-sm text-muted-foreground">{error}</p>
-          <p className="text-sm">
+          <div className="flex flex-wrap items-center gap-2 pt-2 text-sm">
+            <ErrorReportInlineTrigger
+              context={{
+                expediente: { radicado },
+                lastError: {
+                  source: 'funmanage-expediente-route',
+                  error: { message: error },
+                },
+              }}
+            />
             <a href="/licencias/gestion-nueva" className="text-primary hover:underline">
               Volver a Gestión Licencias Nuevo
             </a>
-          </p>
+          </div>
         </div>
       </div>
     );
@@ -391,7 +429,10 @@ function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
       translation={translation}
       globals={globals}
       swaMsg={swaMsg}
-      onClose={() => window.history.back()}
+      initialSection={workspaceTarget.section}
+      initialReport={workspaceTarget.report}
+      defaultRightPanelOpen={workspaceTarget.rightPanel}
+      onClose={closeExpedienteWindow}
     />
   );
 }

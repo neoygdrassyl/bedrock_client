@@ -95,6 +95,12 @@ const ALARM_ACTION_OPTIONS = [
   { value: 'start_suspension_prorroga', label: 'Suspensión/prórroga' },
 ];
 
+const ALARM_TRAFFIC_LABELS = {
+  green: 'Semáforo verde',
+  yellow: 'Semáforo amarillo',
+  red: 'Semáforo rojo',
+};
+
 const PHASE_LABEL_BY_ID = PHASES.reduce((acc, phase) => ({ ...acc, [phase.id]: phase.label }), {});
 
 function getOptionLabel(options, value) {
@@ -166,6 +172,7 @@ function SummaryBadge({ children }) {
 
 export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActiveFilterKey }) {
   const [users, setUsers] = useState([]);
+  const [filtersHidden, setFiltersHidden] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   useEffect(() => {
@@ -257,7 +264,7 @@ export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActive
 
   const activeFilterCount = useMemo(() => {
     const keys = [
-      'status', 'profesional', 'desde', 'hasta', 'bookmarked', 'alarmLevel', 'alarmActor', 'alarmAction', 'search',
+      'status', 'profesional', 'desde', 'hasta', 'bookmarked', 'alarmTraffic', 'alarmLevel', 'alarmActor', 'alarmAction', 'search',
     ];
     const scalarCount = keys.filter((key) => {
       const value = filters?.[key];
@@ -292,6 +299,7 @@ export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActive
     if (filters.bookmarked) items.push(`Marcados: ${getOptionLabel(BOOKMARK_OPTIONS, filters.bookmarked) || filters.bookmarked}`);
     if (filters.vecinos || filters.vecinosState) items.push(`Vecinos: ${getOptionLabel(NEIGHBOR_OPTIONS, filters.vecinos || filters.vecinosState) || filters.vecinos || filters.vecinosState}`);
     if (filters.valla || filters.vallaState) items.push(`Valla: ${getOptionLabel(VALLA_OPTIONS, filters.valla || filters.vallaState) || filters.valla || filters.vallaState}`);
+    if (filters.alarmTraffic) items.push(ALARM_TRAFFIC_LABELS[filters.alarmTraffic] || `Semáforo: ${filters.alarmTraffic}`);
     if (filters.alarmLevel) items.push(`Alarma: ${getOptionLabel(ALARM_LEVEL_OPTIONS, filters.alarmLevel) || filters.alarmLevel}`);
     if (filters.alarmActor) items.push(`Actor: ${getOptionLabel(ALARM_ACTOR_OPTIONS, filters.alarmActor) || filters.alarmActor}`);
     if (filters.alarmAction) items.push(`Acción: ${getOptionLabel(ALARM_ACTION_OPTIONS, filters.alarmAction) || filters.alarmAction}`);
@@ -328,6 +336,18 @@ export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActive
             variant="outline"
             size="sm"
             className="h-8 px-2.5 text-xs"
+            onClick={() => setFiltersHidden((value) => !value)}
+            aria-expanded={!filtersHidden}
+          >
+            <Icon name={filtersHidden ? 'eye' : 'eye-slash'} size={14} />
+            {filtersHidden ? 'Mostrar filtros' : 'Ocultar filtros'}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 px-2.5 text-xs"
+            disabled={filtersHidden}
             onClick={() => setAdvancedOpen((value) => !value)}
           >
             <Icon name="sliders-h" size={14} />
@@ -342,6 +362,18 @@ export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActive
         </div>
       </div>
 
+      {filtersHidden ? (
+        <div className="flex flex-wrap items-center gap-1.5 px-3 py-2" aria-label="Filtros ocultos">
+          <span className="mr-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+            Filtros ocultos
+          </span>
+          {summaryItems.length > 0 ? (
+            summaryItems.map((item) => <SummaryBadge key={item}>{item}</SummaryBadge>)
+          ) : (
+            <span className="text-xs text-muted-foreground">No hay filtros activos.</span>
+          )}
+        </div>
+      ) : (
       <div className="space-y-3 px-3 py-3">
         <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-6">
           <SelectFilter
@@ -556,6 +588,7 @@ export function FilterPanel({ filters, setFilters, clearAllFilters, setKpiActive
           </div>
         )}
       </div>
+      )}
     </section>
   );
 }

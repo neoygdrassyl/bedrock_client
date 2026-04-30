@@ -21,6 +21,7 @@ export const DEFAULT_FILTERS = {
   vecinosState: null,
   valla: null,
   vallaState: null,
+  alarmTraffic: null,
   alarmLevel: null,
   alarmActor: null,
   alarmAction: null,
@@ -54,7 +55,7 @@ export function hasActiveFilters(filters) {
   const keys = [
     'fase', 'phase', 'subfiltro', 'status', 'responsable', 'profesional', 
     'search', 'desistido', 'causal', 'bookmarked', 'vecinos', 'vecinosState', 'valla', 'vallaState',
-    'alarmLevel', 'alarmActor', 'alarmAction',
+    'alarmTraffic', 'alarmLevel', 'alarmActor', 'alarmAction',
     'desde', 'hasta'
   ];
   return keys.some((k) => {

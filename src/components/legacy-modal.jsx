@@ -4,10 +4,30 @@ import { cn } from '@/lib/utils';
 
 const MIN_OVERLAY_Z_INDEX = 1050;
 const MIN_CONTENT_Z_INDEX = 1051;
+const FULLSCREEN_WORKSPACE_BASE_Z_INDEX = 10080;
 
 function getSafeZIndex(value, fallback) {
   const parsedValue = Number.parseInt(`${value ?? ''}`, 10);
   return Number.isFinite(parsedValue) ? Math.max(parsedValue, fallback) : fallback;
+}
+
+function getModalStackBase() {
+  if (typeof document === 'undefined') return {
+    overlay: MIN_OVERLAY_Z_INDEX,
+    content: MIN_CONTENT_Z_INDEX,
+  };
+
+  if (document.body.classList.contains('workspace-fullscreen-open')) {
+    return {
+      overlay: FULLSCREEN_WORKSPACE_BASE_Z_INDEX,
+      content: FULLSCREEN_WORKSPACE_BASE_Z_INDEX + 1,
+    };
+  }
+
+  return {
+    overlay: MIN_OVERLAY_Z_INDEX,
+    content: MIN_CONTENT_Z_INDEX,
+  };
 }
 
 function lockDocumentScroll() {
@@ -106,6 +126,7 @@ export function LegacyModal({
 
   const contentStyle = style?.content ?? {};
   const overlayStyle = style?.overlay ?? {};
+  const stackBase = getModalStackBase();
 
   return createPortal(
     <div
@@ -114,7 +135,7 @@ export function LegacyModal({
       aria-modal="true"
       aria-label={contentLabel}
       style={{
-        zIndex: getSafeZIndex(overlayStyle.zIndex, MIN_OVERLAY_Z_INDEX),
+        zIndex: getSafeZIndex(overlayStyle.zIndex, stackBase.overlay),
       }}
       {...rest}
     >
@@ -138,7 +159,7 @@ export function LegacyModal({
           maxWidth: '1400px',
           margin: '0 auto',
           ...contentStyle,
-          zIndex: getSafeZIndex(contentStyle.zIndex, MIN_CONTENT_Z_INDEX),
+          zIndex: getSafeZIndex(contentStyle.zIndex, stackBase.content),
         }}
         onClick={(e) => e.stopPropagation()}
       >

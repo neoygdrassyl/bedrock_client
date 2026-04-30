@@ -87,7 +87,7 @@ function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, req
     }
 
     return (
-        <div>
+        <div className="w-full min-w-0 overflow-hidden">
             <div className="bg-primary text-primary-foreground p-2 mb-3 h5 text-center">
                 Control de Tiempos y Fechas
             </div>

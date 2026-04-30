@@ -64,3 +64,9 @@ test-output-debug.log
 test-output-full.log
 .superpowers/
 .fun_clock.js.swp
+
+# AI config files
+.github/
+.vscode/
+ai/
+scripts/

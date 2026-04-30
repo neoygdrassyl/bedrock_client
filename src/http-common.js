@@ -1,4 +1,5 @@
 import axios from "axios";
+import { captureDovelaHttpError } from "@/app/utils/errorReporting";
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -23,6 +24,9 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (!error?.config?.skipDovelaErrorCapture) {
+      captureDovelaHttpError(error);
+    }
     if (
       error.response &&
       error.response.status === 401 &&

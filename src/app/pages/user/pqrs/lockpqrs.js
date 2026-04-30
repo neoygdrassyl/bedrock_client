@@ -36,10 +36,15 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                const message = "No ha sido posible cargar este item, intentelo nuevamente.";
+                swalError({
+                    title: "ERROR AL CARGAR",
+                    text: message,
+                    reportContext: buildCloseReportContext(message, 'pqrs-close-load'),
+                });
                 setLoad(false);
             });
-    }, [swaMsg]);
+    }, [currentId, swaMsg]);
 
     useEffect(() => {
         retrieveItem(currentId);
@@ -68,6 +73,53 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
     const minusAttachEmail = () => {
         setAttachsForEmails(prev => prev - 1);
     };
+
+    const buildCloseReportContext = useCallback((message, source = 'pqrs-close') => ({
+        expediente: {
+            radicado: currentItem?.id_publico || currentItem?.id_global || String(currentItem?.id || currentId || ''),
+            identifiers: {
+                id: currentItem?.id ?? currentId ?? null,
+                idPublico: currentItem?.id_publico ?? null,
+                idGlobal: currentItem?.id_global ?? null,
+            },
+        },
+        lastError: {
+            source,
+            error: { message },
+        },
+    }), [currentId, currentItem]);
+
+    const collectCloseAttachments = useCallback(() => {
+        const fileInputs = Array.from(document.getElementsByName("files_close"));
+        const nameInputs = Array.from(document.getElementsByName("files_close_names"));
+        const attachments = [];
+
+        for (let index = 0; index < attachs; index += 1) {
+            const file = fileInputs[index]?.files?.[0];
+            const publicName = nameInputs[index]?.value?.trim() || '';
+
+            if (!file && !publicName) {
+                continue;
+            }
+
+            if (!file) {
+                return { error: 'Cada documento de cierre agregado debe incluir un archivo antes de continuar.' };
+            }
+
+            attachments.push({ file, publicName });
+        }
+
+        return { attachments };
+    }, [attachs]);
+
+    const appendCloseAttachments = useCallback((nextFormData, attachments = []) => {
+        nextFormData.set('attachs_length', attachments.length);
+        nextFormData.set('files_names', attachments.map((attachment) => attachment.publicName));
+
+        attachments.forEach(({ file }) => {
+            nextFormData.append('file', file, `pqrsout_${file.name}`);
+        });
+    }, []);
 
     var formData = new FormData();
 
@@ -168,27 +220,39 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
             e.preventDefault();
             swalConfirm({ title: "CERRAR PETICION ", text: "¿Esta seguro de cerrar esta peticion?", icon: 'warning', confirmButtonText: "CERRAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
+                    if (!currentItem?.id) {
+                        const message = "No ha sido posible cargar este item, intentelo nuevamente.";
+                        swalError({
+                            title: "ERROR AL CARGAR",
+                            text: message,
+                            reportContext: buildCloseReportContext(message, 'pqrs-close-load'),
+                        });
+                        return;
+                    }
+
+                    const { attachments, error: attachmentError } = collectCloseAttachments();
+                    if (attachmentError) {
+                        swalError({
+                            title: 'ANEXOS INCOMPLETOS',
+                            text: attachmentError,
+                            allowReport: true,
+                            reportContext: buildCloseReportContext(attachmentError, 'pqrs-close-validation'),
+                        });
+                        return;
+                    }
+
                     swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     formData = new FormData();
                     formData.set('id_master', currentItem.id);
-                    formData.set('id_reply', currentItem.id_reply);
-                    formData.set('time_id', currentItem.pqrs_time.id);
-                    let reply_formal = document.getElementById('pqrs_formal_time').value
+                    formData.set('id_reply', currentItem.id_reply ?? 0);
+
+                    if (currentItem?.pqrs_time?.id) {
+                        formData.set('time_id', currentItem.pqrs_time.id);
+                    }
+
+                    let reply_formal = document.getElementById('pqrs_formal_time')?.value || '';
                     formData.set('reply_formal', reply_formal);
-
-                    let files = document.getElementsByName("files_close");
-
-                    formData.set('attachs_length', attachs);
-                    for (var i = 0; i < attachs; i++) {
-                        formData.append('file', files[i].files[0], "pqrsout_" + files[i].files[0].name)
-                    }
-                    let array_form = [];
-                    let array_html = [];
-                    array_html = document.getElementsByName("files_close_names");
-                    for (var i = 0; i < array_html.length; i++) {
-                        array_form.push(array_html[i].value)
-                    }
-                    formData.set('files_names', array_form);
+                    appendCloseAttachments(formData, attachments);
 
                     PQRS_Service.close(formData)
                         .then(response => {
@@ -202,28 +266,43 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                         })
                         .catch(e => {
                             console.log(e);
+                            const message = e?.response?.data?.message || 'No fue posible cerrar la PQRS. Inténtelo nuevamente.';
+                            swalError({
+                                title: 'ERROR AL CERRAR',
+                                text: message,
+                                allowReport: true,
+                                reportContext: buildCloseReportContext(message, 'pqrs-close-request'),
+                            });
                         });
                 }
             });
         };
 
         let addAttachsClose = () => {
+            if (!currentItem?.id) {
+                const message = "No ha sido posible cargar este item, intentelo nuevamente.";
+                swalError({
+                    title: "ERROR AL CARGAR",
+                    text: message,
+                    reportContext: buildCloseReportContext(message, 'pqrs-close-load'),
+                });
+                return;
+            }
+
+            const { attachments, error: attachmentError } = collectCloseAttachments();
+            if (attachmentError) {
+                swalError({
+                    title: 'ANEXOS INCOMPLETOS',
+                    text: attachmentError,
+                    allowReport: true,
+                    reportContext: buildCloseReportContext(attachmentError, 'pqrs-close-validation'),
+                });
+                return;
+            }
+
             formData = new FormData();
             formData.set('id_master', currentItem.id);
-            // GET DATA OF ATTACHS
-            let files = document.getElementsByName("files_close");
-
-            formData.set('attachs_length', attachs);
-            for (var i = 0; i < attachs; i++) {
-                formData.append('file', files[i].files[0], "pqrsout_" + files[i].files[0].name)
-            }
-            let array_form = [];
-            let array_html = [];
-            array_html = document.getElementsByName("files_close_names");
-            for (var i = 0; i < array_html.length; i++) {
-                array_form.push(array_html[i].value)
-            }
-            formData.set('files_names', array_form);
+            appendCloseAttachments(formData, attachments);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.addAttachsClose(formData)
@@ -238,6 +317,13 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                 })
                 .catch(e => {
                     console.log(e);
+                    const message = e?.response?.data?.message || 'No fue posible anexar los documentos de cierre. Inténtelo nuevamente.';
+                    swalError({
+                        title: 'ERROR AL ANEXAR',
+                        text: message,
+                        allowReport: true,
+                        reportContext: buildCloseReportContext(message, 'pqrs-close-attachments'),
+                    });
                 });
         }
 

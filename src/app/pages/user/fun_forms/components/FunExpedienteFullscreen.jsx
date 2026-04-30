@@ -16,6 +16,8 @@ import RECORD_LAW from '../../records/record_law';
 import RECORD_ENG from '../../records/record_eng';
 import RECORD_REVIEW from '../../records/record_review';
 import EXPEDITION from '../../expeditions/expedition.page';
+import { BookmarkQuickMenu } from './BookmarkQuickMenu';
+import { useBookmarks } from '../hooks/useBookmarks';
 
 const SECTION_ITEMS = [
   { id: 'detalles', label: 'Detalles', icon: 'FolderOpen' },
@@ -58,6 +60,34 @@ const STATUS_META = {
 
 function getExpedienteId(expediente) {
   return expediente?.id ?? expediente?.fun0Id ?? expediente?.fun_0_id ?? null;
+}
+
+function getBookmarkExpedienteId(bookmark) {
+  return bookmark?.fun0Id ?? bookmark?.fun_0_id ?? bookmark?.fun_0?.id ?? bookmark?.id ?? null;
+}
+
+function createBookmarkState(state = {}) {
+  const personal = Boolean(state.personal);
+  const team = Boolean(state.team);
+
+  return {
+    personal,
+    team,
+    any: personal || team,
+    mode: personal && team ? 'both' : personal ? 'personal' : team ? 'team' : 'none',
+  };
+}
+
+function mergeBookmarkState(...states) {
+  return createBookmarkState(
+    states.reduce(
+      (acc, state) => ({
+        personal: acc.personal || Boolean(state?.personal),
+        team: acc.team || Boolean(state?.team),
+      }),
+      { personal: false, team: false }
+    )
+  );
 }
 
 function getExpedienteVersion(expediente) {
@@ -263,18 +293,41 @@ function renderModuleContent(activeSection, activeReport, moduleProps) {
   }
 }
 
-export function FunExpedienteFullscreen({ expediente, translation, globals, swaMsg, onClose, onRefresh }) {
+function normalizeInitialSection(section) {
+  return SECTION_ITEMS.some((item) => item.id === section) ? section : 'detalles';
+}
+
+function normalizeInitialReport(report) {
+  return REPORT_ITEMS.some((item) => item.id === report) ? report : 'juridico';
+}
+
+export function FunExpedienteFullscreen({
+  expediente,
+  translation,
+  globals,
+  swaMsg,
+  onClose,
+  onRefresh,
+  initialSection = 'detalles',
+  initialReport = 'juridico',
+  defaultRightPanelOpen = false,
+}) {
   const [summary, setSummary] = useState(expediente);
-  const [activeSection, setActiveSection] = useState('detalles');
-  const [activeReport, setActiveReport] = useState('juridico');
+  const [activeSection, setActiveSection] = useState(() => normalizeInitialSection(initialSection));
+  const [activeReport, setActiveReport] = useState(() => normalizeInitialReport(initialReport));
   const [currentId, setCurrentId] = useState(getExpedienteId(expediente));
   const [currentVersion, setCurrentVersion] = useState(getExpedienteVersion(expediente));
   const [currentPublic, setCurrentPublic] = useState(getExpedienteRadicado(expediente));
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [headerExpanded, setHeaderExpanded] = useState(false);
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(defaultRightPanelOpen);
 
   const { alarms } = useAlarms({ includeAttended: true, includeHidden: true });
+  const {
+    bookmarks,
+    error: bookmarkError,
+    setScope: setBookmarkScope,
+  } = useBookmarks();
 
   useEffect(() => {
     setSummary(expediente);
@@ -282,6 +335,26 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
     setCurrentVersion(getExpedienteVersion(expediente));
     setCurrentPublic(getExpedienteRadicado(expediente));
   }, [expediente]);
+
+  useEffect(() => {
+    setActiveSection(normalizeInitialSection(initialSection));
+    setActiveReport(normalizeInitialReport(initialReport));
+  }, [initialReport, initialSection]);
+
+  useEffect(() => {
+    setRightPanelOpen(defaultRightPanelOpen);
+  }, [defaultRightPanelOpen]);
+
+  useEffect(() => {
+    const previousTitle = document.title;
+    if (currentPublic) {
+      document.title = `${currentPublic} · DOVELA`;
+    }
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [currentPublic]);
 
   useEffect(() => {
     const { overflow } = document.body.style;
@@ -434,6 +507,26 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
     [alarms, currentId]
   );
 
+  const bookmarkState = useMemo(() => {
+    const serverState = createBookmarkState(summary?.isBookmarked);
+    const matchedBookmarks = (bookmarks || []).filter((bookmark) => String(getBookmarkExpedienteId(bookmark)) === String(currentId));
+    const clientState = createBookmarkState({
+      personal: matchedBookmarks.some((bookmark) => bookmark.scope === 'personal' || bookmark.scope === 'user'),
+      team: matchedBookmarks.some((bookmark) => bookmark.scope === 'team'),
+    });
+
+    return mergeBookmarkState(serverState, clientState);
+  }, [bookmarks, currentId, summary?.isBookmarked]);
+
+  const handleToggleBookmarkScope = useCallback(
+    async (scope, shouldMark) => {
+      if (!currentId) return;
+      await setBookmarkScope(currentId, scope, shouldMark);
+      await refreshSummary();
+    },
+    [currentId, refreshSummary, setBookmarkScope]
+  );
+
   const noop = useCallback(() => {}, []);
 
   const moduleProps = useMemo(
@@ -494,6 +587,21 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
 
           {/* Acciones + toggle detalle + cerrar */}
           <div className="flex shrink-0 items-center gap-1">
+            <BookmarkQuickMenu
+              rowId={currentId || currentPublic || 'actual'}
+              bookmarkState={bookmarkState}
+              triggerClassName="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              triggerTestIdPrefix="fullscreen-bookmark-menu-trigger"
+              menuTestIdPrefix="fullscreen-bookmark-menu"
+              align="end"
+              disabled={!currentId}
+              onToggleScope={handleToggleBookmarkScope}
+            />
+            {bookmarkError ? (
+              <span title="No se pudieron sincronizar los marcajes" className="inline-flex h-7 w-7 items-center justify-center rounded-md text-warning">
+                <Icon name="AlertCircle" size={13} />
+              </span>
+            ) : null}
             <Button
               variant="ghost"
               size="sm"
@@ -562,9 +670,9 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
       {/* ── Área de trabajo ──────────────────────────────────────────── */}
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Contenido principal */}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <ScrollArea className="flex-1">
-            <div className="space-y-4 p-3 sm:p-5">
+        <div className={cn('flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden transition-[max-width] duration-200', rightPanelOpen ? 'max-w-[calc(100%_-_18rem)]' : 'max-w-full')}>
+          <ScrollArea className="min-w-0 flex-1">
+            <div className="w-full min-w-0 space-y-4 p-3 sm:p-5">
               {activeSection === 'informes' ? (
                 <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card/80 p-2 shadow-sm">
                   {REPORT_ITEMS.map((item) => (
@@ -584,7 +692,7 @@ export function FunExpedienteFullscreen({ expediente, translation, globals, swaM
 
               <div
                 className={cn(
-                  'rounded-2xl border border-border bg-card/90 shadow-sm',
+                  'w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm',
                   activeSection === 'tiempos' ? 'p-1 sm:p-2' : 'p-3 sm:p-5'
                 )}
               >
