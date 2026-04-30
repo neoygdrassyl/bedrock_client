@@ -289,6 +289,7 @@ function FunDocumentManagementModal({
     return <Modal
         contentLabel="GESTION DOCUMENTO DIGITALIZADO"
         isOpen={open}
+        onRequestClose={onClose}
         style={MODAL_STYLES}
         ariaHideApp={false}
         className="fun-modal-content"

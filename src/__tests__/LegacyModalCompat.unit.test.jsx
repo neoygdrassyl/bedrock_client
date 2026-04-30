@@ -49,4 +49,25 @@ describe('LegacyModal compatibility', () => {
     fireEvent.click(document.body.querySelector('.ReactModal__Overlay > div'));
     expect(onRequestClose).toHaveBeenCalledTimes(1);
   });
+
+  it('elevates modal stacking above the expediente workspace fullscreen shell', () => {
+    const onRequestClose = vi.fn();
+    document.body.classList.add('workspace-fullscreen-open');
+
+    try {
+      render(
+        <LegacyModal isOpen onRequestClose={onRequestClose} contentLabel="Demo modal">
+          <div>Modal body</div>
+        </LegacyModal>,
+      );
+
+      const overlay = document.body.querySelector('.ReactModal__Overlay');
+      const content = document.body.querySelector('.ReactModal__Content');
+
+      expect(overlay).toHaveStyle({ zIndex: '10080' });
+      expect(content).toHaveStyle({ zIndex: '10081' });
+    } finally {
+      document.body.classList.remove('workspace-fullscreen-open');
+    }
+  });
 });
