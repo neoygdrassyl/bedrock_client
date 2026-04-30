@@ -10,6 +10,8 @@ import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArr
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 
+const normalizeNeighbourField = (value) => String(value ?? '');
+
 
 function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, currentVersion, vr, cubSelected, setVr }) {
         const [vrsRelated, setVrsRelated] = useState([]);
@@ -229,12 +231,12 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                     <div className="col-4">
                         <label>2.1.7 Número Predial/Catastral</label>
                         <input type="text" className="form-control" id="gen_alert_predial"
-                            defaultValue={(_CHILD_2.item_23).replaceAll('-', '')} />
+                            defaultValue={normalizeNeighbourField(_CHILD_2.item_23).replaceAll('-', '')} />
                     </div>
                     <div className="col-4">
                         <label>2.1.8 Número de Matricula</label>
                         <input type="text" className="form-control" id="gen_alert_matricula"
-                            defaultValue={(_CHILD_2.item_22).replaceAll('-', ' ')} />
+                            defaultValue={normalizeNeighbourField(_CHILD_2.item_22).replaceAll('-', ' ')} />
                     </div>
                     <div className="col-4">
                         <label>2.1.9 Propietario Predio</label>
