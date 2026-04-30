@@ -79,8 +79,32 @@ function getPayload(report) {
   }
 }
 
+function getBackendTrace(report) {
+  const payload = getPayload(report) || {};
+  const http = payload?.lastError?.http || {};
+  const event = report?.backendErrorEvent || payload?.backendErrorEvent || null;
+
+  return {
+    backendErrorId: report?.backendErrorId || http.backendErrorId || event?.id || null,
+    backendRequestId: report?.backendRequestId || http.requestId || http.backendRequestId || event?.requestId || null,
+    event,
+  };
+}
+
+function buildTechnicalPayload(report) {
+  const payload = getPayload(report) || {};
+  if (!report?.backendErrorEvent) return payload || report;
+  const basePayload = payload && typeof payload === 'object' ? payload : {};
+  return {
+    ...basePayload,
+    backendErrorId: report.backendErrorId,
+    backendRequestId: report.backendRequestId,
+    backendErrorEvent: report.backendErrorEvent,
+  };
+}
+
 function downloadJson(report) {
-  const payload = getPayload(report) || report;
+  const payload = buildTechnicalPayload(report) || report;
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -93,7 +117,7 @@ function downloadJson(report) {
 }
 
 async function copyPayload(report) {
-  const payload = getPayload(report) || report;
+  const payload = buildTechnicalPayload(report) || report;
   await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
 }
 
@@ -130,6 +154,7 @@ export default function ErrorReportsPanel({ mode = 'technical' }) {
   const copy = PANEL_COPY[mode] || PANEL_COPY.technical;
   const canManage = mode === 'management' || mode === 'technical';
   const showTechnical = mode === 'technical';
+  const selectedBackendTrace = selected ? getBackendTrace(selected) : null;
 
   const stats = useMemo(() => {
     const open = reports.filter((report) => report.status === 'open').length;
@@ -301,6 +326,7 @@ export default function ErrorReportsPanel({ mode = 'technical' }) {
                     <div className="font-medium text-foreground">{report.module || 'Sin modulo'}</div>
                     <div className="truncate text-xs text-muted-foreground" title={report.path}>{report.path || 'Sin ruta'}</div>
                     {report.expediente ? <div className="mt-1 font-mono text-[11px] text-primary">{report.expediente}</div> : null}
+                    {report.backendErrorId ? <div className="mt-1 font-mono text-[11px] text-destructive">Backend #{report.backendErrorId}</div> : null}
                   </td>
                   <td className="max-w-[280px] px-3 py-2 align-top text-xs text-foreground">
                     <span className="line-clamp-3">{report.message || 'Sin mensaje'}</span>
@@ -346,6 +372,8 @@ export default function ErrorReportsPanel({ mode = 'technical' }) {
                 <DetailRow label="Modulo" value={selected.module} />
                 <DetailRow label="Ruta" value={selected.path} />
                 <DetailRow label="Usuario" value={selected.userName || selected.userRole} />
+                <DetailRow label="Error backend" value={selectedBackendTrace?.backendErrorId ? `#${selectedBackendTrace.backendErrorId}` : null} />
+                <DetailRow label="Request ID" value={selectedBackendTrace?.backendRequestId} />
               </dl>
 
               <div className="grid gap-2">
@@ -374,14 +402,48 @@ export default function ErrorReportsPanel({ mode = 'technical' }) {
               </div>
 
               {showTechnical ? (
-                <div className="grid gap-2">
-                  <Label>Payload JSON</Label>
-                  <Textarea
-                    readOnly
-                    value={JSON.stringify(getPayload(selected) || {}, null, 2)}
-                    className="min-h-[20rem] font-mono text-xs"
-                  />
-                </div>
+                <>
+                  {selectedBackendTrace?.event ? (
+                    <div className="grid gap-2 rounded-md border border-border/60 bg-muted/20 p-3">
+                      <Label>Traza backend</Label>
+                      <dl className="grid gap-2 sm:grid-cols-3">
+                        <DetailRow label="Estado HTTP" value={selectedBackendTrace.event.statusCode} />
+                        <DetailRow label="Metodo" value={selectedBackendTrace.event.method} />
+                        <DetailRow label="Fuente" value={selectedBackendTrace.event.source} />
+                        <DetailRow label="Ruta backend" value={selectedBackendTrace.event.path} />
+                        <DetailRow label="Error" value={selectedBackendTrace.event.errorName || selectedBackendTrace.event.errorCode} />
+                        <DetailRow label="DB code" value={selectedBackendTrace.event.dbCode || selectedBackendTrace.event.dbErrno} />
+                      </dl>
+                      {selectedBackendTrace.event.message ? (
+                        <div className="rounded-md border border-border/60 bg-background px-3 py-2 text-xs text-foreground">
+                          {selectedBackendTrace.event.message}
+                        </div>
+                      ) : null}
+                      {selectedBackendTrace.event.dbSqlMessage ? (
+                        <Textarea
+                          readOnly
+                          value={selectedBackendTrace.event.dbSqlMessage}
+                          className="min-h-20 font-mono text-xs"
+                        />
+                      ) : null}
+                      {selectedBackendTrace.event.stack ? (
+                        <Textarea
+                          readOnly
+                          value={selectedBackendTrace.event.stack}
+                          className="min-h-32 font-mono text-xs"
+                        />
+                      ) : null}
+                    </div>
+                  ) : null}
+                  <div className="grid gap-2">
+                    <Label>Payload JSON</Label>
+                    <Textarea
+                      readOnly
+                      value={JSON.stringify(buildTechnicalPayload(selected) || {}, null, 2)}
+                      className="min-h-[20rem] font-mono text-xs"
+                    />
+                  </div>
+                </>
               ) : null}
             </div>
           ) : null}
