@@ -18,6 +18,7 @@ function buildQuery(params = {}) {
 
 class ErrorReportService {
   create(report) {
+    const backendTrace = report.lastError?.http || report.backendTrace || {};
     return http.post(`/${ROUTE}`, {
       source: report.source,
       severity: report.userInput?.severity || report.severity,
@@ -27,6 +28,8 @@ class ErrorReportService {
       expediente: report.userInput?.expediente || report.expediente?.radicado,
       userName: report.user?.name || report.user?.email,
       userRole: report.user?.role,
+      backendErrorId: backendTrace.backendErrorId || null,
+      backendRequestId: backendTrace.requestId || backendTrace.backendRequestId || null,
       payloadJson: JSON.stringify(report),
     }, JSON_REQUEST);
   }
