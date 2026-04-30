@@ -28,6 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
 import {
+  DOVELA_OPEN_ERROR_REPORT_EVENT,
   buildDovelaErrorReport,
   captureDovelaError,
   captureDovelaConsoleMessage,
@@ -37,6 +38,7 @@ import {
   getLastDovelaAction,
   getLastDovelaError,
   isDashboardGuideDismissed,
+  resolveDovelaReportLastError,
 } from '@/app/utils/errorReporting';
 import ErrorReportService from '@/app/services/error_report.service';
 
@@ -87,7 +89,7 @@ function clearTutorialHighlights() {
 }
 
 function getContextSnapshot(overrideContext = {}) {
-  const lastError = overrideContext.lastError || overrideContext.errorSnapshot || getLastDovelaError();
+  const lastError = resolveDovelaReportLastError(overrideContext) || getLastDovelaError();
   const lastAction = overrideContext.lastAction || getLastDovelaAction();
   const expediente = overrideContext.expediente || extractExpedienteContext() || lastError?.expediente || lastAction?.expediente || null;
   return { lastError, lastAction, expediente };
@@ -138,6 +140,14 @@ function ErrorReportDialog({ open, onOpenChange, context, source = 'manual-repor
   const previewReport = useMemo(
     () => buildDovelaErrorReport(form, { source, lastError: snapshot.lastError }),
     [form, snapshot.lastError, source]
+  );
+  const backendTrace = previewReport.backendTrace || previewReport.lastError?.http || null;
+  const hasBackendTrace = Boolean(
+    backendTrace?.backendErrorId
+    || backendTrace?.requestId
+    || backendTrace?.backendRequestId
+    || backendTrace?.status
+    || backendTrace?.url
   );
 
   const updateForm = (key, value) => {
@@ -260,8 +270,13 @@ function ErrorReportDialog({ open, onOpenChange, context, source = 'manual-repor
               <ContextRow label="Ruta" value={previewReport.location?.pathname} />
               <ContextRow label="Última acción" value={snapshot.lastAction?.element?.label || snapshot.lastAction?.element?.href} />
               <ContextRow label="Error detectado" value={snapshot.lastError ? 'Sí, se adjunta al reporte' : 'No hay error automático reciente'} />
+              <ContextRow label="Correlación backend" value={hasBackendTrace ? 'Sí, lista para enviarse' : 'No capturada en este incidente'} />
+              <ContextRow label="HTTP status" value={backendTrace?.status || 'No disponible'} />
+              <ContextRow label="Request ID" value={backendTrace?.requestId || backendTrace?.backendRequestId || 'No disponible'} />
+              <ContextRow label="Error backend" value={backendTrace?.backendErrorId || 'No disponible'} />
               <ContextRow label="Usuario" value={previewReport.user?.name || previewReport.user?.email || 'Usuario no identificado'} />
               <ContextRow label="Pantalla" value={previewReport.browser?.viewport} />
+              <ContextRow label="Endpoint backend" value={backendTrace?.url || 'No disponible'} multiline />
             </div>
           </div>
         </div>
@@ -443,9 +458,12 @@ export function DovelaSupportLayer({ user }) {
   const [reportOpen, setReportOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [reportContext, setReportContext] = useState({});
+  const [reportSource, setReportSource] = useState('global-floating-report');
 
-  const openReportDialog = useCallback((context = {}) => {
-    setReportContext(getContextSnapshot(context));
+  const openReportDialog = useCallback((context = {}, source = 'global-floating-report') => {
+    const { reportSource: contextReportSource, ...cleanContext } = context || {};
+    setReportContext(getContextSnapshot(cleanContext));
+    setReportSource(contextReportSource || source);
     setReportOpen(true);
   }, []);
 
@@ -525,18 +543,24 @@ export function DovelaSupportLayer({ user }) {
         description: 'Puedes enviar un reporte con el contexto capturado.',
         action: {
           label: 'Reportar error',
-          onClick: () => openReportDialog({ lastError: detail }),
+          onClick: () => openReportDialog({ lastError: detail }, 'captured-error-toast'),
         },
       });
+    };
+
+    const handleOpenReportRequest = (event) => {
+      openReportDialog(event.detail || {});
     };
 
     window.addEventListener('error', handleWindowError);
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
     window.addEventListener('dovela:error-captured', handleCapturedError);
+    window.addEventListener(DOVELA_OPEN_ERROR_REPORT_EVENT, handleOpenReportRequest);
     return () => {
       window.removeEventListener('error', handleWindowError);
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
       window.removeEventListener('dovela:error-captured', handleCapturedError);
+      window.removeEventListener(DOVELA_OPEN_ERROR_REPORT_EVENT, handleOpenReportRequest);
     };
   }, [openReportDialog]);
 
@@ -573,7 +597,7 @@ export function DovelaSupportLayer({ user }) {
           type="button"
           variant="destructive"
           size="sm"
-          onClick={() => openReportDialog()}
+          onClick={() => openReportDialog({}, 'global-floating-report')}
           className="h-9 px-3 shadow-lg"
         >
           <AlertTriangle className="h-4 w-4" />
@@ -590,7 +614,7 @@ export function DovelaSupportLayer({ user }) {
         open={reportOpen}
         onOpenChange={setReportOpen}
         context={reportContext}
-        source="global-floating-report"
+        source={reportSource}
       />
     </>
   );
