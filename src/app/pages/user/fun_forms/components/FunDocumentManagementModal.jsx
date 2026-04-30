@@ -23,6 +23,21 @@ const MODAL_STYLES = {
     },
 };
 
+const FULLSCREEN_PREVIEW_MODAL_STYLES = {
+    overlay: {
+        backgroundColor: 'rgba(15, 23, 42, 0.72)',
+        zIndex: 1070,
+    },
+    content: {
+        inset: '1.5vh 1.5vw',
+        maxWidth: 'none',
+        padding: 0,
+        borderRadius: '24px',
+        border: '1px solid rgba(148, 163, 184, 0.22)',
+        overflow: 'hidden',
+    },
+};
+
 function createInitialHistoryForm(date = '') {
     return {
         detail: '',
@@ -66,6 +81,7 @@ function FunDocumentManagementModal({
     const [historyMode, setHistoryMode] = useState(null);
     const [historyForm, setHistoryForm] = useState(createInitialHistoryForm());
     const [editingHistoryId, setEditingHistoryId] = useState(null);
+    const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
 
     const previewPath = useMemo(() => getPreviewPath(documentItem), [documentItem]);
     const previewUrl = useMemo(
@@ -103,6 +119,7 @@ function FunDocumentManagementModal({
 
     useEffect(() => {
         if (!open) {
+            setIsPreviewFullscreen(false);
             resetHistoryForm(documentItem?.date || '');
             return;
         }
@@ -110,6 +127,8 @@ function FunDocumentManagementModal({
         resetHistoryForm(documentItem?.date || '');
         loadHistory();
     }, [open, documentItem?.id]);
+
+    const canOpenPreviewFullscreen = Boolean(previewPath) && (documentExtension === 'pdf' || isPreviewableImage(documentExtension));
 
     const historyColumns = useMemo(() => {
         const baseColumns = [
@@ -255,7 +274,7 @@ function FunDocumentManagementModal({
         window.open(previewUrl, '_blank', 'noopener,noreferrer');
     };
 
-    const renderPreview = () => {
+    const renderPreview = ({ fullscreen = false } = {}) => {
         if (!previewPath) {
             return <div className="flex h-full min-h-[16rem] items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 p-6 text-sm text-muted-foreground">
                 Este documento no tiene un archivo disponible para previsualización.
@@ -264,16 +283,24 @@ function FunDocumentManagementModal({
 
         if (documentExtension === 'pdf') {
             return <div className="rounded-xl border border-border bg-background p-3">
-                <PDF_VIEWER key={previewPath} url={previewPath} apipath="/files/" />
+                <PDF_VIEWER
+                    key={`${previewPath}-${fullscreen ? 'fullscreen' : 'inline'}`}
+                    url={previewPath}
+                    apipath="/files/"
+                    defaultScale={fullscreen ? 1.2 : 1.1}
+                    maxPageWidth={fullscreen ? 1600 : 920}
+                    viewportClassName={fullscreen ? 'h-[calc(100vh-14rem)] bg-muted/10' : 'max-h-[min(60vh,48rem)] bg-muted/10'}
+                    pageWrapperClassName={fullscreen ? 'px-4 py-4' : 'px-2 py-3'}
+                />
             </div>;
         }
 
         if (isPreviewableImage(documentExtension)) {
-            return <div className="flex min-h-[24rem] items-center justify-center rounded-xl border border-border bg-muted/20 p-3">
+            return <div className={`flex items-center justify-center rounded-xl border border-border bg-muted/20 p-3 ${fullscreen ? 'h-[calc(100vh-14rem)]' : 'min-h-[24rem] max-h-[min(60vh,48rem)] overflow-auto'}`}>
                 <img
                     src={previewUrl}
                     alt={documentItem?.description || 'Documento digitalizado'}
-                    className="max-h-[70vh] w-full rounded-lg object-contain"
+                    className={`rounded-lg object-contain ${fullscreen ? 'max-h-full max-w-full' : 'max-h-[min(56vh,44rem)] w-full'}`}
                 />
             </div>;
         }
@@ -286,15 +313,16 @@ function FunDocumentManagementModal({
         </div>;
     };
 
-    return <Modal
-        contentLabel="GESTION DOCUMENTO DIGITALIZADO"
-        isOpen={open}
-        onRequestClose={onClose}
-        style={MODAL_STYLES}
-        ariaHideApp={false}
-        className="fun-modal-content"
-    >
-        <div className="flex h-full flex-col bg-background text-foreground">
+    return <>
+        <Modal
+            contentLabel="GESTION DOCUMENTO DIGITALIZADO"
+            isOpen={open}
+            onRequestClose={onClose}
+            style={MODAL_STYLES}
+            ariaHideApp={false}
+            className="fun-modal-content"
+        >
+            <div className="flex h-full flex-col bg-background text-foreground">
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/60 px-5 py-4">
                 <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -356,8 +384,18 @@ function FunDocumentManagementModal({
                             <h3 className="m-0 text-sm font-semibold">Previsualización</h3>
                             <p className="m-0 text-xs text-muted-foreground">Consulta inmediata del archivo digitalizado.</p>
                         </div>
+                        {canOpenPreviewFullscreen ? <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsPreviewFullscreen(true)}
+                            aria-label="Abrir previsualización en pantalla completa"
+                            data-testid="document-preview-fullscreen-trigger"
+                        >
+                            <Icon name="expand-arrows-alt" size={14} /> Pantalla completa
+                        </Button> : null}
                     </div>
-                    <div className="min-w-0">{renderPreview()}</div>
+                    <div className="min-w-0 overflow-hidden">{renderPreview()}</div>
                 </section>
 
                 <section className="min-w-0 rounded-2xl border border-border bg-card/80 p-4 shadow-sm">
@@ -447,8 +485,40 @@ function FunDocumentManagementModal({
                     </form> : null}
                 </section>
             </div>
-        </div>
-    </Modal>;
+            </div>
+        </Modal>
+
+        <Modal
+            contentLabel="PREVISUALIZACION DOCUMENTO PANTALLA COMPLETA"
+            isOpen={open && isPreviewFullscreen}
+            onRequestClose={() => setIsPreviewFullscreen(false)}
+            style={FULLSCREEN_PREVIEW_MODAL_STYLES}
+            ariaHideApp={false}
+            className="fun-modal-content"
+        >
+            <div data-testid="document-preview-fullscreen-modal" className="flex h-full flex-col bg-background text-foreground">
+                <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/60 px-5 py-4">
+                    <div className="min-w-0">
+                        <h2 className="m-0 text-base font-semibold">Vista completa del documento</h2>
+                        <p className="m-0 text-sm text-muted-foreground">Previsualización inmersiva sin perder el contexto del expediente.</p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                        {previewPath ? <Button type="button" variant="outline" size="sm" onClick={handleDownload}>
+                            <Icon name="Download" size={14} /> Descargar
+                        </Button> : null}
+                        <Button type="button" variant="ghost" size="icon" onClick={() => setIsPreviewFullscreen(false)} aria-label="Cerrar previsualización en pantalla completa">
+                            <Icon name="X" size={16} />
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="min-h-0 flex-1 overflow-hidden p-4">
+                    {renderPreview({ fullscreen: true })}
+                </div>
+            </div>
+        </Modal>
+    </>;
 }
 
 export default FunDocumentManagementModal;
