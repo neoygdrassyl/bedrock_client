@@ -1,19 +1,22 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 import { FunDashboardKPIs } from './fun_forms/components/FunDashboardKPIs';
 import { FunmanageScatterChart } from './fun_forms/components/FunmanageScatterChart';
 import { FunmanageDataTable } from './fun_forms/components/FunmanageDataTable';
 import { FunmanagePhaseChart } from './fun_forms/components/FunmanagePhaseChart';
 import { FunExpedienteDetail } from './fun_forms/components/FunExpedienteDetail';
-import { FunExpedienteWorkspace } from './fun_forms/components/FunExpedienteWorkspace';
 import { FilterPanel } from './fun_forms/components/FilterPanel';
 import { useDashboard } from './fun_forms/hooks/useDashboard';
 import { useAlarmConfig } from './fun_forms/hooks/useAlarmConfig';
 import { useAlarmConfigV2 } from './fun_forms/hooks/useAlarmConfigV2';
 import { useBookmarks } from './fun_forms/hooks/useBookmarks';
 import { DEFAULT_FILTERS, mergeFilters, hasActiveFilters } from './fun_forms/utils/filters';
+import { openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
+
+const GESTION_NUEVA_IN_DEVELOPMENT = true;
 
 export function normalizeResponsibleActor(responsable) {
   const normalized = String(responsable || '').trim().toLowerCase();
@@ -50,12 +53,28 @@ function mergeBookmarkState(...states) {
   );
 }
 
+function getActorAlarmValue(row, actor) {
+  const normalizedActor = String(actor || '').toUpperCase();
+  const alarms = Array.isArray(row?.activeAlarms) ? row.activeAlarms : [];
+  const selectedAlarm = alarms
+    .filter((alarm) => String(alarm?.actor || '').toUpperCase() === normalizedActor)
+    .filter((alarm) => String(alarm?.action || 'show_alarm') === 'show_alarm')
+    .sort((a, b) => Number(b?.level || 0) - Number(a?.level || 0))[0];
+
+  const used = Number(selectedAlarm?.daysUsed);
+  const total = Number(selectedAlarm?.daysTotal);
+  if (!Number.isFinite(used) || !Number.isFinite(total) || total <= 0) return null;
+  return `${used}/${total}`;
+}
+
 export function buildCompactTableRow(row, bookmarkState) {
   const rowId = row.fun0Id ?? row.fun_0_id ?? row.id;
   const currentActor = normalizeResponsibleActor(row.responsable);
   const usedDays = Number.isFinite(row.dias_habiles_usados) ? row.dias_habiles_usados : 0;
   const limitDays = Number.isFinite(row.dias_habiles_limite) ? row.dias_habiles_limite : 0;
   const actorValue = `${usedDays}/${limitDays}`;
+  const curAlarmValue = getActorAlarmValue(row, 'CUR');
+  const solAlarmValue = getActorAlarmValue(row, 'SOL');
 
   return {
     ...row,
@@ -63,8 +82,8 @@ export function buildCompactTableRow(row, bookmarkState) {
     phaseText: row.fase_label ?? 'Sin fase',
     phaseTooltip: row.fase_label ?? 'Sin fase',
     currentActor,
-    curValue: currentActor === 'cur' ? actorValue : '0/0',
-    solValue: currentActor === 'sol' ? actorValue : '0/0',
+    curValue: currentActor === 'cur' ? actorValue : (curAlarmValue || '0/0'),
+    solValue: currentActor === 'sol' ? actorValue : (solAlarmValue || '0/0'),
     _bookmarkState: bookmarkState,
     _bookmarked: bookmarkState.any,
   };
@@ -79,14 +98,46 @@ function useDebounce(value, delay = 400) {
   return debounced;
 }
 
-function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
+function FunManageNewDevelopmentNotice() {
+  return (
+    <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center px-3 py-8" data-testid="gestion-nueva-development-state">
+      <section className="w-full max-w-2xl rounded-xl border border-border bg-card/95 p-6 text-center shadow-sm">
+        <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10 text-warning">
+          <Icon name="Construction" size={24} />
+        </span>
+        <div className="mb-2 inline-flex rounded-full border border-warning/30 bg-warning/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-warning">
+          En desarrollo
+        </div>
+        <h1 className="text-xl font-semibold text-foreground">Gestión Licencias Nuevo está en desarrollo</h1>
+        <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+          Esta superficie permanece cerrada mientras se termina la validación operativa. Por ahora no muestra expedientes, KPI, gráficos ni información del dashboard.
+        </p>
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <Button asChild size="sm">
+            <Link to="/licencias/gestion" className="no-underline">
+              <Icon name="FolderOpen" size={14} />
+              Abrir gestión clásica
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link to="/dashboard" className="no-underline">
+              <Icon name="LayoutDashboard" size={14} />
+              Volver al dashboard
+            </Link>
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function FunManageNewDashboard({ translation, globals, swaMsg, breadCrums }) {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebounce(searchInput, 450);
 
   const [kpiActiveFilterKey, setKpiActiveFilterKey] = useState(null);
   const [selectedExpediente, setSelectedExpediente] = useState(null);
-  const [workspaceExpediente, setWorkspaceExpediente] = useState(null);
 
   useEffect(() => {
     setFilters((prev) => (prev.search === debouncedSearch ? prev : mergeFilters(prev, { search: debouncedSearch })));
@@ -140,7 +191,22 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
     [bookmarkStateById]
   );
 
-  const handleKPIFilterChange = useCallback(({ status, phase, desistido, causal, key, subfiltro, bookmarked, vecinos }) => {
+  const handleKPIFilterChange = useCallback(({
+    status,
+    phase,
+    desistido,
+    causal,
+    key,
+    subfiltro,
+    bookmarked,
+    vecinos,
+    valla,
+    alarmTraffic,
+    alarmLevel,
+    alarmActor,
+    alarmAction,
+    soloConAlarmas,
+  }) => {
     setKpiActiveFilterKey((prev) => {
       if (prev === key) {
         setFilters((f) => mergeFilters(f, {
@@ -153,6 +219,13 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           bookmarked: null,
           vecinos: null,
           vecinosState: null,
+          valla: null,
+          vallaState: null,
+          alarmTraffic: null,
+          alarmLevel: null,
+          alarmActor: null,
+          alarmAction: null,
+          soloConAlarmas: false,
         }));
         return null;
       }
@@ -167,6 +240,13 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           bookmarked: bookmarked || null,
           vecinos: vecinos || null,
           vecinosState: vecinos || null,
+          valla: valla || null,
+          vallaState: valla || null,
+          alarmTraffic: alarmTraffic || null,
+          alarmLevel: alarmLevel || null,
+          alarmActor: alarmActor || null,
+          alarmAction: alarmAction || null,
+          soloConAlarmas: Boolean(soloConAlarmas),
         })
       );
       return key;
@@ -181,11 +261,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
 
   const handleOpenWorkspace = useCallback((expediente) => {
     setSelectedExpediente(null);
-    setWorkspaceExpediente(expediente);
-  }, []);
-
-  const handleCloseWorkspace = useCallback(() => {
-    setWorkspaceExpediente(null);
+    openExpedienteWorkspace(expediente, { module: 'general' });
   }, []);
 
   const handleSortingChange = useCallback((updater) => {
@@ -276,7 +352,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
           />
 
           <div className="row g-3 mb-4" data-testid="main-content-row">
-            <div className="col-12 col-lg-7 col-xl-8" data-testid="table-section">
+            <div className="col-12 col-lg-7 col-xl-7" data-testid="table-section">
               <div className="rounded border p-3 h-100" style={{ borderColor: '#e2e8f0', background: '#fff' }}>
                 <div className="d-flex flex-wrap align-items-center justify-content-between mb-3">
                   <h6 className="text-muted mb-0" style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}>
@@ -303,14 +379,14 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
               </div>
             </div>
 
-            <div className="col-12 col-lg-5 col-xl-4 d-flex flex-column gap-3" data-testid="charts-col">
+            <div className="col-12 col-lg-5 col-xl-5 d-flex flex-column gap-3" data-testid="charts-col">
               <div
                 className="rounded border p-3"
                 style={{ borderColor: '#e2e8f0', background: '#fff' }}
                 data-testid="scatter-section"
               >
                 <h6 className="text-muted mb-2" style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}>
-                  <Icon name="circle-nodes" size={16} className="me-2" />Tiempo por Categoría
+                  <Icon name="circle-nodes" size={16} className="me-2" />Tiempo por Fase
                 </h6>
                 <FunmanageScatterChart data={chartData} loading={loading} thresholds={scatterThresholds} />
               </div>
@@ -366,18 +442,16 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
         />
       )}
 
-      {workspaceExpediente && (
-        <FunExpedienteWorkspace
-          expediente={workspaceExpediente}
-          translation={translation}
-          globals={globals}
-          swaMsg={swaMsg}
-          onClose={handleCloseWorkspace}
-          onRefresh={refetch}
-        />
-      )}
     </div>
   );
+}
+
+function FunManageNewPage(props) {
+  if (GESTION_NUEVA_IN_DEVELOPMENT) {
+    return <FunManageNewDevelopmentNotice />;
+  }
+
+  return <FunManageNewDashboard {...props} />;
 }
 
 export default FunManageNewPage;

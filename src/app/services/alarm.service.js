@@ -33,7 +33,7 @@ class AlarmService {
     return http.get(`/${ROUTE}${buildQuery(params)}`);
   }
 
-  // ---- Campana (solo usuario actual, solo show_alarm + actor=CUR + asignados) ----
+  // ---- Campana de perfil (show_alarm + actor=CUR; assignedOnly opcional) ----
   bell(params = {}) {
     return http.get(`/${ROUTE}/bell${buildQuery(params)}`);
   }

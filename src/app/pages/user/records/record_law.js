@@ -23,6 +23,7 @@ import RECORD_LAW_GEN2_11 from './law/record_law_gen2_11';
 import RECORD_LAW_FUN_51 from './law/record_law_fun_51.component';
 import RECORD_LAW_FUN_52 from './law/record_law_fun_52.component';
 import RECORD_LAW_FUN_53 from './law/record_law_fun_53.component';
+import RECORD_LAW_PROFESIONALS from './law/record_law_profesionals';
 import RECORD_LAW_FUN_LAW from './law/record_law_fun_law.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORDS_BINNACLE from './records_binnacles.component';
@@ -182,6 +183,14 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
             }
             return _LIST;
         }
+        let _GET_CHILD_52 = () => {
+            var _CHILD = currentItem.fun_52s;
+            var _LIST = [];
+            if (_CHILD) {
+                _LIST = _CHILD;
+            }
+            return _LIST;
+        }
         let _GET_CHILD_REVIEW = () => {
             var _CHILD = currentItem.fun_rs;
             var _CURRENT_VERSION = currentVersion - 1;
@@ -319,6 +328,14 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                         requestUpdate={requestUpdate}
                                         readOnly
                                         mergeVentanilla
+                                    />}
+                                    professionalsLabel="Profesionales del proyecto"
+                                    professionalsContent={<RECORD_LAW_PROFESIONALS
+                                        translation={translation}
+                                        swaMsg={swaMsg}
+                                        globals={globals}
+                                        _FUN_1={_GET_CHILD_1()}
+                                        _FUN_52={_GET_CHILD_52()}
                                     />}
                                 />
 

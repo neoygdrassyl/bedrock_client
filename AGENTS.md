@@ -139,6 +139,15 @@ npm run test:e2e
 npm run build
 ```
 
+## 9.1 Protocolo de reinicio local (sin instancias extra)
+
+1. Estado base obligatorio: frontend ya corriendo en `3000` y backend en `3001`.
+2. No levantes una segunda instancia de frontend por defecto; reinicia sobre el proceso existente.
+3. Si necesitas reiniciar, hazlo en la misma sesion/terminal que ya estaba ejecutando la app.
+4. Si no puedes confirmar que realmente se reinicio o no controlas el proceso, pregunta al usuario con `ask_user` antes de abrir otra instancia.
+5. Usa `3002` solo como fallback excepcional y solo despues de confirmacion explicita del usuario con `ask_user`.
+6. Cuando termines, deja claro que puerto de frontend quedo activo.
+
 ## 10. Regla de lectura progresiva
 
 AGENTS.md solo debe darte lo necesario para arrancar. Si el cambio escala, lee la referencia adecuada en vez de inflar este archivo:

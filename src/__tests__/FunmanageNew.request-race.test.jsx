@@ -1,15 +1,6 @@
 import React, { StrictMode } from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
-
-function deferred() {
-  let resolve;
-  let reject;
-  const promise = new Promise((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return { promise, resolve, reject };
-}
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 
 const { dashboardServiceMock } = vi.hoisted(() => ({
   dashboardServiceMock: {
@@ -57,7 +48,10 @@ vi.mock('@/components/ui/select', () => ({
 }));
 
 vi.mock('@/components/ui/button', () => ({
-  Button: ({ children, ...props }) => <button type="button" {...props}>{children}</button>,
+  Button: ({ children, asChild, ...props }) => {
+    if (asChild && React.isValidElement(children)) return React.cloneElement(children, props);
+    return <button type="button" {...props}>{children}</button>;
+  },
 }));
 
 vi.mock('@/components/icon', () => ({
@@ -71,47 +65,17 @@ describe('FunManageNewPage request lifecycle', () => {
     dashboardServiceMock.getExpedientes.mockReset();
   });
 
-  test('ignores stale dashboard failures after a newer load already succeeded', async () => {
-    const firstRequest = deferred();
-    const secondRequest = deferred();
-
-    dashboardServiceMock.getExpedientes
-      .mockImplementationOnce(() => firstRequest.promise)
-      .mockImplementationOnce(() => secondRequest.promise)
-      .mockResolvedValue({ data: { kpis: null, data: [], chartData: [], total: 0 } });
-
+  test('does not start dashboard requests while development state is active', () => {
     render(
       <StrictMode>
-        <FunManageNewPage translation={{}} globals={{}} swaMsg={{}} breadCrums={{}} />
+        <MemoryRouter>
+          <FunManageNewPage translation={{}} globals={{}} swaMsg={{}} breadCrums={{}} />
+        </MemoryRouter>
       </StrictMode>
     );
 
-    await waitFor(() => expect(dashboardServiceMock.getExpedientes).toHaveBeenCalledTimes(2));
-
-    await act(async () => {
-      secondRequest.resolve({
-        data: {
-          kpis: { total: 1 },
-          data: [{ id: 101, radicado: 'CUB-101' }],
-          chartData: [],
-          total: 1,
-        },
-      });
-      await secondRequest.promise;
-    });
-
-    expect(await screen.findByText('rows:1')).toBeInTheDocument();
-
-    await act(async () => {
-      firstRequest.reject(new Error('stale dashboard failure'));
-      try {
-        await firstRequest.promise;
-      } catch {
-        // expected rejection for the stale request
-      }
-    });
-
-    expect(screen.queryByText('No se pudo cargar el dashboard.')).not.toBeInTheDocument();
-    expect(screen.getByText('rows:1')).toBeInTheDocument();
+    expect(screen.getByTestId('gestion-nueva-development-state')).toBeInTheDocument();
+    expect(dashboardServiceMock.getExpedientes).not.toHaveBeenCalled();
+    expect(screen.queryByTestId('funmanage-table-state')).not.toBeInTheDocument();
   });
 });

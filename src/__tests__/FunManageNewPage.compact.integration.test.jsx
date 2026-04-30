@@ -1,7 +1,6 @@
 import React from 'react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 const mockUseDashboard = vi.fn();
@@ -103,74 +102,15 @@ describe('FunManageNewPage compact integration', () => {
     expect(compactRow._bookmarked).toBe(true);
   });
 
-  it('shows bookmark menu only in the approved detail drawer path, not in workspace', async () => {
-    const user = userEvent.setup();
+  it('muestra Gestión Nueva como desarrollo sin renderizar información operativa', () => {
     renderPage();
 
-    await user.click(screen.getByTestId('table-row-0'));
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Detalle del expediente')).toBeInTheDocument();
-    });
-    expect(screen.getByTestId('detail-bookmark-menu-trigger-77')).toBeInTheDocument();
-
-    await user.click(screen.getByLabelText('Cerrar panel'));
-
-    await waitFor(() => {
-      expect(screen.queryByLabelText('Detalle del expediente')).not.toBeInTheDocument();
-    });
-
-    await user.click(screen.getByTestId('row-fullscreen-77'));
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Detalle del expediente')).toBeInTheDocument();
-    });
-    expect(screen.queryByTestId('detail-bookmark-menu-trigger-77')).not.toBeInTheDocument();
-  });
-
-  it('toggles bookmark using personal and team scopes from the compact table', async () => {
-    const user = userEvent.setup();
-    const setScope = vi.fn().mockResolvedValue(undefined);
-    const refetch = vi.fn();
-
-    mockUseDashboard.mockReturnValue({
-      kpis: { por_fase: [] },
-      chartData: [],
-      table: { data: [dashboardRow], total: 1, page: 1, limit: 12 },
-      loading: false,
-      error: null,
-      refetch,
-    });
-
-    mockUseBookmarks.mockReturnValue({
-      bookmarks: [],
-      error: null,
-      setScope,
-    });
-
-    renderPage();
-
-    await user.click(screen.getByTestId('bookmark-menu-trigger-77'));
-    await user.click(screen.getByTestId('bookmark-menu-personal-77'));
-
-    await waitFor(() => {
-      expect(setScope).toHaveBeenCalledWith(77, 'personal', true);
-    });
-    await waitFor(() => {
-      expect(refetch).toHaveBeenCalled();
-    });
-
-    setScope.mockClear();
-    refetch.mockClear();
-
-    await user.click(screen.getByTestId('bookmark-menu-trigger-77'));
-    await user.click(screen.getByTestId('bookmark-menu-team-77'));
-
-    await waitFor(() => {
-      expect(setScope).toHaveBeenCalledWith(77, 'team', true);
-    });
-    await waitFor(() => {
-      expect(refetch).toHaveBeenCalled();
-    });
+    expect(screen.getByTestId('gestion-nueva-development-state')).toBeInTheDocument();
+    expect(screen.getByText('Gestión Licencias Nuevo está en desarrollo')).toBeInTheDocument();
+    expect(screen.getByText(/no muestra expedientes, KPI, gráficos ni información/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('kpis-stub')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('scatter-stub')).not.toBeInTheDocument();
+    expect(mockUseDashboard).not.toHaveBeenCalled();
+    expect(mockUseBookmarks).not.toHaveBeenCalled();
   });
 });

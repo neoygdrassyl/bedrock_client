@@ -20,6 +20,8 @@ import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swal
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 var writtenNumber = require('written-number');
 const IVA = 0.19;
+const normalizeExpeditionField = (value) => String(value ?? '');
+const stripExpeditionSeparators = (value, replacement = '') => normalizeExpeditionField(value).replaceAll('-', replacement);
 
 function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc, requestUpdate, requestUpdateRecord }) {
     const [vrsRelated, setVrsRelated] = useState([]);
@@ -453,7 +455,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="mt-1"># Predial / Catastral</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_2_4" disabled
-                                value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
+                                value={stripExpeditionSeparators(_GET_CHILD_2().item_23)} readOnly />
                         </div>
                     </div>
                     <div className="col">
@@ -650,7 +652,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="mt-1"># Predial / Catastral</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_3_4" disabled
-                                value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
+                                value={stripExpeditionSeparators(_GET_CHILD_2().item_23)} readOnly />
                         </div>
                     </div>
                     <div className="col">
@@ -835,7 +837,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="mt-1"># Predial / Catastral</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_4_4" disabled
-                                value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
+                                value={stripExpeditionSeparators(_GET_CHILD_2().item_23)} readOnly />
                         </div>
                     </div>
                     <div className="col">
@@ -975,7 +977,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="mt-1"># Predial / Catastral</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_5_7" disabled
-                                value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
+                                value={stripExpeditionSeparators(_GET_CHILD_2().item_23)} readOnly />
                         </div>
                     </div>
                     <div className="col">
@@ -1277,7 +1279,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="mt-1"># Predial / Catastral</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_6_4" disabled
-                                value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
+                                value={stripExpeditionSeparators(_GET_CHILD_2().item_23)} readOnly />
                         </div>
                     </div>
 
@@ -1433,7 +1435,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="mt-1"># Predial / Catastral</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_7_4" disabled
-                                value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
+                                value={stripExpeditionSeparators(_GET_CHILD_2().item_23)} readOnly />
                         </div>
                     </div>
                     <div className="col">

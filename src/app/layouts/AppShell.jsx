@@ -6,6 +6,7 @@ import { ContextPanel } from './ContextPanel';
 import { HeaderBar } from './HeaderBar';
 import { AppFooter } from './AppFooter';
 import { LegacyPageWrapper } from './LegacyPageWrapper';
+import { DovelaSupportLayer } from '../components/DovelaSupportLayer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { infoCud } from '@/app/components/jsons/vars';
 
@@ -126,6 +127,8 @@ export function AppShell({ user, onLogout, children }) {
 
         <AppFooter />
       </div>
+
+      <DovelaSupportLayer user={user} />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
 import DataTable from '@/components/data-table-bridge';
 import dayjs from 'dayjs';
+import InternalChatPanel from './chat/InternalChatPanel';
 
 function Mail({ translation, globals, breadCrums }) {
     const [error, setError] = useState(null);
@@ -13,6 +14,7 @@ function Mail({ translation, globals, breadCrums }) {
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [modal, setModal] = useState(false);
     const [items, setItems] = useState([]);
+    const [activeTab, setActiveTab] = useState('chat');
 
     const retrievePublish = useCallback(() => {
         MailboxService.getAll()
@@ -87,11 +89,34 @@ function Mail({ translation, globals, breadCrums }) {
 
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-xl font-bold text-foreground">Buzón de Mensajes</h1>
-                    <p className="text-sm text-muted-foreground mt-1">Mensajes recibidos del formulario de contacto</p>
+                    <h1 className="text-xl font-bold text-foreground">Mensajes</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Chat interno de usuarios y buzón recibido del formulario de contacto</p>
                 </div>
 
-                <Card>
+                <div className="flex flex-wrap gap-2">
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant={activeTab === 'chat' ? 'default' : 'outline'}
+                        onClick={() => setActiveTab('chat')}
+                    >
+                        <Icon name="MessageCircle" size={14} className="mr-1" />
+                        Chat interno
+                    </Button>
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant={activeTab === 'mailbox' ? 'default' : 'outline'}
+                        onClick={() => setActiveTab('mailbox')}
+                    >
+                        <Icon name="Inbox" size={14} className="mr-1" />
+                        Buzón externo
+                    </Button>
+                </div>
+
+                {activeTab === 'chat' && <InternalChatPanel />}
+
+                {activeTab === 'mailbox' && <Card>
                     <CardContent className="p-0">
                         {isLoaded ? (
                             <DataTable
@@ -113,7 +138,7 @@ function Mail({ translation, globals, breadCrums }) {
                             </div>
                         )}
                     </CardContent>
-                </Card>
+                </Card>}
 
                 {/* Detail Modal */}
                 {getToggle() && (

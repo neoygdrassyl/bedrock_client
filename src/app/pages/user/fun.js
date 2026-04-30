@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
@@ -21,7 +20,6 @@ import { cn } from '@/lib/utils';
 
 // SERVICES
 import FUNService from '../../services/fun.service'
-import FunManageDashboardService from '../../services/funmanage_dashboard.service';
 import USER_SERVICE from '../../services/users.service';
 
 // FUN FAMILY!
@@ -32,7 +30,7 @@ import FUND from './fun_forms/components/fun_docs'
 import FUN_ALERT from './fun_forms/fun_alertn';
 import FUNCLOCK from './fun_forms/fun_clock';
 
-import { dateParser, dateParser_finalDate, dateParser_timePassed, dateParser_timeLeft, formsParser1, regexChecker_isPh, regexChecker_isOA, regexChecker_isOA_2 } from '../../components/customClasses/typeParse';
+import { dateParser_finalDate, dateParser_timePassed, formsParser1, regexChecker_isPh, regexChecker_isOA, regexChecker_isOA_2 } from '../../components/customClasses/typeParse';
 import { DiasHabilesColombia } from '../../utils/BusinessDaysCol';
 
 // RECORDS
@@ -40,12 +38,11 @@ import RECORD_ARC from './records/record_arc';
 import RECORD_LAW from './records/record_law';
 import RECORD_PH from './records/record_ph';
 import RECORD_ENG from './records/record_eng';
-import FUN_ICON_PROGRESS from './fun_forms/components/icon_progress.compoennt';
 import FUN_WORKER_ASIGN from './fun_forms/components/fun_worker_asign.component';
 import RECORD_REVIEW from './records/record_review';
 import EXPEDITION from './expeditions/expedition.page';
 import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
-import { FunExpedienteDetail } from './fun_forms/components/FunExpedienteDetail';
+import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
 import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
@@ -102,8 +99,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             clocks: [],
 
             worker_list: [],
-            previewExpediente: null,
-            previewSourceRow: null,
 
             currentId: undefined,
             currentLastVersion: undefined,
@@ -117,7 +112,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     );
 
     const prevUrlParamsRef = useRef(urlParams);
-    const detailRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrievePublish();
@@ -138,13 +132,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         // Placeholder — urlParams is not currently passed to this component
     }
 
-    function openFullscreenWorkspace(item) {
-        const radicado = item?.id_public ?? item?.radicado;
-        if (radicado) {
-            const nextPath = `/funmanage/expediente/${radicado}`;
-            window.history.pushState({}, '', nextPath);
-            window.dispatchEvent(new PopStateEvent('popstate'));
-        }
+    function openFullscreenWorkspace(item, module = 'general') {
+        openExpedienteWorkspace(item, { module });
     }
 
     function retrieveWorkers() {
@@ -173,8 +162,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         FUNService.get(id)
             .then(response => {
                 swalClose()
-
-                toggle_d(response.data);
+                openExpedienteWorkspace(response.data, { module: 'archive' });
             })
             .catch(e => {
                 swalError({
@@ -503,6 +491,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 break;
 
         }
+
+        if (Object.prototype.hasOwnProperty.call(LEGACY_MODULE_TO_WORKSPACE, TO)) {
+            openExpedienteWorkspace(item, { module: TO });
+            return;
+        }
+
         switch (TO) {
             case "general":
                 toggle(item)
@@ -705,102 +699,15 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             return ''
         }
         const _fun_0_type = { '0': 'NC', 'i': 'I', 'ii': "II", 'iii': "III", 'iv': "IV", 'oa': "OA" }
-        const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
-        const buildQuickPreviewSeed = (item) => {
-            const totalDays = _fun_0_type_time[item?.type] ?? 30;
-            const parsedUsedDays = Number(item?.clock_payment ? dateParser_timePassed(item.clock_payment) : 0);
-            const usedDays = Number.isFinite(parsedUsedDays) ? Math.max(parsedUsedDays, 0) : 0;
-            const remainingDays = totalDays - usedDays;
-            const status = remainingDays <= 0 ? 'VENCIDO' : remainingDays <= 5 ? 'PRONTO_A_VENCER' : 'EN_TERMINO';
-
-            return {
-                id: item?.id,
-                radicado: item?.id_public ?? '—',
-                fase_actual: '',
-                fase_label: _GET_STATE_STR(item?.state, true, item) || 'Sin fase',
-                responsable: item?.responsable || '—',
-                categoria: _fun_0_type[item?.type] || item?.type || '—',
-                tipo_licencia: formsParser1(item, true),
-                tramite: item?.tramite || '—',
-                fecha_radicacion: item?.date || item?.clock_payment || '—',
-                fecha_limite: item?.clock_payment ? dateParser_finalDate(item.clock_payment, totalDays) : '—',
-                dias_habiles_usados: usedDays,
-                dias_habiles_limite: totalDays,
-                dias_habiles_totales: totalDays,
-                porcentaje_avance: totalDays > 0 ? Math.min(100, Math.round((usedDays / totalDays) * 100)) : 0,
-                status,
-                sugerencia: null,
-                bitacora: [],
-                state_raw: item?.state,
-                clocks_count: 0,
-                __sourceRow: item,
-            };
-        };
-        const closeQuickPreview = () => {
-            detailRequestIdRef.current += 1;
-            setState({
-                previewExpediente: null,
-                previewSourceRow: null,
-            });
-        };
-        const openDetailedManagement = (expediente) => {
-            const sourceRow = expediente?.__sourceRow ?? state.previewSourceRow;
-
-            closeQuickPreview();
-            if (sourceRow) {
-                toggle(sourceRow);
-            }
-        };
-        const openQuickPreview = (item) => {
+        const openRadicacionWorkspace = (item) => {
             if (!item) {
                 return;
             }
 
-            const previewSeed = buildQuickPreviewSeed(item);
-            const requestId = ++detailRequestIdRef.current;
-
             setState({
                 selectedRow: item.id,
-                previewSourceRow: item,
-                previewExpediente: previewSeed,
             });
-
-            FunManageDashboardService.getExpedientes({
-                search: item.id_public || item.id,
-                page: 1,
-                limit: 10,
-            })
-                .then((response) => {
-                    if (requestId !== detailRequestIdRef.current) {
-                        return;
-                    }
-
-                    const rows = response.data?.data ?? [];
-                    const match = rows.find((candidate) => (
-                        String(candidate?.id ?? candidate?.fun0Id ?? candidate?.fun_0_id ?? '') === String(item.id)
-                        || candidate?.radicado === item.id_public
-                        || candidate?.id_public === item.id_public
-                    ));
-
-                    if (!match) {
-                        return;
-                    }
-
-                    setState({
-                        previewExpediente: {
-                            ...previewSeed,
-                            ...match,
-                            radicado: match.radicado ?? match.id_public ?? previewSeed.radicado,
-                            __sourceRow: item,
-                        },
-                        previewSourceRow: item,
-                    });
-                })
-                .catch(() => {
-                    if (requestId !== detailRequestIdRef.current) {
-                        return;
-                    }
-                });
+            openExpedienteWorkspace(item, { module: 'general' });
         };
         // ----------------------
         const rowSelectedStyle = [
@@ -822,9 +729,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         const compactNumericCellClass = 'text-[11px] font-mono tabular-nums tracking-tight text-foreground';
         const compactRadicadoCellClass = 'text-xs font-semibold font-mono tabular-nums tracking-tight text-foreground';
         const compactCategoryBadgeClass = 'px-1.5 py-0 text-[10px] font-mono leading-4';
-        const renderCompactProgress = (row) => (
-            <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} small />
-        );
         const renderRemainingTime = (row) => {
             const time = 30 - dateParser_timePassed(row.clock_payment);
 
@@ -889,12 +793,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             },
 
             {
-                name: 'PROGRESIÓN',
-                center: true,
-                minWidth: '260px',
-                cell: row => renderCompactProgress(row)
-            },
-            {
                 name: 'ACCIÓN',
                 button: true,
                 center: true,
@@ -942,12 +840,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
-                name: 'PROGRESIÓN',
-                center: true,
-                minWidth: '260px',
-                cell: row => renderCompactProgress(row)
-            },
-            {
                 name: 'ACCIÓN',
                 button: true,
                 minWidth: '72px',
@@ -985,12 +877,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <span className={compactNumericCellClass}>{row.clock_date}</span>
             },
             {
-                name: 'PROGRESIÓN',
-                center: true,
-                minWidth: '260px',
-                cell: row => renderCompactProgress(row)
-            },
-            {
                 name: 'ACCIÓN',
                 button: true,
                 minWidth: '72px',
@@ -1026,12 +912,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 cell: row => <span className={compactNumericCellClass}>{row.clock_pay2}</span>
-            },
-            {
-                name: 'PROGRESIÓN',
-                center: true,
-                minWidth: '260px',
-                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -1077,12 +957,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 cell: row => <span className={compactNumericCellClass}>{row.clock_date}</span>
-            },
-            {
-                name: 'PROGRESIÓN',
-                center: true,
-                minWidth: '260px',
-                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -1131,13 +1005,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <span className={compactNumericCellClass}>{row.clock_archive}</span>
             },
             {
-                name: 'PROGRESIÓN',
-                center: true,
-                minWidth: '260px',
-                ignoreCSV: true,
-                cell: row => renderCompactProgress(row)
-            },
-            {
                 name: 'ACCIÓN',
                 button: true,
                 minWidth: '72px',
@@ -1176,12 +1043,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 filterable: true,
                 center: true,
                 cell: row => _GET_STATE_STR(row.state)
-            },
-            {
-                name: 'PROGRESIÓN',
-                center: true,
-                minWidth: '260px',
-                cell: row => renderCompactProgress(row)
             },
             {
                 name: 'ACCIÓN',
@@ -1294,19 +1155,15 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <DropdownMenuLabel className="flex items-center gap-2">
                             <Icon name="Eye" size={14} /> Consulta
                         </DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => openQuickPreview(row)}>
-                            <Icon name="Eye" size={14} className="text-primary" />
-                            Consulta rápida
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row)}>
+                        <DropdownMenuItem onClick={() => openRadicacionWorkspace(row)}>
                             <Icon name="Maximize2" size={14} className="text-primary" />
-                            Gestión completa
+                            Abrir solicitud
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toggle_clock(row)}>
+                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'clock')}>
                             <Icon name="Clock" size={14} className="text-muted-foreground" />
                             Tiempos
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toggle_d(row)}>
+                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'archive')}>
                             <Icon name="Archive" size={14} className="text-muted-foreground" />
                             Documentos
                         </DropdownMenuItem>
@@ -1320,7 +1177,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                     <Icon name="RefreshCw" size={14} className="text-primary" />
                                     Actualizar
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => toggle_c(row)}>
+                                <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'check')}>
                                     <Icon name="CheckSquare" size={14} className="text-accent" />
                                     Checkeo
                                 </DropdownMenuItem>
@@ -1337,23 +1194,23 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                 Publicidad
                                             </DropdownMenuItem>
                                         )}
-                                        <DropdownMenuItem onClick={() => toggle_recordLaw(row)}>
+                                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'record_law')}>
                                             <Icon name="Scale" size={14} className="text-warning" />
                                             Inf. Jurídico
                                         </DropdownMenuItem>
                                         {!isOA && (
                                             <>
-                                                <DropdownMenuItem onClick={() => toggle_recordArc(row)}>
+                                                <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'record_arc')}>
                                                     <Icon name="Building" size={14} className="text-warning" />
                                                     Inf. Arquitectónico
                                                 </DropdownMenuItem>
                                                 {rules[1] != 1 && (
-                                                    <DropdownMenuItem onClick={() => toggle_recordEng(row)}>
+                                                    <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'record_eng')}>
                                                         <Icon name="Cog" size={14} className="text-warning" />
                                                         Inf. Estructural
                                                     </DropdownMenuItem>
                                                 )}
-                                                <DropdownMenuItem onClick={() => toggle_recordReview(row)}>
+                                                <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'record_review')}>
                                                     <Icon name="FileText" size={14} className="text-warning" />
                                                     Acta
                                                 </DropdownMenuItem>
@@ -1365,7 +1222,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 <DropdownMenuLabel className="flex items-center gap-2">
                                     <Icon name="FileOutput" size={14} /> Resolución
                                 </DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => toggle_exp(row)}>
+                                <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'expedition')}>
                                     <Icon name="FileCheck" size={14} className="text-accent" />
                                     Expedición
                                 </DropdownMenuItem>
@@ -1624,7 +1481,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             paginationRowsPerPageOptions={[25, 50, 100]}
                             className="data-table-component"
                             noHeader
-                            onRowClicked={openQuickPreview}
+                            onRowClicked={openRadicacionWorkspace}
                             dense
                             progressPending={!isLoaded}
                             progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
@@ -1681,7 +1538,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={openQuickPreview}
+                                onRowClicked={openRadicacionWorkspace}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1701,7 +1558,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={openQuickPreview}
+                                onRowClicked={openRadicacionWorkspace}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1721,7 +1578,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={openQuickPreview}
+                                onRowClicked={openRadicacionWorkspace}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1741,7 +1598,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={openQuickPreview}
+                                onRowClicked={openRadicacionWorkspace}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1761,7 +1618,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={openQuickPreview}
+                                onRowClicked={openRadicacionWorkspace}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
@@ -1786,21 +1643,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 className="data-table-component"
                                 noHeader
                                 dense
-                                onRowClicked={openQuickPreview}
+                                onRowClicked={openRadicacionWorkspace}
                                 progressPending={!isLoaded}
                                 progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </TabPane>
                     </div>
                 </div>
-
-                {state.previewExpediente && (
-                    <FunExpedienteDetail
-                        expediente={state.previewExpediente}
-                        onClose={closeQuickPreview}
-                        onOpenWorkspace={openDetailedManagement}
-                    />
-                )}
 
                 {/* ── Modals (react-modal — kept during migration) ── */}
                 <Modal contentLabel="GENERAL VIEW FUN"

@@ -4,10 +4,60 @@ import { PDFDocument } from 'pdf-lib';
 import { useState, useEffect } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
 import { Icon } from '@/components/icon';
+import http from '../../http-common';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url
 ).toString();
+
+function decodeErrorPayload(data) {
+    if (!data) return '';
+
+    if (typeof data === 'string') {
+        return data;
+    }
+
+    const buffer = data instanceof ArrayBuffer
+        ? data
+        : ArrayBuffer.isView(data)
+            ? data.buffer
+            : null;
+
+    if (buffer) {
+        try {
+            return new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+        } catch {
+            return '';
+        }
+    }
+
+    if (typeof data === 'object') {
+        try {
+            return JSON.stringify(data);
+        } catch {
+            return '';
+        }
+    }
+
+    return String(data);
+}
+
+function extractErrorMessage(error) {
+    const payloadText = decodeErrorPayload(error?.response?.data);
+
+    if (payloadText) {
+        try {
+            const parsedPayload = JSON.parse(payloadText);
+            if (parsedPayload?.message) {
+                return parsedPayload.message;
+            }
+        } catch {
+            return payloadText;
+        }
+    }
+
+    return error?.message || 'No fue posible cargar el PDF.';
+}
 
 function PDF_VIEWER({ url, apipath }) {
     const [numPages, setNumPages] = useState(null);
@@ -15,18 +65,64 @@ function PDF_VIEWER({ url, apipath }) {
     const [leftBtn, setLeftBtn] = useState(1);
     const [rightBtn, setRightBtn] = useState(1);
     const [pdf, setPdf] = useState(null);
+    const [loadError, setLoadError] = useState(null);
+    const hasLoadedPdf = Boolean(pdf) && !loadError;
 
     useEffect(() => {
+        let ignore = false;
+
         setPageNumber(1);
+        setNumPages(null);
+        setPdf(null);
+        setLoadError(null);
+
         const getPdf = async () => {
-            var formUrl = import.meta.env.VITE_API_URL + apipath + url;
-            var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
-            var pdfDoc = await PDFDocument.load(formPdfBytes);
-            const base64String = await pdfDoc.saveAsBase64({ dataUri: true });
-            setPdf(base64String);
+            if (!url || !apipath) {
+                if (!ignore) {
+                    setLoadError({
+                        message: 'No se recibió una ruta válida para cargar el PDF.',
+                        status: null,
+                        requestId: null,
+                        backendErrorId: null,
+                    });
+                }
+                return;
+            }
+
+            try {
+                const response = await http.get(`${apipath}${url}`, {
+                    responseType: 'arraybuffer',
+                });
+                const contentType = response?.headers?.['content-type'] || response?.headers?.['Content-Type'] || '';
+
+                if (contentType && !/pdf|octet-stream/i.test(contentType)) {
+                    throw new Error(`El servidor respondió con un contenido no compatible (${contentType}).`);
+                }
+
+                const pdfDoc = await PDFDocument.load(response.data);
+                const base64String = await pdfDoc.saveAsBase64({ dataUri: true });
+
+                if (!ignore) {
+                    setPdf(base64String);
+                }
+            } catch (error) {
+                console.log(error);
+                if (!ignore) {
+                    setLoadError({
+                        message: extractErrorMessage(error),
+                        status: error?.response?.status ?? null,
+                        requestId: error?.response?.headers?.['x-dovela-request-id'] || error?.response?.headers?.['X-Dovela-Request-Id'] || null,
+                        backendErrorId: error?.response?.headers?.['x-dovela-backend-error-id'] || error?.response?.headers?.['X-Dovela-Backend-Error-Id'] || null,
+                    });
+                }
+            }
         };
         getPdf();
-    }, []);
+
+        return () => {
+            ignore = true;
+        };
+    }, [url, apipath]);
 
     const prevPage = () => {
         if (pageNumber > 1) {
@@ -80,19 +176,35 @@ function PDF_VIEWER({ url, apipath }) {
 
     return (
         <div className="pdf-viewer">
-            <Document
-                file={pdf}
-                onLoadSuccess={onDocumentLoadSuccess}
-                className="m-0 p-0"
-            >
-                <Page pageNumber={pageNumber} onLoadSuccess={onPageLoadSuccess} scale="1.75" />
-            </Document>
+            {loadError ? (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-foreground">
+                    <p className="mb-2 font-semibold text-destructive">No fue posible abrir este PDF.</p>
+                    <p className="mb-0">{loadError.message}</p>
+                    {loadError.status ? <p className="mt-2 mb-0 text-xs text-muted-foreground">HTTP {loadError.status}</p> : null}
+                    {loadError.requestId ? <p className="mb-0 text-xs text-muted-foreground">Request ID: {loadError.requestId}</p> : null}
+                    {loadError.backendErrorId ? <p className="mb-0 text-xs text-muted-foreground">Backend Error ID: {loadError.backendErrorId}</p> : null}
+                </div>
+            ) : pdf ? (
+                <Document
+                    file={pdf}
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    className="m-0 p-0"
+                >
+                    <Page pageNumber={pageNumber} onLoadSuccess={onPageLoadSuccess} scale="1.75" />
+                </Document>
+            ) : (
+                <div className="rounded-lg border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
+                    Cargando PDF...
+                </div>
+            )}
 
             <div className="row py-3">
                 <div className="col-6 text-start">
-                    <label className="pb-3">Pagina {pageNumber} de {numPages}</label>
-                    <Icon name="chevron-left" size={24} className="mx-2 cursor-pointer" style={_GET_STYLE('left')} onClick={() => prevPage()} />
-                    <Icon name="chevron-right" size={24} className="mx-2 cursor-pointer" style={_GET_STYLE('right')} onClick={() => nextPage()} />
+                    <label className="pb-3">{hasLoadedPdf ? `Pagina ${pageNumber} de ${numPages}` : 'Previsualización no disponible'}</label>
+                    {hasLoadedPdf ? <>
+                        <Icon name="chevron-left" size={24} className="mx-2 cursor-pointer" style={_GET_STYLE('left')} onClick={() => prevPage()} />
+                        <Icon name="chevron-right" size={24} className="mx-2 cursor-pointer" style={_GET_STYLE('right')} onClick={() => nextPage()} />
+                    </> : null}
                 </div>
                 <div className="col-6 text-end">
                     <form id="form_pdf_viewer_to_page" onSubmit={toPage}>
@@ -101,10 +213,10 @@ function PDF_VIEWER({ url, apipath }) {
                             <label className="">Ir a pagina: </label>
                         </div>
                         <div className="col-3">
-                            <input type="number" step="1" min="1" id="pdf_viewer_page_to" className="form-control" defaultValue="1" />
+                            <input type="number" step="1" min="1" id="pdf_viewer_page_to" className="form-control" defaultValue="1" disabled={!hasLoadedPdf} />
                         </div>
                         <div className="col-1 text-start ms-0 ps-0">
-                            <Icon name="chevron-right" size={24} className="ms-0 ps-0 cursor-pointer" onClick={() => toPage()} style={{ color: "DeepSkyBlue" }} />
+                            {hasLoadedPdf ? <Icon name="chevron-right" size={24} className="ms-0 ps-0 cursor-pointer" onClick={() => toPage()} style={{ color: "DeepSkyBlue" }} /> : null}
                         </div>
                     </div>
                     </form>

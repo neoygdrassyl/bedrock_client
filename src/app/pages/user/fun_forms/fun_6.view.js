@@ -4,13 +4,12 @@ import FUNService from '../../../services/fun.service'
 import DataTable from '@/components/data-table-bridge';
 import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../services/fun.service';
-import VIZUALIZER from '../../../components/vizualizer.component';
 import DOCS_LIST from './components/docs_list.component';
-import FUN_6_HISTORY from './components/fun_6_history.component';
 import submitService from '../../../services/submit.service';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { Button } from '@/components/ui/button';
+import FunDocumentManagementModal from './components/FunDocumentManagementModal';
 import {
     buildUnifiedDocumentRows,
     filterUnifiedDocumentRows,
@@ -50,6 +49,8 @@ function FUN_6_VIEW({
     const [item, setItem] = useState(null);
     const [show_doc_1, setShowDoc1] = useState(false);
     const [modal_searchList, setModalSearchList] = useState(false);
+    const [managementDocument, setManagementDocument] = useState(null);
+    const [managementModalOpen, setManagementModalOpen] = useState(false);
     const [currentItem6, setCurrentItem6] = useState([]);
     const [VRList, setVRList] = useState([]);
     const [ventanillaDocs, setVentanillaDocs] = useState([]);
@@ -73,6 +74,11 @@ function FUN_6_VIEW({
         [unifiedRows, sourceFilter, digitizationFilter, searchValue]
     );
     const unifiedSummary = useMemo(() => summarizeUnifiedDocumentRows(unifiedRows), [unifiedRows]);
+    const currentUser = typeof window === 'undefined' ? null : window.user;
+    const canManageDocuments = !readOnly && (
+        Number(currentUser?.id) === 1
+        || [1, 2, 3].includes(Number(currentUser?.roleId))
+    );
 
     const requestUpdate = (id) => {
         retrieveItem(id);
@@ -166,32 +172,27 @@ function FUN_6_VIEW({
         var formData = new FormData();
 
         const isRewDoc = (id) => (id || '').includes('law') || (id || '').includes('eng') || (id || '').includes('arc');
+        const openManagementModal = (digitalDoc) => {
+            if (!digitalDoc) {
+                return;
+            }
+
+            setManagementDocument(digitalDoc);
+            setManagementModalOpen(true);
+        };
+        const closeManagementModal = () => {
+            setManagementModalOpen(false);
+            setManagementDocument(null);
+        };
 
         const renderActionButtons = (digitalDoc) => {
             if (!digitalDoc) {
                 return <span className="text-xs font-semibold text-warning">Pendiente de digitalizar</span>;
             }
 
-            return <>
-                <VIZUALIZER url={digitalDoc.path + "/" + digitalDoc.filename} apipath={'/files/'}
-                    icon='Search'
-                    iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
-                    iconStyle={{ fontSize: '150%' }} />
-                <FUN_6_HISTORY translation={translation}
-                    swaMsg={swaMsg}
-                    globals={globals}
-                    fun6={digitalDoc} />
-                {readOnly ? '' :
-                    window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2 ?
-                        <>
-                            <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => set_edit_6(digitalDoc)}>
-                                    <Icon name="edit" size={16} style={{ fontSize: '150%' }} /></Button></span>
-                            <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_6(digitalDoc.id)}>
-                                    <Icon name="trash-alt" size={16} style={{ fontSize: '150%' }} /></Button></span>
-                        </>
-                        : ''
-                }
-            </>;
+            return <Button type="button" size="sm" onClick={() => openManagementModal(digitalDoc)}>
+                <Icon name="Search" size={14} /> Gestionar
+            </Button>;
         };
 
         const renderReferenceCell = (row) => {
@@ -620,6 +621,19 @@ function FUN_6_VIEW({
                                 </div>
                             </div>
                         </form></> : ""}
+                <FunDocumentManagementModal
+                    open={managementModalOpen}
+                    onClose={closeManagementModal}
+                    documentItem={managementDocument}
+                    canManage={canManageDocuments}
+                    swaMsg={swaMsg}
+                    onEditDocument={(digitalDoc) => {
+                        set_edit_6(digitalDoc);
+                    }}
+                    onDeleteDocument={(digitalDoc) => {
+                        delete_6(digitalDoc.id);
+                    }}
+                />
             </div>
         );
 }

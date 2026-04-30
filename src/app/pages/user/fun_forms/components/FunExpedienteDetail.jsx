@@ -151,19 +151,9 @@ export function FunExpedienteDetail({
               <span className="text-xs text-uppercase text-muted d-block" style={{ letterSpacing: '0.06em' }}>
                 Expediente
               </span>
-              {showBookmarkQuickMenu && (
-                <BookmarkQuickMenu
-                  rowId={expediente.id}
-                  bookmarkState={bookmarkState}
-                  triggerClassName="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted"
-                  triggerTestIdPrefix="detail-bookmark-menu-trigger"
-                  menuTestIdPrefix="detail-bookmark-menu"
-                  onToggleScope={(scope, shouldMark) => onToggleBookmarkScope(expediente, scope, shouldMark)}
-                />
-              )}
             </div>
             <div className="d-flex flex-wrap align-items-center gap-2">
-              <span className="font-mono font-semibold text-lg me-2">{expediente.radicado}</span>
+              <span className="font-sans font-medium text-lg me-2">{expediente.radicado}</span>
               {expediente.fase_label && (
                 <span className="badge bg-light text-secondary border">
                   {expediente.fase_label}
@@ -179,13 +169,26 @@ export function FunExpedienteDetail({
               Revise el expediente sin salir de la tabla.
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-md p-1 hover:bg-muted transition-colors mt-2"
-            aria-label="Cerrar panel"
-          >
-            <Icon name="X" size={16} className="text-muted-foreground" />
-          </button>
+          <div className="d-flex align-items-center gap-1 mt-1">
+            {showBookmarkQuickMenu && (
+              <BookmarkQuickMenu
+                rowId={expediente.id}
+                bookmarkState={bookmarkState}
+                triggerClassName="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted"
+                triggerTestIdPrefix="detail-bookmark-menu-trigger"
+                menuTestIdPrefix="detail-bookmark-menu"
+                align="end"
+                onToggleScope={(scope, shouldMark) => onToggleBookmarkScope(expediente, scope, shouldMark)}
+              />
+            )}
+            <button
+              onClick={onClose}
+              className="rounded-md p-1 hover:bg-muted transition-colors"
+              aria-label="Cerrar panel"
+            >
+              <Icon name="X" size={16} className="text-muted-foreground" />
+            </button>
+          </div>
         </div>
 
         <div className="d-flex flex-grow-1 overflow-hidden">

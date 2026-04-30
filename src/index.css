@@ -89,6 +89,9 @@ select,
 textarea,
 table,
 .font-mono {
+  /* Dovela muestra radicados, fases y códigos operativos con la fuente base.
+     Evita la apariencia técnica de monoespaciada, conservando alineación numérica. */
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: 'tnum' 1, 'lnum' 1;
 }
@@ -104,6 +107,18 @@ body.workspace-fullscreen-open .fun-nav-toggle {
 
 body.workspace-fullscreen-open {
   --fun-sidebar-width: 0px;
+}
+
+.expediente-fullscreen .container {
+  width: 100%;
+  max-width: none;
+}
+
+.expediente-fullscreen [data-radix-scroll-area-viewport] > div {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
 }
 
 #root, .App {

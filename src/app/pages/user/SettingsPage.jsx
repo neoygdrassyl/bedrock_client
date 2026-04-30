@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
-import { Bell, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Bell, Bug, FileText, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
 import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
+import ErrorReportsPanel from './ErrorReportsPanel.jsx';
+import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
 import './SettingsPage.css';
 
 const NAV_ITEMS = [
@@ -17,6 +20,12 @@ const NAV_ITEMS = [
     description: 'Información del usuario actual',
     icon: UserCircle2,
   },
+  {
+    key: 'misReportes',
+    label: 'Mis reportes',
+    description: 'Estado de reportes enviados',
+    icon: FileText,
+  },
 ];
 
 function formatLastLogin(value) {
@@ -30,11 +39,37 @@ function formatLastLogin(value) {
 }
 
 export default function SettingsPage() {
-  const [active, setActive] = useState('alarmas');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [active, setActive] = useState(searchParams.get('tab') || 'alarmas');
   const user = DataService.getUserData();
+  const canSeeTechnicalReports = isDeveloperUser(user);
+  const canManageErrorReports = isErrorReportManagerUser(user) || canSeeTechnicalReports;
+  const navItems = canManageErrorReports
+    ? [
+        ...NAV_ITEMS,
+        {
+          key: 'errorReports',
+          label: canSeeTechnicalReports ? 'Reportes técnicos' : 'Gestión de reportes',
+          description: canSeeTechnicalReports ? 'JSON seguro para desarrollo' : 'Estados y notas visibles',
+          icon: Bug,
+        },
+      ]
+    : NAV_ITEMS;
+  const activeKey = navItems.some((item) => item.key === active) ? active : 'alarmas';
   const fullName = [user?.name, user?.surname].filter(Boolean).join(' ') || 'No disponible';
   const roleDesc = user?.roleDesc || 'No disponible';
   const lastLogin = formatLastLogin(user?.lastLoginAt || user?.lastLogin);
+
+  useEffect(() => {
+    const requestedTab = searchParams.get('tab');
+    if (requestedTab) setActive(requestedTab);
+  }, [searchParams]);
+
+  const selectTab = (key) => {
+    setActive(key);
+    if (key === 'alarmas') setSearchParams({});
+    else setSearchParams({ tab: key });
+  };
 
   return (
     <div className="settings-shell">
@@ -51,15 +86,15 @@ export default function SettingsPage() {
       <div className="settings-shell__body">
         <aside className="settings-nav" aria-label="Secciones de configuración">
           <ul className="settings-nav__list">
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = active === item.key;
+              const isActive = activeKey === item.key;
               return (
                 <li key={item.key}>
                   <button
                     type="button"
                     className={`settings-nav__item${isActive ? ' is-active' : ''}`}
-                    onClick={() => setActive(item.key)}
+                    onClick={() => selectTab(item.key)}
                     aria-current={isActive ? 'page' : undefined}
                     data-testid={`settings-nav-${item.key}`}
                   >
@@ -76,8 +111,12 @@ export default function SettingsPage() {
         </aside>
 
         <main className="settings-panel" role="main">
-          {active === 'alarmas' && <AlarmsV2ConfigPanel />}
-          {active === 'cuenta' && (
+          {activeKey === 'alarmas' && <AlarmsV2ConfigPanel />}
+          {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
+          {activeKey === 'errorReports' && canManageErrorReports && (
+            <ErrorReportsPanel mode={canSeeTechnicalReports ? 'technical' : 'management'} />
+          )}
+          {activeKey === 'cuenta' && (
             <AccountPanel fullName={fullName} roleDesc={roleDesc} lastLogin={lastLogin} />
           )}
         </main>

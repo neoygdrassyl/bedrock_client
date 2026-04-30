@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Bell, Mail, Archive, Inbox, ExternalLink } from 'lucide-react';
 import {
   DropdownMenu,
@@ -10,14 +11,80 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useAlarmsBell } from '../hooks/useAlarmsV2';
+import FUNService from '../../../../services/fun.service';
+import { buildExpedienteWorkspaceUrl } from '../utils/expedienteWorkspaceRoute';
+
+function looksLikePublicId(value) {
+  if (typeof value !== 'string') return false;
+  const normalized = value.trim();
+  if (!normalized) return false;
+  return /[A-Za-z-]/.test(normalized);
+}
+
+function pickAlarmPublicId(alarm) {
+  const candidates = [
+    alarm?.id_public,
+    alarm?.idPublic,
+    alarm?.radicado,
+    alarm?.currentPublic,
+  ];
+
+  const explicit = candidates.find((value) => typeof value === 'string' && looksLikePublicId(value));
+  if (explicit) return explicit;
+
+  return '';
+}
+
+async function resolveAlarmExpedienteUrl(alarm) {
+  const directPublicId = pickAlarmPublicId(alarm);
+  if (directPublicId) {
+    return buildExpedienteWorkspaceUrl({ id_public: directPublicId });
+  }
+
+  const fun0Id = alarm?.fun0Id;
+  if (!fun0Id) return '';
+
+  try {
+    const response = await FUNService.get(fun0Id);
+    const payload = response?.data;
+    const expediente = Array.isArray(payload) ? payload[0] : payload;
+    const resolvedPublicId = expediente?.id_public || expediente?.radicado || '';
+    if (resolvedPublicId) {
+      return buildExpedienteWorkspaceUrl({ id_public: resolvedPublicId });
+    }
+  } catch (_error) {
+    // Si no se logra resolver por id, no forzamos una URL inválida al workspace.
+  }
+
+  return '';
+}
 
 export function AlarmBell() {
   const { alarms: openAlarms, unread, loading, markRead, archive, attend, refetch } = useAlarmsBell({
     pollMs: 60000,
     includeRead: true,
+    assignedOnly: false,
   });
   const [modalOpen, setModalOpen] = useState(false);
   const [tab, setTab] = useState('current');
+
+  useEffect(() => {
+    if (!modalOpen) return undefined;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setModalOpen(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [modalOpen]);
 
   const currentAlarms = useMemo(
     () => (openAlarms || []).filter((a) => !a.archivedAt),
@@ -30,10 +97,10 @@ export function AlarmBell() {
     [currentAlarms]
   );
 
-  const handleOpenExpediente = (a) => {
-    const rad = a.radicado || a.fun0Id;
-    if (!rad) return;
-    window.open(`/funmanage/expediente/${rad}`, '_blank', 'noopener,noreferrer');
+  const handleOpenExpediente = async (a) => {
+    const url = await resolveAlarmExpedienteUrl(a);
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleOpenModal = () => {
@@ -69,7 +136,7 @@ export function AlarmBell() {
           <DropdownMenuLabel className="flex items-center justify-between">
             <span>Alarmas</span>
             <span className="text-xs text-muted-foreground font-normal">
-              {loading ? 'Actualizando…' : `${unreadCount} sin leer / ${count} activas`}
+              {loading ? 'Actualizando…' : `${unreadCount} sin leer / ${count} activas · todos`}
             </span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -82,7 +149,7 @@ export function AlarmBell() {
               <AlarmDropdownItem
                 key={a.id}
                 alarm={a}
-                onOpen={() => handleOpenExpediente(a)}
+                onOpen={async () => handleOpenExpediente(a)}
                 onMarkRead={() => markRead(a.id)}
                 onAttend={() => attend(a.id)}
               />
@@ -96,7 +163,7 @@ export function AlarmBell() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {modalOpen && (
+      {modalOpen && typeof document !== 'undefined' && createPortal(
         <AlarmsModal
           onClose={() => setModalOpen(false)}
           tab={tab}
@@ -107,7 +174,8 @@ export function AlarmBell() {
           archive={archive}
           attend={attend}
           onOpenExpediente={handleOpenExpediente}
-        />
+        />,
+        document.body
       )}
     </>
   );
@@ -181,7 +249,7 @@ function AlarmsModal({ onClose, tab, setTab, currentAlarms, refetch, markRead, a
 
   return (
     <div
-      className="fixed inset-0 z-[1060] bg-black/50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1200] bg-black/50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       data-testid="alarms-modal"
@@ -252,7 +320,7 @@ function AlarmsModal({ onClose, tab, setTab, currentAlarms, refetch, markRead, a
                       <td className="small text-muted">{a.message}</td>
                       <td className="text-end">
                         <div className="btn-group btn-group-sm">
-                          <button type="button" className="btn btn-outline-primary" onClick={() => onOpenExpediente(a)} title="Abrir expediente en nueva pestaña">
+                          <button type="button" className="btn btn-outline-primary" onClick={async () => onOpenExpediente(a)} title="Abrir expediente en nueva pestaña">
                             <ExternalLink className="h-3 w-3" />
                           </button>
                           {tab === 'current' && !a.readAt && (

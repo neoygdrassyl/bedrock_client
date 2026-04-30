@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'jodit-pro/es2021/jodit.fat.min.css';
 // MDB CSS removed — mdb-react-ui-kit eliminated, using Bootstrap 5 classes directly
 
 import './index.css'; // MUST load after Bootstrap so our tokens/fonts/resets win

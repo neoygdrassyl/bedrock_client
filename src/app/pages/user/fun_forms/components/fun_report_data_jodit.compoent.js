@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { dateParser, dateParser_finalDate, formsParser1 } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
 
@@ -203,9 +203,11 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
     const editor = useRef(null)
     const [content, setContent] = useState(default_content)
 
-    const config = () => {
-        return {
+    const config = useMemo(() => ({
             readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+            language: 'es',
+            iframe: true,
+            allowHTML: true,
             uploader: {
                 url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
             },
@@ -215,11 +217,9 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
                 },
                 height: 1000,
             },
-            language: 'es',
             "readonly": false,
             "toolbar": true,
-            "disablePlugins": "clipboard",
-            "disablePlugins": "xpath",
+            "disablePlugins": "clipboard,xpath",
             minHeight: 1000,
             removeButtons: ['xpath'],
             controls: {
@@ -229,18 +229,16 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
 
                 }
             }
-        }
-    }
+        }), [])
 
     let _JODIT_COMPONENT = () => {
 
         return <JoditEditor
             ref={editor}
             value={content}
-            config={config()}
+            config={config}
             tabIndex={1} // tabIndex of textarea
             onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
-            className="form-control mb-3"
             rows="5"
             maxlength="409675"
 
