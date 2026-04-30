@@ -9,7 +9,9 @@ import FUNService from '../../../../services/fun.service';
 import { useAlarms } from '../hooks/useAlarms';
 import FUNG from '../fun_g';
 import FUNC from '../fun_c';
+import FUNN from '../fun_n';
 import FUND from './fun_docs';
+import FUN_ALERT from '../fun_alertn';
 import FUNCLOCK from '../fun_clock';
 import RECORD_ARC from '../../records/record_arc';
 import RECORD_LAW from '../../records/record_law';
@@ -18,16 +20,36 @@ import RECORD_REVIEW from '../../records/record_review';
 import EXPEDITION from '../../expeditions/expedition.page';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 import { useBookmarks } from '../hooks/useBookmarks';
+import { formsParser1, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 
-const SECTION_ITEMS = [
-  { id: 'detalles', label: 'Detalles', icon: 'FolderOpen' },
-  { id: 'tiempos', label: 'Tiempos', icon: 'Clock' },
-  { id: 'chequeo', label: 'Chequeo', icon: 'CheckSquare' },
-  { id: 'documentos', label: 'Documentos', icon: 'Archive' },
-  { id: 'informes', label: 'Informes', icon: 'FileText' },
-  { id: 'acta', label: 'Acta', icon: 'FileCheck' },
-  { id: 'expedicion', label: 'Expedición', icon: 'FileOutput' },
+const SECTION_GROUPS = [
+  {
+    id: 'contexto',
+    items: [
+      { id: 'detalles', label: 'Detalles', icon: 'FolderOpen', accent: 'sky' },
+      { id: 'tiempos', label: 'Tiempos', icon: 'Clock', accent: 'sky' },
+    ],
+  },
+  {
+    id: 'gestion',
+    items: [
+      { id: 'documentos', label: 'Documentos', icon: 'Archive', accent: 'slate' },
+      { id: 'actualizar', label: 'Actualizar', icon: 'RefreshCw', accent: 'slate', requiresEdit: true },
+      { id: 'chequeo', label: 'Chequeo', icon: 'CheckSquare', accent: 'slate' },
+      { id: 'publicidad', label: 'Publicidad', icon: 'Megaphone', accent: 'amber', requiresPublicidad: true },
+    ],
+  },
+  {
+    id: 'cierre',
+    items: [
+      { id: 'informes', label: 'Informes', icon: 'FileText', accent: 'amber' },
+      { id: 'acta', label: 'Acta', icon: 'FileCheck', accent: 'amber' },
+      { id: 'expedicion', label: 'Expedición', icon: 'FileOutput', accent: 'amber' },
+    ],
+  },
 ];
+
+const SECTION_ITEMS = SECTION_GROUPS.flatMap((group) => group.items);
 
 const REPORT_ITEMS = [
   { id: 'juridico', label: 'Jurídico', icon: 'Scale' },
@@ -100,6 +122,52 @@ function getExpedienteRadicado(expediente) {
 
 function getExpedienteApplicant(expediente) {
   return expediente?.solicitante ?? expediente?.applicant ?? expediente?.titular ?? 'Sin solicitante registrado';
+}
+
+function matchesLegacyPropertyHorizontal(type) {
+  return /p\.?\s*h|propiedad\s+horizontal/i.test(type || '');
+}
+
+function isEditableLegacyExpediente(expediente) {
+  if (typeof expediente?.state !== 'number') {
+    return false;
+  }
+
+  return expediente.state !== 101 && expediente.state <= 200;
+}
+
+function canShowLegacyPublicidad(expediente, version) {
+  if (!isEditableLegacyExpediente(expediente)) {
+    return false;
+  }
+
+  const rules = expediente?.rules ? String(expediente.rules).split(';') : [];
+  if (rules[0] == 1) {
+    return false;
+  }
+
+  const fun1List = Array.isArray(expediente?.fun_1s) ? expediente.fun_1s : [];
+  const targetIndex = Math.max(Math.min((version || 1) - 1, fun1List.length - 1), 0);
+  const fun1 = fun1List[targetIndex] ?? fun1List[0] ?? null;
+  const type = formsParser1(fun1);
+
+  return !matchesLegacyPropertyHorizontal(type) && !regexChecker_isOA_2(fun1);
+}
+
+function getVisibleSectionGroups(expediente, version) {
+  const showActualizar = isEditableLegacyExpediente(expediente);
+  const showPublicidad = canShowLegacyPublicidad(expediente, version);
+
+  return SECTION_GROUPS
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => {
+        if (item.requiresPublicidad) return showPublicidad;
+        if (item.requiresEdit) return showActualizar;
+        return true;
+      }),
+    }))
+    .filter((group) => group.items.length > 0);
 }
 
 function normalizeBitacoraEntries(expediente) {
@@ -216,15 +284,26 @@ function SummaryItem({ icon, label, value }) {
 }
 
 function SectionButton({ item, active, onClick }) {
+  const toneClass = {
+    sky: active
+      ? 'border-sky-500 bg-sky-50 text-sky-700'
+      : 'border-transparent text-muted-foreground hover:border-sky-200 hover:bg-sky-50/70 hover:text-sky-700',
+    slate: active
+      ? 'border-slate-400 bg-slate-100 text-slate-900'
+      : 'border-transparent text-muted-foreground hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900',
+    amber: active
+      ? 'border-amber-400 bg-amber-50 text-amber-800'
+      : 'border-transparent text-muted-foreground hover:border-amber-200 hover:bg-amber-50/70 hover:text-amber-800',
+  };
+
   return (
     <button
       type="button"
       onClick={() => onClick(item.id)}
+      aria-current={active ? 'page' : undefined}
       className={cn(
-        'inline-flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors',
-        active
-          ? 'border-primary text-primary'
-          : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground'
+        'inline-flex items-center gap-2 whitespace-nowrap rounded-lg border-b-2 px-3 py-2.5 text-sm font-medium transition-colors',
+        toneClass[item.accent] || toneClass.slate
       )}
     >
       <Icon name={item.icon} size={14} />
@@ -272,10 +351,14 @@ function renderModuleContent(activeSection, activeReport, moduleProps) {
       return <FUNG {...moduleProps} onDuplicateSuccess={() => {}} />;
     case 'tiempos':
       return <FUNCLOCK {...moduleProps} />;
+    case 'actualizar':
+      return <FUNN {...moduleProps} />;
     case 'chequeo':
       return <FUNC {...moduleProps} closeModal={moduleProps.closeModal} />;
     case 'documentos':
       return <FUND {...moduleProps} />;
+    case 'publicidad':
+      return <FUN_ALERT {...moduleProps} />;
     case 'informes':
       if (activeReport === 'arquitectonico') {
         return <RECORD_ARC {...moduleProps} />;
@@ -383,7 +466,6 @@ export function FunExpedienteFullscreen({
       try {
         const response = await FUNService.get_fun_IdPublic(radicado);
         const data = response?.data?.data ?? response?.data ?? null;
-
         if (data) {
           setSummary(data);
           setCurrentId(getExpedienteId(data));
@@ -438,6 +520,9 @@ export function FunExpedienteFullscreen({
       case 'general':
         setActiveSection('detalles');
         break;
+      case 'edit':
+        setActiveSection('actualizar');
+        break;
       case 'check':
         setActiveSection('chequeo');
         break;
@@ -446,6 +531,9 @@ export function FunExpedienteFullscreen({
         break;
       case 'archive':
         setActiveSection('documentos');
+        break;
+      case 'alert':
+        setActiveSection('publicidad');
         break;
       case 'record_law':
         setActiveSection('informes');
@@ -544,6 +632,22 @@ export function FunExpedienteFullscreen({
     }),
     [currentId, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, swaMsg, translation]
   );
+
+  const visibleSectionGroups = useMemo(
+    () => getVisibleSectionGroups(summary, currentVersion),
+    [currentVersion, summary]
+  );
+
+  const visibleSectionIds = useMemo(
+    () => visibleSectionGroups.flatMap((group) => group.items.map((item) => item.id)),
+    [visibleSectionGroups]
+  );
+
+  useEffect(() => {
+    if (!visibleSectionIds.includes(activeSection)) {
+      setActiveSection('detalles');
+    }
+  }, [activeSection, visibleSectionIds]);
 
   const moduleContent = renderModuleContent(activeSection, activeReport, moduleProps);
 
@@ -660,9 +764,13 @@ export function FunExpedienteFullscreen({
 
       {/* ── Navegación de submódulos ─────────────────────────────────── */}
       <div className="shrink-0 border-b border-border bg-card/50 px-2 sm:px-4">
-        <div className="flex overflow-x-auto">
-          {SECTION_ITEMS.map((item) => (
-            <SectionButton key={item.id} item={item} active={activeSection === item.id} onClick={handleSectionChange} />
+        <div className="flex gap-2 overflow-x-auto py-2">
+          {visibleSectionGroups.map((group) => (
+            <div key={group.id} className="flex items-center gap-1 rounded-xl border border-border/70 bg-background/85 p-1 shadow-sm">
+              {group.items.map((item) => (
+                <SectionButton key={item.id} item={item} active={activeSection === item.id} onClick={handleSectionChange} />
+              ))}
+            </div>
           ))}
         </div>
       </div>
@@ -693,7 +801,11 @@ export function FunExpedienteFullscreen({
               <div
                 className={cn(
                   'w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm',
-                  activeSection === 'tiempos' ? 'p-1 sm:p-2' : 'p-3 sm:p-5'
+                  activeSection === 'tiempos'
+                    ? 'p-1 sm:p-2'
+                    : activeSection === 'actualizar' || activeSection === 'publicidad'
+                      ? 'p-2 sm:p-4'
+                      : 'p-3 sm:p-5'
                 )}
               >
                 {moduleContent}

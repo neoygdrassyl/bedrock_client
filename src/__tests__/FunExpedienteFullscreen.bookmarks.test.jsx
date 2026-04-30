@@ -65,7 +65,9 @@ vi.mock('@/components/icon', () => ({
 
 vi.mock('../app/pages/user/fun_forms/fun_g', () => ({ __esModule: true, default: () => <div data-testid="module-detalles" /> }));
 vi.mock('../app/pages/user/fun_forms/fun_c', () => ({ __esModule: true, default: () => <div data-testid="module-chequeo" /> }));
+vi.mock('../app/pages/user/fun_forms/fun_n', () => ({ __esModule: true, default: () => <div data-testid="module-actualizar" /> }));
 vi.mock('../app/pages/user/fun_forms/components/fun_docs', () => ({ __esModule: true, default: () => <div data-testid="module-documentos" /> }));
+vi.mock('../app/pages/user/fun_forms/fun_alertn', () => ({ __esModule: true, default: () => <div data-testid="module-publicidad" /> }));
 vi.mock('../app/pages/user/fun_forms/fun_clock', () => ({ __esModule: true, default: () => <div data-testid="module-tiempos" /> }));
 vi.mock('../app/pages/user/records/record_arc', () => ({ __esModule: true, default: () => <div data-testid="module-arc" /> }));
 vi.mock('../app/pages/user/records/record_law', () => ({ __esModule: true, default: () => <div data-testid="module-law" /> }));
@@ -79,6 +81,9 @@ const expediente = {
   id: 123,
   id_public: '2026-00123',
   version: 1,
+  state: 10,
+  rules: '0;0',
+  fun_1s: [{ tipo: 'D', tramite: 'A', m_lic: '', m_urb: '', m_sub: '' }],
   fase_label: 'Estudio y Observaciones',
   status: 'EN_TERMINO',
   porcentaje_avance: 35,
@@ -116,5 +121,49 @@ describe('FunExpedienteFullscreen bookmarks', () => {
 
     expect(setScopeMock).toHaveBeenCalledWith(123, 'team', true);
     expect(getFunByPublicMock).toHaveBeenCalledWith('2026-00123');
+  });
+
+  it('restaura Actualizar y Publicidad en expedientes elegibles y permite navegar entre ambos', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <FunExpedienteFullscreen
+        expediente={expediente}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+      />
+    );
+
+    const actualizarButton = screen.getByRole('button', { name: /actualizar/i });
+    const publicidadButton = screen.getByRole('button', { name: /publicidad/i });
+
+    expect(actualizarButton).toBeInTheDocument();
+    expect(publicidadButton).toBeInTheDocument();
+
+    await user.click(actualizarButton);
+    expect(screen.getByTestId('module-actualizar')).toBeInTheDocument();
+
+    await user.click(publicidadButton);
+    expect(screen.getByTestId('module-publicidad')).toBeInTheDocument();
+  });
+
+  it('oculta Publicidad cuando la regla legacy No usar Publicidad está activa', () => {
+    render(
+      <FunExpedienteFullscreen
+        expediente={{
+          ...expediente,
+          rules: '1;0',
+        }}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /actualizar/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /publicidad/i })).not.toBeInTheDocument();
   });
 });
