@@ -12,8 +12,8 @@ import {
   ReferenceLine,
   Cell,
 } from 'recharts';
-import { ExpedientePanelDrawer } from './ExpedientePanelDrawer';
-import { useNavigate } from 'react-router-dom';
+import { FunExpedienteDetail } from './FunExpedienteDetail';
+import { openExpedienteWorkspace } from '../utils/expedienteWorkspaceRoute';
 
 // ── Fases y orden ─────────────────────────────────────────
 const PHASES = [
@@ -137,7 +137,6 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
   const [showVencidos, setShowVencidos] = useState(true);
   const [selectedExpediente, setSelectedExpediente] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const navigate = useNavigate();
 
   // Thresholds desde alarmConfigV2 (configurable por curaduria). Fallback a 70/90/100.
   const thresholds = useMemo(() => {
@@ -206,10 +205,20 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
       .filter(d => showVencidos || !d.isOverdue);
   }, [data, responsableFilter, showVencidos, thresholds]);
 
-  const handleNavigateDetail = (exp) => {
+  const handlePreviewExpediente = (eventOrExpediente) => {
+    const expediente = eventOrExpediente?.payload || eventOrExpediente;
+    if (!expediente) return;
+
+    if (isFullscreen) {
+      setIsFullscreen(false);
+    }
+
+    setSelectedExpediente(expediente);
+  };
+
+  const handleOpenWorkspace = (expediente) => {
     setSelectedExpediente(null);
-    if (isFullscreen) setIsFullscreen(false);
-    navigate(`/licencias/gestion/${exp.id || exp.radicado}`);
+    openExpedienteWorkspace(expediente, { module: 'general' });
   };
 
   React.useEffect(() => {
@@ -257,7 +266,7 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
           name="Expedientes" 
           data={plotData} 
           shape="circle"
-          onClick={(e) => setSelectedExpediente(e?.payload || e)}
+          onClick={handlePreviewExpediente}
         >
           {plotData.map((entry, index) => (
             <Cell 
@@ -273,8 +282,13 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
 
   if (loading) {
     return (
-      <div className="d-flex flex-column justify-content-center align-items-center py-4" style={{ minHeight: 300 }}>
-        <div className="spinner-border spinner-border-sm text-primary" role="status"></div>
+      <div
+        className="d-flex flex-column justify-content-center align-items-center py-4"
+        style={{ minHeight: 300 }}
+        data-testid="scatter-chart-loading"
+        aria-live="polite"
+      >
+        <div className="spinner-border spinner-border-sm text-primary" role="progressbar" aria-label="Cargando gráfico de fases"></div>
         <div className="mt-2 text-muted" style={{ fontSize: 13 }}>Cargando gráfico...</div>
       </div>
     );
@@ -311,12 +325,13 @@ export function FunmanageScatterChart({ data, loading, scatterThresholds, thresh
         <div className="text-center text-muted py-4"><Icon name="chart-bar" size={16} className="me-2" />Sin datos.</div>
       ) : renderChart(300)}
 
-      <ExpedientePanelDrawer 
-        show={!!selectedExpediente} 
-        expediente={selectedExpediente} 
-        onClose={() => setSelectedExpediente(null)}
-        onNavigateDetail={handleNavigateDetail}
-      />
+      {selectedExpediente ? (
+        <FunExpedienteDetail
+          expediente={selectedExpediente}
+          onClose={() => setSelectedExpediente(null)}
+          onOpenWorkspace={handleOpenWorkspace}
+        />
+      ) : null}
 
       {isFullscreen && (
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>

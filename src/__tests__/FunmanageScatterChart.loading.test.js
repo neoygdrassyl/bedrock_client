@@ -41,6 +41,6 @@ describe('FunmanageScatterChart loading state', () => {
 
     expect(screen.getByTestId('scatter-chart-loading')).toBeInTheDocument();
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    expect(screen.getByText(/preparando la dispersión por categoría/i)).toBeInTheDocument();
+    expect(screen.getByText(/cargando gráfico/i)).toBeInTheDocument();
   });
 });
