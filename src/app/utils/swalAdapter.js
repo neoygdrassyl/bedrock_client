@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import { requestDovelaErrorReport, resolveDovelaReportLastError } from './errorReporting';
 
 /**
  * Thin adapter over SweetAlert2.
@@ -16,6 +17,8 @@ const BASE = {
   buttonsStyling: false,
   reverseButtons: true,
 };
+
+const LOAD_ITEM_ERROR_PATTERN = /no ha sido posible cargar este (?:item|ítem)[,.\s]*int[eé]ntelo nuevamente/i;
 
 function mergeSwalOptions(defaults, opts = {}) {
   const merged = {
@@ -60,10 +63,40 @@ export function swalSuccess(opts = {}) {
 }
 
 export function swalError(opts = {}) {
+  const {
+    allowReport = false,
+    reportContext = {},
+    reportSource = 'legacy-swal-error',
+    ...swalOpts
+  } = opts;
+
+  const errorText = [swalOpts.title, swalOpts.text].filter(Boolean).join(' ');
+  const showReportAction = allowReport || LOAD_ITEM_ERROR_PATTERN.test(errorText);
+
   return Swal.fire(mergeSwalOptions({
     ...BASE,
     icon: 'error',
-  }, opts));
+    ...(showReportAction ? {
+      showDenyButton: true,
+      denyButtonText: 'Reportar fallo',
+      confirmButtonText: swalOpts.confirmButtonText || 'Cerrar',
+    } : {}),
+  }, swalOpts)).then((result) => {
+    if (showReportAction && result.isDenied) {
+      requestDovelaErrorReport({
+        ...reportContext,
+        reportSource,
+        lastError: resolveDovelaReportLastError(reportContext) || {
+          source: reportSource,
+          error: {
+            message: errorText || 'Dovela mostró un error sin detalle adicional.',
+          },
+        },
+      });
+    }
+
+    return result;
+  });
 }
 
 export function swalLoading(opts = {}) {
