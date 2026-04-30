@@ -42,6 +42,9 @@ class UserslDataService {
   get_fun_IdPublic(id_public) {
     return http.get(`/${route}/get/idpublic/${id_public}`);
   }
+  getSummaryByIdPublic(id_public) {
+    return http.get(`/${route}/get/summary/${id_public}`);
+  }
   loadMacro(date_start, date_end) {
     return http.get(`/${route}/loadMacro/${date_start}&${date_end}`);
   }

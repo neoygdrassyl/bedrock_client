@@ -125,10 +125,10 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
         type="button"
         onClick={() => setSearchOpen(true)}
         className="flex h-7 w-7 items-center justify-center rounded-md border border-border/50 bg-muted/30 text-xs text-muted-foreground/60 transition-colors hover:bg-muted/60 hover:text-muted-foreground md:w-auto md:justify-start md:gap-1.5 md:px-2.5"
-        aria-label="Buscar"
+        aria-label="Buscar expediente"
       >
         <Search className="h-3 w-3" />
-        <span className="hidden md:inline">Buscar...</span>
+        <span className="hidden md:inline">Expediente...</span>
         <kbd className="ml-3 hidden rounded border border-border/40 bg-background/80 px-1 py-0.5 font-mono text-[9px] lg:inline">⌘K</kbd>
       </button>
 
