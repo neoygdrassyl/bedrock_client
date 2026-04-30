@@ -1,6 +1,9 @@
 const LAST_ERROR_STORAGE_KEY = 'dovela-last-error-context-v2';
+const LAST_HTTP_ERROR_STORAGE_KEY = 'dovela-last-http-error-context-v1';
 const LAST_ACTION_STORAGE_KEY = 'dovela-last-user-action-v2';
 const CONSOLE_ENTRIES_STORAGE_KEY = 'dovela-console-entries-v2';
+export const DOVELA_OPEN_ERROR_REPORT_EVENT = 'dovela:open-error-report';
+const REPORT_HTTP_ERROR_WINDOW_MS = 2 * 60 * 1000;
 const SENSITIVE_KEY_PATTERN = /(password|passwd|contrase|token|authorization|cookie|secret|api[-_]?key|jwt|session|credential|credencial)/i;
 const SENSITIVE_QUERY_PATTERN = /((?:password|passwd|token|authorization|secret|api[-_]?key|jwt|session|cookie)=)[^&\s]+/gi;
 
@@ -293,11 +296,15 @@ export function captureDovelaError(error, meta = {}) {
 export function captureDovelaHttpError(error) {
   const status = error?.response?.status ?? null;
   const url = error?.config?.url || '';
+  const responseData = error?.response?.data || {};
+  const responseHeaders = error?.response?.headers || {};
+  const requestId = responseData.requestId || responseHeaders['x-dovela-request-id'] || responseHeaders['X-Dovela-Request-Id'] || null;
+  const backendErrorId = responseData.backendErrorId || responseHeaders['x-dovela-backend-error-id'] || responseHeaders['X-Dovela-Backend-Error-Id'] || null;
   const isExpectedAuthRedirect = status === 401 && error?.response?.data?.expired === true;
   if (url.includes('error-reports')) return null;
   if (isExpectedAuthRedirect || (status && status < 500)) return null;
 
-  return captureDovelaError(error, {
+  const snapshot = captureDovelaError(error, {
     source: 'http-client',
     notify: true,
     http: {
@@ -306,9 +313,15 @@ export function captureDovelaHttpError(error) {
       method: error?.config?.method || null,
       url: error?.config?.url || null,
       baseURL: error?.config?.baseURL || null,
+      requestId,
+      backendRequestId: requestId,
+      backendErrorId,
       responseMessage: safeText(error?.response?.data?.message || error?.response?.data?.error, 700) || null,
     },
   });
+
+  writeStorage(LAST_HTTP_ERROR_STORAGE_KEY, snapshot);
+  return snapshot;
 }
 
 export function getLastDovelaError() {
@@ -318,15 +331,62 @@ export function getLastDovelaError() {
   return lastError;
 }
 
+export function isThinDovelaErrorContext(lastError) {
+  if (!lastError || typeof lastError !== 'object') return false;
+  if (lastError.http || lastError.componentStack || lastError.info) return false;
+  return Object.keys(lastError).every((key) => ['source', 'error'].includes(key));
+}
+
+export function getLastDovelaHttpError(options = {}) {
+  const { maxAgeMs = REPORT_HTTP_ERROR_WINDOW_MS, pathname = null } = options;
+  const lastHttpError = readStorage(LAST_HTTP_ERROR_STORAGE_KEY, null);
+  if (!lastHttpError?.http) return null;
+
+  const status = lastHttpError.http.status;
+  if (status && status < 500) return null;
+
+  const timestamp = Date.parse(lastHttpError.at || '');
+  if (Number.isFinite(timestamp) && maxAgeMs > 0 && (Date.now() - timestamp) > maxAgeMs) {
+    return null;
+  }
+
+  if (pathname && lastHttpError?.location?.pathname && lastHttpError.location.pathname !== pathname) {
+    return null;
+  }
+
+  return lastHttpError;
+}
+
+export function resolveDovelaReportLastError(context = {}) {
+  const explicitLastError = context?.lastError || context?.errorSnapshot || null;
+  const currentPath = context?.location?.pathname
+    || context?.path
+    || (typeof window !== 'undefined' ? window.location?.pathname : null)
+    || null;
+
+  if (explicitLastError?.http?.status >= 500 || explicitLastError?.http?.backendErrorId || explicitLastError?.http?.requestId) {
+    return explicitLastError;
+  }
+
+  const recentHttpError = getLastDovelaHttpError({ pathname: currentPath });
+  if (recentHttpError && (!explicitLastError || isThinDovelaErrorContext(explicitLastError))) {
+    return recentHttpError;
+  }
+
+  return explicitLastError || getLastDovelaError();
+}
+
 export function getLastDovelaAction() {
   return readStorage(LAST_ACTION_STORAGE_KEY, null);
 }
 
 export function buildDovelaErrorReport(userInput = {}, overrides = {}) {
+  const resolvedLastError = overrides.lastError || resolveDovelaReportLastError(overrides);
   return {
     id: `DOVELA-${Date.now().toString(36).toUpperCase()}`,
     ...buildBaseContext(),
-    lastError: overrides.lastError || getLastDovelaError(),
+    lastError: resolvedLastError,
+    backendTrace: resolvedLastError?.http || null,
     userInput: {
       expediente: safeText(userInput.expediente, 160) || null,
       attemptedAction: safeText(userInput.attemptedAction, 900) || null,
@@ -335,6 +395,19 @@ export function buildDovelaErrorReport(userInput = {}, overrides = {}) {
     },
     source: overrides.source || 'manual-report',
   };
+}
+
+export function requestDovelaErrorReport(context = {}) {
+  if (typeof window === 'undefined' || typeof window.dispatchEvent !== 'function') return false;
+
+  try {
+    window.dispatchEvent(new CustomEvent(DOVELA_OPEN_ERROR_REPORT_EVENT, {
+      detail: redactObject(context),
+    }));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function copyReportToClipboard(report) {
