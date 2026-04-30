@@ -35,6 +35,48 @@ import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/a
 export default function PQRS_MANAGE_COMPONENT(props) {
     const { currentId, globals, swaMsg, translation, retrieveItem, translation_form, retrievePublish, worker } = props;
     var formData = new FormData();
+
+    const buildLoadReportContext = (error, source, extra = {}) => {
+        const responseMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Error de carga sin detalle del servidor.';
+
+        return {
+            reportSource: source,
+            expediente: {
+                radicado: extra.radicado || currentItem?.id_publico || currentItem?.id_global || String(currentId || ''),
+                identifiers: {
+                    currentId,
+                    idPublico: currentItem?.id_publico ?? null,
+                    idGlobal: currentItem?.id_global ?? extra.idGlobal ?? null,
+                },
+            },
+            lastError: {
+                source,
+                error: { message: responseMessage },
+                http: {
+                    status: error?.response?.status ?? null,
+                    statusText: error?.response?.statusText || null,
+                    method: error?.config?.method || null,
+                    url: error?.config?.url || null,
+                    baseURL: error?.config?.baseURL || null,
+                    responseMessage,
+                },
+                info: {
+                    currentId,
+                    ...extra,
+                },
+            },
+        };
+    };
+
+    const showLoadError = (error, source, extra = {}) => {
+        swalError({
+            title: "ERROR AL CARGAR",
+            text: "No ha sido posible cargar este item, intentelo nuevamente.",
+            reportSource: source,
+            reportContext: buildLoadReportContext(error, source, extra),
+        });
+    };
+
     // ** CONSTS ** //
     const cont1 = { a: 'a' };
 
@@ -101,7 +143,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                showLoadError(e, 'pqrs-manage-load-pqrs');
                 setLoad(true)
             });
         USERS_Service.getAll()
@@ -110,17 +152,22 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                showLoadError(e, 'pqrs-manage-load-users');
                 setLoad(true)
             });
     }
 
     const loadVRs = async (id_global) => {
-        const response = await cubXvrService.getByVR(id_global)
-        const data = response.data.find(item => item.process === 'ENVIAR CONFIRMACION POR EMAIL')
-        const data2 = response.data.find(item => item.process === 'RESPUESTA FORMAL DE LA PETICION')
-        if (data) setIdCUBxVr(data.id)
-        if (data2) setIdCUBxVr2(data2.id)
+        try {
+            const response = await cubXvrService.getByVR(id_global)
+            const data = response.data.find(item => item.process === 'ENVIAR CONFIRMACION POR EMAIL')
+            const data2 = response.data.find(item => item.process === 'RESPUESTA FORMAL DE LA PETICION')
+            if (data) setIdCUBxVr(data.id)
+            if (data2) setIdCUBxVr2(data2.id)
+        } catch (e) {
+            console.log(e);
+            showLoadError(e, 'pqrs-manage-load-cubxvr', { idGlobal: id_global });
+        }
     }
 
     const refreshList = () => {
