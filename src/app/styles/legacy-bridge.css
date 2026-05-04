@@ -623,6 +623,13 @@
   border-radius: var(--radius);
 }
 
+/* ── input-group-text with bg-*: ensure text/icon contrast ──── */
+#main-content :where(.input-group .input-group-text.bg-primary) { color: hsl(var(--primary-foreground)); }
+#main-content :where(.input-group .input-group-text.bg-success) { color: hsl(var(--accent-foreground)); }
+#main-content :where(.input-group .input-group-text.bg-danger)  { color: hsl(var(--destructive-foreground)); }
+#main-content :where(.input-group .input-group-text.bg-warning) { color: hsl(var(--warning-foreground)); }
+#main-content :where(.input-group .input-group-text.bg-info)    { color: hsl(var(--primary-foreground)); }
+
 #main-content :where(.input-group .form-control,
                        .input-group .form-select) {
   border-color: hsl(var(--input));

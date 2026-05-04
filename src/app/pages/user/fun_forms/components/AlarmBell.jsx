@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAlarmsBell } from '../hooks/useAlarmsV2';
 import FUNService from '../../../../services/fun.service';
+import AlarmService from '../../../../services/alarm.service';
 import { buildExpedienteWorkspaceUrl } from '../utils/expedienteWorkspaceRoute';
 
 function looksLikePublicId(value) {
@@ -231,8 +232,7 @@ function AlarmsModal({ onClose, tab, setTab, currentAlarms, refetch, markRead, a
   const loadArchived = async () => {
     setLoadingArchived(true);
     try {
-      const svc = (await import('../../../../services/alarm.service')).default;
-      const resp = await svc.bell({ includeRead: true, includeArchived: true, limit: 200 });
+      const resp = await AlarmService.bell({ includeRead: true, includeArchived: true, limit: 200 });
       const list = resp.data?.data ?? resp.data ?? [];
       setArchived(Array.isArray(list) ? list.filter((a) => a.archivedAt) : []);
     } finally {
