@@ -1143,11 +1143,24 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             const canEdit = row.state != 101 && row.state <= 200;
             const isPH = regexChecker_isPh(row, true);
             const canAssign = window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2;
+            const stopRowClick = (event) => {
+                event?.stopPropagation?.();
+            };
+
+            const runMenuAction = (event, action) => {
+                stopRowClick(event);
+                action();
+            };
 
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="fun-action-toggle h-8 w-8">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="fun-action-toggle h-8 w-8"
+                            onClick={stopRowClick}
+                        >
                             <Icon name="MoreVertical" size={16} />
                         </Button>
                     </DropdownMenuTrigger>
@@ -1155,15 +1168,15 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <DropdownMenuLabel className="flex items-center gap-2">
                             <Icon name="Eye" size={14} /> Consulta
                         </DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => openRadicacionWorkspace(row)}>
+                        <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openRadicacionWorkspace(row))}>
                             <Icon name="Maximize2" size={14} className="text-primary" />
                             Abrir solicitud
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'clock')}>
+                        <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'clock'))}>
                             <Icon name="Clock" size={14} className="text-muted-foreground" />
                             Tiempos
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'archive')}>
+                        <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'archive'))}>
                             <Icon name="Archive" size={14} className="text-muted-foreground" />
                             Documentos
                         </DropdownMenuItem>
@@ -1173,44 +1186,44 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 <DropdownMenuLabel className="flex items-center gap-2">
                                     <Icon name="Pencil" size={14} /> Gestión
                                 </DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => toggle_n(row)}>
+                                <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'edit'))}>
                                     <Icon name="RefreshCw" size={14} className="text-primary" />
                                     Actualizar
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'check')}>
+                                <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'check'))}>
                                     <Icon name="CheckSquare" size={14} className="text-accent" />
                                     Checkeo
                                 </DropdownMenuItem>
                                 {isPH ? (
-                                    <DropdownMenuItem onClick={() => toggle_recordPH(row)}>
+                                    <DropdownMenuItem onClick={(event) => runMenuAction(event, () => toggle_recordPH(row))}>
                                         <Icon name="PenTool" size={14} className="text-warning" />
                                         Inf. P.H.
                                     </DropdownMenuItem>
                                 ) : (
                                     <>
                                         {!isOA && rules[0] != 1 && (
-                                            <DropdownMenuItem onClick={() => toggle_alert(row)}>
+                                            <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'alert'))}>
                                                 <Icon name="Megaphone" size={14} className="text-warning" />
                                                 Publicidad
                                             </DropdownMenuItem>
                                         )}
-                                        <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'record_law')}>
+                                        <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'record_law'))}>
                                             <Icon name="Scale" size={14} className="text-warning" />
                                             Inf. Jurídico
                                         </DropdownMenuItem>
                                         {!isOA && (
                                             <>
-                                                <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'record_arc')}>
+                                                <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'record_arc'))}>
                                                     <Icon name="Building" size={14} className="text-warning" />
                                                     Inf. Arquitectónico
                                                 </DropdownMenuItem>
                                                 {rules[1] != 1 && (
-                                                    <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'record_eng')}>
+                                                    <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'record_eng'))}>
                                                         <Icon name="Cog" size={14} className="text-warning" />
                                                         Inf. Estructural
                                                     </DropdownMenuItem>
                                                 )}
-                                                <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'record_review')}>
+                                                <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'record_review'))}>
                                                     <Icon name="FileText" size={14} className="text-warning" />
                                                     Acta
                                                 </DropdownMenuItem>
@@ -1222,7 +1235,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 <DropdownMenuLabel className="flex items-center gap-2">
                                     <Icon name="FileOutput" size={14} /> Resolución
                                 </DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => openFullscreenWorkspace(row, 'expedition')}>
+                                <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'expedition'))}>
                                     <Icon name="FileCheck" size={14} className="text-accent" />
                                     Expedición
                                 </DropdownMenuItem>
@@ -1231,7 +1244,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         {canAssign && (
                             <>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => retrieveMacroSingle(row.id)}>
+                                <DropdownMenuItem onClick={(event) => runMenuAction(event, () => retrieveMacroSingle(row.id))}>
                                     <Icon name="UserCog" size={14} className="text-primary" />
                                     Asignar
                                 </DropdownMenuItem>
