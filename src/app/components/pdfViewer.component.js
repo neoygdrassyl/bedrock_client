@@ -6,7 +6,9 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
 import http from '../../http-common';
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url';
+
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
 
 function decodeErrorPayload(data) {
     if (!data) return '';
