@@ -8,13 +8,15 @@ import SUBMIT_ANEX from './submit_anex.component';
 import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: propRefreshList, closeModal, edit }) {
     const [currentItem, setCurrentItem] = useState(false);
     const [verifyMSG, setVerifyMSG] = useState(null);
+    const [vrWarning, setVrWarning] = useState(null);
+    const [isVrDuplicate, setIsVrDuplicate] = useState(false);
     const [payment, setPayment] = useState(false);
 
     useEffect(() => {
@@ -90,6 +92,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = new_id.split('-')[0] + "-" + concecutive
                             document.getElementById(htmlId).value = new_id;
+                            _VERIFY_VR_DUPLICATE(htmlId);
                         } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
                     } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
                 })
@@ -98,6 +101,40 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
+        }
+        let _VERIFY_VR_DUPLICATE = (_htmlId) => {
+            let htmlId = _htmlId ?? 'submit_1';
+            let vrCode = document.getElementById(htmlId).value;
+            if (!vrCode || vrCode.length < 4) {
+                setVrWarning(null);
+                return;
+            }
+            setVrWarning(<label className="fw-bold"><Icon name="search-location" size={14} className="text-info" /> Verificando duplicado...</label>);
+            SubmitService.getSearch(1, vrCode)
+                .then(response => {
+                    let duplicates = response.data;
+                    if (currentItem && currentItem.id_public) {
+                        duplicates = duplicates.filter(d => d.id_public !== currentItem.id_public);
+                    }
+                    if (duplicates.length) {
+                        setIsVrDuplicate(true);
+                        setVrWarning(<label className="fw-bold" style={{ fontSize: '12px' }}>
+                            <Icon name="exclamation-triangle" size={14} className="text-danger" /> El código VR <strong>{vrCode}</strong> ya existe en ventanilla única. Se guardará como duplicado si continúa.
+                        </label>);
+                    } else {
+                        setIsVrDuplicate(false);
+                        setVrWarning(<label className="fw-bold" style={{ fontSize: '12px' }}>
+                            <Icon name="check" size={14} className="text-success" /> Código VR disponible.
+                        </label>);
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    setIsVrDuplicate(false);
+                    setVrWarning(<label className="fw-bold" style={{ fontSize: '12px' }}>
+                        <Icon name="exclamation" size={14} className="text-warning" /> No se pudo verificar duplicado. El backend validará al guardar.
+                    </label>);
+                });
         }
         let _VERIFY_RELATED_ID = () => {
             setVerifyMSG(<label className="fw-bold"><Icon name="search-location" size={16} className="text-info" /> Buscando...</label>)
@@ -215,9 +252,11 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_1" required
-                                defaultValue={_CHILD.id_public} />
-                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
+                                defaultValue={_CHILD.id_public}
+                                onBlur={() => _VERIFY_VR_DUPLICATE()} />
+                            <Button size="sm" type="button" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
+                        {vrWarning}
                     </div>
                     <div className="col-5">
                         <label >2. Número de solicitud</label>
@@ -227,7 +266,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             </span>
                             <input type="text" className="form-control" id="submit_2"
                                 defaultValue={_CHILD.id_related} />
-                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
+                            <Button size="sm" type="button" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
                         </div>
                         {verifyMSG}
                     </div>
@@ -257,9 +296,9 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <div className="col-4">
                             {payment
                                 ? <>
-                                    <Button size="sm" className="me-1"
+                                    <Button size="sm" type="button" className="me-1"
                                         onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
-                                    <Button size="sm"
+                                    <Button size="sm" type="button"
                                         onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
                                 </>
                                 : ""}
@@ -280,7 +319,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                 <Icon name="check-square" size={16} />
                             </span>
                             <input list="submit_type" className="form-control" id="submit_4"
-                                defaultValue={_CHILD.type} utocomplete="off" maxLength={250} />
+                                defaultValue={_CHILD.type} autoComplete="off" maxLength={250}
+                                placeholder="Seleccione o escriba un tipo..." />
                             <datalist id="submit_type">
                                 <option value="LICENCIA" />
                                 <option value="URBANIZACION" />
@@ -294,6 +334,9 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                 <option value="EXPENSAS / IMPUESTOS " />
                             </datalist>
                         </div>
+                        <small className="text-muted d-block mt-1" style={{ fontSize: '11px' }}>
+                            <Icon name="info-circle" size={12} /> Opciones: LICENCIA, URBANIZACION, PARCELACION, SUBDIVICON, RECONOCIMIENTO, COSTRUCCION, OTRAS ACTUACIONES, VISTO BUENO, PROPIEDAD HORIZONTAL, EXPENSAS / IMPUESTOS. También puede escribir un valor libre.
+                        </small>
                     </div>
                 </div>
                 <div className="row">
@@ -412,6 +455,12 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
         // FUNCTIONS AND APIS
         var formData = new FormData();
 
+        let handleFormKeyDown = (e) => {
+            if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit') {
+                e.preventDefault();
+            }
+        };
+
         let save_submit = (e) => {
             e.preventDefault();
             formData = new FormData();
@@ -437,7 +486,19 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
             let id_public = document.getElementById("submit_1").value;
             formData.set('id_public', id_public);
 
-            if (false) return swalError({ title: "ERROR DE DUPLICACIÓN", text: "(1. Número de radicación ) y (2. Número de Solicitud)  deben ser consecutivos diferentes" });
+            if (isVrDuplicate) {
+                swalConfirm({
+                    title: "POSIBLE DUPLICADO",
+                    text: `El código VR ${id_public} ya existe en ventanilla única. ¿Desea guardar de todos modos?`,
+                    icon: 'warning',
+                    confirmButtonText: "Guardar de todos modos"
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        manage_submit(id_public);
+                    }
+                });
+                return;
+            }
 
             let date = document.getElementById("submit_3").value;
             if (date) formData.set('date', date);
@@ -516,7 +577,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         </h3>
                     </div>
 
-                    <form id="form_manage_submit" onSubmit={save_submit} className="space-y-4 p-4 md:p-5">
+                    <form id="form_manage_submit" onSubmit={save_submit} onKeyDown={handleFormKeyDown} className="space-y-4 p-4 md:p-5">
                         {COMPONENT_NEW()}
                         <div className="flex justify-end border-t border-border/60 pt-4">
                             {currentItem
