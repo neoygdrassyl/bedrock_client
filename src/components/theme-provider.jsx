@@ -1,4 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  DASHBOARD_PREFERENCES_CHANGED_EVENT,
+  applyDashboardPreferencesToDocument,
+} from '@/app/pages/user/dashboardPreferences';
 
 const ThemeContext = createContext({
   theme: 'system',
@@ -42,6 +46,21 @@ export function ThemeProvider({
       return () => mediaQuery.removeEventListener('change', applyTheme);
     }
   }, [theme]);
+
+  useEffect(() => {
+    function syncPalette(event) {
+      applyDashboardPreferencesToDocument(event?.detail);
+    }
+
+    syncPalette();
+    window.addEventListener('storage', syncPalette);
+    window.addEventListener(DASHBOARD_PREFERENCES_CHANGED_EVENT, syncPalette);
+
+    return () => {
+      window.removeEventListener('storage', syncPalette);
+      window.removeEventListener(DASHBOARD_PREFERENCES_CHANGED_EVENT, syncPalette);
+    };
+  }, []);
 
   function setTheme(newTheme) {
     localStorage.setItem(storageKey, newTheme);

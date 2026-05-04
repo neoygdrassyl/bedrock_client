@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 
-function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg }) {
+function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg, currentVersion, translation }) {
         const [fillActive, setFillActive] = useState(null);
         const [edit, setEdit] = useState(false);
 
@@ -31,10 +31,19 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
     }, [currentItem, edit]);
 
     useEffect(() => {
-
-        setFillActive(currentItem.state);
+        // Auto-seleccionar tab activo basado en proceso en curso o estado del expediente
+        const ongoing = _GET_ONGOING_PROCESS();
+        if (ongoing !== 0) {
+            setFillActive(String(ongoing - 100));
+        } else if (currentItem.state < -100) {
+            setFillActive(String(currentItem.state));
+        } else {
+            // Seleccionar primer tab que tenga datos, o el primero por defecto
+            const versions = ['-1', '-2', '-3', '-4', '-5', '-6'];
+            const activeVersion = versions.find(v => _GET_CLOCK_STATE_VERSION(-50, v) || _GET_CLOCK_STATE_VERSION(-5, v));
+            setFillActive(activeVersion ? String(Number(activeVersion) - 100) : '-101');
+        }
         autoSaveMissingStartClock();
-
     }, []);
 
     // --- DATA GETTERS MOVIDOS A METODOS DE CLASE ---
@@ -204,7 +213,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             '-3': 'NO CUMPLE ACTA CORRECCIONES',
             '-4': 'NO PAGA EXPENSAS',
             '-5': 'VOLUNTARIO',
-            // '-6': 'NEGADA',
+            '-6': 'NEGADA',
         }
         const resolveStatusIcon = {
             '-1': <Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} />,
@@ -252,6 +261,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             if ((_GET_CLOCK_STATE_VERSION(-50, -3) || _GET_CLOCK_STATE_VERSION(-5, -3)) && !_GET_CLOCK_STATE_VERSION(-30, -3)) return true;
             if ((_GET_CLOCK_STATE_VERSION(-50, -4) || _GET_CLOCK_STATE_VERSION(-5, -4)) && !_GET_CLOCK_STATE_VERSION(-30, -4)) return true;
             if ((_GET_CLOCK_STATE_VERSION(-50, -5) || _GET_CLOCK_STATE_VERSION(-5, -5)) && !_GET_CLOCK_STATE_VERSION(-30, -5)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -6) || _GET_CLOCK_STATE_VERSION(-5, -6)) && !_GET_CLOCK_STATE_VERSION(-30, -6)) return true;
             return false;
         }
         let _CHECK_IF_PROCESS_ENDED = (version) => {
@@ -286,6 +296,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             if ((_GET_CLOCK_STATE_VERSION(-50, -3) || _GET_CLOCK_STATE_VERSION(-5, -3)) && !_GET_CLOCK_STATE_VERSION(-30, -3)) OngoingProcess = -3;
             if ((_GET_CLOCK_STATE_VERSION(-50, -4) || _GET_CLOCK_STATE_VERSION(-5, -4)) && !_GET_CLOCK_STATE_VERSION(-30, -4)) OngoingProcess = -4;
             if ((_GET_CLOCK_STATE_VERSION(-50, -5) || _GET_CLOCK_STATE_VERSION(-5, -5)) && !_GET_CLOCK_STATE_VERSION(-30, -5)) OngoingProcess = -5;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -6) || _GET_CLOCK_STATE_VERSION(-5, -6)) && !_GET_CLOCK_STATE_VERSION(-30, -6)) OngoingProcess = -6;
             return OngoingProcess;
         }
         let _CHILD_6_SELECT = () => {
@@ -387,7 +398,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <Button variant="destructive" size="sm"><Icon name="times-circle" size={16} /> ABRIR PROCESO </Button>
+                            <Button type="submit" variant="destructive" size="sm"><Icon name="times-circle" size={16} /> ABRIR PROCESO </Button>
                         </div>
                     </div>
                 </form>
@@ -417,7 +428,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors" ><Icon name="times-circle" size={16} /> CANCELAR PROCESO </button>
+                            <button type="submit" className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors" ><Icon name="times-circle" size={16} /> CANCELAR PROCESO </button>
                         </div>
                     </div>
                 </form>
@@ -580,7 +591,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     }
                 },
             ]
-            var stepsToCheck = ['-50', '-6', '-5', , '-7', '-8', '-10', '-17', '-20', '-21', '-22', '-30'];
+            var stepsToCheck = ['-50', '-6', '-5', '-7', '-8', '-10', '-17', '-20', '-21', '-22', '-30'];
             if (NegativeState == '-1') { stepsToCheck.unshift('-4'); stepsToCheck.unshift('-3') }
             if (NegativeState == '-3') { stepsToCheck.unshift('-4'); stepsToCheck.unshift('-3') }
             if (NegativeState == '-4') { stepsToCheck.unshift('-4'); }
@@ -600,7 +611,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     resolver_id6: null,
                     resolver_sattus: null,
                     resolver_context: null,
-                    disabled: (value == '-4' || value == '-3') ? false : value == '-30' && currentItem.state == 200 && _CHECK_IF_PROCESS_ENDED(NegativeState) ? false : !edit,
+                    disabled: (value == '-4' || value == '-3') ? false : value == '-30' && currentItem.state == 200 && _CHECK_IF_PROCESS_ENDED(NegativeState) ? false : edit ? false : true,
                 }
                 let clock = _GET_CLOCK_STATE_VERSION(value, NegativeState);
 
@@ -629,9 +640,19 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             let TableTitle = () => {
                 let op = _GET_ONGOING_PROCESS();
                 let finished = _CHECK_IF_PROCESS_ENDED(NegativeState);
-                let ogl = op == NegativeState ? <label className='fw-bold text-danger'>(EN EJECUCIÓN)</label> :
-                    finished ? <label className='fw-bold text-success'>FINALIZADO</label> : '';
-                return <label>DESISTIDO: {NegativePRocessTitle[NegativeState]} {ogl}</label>
+                let archived = _GET_CLOCK_STATE_VERSION(200, NegativeState);
+                let badgeClass = 'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ';
+                let ogl;
+                if (archived) {
+                    ogl = <span className={badgeClass + 'bg-slate-100 text-slate-800 border border-slate-200'}>ARCHIVADO</span>;
+                } else if (op == NegativeState) {
+                    ogl = <span className={badgeClass + 'bg-red-50 text-red-700 border border-red-200'}>EN EJECUCIÓN</span>;
+                } else if (finished) {
+                    ogl = <span className={badgeClass + 'bg-green-50 text-green-700 border border-green-200'}>FINALIZADO</span>;
+                } else {
+                    ogl = <span className={badgeClass + 'bg-gray-50 text-gray-600 border border-gray-200'}>SIN INICIAR</span>;
+                }
+                return <div className="flex items-center gap-2">DESISTIDO: {NegativePRocessTitle[NegativeState]} {ogl}</div>
             }
             return <>
                 <DataTable
@@ -678,22 +699,41 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 return 1;
             }
 
-            formDataClock = new FormData();
+            const processLabels = {
+                '-1': 'RADICACIÓN INCOMPLETA',
+                '-2': 'FALTA VALLA INFORMATIVA',
+                '-3': 'NO CUMPLE CORRECCIONES DEL ACTA',
+                '-4': 'NO PAGO EXPENSAS VARIABLES',
+                '-5': 'DESISTIMIENTO VOLUNTARIO',
+                '-6': 'NEGADA'
+            };
 
-            let state = -50
-            formDataClock.set('date_start', date);
-            formDataClock.set('name', "INICIO DEL PROCESO DE DESISTIMIENTO");
-            formDataClock.set('desc', "Inicio de proceso abierto por: " + worker);
-            formDataClock.set('state', state);
-            formDataClock.set('version', process);
-            formDataClock.set('fun0Id', currentItem.id);
+            swalConfirm({
+                title: '¿ABRIR PROCESO DE DESISTIMIENTO?',
+                text: `Está a punto de iniciar un proceso de desistimiento por: ${processLabels[process] || process}. Esta acción cambiará el estado del expediente y no se puede deshacer fácilmente.`,
+                icon: 'warning',
+                confirmButtonText: 'Sí, abrir proceso',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    formDataClock = new FormData();
 
-            manage_clock(true, state, process, formDataClock);
+                    let state = -50
+                    formDataClock.set('date_start', date);
+                    formDataClock.set('name', "INICIO DEL PROCESO DE DESISTIMIENTO");
+                    formDataClock.set('desc', "Inicio de proceso abierto por: " + worker);
+                    formDataClock.set('state', state);
+                    formDataClock.set('version', process);
+                    formDataClock.set('fun0Id', currentItem.id);
 
-            formData = new FormData();
-            let new_state = Number(process) - 100;
-            formData.set('state', new_state);
-            manage_fun_0(false, formData)
+                    manage_clock(true, state, process, formDataClock);
+
+                    formData = new FormData();
+                    let new_state = Number(process) - 100;
+                    formData.set('state', new_state);
+                    manage_fun_0(false, formData);
+                }
+            });
         }
         let cancel_process = (e) => {
             e.preventDefault();
@@ -742,10 +782,10 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             formDataClock.set('version', version);
             formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(false, state, currentVersion, formDataClock);
+            manage_clock(false, state, version, formDataClock);
 
         }
-        let save_archive = () => {
+        let save_archive = (version) => {
             formDataClock = new FormData();
 
             let state = 101 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
@@ -757,10 +797,10 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             formDataClock.set('name', "ARCHIVACIÓN");
             formDataClock.set('desc', "Fue enviado al archivo por: " + worker);
             formDataClock.set('state', state);
-            formDataClock.set('version', currentVersion);
+            formDataClock.set('version', version);
             formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(false, state, currentVersion, formDataClock);
+            manage_clock(false, state, version, formDataClock);
 
         }
         let final_clock = () => {
