@@ -332,17 +332,45 @@ function RECORD_LAW_DOCSCHECK(props) {
         {
             name: 'VER',
             center: true,
-            minWidth: '70px',
+            minWidth: '90px',
             cell: row => {
                 let id6 = _GET_ID6(row.doc) || _GET_ID6_NAME(row.doc);
-                if (id6 > 0) return <VIZUALIZER
-                    url={_FIND_6(id6).path + "/" + _FIND_6(id6).filename}
-                    apipath={'/files/'}
-                    icon='Search'
-                    iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
-                    iconStyle={{ fontSize: '150%' }}
-                />
-                else return '';
+                let numId6 = Number(id6);
+
+                if (numId6 > 0) {
+                    let fun6doc = _FIND_6(numId6);
+                    if (fun6doc && fun6doc.path && fun6doc.filename) {
+                        return <VIZUALIZER
+                            url={fun6doc.path + "/" + fun6doc.filename}
+                            apipath={'/files/'}
+                            icon='Search'
+                            iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
+                            iconStyle={{ fontSize: '150%' }}
+                        />
+                    }
+                    return (
+                        <span
+                            title="El documento está registrado pero no tiene archivo digital asociado"
+                            className="inline-flex items-center justify-center rounded-md bg-muted/50 h-8 w-8 text-muted-foreground cursor-help"
+                        >—</span>
+                    );
+                }
+
+                if (numId6 === -1 || id6 === '-1') {
+                    return (
+                        <span
+                            title="Documento aportado físicamente (ventanilla única)"
+                            className="inline-flex items-center justify-center rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning cursor-help"
+                        >FÍSICO</span>
+                    );
+                }
+
+                return (
+                    <span
+                        title="Sin documento digital asociado"
+                        className="inline-flex items-center justify-center rounded-md bg-muted/50 h-8 w-8 text-muted-foreground cursor-help"
+                    >—</span>
+                );
             }
         },
     ]
