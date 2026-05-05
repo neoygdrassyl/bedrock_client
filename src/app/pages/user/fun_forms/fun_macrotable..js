@@ -114,6 +114,7 @@ const _fun_0_type_days_matrix = {
     'oa': { 'law': 1, 'arc': 1, 'eng': 0 },
     '0': { 'law': 1, 'arc': 1, 'eng': 0 },
 }
+import 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { swalError } from '@/app/utils/swalAdapter';
 function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilter, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
