@@ -36,6 +36,7 @@ const DASHBOARD_PALETTES = {
     neutralTone: 'bg-primary/10 text-primary/80',
     quickCard: 'hover:border-primary/30 hover:bg-primary/5',
     spotlight: 'border-primary/15 bg-primary/5',
+    groupCard: 'border-primary/20 bg-gradient-to-br from-card via-card to-primary/5 shadow-primary/10',
   },
   civic: {
     hero: 'border-primary/20 bg-primary/5 text-primary',
@@ -45,6 +46,7 @@ const DASHBOARD_PALETTES = {
     neutralTone: 'bg-primary/10 text-primary/80',
     quickCard: 'hover:border-primary/35 hover:bg-primary/5',
     spotlight: 'border-primary/20 bg-primary/5',
+    groupCard: 'border-primary/20 bg-gradient-to-br from-card via-card to-primary/5 shadow-primary/10',
   },
   verde: {
     hero: 'border-accent/20 bg-accent/5 text-accent',
@@ -54,6 +56,7 @@ const DASHBOARD_PALETTES = {
     neutralTone: 'bg-accent/10 text-accent/80',
     quickCard: 'hover:border-accent/35 hover:bg-accent/5',
     spotlight: 'border-accent/20 bg-accent/5',
+    groupCard: 'border-accent/20 bg-gradient-to-br from-card via-card to-accent/5 shadow-accent/10',
   },
   ambar: {
     hero: 'border-warning/25 bg-warning/10 text-warning',
@@ -63,6 +66,7 @@ const DASHBOARD_PALETTES = {
     neutralTone: 'bg-warning/15 text-warning/90',
     quickCard: 'hover:border-warning/35 hover:bg-warning/10',
     spotlight: 'border-warning/20 bg-warning/10',
+    groupCard: 'border-warning/25 bg-gradient-to-br from-card via-card to-warning/10 shadow-warning/10',
   },
   graphite: {
     hero: 'border-foreground/15 bg-muted/60 text-foreground',
@@ -72,6 +76,7 @@ const DASHBOARD_PALETTES = {
     neutralTone: 'bg-accent/10 text-accent/80',
     quickCard: 'hover:border-foreground/20 hover:bg-muted/60',
     spotlight: 'border-foreground/10 bg-muted/50',
+    groupCard: 'border-foreground/15 bg-gradient-to-br from-card via-card to-muted/70 shadow-foreground/10',
   },
 };
 
@@ -92,7 +97,7 @@ const MODULES = {
   radicacion: { key: 'radicacion', title: 'Radicar solicitud', eyebrow: 'Radicación', icon: 'FileText', desc: 'Crear una nueva solicitud', link: '/licencias', tone: 'primary' },
   ventanilla: { key: 'ventanilla', title: 'Ventanilla Única', eyebrow: 'Recepción', icon: 'FileInput', desc: 'Ingresos y revisión inicial', link: '/ventanilla', tone: 'accent' },
   'gestion-nueva': { key: 'gestion-nueva', title: 'Gestión nueva', eyebrow: 'Operación', icon: 'Layers', desc: 'Expedientes en desarrollo', link: '/licencias/gestion-nueva', status: 'En desarrollo', tone: 'primary' },
-  gestion: { key: 'gestion', title: 'Gestión actual', eyebrow: 'Operación', icon: 'FolderOpen', desc: 'Licencias activas', link: '/licencias/gestion', tone: 'primary' },
+  gestion: { key: 'gestion', title: 'Gestión de licencias', eyebrow: 'Operación', icon: 'FolderOpen', desc: 'Licencias activas', link: '/licencias/gestion', tone: 'primary' },
   pqrs: { key: 'pqrs', title: 'PQRS', eyebrow: 'Atención', icon: 'FileSpreadsheet', desc: 'Peticiones y reclamos', link: '/peticiones', tone: 'warning' },
   alarmas: { key: 'alarmas', title: 'Alarmas', eyebrow: 'SLA', icon: 'BellRing', desc: 'Umbrales y vencimientos', link: '/configuracion?tab=alarmas', status: 'En desarrollo', tone: 'warning' },
   calendario: { key: 'calendario', title: 'Calendario', eyebrow: 'Agenda', icon: 'Calendar', desc: 'Citas y programación', link: '/calendario', tone: 'accent' },
@@ -115,18 +120,18 @@ const MODULES = {
 const SECTION_DEFINITIONS = {
   intake: {
     title: 'Radicación e ingreso',
-    description: 'Captura trámites, ventanilla y apertura de expedientes sin mezclar consulta normativa.',
-    items: ['radicacion', 'ventanilla', 'gestion-nueva'],
+    description: 'Ingreso y recepción de solicitudes.',
+    items: ['radicacion', 'ventanilla'],
   },
   reference: {
-    title: 'Normativa y consulta predial',
-    description: 'Aísla nomenclaturas, normas urbanas y uso del suelo para consulta rápida sin ruido operativo.',
+    title: 'Otras actuaciones',
+    description: 'Consultas prediales y urbanísticas.',
     items: ['nomenclatura', 'normas', 'uso-suelo'],
   },
   management: {
     title: 'Gestión curaduría',
-    description: 'Continúa expedientes activos, revisa alarmas y agenda operativa.',
-    items: ['gestion-nueva', 'gestion', 'alarmas', 'calendario'],
+    description: 'Expedientes activos y agenda operativa.',
+    items: ['gestion', 'calendario'],
   },
   communications: {
     title: 'Atención y comunicaciones',
@@ -150,7 +155,7 @@ const DASHBOARD_PRESETS = {
     eyebrow: 'Dovela recomendado',
     title: 'Consola operativa del día',
     description: 'Radica, continúa gestión y revisa señales críticas sin repetir el mismo catálogo de módulos.',
-    quickActionKeys: ['radicacion', 'gestion-nueva', 'pqrs', 'alarmas'],
+    quickActionKeys: ['gestion'],
     processSectionKeys: ['intake', 'management'],
     supportSectionKeys: ['reference', 'communications', 'archive', 'tools'],
     focus: ['4 acciones críticas arriba', 'Proceso separado de soporte', 'Seguimiento lateral compacto'],
@@ -160,7 +165,7 @@ const DASHBOARD_PRESETS = {
     eyebrow: 'Radicación express',
     title: 'Ingreso rápido de trámites',
     description: 'Reduce la primera pantalla a recepción, radicación y creación de expedientes.',
-    quickActionKeys: ['radicacion', 'ventanilla', 'gestion-nueva'],
+    quickActionKeys: ['gestion'],
     processSectionKeys: ['intake'],
     supportSectionKeys: ['reference', 'management', 'communications', 'archive'],
     focus: ['Recepción primero', 'Ingreso sin ruido', 'Gestión secundaria'],
@@ -169,8 +174,8 @@ const DASHBOARD_PRESETS = {
   management: {
     eyebrow: 'Gestión curaduría',
     title: 'Control de expedientes activos',
-    description: 'Prioriza gestión, alarmas y seguimiento para usuarios que operan expedientes todo el día.',
-    quickActionKeys: ['gestion-nueva', 'gestion', 'alarmas', 'calendario'],
+    description: 'Prioriza gestión y seguimiento para usuarios que operan expedientes todo el día.',
+    quickActionKeys: ['gestion'],
     processSectionKeys: ['management'],
     supportSectionKeys: ['intake', 'reference', 'communications', 'archive'],
     focus: ['Seguimiento ampliado', 'Alarmas arriba', 'Agenda operativa'],
@@ -180,7 +185,7 @@ const DASHBOARD_PRESETS = {
     eyebrow: 'Atención y comunicaciones',
     title: 'Frente de atención ciudadana',
     description: 'Organiza PQRS, mensajes, chat y agenda para responder más rápido.',
-    quickActionKeys: ['pqrs', 'mensajes', 'chat', 'calendario'],
+    quickActionKeys: ['gestion'],
     processSectionKeys: ['communications'],
     supportSectionKeys: ['management', 'intake', 'reference', 'archive'],
     focus: ['PQRS visible', 'Buzón y chat unidos', 'Agenda inmediata'],
@@ -190,7 +195,7 @@ const DASHBOARD_PRESETS = {
     eyebrow: 'Archivo y expedición',
     title: 'Cierre documental y consultas',
     description: 'Lleva documentos, consecutivos, archivo y utilidades al primer nivel de trabajo.',
-    quickActionKeys: ['archivo', 'documentos', 'consecutivos', 'sellos'],
+    quickActionKeys: ['gestion'],
     processSectionKeys: ['archive', 'tools'],
     supportSectionKeys: ['reference', 'intake', 'management', 'communications'],
     focus: ['Documentos primero', 'Consultas agrupadas', 'Operación compacta'],
@@ -261,7 +266,7 @@ function buildTrackedExpedientes(bookmarks, funData) {
         description: fun1?.description || expediente?.model || 'Sin descripción registrada',
         stateLabel: getExpedienteStateLabel(expediente?.state),
         dateLabel: formatShortDate(expediente?.date || bookmark.createdAt),
-        href: idPublic ? `/funmanage/expediente/${encodeURIComponent(idPublic)}` : '/licencias/gestion-nueva',
+        href: idPublic ? `/funmanage/expediente/${encodeURIComponent(idPublic)}` : '/licencias/gestion',
       };
     })
     .filter(Boolean)
@@ -302,14 +307,13 @@ function getModule(key) {
   return item;
 }
 
-function buildSection(key, excludedKeys = new Set()) {
+function buildSection(key) {
   const definition = SECTION_DEFINITIONS[key];
   if (!definition) return null;
 
   const items = definition.items
     .map(getModule)
-    .filter(Boolean)
-    .filter((item) => !excludedKeys.has(item.key));
+    .filter(Boolean);
   if (items.length === 0) return null;
 
   return {
@@ -323,40 +327,13 @@ function buildSection(key, excludedKeys = new Set()) {
 function buildDashboardSections(layout = 'recommended') {
   const preset = DASHBOARD_PRESETS[layout] || DASHBOARD_PRESETS.recommended;
   const quickActions = preset.quickActionKeys.map(getModule).filter(Boolean);
-  const quickActionKeys = new Set(quickActions.map((item) => item.key));
 
   return {
     preset,
     quickActions,
-    processSections: preset.processSectionKeys.map((key) => buildSection(key, quickActionKeys)).filter(Boolean),
-    supportSections: preset.supportSectionKeys.map((key) => buildSection(key, quickActionKeys)).filter(Boolean),
+    processSections: preset.processSectionKeys.map((key) => buildSection(key)).filter(Boolean),
+    supportSections: preset.supportSectionKeys.map((key) => buildSection(key)).filter(Boolean),
   };
-}
-
-function buildTopWorkItems(personal = [], team = [], recent = []) {
-  const seen = new Set();
-  const candidates = [
-    ...personal.map((item) => ({ ...item, sourceLabel: 'Mío' })),
-    ...team.map((item) => ({ ...item, sourceLabel: 'Equipo' })),
-    ...recent.map((item) => ({
-      key: `recent-${item.radicado}`,
-      radicado: item.radicado,
-      href: item.href,
-      title: 'Expediente reciente',
-      stateLabel: 'Reciente',
-      sourceLabel: 'Reciente',
-    })),
-  ];
-
-  return candidates
-    .filter((item) => item?.radicado && item?.href)
-    .filter((item) => {
-      const key = item.href || item.key || item.radicado;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    })
-    .slice(0, 3);
 }
 
 function getShortUserName(userName) {
@@ -385,7 +362,6 @@ function Dashboard({ breadCrums }) {
           MailboxService.getAll(),
           AppointmentsService.getAll(),
           BookmarkService.list({ scope: 'personal' }),
-          BookmarkService.list({ scope: 'team' }),
         ]);
 
         if (cancelled) return;
@@ -404,11 +380,9 @@ function Dashboard({ breadCrums }) {
         if (Array.isArray(funData)) {
           nextCounts['/licencias'] = funData.filter((item) => item.state === 1 || item.state === -1).length;
           nextCounts['/licencias/gestion'] = funData.filter((item) => item.state > 0 && item.state < 100).length;
-          nextCounts['/licencias/gestion-nueva'] = nextCounts['/licencias/gestion'];
         } else {
           nextFailures['/licencias'] = true;
           nextFailures['/licencias/gestion'] = true;
-          nextFailures['/licencias/gestion-nueva'] = true;
         }
 
         const countMappings = [
@@ -428,15 +402,14 @@ function Dashboard({ breadCrums }) {
         setCountFailures(nextFailures);
 
         const personalBookmarks = results[5].status === 'fulfilled' ? normalizeList(results[5].value?.data) : [];
-        const teamBookmarks = results[6].status === 'fulfilled' ? normalizeList(results[6].value?.data) : [];
 
         setTrackedExpedientes({
           personal: buildTrackedExpedientes(personalBookmarks, funData || []),
-          team: buildTrackedExpedientes(teamBookmarks, funData || []),
+          team: [],
         });
         setTrackedError(
-          results[5].status === 'rejected' || results[6].status === 'rejected'
-            ? 'No se pudieron cargar todos los marcados.'
+          results[5].status === 'rejected'
+            ? 'No se pudieron cargar los marcados.'
             : null
         );
       } catch {
@@ -444,7 +417,6 @@ function Dashboard({ breadCrums }) {
           setCountFailures({
             '/licencias': true,
             '/licencias/gestion': true,
-            '/licencias/gestion-nueva': true,
             '/peticiones': true,
             '/ventanilla': true,
             '/mensajes': true,
@@ -495,61 +467,51 @@ function Dashboard({ breadCrums }) {
   const density = DENSITY_STYLES[preferences.density] || DENSITY_STYLES.comfortable;
   const palette = DASHBOARD_PALETTES[preferences.palette] || DASHBOARD_PALETTES.dovela;
   const selectedPreset = dashboardModel.preset;
-  const trackingEmphasis = selectedPreset.trackingMode === 'prominent';
-  const topActions = dashboardModel.quickActions.slice(0, 2);
-  const topWorkItems = useMemo(
-    () => buildTopWorkItems(trackedExpedientes.personal, trackedExpedientes.team, recentExpedientes),
-    [recentExpedientes, trackedExpedientes.personal, trackedExpedientes.team]
-  );
+  const primaryAction = dashboardModel.quickActions[0] || getModule('gestion');
 
   return (
     <TooltipProvider delayDuration={140}>
       <div className={cn('w-full animate-fade-in-up', density.sectionGap)} data-dovela-tour-id="dashboard-main">
-      <WorkdayHeader
-        preset={selectedPreset}
-        userName={userName}
-        palette={palette}
-        paletteKey={preferences.palette}
-        topActions={topActions}
-        workItems={topWorkItems}
-        counts={counts}
-        countFailures={countFailures}
-        loadingCounts={loadingCounts}
-        loadingWorkItems={loadingTracked}
-        density={preferences.density}
-      />
+        <WorkdayHeader
+          preset={selectedPreset}
+          userName={userName}
+          palette={palette}
+          paletteKey={preferences.palette}
+          primaryAction={primaryAction}
+          counts={counts}
+          countFailures={countFailures}
+          loadingCounts={loadingCounts}
+          density={preferences.density}
+        />
 
-      <section className="space-y-3" data-dovela-tour-id="dashboard-quick-actions">
-        <SectionHeader title="Acciones críticas" />
-        <div className={cn('grid gap-3', trackingEmphasis ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4' : density.quickGrid)}>
-          {dashboardModel.quickActions.map((item) => (
-            <QuickActionCard
-              key={item.key || item.link}
-              item={item}
-              palette={preferences.palette}
-              density={preferences.density}
-              counts={counts}
-              countFailures={countFailures}
-              loadingCounts={loadingCounts}
-            />
-          ))}
-        </div>
-      </section>
+        <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-start">
+          <div className="min-w-0 space-y-5 2xl:flex-1">
+            {dashboardModel.processSections.length > 0 ? (
+              <section className="space-y-3" data-dovela-tour-id="dashboard-operations">
+                <SectionHeader title="Trabajo principal" badge={selectedPreset.eyebrow} />
 
-      <div className={cn('flex flex-col gap-4', '2xl:flex-row 2xl:items-start')}>
-        <div
-          className={cn(
-            'space-y-5',
-            !trackingEmphasis && '2xl:w-full 2xl:max-w-[63rem] 2xl:flex-none',
-            trackingEmphasis && '2xl:w-full 2xl:max-w-[49rem] 2xl:flex-none'
-          )}
-        >
-          {dashboardModel.processSections.length > 0 ? (
-            <section className="space-y-3" data-dovela-tour-id="dashboard-operations">
-              <SectionHeader title="Trabajo principal" badge={selectedPreset.eyebrow} />
+                <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                  {dashboardModel.processSections.map((section) => (
+                    <GroupedActionCard
+                      key={section.key}
+                      title={section.title}
+                      description={section.description}
+                      items={section.items}
+                      counts={counts}
+                      countFailures={countFailures}
+                      loadingCounts={loadingCounts}
+                      palette={preferences.palette}
+                      density={preferences.density}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
-              <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-                {dashboardModel.processSections.map((section) => (
+            <section className="space-y-3">
+              <SectionHeader title="Módulos" />
+              <div className="grid grid-cols-1 gap-3 xl:grid-cols-2 2xl:grid-cols-4">
+                {dashboardModel.supportSections.map((section) => (
                   <GroupedActionCard
                     key={section.key}
                     title={section.title}
@@ -564,48 +526,22 @@ function Dashboard({ breadCrums }) {
                 ))}
               </div>
             </section>
-          ) : null}
+          </div>
 
-          <section className="space-y-3">
-            <SectionHeader title="Módulos" />
-            <div className="grid grid-cols-1 gap-3 xl:grid-cols-2 2xl:grid-cols-3">
-              {dashboardModel.supportSections.map((section) => (
-                <GroupedActionCard
-                  key={section.key}
-                  title={section.title}
-                  description={section.description}
-                  items={section.items}
-                  counts={counts}
-                  countFailures={countFailures}
-                  loadingCounts={loadingCounts}
-                  palette={preferences.palette}
-                  density={preferences.density}
-                />
-              ))}
-            </div>
-          </section>
+          <aside
+            className="space-y-4 2xl:sticky 2xl:top-4 2xl:ml-auto 2xl:w-[24rem] 2xl:flex-none"
+            data-dovela-tour-id="dashboard-tracking"
+          >
+            <RecentExpedientesSummary items={recentExpedientes} palette={preferences.palette} />
+            <TrackedExpedientesSummary
+              personal={trackedExpedientes.personal}
+              loading={loadingTracked}
+              error={trackedError}
+              density={preferences.density}
+              palette={preferences.palette}
+            />
+          </aside>
         </div>
-
-        <aside
-          className={cn(
-            'space-y-4',
-            '2xl:sticky 2xl:top-4 2xl:ml-auto 2xl:flex-none',
-            !trackingEmphasis && '2xl:w-[26rem]',
-            trackingEmphasis && '2xl:w-[34rem]'
-          )}
-          data-dovela-tour-id="dashboard-tracking"
-        >
-          <RecentExpedientesSummary items={recentExpedientes} />
-          <TrackedExpedientesSummary
-            personal={trackedExpedientes.personal}
-            team={trackedExpedientes.team}
-            loading={loadingTracked}
-            error={trackedError}
-            stacked={!trackingEmphasis}
-            density={preferences.density}
-          />
-        </aside>
-      </div>
       </div>
     </TooltipProvider>
   );
@@ -616,130 +552,71 @@ function WorkdayHeader({
   userName,
   palette,
   paletteKey,
-  topActions,
-  workItems,
+  primaryAction,
   counts,
   countFailures,
   loadingCounts,
-  loadingWorkItems,
   density,
 }) {
   const dense = density === 'compact';
+  const toneClasses = primaryAction ? getToneClasses(paletteKey, primaryAction.tone) : palette.primaryTone;
+  const toneIconClasses = primaryAction ? getToneIconClasses(paletteKey, primaryAction.tone) : 'text-primary';
 
   return (
     <section
-      className={cn('overflow-hidden rounded-2xl border p-3 shadow-sm sm:p-4', palette.hero)}
+      className={cn('overflow-hidden rounded-2xl border px-3 py-3 shadow-sm sm:px-4', palette.hero)}
       data-dovela-tour-id="dashboard-hero"
     >
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] xl:items-stretch">
-        <div className="grid gap-3 lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1fr)] lg:items-center">
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-current/15 bg-background/70 text-current shadow-sm">
-              <Icon name="LayoutDashboard" size={18} />
-            </span>
-            <div className="min-w-0">
-              <div className="mb-1 flex min-w-0 flex-wrap items-center gap-1.5">
-                <Badge variant="outline" className="h-5 max-w-full rounded-full border-current/20 bg-background/70 px-2 text-[10px] text-current">
-                  <span className="truncate">{preset.eyebrow}</span>
-                </Badge>
-              </div>
-              <h1 className="truncate text-lg font-semibold tracking-tight text-foreground sm:text-xl">Panel de trabajo</h1>
-              <p className={cn('truncate text-muted-foreground', dense ? 'text-[10px]' : 'text-[11px]')}>
-                {getGreeting()}, {getShortUserName(userName)} · {getCompactDate()}
-              </p>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-current/15 bg-background/70 text-current shadow-sm">
+            <Icon name="LayoutDashboard" size={18} />
+          </span>
+          <div className="min-w-0">
+            <div className="mb-1 flex min-w-0 flex-wrap items-center gap-1.5">
+              <Badge variant="outline" className="h-5 max-w-full rounded-full border-current/20 bg-background/70 px-2 text-[10px] text-current">
+                <span className="truncate">{preset.eyebrow}</span>
+              </Badge>
             </div>
-          </div>
-
-          <div className="grid gap-2 sm:grid-cols-2">
-            {topActions.map((item) => (
-              <HeaderActionButton
-                key={item.key || item.link}
-                item={item}
-                palette={paletteKey}
-                counts={counts}
-                countFailures={countFailures}
-                loadingCounts={loadingCounts}
-                compact={dense}
-              />
-            ))}
+            <h1 className="truncate text-lg font-semibold tracking-tight text-foreground sm:text-xl">Panel de trabajo</h1>
+            <p className={cn('truncate text-muted-foreground', dense ? 'text-[10px]' : 'text-[11px]')}>
+              {getGreeting()}, {getShortUserName(userName)} · {getCompactDate()}
+            </p>
           </div>
         </div>
 
-        <div className="rounded-xl border border-current/15 bg-background/75 p-2.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/70">Continuar</span>
-            <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-normal">
-              {loadingWorkItems ? '…' : workItems.length}
-            </Badge>
-          </div>
-          <div className="grid gap-1.5">
-            {loadingWorkItems ? (
-              Array.from({ length: 2 }).map((_, index) => <Skeleton key={index} className="h-9 rounded-lg" />)
-            ) : workItems.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border/70 px-3 py-2 text-[11px] text-muted-foreground">
-                Sin expedientes recientes.
-              </div>
-            ) : (
-              workItems.map((item) => <HeaderWorkItem key={item.key || item.href || item.radicado} item={item} />)
-            )}
-          </div>
-        </div>
+        {primaryAction ? (
+          <ModuleTooltip item={primaryAction}>
+            <Button
+              asChild
+              variant="outline"
+              className="h-auto min-h-11 shrink-0 rounded-xl border-current/15 bg-background/75 p-0 text-left shadow-sm transition-colors hover:bg-background"
+            >
+              <Link to={primaryAction.link} className="flex w-full items-center justify-between gap-3 no-underline px-3 py-2 md:w-[18rem]">
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg', toneClasses)}>
+                    <Icon name={primaryAction.icon} size={15} className={toneIconClasses} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[12px] font-semibold text-foreground">{primaryAction.title}</span>
+                    <span className="block truncate text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">
+                      {primaryAction.eyebrow}
+                    </span>
+                  </span>
+                </span>
+                <ActionMeta
+                  item={primaryAction}
+                  counts={counts}
+                  countFailures={countFailures}
+                  loadingCounts={loadingCounts}
+                  compact={dense}
+                />
+              </Link>
+            </Button>
+          </ModuleTooltip>
+        ) : null}
       </div>
     </section>
-  );
-}
-
-function HeaderActionButton({ item, palette, counts, countFailures, loadingCounts, compact }) {
-  const toneClasses = getToneClasses(palette, item.tone);
-  const toneIconClasses = getToneIconClasses(palette, item.tone);
-
-  return (
-    <ModuleTooltip item={item}>
-      <Button
-        asChild
-        variant="outline"
-        className="h-auto min-h-11 rounded-xl border-current/15 bg-background/70 p-0 text-left shadow-sm transition-colors hover:bg-background"
-      >
-        <Link to={item.link} className="flex w-full items-center justify-between gap-2.5 no-underline px-3 py-2">
-          <span className="flex min-w-0 items-center gap-2.5">
-            <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg', toneClasses)}>
-              <Icon name={item.icon} size={15} className={toneIconClasses} />
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate text-[12px] font-semibold text-foreground">{item.title}</span>
-              <span className="block truncate text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">
-                {item.eyebrow}
-              </span>
-            </span>
-          </span>
-
-          <ActionMeta
-            item={item}
-            counts={counts}
-            countFailures={countFailures}
-            loadingCounts={loadingCounts}
-            compact={compact}
-          />
-        </Link>
-      </Button>
-    </ModuleTooltip>
-  );
-}
-
-function HeaderWorkItem({ item }) {
-  return (
-    <Link
-      to={item.href}
-      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg px-2.5 py-2 no-underline transition-colors hover:bg-muted/60"
-    >
-      <span className="min-w-0">
-        <span className="block truncate font-mono text-[11px] font-semibold text-foreground">{item.radicado}</span>
-        <span className="block truncate text-[10px] text-muted-foreground">{item.sourceLabel}</span>
-      </span>
-      <Badge variant="outline" className="h-5 max-w-24 rounded-full px-2 text-[10px] font-normal">
-        <span className="truncate">{item.stateLabel}</span>
-      </Badge>
-    </Link>
   );
 }
 
@@ -778,66 +655,36 @@ function ModuleTooltip({ item, children }) {
   );
 }
 
-function QuickActionCard({ item, palette, density, counts, countFailures, loadingCounts }) {
-  const toneClasses = getToneClasses(palette, item.tone);
-  const toneIconClasses = getToneIconClasses(palette, item.tone);
-  const paletteClasses = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
-  const dense = density === 'compact';
-
-  return (
-    <ModuleTooltip item={item}>
-      <Button
-        asChild
-        variant="outline"
-        className={cn(
-          'h-auto rounded-xl border-border/70 p-0 text-left shadow-sm transition-colors',
-          paletteClasses.quickCard
-        )}
-      >
-        <Link to={item.link} className="flex w-full items-center gap-2.5 no-underline p-3">
-          <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', toneClasses)}>
-            <Icon name={item.icon} size={16} className={toneIconClasses} />
-          </span>
-
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">
-                {item.eyebrow}
-              </span>
-              {item.status ? (
-                <Badge variant="outline" className="rounded-full px-2 text-[10px] font-normal">
-                  {item.status}
-                </Badge>
-              ) : null}
-            </span>
-
-            <span className="text-[13px] font-semibold leading-tight text-foreground">{item.title}</span>
-          </span>
-
-          <ActionMeta
-            item={item}
-            counts={counts}
-            countFailures={countFailures}
-            loadingCounts={loadingCounts}
-            compact={dense}
-          />
-        </Link>
-      </Button>
-    </ModuleTooltip>
-  );
-}
-
 function GroupedActionCard({ title, description, items, counts, countFailures, loadingCounts, palette, density }) {
   const dense = density === 'compact';
+  const paletteClasses = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
+  const leadTone = items[0]?.tone || 'primary';
+  const leadToneClasses = getToneClasses(palette, leadTone);
+  const leadIconClasses = getToneIconClasses(palette, leadTone);
 
   return (
-    <Card className="border-border/60 shadow-sm">
+    <Card className={cn('overflow-hidden border shadow-lg shadow-black/5', paletteClasses.groupCard)}>
       <CardContent className="p-3">
-        <div className="mb-2.5 flex items-center justify-between gap-2">
-          <h3 className="truncate text-sm font-semibold text-foreground">{title}</h3>
-          {description ? <SectionInfoTooltip title={title} description={description} /> : null}
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', leadToneClasses)}>
+              <Icon name={items[0]?.icon || 'Grid2X2'} size={15} className={leadIconClasses} />
+            </span>
+            <div className="min-w-0">
+              <h3 className="truncate text-sm font-semibold text-foreground">{title}</h3>
+              <p className="truncate text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/65">
+                {items.length} accesos
+              </p>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-normal tabular-nums">
+              {items.length}
+            </Badge>
+            {description ? <SectionInfoTooltip title={title} description={description} /> : null}
+          </div>
         </div>
-        <div className="grid grid-cols-1 gap-1.5">
+        <div className="grid grid-cols-1 gap-2">
           {items.map((item) => {
             const toneClasses = getToneClasses(palette, item.tone);
             const toneIconClasses = getToneIconClasses(palette, item.tone);
@@ -849,9 +696,12 @@ function GroupedActionCard({ title, description, items, counts, countFailures, l
                   variant="outline"
                   className={cn('h-auto justify-start px-3 py-2', dense ? 'min-h-[2.85rem]' : 'min-h-[3rem]')}
                 >
-                  <Link to={item.link} className="flex w-full items-center justify-between gap-2.5 no-underline">
+                  <Link
+                    to={item.link}
+                    className="flex w-full items-center justify-between gap-2.5 rounded-lg border border-border/50 bg-background/75 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-current/20 hover:bg-background hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
                     <span className="flex min-w-0 items-center gap-2.5">
-                      <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-md', toneClasses)}>
+                      <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', toneClasses)}>
                         <Icon name={item.icon} size={15} className={toneIconClasses} />
                       </span>
                       <span className="min-w-0 text-left">
@@ -934,14 +784,18 @@ function ActionMeta({ item, counts, countFailures, loadingCounts, compact = fals
   return <Icon name="ArrowUpRight" size={14} className="shrink-0 text-muted-foreground" />;
 }
 
-function RecentExpedientesSummary({ items }) {
+function RecentExpedientesSummary({ items, palette }) {
+  const paletteClasses = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
+  const toneClasses = getToneClasses(palette, 'accent');
+  const toneIconClasses = getToneIconClasses(palette, 'accent');
+
   return (
-    <Card className="border-border/60 shadow-sm">
+    <Card className={cn('overflow-hidden border shadow-sm', paletteClasses.groupCard)}>
       <CardContent className="p-0">
         <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-2.5">
           <div className="flex min-w-0 items-center gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
-              <Icon name="History" size={15} />
+            <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', toneClasses)}>
+              <Icon name="History" size={15} className={toneIconClasses} />
             </span>
             <div className="min-w-0">
               <h2 className="truncate text-sm font-semibold text-foreground">Vistos recientemente</h2>
@@ -957,14 +811,20 @@ function RecentExpedientesSummary({ items }) {
             Sin recientes.
           </div>
         ) : (
-          <div className="grid gap-1.5 p-2">
+          <div className="grid gap-2 p-2.5">
             {items.map((item) => (
               <Link
                 key={item.radicado}
                 to={item.href}
-                className="flex items-center justify-between rounded-md px-2.5 py-2 no-underline transition-colors hover:bg-muted/50"
+                className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 rounded-xl border border-border/55 bg-background/80 px-3 py-2 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/25 hover:bg-background hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <span className="truncate text-xs font-semibold text-foreground">{item.radicado}</span>
+                <span className="min-w-0">
+                  <span className="block truncate font-mono text-xs font-semibold text-foreground">{item.radicado}</span>
+                  <span className="block truncate text-[10px] text-muted-foreground">{formatShortDate(item.updatedAt)}</span>
+                </span>
+                <Badge variant="outline" className="h-5 rounded-full px-2 text-[10px] font-normal">
+                  Reciente
+                </Badge>
                 <Icon name="ArrowUpRight" size={13} className="text-muted-foreground" />
               </Link>
             ))}
@@ -975,11 +835,11 @@ function RecentExpedientesSummary({ items }) {
   );
 }
 
-function TrackedExpedientesSummary({ personal, team, loading, error, stacked = false, density }) {
+function TrackedExpedientesSummary({ personal, loading, error, density, palette }) {
   const dense = density === 'compact';
 
   return (
-    <section className={cn('grid gap-3', stacked ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-2')}>
+    <section className="grid gap-3">
       <TrackedExpedientesTable
         title="Marcados para mí"
         subtitle="Atención directa"
@@ -988,18 +848,10 @@ function TrackedExpedientesSummary({ personal, team, loading, error, stacked = f
         loading={loading}
         emptyText="Sin marcados personales."
         dense={dense}
-      />
-      <TrackedExpedientesTable
-        title="Marcados del equipo"
-        subtitle="Prioridades compartidas"
-        icon="Users"
-        items={team}
-        loading={loading}
-        emptyText="Sin marcados del equipo."
-        dense={dense}
+        palette={palette}
       />
       {error ? (
-        <div className={cn('rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning', !stacked && 'xl:col-span-2')}>
+        <div className="rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
           {error}
         </div>
       ) : null}
@@ -1007,14 +859,18 @@ function TrackedExpedientesSummary({ personal, team, loading, error, stacked = f
   );
 }
 
-function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyText, dense }) {
+function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyText, dense, palette }) {
+  const paletteClasses = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
+  const toneClasses = getToneClasses(palette, 'primary');
+  const toneIconClasses = getToneIconClasses(palette, 'primary');
+
   return (
-    <Card className="border-border/60 shadow-sm">
+    <Card className={cn('overflow-hidden border shadow-sm', paletteClasses.groupCard)}>
       <CardContent className="p-0">
         <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-2.5">
           <div className="flex min-w-0 items-center gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-              <Icon name={icon} size={15} />
+            <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', toneClasses)}>
+              <Icon name={icon} size={15} className={toneIconClasses} />
             </span>
             <div className="min-w-0">
               <h2 className="truncate text-sm font-semibold text-foreground">{title}</h2>
@@ -1026,26 +882,26 @@ function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyT
           </Badge>
         </div>
 
-        <div className="divide-y divide-border/50">
+        <div className="grid gap-2 p-2.5">
           {loading ? (
             Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="px-3.5 py-2.5">
+              <div key={index} className="rounded-xl border border-border/55 bg-background/70 px-3 py-2.5">
                 <Skeleton className="mb-2 h-4 w-1/3" />
                 <Skeleton className="h-3 w-3/4" />
               </div>
             ))
           ) : items.length === 0 ? (
-            <div className="px-4 py-4 text-center text-xs text-muted-foreground">
+            <div className="rounded-xl border border-dashed border-border/70 px-4 py-4 text-center text-xs text-muted-foreground">
               {emptyText}
             </div>
           ) : (
-            items.map((item) => <TrackedExpedienteRow key={item.key} item={item} dense={dense} />)
+            items.map((item) => <TrackedExpedienteRow key={item.key} item={item} dense={dense} palette={palette} />)
           )}
         </div>
 
         <div className="border-t border-border/50 px-3.5 py-2.5 text-right">
-          <Link to="/licencias/gestion-nueva" className="text-xs font-medium text-primary hover:underline underline-offset-2">
-            Ver gestión nueva
+          <Link to="/licencias/gestion" className="text-xs font-medium text-primary hover:underline underline-offset-2">
+            Ver gestión de licencias
           </Link>
         </div>
       </CardContent>
@@ -1053,23 +909,34 @@ function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyT
   );
 }
 
-function TrackedExpedienteRow({ item, dense }) {
+function TrackedExpedienteRow({ item, dense, palette }) {
+  const toneClasses = getToneClasses(palette, 'primary');
+  const toneIconClasses = getToneIconClasses(palette, 'primary');
+
   return (
-    <Link to={item.href} className="block no-underline transition-colors hover:bg-muted/40">
-      <div className={cn('grid grid-cols-[minmax(0,1fr)_auto] gap-3 px-3.5', dense ? 'py-2.5' : 'py-3')}>
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-xs font-semibold text-foreground">{item.radicado}</span>
-            <Badge variant="outline" className="h-5 rounded-full px-2 text-[10px] font-normal">
-              {item.stateLabel}
-            </Badge>
-          </div>
-          <p className="mt-1 truncate text-xs font-medium text-foreground/90">{item.title}</p>
+    <Link
+      to={item.href}
+      className={cn(
+        'grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-xl border border-border/55 bg-background/80 px-3 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:bg-background hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        dense ? 'py-2.5' : 'py-3'
+      )}
+    >
+      <span className={cn('mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', toneClasses)}>
+        <Icon name="FolderOpen" size={14} className={toneIconClasses} />
+      </span>
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="font-mono text-xs font-semibold text-foreground">{item.radicado}</span>
+          <Badge variant="outline" className="h-5 rounded-full px-2 text-[10px] font-normal">
+            {item.stateLabel}
+          </Badge>
         </div>
-        <div className="flex flex-col items-end justify-between gap-2 text-right">
-          <span className="text-[10px] text-muted-foreground">{item.dateLabel}</span>
-          <Icon name="ArrowUpRight" size={13} className="text-muted-foreground" />
-        </div>
+        <p className="mt-1 truncate text-xs font-medium text-foreground/90">{item.title}</p>
+        <p className="mt-0.5 truncate text-[10px] text-muted-foreground">{item.description}</p>
+      </div>
+      <div className="flex flex-col items-end justify-between gap-2 text-right">
+        <span className="text-[10px] text-muted-foreground">{item.dateLabel}</span>
+        <Icon name="ArrowUpRight" size={13} className="text-muted-foreground" />
       </div>
     </Link>
   );

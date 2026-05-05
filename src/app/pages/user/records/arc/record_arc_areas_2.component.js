@@ -157,7 +157,41 @@ export default function RECORD_ARC_AREAS_2(props) {
     const [selectedRange, setSelectedRange] = useState(null);
     const [dragAnchor, setDragAnchor] = useState(null);
     const [editingCell, setEditingCell] = useState(null);
+    const [colWidths, setColWidths] = useState([]);
     var saveCounter = 0;
+
+    let _MEASURE_TEXT = (text, fontSize = 12.8) => {
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+            return ctx.measureText(String(text ?? '')).width;
+        } catch {
+            return String(text ?? '').length * 7;
+        }
+    };
+
+    useEffect(() => {
+        if (!Array.isArray(Header) || Header.length === 0) return;
+        const PADDING = 16;
+        const MIN_COL_0 = 40;
+        const MIN_COL_REST = 70;
+        const widths = Header.map((h, colIdx) => {
+            if (colIdx === 0) return MIN_COL_0;
+            let max = _MEASURE_TEXT(h) + PADDING * 2;
+            if (Array.isArray(data)) {
+                data.forEach((row) => {
+                    if (!Array.isArray(row)) return;
+                    const cell = row[colIdx];
+                    if (!cell) return;
+                    const w = _MEASURE_TEXT(cell.value) + PADDING * 2;
+                    if (w > max) max = w;
+                });
+            }
+            return Math.max(max, MIN_COL_REST);
+        });
+        setColWidths(widths);
+    }, [Header, data]);
 
     useEffect(() => {
         if (currentRecord.record_arc_33_areas != null) {
@@ -1141,15 +1175,15 @@ export default function RECORD_ARC_AREAS_2(props) {
                     _PASTE_SELECTED_TEXT(text);
                 }}
             >
-                <table className='table table-bordered table-sm' style={{ minWidth: safeHeader.length * 150, tableLayout: 'fixed' }}>
+                <table className='table table-bordered table-sm' style={{ minWidth: colWidths.length ? colWidths.reduce((a, b) => a + b, 0) : safeHeader.length * 100, tableLayout: 'fixed' }}>
                     <thead>
                         <tr>
                             {safeHeader.map((h, i) => (
                                 <th key={'th_' + i}
                                     style={{
-                                        width: i === 0 ? 50 : 150,
+                                        width: colWidths[i] ?? (i === 0 ? 40 : 100),
                                         position: i < 2 ? 'sticky' : undefined,
-                                        left: i === 0 ? 0 : i === 1 ? 50 : undefined,
+                                        left: i === 0 ? 0 : i === 1 ? (colWidths[0] ?? 40) : undefined,
                                         zIndex: i < 2 ? 2 : undefined,
                                         background: '#f8f9fa',
                                         whiteSpace: 'nowrap',
@@ -1181,9 +1215,9 @@ export default function RECORD_ARC_AREAS_2(props) {
                                                 data-arc-row={rowIdx}
                                                 data-arc-col={colIdx}
                                                 style={{
-                                                    width: colIdx === 0 ? 50 : 150,
+                                                    width: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
                                                     position: colIdx < 2 ? 'sticky' : undefined,
-                                                    left: colIdx === 0 ? 0 : colIdx === 1 ? 50 : undefined,
+                                                    left: colIdx === 0 ? 0 : colIdx === 1 ? (colWidths[0] ?? 40) : undefined,
                                                     zIndex: colIdx < 2 ? 1 : undefined,
                                                     background: isSelected ? 'rgba(37, 99, 235, 0.14)' : isReadOnly ? 'gainsboro' : '#fff',
                                                     color: cell.color || undefined,
@@ -1192,8 +1226,8 @@ export default function RECORD_ARC_AREAS_2(props) {
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
-                                                    minWidth: colIdx === 0 ? 50 : 150,
-                                                    maxWidth: colIdx === 0 ? 50 : 150,
+                                                    minWidth: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
+                                                    maxWidth: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
                                                     outline: isActive ? '2px solid #2563eb' : undefined,
                                                     outlineOffset: isActive ? '-2px' : undefined,
                                                     cursor: isReadOnly ? 'default' : 'cell',

@@ -696,7 +696,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         </div>
                     </div>
 
-                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                    <div className="col-12 px-0 min-w-0 flex border-b border-border overflow-x-auto" role="tablist">
                         <button
                             role="tab"
                             aria-selected={fillActive === '4'}
@@ -741,8 +741,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         </button>
                     </div>
 
-                    <div>
-                        <TabPane show={fillActive === '4'}>
+                    <div className="col-12 px-0 min-w-0">
+                        <TabPane show={fillActive === '4'} className="w-full min-w-0">
                             {mountedTabs['4'] && <FUN_DAILY_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
                                 NAVIGATION_GEN={navigation}
                                 requestUpdate={requestUpdate}
@@ -750,7 +750,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             />}
                         </TabPane>
 
-                        <TabPane show={fillActive === '2'}>
+                        <TabPane show={fillActive === '2'} className="w-full min-w-0">
                             {mountedTabs['2'] && <SUBMIT_X_FUN translation={translation} globals={globals}
                                 setSubtmitRows={setSubtmitRows}
                                 type={"LIC"}
@@ -758,7 +758,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 openModal={openModal}
                                 listIncomplete={list_started} />}
                         </TabPane>
-                        <TabPane show={fillActive === '3'}>
+                        <TabPane show={fillActive === '3'} className="w-full min-w-0">
                             {mountedTabs['3'] && <FUN_ASIGNS_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
                                 NAVIGATION_GEN={navigation}
                                 requestUpdate={requestUpdate}

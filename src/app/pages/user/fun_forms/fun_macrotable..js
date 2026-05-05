@@ -117,7 +117,7 @@ const _fun_0_type_days_matrix = {
 import dayjs from 'dayjs';
 import { swalError } from '@/app/utils/swalAdapter';
 function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilter, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
-    const tagRef = useRef(null);
+    const macroTabRefs = useRef({});
     const [state, setState] = useReducer(
         (prev, next) => ({ ...prev, ...next }),
         {
@@ -2803,193 +2803,344 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
             link.click();
         }
+        const groupPanels = [
+            {
+                id: '1',
+                label: 'General',
+                panelTitle: 'Licencias urbanisticas',
+                description: 'Seguimiento principal de expedientes activos dentro del corte visible.',
+                panelDescription: 'Consulta, selecciona y exporta las licencias urbanisticas filtradas sin perder la lectura del bloque principal.',
+                icon: 'LayoutList',
+                tone: 'primary',
+                count: state.data_macro_filter.length,
+            },
+            {
+                id: '2',
+                label: 'Otras Actuaciones',
+                panelTitle: 'Otras actuaciones',
+                description: 'Actuaciones complementarias vigentes separadas del flujo principal.',
+                panelDescription: 'Mantiene las otras actuaciones agrupadas en un bloque propio, con el mismo lenguaje operativo del tablero.',
+                icon: 'FileStack',
+                tone: 'primary',
+                count: state.data_oa.length,
+            },
+            {
+                id: '-1',
+                label: 'Desistimientos',
+                panelTitle: 'Desistidos y desistiendo',
+                description: 'Seguimiento de procesos desistidos o en ejecucion de desistimiento.',
+                panelDescription: 'Agrupa los casos con mayor severidad visual sin contaminar la grilla principal con color extra.',
+                icon: 'XCircle',
+                tone: 'destructive',
+                count: state.data_negative.length,
+            },
+        ];
+        const groupPanelIds = groupPanels.map(group => group.id);
+        const activeGroup = groupPanels.find(group => group.id === state.fillActive) ?? groupPanels[0];
+        const activeGroupIsDestructive = activeGroup.tone === 'destructive';
+        const activeCountLabel = `${activeGroup.count.toLocaleString('es-CO')} visibles`;
+        const dateRangeSummary = date_start || date_end
+            ? `Rango visible: ${date_start ?? 'sin fecha inicial'} a ${date_end ?? 'sin fecha final'}`
+            : 'Rango visible segun filtros y corte actual del bloque';
+        const blockShellClassName = activeGroupIsDestructive
+            ? 'border-destructive/25 shadow-sm shadow-destructive/5'
+            : 'border-primary/15 shadow-sm shadow-primary/5';
+        const blockHeaderClassName = activeGroupIsDestructive
+            ? 'border-destructive/20 bg-gradient-to-r from-destructive/10 via-destructive/5 to-background'
+            : 'border-primary/15 bg-gradient-to-r from-primary/10 via-primary/5 to-background';
+        const blockAccentClassName = activeGroupIsDestructive ? 'bg-destructive/80' : 'bg-primary/80';
+
+        const focusGroupTab = (groupId) => {
+            const nextTab = macroTabRefs.current[groupId];
+            if (nextTab) {
+                nextTab.focus();
+            }
+        };
+
+        const handleGroupTabKeyDown = (event, groupId) => {
+            const currentIndex = groupPanelIds.indexOf(groupId);
+            if (currentIndex === -1) {
+                return;
+            }
+
+            let nextIndex = null;
+            switch (event.key) {
+                case 'ArrowRight':
+                case 'ArrowDown':
+                    nextIndex = (currentIndex + 1) % groupPanelIds.length;
+                    break;
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    nextIndex = (currentIndex - 1 + groupPanelIds.length) % groupPanelIds.length;
+                    break;
+                case 'Home':
+                    nextIndex = 0;
+                    break;
+                case 'End':
+                    nextIndex = groupPanelIds.length - 1;
+                    break;
+                default:
+                    return;
+            }
+
+            event.preventDefault();
+            const nextGroupId = groupPanelIds[nextIndex];
+            handleFillClick(nextGroupId);
+            requestAnimationFrame(() => focusGroupTab(nextGroupId));
+        };
+
+        const renderGroupTab = (group) => {
+            const isActive = group.id === state.fillActive;
+            const isDestructive = group.tone === 'destructive';
+
+            return (
+                <button
+                    key={group.id}
+                    id={`macro-tab-${group.id}`}
+                    ref={(node) => {
+                        if (node) {
+                            macroTabRefs.current[group.id] = node;
+                        } else {
+                            delete macroTabRefs.current[group.id];
+                        }
+                    }}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`macro-panel-${group.id}`}
+                    tabIndex={isActive ? 0 : -1}
+                    onClick={() => handleFillClick(group.id)}
+                    onKeyDown={(event) => handleGroupTabKeyDown(event, group.id)}
+                    className={cn(
+                        'inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-[color,background-color,border-color,box-shadow] duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                        isActive
+                            ? isDestructive
+                                ? 'border-destructive/25 bg-destructive/10 text-destructive shadow-sm shadow-destructive/5'
+                                : 'border-primary/20 bg-primary/10 text-primary shadow-sm shadow-primary/5'
+                            : isDestructive
+                                ? 'border-border/70 bg-background/80 text-muted-foreground hover:border-destructive/25 hover:bg-destructive/5 hover:text-destructive'
+                                : 'border-border/70 bg-background/80 text-muted-foreground hover:border-primary/20 hover:bg-primary/5 hover:text-foreground'
+                    )}
+                >
+                    <Icon name={group.icon} size={15} />
+                    <span>{group.label}</span>
+                    <Badge
+                        variant={isActive ? (isDestructive ? 'destructive' : 'default') : 'outline'}
+                        className={cn(
+                            'rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums transition-colors',
+                            !isActive && 'bg-background/90 text-muted-foreground border-border/80',
+                            !isActive && isDestructive && 'border-destructive/20 bg-destructive/5 text-destructive'
+                        )}
+                    >
+                        {group.count.toLocaleString('es-CO')}
+                    </Badge>
+                </button>
+            );
+        };
+
+        const renderPanelHeader = ({ title, description, count, action, controls = null }) => (
+            <div className="flex flex-col gap-3 border-b border-border/60 px-4 py-4 sm:px-5 lg:flex-row lg:items-start lg:justify-between">
+                <div className="min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="mb-0 text-sm font-semibold uppercase tracking-[0.08em] text-foreground">{title}</h4>
+                        <Badge variant="outline" className="rounded-full border-border/80 bg-background/90 px-2 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
+                            {`${count.toLocaleString('es-CO')} registros`}
+                        </Badge>
+                    </div>
+                    <p className="mb-0 max-w-3xl text-xs leading-5 text-muted-foreground">{description}</p>
+                </div>
+
+                <div className="flex flex-col gap-2 lg:items-end">
+                    {controls ? <div className="flex flex-wrap items-center gap-2">{controls}</div> : null}
+                    <div className="flex flex-wrap items-center gap-2">{action}</div>
+                </div>
+            </div>
+        );
+
         return (
             <div className="py-3 container-macro-table">
 
                 {_COMPONENT_CHARTS()}
-                {_COMPONENT_FILTER()}
-
-                <div className="flex border-b border-border overflow-x-auto" role="tablist">
-                    <button
-                        role="tab"
-                        aria-selected={state.fillActive === '1'}
-                        onClick={() => handleFillClick('1')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            state.fillActive === '1'
-                                ? 'border-b-primary text-primary'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="LayoutList" size={14} />
-                        General
-                        <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{state.data_macro_filter.length}</Badge>
-                    </button>
-                    <button
-                        role="tab"
-                        aria-selected={state.fillActive === '2'}
-                        onClick={() => handleFillClick('2')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            state.fillActive === '2'
-                                ? 'border-b-primary text-primary'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="FileStack" size={14} />
-                        Otras Actuaciones
-                        <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{state.data_oa.length}</Badge>
-                    </button>
-                    <button
-                        role="tab"
-                        aria-selected={state.fillActive === '-1'}
-                        onClick={() => handleFillClick('-1')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            state.fillActive === '-1'
-                                ? 'border-b-destructive text-destructive'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="XCircle" size={14} />
-                        Desistimientos
-                        <Badge variant="destructive" className="ml-1 text-[10px] px-1.5 py-0">{state.data_negative.length}</Badge>
-                    </button>
+                <div className="mt-4 rounded-xl border border-border/60 bg-card/50 p-3 shadow-sm">
+                    {_COMPONENT_FILTER()}
                 </div>
 
-                <div>
+                <section className={cn('mt-4 overflow-hidden rounded-2xl border bg-card/95 backdrop-blur-sm', blockShellClassName)}>
+                    <div aria-hidden="true" className={cn('h-1 w-full', blockAccentClassName)} />
 
-                    <TabPane show={state.fillActive === '1'}>
-                        <div className="row">
-
-                            <DataTable
-                                conditionalRowStyles={rowSelectedStyle}
-                                noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
-                                striped="true"
-                                columns={columns}
-                                data={(state.data_macro_filter)}
-                                highlightOnHover
-                                pagination
-                                paginationPerPage={30}
-                                paginationRowsPerPageOptions={[30, 60, 120]}
-                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                className="data-table-component"
-                                title={
-                                    <div className="d-flex justify-content-between">
-                                        <div><h5>LICENCIAS URBANISTICAS</h5></div>
-                                        <div><Button variant="outline" size="sm" onClick={() => { generateCVS(state.data_macro_filter) }}
-                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
+                    <div className={cn('border-b px-4 py-4 sm:px-5', blockHeaderClassName)}>
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                            <div className="min-w-0 space-y-1.5">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <div className={cn(
+                                        'inline-flex h-9 w-9 items-center justify-center rounded-xl border bg-background/80 shadow-sm',
+                                        activeGroupIsDestructive ? 'border-destructive/20 text-destructive' : 'border-primary/15 text-primary'
+                                    )}>
+                                        <Icon name={activeGroup.icon} size={16} />
                                     </div>
-                                }
-                                dense
-
-                                progressPending={!load}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
-
-                                fixedHeader
-                                fixedHeaderScrollHeight="700px"
-                                //selectableRows
-                                //actions={actionsMemo}
-                                expandableRows={(window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2)}
-                                expandableRowsComponent={ExpandedComponent}
-                                //expandableRowDisabled={row => row.disabled}
-                                defaultSortFieldId={1}
-                                defaultSortAsc={false}
-                                onRowClicked={(e) => setSelectedRow(e.id)}
-                            //onRowDoubleClicked={(row, event) => console.log(row, event)}
-                            />
-
-                        </div>
-                    </TabPane>
-
-                    <TabPane show={state.fillActive === '2'}>
-                        <div className="row">
-
-                            <DataTable
-                                conditionalRowStyles={rowSelectedStyle}
-                                noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
-                                striped="true"
-                                columns={columns}
-                                data={state.data_oa}
-                                highlightOnHover
-                                pagination
-                                paginationPerPage={30}
-                                paginationRowsPerPageOptions={[30, 60, 120]}
-                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                className="data-table-component"
-                                dense
-                                title={
-                                    <div className="d-flex justify-content-between">
-                                        <div><h5>OTRAS ACTUACIONES</h5></div>
-                                        <div><Button variant="outline" size="sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
-                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
+                                    <div>
+                                        <h3 className="mb-0 text-base font-semibold tracking-tight text-foreground">Macro tabla de seguimiento</h3>
+                                        <p className="mb-0 text-xs font-medium text-muted-foreground">{activeGroup.description}</p>
                                     </div>
-                                }
-                                progressPending={!load}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
-
-                                fixedHeader
-                                fixedHeaderScrollHeight="700px"
-                                //selectableRows
-                                //actions={actionsMemo}
-                                expandableRows={(window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2)}
-                                expandableRowsComponent={ExpandedComponent}
-                                //expandableRowDisabled={row => row.disabled}
-                                defaultSortFieldId={1}
-                                defaultSortAsc={false}
-                                onRowClicked={(e) => setSelectedRow(e.id)}
-                            //onRowDoubleClicked={(row, event) => console.log(row, event)}
-                            />
-
-                        </div>
-                    </TabPane>
-
-                    <TabPane show={state.fillActive === '-1'}>
-                        <div className="row">
-                            <div className="col-2">
-                                <div className="input-group mb-3">
-                                    <div className="input-group-text">
-                                        <input className="form-check-input mt-0" type="checkbox" onChange={(e) => _SHOW_NEGATIVE(e.target.checked)} />
-                                    </div>
-                                    <input type="text" className="form-control" disabled value="Mostrar Finalizados" />
                                 </div>
+                                <p className="mb-0 max-w-3xl text-sm leading-6 text-muted-foreground">{activeGroup.panelDescription}</p>
+                            </div>
+
+                            <div className="flex flex-col gap-2 lg:items-end">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <Badge
+                                        variant={activeGroupIsDestructive ? 'destructive' : 'default'}
+                                        className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em]"
+                                    >
+                                        {activeGroup.label}
+                                    </Badge>
+                                    <Badge
+                                        variant="outline"
+                                        className={cn(
+                                            'rounded-full border-current/15 bg-background/90 px-2.5 py-1 text-[10px] font-medium',
+                                            activeGroupIsDestructive ? 'text-destructive' : 'text-primary'
+                                        )}
+                                    >
+                                        {activeCountLabel}
+                                    </Badge>
+                                </div>
+                                <p className="mb-0 text-xs text-muted-foreground lg:text-right">{dateRangeSummary}</p>
                             </div>
                         </div>
 
-                        <div className="">
-                            {load ? (
-                                <DataTable
-                                    conditionalRowStyles={rowSelectedStyleNegative}
-                                    noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
-                                    striped="true"
-                                    columns={columns_negative}
-                                    data={state.data_negative}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={50}
-                                    paginationRowsPerPageOptions={[50, 100, 200]}
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    className="data-table-component"
-                                    title={
-                                        <div className="d-flex justify-content-between">
-                                            <div><h5>DESISTIDOS / DESISTENDO</h5></div>
-                                            <div><Button variant="outline" size="sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
-                                            ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
+                        <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Grupos de la macro tabla" aria-orientation="horizontal">
+                            {groupPanels.map(renderGroupTab)}
+                        </div>
+                    </div>
+
+                    <div className="bg-background/80 px-3 pb-3 pt-4 sm:px-4 sm:pb-4">
+                        <TabPane show={state.fillActive === '1'} id="macro-panel-1" aria-labelledby="macro-tab-1" className="outline-none">
+                            <div className="overflow-hidden rounded-xl border border-border/60 bg-background/90 shadow-sm">
+                                {renderPanelHeader({
+                                    title: 'Licencias urbanisticas',
+                                    description: 'Vista principal del bloque con el total filtrado listo para consulta, seleccion y exportacion.',
+                                    count: state.data_macro_filter.length,
+                                    action: (
+                                        <Button variant="outline" size="sm" onClick={() => { generateCVS(state.data_macro_filter) }}>
+                                            <Icon name="file-csv" size={16} /> DESCARGAR CSV
+                                        </Button>
+                                    ),
+                                })}
+
+                                <div className="p-3 sm:p-4">
+                                    <DataTable
+                                        conditionalRowStyles={rowSelectedStyle}
+                                        noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
+                                        striped="true"
+                                        columns={columns}
+                                        data={state.data_macro_filter}
+                                        highlightOnHover
+                                        pagination
+                                        paginationPerPage={30}
+                                        paginationRowsPerPageOptions={[30, 60, 120]}
+                                        paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                        className="data-table-component"
+                                        dense
+                                        progressPending={!load}
+                                        progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                        fixedHeader
+                                        fixedHeaderScrollHeight="700px"
+                                        expandableRows={(window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2)}
+                                        expandableRowsComponent={ExpandedComponent}
+                                        defaultSortFieldId={1}
+                                        defaultSortAsc={false}
+                                        onRowClicked={(e) => setSelectedRow(e.id)}
+                                    />
+                                </div>
+                            </div>
+                        </TabPane>
+
+                        <TabPane show={state.fillActive === '2'} id="macro-panel-2" aria-labelledby="macro-tab-2" className="outline-none">
+                            <div className="overflow-hidden rounded-xl border border-border/60 bg-background/90 shadow-sm">
+                                {renderPanelHeader({
+                                    title: 'Otras actuaciones',
+                                    description: 'Bloque complementario con el mismo lenguaje de tabla limpia y enfasis superior en la agrupacion.',
+                                    count: state.data_oa.length,
+                                    action: (
+                                        <Button variant="outline" size="sm" onClick={() => { generateCVS(state.data_oa, 'OTRAS ACTUACIONES') }}>
+                                            <Icon name="file-csv" size={16} /> DESCARGAR CSV
+                                        </Button>
+                                    ),
+                                })}
+
+                                <div className="p-3 sm:p-4">
+                                    <DataTable
+                                        conditionalRowStyles={rowSelectedStyle}
+                                        noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
+                                        striped="true"
+                                        columns={columns}
+                                        data={state.data_oa}
+                                        highlightOnHover
+                                        pagination
+                                        paginationPerPage={30}
+                                        paginationRowsPerPageOptions={[30, 60, 120]}
+                                        paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                        className="data-table-component"
+                                        dense
+                                        progressPending={!load}
+                                        progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                        fixedHeader
+                                        fixedHeaderScrollHeight="700px"
+                                        expandableRows={(window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2)}
+                                        expandableRowsComponent={ExpandedComponent}
+                                        defaultSortFieldId={1}
+                                        defaultSortAsc={false}
+                                        onRowClicked={(e) => setSelectedRow(e.id)}
+                                    />
+                                </div>
+                            </div>
+                        </TabPane>
+
+                        <TabPane show={state.fillActive === '-1'} id="macro-panel--1" aria-labelledby="macro-tab--1" className="outline-none">
+                            <div className="overflow-hidden rounded-xl border border-border/60 bg-background/90 shadow-sm">
+                                {renderPanelHeader({
+                                    title: 'Desistidos y desistiendo',
+                                    description: 'Casos con severidad mayor, agrupados arriba pero manteniendo la tabla limpia y operativa.',
+                                    count: state.data_negative.length,
+                                    controls: (
+                                        <label className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border/70 bg-background/90 px-3 py-2 text-xs font-medium text-muted-foreground shadow-sm">
+                                            <input className="h-4 w-4 rounded border-border text-destructive focus:ring-destructive" type="checkbox" onChange={(e) => _SHOW_NEGATIVE(e.target.checked)} />
+                                            <span>Mostrar finalizados</span>
+                                        </label>
+                                    ),
+                                    action: (
+                                        <Button variant="outline" size="sm" onClick={() => { generateCVSNegative(state.data_negative, 'DESISTIDOS') }}>
+                                            <Icon name="file-csv" size={16} /> DESCARGAR CSV
+                                        </Button>
+                                    ),
+                                })}
+
+                                <div className="p-3 sm:p-4">
+                                    {load ? (
+                                        <DataTable
+                                            conditionalRowStyles={rowSelectedStyleNegative}
+                                            noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
+                                            striped="true"
+                                            columns={columns_negative}
+                                            data={state.data_negative}
+                                            highlightOnHover
+                                            pagination
+                                            paginationPerPage={50}
+                                            paginationRowsPerPageOptions={[50, 100, 200]}
+                                            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                            className="data-table-component"
+                                            dense
+                                            onRowClicked={(e) => setSelectedRow(e.id_sistem)}
+                                        />
+                                    ) : (
+                                        <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-10 text-center">
+                                            <h4 className="fw-bold mb-0">CARGANDO INFORMACION...</h4>
                                         </div>
-                                    }
-                                    dense
-                                    onRowClicked={(e) => setSelectedRow(e.id_sistem)}
-                                />
-                            ) : (
-                                <div className="text-center">
-                                    <h4 className="fw-bold">CARGANDO INFORMACION...</h4>
-                                </div>)}
-                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </TabPane>
 
-                        <div className="row">
-
-                        </div>
-                    </TabPane>
                     {
                         /*
     
@@ -3014,7 +3165,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     }
 
                 </div>
-            </div >
+                </section>
+            </div>
         );
 }
 

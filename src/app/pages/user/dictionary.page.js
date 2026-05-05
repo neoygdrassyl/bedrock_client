@@ -151,6 +151,7 @@ export default function DICTIONARY(props) {
         }
         else {
             LIST = _list.filter((arr, i) => {
+                if (!arr[_key]) return false;
                 let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 return curated_element.includes(curated_filter)
@@ -486,6 +487,7 @@ export default function DICTIONARY(props) {
         }
         else {
             LIST = _list.filter((arr, i) => {
+                if (!arr[_key]) return false;
                 let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 return curated_element.includes(curated_filter)
@@ -534,7 +536,7 @@ export default function DICTIONARY(props) {
                     {
                         it.id !== '1' && <li className="list-group-item"><label>VR: <label className='fw-bold'>{it.vr}</label></label></li>
                     }
-                    <li className="list-group-item"><label>Proceso: <label className='fw-bold'>{it.res}</label></label></li>
+                    <li className="list-group-item"><label>Proceso: <label className='fw-bold'>{it.res || '—'}</label></label></li>
                 </ul>
             </PopoverContent>
         </Popover>
@@ -632,8 +634,8 @@ export default function DICTIONARY(props) {
                         <div className='col text-end'>
                             <Button variant="outline" size="sm" onClick={() => generateCVS(
                                 ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN', "FECHA"],
-                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`, 
-                                    i.res === 'Citacion Notificación Resolución' ? getJSONFull(i.date).date_doc :i.date])),
+                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res || ''}`, 
+                                    i.res === 'Citacion Notificación Resolución' ? (getJSONFull(i.date) || {}).date_doc || i.date : i.date])),
                                 'LISTADO CONSECUTIVOS DE SALIDA')}
                                 ><Icon name="table" size={16} /> Descargar CSV</Button>
                         </div>
