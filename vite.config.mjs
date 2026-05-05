@@ -81,8 +81,33 @@ function cjsToEsm() {
   };
 }
 
+function momentBusinessDaysToEsm(code) {
+  const withoutStrict = code.replace(/^['"]use strict['"];\s*/, '');
+  const withoutRequire = withoutStrict.replace(
+    /if\s*\(\s*typeof\s+require\s*===\s*['"]function['"]\s*\)\s*\{\s*var\s+moment\s*=\s*require\(\s*['"]moment['"]\s*\);\s*\}\s*/,
+    '',
+  );
+  const withoutCommonJsExport = withoutRequire.replace(
+    /if\s*\(\s*typeof\s+module\s*!=\s*['"]undefined['"]\s*&&\s*module\.exports\s*\)\s*\{\s*module\.exports\s*=\s*moment;\s*\}\s*/,
+    '',
+  );
+
+  return `import moment from 'moment';\n${withoutCommonJsExport.trim()}\nexport default moment;\n`;
+}
+
+function momentBusinessDaysCompat() {
+  return {
+    name: 'moment-business-days-compat',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!id.replace(/\\/g, '/').includes('/node_modules/moment-business-days/index.js')) return null;
+      return { code: momentBusinessDaysToEsm(code), map: null };
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [cjsToEsm(), jsxInJs(), react()],
+  plugins: [momentBusinessDaysCompat(), cjsToEsm(), jsxInJs(), react()],
 
   // Treat .md files as static assets (CRA imported them as URLs for fetch())
   assetsInclude: ['**/*.md'],
@@ -133,13 +158,7 @@ export default defineConfig({
               async (args) => {
                 const { readFile } = await import('node:fs/promises');
                 let code = await readFile(args.path, 'utf8');
-                // Strip the CJS conditional require block
-                code = code.replace(
-                  /if\s*\(\s*typeof\s+require\s*===\s*['"]function['"]\s*\)\s*\{[^}]*\}/,
-                  '',
-                );
-                // Prepend an ESM import for moment
-                code = 'import moment from "moment";\n' + code;
+                code = momentBusinessDaysToEsm(code);
                 return { contents: code, loader: 'js' };
               },
             );
