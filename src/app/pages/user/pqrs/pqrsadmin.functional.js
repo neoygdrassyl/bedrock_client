@@ -771,8 +771,10 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
     let loadMacro = (event) => {
         event.preventDefault();
         toggle_macro();
-        let date_a = document.getElementById("load_macro_date_1").value;
-        let date_b = document.getElementById("load_macro_date_2").value;
+        const el1 = document.getElementById("load_macro_date_1");
+        const el2 = document.getElementById("load_macro_date_2");
+        let date_a = el1?.value || dayjs().format('YYYY-MM-DD');
+        let date_b = el2?.value || dayjs().format('YYYY-MM-DD');
         var date_start_val = date_a;
         var date_end_val = date_b;
         if (dayjs(date_a).diff(date_b) >= 0) {

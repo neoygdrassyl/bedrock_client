@@ -536,8 +536,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 break;
             case "macro":
                 setState({
-                    date_start: dayjs(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'),
-                    date_end: dayjs(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'),
+                    date_start: dayjs(document.getElementById('load_macro_date_1')?.value || undefined).format('YYYY-MM-DD'),
+                    date_end: dayjs(document.getElementById('load_macro_date_2')?.value || undefined).format('YYYY-MM-DD'),
                 })
                 toggle_macro(item)
                 break;

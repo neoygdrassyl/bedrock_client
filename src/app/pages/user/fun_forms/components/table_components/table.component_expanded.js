@@ -14,7 +14,9 @@ import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function TABLE_COMPONENT_EXPANDED(props) {
-    const { currentItem, swaMsg, worker_list, lenghtL, dataL, date_start, date_end } = props;
+    const { currentItem, swaMsg, worker_list, lenghtL, dataL } = props;
+    const date_start = props.date_start || dayjs().subtract(2, 'year').format('YYYY-MM-DD');
+    const date_end = props.date_end || dayjs().format('YYYY-MM-DD');
 
     var [clocks, setClocks] = useState([])
     var [ncl, setncl] = useState(false)
