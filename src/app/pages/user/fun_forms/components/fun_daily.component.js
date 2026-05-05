@@ -35,6 +35,23 @@ function buildSectionBuckets(items = []) {
     };
 }
 
+const DAILY_LEGACY_TONES = ['danger', 'warning', 'success', 'dark', 'secondary', 'info', 'primary'];
+
+function getDailyLegacyTone(color) {
+    return DAILY_LEGACY_TONES.includes(color) ? color : 'primary';
+}
+
+function getDailySectionTone(sectionKey = '') {
+    const key = String(sectionKey);
+    return DAILY_LEGACY_TONES.find(tone => key.includes(tone)) || 'primary';
+}
+
+function getDailyLegacyButtonClass(btn, selectedBtn) {
+    const tone = getDailyLegacyTone(btn.color);
+    const selectedClass = selectedBtn == btn.id_public ? ' is-selected' : '';
+    return `table-popover-btn daily-status-btn daily-status-${tone}${selectedClass}`;
+}
+
 function createDailyTableBuckets(data) {
     return {
         inc: buildSectionBuckets(data.inc),
@@ -999,7 +1016,7 @@ export default function FUN_DAILY_COMPONENT(props) {
         else contextTest = '';
 
         if (row.wn) contextTest = row.wn + ' ' + contextTest
-        let component = <h6 className={selectedBtn != row.id_public ? 'text-dark fw-normal my-0 py-0' : 'text-light my-0 py-0'}>{contextTest}</h6>
+        let component = <h6 className='daily-popover-context my-0 py-0'>{contextTest}</h6>
         return component;
     }
     let TABLE_BTNS = (datas, sectionKey) => {
@@ -1007,9 +1024,9 @@ export default function FUN_DAILY_COMPONENT(props) {
 
         if (datas.length > DEFER_TABLE_SECTION_THRESHOLD && !expandedTableSections.has(sectionKey)) {
             return (
-                <div className="d-flex flex-column align-items-start gap-2">
+                <div className="daily-board-deferred d-flex flex-column align-items-start gap-1">
                     <span className="small text-muted">Contenido diferido para reducir la carga inicial.</span>
-                    <Button variant="outline" size="sm" onClick={() => expandTableSection(sectionKey)}>
+                    <Button variant="outline" size="sm" className="daily-board-deferred-btn" onClick={() => expandTableSection(sectionKey)}>
                         Ver {datas.length} solicitudes
                     </Button>
                 </div>
@@ -1022,13 +1039,13 @@ export default function FUN_DAILY_COMPONENT(props) {
                     <DropdownMenu key={btn.id_public}>
                         <DropdownMenuTrigger asChild>
                             <Button
-                                variant={selectedBtn != btn.id_public ? "outline" : "default"}
+                                variant="outline"
                                 size="sm"
-                                className="table-popover-btn rounded-full px-2"
+                                className={getDailyLegacyButtonClass(btn, selectedBtn)}
                                 onClick={() => setSbtn(btn.id_public)}
                             >
                                 {text_context_btn(btn)}
-                                <h6 className={selectedBtn != btn.id_public ? 'text-dark fw-normal my-0 py-0' : 'text-light my-0 py-0'}>
+                                <h6 className='daily-popover-id my-0 py-0'>
                                     {(btn.id_public).slice(-7)}
                                 </h6>
                             </Button>
@@ -1259,13 +1276,13 @@ export default function FUN_DAILY_COMPONENT(props) {
     const TABLE_MAIN_HEADER = () => {
         return <>
             <div className="row text-white fw-bold mx-0 px-0"  >
-                <div className="col-5 text-center m-0 p-0 border border-ligh bg-primary text-primary-foreground" style={{ width: '220px' }}>
+                <div className="col-5 text-center m-0 p-0 border border-ligh bg-info" style={{ width: '220px' }}>
                     <h5 className='m-0 p-0 text-dark'>RADICACION </h5>
                 </div>
-                <div className="col-5 text-center m-0 p-0 border border-ligh bg-primary text-primary-foreground" style={{ width: '1410px' }}>
+                <div className="col-5 text-center m-0 p-0 border border-ligh bg-info" style={{ width: '1410px' }}>
                     <h5 className='m-0 p-0 text-dark'>ACTA </h5>
                 </div>
-                <div className="col-5 text-center  m-0 p-0 border border-light bg-primary text-primary-foreground" style={{ width: '1850px' }} >
+                <div className="col-5 text-center  m-0 p-0 border border-light bg-info" style={{ width: '1850px' }} >
                     <h5 className='m-0 p-0 text-dark'>EXPEDICIÓN </h5>
                 </div>
             </div>
@@ -1274,9 +1291,9 @@ export default function FUN_DAILY_COMPONENT(props) {
 
     const TABLE_BODY = (datas) => {
         const renderBucketSection = (title, items, sectionKey) => (
-            <div className="row" key={sectionKey}>
-                <div className="col border border-info py-1">
-                    <h5 className='fw-bold'>{title}{title ? ` (${items.length})` : ''}</h5>
+            <div className="row daily-board-section-row" key={sectionKey}>
+                <div className={`col border border-info py-2 daily-board-bucket daily-bucket-${getDailySectionTone(sectionKey)}`}>
+                    <h5 className='fw-bold daily-board-bucket-title'>{title}{title ? ` (${items.length})` : ''}</h5>
                     {TABLE_BTNS(items, sectionKey)}
                 </div>
             </div>
@@ -1363,9 +1380,9 @@ export default function FUN_DAILY_COMPONENT(props) {
             ],
         ];
 
-        return <div className="row mx-1 px-1 ">
+        return <div className="row mx-1 px-1 daily-board-row">
             {tableColumns.map((column, index) => (
-                <div className="col" key={`daily-column-${index}`}>
+                <div className="col daily-board-column" key={`daily-column-${index}`}>
                     {column.map(section => renderBucketSection(section.title, section.items, section.key))}
                 </div>
             ))}
@@ -1425,8 +1442,8 @@ export default function FUN_DAILY_COMPONENT(props) {
             <>
                 {load2 ?
                     <>
-                        <div className='chart-clock'>
-                            <div className='row   px-1' style={{ width: '3500px', maxHeight: '500px', minHeight: '100px' }} >
+                        <div className='chart-clock daily-board-scroll'>
+                            <div className='row px-1 daily-board-table-shell' style={{ width: '3500px', minHeight: '100px' }} >
                                 {TABLE()}
                             </div>
                         </div>
