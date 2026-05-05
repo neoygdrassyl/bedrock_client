@@ -140,6 +140,21 @@ export default defineConfig({
 
           // Bootstrap (CSS-in-JS part) + DOMPurify
           if (/bootstrap|dompurify/.test(id)) return 'vendor-bootstrap';
+
+          // Charts (heavy, only needed in analytics views)
+          if (/recharts/.test(id)) return 'vendor-charts';
+
+          // Alert dialogs
+          if (/sweetalert2/.test(id)) return 'vendor-swal';
+
+          // Gantt chart (frappe)
+          if (/frappe-gantt/.test(id)) return 'vendor-gantt';
+
+          // PDF viewer (separate from pdf generator)
+          if (/pdf-viewer-reactjs/.test(id)) return 'vendor-pdf-viewer';
+
+          // Spreadsheet
+          if (/react-spreadsheet/.test(id)) return 'vendor-spreadsheet';
         },
       },
     },
