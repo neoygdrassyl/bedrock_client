@@ -1101,6 +1101,11 @@ export default function RECORD_ARC_AREAS_2(props) {
         }
 
         _ACTIVATE_CELL(rowIdx, colIdx);
+
+        const cell = data[rowIdx]?.[colIdx];
+        if (cell && !cell.readOnly) {
+            setEditingCell({ row: rowIdx, col: colIdx });
+        }
     }
 
     let _HANDLE_CELL_DOUBLE_CLICK = (rowIdx, colIdx, isReadOnly) => {
