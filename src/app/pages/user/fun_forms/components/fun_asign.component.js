@@ -570,7 +570,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         const isOA = regexChecker_isOA_2(row);
         let rules = row.rules ? row.rules.split(';') : [];
         return <>
-                {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ?
+                {window.user.id == 1 || window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 6 ?
                     <DropdownMenuItem onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }}><Icon name="UserClock" size={14} className="mr-2" /> Asignar</DropdownMenuItem>
                     : null}
                 <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'general', '')}><Icon name="FolderOpen" size={14} className="mr-2 text-primary" /> Detalles</DropdownMenuItem>
@@ -663,8 +663,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         <li className='list-group-item my-0 py-1'>
                             <b>Revisando:</b>
                             <div className="d-flex flex-wrap">
-                                {worker.datas.filter(item => _filter(item)).filter(item => item.color == 'success' || item.color == 'secondary').map(btn => {
-                                    return <div key={btn.id_public} className='me-1 mb-1'>
+                                {worker.datas.filter(item => _filter(item)).filter(item => item.color == 'success' || item.color == 'secondary').map((btn, idx) => {
+                                    return <div key={`rev-${btn.id_public}-${idx}-${Math.random().toString(36).slice(2,8)}`} className='me-1 mb-1'>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>
@@ -680,10 +680,10 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                             </div>
                             <b>No Viable (<label className="text-success">Nuevos Documentos</label>)</b>
                             <div className="d-flex flex-wrap">
-                                {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map(btn => {
+                                {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map((btn, idx) => {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(!newDocs) return '';
-                                    return <div key={btn.id_public + '-newdocs'} className='me-1 mb-1'>
+                                    return <div key={`new-${btn.id_public}-${idx}-${Math.random().toString(36).slice(2,8)}`} className='me-1 mb-1'>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>
@@ -699,10 +699,10 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                             </div>
                             <b>No Viable (Sin documentos nuevos)</b>
                             <div className="d-flex flex-wrap">
-                                {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map(btn => {
+                                {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map((btn, idx) => {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(newDocs) return '';
-                                    return <div key={btn.id_public + '-nodocs'} className='me-1 mb-1'>
+                                    return <div key={`nodoc-${btn.id_public}-${idx}-${Math.random().toString(36).slice(2,8)}`} className='me-1 mb-1'>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>

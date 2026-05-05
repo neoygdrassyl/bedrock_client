@@ -236,6 +236,19 @@ body.workspace-fullscreen-open {
   max-width: 100% !important;
 }
 
+.app-shell-main-scroll [data-radix-scroll-area-viewport] > div {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.app-shell-main-scroll #main-content {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
 #root, .App {
   width: 100%;
   max-width: 100%;

@@ -326,7 +326,9 @@ export function captureDovelaHttpError(error) {
 
 export function getLastDovelaError() {
   const lastError = readStorage(LAST_ERROR_STORAGE_KEY, null);
-  const status = lastError?.http?.status;
+  if (!lastError) return null;
+  if (!lastError.http) return lastError;
+  const status = lastError.http.status;
   if (status && status < 500) return null;
   return lastError;
 }

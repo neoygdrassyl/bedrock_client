@@ -407,8 +407,8 @@ function FUN_0_RECIPE(props) {
             let model = document.getElementById("fun_0_model").value;
             formData0.set('model', model);
 
-            let tags = tagInput.current.props.tags ?? []
-            formData0.set('tags', tags.join(','));
+            let tagsArray = Array.isArray(tags) ? tags : (currentItem.tags ? currentItem.tags.split(',') : []);
+            formData0.set('tags', tagsArray.join(','));
 
             let rules_html = document.getElementsByName('fun_0_rules');
             let rules = [];

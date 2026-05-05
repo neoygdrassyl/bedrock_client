@@ -3058,7 +3058,7 @@ export default function EXP_RES(props) {
 
     let _COMPONENT_DOC_RES = () => {
         var model = currentRecord.model || 'open';
-        let canSave = (window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2) || _GLOBAL_ID == 'cb1';
+        let canSave = (window.user.id == 1 || window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 6) || _GLOBAL_ID == 'cb1';
 
         function getOptions(model) {
             let defaultOp = <>
