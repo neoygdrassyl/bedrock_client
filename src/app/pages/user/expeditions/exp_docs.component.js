@@ -2344,7 +2344,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formData = new FormData();
             var reso = _GET_EXPEDITION_JSON('reso');
 
-            let rew_name = String(window.user.role_short + ' ' + window.user.name_full).toUpperCase();
+            let rew_name = String(window?.user?.role_short + ' ' + window?.user?.name_full).toUpperCase();
             formData.set('r_simple_name', rew_name);
             formData.set('r_simple', document.getElementById("eje_pdf_reso_1").checked);
             formData.set('r_signs', document.getElementById("eje_pdf_rew_signs").checked);

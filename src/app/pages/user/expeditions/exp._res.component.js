@@ -469,7 +469,7 @@ export default function EXP_RES(props) {
         let tb_text = () => {
             let text = `# |  Número predial | Matricula inmobiliaria | Dirección | Barrio | Área predio\n`;
             let f2 = _GET_CHILD_2();
-            let law_liberties = recordArc.record_law_11_liberties
+            let law_liberties = recordArc?.record_law_11_liberties
 
             let isLiberty = law_liberties && law_liberties.length > 0 ? true : false;
             let max_rows = 0;
@@ -3058,7 +3058,7 @@ export default function EXP_RES(props) {
 
     let _COMPONENT_DOC_RES = () => {
         var model = currentRecord.model || 'open';
-        let canSave = (window.user.id == 1 || window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 6) || _GLOBAL_ID == 'cb1';
+        let canSave = (window?.user?.id == 1 || window?.user?.roleId == 1 || window?.user?.roleId == 3 || window?.user?.roleId == 6) || _GLOBAL_ID == 'cb1';
 
         function getOptions(model) {
             let defaultOp = <>
@@ -3468,7 +3468,7 @@ export default function EXP_RES(props) {
         let date_payment = _GET_CLOCK_STATE(3).date_start || '';
         let r_simple = document.getElementById("record_rew_simple").checked;
         formData.set('r_simple', r_simple);
-        let rew_name = String(window.user.role_short + ' ' + window.user.name_full).toUpperCase();
+        let rew_name = String(window?.user?.role_short + ' ' + window?.user?.name_full).toUpperCase();
         formData.set('r_simple_name', rew_name);
         let r_signs = document.getElementById("record_rew_signs").checked;
         formData.set('r_signs', r_signs);

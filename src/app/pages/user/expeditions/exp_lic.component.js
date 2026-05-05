@@ -136,7 +136,7 @@ export default function EXP_LIC(props) {
 
         let state = 101 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
 
-        let worker = window.user.name + " " + window.user.surname;
+        let worker = window?.user?.name + " " + window?.user?.surname;
         let date_start = document.getElementById("clock_arch_date").value;;
 
         formDataClock.set('date_start', date_start);
