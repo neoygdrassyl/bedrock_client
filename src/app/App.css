@@ -401,6 +401,8 @@ legend {
   margin-left: 0 !important;
   padding-top: 0.12rem !important;
   padding-bottom: 0.12rem !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
   z-index: 2;
 }
 
