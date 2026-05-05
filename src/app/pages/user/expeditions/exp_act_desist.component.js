@@ -496,7 +496,7 @@ const restoreDocs = useCallback(() => {
     // ******************************* JSX ***************************** // 
     let _COMPONENT_DOC_RES = () => {
         var model = currentRecord.model_des || 'delete';
-        let canSave = (window.user.id === 1 || window.user.roleId === 3 || window.user.roleId === 5 || window.user.roleId === 2) || _GLOBAL_ID === 'cb1';
+        let canSave = (window?.user?.id === 1 || window?.user?.roleId === 3 || window?.user?.roleId === 5 || window?.user?.roleId === 2) || _GLOBAL_ID === 'cb1';
 
         var reso = _GET_EXPEDITION_JSON('reso');
         var _CHILD_1 = _GET_CHILD_1();
@@ -1269,7 +1269,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
         let date_payment = _GET_CLOCK_STATE(3).date_start || '';
         let r_simple = document.getElementById("record_rew_simple").checked;
         formData.set('r_simple', r_simple);
-        let rew_name = String(window.user.role_short + ' ' + window.user.name_full).toUpperCase();
+        let rew_name = String(window?.user?.role_short + ' ' + window?.user?.name_full).toUpperCase();
         formData.set('r_simple_name', rew_name);
         let r_signs = document.getElementById("record_rew_signs").checked;
         formData.set('r_signs', r_signs);

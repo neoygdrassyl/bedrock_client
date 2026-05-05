@@ -628,7 +628,7 @@ export default function EXP_EJEC(props) {
 
         applyPdfFormData(formData, 'exec');
 
-        const rew_name = String(window.user.role_short + ' ' + window.user.name_full).toUpperCase();
+        const rew_name = String(window?.user?.role_short + ' ' + window?.user?.name_full).toUpperCase();
         formData.set('r_simple_name', rew_name);
         formData.set('type_not', document.getElementById('expedition_eje_type')?.value ?? '');
         formData.set('tipo',     document.getElementById('expedition_eje_type')?.value ?? '');
