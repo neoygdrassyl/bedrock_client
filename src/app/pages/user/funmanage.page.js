@@ -599,14 +599,14 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     </button>
                 </div>
             )}
-            <div className="Publish container p-0">
+            <div className="Publish container-fluid px-0">
                 <div>
                     <h1 className="text-xl font-bold text-foreground">Gestión de Licencias</h1>
                     <p className="text-sm text-muted-foreground mt-1">Detalle y administración de trámites de licencias urbanísticas</p>
                 </div>
 
-                <div className="row mb-4 d-flex justify-content-center">
-                    <div className="col-lg-11 col-md-12">
+                <div className="row mb-4 mx-0">
+                    <div className="col-12 px-0">
                         <h2 className="text-center my-4 text-xl font-semibold tracking-tight">Gestión de Solicitudes</h2>
                         <hr />
                     </div>
