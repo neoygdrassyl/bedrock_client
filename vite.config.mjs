@@ -1,6 +1,7 @@
 import { defineConfig, transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // Custom plugin: treat .js files in src/ as JSX (CRA migration compat)
 function jsxInJs() {
@@ -84,7 +85,17 @@ function cjsToEsm() {
 
 
 export default defineConfig({
-  plugins: [cjsToEsm(), jsxInJs(), react()],
+  plugins: [
+    cjsToEsm(),
+    jsxInJs(),
+    react(),
+    process.env.ANALYZE === 'true' && visualizer({
+      filename: 'build/stats.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    }),
+  ].filter(Boolean),
 
   // Treat .md files as static assets (CRA imported them as URLs for fetch())
   assetsInclude: ['**/*.md'],
