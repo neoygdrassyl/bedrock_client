@@ -500,12 +500,11 @@ function PrivateRoute({ children }) {
 }
 
 function LoginPage() {
-  let sha256 = require('js-sha256');
   const { t } = useTranslation();
   const navigate = useNavigate();
   let auth = useAuth();
-  const recaptchaRef = React.createRef();
-  var formData = new FormData();
+  const recaptchaRef = React.useRef(null);
+  const credentialsRef = React.useRef({ email: "", password: "" });
 
   let { from } = { from: { pathname: "/dashboard" } };
 
@@ -513,7 +512,7 @@ function LoginPage() {
     event.preventDefault();
 
     recaptchaRef.current.execute().then(response => {
-      CustomsDataService.appLogin(formData)
+        CustomsDataService.appLoginCompatible(credentialsRef.current)
         .then(response => {
             let userInfo = {};
             if (response.data && response.data.token && response.data.user) {
@@ -567,16 +566,19 @@ function LoginPage() {
               icon: 'error',
               confirmButtonText: 'CONTINUAR',
             })
-  };
+            });
+        }).catch(e => {
+          console.log(e);
+        });
+    };
 
-  let login = () => {
-    auth.signin(() => {
-      navigate(from, { replace: true });
-    });
-  };
+    let login = () => {
+      auth.signin(() => {
+        navigate(from, { replace: true });
+      });
+    };
 
-
-  return (
+    return (
     <div className="Login container py-3">
       <div className="row my-4 d-flex justify-content-center">
         <div className="col-lg-8 col-md-12">
@@ -588,12 +590,12 @@ function LoginPage() {
                   <div class="mb-3">
                     <label for="email" class="form-label text-black">{t('login.str_user')}</label>
                     <input type="email" class="form-control" id="email"
-                      onChange={(e) => formData.set('email', e.target.value)} />
+                      onChange={(e) => { credentialsRef.current.email = e.target.value; }} />
                   </div>
                   <div class="mb-3">
                     <label for="password" class="form-label text-black">{t('login.str_pass')}</label>
                     <input type="password" class="form-control" id="password"
-                      onChange={(e) => formData.set('password', sha256(e.target.value))} />
+                      onChange={(e) => { credentialsRef.current.password = e.target.value; }} />
                   </div>
                   <div className="text-center pt-4 mt-3">
                     <button type="submit" class="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
