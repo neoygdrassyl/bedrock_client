@@ -105,7 +105,7 @@ export default defineConfig({
   // Build
   build: {
     outDir: 'build',
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
