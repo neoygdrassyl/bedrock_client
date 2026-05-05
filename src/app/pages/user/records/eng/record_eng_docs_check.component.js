@@ -27,33 +27,34 @@ function RECORD_ENG_DOCS_CHECK(props) {
             return []
         }
         //  DATA CONVERTES
+        let _RENDER_VIZ_BTN = (id, title, icon, color) => {
+            if (id <= 0) return "";
+            let fun6doc = _FIND_6(id);
+            if (!fun6doc || !fun6doc.path || !fun6doc.filename) {
+                return (
+                    <span
+                        title={`${title}: documento sin archivo digital asociado`}
+                        className="inline-flex items-center justify-center rounded-md bg-muted/50 h-8 w-8 text-muted-foreground cursor-help me-1"
+                    >—</span>
+                );
+            }
+            return (
+                <span title={title}>
+                    <VIZUALIZER url={fun6doc.path + "/" + fun6doc.filename} apipath={'/files/'}
+                        icon={icon} color={color} />
+                </span>
+            );
+        };
+
         let _GET_DOCS_BTNS = (_item) => {
             if (!_item) return "";
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
-                ?
-                <span title="CEDULA DE CIUDADANIA"><VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                        icon={'IdCard'} color={'DeepSkyBlue'} /></span>
-                : ""}</>)
-
-            _COMPONENT.push(<>{_array[1] > 0
-                ?
-                <span title="MATRICULA"><VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                        icon={'BadgeCheck'} color={'DarkOrchid'} /></span>
-                : ""}</>)
-
-            _COMPONENT.push(<>{_array[2] > 0
-                ?
-                <span title="FICHA COPNIA"><VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                        icon={'BookOpen'} color={'GoldenRod'} /></span>
-                : ""}</>)
-
-            _COMPONENT.push(<>{_array[2] > 0
-                ? <span title="HOJA DE VIDA Y CERTIFICADOS"><VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                        icon={'FileText'} color={'LimeGreen'} /></span>
-                : ""}</>)
+            _COMPONENT.push(<>{_RENDER_VIZ_BTN(Number(_array[0]), "CEDULA DE CIUDADANIA", "IdCard", "DeepSkyBlue")}</>)
+            _COMPONENT.push(<>{_RENDER_VIZ_BTN(Number(_array[1]), "MATRICULA", "BadgeCheck", "DarkOrchid")}</>)
+            _COMPONENT.push(<>{_RENDER_VIZ_BTN(Number(_array[2]), "FICHA COPNIA", "BookOpen", "GoldenRod")}</>)
+            _COMPONENT.push(<>{_RENDER_VIZ_BTN(Number(_array[3]), "HOJA DE VIDA Y CERTIFICADOS", "FileText", "LimeGreen")}</>)
 
             return <>{_COMPONENT}</>
         }
@@ -92,6 +93,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
                 let _DOCS = _FIND_6_BY_CODE(_codes[i]);
                 if (_DOCS.length > 0) {
                     return _DOCS.map((object, index) =>{
+                        let hasFile = object && object.path && object.filename;
                         return <>
                         <li className="list-group-item">
                             <div className="row">
@@ -99,7 +101,13 @@ function RECORD_ENG_DOCS_CHECK(props) {
                                     <label><span className="badge bg-success">ANEXADO</span> {object.description} </label>
                                 </div>
                                 <div className="col-1">
-                                    <VIZUALIZER url={object.path + "/" + object.filename} apipath={'/files/'} />
+                                    {hasFile
+                                        ? <VIZUALIZER url={object.path + "/" + object.filename} apipath={'/files/'} />
+                                        : <span
+                                            title="Documento anexado sin archivo digital asociado"
+                                            className="inline-flex items-center justify-center rounded-md bg-muted/50 h-8 w-8 text-muted-foreground cursor-help"
+                                        >—</span>
+                                    }
                                 </div>
                                 <div className="col">
                                     <input type="text" className="form-control" name="sdocs" placeholder="Observaciónes"
