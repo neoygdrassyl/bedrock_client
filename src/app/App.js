@@ -411,7 +411,17 @@ function useAuth() {
 }
 
 function useProvideAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    if (DataSerive.restoreSession && DataSerive.restoreSession()) {
+      fakeAuth.isAuthenticated = true;
+      return DataSerive.getUserData();
+    }
+    if (DataSerive.getUserData() != null) {
+      fakeAuth.isAuthenticated = true;
+      return DataSerive.getUserData();
+    }
+    return null;
+  });
 
   const signin = cb => {
     return fakeAuth.signin(() => {
@@ -505,38 +515,58 @@ function LoginPage() {
     recaptchaRef.current.execute().then(response => {
       CustomsDataService.appLogin(formData)
         .then(response => {
-          if (response.data.length === 1) {
             let userInfo = {};
-            userInfo.name = response.data[0].name;
-            userInfo.surname = response.data[0].surname;
-            userInfo.role = response.data[0].role.name;
-            userInfo.role_short = response.data[0].role.short;
-            userInfo.roleDesc = response.data[0].role.desc;
-            userInfo.active = response.data[0].active;
-            userInfo.roleId = response.data[0].roleId;
-            userInfo.id = response.data[0].id;
-            userInfo.name_short = response.data[0].name + ' ' + response.data[0].surname;
-            userInfo.name_full = response.data[0].name + ' ' + response.data[0].name_2 + ' ' + response.data[0].surname + ' ' + response.data[0].surname_2;
-            DataSerive.setUser(userInfo);
-            login();
-          } else {
+            if (response.data && response.data.token && response.data.user) {
+              const u = response.data.user;
+              const role = u.Role || u.role || {};
+              userInfo.name = u.name;
+              userInfo.surname = u.surname;
+              userInfo.role = role.name || u.role;
+              userInfo.role_short = role.short || u.role_short;
+              userInfo.roleDesc = role.desc || u.roleDesc;
+              userInfo.active = u.active;
+              userInfo.roleId = u.roleId;
+              userInfo.id = u.id;
+              userInfo.name_short = u.name + ' ' + u.surname;
+              userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
+              
+              DataSerive.saveToken(response.data.token);
+              DataSerive.setUser(userInfo);
+              login();
+            } else if (Array.isArray(response.data) && response.data.length === 1) {
+              const u = response.data[0];
+              userInfo.name = u.name;
+              userInfo.surname = u.surname;
+              userInfo.role = u.role.name;
+              userInfo.role_short = u.role.short;
+              userInfo.roleDesc = u.role.desc;
+              userInfo.active = u.active;
+              userInfo.roleId = u.roleId;
+              userInfo.id = u.id;
+              userInfo.name_short = u.name + ' ' + u.surname;
+              userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
+              
+              DataSerive.setUser(userInfo);
+              login();
+            } else {
+              MySwal.fire({
+                title: <h2>CERTIFICACION FALLIDA</h2>,
+                text: 'Hubo un error de acceso a la aplicación',
+                footer: 'Revise sus credenciales e intentelo nuevamente',
+                icon: 'error',
+                confirmButtonText: 'CONTINUAR',
+              })
+            }
+          })
+          .catch(e => {
+            console.log(e);
             MySwal.fire({
               title: <h2>CERTIFICACION FALLIDA</h2>,
-              text: 'Hubo un error de acceso a la aplicación',
+              text: 'Credenciales inválidas o error de conexión',
               footer: 'Revise sus credenciales e intentelo nuevamente',
               icon: 'error',
               confirmButtonText: 'CONTINUAR',
             })
-          }
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    }).catch(e => {
-      console.log(e);
-    });;
-
-
   };
 
   let login = () => {
