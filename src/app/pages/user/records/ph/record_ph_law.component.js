@@ -1,275 +1,220 @@
-import Icon from '@/components/icon';
+
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
-import FUN_SERVICE from '../../../../services/fun.service';
+import DataTable from '@/components/data-table-bridge';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
-import VIZUALIZER from '../../../../components/vizualizer.component';
-import dayjs from 'dayjs';
-import RECORD_LAW_PDF from '../law/record_law_pdf';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/components/icon';
+import { swalConfirm } from '@/app/utils/swalAdapter';
+import usePHSave from './hooks/usePHSave';
 
-function RECORD_PH_LAW(props) {
-        const { translation, swaMsg, globals, currentItem, _FUN_R, _FUN_6, currentRecord, currentVersionR } = props;
+const INITIAL_FORM = { type: '', check: '', context: '' };
 
-        // DATA GETTER
-        let _GET_CHILD_6 = () => {
-            var _CHILD = _FUN_6;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
-        }
-        //  DATA CONVERTES
-        let _FIND_6 = (_ID) => {
-            let _LIST = _GET_CHILD_6();
-            let _CHILD = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                if (_LIST[i].id == _ID) {
-                    return _LIST[i];
-                }
-            }
-            return _CHILD;
-        }
-        let _CHILD_6_SELECT = () => {
-            let _LIST = _GET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
-            }
-            return <>{_COMPONENT}</>
-        }
-        let _GET_VALUE_BADGE = (_value) => {
-            if (_value == -1) return <span className="badge bg-dark">SIN DEFINIR</span>
-            if (_value == 0) return <span className="badge bg-danger">NO APORTO</span>
-            if (_value == 1) return <span className="badge bg-success">APORTO</span>
-            if (_value == 2) return <span className="badge bg-warning">NO APLICA</span>
-        }
-        let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
-            if (!_VALUE) {
-                return 'form-select text-danger';
-            }
-            if (_VALUE == 0) {
-                return 'form-select text-danger';
-            }
-            if (_VALUE == 1) {
-                return 'form-select text-success';
-            }
-            if (_VALUE == 2) {
-                return 'form-select text-warning';
-            } else {
-                return 'form-select';
-            }
-        }
-        let _GET_REVIEW = (_code) => {
-            let _review = _FUN_R.review;
-            _review ? _review = _review.split(',') : _review = [];
-            for (var i = 0; i < _review.length; i++) {
-                if (_review[i].includes(_code)) return _review[i].split('&')[1];
-            }
-            return 0;
-        }
-        let _GET_ID6 = (_code) => {
-            let _id6 = _FUN_R.id6;
-            _id6 ? _id6 = _id6.split(',') : _id6 = [];
-            for (var i = 0; i < _id6.length; i++) {
-                if (_id6[i].includes(_code)) return _id6[i].split('&')[1];
-            }
-            return 0;
-        }
+function RECORD_PH_LAW({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [form, setForm] = useState({ ...INITIAL_FORM });
+    const [editForm, setEditForm] = useState({ ...INITIAL_FORM });
+    const { execute, isSaving } = usePHSave({ swaMsg });
 
-        // COMPONENT JSX
-        let _COMPONENT_DOC_CHECK = (_checks) => {
-            if (!_FUN_R) return <label className="fw-bold">La lista de Checkeo no esta debidamente formulada</label>
-            let _DOCS = _FUN_R.code;
-            let _VALUE = _FUN_R.checked;
-            let _REVIEW = _FUN_R.review;
-            let _ID6 = _FUN_R.id6;
-            if (!_DOCS || !_VALUE) return <label className="fw-bold">La lista de Checkeo no esta debidamente formulada</label>
-            _DOCS = _DOCS.split(',');
-            _VALUE = _VALUE.split(',');
-            let _COMPONENT = [];
-            for (var i = 0; i < _checks.length; i++) {
-                let index = _DOCS.indexOf(_checks[i]);
-                _COMPONENT.push(<li className="list-group-item">
-                    <div className="row mb-2">
-                        <lavel> {index > -1
-                            ? <>{_GET_VALUE_BADGE(_VALUE[index])} - {FUN6JSON[_DOCS[index]]}</>
-                            : <> {_GET_VALUE_BADGE(index)} - {FUN6JSON[_checks[i]]} </>}</lavel>
-                    </div>
-                    {_VALUE[index] == 1
-                        ? <div className="row">
-                            <div className="col-4">
-                                <input type="hidden" value={_DOCS[index]} readOnly name={'r_l_g2_doc_code'} />
-                                <select className={_GET_SELECT_COLOR_VALUE(_GET_REVIEW(_DOCS[index]))} name="r_l_g2_doc_review"
-                                    defaultValue={_GET_REVIEW(_DOCS[index])} onChange={() => save_fun_r()}>
-                                    <option value="0" className="text-danger">NO CUMPLE</option>
-                                    <option value="1" className="text-success">CUMPLE</option>
-                                </select>
-                            </div>
-                            <div className="col-7">
-                                <select className='form-select' name="r_l_g2_doc_id6"
-                                    defaultValue={_GET_ID6(_DOCS[index])} onChange={() => save_fun_r()}>
-                                    <option value="-1">APORTADO FÍSICAMENTE</option>
-                                    <option value="0">SIN DOCUMENTO</option>
-                                    {_CHILD_6_SELECT()}
-                                </select>
-                            </div>
-                            <div className="col-1">
-                                {_GET_ID6(_DOCS[index]) > 0
-                                    ?
-                                    <VIZUALIZER url={_FIND_6(_GET_ID6(_DOCS[index])).path + "/" + _FIND_6(_GET_ID6(_DOCS[index])).filename}
-                                        apipath={'/files/'} />
-                                    : ""}
-                            </div>
-                        </div>
-                        : ""}
-                </li>)
-            }
-
-            return <>{_COMPONENT}</>
+    useEffect(() => {
+        if (edit !== false) {
+            setEditForm({
+                type: edit.type ?? '',
+                check: edit.check ?? '',
+                context: edit.context ?? '',
+            });
         }
-        let _COMPONENT_WORKER = () => {
-            return <>
-                <div className="row">
-                    <input type="hidden" id="record_ph_worker_law_0" defaultValue={currentRecord.worker_law_id ? currentRecord.worker_law_id : window.user.id} />
-                    <div className="col-6">
-                        <label>Profesional</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="user" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="record_ph_worker_law_1"
-                                defaultValue={currentRecord.worker_law_name ? currentRecord.worker_law_name : window.user.name + " " + window.user.surname} />
-                        </div>
-                    </div>
-                    <div className="col-3">
-                        <label>Fecha de la revisón</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="calendar-alt" size={16} />
-                            </span>
-                            <input type="date" className="form-control" id="record_ph_worker_law_2" required
-                                defaultValue={currentRecord.date_law_review ? currentRecord.date_law_review : dayjs().format('YYYY-MM-DD')} />
-                        </div>
-                    </div>
+    }, [edit]);
 
-                    <div className="col-3">
-                        <label>Aprobado</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="check-square" size={16} />
-                            </span>
-                            <select className="form-control" id="record_ph_worker_law_3" defaultValue={currentRecord.check_law} >
-                                <option value="0" className="text-danger">NO</option>
-                                <option value="1" className="text-success">SI</option>
-                            </select>
-                        </div>
+    let _GET_CHILD_LAWS = () => {
+        var _CHILD = currentRecord.record_ph_laws;
+        var _LIST = [];
+        if (_CHILD) {
+            _LIST = _CHILD;
+        }
+        return _LIST;
+    }
+
+    let _CHILD_LICENCE_LIST = () => {
+        let _LIST = _GET_CHILD_LAWS();
+        const columns = [
+            {
+                name: 'NORMA / DOCUMENTO',
+                selector: row => row.type,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <span className="text-sm">{row.type}</span>
+            },
+            {
+                name: 'CUMPLE',
+                selector: row => row.check,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <span className="text-sm">{row.check}</span>
+            },
+            {
+                name: 'OBSERVACIONES / RECOMENDACIONES',
+                selector: row => row.context,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label >{row.context}</label>
+            },
+            {
+                name: 'ACCIÓN',
+                button: true,
+                minWidth: '120px',
+                cell: row => <>
+                    <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
+                    <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                </>
+            },
+        ]
+        return <DataTable
+            noDataComponent="No hay Items"
+            striped="true"
+            columns={columns}
+            data={_LIST}
+            highlightOnHover
+            className="data-table-component"
+            noHeader
+        />
+    }
+
+    let _COMPONENT_MANAGE = (isEditing = false) => {
+        const data = isEditing ? editForm : form;
+        const setData = isEditing ? setEditForm : setForm;
+        const suffix = isEditing ? '_edit' : '';
+
+        const handleChange = (field) => (e) => {
+            setData(prev => ({ ...prev, [field]: e.target.value }));
+        };
+
+        return <>
+            <div className="row mb-1">
+                <div className="col-6">
+                    <label>Norma / Documento</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="file-alt" size={16} />
+                        </span>
+                        <input type="text" className="form-control" id={"r_ph_l_1" + suffix} value={data.type} onChange={handleChange('type')} />
                     </div>
                 </div>
-            </>
-        }
-
-        // FUNCTIONS & APIS
-        var formData = new FormData();
-
-        let save_fun_r = () => {
-            let _reivews = document.getElementsByName('r_l_g2_doc_review');
-            let _id6s = document.getElementsByName('r_l_g2_doc_id6');
-            let _codes = document.getElementsByName('r_l_g2_doc_code');
-
-            let review = [];
-            let id6 = [];
-            for (var i = 0; i < _codes.length; i++) {
-                review.push(`${_codes[i].value}&${_reivews[i].value}`);
-                id6.push(`${_codes[i].value}&${_id6s[i].value}`);
-            }
-            formData.set('review', review.join());
-            formData.set('id6', id6.join());
-            manage_fun_r(false);
-        }
-        let manage_fun_r = (useMySwal) => {
-            if (useMySwal) {
-                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            }
-            if (_FUN_R) {
-                FUN_SERVICE.update_r(_FUN_R.id, formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                            }
-                            props.requestUpdate(currentItem.id);
-                        } else {
-                            if (useMySwal) {
-                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                            }
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useMySwal) {
-                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        }
-                    });
-            }
-        }
-        let manage_item = (e) => {
-            e.preventDefault();
-            formData = new FormData();
-
-            let worker_law_id = document.getElementById("record_ph_worker_law_0").value;
-            formData.set('worker_law_id', worker_law_id);
-            let worker_law_name = document.getElementById("record_ph_worker_law_1").value;
-            formData.set('worker_law_name', worker_law_name);
-            let date_law_review = document.getElementById("record_ph_worker_law_2").value;
-            formData.set('date_law_review', date_law_review);
-            let check_law = document.getElementById("record_ph_worker_law_3").value;
-            formData.set('check_law', check_law);
-
-            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RECORD_PH_SERVICE.update(currentRecord.id, formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        props.requestUpdateRecord(currentItem.id);
-                    } else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
-        }
-        return (
-            <div className="record_ph_law container">
-
-                <form id="form_manage_ph_gen" onSubmit={manage_item}>
-                    <label className="app-p lead fw-bold my-2">PROFESIONAL QUE REALIZA LA REVISION JURÍDICA</label>
-                    {_COMPONENT_WORKER()}
-                    <div className="row mb-3 text-center">
-
-                        <div className="col">
-                            <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
-                        </div>
+                <div className="col">
+                    <label>Cumple</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="check-circle" size={16} />
+                        </span>
+                        <select className="form-select" id={"r_ph_l_2" + suffix} value={data.check} onChange={handleChange('check')}>
+                            <option value="">Seleccione...</option>
+                            <option value="SI">SI</option>
+                            <option value="NO">NO</option>
+                            <option value="PARCIAL">PARCIAL</option>
+                            <option value="NO APLICA">NO APLICA</option>
+                        </select>
                     </div>
-                </form>
-                <div className="row mb-3 text-center">
-                <label className="app-p lead fw-bold my-2">GENERAR PDF</label>
-                        <div className='col'>
-                        <RECORD_LAW_PDF
-                            currentItem={currentItem}
-                            currentVersion={1}
-                            currentRecord={currentRecord}
-                            currentVersionR={currentVersionR}
-                            swaMsg={swaMsg}
-                            noReport />
-                        </div>
-
+                </div>
+            </div>
+            <div className="row mb-1">
+                <div className="col">
+                    <label>Observaciones / Recomendaciones</label>
+                    <div className="input-group my-1">
+                        <textarea className="form-control" id={"r_ph_l_3" + suffix} rows="3" value={data.context} onChange={handleChange('context')}></textarea>
                     </div>
-            </div >
-        );
+                </div>
+            </div>
+        </>
+    }
+
+    let new_item = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.set('recordPhId', currentRecord.id);
+        if (form.type) formData.set('type', form.type);
+        if (form.check) formData.set('check', form.check);
+        if (form.context) formData.set('context', form.context);
+
+        await execute(RECORD_PH_SERVICE.create_law(formData), {
+            operationName: 'crear norma',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                setForm({ ...INITIAL_FORM });
+            },
+        });
+    }
+
+    let delete_item = async (id) => {
+        const confirmed = await swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" });
+        if (!confirmed.isConfirmed) return;
+
+        await execute(RECORD_PH_SERVICE.delete_law(id), {
+            operationName: 'eliminar norma',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                setEdit(false);
+            },
+        });
+    }
+
+    let edit_item = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        if (editForm.type) formData.set('type', editForm.type);
+        if (editForm.check) formData.set('check', editForm.check);
+        if (editForm.context) formData.set('context', editForm.context);
+
+        await execute(RECORD_PH_SERVICE.update_law(edit.id, formData), {
+            operationName: 'actualizar norma',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                setEditForm({ ...INITIAL_FORM });
+                setEdit(false);
+            },
+        });
+    }
+
+    return (
+        <div className="record_law_gen_11 container my-2">
+            <label className="app-p lead fw-bold">NORMAS Y DOCUMENTOS</label>
+
+            <div className="form-check ms-5">
+                <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                    Nueva Norma / Documento
+                </label>
+            </div>
+            {isNew
+                ? <>
+                    <form id="form_ph_law_new" onSubmit={new_item}>
+                        {_COMPONENT_MANAGE(false)}
+                        <div className="row mb-3 text-center">
+                            <div className="col-12">
+                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                            </div>
+                        </div>
+                    </form>
+                </>
+                : ""}
+            {_CHILD_LICENCE_LIST()}
+            {edit
+                ? <>
+                    <form id="form_ph_law_edit" onSubmit={edit_item}>
+                        <h3 className="my-3 text-center">Actualizar Norma / Documento</h3>
+                        {_COMPONENT_MANAGE(true)}
+                        <div className="row mb-3 text-center">
+                            <div className="col-12">
+                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                            </div>
+                        </div>
+                    </form>
+                </>
+                : ""}
+        </div >
+    );
 }
 
 export default RECORD_PH_LAW;

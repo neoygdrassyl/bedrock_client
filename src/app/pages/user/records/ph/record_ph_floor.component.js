@@ -1,702 +1,557 @@
-
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
-import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
-    const [isNew, setIsNew] = useState(false);
-    const [edit, setEdit] = useState(false);
-    const [divisions, setDivisions] = useState(1);
-    const [divisionsEdit, setDivisionsEdit] = useState(1);
-    const [fixed, setFixed] = useState(false);
-    const [fixedEdit, setFixedEdit] = useState(false);
+import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
+import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
+import RECORD_LAW_SERVICE from '../../../../services/record_law.service';
+import { swalConfirm, swalError } from '../../../../utils/swalAdapter';
+import usePHSave from './hooks/usePHSave';
+import { savePHStep } from './utils/phSaveStep';
+
+export default function RECORD_PH_FLOOR(props) {
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, attachs } = props;
+    const { execute } = usePHSave({ swaMsg });
+    const REVIEW = REVIEW_DOCS;
+
+    const [a1, setA1] = useState({ f01: '', f02: '', f03: '', f04: '' });
+    const [a2, setA2] = useState({ f01: '', f02: '', f03: '', f04: '', f05: '', f06: '' });
+    const [i1, setI1] = useState({ f01: '' });
+    const [n2, setN2] = useState({ f01: '', f02: '' });
+    const [m1, setM1] = useState({ f01: '' });
+    const [m2, setM2] = useState({ f01: '' });
+    const [n3, setN3] = useState({ f01: '', f02: '', f03: '' });
+    const [n3v, setN3v] = useState({ f01: '', f02: '', f03: '' });
+    const [n3t, setN3t] = useState({ f01: '', f02: '', f03: '' });
+    const [o1, setO1] = useState({ f01: '', f02: '' });
+    const [o2, setO2] = useState({ f01: '' });
+    const [n4, setN4] = useState({ f01: '', f02: '', f03: '', f04: '' });
+    const [v1, setV1] = useState({ f01: '' });
+    const [v2, setV2] = useState({ f01: '' });
+    const [v3, setV3] = useState({ f01: '', f02: '', f03: '' });
+    const [v4, setV4] = useState({ f01: '' });
+    const [s1, setS1] = useState({ f01: '', f02: '', f03: '' });
+    const [v5, setV5] = useState({ f01: '' });
+    const [d1, setD1] = useState({ f01: '' });
+    const [p1, setP1] = useState({ f01: '' });
+    const [e1, setE1] = useState({ f01: '' });
+    const [e2, setE2] = useState({ f01: '', f02: '' });
+    const [h1, setH1] = useState({ f01: '', f02: '', f03: '' });
+    const [h2, setH2] = useState({ f01: '', f02: '', f03: '', f04: '', f05: '', f06: '', f07: '', f08: '', f09: '', f10: '' });
+    const [f1, setF1] = useState({ f01: '', f02: '', f03: '', f04: '', f05: '' });
+    const [c1, setC1] = useState({ f01: '' });
+    const [r1, setR1] = useState({ f01: '' });
+
+    const [showIncluir, setShowIncluir] = useState(false);
+    const [showCub, setShowCub] = useState(false);
+    const [showAnexo, setShowAnexo] = useState(false);
+    const [incluyeSelect, setIncluyeSelect] = useState('');
+    const [cub0, setCub0] = useState('');
+    const [cub1, setCub1] = useState('');
+    const [ext0, setExt0] = useState(false);
+    const [ext1, setExt1] = useState('');
+    const [ext2, setExt2] = useState(false);
+    const [ext3, setExt3] = useState('');
+    const [checkArrayState, setCheckArrayState] = useState([null, null, null, null, null, null]);
+    const [checkedReviews, setCheckedReviews] = useState(new Set());
+
+    const [toggle, setToggle] = useState(0);
+    const [cubSelected, setCubSelected] = useState({
+        item_1: null,
+        item_2: null,
+        item_3: null,
+        item_4: null,
+        item_5: null,
+        item_6: null,
+    });
+    const [lastButton, setLastButton] = useState(false);
 
     useEffect(() => {
-        if (edit !== false) {
-            var _ITEM = edit;
-
-            document.getElementById("r_ph_fl_1_edit").value = _ITEM.floor;
-            let common = [];
-            if (_ITEM.common) common = (_ITEM.common).split(';');
-
-            let fixedVal = _ITEM.fixed ? (_ITEM.fixed).split(';') : [];
-
-            const cb = document.getElementById("cb_fixed_edit");
-            const lastValue = cb.checked;
-            if (fixedVal[0] == '&&') cb.checked = true;
-            else cb.checked = false;
-            const event = new Event("input", { fixed_edit: true });
-            const tracker = cb._valueTracker;
-            if (tracker) {
-                tracker.setValue(lastValue);
-            }
-            cb.dispatchEvent(event);
-
-            document.getElementById("r_ph_fl_1_edit").value = _ITEM.floor;
-
-            document.getElementById("r_ph_floor_fixed_3_edit").value = fixedVal[1] ?? "";
-            document.getElementById("r_ph_floor_fixed_4_edit").value = fixedVal[2] ?? "";
-            document.getElementById("r_ph_floor_fixed_5_edit").value = fixedVal[3] ?? "";
-            document.getElementById("r_ph_floor_fixed_6_edit").value = fixedVal[4] ?? "";
-
-            let inputs = document.getElementsByName("r_ph_fl_common_edit");
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].value = common[i];
-            }
-
-            if (_ITEM.division) {
-                let _division = _ITEM.division ? _ITEM.division.split(';') : [];
-                let _division_build = _ITEM.division_build ? _ITEM.division_build.split(';') : [];
-                let _division_free = _ITEM.division_free ? _ITEM.division_free.split(';') : [];
-                let division_inputs = document.getElementsByName('r_ph_floor_division_edit')
-                let division_common_inputs = document.getElementsByName('r_ph_floor_division_common_edit')
-                let division_free_inputs = document.getElementsByName('r_ph_floor_division_free_edit')
-                if (division_inputs) {
-                    for (var i = 0; i < division_inputs.length; i++) {
-                        division_inputs[i].value = _division[i] ? _division[i] : ""
-                    }
-                }
-                if (division_common_inputs) {
-                    for (var i = 0; i < division_common_inputs.length; i++) {
-                        division_common_inputs[i].value = _division_build[i]
-                    }
-                }
-                if (division_free_inputs) {
-                    for (var i = 0; i < division_free_inputs.length; i++) {
-                        division_free_inputs[i].value = _division_free[i]
-                    }
-
-                }
-            }
-
-        }
-    }, [edit]);
-        const rowSelectedStyle = [
-            {
-                when: row => row.fixed != null && row.fixed.includes('&&'),
-                style: {
-                    backgroundColor: 'hsl(var(--warning) / 0.12)',
-                },
-            },
-        ];
-        // DATA GETTERS
-        let _GET_CHILD_FLOOR = () => {
-            var _CHILD = currentRecord.record_ph_floors;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
-        }
-
-        // DATA CONVERTERS
-        let _GET_TOTAL = () => {
-            let _LIST = _GET_CHILD_FLOOR();
-            var _TOTALES = {
-                common_total: 0,
-
-                common_build: 0,
-                common_free: 0,
-                exclusive_build: 0,
-                exclusive_free: 0,
-
-                private_build: 0,
-                private_free: 0,
-
-                private_total: 0,
-
-                total: 0,
-            }
-            for (var i = 0; i < _LIST.length; i++) {
-                var _common = _LIST[i].common.split(';');
-                if (_common[0] == '&&') {
-                    _TOTALES.common_total += Number(_common[1]);
-                } else {
-                    _TOTALES.common_build += (!isNaN(_common[0]) ? Number(_common[0]) : 0);
-                    _TOTALES.common_free += (!isNaN(_common[1]) ? Number(_common[1]) : 0);
-                    _TOTALES.exclusive_build += (!isNaN(_common[2]) ? Number(_common[2]) : 0);
-                    _TOTALES.exclusive_free += (!isNaN(_common[3]) ? Number(_common[3]) : 0);
-                    _TOTALES.common_total += (!isNaN(_common[0]) ? Number(_common[0]) : 0) + (!isNaN(_common[2]) ? Number(_common[2]) : 0);
-                }
-                var _division_build = []
-                if (_LIST[i].division_build) _division_build = _LIST[i].division_build.split(';');
-                var _division_free = []
-                if (_LIST[i].division_free) _division_free = _LIST[i].division_free.split(';');
-                for (var j = 0; j < _division_build.length; j++) {
-                    _TOTALES.private_build += Number(_division_build[j] ?? 0)
-                    _TOTALES.private_free += Number(_division_free[j] ?? 0)
-                    _TOTALES.private_total += Number(_division_build[j] ?? 0) + Number(_division_free[j] ?? 0)
-                }
-            }
-            _TOTALES.total = _TOTALES.common_build + _TOTALES.exclusive_build + _TOTALES.private_build;
-
-            return _TOTALES;
-        }
-        let _DISPLAY_DIVISION = (item) => {
-            if (!item) return ""
-            var _item = item.split(';')
-            var _COMPONENT = []
-            for (var i = 0; i < _item.length; i++) {
-                _COMPONENT.push(<li className="list-group-item mx-0 p-1">
-                    {_item[i] ? _item[i] : "-"}
-                </li>)
-            }
-            return <>{_COMPONENT}</>
-        }
-        let _DISPLAY_DIVISION_TOTAL = (row) => {
-            if (!row) return ""
-            var _build = [];
-            if (row.division_build) _build = row.division_build.split(";")
-            var _free = [];
-            if (row.division_free) _free = row.division_free.split(";")
-
-            var _COMPONENT = []
-            for (var i = 0; i < _build.length; i++) {
-                _COMPONENT.push(<li className="list-group-item text-secondary mx-0 p-1">
-                    {(Number(_build[i] ?? 0) + Number(_free[i]  ?? 0)).toFixed(2)}
-                </li>)
-            }
-            return <>{_COMPONENT}</>
-        }
-        let _DISPLAY_SUB_TOTAL = (row) => {
-            if (!row) return ""
-            var _sub_total = 0;
-            var _build = [];
-            if (row.common.split(';')[0] == '&&') {
-                return Number((row.common).split(';')[1]).toFixed(2);
-            } else {
-                if (row.division_build) _build = row.division_build.split(";")
-
-                for (var i = 0; i < _build.length; i++) {
-                    _sub_total += Number(_build[i])
-                }
-
-                _sub_total += Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])
-                return (_sub_total).toFixed(2);
-            }
-
-        }
-        let _SET_EDIT = (row) => {
-            setEdit(row)
-            if (row.division) setDivisionsEdit(row.division.split(';').length)
-            else setDivisionsEdit(1)
-            console.log(divisionsEdit)
-        }
-        // COMPONENT JSX
-        let _CHILD_LICENCE_LIST = () => {
-            let _LIST = _GET_CHILD_FLOOR();
-            const columns = [
-                {
-                    name: 'Piso',
-                    selector: row => row.floor,
-                    sortable: true,
-                    filterable: true,
-                    center: true,
-                    cell: row => <span className="text-sm">{row.floor}</span>
-                },
-                {
-                    name: 'División',
-                    center: true,
-                    compact: true,
-                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division)}</ul>
-                },
-                {
-                    name: 'Área Privada Construida',
-                    center: true,
-                    compact: true,
-                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_build)}</ul>
-                },
-                {
-                    name: 'Área Privada Libre',
-                    center: true,
-                    compact: true,
-                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_free)}</ul>
-                },
-                {
-                    name: 'Área Total Privada',
-                    center: true,
-                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION_TOTAL(row)}</ul>
-                },
-                {
-                    name: 'Área Común Construida',
-                    selector: row => (row.common).split(";")[0],
-                    sortable: true,
-                    filterable: true,
-                    center: true,
-                    cell: row => <span className="text-sm">{(row.common).split(';')[0]}</span>
-                },
-                {
-                    name: 'Área Común Libre',
-                    selector: row => (row.common).split(";")[1],
-                    sortable: true,
-                    filterable: true,
-                    center: true,
-                    cell: row => <span className="text-sm">{(row.common).split(';')[1]}</span>
-                },
-                {
-                    name: 'Área Exclusiva Construida',
-                    selector: row => (row.common).split(";")[2],
-                    sortable: true,
-                    filterable: true,
-                    center: true,
-                    cell: row => <span className="text-sm">{(row.common).split(';')[2]}</span>
-                },
-                {
-                    name: 'Área Exclusiva Libre',
-                    selector: row => (row.common).split(";")[3],
-                    sortable: true,
-                    filterable: true,
-                    center: true,
-                    cell: row => <span className="text-sm">{(row.common).split(';')[3]}</span>
-                },
-                {
-                    name: 'Total Común Construida',
-                    selector: row => (Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])).toFixed(2),
-                    sortable: true,
-                    filterable: true,
-                    center: true,
-                    cell: row => <label className="fw-bold text-secondary">{(Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])).toFixed(2) }</label>
-                },
-                {
-                    name: 'Area Total Visto Bueno',
-                    selector: row => _DISPLAY_SUB_TOTAL(row),
-                    sortable: true,
-                    filterable: true,
-                    center: true,
-                    cell: row => <label className="fw-bold text-danger">{_DISPLAY_SUB_TOTAL(row)}</label>
-                },
-                {
-                    name: 'ACCION',
-                    button: true,
-                    minWidth: '120px',
-                    cell: row => <>
-                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => _SET_EDIT(row)}><Icon name="edit" size={16} /></Button></span>
-                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
-                    </>
-                },
-            ]
-            return <DataTable
-                conditionalRowStyles={rowSelectedStyle}
-                noDataComponent="No hay Items"
-                striped="true"
-                columns={columns}
-                data={_LIST}
-                highlightOnHover
-                className="data-table-component"
-                noHeader
-            />
-        }
-        let _COMPONENT_MANAGE = (editSuffix = "") => {
-            var counter = editSuffix ? divisionsEdit : divisions;
-
-            return <>
-                <div className="row mb-1">
-                    <div className="col-3">
-                        <label>Piso</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="hashtag" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id={"r_ph_fl_1" + editSuffix} required />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="row mb-1">
-                    <div className="col-8 border border-info p-2">
-                        <label className="fw-bold">Unidades</label>
-                        {PH_DIVISIONS(editSuffix, counter, editSuffix ? edit : null)}
-                    </div>
-                    <div className="col-4 text-end">
-                        {editSuffix ?
-                            <>
-                                {divisionsEdit > 1
-                                    ? <>
-                                        <Button variant="outline" size="sm" className="mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
-                                    </>
-                                    : ""}
-                            </>
-
-                            : <>
-                                {divisions > 1
-                                    ? <>
-                                        <Button variant="outline" size="sm" className="mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
-                                    </>
-                                    : ""}
-                            </>}
-
-                        <Button variant="outline" size="sm" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit + 1) : setDivisions(divisions + 1)}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
-                    </div>
-                </div>
-
-                <div className="row ">
-                    <label className="fw-bold">Área Común</label>
-                    <div className="col-6 border border-info p-2">
-                        <label className="fw-bold">Área de uso Común</label>
-                        <div className="row ">
-                            <div className="col">
-                                <label>Construida</label>
-                                <div className="input-group my-1">
-                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
-                                </div>
-                            </div>
-                            <div className="col">
-                                <label>Libre</label>
-                                <div className="input-group my-1">
-                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-6 border border-info p-2">
-                        <label className="fw-bold">Área de uso Exclusivo</label>
-                        <div className="row ">
-                            <div className="col">
-                                <label>Construida</label>
-                                <div className="input-group my-1">
-                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
-                                </div>
-                            </div>
-                            <div className="col">
-                                <label>Libre</label>
-                                <div className="input-group my-1">
-                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="form-check ms-5 my-3">
-                    {editSuffix ?
-                        <input className="form-check-input" type="checkbox" id="cb_fixed_edit" onChange={(e) => setFixedEdit(e.target.checked)} />
-                        : <input className="form-check-input" type="checkbox" onChange={(e) => setFixed(e.target.checked)} />}
-                    <label className="form-check-label" htmlFor="flexCheckDefault">
-                        Área no modificable
-                    </label>
-                </div>
-                {PH_FIXED_AREA(editSuffix)}
-
-            </>
-        }
-        let _COMPONENT_TOTAL = () => {
-
-            let _LIST = _GET_TOTAL();
-            return <>
-                <div className="row border border-dark mx-2 py-2">
-                    <div className="col-12  text-center">
-                        <label className="fw-bold">Totales:</label>
-                    </div>
-                </div>
-                <div className="row mx-2 text-center">
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Área Privada Construida</label><br />
-                        <label className="fw-bold">{(_LIST.private_build).toFixed(2)}</label>
-                    </div>
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Área Privada Libre</label><br />
-                        <label className="fw-bold">{(_LIST.private_free).toFixed(2)}</label>
-                    </div>
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Total Área Privada</label><br />
-                        <label className="fw-bold text-secondary">{(_LIST.private_total.toFixed(2))}</label>
-                    </div>
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Área Común Construida</label><br />
-                        <label className="fw-bold">{(_LIST.common_build).toFixed(2)}</label>
-                    </div>
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Área Común Libre</label><br />
-                        <label className="fw-bold">{(_LIST.common_free).toFixed(2)}</label>
-                    </div>
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Área Exclusiva Construida</label><br />
-                        <label className="fw-bold">{(_LIST.exclusive_build).toFixed(2)}</label>
-                    </div>
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Área Exclusiva Libre</label><br />
-                        <label className="fw-bold">{(_LIST.exclusive_free).toFixed(2)}</label>
-                    </div>
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Total Común Construida</label><br />
-                        <label className="fw-bold text-secondary">{(_LIST.common_total).toFixed(2)}</label>
-                    </div>
-                    <div className="col border border-dark ">
-                        <label style={{ fontSize: 'small' }}>Área Total Construida</label><br />
-                        <label className="fw-bold text-danger">{(_LIST.total).toFixed(2)}</label>
-                    </div>
-                </div>
-            </>
-        }
-        // FUNCTIONS AND APIS
-        var formData = new FormData();
-
-        let new_item = (e) => {
-            e.preventDefault();
-            formData = new FormData();
-
-            formData.set('recordPhId', currentRecord.id);
-
-            if (fixed) {
-                let fixed = [];
-
-                fixed.push('&&');
-                fixed.push(document.getElementById("r_ph_floor_fixed_3").value);
-                fixed.push(document.getElementById("r_ph_floor_fixed_4").value);
-                fixed.push(document.getElementById("r_ph_floor_fixed_5").value);
-                fixed.push(document.getElementById("r_ph_floor_fixed_6").value);
-                formData.set('fixed', fixed.join(';'));
-            }
-            let floor = document.getElementById("r_ph_fl_1").value;
-            if (floor) formData.set('floor', floor);
-
-            let items;
-            let division = [];
-            let division_build = [];
-            let division_free = [];
-
-            let common = [];
-
-            items = document.getElementsByName("r_ph_floor_division");
-            for (var i = 0; i < items.length; i++) {
-                division.push(items[i].value);
-            }
-            items = document.getElementsByName("r_ph_floor_division_common");
-            for (var i = 0; i < items.length; i++) {
-                division_build.push(items[i].value);
-            }
-            items = document.getElementsByName("r_ph_floor_division_free");
-            for (var i = 0; i < items.length; i++) {
-                division_free.push(items[i].value);
-            }
-
-            items = document.getElementsByName("r_ph_fl_common");
-            for (var i = 0; i < items.length; i++) {
-                common.push(items[i].value);
-            }
-
-            formData.set('division', division.join(';'));
-            formData.set('division_build', division_build.join(';'));
-            formData.set('division_free', division_free.join(';'));
-
-            formData.set('common', common.join(';'));
-
-            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RECORD_PH_SERVICE.create_floor(formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        requestUpdateRecord(currentItem.id);
-                        document.getElementById('form_ph_floor_new').reset();
-                    } else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
-        }
-        let delete_item = (id) => {
-            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
-                if (SweetAlertResult.isConfirmed) {
-                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-                    RECORD_PH_SERVICE.delete_floor(id)
-                        .then(response => {
-                            if (response.data === 'OK') {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                                requestUpdateRecord(currentItem.id);
-                                setEdit(false);
-                            } else {
-                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                            }
-                        })
-                        .catch(e => {
-                            console.log(e);
-                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        });
-                }
+        const _CHILD = _GET_CHILD_1(currentItem);
+        setToggle(_CHILD.item_1);
+        const _CHILD_1 = _GET_CHILD_1_LATER(currentItem);
+        setLastButton(_CHILD_1.item_2);
+        setCub0(_CHILD_1.item_0 ?? '');
+        setCub1(_CHILD_1.item_1 ?? '');
+        const _CHILD_1_LATER = _GET_CHILD_1_LATER_LIST(currentItem);
+        if (_CHILD_1_LATER && Array.isArray(_CHILD_1_LATER)) {
+            const next = {};
+            _CHILD_1_LATER.forEach(it => { next[it.type] = it; });
+            setCubSelected({
+                item_1: next['cub1'] || null,
+                item_2: next['cub2'] || null,
+                item_3: next['cub3'] || null,
+                item_4: next['cub4'] || null,
+                item_5: next['cub5'] || null,
+                item_6: next['cub6'] || null,
             });
         }
-        let edit_item = (e) => {
-            e.preventDefault();
-            formData = new FormData();
-
-            formData.set('recordPhId', currentRecord.id);
-
-            if (document.getElementById("cb_fixed_edit").checked) {
-                let fixed = [];
-
-                fixed.push('&&');
-                fixed.push(document.getElementById("r_ph_floor_fixed_3_edit").value);
-                fixed.push(document.getElementById("r_ph_floor_fixed_4_edit").value);
-                fixed.push(document.getElementById("r_ph_floor_fixed_5_edit").value);
-                fixed.push(document.getElementById("r_ph_floor_fixed_6_edit").value);
-                formData.set('fixed', fixed.join(';'));
-            }else{
-                formData.set('fixed', '');
-            }
-            let floor = document.getElementById("r_ph_fl_1_edit").value;
-            if (floor) formData.set('floor', floor);
-
-            let items;
-            let division = [];
-            let division_build = [];
-            let division_free = [];
-
-            let common = [];
-
-            items = document.getElementsByName("r_ph_floor_division_edit");
-            for (var i = 0; i < items.length; i++) {
-                division.push(items[i].value);
-            }
-            items = document.getElementsByName("r_ph_floor_division_common_edit");
-            for (var i = 0; i < items.length; i++) {
-                division_build.push(items[i].value);
-            }
-            items = document.getElementsByName("r_ph_floor_division_free_edit");
-            for (var i = 0; i < items.length; i++) {
-                division_free.push(items[i].value);
-            }
-
-            items = document.getElementsByName("r_ph_fl_common_edit");
-            for (var i = 0; i < items.length; i++) {
-                common.push(items[i].value);
-            }
-
-            formData.set('division', division.join(';'));
-            formData.set('division_build', division_build.join(';'));
-            formData.set('division_free', division_free.join(';'));
-
-            formData.set('common', common.join(';'));
-
-            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RECORD_PH_SERVICE.update_floor(edit.id, formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        requestUpdateRecord(currentItem.id);
-                        document.getElementById('form_ph_floor_edit').reset();
-                        setEdit(false);
-                    } else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
+        const _CHILD_VARS = _GET_CHILD_1(currentItem);
+        setExt0(_CHILD_VARS.item_0 == 1);
+        setExt1(_CHILD_VARS.item_1 ?? '');
+        setExt2(_CHILD_VARS.item_2 == 1);
+        setExt3(_CHILD_VARS.item_3 ?? '');
+        const _CHILD_6 = _GET_CHILD_6();
+        const nextChecks = [null, null, null, null, null, null];
+        for (let i = 0; i < 6; i++) {
+            nextChecks[i] = _CHILD_6['item_' + i] ?? null;
         }
+        setCheckArrayState(nextChecks);
+        const review = _GET_REVIEW();
+        setCheckedReviews(new Set(review));
+    }, [currentItem]);
+
+    const SECTION_MAP = [
+        { id: 'phfa', state: a1, set: setA1, labels: ['AREA TOTAL', 'AREA NO BALCON', 'AREA POR PISO', 'ALTURA PROMEDIO'] },
+        { id: 'phfb', state: a2, set: setA2, labels: ['AREA SEMISOTANO', 'AREA ZINJA', 'AREA BALCON', 'AREA MEZANINE', 'AREA COMUN', 'AREA CONSTRUIDA'] },
+        { id: 'phfi', state: i1, set: setI1, labels: ['NUMERO DE PARQUEADEROS'] },
+        { id: 'phfn', state: n2, set: setN2, labels: ['SEPARACION FRONTAL MINIMA', 'SEPARACION LATERAL MINIMA'] },
+        { id: 'phfm', state: m1, set: setM1, labels: ['ANCHO FRONTAL MINIMO'] },
+        { id: 'phfm2', state: m2, set: setM2, labels: ['PROFUNDIDAD MINIMA'] },
+        { id: 'phfn3', state: n3, set: setN3, labels: ['SEPARACION POSTERIOR', 'SEPARACION LATERAL 1', 'SEPARACION LATERAL 2'] },
+        { id: 'phfn3v', state: n3v, set: setN3v, labels: ['VIVIENDAS', 'VIVIENDAS', 'VIVIENDAS'] },
+        { id: 'phfn3t', state: n3t, set: setN3t, labels: ['TERRENOS', 'TERRENOS', 'TERRENOS'] },
+        { id: 'phfo', state: o1, set: setO1, labels: ['CARRERA', 'CALLE'] },
+        { id: 'phfo2', state: o2, set: setO2, labels: ['ESQUINA'] },
+        { id: 'phfn4', state: n4, set: setN4, labels: ['METROS SUPERFICIE 1', 'METROS SUPERFICIE 2', 'METROS SUPERFICIE 3', 'METROS SUPERFICIE 4'] },
+        { id: 'phfv', state: v1, set: setV1, labels: ['VIVIENDA VIS'] },
+        { id: 'phfv2', state: v2, set: setV2, labels: ['VIVIENDA VIP'] },
+        { id: 'phfv3', state: v3, set: setV3, labels: ['ESTRATO 1', 'ESTRATO 2', 'ESTRATO 3'] },
+        { id: 'phfv4', state: v4, set: setV4, labels: ['DESPLAZADOS'] },
+        { id: 'phfs', state: s1, set: setS1, labels: ['SOTANO', 'SEMISOTANO', 'ZINJA'] },
+        { id: 'phfv5', state: v5, set: setV5, labels: ['CONJUNTO CERRADO'] },
+        { id: 'phfd', state: d1, set: setD1, labels: ['DENSIDAD'] },
+        { id: 'phfp', state: p1, set: setP1, labels: ['CONSTRUCCION DE VIVIENDA'] },
+        { id: 'phfe', state: e1, set: setE1, labels: ['EXCESO EN ALTURA'] },
+        { id: 'phfe2', state: e2, set: setE2, labels: ['RETIRO SUPERIOR', 'RETIRO SUPERIOR NORMA'] },
+        { id: 'phfh', state: h1, set: setH1, labels: ['ALTURA EDIFICACION', 'NIVELES', 'ALTURA EN NIVELES'] },
+        { id: 'phfh2', state: h2, set: setH2, labels: ['ALTURA BASICA', 'ALTURA BASICA PLUS', 'ALTURA ESPECIAL', 'INDICE', 'INDICE PLUS', 'INDICE ESPECIAL', 'INDICE ADICIONAL', 'ESCALONADA', 'ESCALONADA PLUS', 'ESCALONADA ESPECIAL'] },
+        { id: 'phff', state: f1, set: setF1, labels: ['FACHADA', 'MATERIAL', 'HASTA', 'RESTO', 'MODIFICACION'] },
+        { id: 'phfc', state: c1, set: setC1, labels: ['NUMERO DE PISOS'] },
+        { id: 'phfr', state: r1, set: setR1, labels: ['RENOVACION'] },
+    ];
+
+    const _JSON_VECTOR = ['phfa', 'phfb', 'phfi', 'phfn', 'phfm', 'phfm2', 'phfn3', 'phfn3v', 'phfn3t', 'phfo', 'phfo2', 'phfn4', 'phfv', 'phfv2', 'phfv3', 'phfv4', 'phfs', 'phfv5', 'phfd', 'phfp', 'phfe', 'phfe2', 'phfh', 'phfh2', 'phff', 'phfc', 'phfr'];
+
+    let _GET_CHILD_1 = (_item) => {
+        var _CHILD = _item.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
+        var _CHILD_VARS = {
+            item_0: "",
+            item_1: "",
+            item_2: "",
+            item_3: "",
+        }
+        if (_CHILD) {
+            if (_CHILD[_CURRENT_VERSION] != null) {
+                _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id ?? "";
+                _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ?? "";
+                _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ?? "";
+                _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ?? "";
+            }
+        }
+        return _CHILD_VARS;
+    }
+
+    let _GET_CHILD_1_LATER = (_item) => {
+        var _CHILD = _item.fun_1;
+        var _CHILD_VARS = {
+            item_0: "",
+            item_1: "",
+            item_2: "",
+        }
+        if (_CHILD) {
+            _CHILD_VARS.item_0 = _CHILD.id ?? "";
+            _CHILD_VARS.item_1 = _CHILD.tipo ?? "";
+            _CHILD_VARS.item_2 = _CHILD.tramite ?? "";
+        }
+        return _CHILD_VARS;
+    }
+
+    let _GET_CHILD_1_LATER_LIST = (_item) => {
+        var _CHILD = _item.fun_1_list;
+        var _LIST = [];
+        if (_CHILD) {
+            _LIST = _CHILD;
+        }
+        return _LIST;
+    }
+
+    const _GET_CHILD_6 = () => {
+        var _CHILD = currentItem.fun_rs;
+        var _CURRENT_VERSION = currentVersion - 1;
+        var _CHILD_VARS = {
+            item_0: null,
+            item_1: null,
+            item_2: null,
+            item_3: null,
+            item_4: null,
+            item_5: null,
+        }
+        if (_CHILD && _CHILD[_CURRENT_VERSION]) {
+            for (var i = 0; i < _CHILD[_CURRENT_VERSION].length; i++) {
+                if (_CHILD[_CURRENT_VERSION][i] != null) {
+                    _CHILD_VARS['item_' + i] = _CHILD[_CURRENT_VERSION][i];
+                }
+            }
+        }
+        return _CHILD_VARS;
+    }
+
+    let LOAD_STEP = (_id_public) => {
+        var _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
+        for (var i = 0; i < _CHILD.length; i++) {
+            if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
+        }
+        return []
+    }
+
+    let _GET_STEP_TYPE = (_id_public, _type) => {
+        var STEP = LOAD_STEP(_id_public);
+        if (!STEP.id) return [];
+        var value = STEP[_type]
+        if (!value) return [];
+        value = value.split(';');
+        return value
+    }
+
+    let _GET_REVIEW = () => {
+        const REVIEW = [];
+        if (currentRecord != null) {
+            if (currentRecord.record_ph != null) {
+                const value = currentRecord.record_ph.review ?? '';
+                if (value) return value.split(',');
+            }
+        }
+        return REVIEW;
+    }
+
+    let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
+        if (_VALUE === '0' || _VALUE === 'NO CUMPLE') {
+            return 'form-select text-danger form-select-sm';
+        }
+        if (_VALUE === '1' || _VALUE === 'CUMPLE') {
+            return 'form-select text-success form-select-sm';
+        }
+        if (_VALUE === '2' || _VALUE === 'NO APLICA') {
+            return 'form-select text-warning form-select-sm';
+        }
+        return 'form-select form-select-sm';
+    }
+
+    const handleSectionChange = (setState) => (field) => (e) => {
+        let val = e.target.value;
+        if (e.target.type === 'number') val = val.replaceAll(',', '.').replace(/[^0-9.]/g, '');
+        setState(prev => ({ ...prev, [field]: val }));
+    };
+
+    let manage_item = async (e, id) => {
+        if (e) e.preventDefault();
+        const section = SECTION_MAP.find(s => s.id === id);
+        if (!section) return;
+        const values = Object.values(section.state);
+        const formData = new FormData();
+        formData.set('value', values.join(';'));
+        formData.set('version', currentVersionR);
+        formData.set('recordPhId', currentRecord.id);
+        formData.set('id_public', id);
+        await execute(savePHStep(RECORD_PH_SERVICE, id, formData), {
+            operationName: `guardar sección ${id}`,
+            success: true,
+            error: true,
+            onSuccess: () => requestUpdateRecord(currentItem.id),
+        });
+    }
+
+    let manage_rar = async (e) => {
+        if (e) e.preventDefault();
+        const formData = new FormData();
+        const checks = Array.from(checkedReviews).join(',');
+        formData.set('review', checks);
+        formData.set('id', currentRecord.record_ph.id);
+        await execute(RECORD_PH_SERVICE.update(formData), {
+            operationName: 'guardar lista de checkeo',
+            success: true,
+            error: true,
+            onSuccess: () => requestUpdateRecord(currentItem.id),
+        });
+    }
+
+    let save_item_61 = async (e, id) => {
+        if (e) e.preventDefault();
+        const formData = new FormData();
+        formData.set('value', e.target.value);
+        formData.set('version', currentVersionR);
+        formData.set('recordPhId', currentRecord.id);
+        formData.set('id_public', id);
+        await execute(savePHStep(RECORD_PH_SERVICE, id, formData), {
+            operationName: `guardar sección ${id}`,
+            success: false,
+            error: true,
+        });
+    }
+
+    let toggle_not = (setter) => setter(prev => !prev);
+
+    let removeItem = (id) => {
+        swalConfirm('Remover elemento', '¿Esta seguro de remover este elemento de la informacion?', () => {
+            RECORD_LAW_SERVICE.delete(id)
+                .then(response => {
+                    if (response.data === 'OK') requestUpdateRecord(currentItem.id);
+                })
+                .catch(e => swalError({ title: 'Error en eliminación', text: e.message }));
+        });
+    }
+
+    let _COMPONENT_REVIEW = () => {
+        const _COMPONENT_RETURN = _GET_REVIEW().map(review => {
+            const found = REVIEW.find(re => re['alias'] == review);
+            const item = { ...found };
+            if (item.name) item.name = item.name.toUpperCase();
+            if (item.desc) item.desc = item.desc.toUpperCase();
+            return item;
+        })
+        return _COMPONENT_RETURN;
+    }
+
+    let _CHECK_ARRAY = () => {
+        let _LIST = [0, 1, 2, 3, 4, 5];
+        let _COMPONENT = [];
+        for (var i = 0; i < _LIST.length; i++) {
+            _COMPONENT.push(
+                <>{checkArrayState[i] ?
+                    <div className="row border" key={i}>
+                        <div className="col">
+                            <select className="form-control form-control-sm" value={checkArrayState[i] ?? ''}
+                                onChange={(e) => {
+                                    const next = [...checkArrayState];
+                                    next[i] = e.target.value;
+                                    setCheckArrayState(next);
+                                }}>
+                                <option value="1">INCLUIR CONTRIBUYENTES INMUEBLE</option>
+                                <option value="2">INCLUIR CONTRIBUYENTES LINDEROS</option>
+                                <option value="3">INCLUIR PROPIETARIOS PREDIO</option>
+                                <option value="4">INCLUIR PROPIETARIOS LINDEROS</option>
+                                <option value="5">INCLUIR TITULARES APROBACION</option>
+                                <option value="6">INCLUIR AUTORIZA DESPUES</option>
+                            </select>
+                        </div>
+                        <div className="col-3">
+                            <button className="btn btn-danger" onClick={() => removeItem(i)}>BORRAR</button>
+                        </div>
+                    </div>
+                    : ""}</>
+            );
+        }
+        return _COMPONENT;
+    }
+
+    let _COMPONENT = () => {
+        let _CHILD_VARS = _GET_CHILD_1(currentItem);
+        let _CHILD_1 = _GET_CHILD_1_LATER(currentItem);
+        let _CHILD_2 = _GET_CHILD_1_LATER_LIST(currentItem);
+        let _CHILD_CUB = _GET_CHILD_CUB();
+        let _CHILD_6 = _GET_CHILD_6();
+
+        let _JOIN_ARRAY = [];
+        if (attachs) _JOIN_ARRAY = attachs;
+
         return (
-            <div className="record_law_gen_11 container my-2">
-                <label className="app-p lead fw-bold">AREAS COMUNES Y PRIVADAS</label>
+            <div className='record_ph_i container'>
+                {SECTION_MAP.map(sec => {
+                    const data = _GET_STEP_TYPE(sec.id, 'value');
+                    return (
+                        <div className='row border' key={sec.id}>
+                            {sec.labels.map((label, i) => {
+                                const field = `f0${i + 1}`;
+                                return (
+                                    <div className='col' key={field}>
+                                        <div className="row">
+                                            <div className="col-6">
+                                                <label>{label}</label>
+                                            </div>
+                                            <div className="col">
+                                                <input type={field === 'f01' ? "text" : "number"}
+                                                    className='form-control'
+                                                    value={sec.state[field]}
+                                                    onChange={handleSectionChange(sec.set)(field)} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            <div className="col-3">
+                                <button className="btn btn-danger btn-block" onClick={(e) => manage_item(e, sec.id)}>GUARDAR</button>
+                            </div>
+                        </div>
+                    );
+                })}
 
-                <div className="form-check ms-5">
-                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label className="form-check-label" htmlFor="flexCheckDefault">
-                        Nuevo Área
-                    </label>
-                </div>
-                {isNew
-                    ? <>
-                        <form id="form_ph_floor_new" onSubmit={new_item}>
-                            {_COMPONENT_MANAGE()}
-                            <div className="row mb-3 text-center">
-                                <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                <div className='row border'>
+                    <div className="col">
+                        <div className="row">
+                            <label className="app-p lead fw-bold text-uppercase text-start">¿Qué listas incluye?</label>
+                            <div className="text-start">
+                                {_COMPONENT_REVIEW().map(rev => <>{rev.name} <br /></>)}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="row">
+                                <div className="col">
+                                    <label>ESTA SOLICITUD INCLUYE: </label>
+                                </div>
+                                <div className="col">
+                                <select className="form-select" value={incluyeSelect}
+                                    onChange={(e) => { setIncluyeSelect(e.target.value); save_item_61(e, 'phfpr'); }}>
+                                    <option value="">APLIQUE PARA AGREGAR O ELIMINAR</option>
+                                    <option value="1">INCLUIR CONTRIBUYENTES INMUEBLE</option>
+                                    <option value="2">INCLUIR CONTRIBUYENTES LINDEROS</option>
+                                    <option value="3">INCLUIR PROPIETARIOS PREDIO</option>
+                                    <option value="4">INCLUIR PROPIETARIOS LINDEROS</option>
+                                    <option value="5">INCLUIR TITULARES APROBACION</option>
+                                    <option value="6">INCLUIR AUTORIZA DESPUES</option>
+                                </select>
                                 </div>
                             </div>
-                        </form>
-                    </>
-                    : ""}
-                {_CHILD_LICENCE_LIST()}
-                {_COMPONENT_TOTAL()}
-                {edit
-                    ? <>
-                        <form id="form_ph_floor_edit" onSubmit={edit_item}>
-                            <h3 className="my-3 text-center">Actualizar Área</h3>
-                            {_COMPONENT_MANAGE('_edit')}
-                            <div className="row mb-3 text-center">
-                                <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                            {_CHECK_ARRAY()}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-1">
+                        <button className="btn btn-danger btn-block" onClick={() => toggle_not(setShowIncluir)}>INCLUIR</button>
+                    </div>
+                    <div className="col-1">
+                        <button className="btn btn-info btn-block" onClick={() => toggle_not(setShowCub)}>CUB</button>
+                    </div>
+                </div>
+
+                {showIncluir && (
+                    <div className='row border'>
+                        <div className="col">
+                            <div className="row">
+                                <div className="col">
+                                    <h3 className="text-center">INCLUIR DOCUMENTO</h3>
                                 </div>
                             </div>
-                        </form>
-                    </>
-                    : ""}
-            </div >
-        );
-}
+                            <div className="row">
+                                <div className="col">
+                                    <div className="row">
+                                        <label className="app-p lead text-start fw-bold">DOCUMENTO EXTERNO ANEXO</label>
+                                        <div className="col">
+                                            <div className="form-check ms-5">
+                                                <input className="form-check-input" type="checkbox" checked={ext0}
+                                                    onChange={(e) => { setExt0(e.target.checked); save_item_61(e, 'phfpr0'); }} />
+                                                <label className="form-check-label">INCLUIR</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <label>DESCRIPCION</label>
+                                            <textarea className="form-control mb-3" rows="3" maxLength="2000"
+                                                value={ext1}
+                                                onChange={(e) => setExt1(e.target.value)}
+                                                onBlur={(e) => save_item_61(e, 'phfpr1')}
+                                                placeholder="DESCRIPCION DEL DOCUMENTO (MAXIMO 2000 CARACTERES)"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-const PH_DIVISIONS = (edit, LENGTH = 1, object) => {
-    var _COMPONEN_DIV = [];
-    var counter = 1;
-    if (object) {
-        if (object.division ?? false) counter = object.division.split(';').length
-        if (object.common.split(';')[0] == '&&') counter = 1
-    }
-    if (LENGTH != counter) counter = LENGTH
-    for (var i = 0; i < counter; i++) {
-        _COMPONEN_DIV.push(<div className="row">
-            <div className="col">
-                <label>Unidad {i + 1}</label>
-                <div className="input-group my-1">
-                    <input type="text" className="form-control" name={"r_ph_floor_division" + edit} />
-                </div>
-            </div>
-            <div className="col">
-                <label>Área Priv. Construida</label>
-                <div className="input-group my-1">
-                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_floor_division_common" + edit} />
-                </div>
-            </div>
-            <div className="col">
-                <label>Área Priv. Libre</label>
-                <div className="input-group my-1">
-                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_floor_division_free" + edit} />
-                </div>
-            </div>
-        </div>)
-    }
-    return <>{_COMPONEN_DIV}</>
-}
+                {showCub && (
+                    <div className='row border'>
+                        <div className="col">
+                            <div className="row">
+                                <div className="col">
+                                    <h3 className="text-center">INCLUIR CUB</h3>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col">
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="input-group">
+                                                <select className="form-select" value={cub0}
+                                                    onChange={(e) => { setCub0(e.target.value); manage_item(e, 'phfpr_cub_0'); }}>
+                                                    <option value="">SELECCIONE UNA CATEGORIA DE CUB</option>
+                                                    <option value="1">CUB 1</option>
+                                                    <option value="2">CUB 2</option>
+                                                    <option value="3">CUB 3</option>
+                                                    <option value="4">CUB 4</option>
+                                                    <option value="5">CUB 5</option>
+                                                    <option value="6">CUB 6</option>
+                                                </select>
+                                                <select className="form-select" value={cub1}
+                                                    onChange={(e) => { setCub1(e.target.value); manage_item(e, 'phfpr_cub_1'); }}>
+                                                    <option value="">SELECCIONE UNA CATEGORIA DE CUB</option>
+                                                    <option value="1">CUB 1</option>
+                                                    <option value="2">CUB 2</option>
+                                                    <option value="3">CUB 3</option>
+                                                    <option value="4">CUB 4</option>
+                                                    <option value="5">CUB 5</option>
+                                                    <option value="6">CUB 6</option>
+                                                </select>
+                                                <button className="btn btn-danger" onClick={(e) => manage_item(e, 'phfpr_cub')}>GENERAR</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-const PH_FIXED_AREA = (edit) => {
-    var _COMPONEN_DIV = [];
-    _COMPONEN_DIV.push(<div className="border border-info p-2 my-2">
-        <div className="row">
-            <div className="col">
-                <label>Escritura</label>
-                <div className="input-group my-1">
-                    <input type="text" className="form-control" id={"r_ph_floor_fixed_3" + edit} />
+                <div className="row">
+                    <div className="col-1">
+                        <button className="btn btn-danger btn-block" onClick={() => toggle_not(setShowAnexo)}>ANEXO</button>
+                    </div>
                 </div>
+
+                {showAnexo && (
+                    <div className='row border'>
+                        <div className="col">
+                            <div className="row">
+                                <div className="col">
+                                    <h3 className="text-center">ANEXO</h3>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col">
+                                    <div className="row">
+                                        <label className="app-p lead text-start fw-bold">DOCUMENTO EXTERNO ANEXO</label>
+                                        <div className="col">
+                                            <div className="form-check ms-5">
+                                                <input className="form-check-input" type="checkbox" checked={ext2}
+                                                    onChange={(e) => { setExt2(e.target.checked); save_item_61(e, 'phfpr2'); }} />
+                                                <label className="form-check-label">INCLUIR</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <label>DESCRIPCION</label>
+                                            <textarea className="form-control mb-3" rows="3" maxLength="2000"
+                                                value={ext3}
+                                                onChange={(e) => setExt3(e.target.value)}
+                                                onBlur={(e) => save_item_61(e, 'phfpr3')}
+                                                placeholder="DESCRIPCION DEL DOCUMENTO (MAXIMO 2000 CARACTERES)"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
-            <div className="col">
-                <label>Fecha</label>
-                <div className="input-group my-1">
-                    <input type="date" max="2100-01-01" className="form-control" id={"r_ph_floor_fixed_4" + edit} />
-                </div>
-            </div>
-            <div className="col">
-                <label>Notaria</label>
-                <div className="input-group my-1">
-                    <input type="number" min="0" step="1" className="form-control" id={"r_ph_floor_fixed_5" + edit} />
-                </div>
-            </div>
-            <div className="col">
-                <label>Ciudad</label>
-                <div className="input-group my-1">
-                    <input type="text" className="form-control" id={"r_ph_floor_fixed_6" + edit} />
-                </div>
-            </div>
+        )
+    }
+
+    return (
+        <div className="record_ph_i container">
+            {_COMPONENT()}
         </div>
-    </div>)
-
-    return <>{_COMPONEN_DIV}</>
-
+    )
 }
-
-export default RECORD_PH_FLOOR;

@@ -16,6 +16,8 @@ import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import usePHSave from './hooks/usePHSave';
+import { savePHStep } from './utils/phSaveStep';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -25,6 +27,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
     const [idCUBxVr, setIdCUBxVr] = useState(null);
     const [cubSelected_ph, setCubSelected_ph] = useState(null);
     const [idCUBxVr_ph, setIdCUBxVr_ph] = useState(null);
+    const { isSaving, execute } = usePHSave(swaMsg);
 
     useEffect(() => {
         retrieveItem();
@@ -58,8 +61,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
         page.setFont(helveticaFont)
-        // WIDTH = 612, HEIGHT = 936
-
         handleArchCheck(pdfDoc, page, chekcs, _detail, 0, 1)
 
         let _city = _headers.city;
@@ -93,7 +94,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
     // render body starts here
 
-        // DATA GETTERS
         let _GET_CHILD_53 = () => {
             var _CHILD = currentItem.fun_53s;
             var _CURRENT_VERSION = currentItem.version - 1;
@@ -124,16 +124,16 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             }
             return _LIST;
         }
-        let _REGEX_IDNUMBER = (e) => {
+        let _REGEX_IDNUMBER = (value) => {
             let regex = /^[0-9]+$/i;
-            let test = regex.test(e.target.value);
+            let test = regex.test(value);
             if (test) {
-                var _value = Number(e.target.value).toLocaleString();
+                var _value = Number(value).toLocaleString();
                 _value = _value.replaceAll(',', '.');
-                document.getElementById(e.target.id).value = _value;
+                return _value;
             }
+            return value;
         }
-        // DATA CONVERTERS
         let _GET_CLOCK_STATE = (_state, _version) => {
             var _CLOCK = _GET_CLOCK();
             if (_state == null) return false;
@@ -143,11 +143,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             return false;
         }
         let _GET_LAST_OA = () => {
-            let new_id = "";
             FUNService.getLastOA()
                 .then(response => {
                     if (response.data.length) {
-                        new_id = response.data[0].id;
+                        let new_id = response.data[0].id;
                         if (new_id) {
                             let _id = new_id.split('-')
                             let concecutive = _id[1];
@@ -156,9 +155,9 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             if (concecutive < 100) concecutive = "0" + concecutive
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${concecutive}`
-                            document.getElementById('f_02_ph').value = new_id;
-                        } else document.getElementById('f_02_ph').value = "OA" + dayjs().format('YY') + "-0001";
-                    } else document.getElementById('f_02_ph').value = "OA" + dayjs().format('YY') + "-0001";
+                            setActa(prev => ({ ...prev, id_public: new_id }));
+                        } else setActa(prev => ({ ...prev, id_public: "OA" + dayjs().format('YY') + "-0001" }));
+                    } else setActa(prev => ({ ...prev, id_public: "OA" + dayjs().format('YY') + "-0001" }));
                 })
                 .catch(e => {
                     console.log(e);
@@ -166,13 +165,12 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 });
 
         }
-        let _GET_LAST_ID = (_id) => {
-            let new_id = "";
+        let _GET_LAST_ID = () => {
             PQRS_Service.getlascub()
                 .then(response => {
-                    new_id = response.data[0].cub;
+                    let new_id = response.data[0].cub;
                     new_id = _MANAGE_IDS(new_id, 'end')
-                    document.getElementById(_id).value = new_id;
+                    setNotif(prev => ({ ...prev, phnot_cub: new_id }));
                 })
                 .catch(e => {
                     console.log(e);
@@ -206,14 +204,66 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         function capitalize(s) {
             return s && s[0].toUpperCase() + s.slice(1);
         }
-        // COMPONENT JSX
+
+        // ====== FORM STATE ======
+        const _NOT_VALUES = _GET_STEP_TYPE('phnd', 'value');
+        const _PH_DETAIL_VALUES = _GET_STEP_TYPE('ph_details', 'value');
+        const _CHILD_53 = _GET_CHILD_53();
+        const _JSON = getJSONFull(currentRecord.cub_json);
+
+        const [acta, setActa] = useState({
+            detail_2: currentRecord.detail_2 || '',
+            detail_3: currentRecord.detail_3 || '',
+            worker_arc_id: currentRecord.worker_arc_id || window.user.id,
+            worker_arc_name: currentRecord.worker_arc_name || `${window.user.name} ${window.user.surname}`,
+            date_arc_review: currentRecord.date_arc_review || dayjs().format('YYYY-MM-DD'),
+            check: currentRecord.check || '0',
+            id_public: currentRecord.id_public || '',
+        });
+
+        const [config, setConfig] = useState({
+            type_not: '0',
+            exp_pdf_reso_1: '',
+            exp_pdf_reso_2: '',
+            exp_pdf_reso_record_version: _NOT_VALUES[3] || '0',
+            exp_pdf_reso_logo: 'no',
+            record_rew_pagesi: false,
+            record_rew_pagesn: true,
+            record_maring_top: 2.5,
+            record_maring_bot: 2.5,
+            record_maring_left: 1.7,
+            record_maring_right: 1.7,
+            pdf_check_number: '',
+            pdf_check_city: '',
+        });
+
+        const [notifDetails, setNotifDetails] = useState({
+            ph_not_det_1: _NOT_VALUES[0] || '',
+            ph_not_det_2: _NOT_VALUES[1] || '',
+            ph_not_det_3: _NOT_VALUES[2] || '',
+        });
+
+        const [phDetails, setPhDetails] = useState({
+            area: _PH_DETAIL_VALUES[0] || '',
+            history: _PH_DETAIL_VALUES[1] || '',
+        });
+
+        const [notif, setNotif] = useState({
+            phnot_date_doc: _JSON.date_doc || dayjs().format('YYYY-MM-DD'),
+            phnot_cub: currentRecord.cub || '',
+            phnot_city: _JSON.city || capitalize(infoCud.city.toLowerCase()),
+            phnot_name: _JSON.name || `${_CHILD_53.item_5311} ${_CHILD_53.item_5312}`,
+            phnot_address: _JSON.address || _CHILD_53.item_536,
+            phnot_email: _JSON.email || _CHILD_53.item_535,
+        });
+
         let _NOTY_TYPE_COMPONENENT = () => {
             return <>
                 <div className='row mx-5 my-3 text-start'>
                     <strong>TIPO DE NOTIFICACIÓN</strong>
 
                     <div className="col-4">
-                        <select className='form-select' id="type_not">
+                        <select className='form-select' id="type_not" value={config.type_not} onChange={(e) => setConfig(prev => ({ ...prev, type_not: e.target.value }))}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
@@ -226,7 +276,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         let _COMPONENT_WORKER = () => {
             return <>
                 <div className="row">
-                    <input type="hidden" id="record_ph_worker_arc_0" defaultValue={currentRecord.worker_arc_id ? currentRecord.worker_arc_id : window.user.id} />
+                    <input type="hidden" id="record_ph_worker_arc_0" value={acta.worker_arc_id} />
                     <div className="col-6">
                         <label>Profesional</label>
                         <div className="input-group my-1">
@@ -234,7 +284,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="record_ph_worker_arc_1"
-                                defaultValue={currentRecord.worker_arc_name ? currentRecord.worker_arc_name : window.user.name + " " + window.user.surname} />
+                                value={acta.worker_arc_name} onChange={(e) => setActa(prev => ({ ...prev, worker_arc_name: e.target.value }))} />
                         </div>
                     </div>
                     <div className="col-3">
@@ -244,7 +294,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="record_ph_worker_arc_2" required
-                                defaultValue={currentRecord.date_arc_review ? currentRecord.date_arc_review : dayjs().format('YYYY-MM-DD')} />
+                                value={acta.date_arc_review} onChange={(e) => setActa(prev => ({ ...prev, date_arc_review: e.target.value }))} />
                         </div>
                     </div>
                     <div className="col-3">
@@ -253,7 +303,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
-                            <select className="form-control" id="recprd_ph_final_check" defaultValue={currentRecord.check} >
+                            <select className="form-control" id="recprd_ph_final_check" value={acta.check} onChange={(e) => setActa(prev => ({ ...prev, check: e.target.value }))}>
                                 <option value="0" className="text-danger">NO</option>
                                 <option value="1" className="text-success">SI</option>
                             </select>
@@ -263,8 +313,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             </>
         }
         let _COMPONENT_DETAILS_3 = () => {
-            let _CHILD = currentRecord.detail_3;
-
             return <div className="row py-2">
                 <label className='fw-bold'>Observaciones</label>
                 <div className="col-12">
@@ -272,33 +320,30 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         675 de 2001.</p>
                     <p>b. El presente visto bueno se expide de acuerdo con los planos de propiedad horizontal presentando con la  solicitud, los cuales
                         corresponden a los planos arquitectónicos aprobados en: </p>
-                    <input type="text" className="form-control" id="review_ph_detail_3" defaultValue={_CHILD} />
+                    <input type="text" className="form-control" id="review_ph_detail_3" value={acta.detail_3} onChange={(e) => setActa(prev => ({ ...prev, detail_3: e.target.value }))} />
                 </div>
             </div>
         }
         let _COMPONENT_DETAILS_2 = () => {
-            let _CHILD = currentRecord.detail_2;
-
             return <div className="row py-2">
                 <div className="col-12">
                     <label>Observaciones, separe cada punto con (solo) un salto de linea. (máximo 5000 caracteres)</label>
                     <textarea className="input-group" maxLength="5000" id="review_ph_detail_2" rows="4"
-                        defaultValue={_CHILD}></textarea>
+                        value={acta.detail_2} onChange={(e) => setActa(prev => ({ ...prev, detail_2: e.target.value }))}></textarea>
                 </div>
             </div>
         }
         let _COMPONENT_DETAILS_4 = () => {
-            const _VALUES = _GET_STEP_TYPE('ph_details', 'value');
             return <>
                 <div className="row py-2">
                     <div className="col-3">
                         <label>Área del predio</label>
-                        <input type="number" step={0.01} className="form-control" id="review_ph_detail_area" defaultValue={_VALUES[0]} />
+                        <input type="number" step={0.01} className="form-control" id="review_ph_detail_area" value={phDetails.area} onChange={(e) => setPhDetails(prev => ({ ...prev, area: e.target.value }))} />
                     </div>
                     <div className="col-12">
                         <label>Actos administrativos que anteceden y/o licencia(s) de gestión</label>
                         <textarea className="input-group" maxLength="2000" id="review_ph_detail_beofre" rows="4"
-                            defaultValue={_VALUES[1]}></textarea>
+                            value={phDetails.history} onChange={(e) => setPhDetails(prev => ({ ...prev, history: e.target.value }))}></textarea>
                     </div>
                 </div>
             </>
@@ -342,27 +387,25 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             </>
         }
         let _COMPONENTN_NOT = () => {
-            var _CHILD_53 = _GET_CHILD_53();
-            let _JSON = getJSONFull(currentRecord.cub_json)
             return <>
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha del documento</label>
                         <input type="date" className="form-control mb-3" max='2100-01-01' id="phnot_date_doc" required
-                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
+                            value={notif.phnot_date_doc} onChange={(e) => setNotif(prev => ({ ...prev, phnot_date_doc: e.target.value }))} />
                     </div>
 
                     <div className="col">
                         <label>Consecutivo de Entrada</label>
                         <input type="text" className="form-control mb-3" id="phnot_id_public" disabled
-                            defaultValue={currentItem.id_public} />
+                            value={currentItem.id_public} />
                     </div>
                     <div className="col">
                         <label> {infoCud.serials.end} Carta Citación</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="phnot_cub"
-                                defaultValue={currentRecord.cub || ''} />
-                            <Button size="sm" onClick={() => _GET_LAST_ID('phnot_cub')}>GENERAR</Button>
+                                value={notif.phnot_cub} onChange={(e) => setNotif(prev => ({ ...prev, phnot_cub: e.target.value }))} />
+                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
                 </div>
@@ -370,45 +413,43 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <div className="col">
                         <label>Ciudad</label>
                         <input type="text" className="form-control mb-3" id="phnot_city"
-                            defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
+                            value={notif.phnot_city} onChange={(e) => setNotif(prev => ({ ...prev, phnot_city: e.target.value }))} />
                     </div>
                     <div className="col">
                         <label>Consecutivo de Salida</label>
                         <input type="text" className="form-control mb-3" id="phnot_res_public" disabled
-                            defaultValue={currentRecord.id_public} />
+                            value={currentRecord.id_public} />
                     </div>
                     <div className="col">
                         <label>Fecha de Revision</label>
                         <input type="date" className="form-control mb-3" max='2100-01-01' id="phnot_date_res" disabled
-                            defaultValue={_JSON.date || currentRecord.date_arc_review} />
+                            value={_JSON.date || currentRecord.date_arc_review} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
                         <label>Responsable</label>
                         <input type="text" className="form-control mb-3" id="phnot_name"
-                            defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
+                            value={notif.phnot_name} onChange={(e) => setNotif(prev => ({ ...prev, phnot_name: e.target.value }))} />
                     </div>
                     <div className="col">
                         <label>Dirección</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="phnot_address"
-                                defaultValue={_JSON.address || _CHILD_53.item_536} />
+                                value={notif.phnot_address} onChange={(e) => setNotif(prev => ({ ...prev, phnot_address: e.target.value }))} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Email</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="phnot_email"
-                                defaultValue={_JSON.email || _CHILD_53.item_535} />
+                                value={notif.phnot_email} onChange={(e) => setNotif(prev => ({ ...prev, phnot_email: e.target.value }))} />
                         </div>
                     </div>
                 </div>
-
             </>
         }
         let _COMPONENT_NOT_DETAILS = () => {
-            const _VALUES = _GET_STEP_TYPE('phnd', 'value');
             return <>
                 <div className="row">
                     <div className="col-4">
@@ -418,7 +459,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="ph_not_det_1"
-                                defaultValue={_VALUES[0]} onBlur={() => save_not_data()} />
+                                value={notifDetails.ph_not_det_1} onChange={(e) => { setNotifDetails(prev => ({ ...prev, ph_not_det_1: e.target.value })); save_not_data(); }} />
                         </div>
                     </div>
                     <div className="col-4">
@@ -428,7 +469,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="ph_not_det_2"
-                                defaultValue={_VALUES[1]} onBlur={() => save_not_data()} />
+                                value={notifDetails.ph_not_det_2} onChange={(e) => { setNotifDetails(prev => ({ ...prev, ph_not_det_2: e.target.value })); save_not_data(); }} />
                         </div>
                     </div>
                     <div className="col-4">
@@ -438,7 +479,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" id="ph_not_det_3"
-                                defaultValue={_VALUES[2]} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e); save_not_data(); }} />
+                                value={notifDetails.ph_not_det_3} onChange={(e) => { setNotifDetails(prev => ({ ...prev, ph_not_det_3: e.target.value })); save_not_data(); }} onBlur={() => setNotifDetails(prev => ({ ...prev, ph_not_det_3: _REGEX_IDNUMBER(prev.ph_not_det_3) }))} />
                         </div>
                     </div>
                 </div>
@@ -455,7 +496,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_01_ph"
-                                defaultValue={currentItem.id_public} />
+                                value={currentItem.id_public} />
                         </div>
                     </div>
                     <div className="col-4">
@@ -465,7 +506,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_02_ph"
-                                defaultValue={currentRecord.id_public} />
+                                value={acta.id_public} onChange={(e) => setActa(prev => ({ ...prev, id_public: e.target.value }))} />
                             <Button size="sm" onClick={() => _GET_LAST_OA()}>GENERAR</Button>
                         </div>
                     </div>
@@ -478,7 +519,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <div className="col">
                         <label>Autoridad Competente</label>
                         <div className="input-group my-1">
-                            <select className="form-select me-1" id={"exp_pdf_reso_1"}>
+                            <select className="form-select me-1" id={"exp_pdf_reso_1"} value={config.exp_pdf_reso_1} onChange={(e) => setConfig(prev => ({ ...prev, exp_pdf_reso_1: e.target.value }))}>
                                 {domains_number}
                             </select>
                         </div>
@@ -486,7 +527,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <div className="col">
                         <label>Ciudad</label>
                         <div className="input-group my-1">
-                            <select className="form-select me-1" id={"exp_pdf_reso_2"}>
+                            <select className="form-select me-1" id={"exp_pdf_reso_2"} value={config.exp_pdf_reso_2} onChange={(e) => setConfig(prev => ({ ...prev, exp_pdf_reso_2: e.target.value }))}>
                                 {cities}
                             </select>
                         </div>
@@ -494,7 +535,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <div className="col">
                         <label>Vigencia</label>
                         <div className="input-group my-1">
-                            <select className="form-select" id="exp_pdf_reso_record_version" defaultValue={_VALUE[3] || 0}>
+                            <select className="form-select" id="exp_pdf_reso_record_version" value={config.exp_pdf_reso_record_version} onChange={(e) => { setConfig(prev => ({ ...prev, exp_pdf_reso_record_version: e.target.value })); save_not_data(); }}>
                                 <option value={0}>NO USAR EJECUTORIA Y FECHA</option>
                                 <option value={1}>NO USAR FECHA</option>
                                 <option>DOCE (12) MESES</option>
@@ -507,7 +548,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <div className="col">
                         <label>Logo</label>
                         <div className="input-group my-1">
-                            <select className="form-select me-1" id={"exp_pdf_reso_logo"}>
+                            <select className="form-select me-1" id={"exp_pdf_reso_logo"} value={config.exp_pdf_reso_logo} onChange={(e) => setConfig(prev => ({ ...prev, exp_pdf_reso_logo: e.target.value }))}>
                                 <option value={'no'}>SIN LOGO</option>
                                 <option value={'left'}>IZQUIERDA</option>
                                 <option value={'left2'}>IZQUIERDA ENTRESALTO</option>
@@ -520,33 +561,16 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 </div>
                 <div className="row mb-2">
 
-                    {/**
-                     *  <div className="col d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_simple" />
-                            <label className="form-check-label">Usar nombre revisor</label>
-                        </div>
-                    </div>
-
                     <div className="col d-flex justify-content-center">
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_signs" />
-                            <label className="form-check-label">Usar firma profesionales</label>
-                        </div>
-                    </div>
-                     * 
-                     */}
-
-                    <div className="col d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_pagesi" />
+                            <input type="checkbox" className="form-check-input" id="record_rew_pagesi" checked={config.record_rew_pagesi} onChange={(e) => setConfig(prev => ({ ...prev, record_rew_pagesi: e.target.checked }))} />
                             <label className="form-check-label">Usar pie de pagina</label>
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_pagesn" defaultChecked="true" />
+                            <input type="checkbox" className="form-check-input" id="record_rew_pagesn" checked={config.record_rew_pagesn} onChange={(e) => setConfig(prev => ({ ...prev, record_rew_pagesn: e.target.checked }))} />
                             <label className="form-check-label">Usar paginación</label>
                         </div>
                     </div>
@@ -557,110 +581,113 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <div className="col ">
                         <div className="input-group-sm my-1">
                             <label className="form-check-label">Margen Superior (cm)</label>
-                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_top" defaultValue={2.5} />
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_top" value={config.record_maring_top} onChange={(e) => setConfig(prev => ({ ...prev, record_maring_top: e.target.value }))} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
                         <div className="input-group-sm my-1">
                             <label className="form-check-label">Margen Inferior (cm)</label>
-                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_bot" defaultValue={2.5} />
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_bot" value={config.record_maring_bot} onChange={(e) => setConfig(prev => ({ ...prev, record_maring_bot: e.target.value }))} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
                         <div className="input-group-sm my-1">
                             <label className="form-check-label">Margen Izquierdo (cm)</label>
-                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_left" defaultValue={1.7} />
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_left" value={config.record_maring_left} onChange={(e) => setConfig(prev => ({ ...prev, record_maring_left: e.target.value }))} />
                         </div>
                     </div>
 
                     <div className="col d-flex justify-content-center">
                         <div className="input-group-sm my-1">
                             <label className="form-check-label">Margen Derecho (cm)</label>
-                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_right" defaultValue={1.7} />
+                            <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_right" value={config.record_maring_right} onChange={(e) => setConfig(prev => ({ ...prev, record_maring_right: e.target.value }))} />
                         </div>
                     </div>
                 </div>
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                        <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                     <div className="col">
                         <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                     </div>
                     <div className="col">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => CREATE_PDF_CHECK()} ><Icon name="file-pdf" size={16} /> GENERAR CHECKEO </Button>
+                        <label>NUMERO DE DOMINIO</label>
+                        <select className="form-select form-select-sm" id="func_pdf_0_1" value={config.pdf_check_number} onChange={(e) => setConfig({ ...config, pdf_check_number: e.target.value })}>
+                            <option value="">No aplica</option>
+                            <option value="1">PRIMERO</option>
+                            <option value="2">SEGUNDO</option>
+                            <option value="3">TERCERO</option>
+                            <option value="4">CUARTO</option>
+                            <option value="5">QUINTO</option>
+                            <option value="6">SEXTO</option>
+                            <option value="7">SEPTIMO</option>
+                            <option value="8">OCTAVO</option>
+                            <option value="9">NOVENO</option>
+                        </select>
+                    </div>
+                    <div className="col">
+                        <label>CURADURÍA</label>
+                        <select className="form-select form-select-sm" id="func_pdf_0_2" value={config.pdf_check_city} onChange={(e) => setConfig({ ...config, pdf_check_city: e.target.value })}>
+                            <option value="">No aplica</option>
+                            <option value="Bogotá">Bogotá</option>
+                            <option value="Soacha">Soacha</option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                    </div>
+                    <div className="col">
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => CREATE_PDF_CHECK()} disabled={isSaving}><Icon name="file-pdf" size={16} /> GENERAR CHECKEO </Button>
                     </div>
                 </div>
             </>
         }
-        // FUNCTIONS AND APIS
-        var formData = new FormData();
-        var formDataClock = new FormData();
-
-        let manage_item = (e) => {
+        let manage_item = async (e) => {
             if (e) e.preventDefault();
-            formData = new FormData();
+            const formData = new FormData();
 
-            let detail_2 = document.getElementById("review_ph_detail_2").value;
-            formData.set('detail_2', detail_2);
-            let detail_3 = document.getElementById("review_ph_detail_3").value;
-            formData.set('detail_3', detail_3);
-
-            let worker_arc_id = document.getElementById("record_ph_worker_arc_0").value;
-            formData.set('worker_arc_id', worker_arc_id);
-            let worker_arc_name = document.getElementById("record_ph_worker_arc_1").value;
-            formData.set('worker_arc_name', worker_arc_name);
-            let date_arc_review = document.getElementById("record_ph_worker_arc_2").value;
-            formData.set('date_arc_review', date_arc_review);
-
-            let check = document.getElementById("recprd_ph_final_check").value;
-            formData.set('check', check);
-
-            let id_public = document.getElementById("f_02_ph").value;
-            formData.set('id_public', id_public);
-
-            formData.set('new_id', id_public);
+            formData.set('detail_2', acta.detail_2);
+            formData.set('detail_3', acta.detail_3);
+            formData.set('worker_arc_id', acta.worker_arc_id);
+            formData.set('worker_arc_name', acta.worker_arc_name);
+            formData.set('date_arc_review', acta.date_arc_review);
+            formData.set('check', acta.check);
+            formData.set('id_public', acta.id_public);
+            formData.set('new_id', acta.id_public);
             formData.set('prev_id', currentRecord.id_public);
 
-            save_not_data();
-            createVRxCUB_relation_PH();
+            const notDataResult = await save_not_data();
+            if (!notDataResult.ok) return;
 
-            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RECORD_PH_SERVICE.update(currentRecord.id, formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+            const vrResult = await createVRxCUB_relation_PH();
+            if (!vrResult.ok) return;
 
-                        requestUpdateRecord(currentItem.id);
-                        requestUpdate(currentItem.id);
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        swalError({ title: "ERROR DE DUPLICACIÓN", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
-                    }
-                    else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
+            const result = await execute(RECORD_PH_SERVICE.update(currentRecord.id, formData), {
+                operationName: 'guardar acta de revisión',
+            });
+
+            if (result.ok) {
+                requestUpdateRecord(currentItem.id);
+                requestUpdate(currentItem.id);
+            }
         }
 
-        let review = () => {
-            save_clock();
-            manage_item();
+        let review = async () => {
+            const clockResult = await save_clock();
+            if (!clockResult.ok) return;
+            await manage_item();
         }
-        let save_clock = () => {
-            formDataClock = new FormData();
 
-            let state = 14 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
+        let save_clock = async () => {
+            const formDataClock = new FormData();
 
-            let worker = document.getElementById("record_ph_worker_arc_1").value;
-            let date = document.getElementById("record_ph_worker_arc_2").value;
-            let review = document.getElementById("recprd_ph_final_check").value;
+            let state = 14
+
+            let worker = acta.worker_arc_name;
+            let date = acta.date_arc_review;
+            let review = acta.check;
             let desc = review == 1 ? "APROBADO" : "NO APROBADO"
 
             formDataClock.set('date_start', date);
@@ -668,70 +695,37 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             formDataClock.set('desc', "Fue declarada como: " + desc + " por " + worker);
             formDataClock.set('state', state);
             formDataClock.set('version', currentVersion);
+            formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(false, state);
+            return await manage_clock(formDataClock, state);
         }
-        let manage_clock = (useMySwal, findOne) => {
+
+        let manage_clock = async (formDataClock, findOne) => {
             var _CHILD = _GET_CLOCK_STATE(findOne, currentItem);
 
-            formDataClock.set('fun0Id', currentItem.id);
-            if (useMySwal) {
-                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            }
-
             if (_CHILD.id) {
-                FUN_SERVICE.update_clock(_CHILD.id, formDataClock)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                            }
-                            requestUpdate(currentItem.id);
-                        } else {
-                            if (useMySwal) {
-                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                            }
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useMySwal) {
-                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        }
-                    });
+                return await execute(FUN_SERVICE.update_clock(_CHILD.id, formDataClock), {
+                    operationName: 'guardar reloj de revisión',
+                    loading: false,
+                    success: false,
+                });
+            } else {
+                return await execute(FUN_SERVICE.create_clock(formDataClock), {
+                    operationName: 'crear reloj de revisión',
+                    loading: false,
+                    success: false,
+                });
             }
-            else {
-                FUN_SERVICE.create_clock(formDataClock)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                            }
-                            requestUpdate(currentItem.id);
-                        } else {
-                            if (useMySwal) {
-                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                            }
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useMySwal) {
-                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        }
-                    });
-            }
-
         }
-        let save_archive = () => {
-            formDataClock = new FormData();
 
-            let state = 101 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
+        let save_archive = async () => {
+            const formDataClock = new FormData();
+
+            let state = 101
 
             let worker = window.user.name + " " + window.user.surname;
 
-            let date_arc_review = document.getElementById("record_ph_worker_arc_2").value;
-            formData.set('date_arc_review', date_arc_review);
+            let date_arc_review = acta.date_arc_review;
             let date = date_arc_review ?? dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
@@ -739,13 +733,15 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             formDataClock.set('desc', "Fue enviado al archivo por: " + worker);
             formDataClock.set('state', state);
             formDataClock.set('version', currentVersion);
+            formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(false, state);
+            return await manage_clock(formDataClock, state);
         }
-        let save_close = () => {
-            formDataClock = new FormData();
 
-            let state = 100 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
+        let save_close = async () => {
+            const formDataClock = new FormData();
+
+            let state = 100
 
             let worker = window.user.name + " " + window.user.surname;
             let date = dayjs().format('YYYY-MM-DD');
@@ -755,97 +751,77 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             formDataClock.set('desc', "Fue cerrada por: " + worker);
             formDataClock.set('state', state);
             formDataClock.set('version', currentVersion);
+            formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(false, state);
+            return await manage_clock(formDataClock, state);
         }
-        let pdf_gen = () => {
-            formData = new FormData();
-            let altId = document.getElementById("f_01_ph").value;
+
+        let pdf_gen = async () => {
+            const formData = new FormData();
+            let altId = currentItem.id_public;
             formData.set('id', currentItem.id);
             formData.set('altId', altId);
 
-            formData.set('r_pagesi', document.getElementById("record_rew_pagesi").checked);
-            formData.set('r_pagesn', document.getElementById("record_rew_pagesn").checked);
-            formData.set('r_vig', document.getElementById('exp_pdf_reso_record_version').value);
-            formData.set('logo', document.getElementById('exp_pdf_reso_logo').value);
+            formData.set('r_pagesi', config.record_rew_pagesi);
+            formData.set('r_pagesn', config.record_rew_pagesn);
+            formData.set('r_vig', config.exp_pdf_reso_record_version);
+            formData.set('logo', config.exp_pdf_reso_logo);
 
-            formData.set('type_not', document.getElementById("type_not").value);
+            formData.set('type_not', config.type_not);
 
-            formData.set('m_top', document.getElementById("record_maring_top").value ? document.getElementById("record_maring_top").value : 2.5);
-            formData.set('m_bot', document.getElementById("record_maring_bot").value ? document.getElementById("record_maring_bot").value : 2.5);
-            formData.set('m_left', document.getElementById('record_maring_left').value ? document.getElementById("record_maring_left").value : 1.7);
-            formData.set('m_right', document.getElementById('record_maring_right').value ? document.getElementById("record_maring_right").value : 1.7);
+            formData.set('m_top', config.record_maring_top || 2.5);
+            formData.set('m_bot', config.record_maring_bot || 2.5);
+            formData.set('m_left', config.record_maring_left || 1.7);
+            formData.set('m_right', config.record_maring_right || 1.7);
 
-            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RECORD_PH_SERVICE.gen_doc_ph(formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordph/" + "Informe Revision Propiedad Horizontal " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
-                    } else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
+            const result = await execute(RECORD_PH_SERVICE.gen_doc_ph(formData), {
+                operationName: 'generar PDF',
+                success: false,
+            });
 
+            if (result.ok) {
+                swalClose();
+                window.open(import.meta.env.VITE_API_URL + "/pdf/recordph/" + "Informe Revision Propiedad Horizontal " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
+            }
         }
 
-        let close = () => {
-            swalConfirm({ title: "CERRAR SOLICITUD", text: "¿Esta seguro de cerra esta Solicitud? \nSI SE PODRÁ realizar cambios mas adelantes.", icon: 'question', confirmButtonText: "CERRAR" }).then(SweetAlertResult => {
-                if (SweetAlertResult.isConfirmed) {
-                    formData = new FormData();
+        let close = async () => {
+            const confirmResult = await swalConfirm({ title: "CERRAR SOLICITUD", text: "¿Esta seguro de cerra esta Solicitud? \nSI SE PODRÁ realizar cambios mas adelantes.", icon: 'question', confirmButtonText: "CERRAR" });
+            if (!confirmResult.isConfirmed) return;
 
-                    formDataClock.set('state', 100);
+            const formDataClock = new FormData();
+            formDataClock.set('state', 100);
 
-                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-                    FUN_SERVICE.update(currentItem.id, formDataClock)
-                        .then(response => {
-                            if (response.data === 'OK') {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                                save_close();
-                                requestRefresh(currentItem.id);
-                            } else {
-                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                            }
-                        })
-                        .catch(e => {
-                            console.log(e);
-                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        });
-
-                }
+            const result = await execute(FUN_SERVICE.update(currentItem.id, formDataClock), {
+                operationName: 'cerrar solicitud',
             });
+
+            if (result.ok) {
+                const closeResult = await save_close();
+                if (closeResult.ok) {
+                    requestRefresh(currentItem.id);
+                }
+            }
         }
 
-        let archive = () => {
-            swalConfirm({ title: "ARCHIVAR SOLICITUD", text: "¿Esta seguro de archivar esta Solicitud? \nNO SE PODRÁ modificar de ninguna forma.", icon: 'question', confirmButtonText: "ARCHIVAR" }).then(SweetAlertResult => {
-                if (SweetAlertResult.isConfirmed) {
-                    formData = new FormData();
+        let archive = async () => {
+            const confirmResult = await swalConfirm({ title: "ARCHIVAR SOLICITUD", text: "¿Esta seguro de archivar esta Solicitud? \nNO SE PODRÁ modificar de ninguna forma.", icon: 'question', confirmButtonText: "ARCHIVAR" });
+            if (!confirmResult.isConfirmed) return;
 
-                    formDataClock.set('state', 101);
+            const formDataClock = new FormData();
+            formDataClock.set('state', 101);
 
-                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-                    FUN_SERVICE.update(currentItem.id, formDataClock)
-                        .then(response => {
-                            if (response.data === 'OK') {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                                save_archive();
-                                requestRefresh(currentItem.id);
-                                closeModal();
-                            } else {
-                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                            }
-                        })
-                        .catch(e => {
-                            console.log(e);
-                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        });
-
-                }
+            const result = await execute(FUN_SERVICE.update(currentItem.id, formDataClock), {
+                operationName: 'archivar solicitud',
             });
+
+            if (result.ok) {
+                const archiveResult = await save_archive();
+                if (archiveResult.ok) {
+                    requestRefresh(currentItem.id);
+                    closeModal();
+                }
+            }
         }
 
         let CREATE_PDF_CHECK = () => {
@@ -1051,8 +1027,8 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
             }
 
-            let _city = document.getElementById('func_pdf_0_2').value;
-            let _number = document.getElementById('func_pdf_0_1').value;
+            let _city = config.pdf_check_city;
+            let _number = config.pdf_check_number;
 
             var headers = {};
             headers.city = _city;
@@ -1060,240 +1036,146 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
             CREATE_CHECK(_RESUME, checks, currentItem, headers)
         }
-        let createVRxCUB_relation_PH = () => {
-            let vr = document.getElementById("f_01_ph").value;
-            let cub = document.getElementById("f_02_ph").value;
-            let formatData = new FormData();
 
-            formatData.set('vr', vr);
-            formatData.set('cub', cub);
+        let createVRxCUB_relation_PH = async () => {
+            let formatData = new FormData();
+            formatData.set('vr', currentItem.id_public);
+            formatData.set('cub', acta.id_public);
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'PROPIEDAD HORIZONTAL');
 
-            // formatData.set('desc', desc);
-
-            // Mostrar mensaje inicial de espera
             if (idCUBxVr_ph) {
-                CubXVrDataService.updateCubVr(idCUBxVr_ph, formatData)
-                    .then((response) => {
-                        if (response.data === 'OK') {
-                            // Refrescar la UI
-                            requestUpdate(currentItem.id, true);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    });
-            }
-            else {
-                // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
-                    .then((response) => {
-                        if (response.data === 'OK') {
-                            requestUpdateRecord(currentItem.id);
-                            requestUpdate(currentItem.id);
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                    });
+                return await execute(CubXVrDataService.updateCubVr(idCUBxVr_ph, formatData), {
+                    operationName: 'actualizar relación CUBxVR PH',
+                    loading: false,
+                    success: false,
+                });
+            } else {
+                return await execute(CubXVrDataService.createCubXVr(formatData), {
+                    operationName: 'crear relación CUBxVR PH',
+                    loading: false,
+                    success: false,
+                });
             }
         };
-        let save_not_data = () => {
-            let formData = new FormData();
-            let date = document.getElementById('ph_not_det_1').value;
-            let name = document.getElementById('ph_not_det_2').value;
-            let id = document.getElementById('ph_not_det_3').value;
 
-            let eje = document.getElementById('exp_pdf_reso_record_version').value;
+        let save_not_data = async () => {
+            const value = [
+                notifDetails.ph_not_det_1,
+                notifDetails.ph_not_det_2,
+                notifDetails.ph_not_det_3,
+                config.exp_pdf_reso_record_version,
+            ];
 
-            let value = [];
-            value.push(date);
-            value.push(name);
-            value.push(id);
-            value.push(eje);
-
+            const formData = new FormData();
             formData.set('value', value.join(';'));
-
             formData.set('version', currentVersionR);
             formData.set('recordPhId', currentRecord.id);
             formData.set('id_public', 'phnd');
 
-            save_step('phnd', false, formData);
+            const step = LOAD_STEP('phnd');
+            const result = await execute(savePHStep(RECORD_PH_SERVICE, step, formData), {
+                operationName: 'guardar detalles de notificación',
+                loading: false,
+                success: false,
+            });
 
-            if (document.getElementById('review_ph_detail_area')) {
-                formData = new FormData();
-                let area = document.getElementById('review_ph_detail_area').value;
-                let history = document.getElementById('review_ph_detail_beofre').value;
-                value = [];
-                value.push(area);
-                value.push(history);
+            if (!result.ok) return result;
 
-                formData.set('value', value.join(';'));
+            if (phDetails.area || phDetails.history) {
+                const formData2 = new FormData();
+                const value2 = [phDetails.area, phDetails.history];
+                formData2.set('value', value2.join(';'));
+                formData2.set('version', currentVersionR);
+                formData2.set('recordPhId', currentRecord.id);
+                formData2.set('id_public', 'ph_details');
 
-                formData.set('version', currentVersionR);
-                formData.set('recordPhId', currentRecord.id);
-                formData.set('id_public', 'ph_details');
-
-                save_step('ph_details', false, formData);
+                const step2 = LOAD_STEP('ph_details');
+                return await execute(savePHStep(RECORD_PH_SERVICE, step2, formData2), {
+                    operationName: 'guardar detalles adicionales PH',
+                    loading: false,
+                    success: false,
+                });
             }
 
+            return result;
         }
 
-        let save_step = (_id_public, useSwal, formData, start, end) => {
-            var STEP = LOAD_STEP(_id_public);
-
-            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            if (STEP.id) {
-                RECORD_PH_SERVICE.update_step(STEP.id, formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                            requestUpdateRecord(currentItem.id);
-                        } else {
-                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    });
-            }
-            else {
-                RECORD_PH_SERVICE.create_step(formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                            requestUpdateRecord(currentItem.id);
-                        } else {
-                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    });
-            }
-        }
-        let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("phnot_id_public").value;
-            let cub = cub_selected;
+        let createVRxCUB_relation = async (cub_selected) => {
             let formatData = new FormData();
-
-            formatData.set('vr', vr);
-            formatData.set('cub', cub);
+            formatData.set('vr', currentItem.id_public);
+            formatData.set('cub', cub_selected);
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'DOCUMENTOS PH / CITACIÓN PARA NOTIFICACIÓN');
-
-            // let desc = document.getElementById('geng_type').value;
             formatData.set('desc', 'Citacion Notificación Resolución de Aprovación de Plano de Propiedad Horizontal');
-            let date = document.getElementById('phnot_date_doc').value;
-            formatData.set('date', date);
+            formatData.set('date', notif.phnot_date_doc);
 
             if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
-                    .then((response) => {
-                        if (response.data === 'OK') {
-                            // Refrescar la UI
-                            requestUpdate(currentItem.id, true);
-                        } 
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
-            }
-            else {
-                // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
-                    .then((response) => {
-                        if (response.data === 'OK') {
-                            requestUpdateRecord(currentItem.id);
-                            requestUpdate(currentItem.id);
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                    });
+                return await execute(CubXVrDataService.updateCubVr(idCUBxVr, formatData), {
+                    operationName: 'actualizar relación CUBxVR notificación',
+                    loading: false,
+                    success: false,
+                });
+            } else {
+                return await execute(CubXVrDataService.createCubXVr(formatData), {
+                    operationName: 'crear relación CUBxVR notificación',
+                    loading: false,
+                    success: false,
+                });
             }
         };
 
-        let save_cub = (e) => {
+        let save_cub = async (e) => {
             e.preventDefault();
-            formData = new FormData();
-            let cub = document.getElementById("phnot_cub").value;
-            formData.set('new_cub', cub);
+            const formData = new FormData();
+            formData.set('new_cub', notif.phnot_cub);
             formData.set('prev_cub', currentRecord.cub);
 
             let cub_json = getJSONFull(currentRecord.cub_json);
-
-            cub_json.date_doc = document.getElementById("phnot_date_doc").value;
-            cub_json.city = document.getElementById("phnot_city").value;
-            cub_json.name = document.getElementById("phnot_name").value;
-            cub_json.address = document.getElementById("phnot_address").value;
-            cub_json.email = document.getElementById("phnot_email").value;
+            cub_json.date_doc = notif.phnot_date_doc;
+            cub_json.city = notif.phnot_city;
+            cub_json.name = notif.phnot_name;
+            cub_json.address = notif.phnot_address;
+            cub_json.email = notif.phnot_email;
 
             formData.set('cub_json', JSON.stringify(cub_json));
-            createVRxCUB_relation(cub)
 
-            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RECORD_PH_SERVICE.update(currentRecord.id, formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+            const vrResult = await createVRxCUB_relation(notif.phnot_cub);
+            if (!vrResult.ok) return;
 
-                        requestUpdateRecord(currentItem.id);
-                        requestUpdate(currentItem.id);
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        swalError({ title: "ERROR DE DUPLICACIÓN", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
-                    }
-                    else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
+            const result = await execute(RECORD_PH_SERVICE.update(currentRecord.id, formData), {
+                operationName: 'guardar notificación',
+            });
 
+            if (result.ok) {
+                requestUpdateRecord(currentItem.id);
+                requestUpdate(currentItem.id);
+            }
         }
-        let pdfnot_gen = () => {
-            formData = new FormData();
-            let date_doc = document.getElementById("phnot_date_doc").value;
-            formData.set('date_doc', date_doc);
-            let cub = document.getElementById("phnot_cub").value;
-            formData.set('cub', cub);
-            let city = document.getElementById("phnot_city").value;
-            formData.set('city', city);
-            let res_id = document.getElementById("phnot_res_public").value;
-            formData.set('ph_id', res_id);
-            let res_date = document.getElementById("phnot_date_res").value;
-            formData.set('ph_date', res_date);
-            let name = document.getElementById("phnot_name").value;
-            formData.set('name', name);
-            let address = document.getElementById("phnot_address").value;
-            formData.set('address', address);
-            let email = document.getElementById("phnot_email").value;
-            formData.set('email', email);
 
+        let pdfnot_gen = async () => {
+            const formData = new FormData();
+            formData.set('date_doc', notif.phnot_date_doc);
+            formData.set('cub', notif.phnot_cub);
+            formData.set('city', notif.phnot_city);
+            formData.set('ph_id', currentRecord.id_public);
+            formData.set('ph_date', currentRecord.date_arc_review);
+            formData.set('name', notif.phnot_name);
+            formData.set('address', notif.phnot_address);
+            formData.set('email', notif.phnot_email);
             formData.set('id_public', currentItem.id_public);
 
-            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RECORD_PH_SERVICE.gen_doc_not(formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordphnot/" + "CITACIÓN PARA NOTIFICACIÓN " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
-                    } else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
+            const result = await execute(RECORD_PH_SERVICE.gen_doc_not(formData), {
+                operationName: 'generar PDF de notificación',
+                success: false,
+            });
 
+            if (result.ok) {
+                swalClose();
+                window.open(import.meta.env.VITE_API_URL + "/pdf/recordphnot/" + "CITACIÓN PARA NOTIFICACIÓN " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
+            }
         }
+
         return (
             <div className="record_ph_gen container">
                 <form id="form_manage_ph_review" onSubmit={manage_item}>
@@ -1314,17 +1196,17 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             {currentItem.state > -5
                                 ? <>
                                     <div className="col">
-                                        <Button variant="destructive" size="sm" className="my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
+                                        <Button variant="destructive" size="sm" className="my-3" onClick={() => review()} disabled={isSaving}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
                                     </div>
 
                                     {!_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <Button size="sm" className="my-3" onClick={() => close()} ><Icon name="file-archive" size={16} /> CERRAR</Button>
+                                            <Button size="sm" className="my-3" onClick={() => close()} disabled={isSaving}><Icon name="file-archive" size={16} /> CERRAR</Button>
                                         </div>
                                         : ""}
                                     {_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <Button size="sm" className="my-3" onClick={() => archive()} ><Icon name="file-archive" size={16} /> ARCHIVAR</Button>
+                                            <Button size="sm" className="my-3" onClick={() => archive()} disabled={isSaving}><Icon name="file-archive" size={16} /> ARCHIVAR</Button>
                                         </div>
                                         : ""}
                                 </>
@@ -1341,10 +1223,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         {_COMPONENTN_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                             <div className="col">
-                                <Button variant="destructive" size="sm" className="my-3" onClick={() => pdfnot_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                                <Button variant="destructive" size="sm" className="my-3" onClick={() => pdfnot_gen()} disabled={isSaving}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                             </div>
                         </div>
                     </form>

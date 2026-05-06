@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import RECORD_PH from '../../../../services/record_ph.service';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import usePHSave from './hooks/usePHSave';
+import { savePHStep } from './utils/phSaveStep';
 
 export default function RECORD_PH_CHECK_LIST(props) {
-    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
-    var _SAVE_STEPS = 0;
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;
+    const { execute } = usePHSave(swaMsg);
     const REVIEWS_TYPES = [
         { name: 'CONSTRUCCIÓN', id: 'con' },
         { name: 'LOTEO, PARCELACIÓN, SUBDIVISIÓN Y URBANISMO', id: 'sub' },
         { name: 'CERRAMIENTO', id: 'cer' },
     ]
     const REVIEW = REVIEW_DOCS;
-    // ******************* DATA GETERS ********************* //
+
     let LOAD_STEP = (_id_public) => {
         var _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
@@ -20,7 +21,7 @@ export default function RECORD_PH_CHECK_LIST(props) {
         }
         return []
     }
-    // *******************  DATA CONVERTERS ******************* //
+
     let _GET_STEP_TYPE = (_id_public, _type) => {
         var STEP = LOAD_STEP(_id_public);
         if (!STEP.id) return [];
@@ -29,6 +30,7 @@ export default function RECORD_PH_CHECK_LIST(props) {
         value = value.split(';');
         return value
     }
+
     let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
         if (_VALUE === '0' || _VALUE === 'NO CUMPLE') {
             return 'form-select text-danger form-select-sm';
@@ -41,9 +43,15 @@ export default function RECORD_PH_CHECK_LIST(props) {
         }
         return 'form-select form-select-sm';
     }
-    // ******************* COMPONENTS JSX ******************* //
+
+    const initialChecks = _GET_STEP_TYPE('phcl', 'check');
+    const [checks, setChecks] = useState(() => {
+        const arr = [...initialChecks];
+        while (arr.length < 28) arr.push('');
+        return arr;
+    });
+
     let _COMPONENT = () => {
-        const _CHECK_ARRAY = _GET_STEP_TYPE('phcl', 'check');
         const LIST = [
             { title: 'Planos arquitectónicos', items: [] },
             {
@@ -120,13 +128,17 @@ export default function RECORD_PH_CHECK_LIST(props) {
                         return <>
                             <div className='row border'>
                                 <div className='col'><label>{item.desc}</label></div>
-                                <div className='col-2'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item.i])}
-                                    name="phcl_checks" id={"phcl_checks_" + item.i}
-                                    defaultValue={_CHECK_ARRAY[item.i]} onChange={() => manage_rar(false)} >
-                                    <option value="0" className="text-danger">NO</option>
-                                    <option value="1" className="text-success">SI</option>
-                                    <option value="2" className="text-warning">NA</option>
-                                </select></div>
+                                <div className='col-2'>
+                                    <select
+                                        className={_GET_SELECT_COLOR_VALUE(checks[item.i])}
+                                        value={checks[item.i]}
+                                        onChange={(e) => handleCheckChange(item.i, e.target.value)}
+                                    >
+                                        <option value="0" className="text-danger">NO</option>
+                                        <option value="1" className="text-success">SI</option>
+                                        <option value="2" className="text-warning">NA</option>
+                                    </select>
+                                </div>
                             </div>
                         </>
                     })}
@@ -135,73 +147,33 @@ export default function RECORD_PH_CHECK_LIST(props) {
         })
     }
 
+    const handleCheckChange = async (index, value) => {
+        const newChecks = [...checks];
+        newChecks[index] = value;
+        setChecks(newChecks);
 
-    // ******************* APIS ******************* //
-    let manage_rar = (e) => {
-        if (e) e.preventDefault();
-        let formData = new FormData();
-        let checks = [];
-        let checks_html;
-        let values = [];
-
-        checks_html = document.getElementsByName('phcl_checks');
-        for (var i = 0; i < checks_html.length; i++) {
-            checks.push(document.getElementById('phcl_checks_' + i).value)
-        }
-
-        formData.set('check', checks.join(';'));
-
+        const formData = new FormData();
+        formData.set('check', newChecks.join(';'));
         formData.set('version', currentVersionR);
         formData.set('recordPhId', currentRecord.id);
         formData.set('id_public', 'phcl');
 
-        save_step('phcl', false, formData);
-    }
+        const step = LOAD_STEP('phcl');
+        const result = await execute(savePHStep(RECORD_PH, step, formData), {
+            operationName: 'guardar checklist',
+            loading: false,
+            success: false,
+            error: true,
+        });
 
-    let save_step = (_id_public, useSwal, formData, start, end) => {
-        var STEP = LOAD_STEP(_id_public);
-
-        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        if (STEP.id) {
-            RECORD_PH.update_step(STEP.id, formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        if (start != undefined) {
-                            if (start == end) props.requestUpdateRecord(currentItem.id);
-                        }
-                        else props.requestUpdateRecord(currentItem.id);
-                    } else {
-                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
-        }
-        else {
-            RECORD_PH.create_step(formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        if (start != undefined) {
-                            if (start == end) props.requestUpdateRecord(currentItem.id);
-                        }
-                        else props.requestUpdateRecord(currentItem.id);
-                    } else {
-                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
+        if (result.ok) {
+            requestUpdateRecord(currentItem.id);
         }
     }
+
     return (
         <div>
             {_COMPONENT()}
-        </div >
+        </div>
     );
 }
