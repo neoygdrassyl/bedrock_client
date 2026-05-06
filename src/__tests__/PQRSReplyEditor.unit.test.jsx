@@ -103,6 +103,7 @@ describe('PQRS_SET_REPLY1', () => {
     expect(joditMockState.lastProps?.config).toMatchObject({
       iframe: true,
       readonly: false,
+      loadExternalConfig: false,
     });
     expect(joditMockState.lastProps?.className || '').not.toContain('form-control');
   });
