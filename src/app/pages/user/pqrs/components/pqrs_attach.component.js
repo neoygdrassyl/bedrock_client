@@ -77,7 +77,7 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
         let _ATTACHS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < attachs; i++) {
-                _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+                _COMPONENT.push(<div key={`pqrs-attach-${i}`} className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">

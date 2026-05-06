@@ -8,15 +8,15 @@ function PQRS_COMPONENT_INFO({ translation, swaMsg, globals, translation_form, c
                     <div className="col-6">
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Consecutivo de Entrada</lavel>
+                                <label>Consecutivo de Entrada</label>
                             </div>
                             <div className="col-6">
-                                <lavel className="fw-bold">{currentItem.id_publico}</lavel>
+                                <label className="fw-bold">{currentItem.id_publico}</label>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Estado</lavel>
+                                <label>Estado</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{_STATUS_COMPONENT()}</label>
@@ -24,7 +24,7 @@ function PQRS_COMPONENT_INFO({ translation, swaMsg, globals, translation_form, c
                         </div>
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Tipo de solicitud</lavel>
+                                <label>Tipo de solicitud</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.type}</label>
@@ -32,7 +32,7 @@ function PQRS_COMPONENT_INFO({ translation, swaMsg, globals, translation_form, c
                         </div>
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Radicación Original</lavel>
+                                <label>Radicación Original</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.pqrs_info ? currentItem.pqrs_info.radication_channel : ''}</label>
@@ -41,7 +41,7 @@ function PQRS_COMPONENT_INFO({ translation, swaMsg, globals, translation_form, c
 
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Consecutivo de Salida</lavel>
+                                <label>Consecutivo de Salida</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.id_reply}</label>
@@ -50,7 +50,7 @@ function PQRS_COMPONENT_INFO({ translation, swaMsg, globals, translation_form, c
 
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Guiá de Correspondencia</lavel>
+                                <label>Guiá de Correspondencia</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.id_correspondency}</label>

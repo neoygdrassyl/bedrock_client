@@ -77,7 +77,7 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
         }
         let _COMPONENT_MANAGE = (_edit) => {
             var _COMPONENT = [];
-            _COMPONENT.push(<div className="row">
+            _COMPONENT.push(<div key={`pqrs-manage-solicitor-${_edit || 'new'}`} className="row">
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
                         <span className="input-group-text bg-primary text-primary-foreground">

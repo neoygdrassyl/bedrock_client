@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -202,8 +202,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
                 <div className="card-body text-dark">
                     <div className='row'>
                         <div className='col'>
-                            {solicitors.map(s => <>
-                                <div className='row'>
+                            {solicitors.map((s, i) => <div className='row' key={s.id ?? s.id_number ?? `solicitor-${i}`}>
                                     <div className='col'>
                                         <label>Nombre: <label className='fw-bold'>{s.name}</label></label>
                                         <br />
@@ -212,12 +211,10 @@ export const PQRS_ACTION_REVIEW = (props) => {
                                         <label>{s.type_id} {s.id_number}</label>
                                         <hr />
                                     </div>
-                                </div>
-                            </>)}
+                                </div>)}
                         </div>
                         <div className='col'>
-                            {contacts.map(c => <>
-                                <div className='row'>
+                            {contacts.map((c, i) => <div className='row' key={c.id ?? c.email ?? c.phone ?? `contact-${i}`}>
                                     <div className='col'>
                                         <label>Teléfono: <label className='fw-bold'>{c.phone}</label></label>
                                         <br />
@@ -226,8 +223,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
                                         <label>Email: <label className='fw-bold'>{c.email} (Autoriza: {c.notify ? "SI" : "NO"})</label></label>
                                         <hr />
                                     </div>
-                                </div>
-                            </>)}
+                                </div>)}
                         </div>
                     </div>
                 </div>
@@ -251,14 +247,13 @@ export const PQRS_ACTION_REVIEW = (props) => {
             <div className="card border border-dark mb-3">
                 <div className="card-header">3. VALORACIÓN DE LA SOLICITUD Y DEFINICIÓN DE COMPETENCIA</div>
                 <div className="card-body text-dark">
-                    {REW_DATA.map(rew => {
-                        if (rew.title) return <>
+                    {REW_DATA.map((rew, i) => {
+                        if (rew.title) return <Fragment key={`rew-title-${i}`}>
                             <br />
                             <label className='fw-bold'>{rew.title}</label>
-                        </>
+                        </Fragment>
                         else {
-                            return <>
-                                <div className='row'>
+                            return <div className='row' key={rew.id_public}>
                                     <div className='col-10 border'>{rew.desc}</div>
                                     <div className='col-2 border'>
                                         {rew.check ?
@@ -275,12 +270,11 @@ export const PQRS_ACTION_REVIEW = (props) => {
                                                 defaultValue={GET_STEP(rew.id_public).value}
                                                 onChange={(e) => SAVE_STEP(e.target.value, rew)}
                                             >
-                                                {rew.value.map(v => <option>{v}</option>)}
+                                                {rew.value.map(v => <option key={v} value={v}>{v}</option>)}
                                             </select>
                                             : null}
                                     </div>
                                 </div>
-                            </>
                         }
                     })}
 
@@ -353,7 +347,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
             </div>
 
             {ofice.map((row, i) => row.length > 0 ?
-                <div className='row text-center'>
+                <div className='row text-center' key={`ofice-${i}`}>
                     <div className='col-1 border'>
                         <input className='form-control form-control-sm' id={"ofice_json_a_" + i} defaultValue={row[0]} onBlur={() => UPDATE_STEP_JSON(ofice.length)} />
                     </div>
@@ -428,14 +422,13 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
                     {OFICE_COMPONENT()}
 
-                    {REW_2_DATA.map(rew => {
-                        if (rew.title) return <>
+                    {REW_2_DATA.map((rew, i) => {
+                        if (rew.title) return <Fragment key={`rew-2-title-${i}`}>
                             <br />
                             <label className='fw-bold'>{rew.title}</label>
-                        </>
+                        </Fragment>
                         else {
-                            return <>
-                                <div className='row'>
+                            return <div className='row' key={rew.id_public}>
                                     <div className='col-10 border'>{rew.desc}</div>
                                     <div className='col-2 border'>
                                         {rew.check ?
@@ -452,12 +445,11 @@ export const PQRS_ACTION_REVIEW = (props) => {
                                                 defaultValue={GET_STEP(rew.id_public).value}
                                                 onChange={(e) => SAVE_STEP(e.target.value, rew)}
                                             >
-                                                {rew.value.map(v => <option>{v}</option>)}
+                                                {rew.value.map(v => <option key={v} value={v}>{v}</option>)}
                                             </select>
                                             : null}
                                     </div>
                                 </div>
-                            </>
                         }
                     })}
                     <div className='row'><label className='fw-bold'>Observaciones</label></div>

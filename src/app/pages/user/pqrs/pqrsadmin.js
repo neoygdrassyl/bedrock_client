@@ -384,7 +384,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             var _COMPONENT = [];
             for (var i = 0; i < item.pqrs_workers.length; i++) {
                 if (item.pqrs_workers[i].reply) {
-                    _COMPONENT.push(<p>{dateParser(item.pqrs_workers[i].date_reply)}</p>)
+                    _COMPONENT.push(<p key={item.pqrs_workers[i].id ?? item.pqrs_workers[i].worker_id ?? `pqrsadmin-reply-date-${i}`}>{dateParser(item.pqrs_workers[i].date_reply)}</p>)
                 }
             }
             return <>{_COMPONENT}</>;

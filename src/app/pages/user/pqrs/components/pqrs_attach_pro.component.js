@@ -5,8 +5,7 @@ function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, curre
         // COMPONENTS JSX
         let _ATTACHS_COMPONENT_OUTPUT = () => {
             var _COMPONENT = [];
-            _COMPONENT.push(<>
-            <div className='justify-content-center'>
+            _COMPONENT.push(<div key="attach-pro-header" className='justify-content-center'>
                 <div className="row mx-1 py-1 border">
                     <div className="col-5">
                         <label className="fw-bold">Nombre</label>
@@ -18,12 +17,11 @@ function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, curre
                         <label className="fw-bold">Acción</label>
                     </div>
                 </div>
-                </div>
-            </>)
+                </div>)
             for (var i = 0; i < currentItem.pqrs_attaches.length; i++) {
                 if (currentItem.pqrs_attaches[i].class == 1) {
                     _COMPONENT.push(
-                    <div className='justify-content-center'>
+                    <div key={currentItem.pqrs_attaches[i].id ?? currentItem.pqrs_attaches[i].name ?? `attach-pro-${i}`} className='justify-content-center'>
                     <div className="row mx-1  py-1 border">
                         <div className="col-5">
                             <label >{currentItem.pqrs_attaches[i].public_name}</label>

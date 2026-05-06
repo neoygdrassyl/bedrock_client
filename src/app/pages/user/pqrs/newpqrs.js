@@ -48,7 +48,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
         let _SOLICITORS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < solicitors; i++) {
-                _COMPONENT.push(<div className="row">
+                _COMPONENT.push(<div key={`new-pqrs-solicitor-${i}`} className="row">
                     <label className="app-p lead text-start fw-normal">SOLICITANTE N° {i + 1}</label>
 
                     <div className="col-lg-6 col-md-6">
@@ -104,7 +104,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
         let _CONTACTS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < contacts; i++) {
-                _COMPONENT.push(<div className="row">
+                _COMPONENT.push(<div key={`new-pqrs-contact-${i}`} className="row">
                     <label className="app-p lead text-start fw-normal">DATOS PARA NOTIFICACIÓN N° {i + 1}</label>
                     <div className="col-lg-6 col-md-6">
                         <div className="input-group my-1">
@@ -160,7 +160,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
         let _ATTACHS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < attachs; i++) {
-                _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+                _COMPONENT.push(<div key={`new-pqrs-attach-${i}`} className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
@@ -595,7 +595,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <div className="row">
                             <div className="col">
                                 <label>Contenido o descripción de la Solicitud (Maximo 2000 Caracteres)</label>
-                                <textarea className="form-control mb-3" rows="3" maxlength="2000" id="pqrs_mas_4"></textarea>
+                                <textarea className="form-control mb-3" rows="3" maxLength="2000" id="pqrs_mas_4"></textarea>
                             </div>
                         </div>
                         <hr className="my-3" />

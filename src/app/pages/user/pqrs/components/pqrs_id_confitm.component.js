@@ -114,7 +114,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                     <Icon name="hashtag" size={16} />
                 </span>
                 <input type="text" className="form-control" defaultValue={currentItem.id_confirm}
-                    id="pqrs_master_id_confirm" require />
+                    id="pqrs_master_id_confirm" required />
                 <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
             </div>
             <div className="d-flex justify-content-center">

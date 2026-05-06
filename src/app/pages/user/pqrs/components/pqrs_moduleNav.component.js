@@ -31,7 +31,7 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
             let _WORKERS = currentItem.pqrs_workers;
             for (var i = 0; i < _WORKERS.length; i++) {
                 if ((_WORKERS[i].worker_id == window.user.id && !_WORKERS[i].date_reply) || window.user.roleId == 1) {
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<div key={_WORKERS[i].id ?? _WORKERS[i].worker_id ?? `nav-worker-${i}`}>
                         {FROM == "informal"
                             ? <div className="row mx-2 mb-1">
                                 <Button variant="ghost" size="sm" className="m-0 p-2">
@@ -41,7 +41,7 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                 <Button variant="outline" size="sm" className="m-0 p-2" onClick={() => NAVIGATION(_GET_WORKER_VAR(window.user.id), "informal", FROM)}>
                                     <Icon name="comment-dots" size={16} /> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></Button>
                             </div>}
-                    </>)
+                    </div>)
                 }
             }
 

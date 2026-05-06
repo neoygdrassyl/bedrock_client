@@ -92,31 +92,31 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
                         <div className="col-3">
 
                             <div className="col">
-                                <lavel>Fecha inicio de terminos</lavel>
+                                <label>Fecha inicio de terminos</label>
                             </div>
                             <div className="col">
-                                <lavel>Fecha limite de respuesta</lavel>
+                                <label>Fecha limite de respuesta</label>
                             </div>
                             <div className="col">
-                                <lavel>Termino legal de respuesta</lavel>
+                                <label>Termino legal de respuesta</label>
                             </div>
                             <div className="col">
-                                <lavel>(Con prorroga)</lavel>
+                                <label>(Con prorroga)</label>
                             </div>
                             {pTime.reply_formal ? <>
                                 <div className="col">
 
-                                    <lavel>Fecha envío respuesta</lavel>
+                                    <label>Fecha envío respuesta</label>
                                 </div>
                                 <div className="col">
-                                    <lavel>Tiempo real de respuesta</lavel>
+                                    <label>Tiempo real de respuesta</label>
                                 </div>
                             </> : <>
                                 <div className="col">
-                                    <lavel>Tiempo de Respuesta Restante</lavel>
+                                    <label>Tiempo de Respuesta Restante</label>
                                 </div>
                                 <div className="col">
-                                    <lavel>Fecha Limite Respuesta</lavel>
+                                    <label>Fecha Limite Respuesta</label>
                                 </div>
                             </>}
                           
@@ -181,9 +181,9 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
             return <>
                 <hr />
                 <div className="row">
-                    <labal className="fw-bold">Acción de Mejora</labal>
+                    <label className="fw-bold">Acción de Mejora</label>
                     <div className="col-12">
-                        <lavel>{currentItem.action_review}</lavel>
+                        <label>{currentItem.action_review}</label>
                     </div>
                 </div>
             </>
