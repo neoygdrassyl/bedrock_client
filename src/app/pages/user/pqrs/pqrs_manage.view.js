@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { Fragment, useState, useEffect, useMemo, useRef } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import USERS_Service from '../../../services/users.service'
@@ -106,6 +106,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             language: 'es',
             iframe: true,
             allowHTML: true,
+            loadExternalConfig: false,
             uploader: {
                 url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
             },
@@ -265,8 +266,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             <Icon name="user-circle" size={16} />
                         </span>
                         <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
-                            {_array_workers_names.map(function (name) {
-                                return <option>{name}</option>;
+                            {_array_workers_names.map(function (name, index) {
+                                return <option key={`pqrs-worker-name-${index}`}>{name}</option>;
                             })}
                         </select>
                     </div>
@@ -443,9 +444,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {Array.map(function (value) {
+                            {Array.map(function (value, index) {
                                 return (
-                                    <tr>
+                                    <tr key={value.id ?? value.date ?? `pqrs-history-${index}`}>
                                         <td><h6>{dateParser(value.date)} - {value.time}</h6></td>
                                         <td><h6>{value.feedback_argument}</h6></td>
                                         <td>{value.feedback == 1 ? <h6>Si</h6> : <h6>No</h6>}</td>
@@ -500,7 +501,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </div>
                 </div>
                 <label>Cuerpo del Documento</label>
-                <textarea className="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
+                <textarea className="form-control mb-3" rows="3" maxLength="1024" id="pqrs_confirmation_doc_body"
                     defaultValue={_GET_DOC_BODY()}></textarea>
                 <table className="table table-sm table-hover table-bordered">
                     <tbody>
@@ -691,7 +692,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     let _ATTACHS_COMPONENT = () => {
         var _COMPONENT = [];
         for (var i = 0; i < stateadd; i++) {
-            _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+            _COMPONENT.push(<div className="row d-flex justify-content-center my-2" key={`informal-attach-${i}`}>
                 <div className="col-lg-8 col-md-8 ">
                     <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                     <div className="input-group">
@@ -810,7 +811,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     let _ATTACHS_COMPONENT2 = () => {
         var _COMPONENT = [];
         for (var i = 0; i < stateadd2; i++) {
-            _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+            _COMPONENT.push(<div className="row d-flex justify-content-center my-2" key={`close-attach-${i}`}>
                 <div className="col-lg-8 col-md-8 ">
                     <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                     <div className="input-group">
@@ -1051,7 +1052,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 }
                             }
 
-                            return <>
+                            return <Fragment key={value.id ?? value.worker_id ?? `pqrs-worker-${i}`}>
 
                                 <label className="px-4 app-p lead fw-normal"><Icon name="arrow-right" size={16} /> {+i} {value.name}</label>
                                 <div className="text-center m-3">
@@ -1065,7 +1066,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                                         onChange={newContent => { }}
                                         rows="5"
-                                        maxlength="409675"
+                                        maxLength="409675"
 
                                     />
 
@@ -1102,7 +1103,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         <hr></hr>
                                     </> : ''}
 
-                            </>
+                            </Fragment>
                         })}
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
@@ -1167,14 +1168,14 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 <li className="app-p"><strong>Digitalizar Copias de los correos y anexos enviados al documento de respuesta.</strong></li>
                             </ul>
                             {_checkForOutputDocsClass2()
-                                ? <table className="table table-sm table-hover table-bordered">
-                                    <tbody>
-                                        <tr className="bg-warning">
-                                            <th><label className="app-p lead text-start fw-normal">DOCUMENTOS DE CIERRE ANEXADOS</label></th>
-                                        </tr>
+                                ? <div className="rounded border border-secondary-subtle mb-3 overflow-hidden">
+                                    <div className="bg-warning px-3 py-2 border-bottom border-secondary-subtle">
+                                        <label className="app-p lead text-start fw-normal">DOCUMENTOS DE CIERRE ANEXADOS</label>
+                                    </div>
+                                    <div className="p-2">
                                         {_ATTACHSCLOSE_COMPONENT()}
-                                    </tbody>
-                                </table>
+                                    </div>
+                                </div>
                                 : <div className="text-start"><label className="app-p fw-bold text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
 
                             <p className="app-p lead text-end fw-bold">ANEXAR DOCUMENTO DE CIERRE</p>

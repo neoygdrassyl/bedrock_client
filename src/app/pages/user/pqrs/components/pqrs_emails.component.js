@@ -13,6 +13,9 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
     const [usersList, setUsersList] = useState([]);
     const [attachsForEmails, setAttachsForEmails] = useState(0);
     const [load, setLoad] = useState(false);
+    const [emailList, setEmailList] = useState('');
+    const [emailBody, setEmailBody] = useState('');
+    const [selectedEmailType, setSelectedEmailType] = useState(String(email_types?.[0] ?? 0));
 
     useEffect(() => {
         retrieveUsers();
@@ -22,7 +25,6 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
             .then(response => {
                 setUsersList(response.data);
                 setLoad(true);
-                _GET_EMAIL_BODY(email_types[0]);
             })
             .catch(e => {
                 console.log(e);
@@ -30,6 +32,20 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                 setLoad(false);
             });
     };
+
+    useEffect(() => {
+        setSelectedEmailType(String(email_types?.[0] ?? 0));
+    }, [email_types]);
+
+    useEffect(() => {
+        if (!load) return;
+        setEmailList(_GET_EMAILS_TO_NOTIFY());
+    }, [load, currentItem]);
+
+    useEffect(() => {
+        if (!load) return;
+        setEmailBody(_GET_EMAIL_BODY(selectedEmailType));
+    }, [load, selectedEmailType, currentItem]);
 
     const minusAttachEmail = () => {
         setAttachsForEmails(prev => prev - 1);
@@ -151,7 +167,7 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
             página web: https://www.curaduria1bucaramanga.com/ <br/>
            `.replace(/[\n\r]+ */g, ' ');
         }
-        document.getElementById('pqrs_email_2').value = _email_body;
+        return _email_body;
     }
 
         // DATA GETTERS 
@@ -163,11 +179,11 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
         let _GET_EMAIL_TYPES = () => {
             let _COMPONENT = [];
             for (var i = 0; i < email_types.length; i++) {
-                if (email_types[i] == 0) _COMPONENT.push(<option value="0">CONFIRMACIÓN DE RECIBIDO</option>)
-                if (email_types[i] == 1) _COMPONENT.push(<option value="1">PRORROGA</option>)
-                if (email_types[i] == 2) _COMPONENT.push(<option value="2">CONFIRMACIÓN DE RECIBIDO - PETICIÓN INCOMPLETA</option>)
-                if (email_types[i] == 3) _COMPONENT.push(<option value="3">RESPUESTA A PETICIONARIO</option>)
-                if (email_types[i] == 4) _COMPONENT.push(<option value="4">CONFIRMACIÓN DE RECIBIDO - LICENCIA</option>)
+                if (email_types[i] == 0) _COMPONENT.push(<option key="email-type-0" value="0">CONFIRMACIÓN DE RECIBIDO</option>)
+                if (email_types[i] == 1) _COMPONENT.push(<option key="email-type-1" value="1">PRORROGA</option>)
+                if (email_types[i] == 2) _COMPONENT.push(<option key="email-type-2" value="2">CONFIRMACIÓN DE RECIBIDO - PETICIÓN INCOMPLETA</option>)
+                if (email_types[i] == 3) _COMPONENT.push(<option key="email-type-3" value="3">RESPUESTA A PETICIONARIO</option>)
+                if (email_types[i] == 4) _COMPONENT.push(<option key="email-type-4" value="4">CONFIRMACIÓN DE RECIBIDO - LICENCIA</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -194,7 +210,7 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                                 <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" id="pqrs_email_1"
-                                defaultValue={_EMAILS} required />
+                                value={emailList} onChange={(e) => setEmailList(e.target.value)} required />
                             <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" type="submit" disabled>ENVIAR CORREO</Button>
                         </div>
                     </div>
@@ -204,7 +220,7 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="envelope" size={16} />
                             </span>
-                            <select className="form-control" id="pqrs_email_3" onChange={(e) => _GET_EMAIL_BODY(e.target.value)}>
+                            <select className="form-control" id="pqrs_email_3" value={selectedEmailType} onChange={(e) => setSelectedEmailType(e.target.value)}>
                                 {_GET_EMAIL_TYPES()}
                             </select>
                         </div>
@@ -213,7 +229,7 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                 <div className="row">
                     <div className="col">
                         <label>Cuerpo del Email (Modifique este texto debidamente)</label>
-                        <textarea className="form-control mb-3" rows="3" id="pqrs_email_2"></textarea>
+                        <textarea className="form-control mb-3" rows="3" id="pqrs_email_2" value={emailBody} onChange={(e) => setEmailBody(e.target.value)}></textarea>
                     </div>
                 </div>
 
@@ -222,7 +238,7 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
         let _ATTACHSFOREMAIL_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < attachsForEmails; i++) {
-                _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+                _COMPONENT.push(<div key={`pqrs-email-attach-${i}`} className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
@@ -238,9 +254,9 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
         let _ALERTS = () => {
             let _COMPONENT = [];
             if (attachs) {
-                let email_type = document.getElementById('pqrs_email_3') ? document.getElementById('pqrs_email_3').value : null;
+                let email_type = selectedEmailType;
                 if (email_type == 0) {
-                    if (attachsForEmails == 0) _COMPONENT.push(<label className="text-danger fw-bold">Para el email de confirmación se requiere el documento PDF de confimacion anexado</label>)
+                    if (attachsForEmails == 0) _COMPONENT.push(<label key="pqrs-email-alert-attach" className="text-danger fw-bold">Para el email de confirmación se requiere el documento PDF de confimacion anexado</label>)
                 }
             }
             return <>{_COMPONENT}</>
@@ -252,10 +268,8 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
         let email = (e) => {
             e.preventDefault();
             formData = new FormData();
-            let email_list = document.getElementById("pqrs_email_1").value;
-            formData.set('email_list', email_list);
-            let email_body = document.getElementById("pqrs_email_2").value;
-            formData.set('email_body', email_body);
+            formData.set('email_list', emailList);
+            formData.set('email_body', emailBody);
 
             // GET DATA OF ATTACHS
             if (attachsForEmails) {
@@ -268,7 +282,7 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
-            let email_type = document.getElementById('pqrs_email_3').value;
+            let email_type = selectedEmailType;
 
             if (email_type == 0) email_confirmation();
             if (email_type == 1) email_extension();

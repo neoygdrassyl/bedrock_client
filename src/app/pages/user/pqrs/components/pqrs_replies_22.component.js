@@ -15,6 +15,7 @@ export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
             language: 'es',
             iframe: true,
             allowHTML: true,
+            loadExternalConfig: false,
             uploader: {
                 url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
             },
@@ -43,22 +44,21 @@ export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
 
     let _REPLIY_TO_SOLICITOR_COMPONENT = () => {
         var _COMPONENT = [];
-        _COMPONENT.push(<>
-            <div className="row m-2">
+        _COMPONENT.push(<div key={currentItem.id_reply ?? currentItem.id ?? 'reply-to-solicitor-2'} className="row m-2">
                 <div className="col-6">
                     <div className="row">
                         <div className="col-6">
-                            <lavel>Fecha de envio respuesta</lavel>
+                            <label>Fecha de envio respuesta</label>
                         </div>
                         <div className="col-6">
-                            <lavel className="fw-bold">{currentItem.pqrs_time.reply_formal
+                            <label className="fw-bold">{currentItem.pqrs_time.reply_formal
                                 ? dateParser(currentItem.pqrs_time.reply_formal)
-                                : <label className="text-danger fw-bold">NO SE HA DADO RESPUESTA FORMAL</label>}</lavel>
+                                : <label className="text-danger fw-bold">NO SE HA DADO RESPUESTA FORMAL</label>}</label>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-6">
-                            <lavel>Tiempo real de respuesta</lavel>
+                            <label>Tiempo real de respuesta</label>
                         </div>
                         <div className="col-6">
                             <label className="fw-bold">{currentItem.pqrs_time.reply_formal
@@ -79,14 +79,12 @@ export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
                             onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                             onChange={newContent => { }}
                             rows="5"
-                            maxlength="409675"
+                            maxLength="409675"
                         />
                         </div>
                     </div>
                     </Collapsible>
-                </div>
-            
-        </>)
+                </div>)
         return <>{_COMPONENT}</>;
     }
 

@@ -514,6 +514,7 @@ export const MDBTooltip = ({
   const [show, setShow] = useState(false);
   const triggerRef = useRef(null);
   const tooltipRef = useRef(null);
+  const { color: wrapperColor, shadow: wrapperShadow, ...nativeWrapperProps } = wrapperProps;
 
   // Position the tooltip using simple offset calculation
   useEffect(() => {
@@ -575,8 +576,8 @@ export const MDBTooltip = ({
     type: 'button',
     className: clsx(
       'btn',
-      wrapperProps.color !== false && `btn-${wrapperProps.color || 'primary'}`,
-      wrapperProps.shadow === false && 'shadow-none',
+      wrapperColor !== false && `btn-${wrapperColor || 'primary'}`,
+      wrapperShadow === false && 'shadow-none',
       wrapperClass,
     ),
   } : { className: wrapperClass };
@@ -584,7 +585,7 @@ export const MDBTooltip = ({
   // If Tag is MDBBtn (default), merge button-relevant props
   const triggerProps = typeof Tag !== 'string'
     ? { ...wrapperBtnProps, ...rest }
-    : { className: clsx(wrapperClass, className), ...wrapperProps, ...rest };
+    : { className: clsx(wrapperClass, className), ...nativeWrapperProps, ...rest };
 
   return (
     <>

@@ -106,6 +106,7 @@ export const PQRS_SET_REPLY1 = (props) => {
         language: 'es',
         iframe: true,
         allowHTML: true,
+        loadExternalConfig: false,
         minHeight: 0,
         height: 600,
         defaultActionOnPaste: "insert_only_text",
@@ -321,7 +322,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     onBlur={setContent}
                     onChange={setContent}
                     rows="5"
-                    maxlength="4096"
+                    maxLength="4096"
                     id="pqrs_info_reply"
                 />
                 </div>

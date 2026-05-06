@@ -125,7 +125,7 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
 
         {icon
             ? <button type="button"  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(fullUrl)}><Icon name={icon} size={20} style={{...iconStyle, color: color }} /></button>
-            : <MDBTooltip title='Visualizar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
+            : <MDBTooltip tag="span" title='Visualizar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                 <button type="button" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(fullUrl)}>
                     <Icon name="search" size={16} /></button> </MDBTooltip>
         }
