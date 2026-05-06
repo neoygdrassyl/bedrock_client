@@ -1,200 +1,322 @@
 
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
+import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
+import { Icon } from '@/components/icon';
+import { swalConfirm } from '@/app/utils/swalAdapter';
+import usePHSave from './hooks/usePHSave';
 
-function RECORD_PH_PROFESIONALS(props) {
-        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentRecord } = props;
+const INITIAL_FORM = { name: '', surname: '', role: '', registration: '', date: '', type: '', check: '', context: '' };
 
-        // DATA GETTERS
-        /*  ROLES LIST
-            URBANIZADOR O CONSTRUCTOR RESPONSABLE
-            ARQUITECTO PROYECTISTA
-            INGENIERO CIVIL DISEÑADOR ESTRUCTURAL
-            DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES
-            INGENIERO CIVIL GEOTECNISTA
-            INGENIERO TOPOGRAFO Y/O TOPÓGRAFO
-            REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES
-            OTROS PROFESIONALES ESPECIALISTAS
-        */
-            let _GET_CHILD_6 = () => {
-                var _CHILD = _FUN_6;
-                var _LIST = [];
-                if (_CHILD) {
-                    _LIST = _CHILD;
-                }
-                return _LIST;
-            }
-            let _GET_CHILD_REVIEW_GEN = () => {
-                var _CHILD = currentRecord.review_check;
-                var _LIST = [];
-                if (_CHILD) {
-                    _LIST = _CHILD.split(';');
-                }
-                return _LIST;
-            }
+function RECORD_PH_PROFESIONAL({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [form, setForm] = useState({ ...INITIAL_FORM });
+    const [editForm, setEditForm] = useState({ ...INITIAL_FORM });
+    const { execute, isSaving } = usePHSave({ swaMsg });
 
-        //  DATA CONVERTES
-        let _FIND_PROFESIOANL = (_role) => {
-            for (var i = 0; i < _FUN_52.length; i++) {
-                if (_FUN_52[i].role.includes(_role)) return _FUN_52[i];
-            }
-            return false;
+    useEffect(() => {
+        if (edit !== false) {
+            setEditForm({
+                name: edit.name ?? '',
+                surname: edit.surname ?? '',
+                role: edit.role ?? '',
+                registration: edit.registration ?? '',
+                date: edit.date ?? '',
+                type: edit.type ?? '',
+                check: edit.check ?? '',
+                context: edit.context ?? '',
+            });
         }
-        let _FIND_EXPERIENCE = (_role) => {
-            for (var i = 0; i < _FUN_52.length; i++) {
-                if (_FUN_52[i].role.includes(_role)) return _FUN_52[i].expirience;
-            }
-            return false;
+    }, [edit]);
+
+    let _GET_CHILD_PROFESIONALS = () => {
+        var _CHILD = currentRecord.record_ph_profesionals;
+        var _LIST = [];
+        if (_CHILD) {
+            _LIST = _CHILD;
         }
-        let _CECK_EXPERIENCE = (_role) => {
-            let experience = _FIND_EXPERIENCE(_role);
-            if (experience) {
-                let years = Math.trunc(experience / 12);
-                if (_role == 'URBANIZADOR O CONSTRUCTOR RESPONSABLE') {
-                    return years >= 3
-                        ? <label className="text-success">{years} año(s) de 3 años requeridos - CUMPLE</label>
-                        : <label className="text-danger">{years} año(s) de 3 años requeridos - NO CUMPLE</label>
-                }
-                else if (_role == 'INGENIERO CIVIL DISEÑADOR ESTRUCTURAL') {
-                    return years >= 5
-                        ? <label className="text-success">{years} año(s) de 5 años requeridos - CUMPLE</label>
-                        : <label className="text-danger">{years} año(s) de 5 años requeridos - NO CUMPLE</label>
-                }
-                else if (_role == 'DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES') {
-                    return years >= 3
-                        ? <label className="text-success">{years} año(s) de 3 años requeridos - CUMPLE</label>
-                        : <label className="text-danger">{years} año(s) de 3 años requeridos - NO CUMPLE</label>
-                }
-                else if (_role == 'INGENIERO CIVIL GEOTECNISTA') {
-                    return years >= 5
-                        ? <label className="text-success">{years} año(s) de 5 años requeridos - CUMPLE</label>
-                        : <label className="text-danger">{years} año(s) de 5 años requeridos - NO CUMPLE</label>
-                }
-                else if (_role == 'REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES') {
-                    return years >= 5
-                        ? <label className="text-success">{years} año(s) de 5 años requeridos - Suficiente</label>
-                        : <label className="text-danger">{years} año(s) de 5 años requeridos - Insuficiente</label>
-                }
-                else return <label className="text-warning">No requiere</label>
-            }
-            return <label className="text-danger">FALTA INFORMACIÓN</label>;
-        }
-        let _GET_DOCS_BTNS = (_item) => {
-            if (!_item) return "";
-            var _array = _item.split(',');
-            var _COMPONENT = [];
+        return _LIST;
+    }
 
-            _COMPONENT.push(<>{_array[0] > 0
-                ?
-                <span title="CEDULA DE CIUDADANIA"><VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'IdCard'} color={'DeepSkyBlue'} /></span>
-                : ""}</>)
-
-            _COMPONENT.push(<>{_array[1] > 0
-                ?
-                <span title="MATRICULA"><VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'BadgeCheck'} color={'DarkOrchid'} /></span>
-                : ""}</>)
-
-            _COMPONENT.push(<>{_array[2] > 0
-                ?
-                <span title="FICHA COPNIA"><VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                    icon={'BookOpen'} color={'GoldenRod'} /></span>
-                : ""}</>)
-
-            _COMPONENT.push(<>{_array[2] > 0
-                ?   <span title="HOJA DE VIDA Y CERTIFICADOS"><VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'LimeGreen'} /></span>
-                : ""}</>)
-
-            return <>{_COMPONENT}</>
-        }
-        let _FIND_6 = (_ID) => {
-            let _LIST = _GET_CHILD_6();
-            let _CHILD = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                if (_LIST[i].id == _ID) {
-                    return _LIST[i];
-                }
-            }
-            return _CHILD;
-        }
-
-        const getStatusClass = (isCompleted) => isCompleted
-            ? 'border-accent/20 bg-accent/10 text-accent'
-            : 'border-destructive/20 bg-destructive/10 text-destructive';
-        const buildRows = () => ['ARQUITECTO PROYECTISTA'].map((role) => {
-            const professional = _FIND_PROFESIOANL(role);
-
-            return {
-                id: role,
-                role,
-                professional,
-                statusText: professional ? 'DILIGENCIADO' : 'SIN DILIGENCIAR',
-            };
-        });
+    let _CHILD_LICENCE_LIST = () => {
+        let _LIST = _GET_CHILD_PROFESIONALS();
         const columns = [
             {
-                name: 'ROL',
-                minWidth: '220px',
-                cell: (row) => <span className="text-sm font-medium">{row.role}</span>
+                name: 'NOMBRE',
+                selector: row => row.name,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <span className="text-sm">{row.name}</span>
             },
             {
-                name: 'PROFESIONAL',
-                minWidth: '220px',
-                cell: (row) => row.professional
-                    ? <div>
-                        <div className="text-sm font-medium">{row.professional.name} {row.professional.surname}</div>
-                        <div className="text-xs text-muted-foreground">{row.professional.sanction ? 'Con sanciones registradas' : 'Sin sanciones registradas'}</div>
-                    </div>
-                    : <span className="text-sm text-muted-foreground">Sin profesional asignado</span>
+                name: 'APELLIDO',
+                selector: row => row.surname,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <span className="text-sm">{row.surname}</span>
+            },
+            {
+                name: 'ROL',
+                selector: row => row.role,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <span className="text-sm">{row.role}</span>
             },
             {
                 name: 'MATRICULA',
-                minWidth: '120px',
-                cell: (row) => <span className="text-xs font-mono">{row.professional?.registration_date || '—'}</span>
+                selector: row => row.registration,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label >{row.registration}</label>
             },
             {
-                name: 'EXPERIENCIA',
-                minWidth: '220px',
-                cell: (row) => _CECK_EXPERIENCE(row.role)
+                name: 'FECHA',
+                selector: row => row.date,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label >{row.date}</label>
             },
             {
-                name: 'SOPORTES',
-                minWidth: '120px',
-                cell: (row) => row.professional?.docs
-                    ? <div className="flex flex-wrap gap-1">{_GET_DOCS_BTNS(row.professional.docs)}</div>
-                    : <span className="text-xs text-muted-foreground">Sin soportes</span>
+                name: 'TIPO',
+                selector: row => row.type,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label >{row.type}</label>
             },
             {
-                name: 'ESTADO',
+                name: 'CUMPLE',
+                selector: row => row.check,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label >{row.check}</label>
+            },
+            {
+                name: 'OBSERVACIONES / RECOMENDACIONES',
+                selector: row => row.context,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label >{row.context}</label>
+            },
+            {
+                name: 'ACCIÓN',
+                button: true,
                 minWidth: '120px',
-                cell: (row) => <span className={`inline-flex rounded-full border px-2 py-1 text-[11px] font-semibold ${getStatusClass(Boolean(row.professional))}`}>
-                    {row.statusText}
-                </span>
+                cell: row => <>
+                    <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
+                    <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                </>
             },
         ]
+        return <DataTable
+            noDataComponent="No hay Items"
+            striped="true"
+            columns={columns}
+            data={_LIST}
+            highlightOnHover
+            className="data-table-component"
+            noHeader
+        />
+    }
 
-        return (
-            <div className="record_ph_profesional_evaluation container space-y-3">
-                <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
-                    <p className="text-sm font-semibold text-foreground">Profesional responsable de los planos</p>
-                    <p className="text-xs text-muted-foreground">Recuperado como tabla compacta para mantener jerarquía visual y lectura operativa.</p>
+    let _COMPONENT_MANAGE = (isEditing = false) => {
+        const data = isEditing ? editForm : form;
+        const setData = isEditing ? setEditForm : setForm;
+        const suffix = isEditing ? '_edit' : '';
+
+        const handleChange = (field) => (e) => {
+            setData(prev => ({ ...prev, [field]: e.target.value }));
+        };
+
+        return <>
+            <div className="row mb-1">
+                <div className="col">
+                    <label>Nombre</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="user" size={16} />
+                        </span>
+                        <input type="text" className="form-control" id={"r_ph_p_1" + suffix} value={data.name} onChange={handleChange('name')} />
+                    </div>
                 </div>
+                <div className="col">
+                    <label>Apellido</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="user" size={16} />
+                        </span>
+                        <input type="text" className="form-control" id={"r_ph_p_2" + suffix} value={data.surname} onChange={handleChange('surname')} />
+                    </div>
+                </div>
+                <div className="col">
+                    <label>Rol</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="briefcase" size={16} />
+                        </span>
+                        <input type="text" className="form-control" id={"r_ph_p_3" + suffix} value={data.role} onChange={handleChange('role')} />
+                    </div>
+                </div>
+                <div className="col">
+                    <label>Matricula</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="id-card" size={16} />
+                        </span>
+                        <input type="text" className="form-control" id={"r_ph_p_4" + suffix} value={data.registration} onChange={handleChange('registration')} />
+                    </div>
+                </div>
+            </div>
+            <div className="row mb-1">
+                <div className="col">
+                    <label>Fecha</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="calendar" size={16} />
+                        </span>
+                        <input type="date" max="2100-01-01" className="form-control" id={"r_ph_p_5" + suffix} value={data.date} onChange={handleChange('date')} />
+                    </div>
+                </div>
+                <div className="col">
+                    <label>Tipo</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="file-alt" size={16} />
+                        </span>
+                        <input type="text" className="form-control" id={"r_ph_p_6" + suffix} value={data.type} onChange={handleChange('type')} />
+                    </div>
+                </div>
+                <div className="col">
+                    <label>Cumple</label>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="check-circle" size={16} />
+                        </span>
+                        <select className="form-select" id={"r_ph_p_7" + suffix} value={data.check} onChange={handleChange('check')}>
+                            <option value="">Seleccione...</option>
+                            <option value="SI">SI</option>
+                            <option value="NO">NO</option>
+                            <option value="PARCIAL">PARCIAL</option>
+                            <option value="NO APLICA">NO APLICA</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div className="row mb-1">
+                <div className="col">
+                    <label>Observaciones / Recomendaciones</label>
+                    <div className="input-group my-1">
+                        <textarea className="form-control" id={"r_ph_p_8" + suffix} rows="3" value={data.context} onChange={handleChange('context')}></textarea>
+                    </div>
+                </div>
+            </div>
+        </>
+    }
 
-                <DataTable
-                    paginationComponentOptions={{ rowsPerPageText: 'Filas por pagina:', rangeSeparatorText: 'de' }}
-                    noDataComponent="No hay profesional configurado"
-                    striped="true"
-                    columns={columns}
-                    data={buildRows()}
-                    dense
-                    highlightOnHover
-                    className="data-table-component"
-                    noHeader
-                />
-            </div >
-        );
+    let new_item = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.set('recordPhId', currentRecord.id);
+        if (form.name) formData.set('name', form.name);
+        if (form.surname) formData.set('surname', form.surname);
+        if (form.role) formData.set('role', form.role);
+        if (form.registration) formData.set('registration', form.registration);
+        if (form.date) formData.set('date', form.date);
+        if (form.type) formData.set('type', form.type);
+        if (form.check) formData.set('check', form.check);
+        if (form.context) formData.set('context', form.context);
+
+        await execute(RECORD_PH_SERVICE.create_profesional(formData), {
+            operationName: 'crear profesional',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                setForm({ ...INITIAL_FORM });
+            },
+        });
+    }
+
+    let delete_item = async (id) => {
+        const confirmed = await swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" });
+        if (!confirmed.isConfirmed) return;
+
+        await execute(RECORD_PH_SERVICE.delete_profesional(id), {
+            operationName: 'eliminar profesional',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                setEdit(false);
+            },
+        });
+    }
+
+    let edit_item = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        if (editForm.name) formData.set('name', editForm.name);
+        if (editForm.surname) formData.set('surname', editForm.surname);
+        if (editForm.role) formData.set('role', editForm.role);
+        if (editForm.registration) formData.set('registration', editForm.registration);
+        if (editForm.date) formData.set('date', editForm.date);
+        if (editForm.type) formData.set('type', editForm.type);
+        if (editForm.check) formData.set('check', editForm.check);
+        if (editForm.context) formData.set('context', editForm.context);
+
+        await execute(RECORD_PH_SERVICE.update_profesional(edit.id, formData), {
+            operationName: 'actualizar profesional',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                setEditForm({ ...INITIAL_FORM });
+                setEdit(false);
+            },
+        });
+    }
+
+    return (
+        <div className="record_law_gen_11 container my-2">
+            <label className="app-p lead fw-bold">PROFESIONALES</label>
+
+            <div className="form-check ms-5">
+                <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                    Nuevo Profesional
+                </label>
+            </div>
+            {isNew
+                ? <>
+                    <form id="form_ph_profesional_new" onSubmit={new_item}>
+                        {_COMPONENT_MANAGE(false)}
+                        <div className="row mb-3 text-center">
+                            <div className="col-12">
+                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                            </div>
+                        </div>
+                    </form>
+                </>
+                : ""}
+            {_CHILD_LICENCE_LIST()}
+            {edit
+                ? <>
+                    <form id="form_ph_profesional_edit" onSubmit={edit_item}>
+                        <h3 className="my-3 text-center">Actualizar Profesional</h3>
+                        {_COMPONENT_MANAGE(true)}
+                        <div className="row mb-3 text-center">
+                            <div className="col-12">
+                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                            </div>
+                        </div>
+                    </form>
+                </>
+                : ""}
+        </div >
+    );
 }
 
-export default RECORD_PH_PROFESIONALS;
+export default RECORD_PH_PROFESIONAL;

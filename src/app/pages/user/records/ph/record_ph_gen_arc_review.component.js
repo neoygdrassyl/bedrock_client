@@ -1,18 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
-import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
+import { swalError } from '../../../../utils/swalAdapter';
+import usePHSave from './hooks/usePHSave';
+import { savePHStep } from './utils/phSaveStep';
 
-export default function RECORD_PH_GEN_REVIEW(props) {
-    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
-    var _SAVE_STEPS = 0;
-    const REVIEWS_TYPES = [
-        { name: 'CONSTRUCCIÓN', id: 'con' },
-        { name: 'LOTEO, PARCELACIÓN, SUBDIVISIÓN Y URBANISMO', id: 'sub' },
-        { name: 'CERRAMIENTO', id: 'cer' },
-    ]
+export default function RECORD_PH_GEN_ARC_REVIEW(props) {
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;
+    const { execute } = usePHSave({ swaMsg });
     const REVIEW = REVIEW_DOCS;
-    // ******************* DATA GETERS ********************* //
+
+    const [stateMap, setStateMap] = useState(new Map());
+    const [rewType, setRewType] = useState('');
+
+    useEffect(() => {
+        const next = new Map();
+        REVIEW.forEach(re => {
+            const _value = _GET_STEP_TYPE(re.pid, 'value');
+            const _check = _GET_STEP_TYPE(re.pid, 'check');
+            const _context = _GET_STEP_TYPE(re.pid + '_c', 'value');
+            re.items.forEach(it => {
+                if (!it.rtype.includes('ph')) return;
+                const key = `${re.pid}_${it.v}`;
+                next.set(key, {
+                    value: _value[it.v] ?? '',
+                    check: _check[it.c] ?? '1',
+                    context: _context[it.v] ?? '',
+                });
+            });
+        });
+        setStateMap(next);
+        setRewType(_GET_REVIEW_TYPE());
+    }, [currentRecord.record_ph_steps, currentVersionR]);
+
     let LOAD_STEP = (_id_public) => {
         var _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
@@ -20,7 +40,7 @@ export default function RECORD_PH_GEN_REVIEW(props) {
         }
         return []
     }
-    // *******************  DATA CONVERTERS ******************* //
+
     let _GET_STEP_TYPE = (_id_public, _type) => {
         var STEP = LOAD_STEP(_id_public);
         if (!STEP.id) return [];
@@ -29,6 +49,7 @@ export default function RECORD_PH_GEN_REVIEW(props) {
         value = value.split(';');
         return value
     }
+
     let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
         if (_VALUE === '0' || _VALUE === 'NO CUMPLE') {
             return 'form-select text-danger form-select-sm';
@@ -41,256 +62,232 @@ export default function RECORD_PH_GEN_REVIEW(props) {
         }
         return 'form-select form-select-sm';
     }
-    // ******************* COMPONENTS JSX ******************* //
-    let _MASTER_LIST_COMPONENT = () => {
-        const value = _GET_STEP_TYPE('rar_t', 'value');
-        return <>
-            <div className='row py-3' style={{ backgroundColor: 'silver' }}>
-                <div className='col text-center'>
-                    <label className='fw-bold'>TIPO DE REVISION:</label>
-                </div>
-                <div className='col'>
-                    <select
-                        className={'form-select'} defaultValue={value[0]} name="rar_t_value"
-                        onChange={() => manage_rar()}>
-                        <option value='0' disabled>Seleccione tipo...</option>
-                        {REVIEWS_TYPES.map(it => <option value={it.id}>{it.name}</option>)}
-                    </select>
-                </div>
-            </div>
 
-        </>
-    }
-    let _REVIEW_LIST_COMPONENT = () => {
-        const value = 'ph';
-        return REVIEW.map(re => {
-            let _value = _GET_STEP_TYPE(re.pid, 'value');
-            let _check = _GET_STEP_TYPE(re.pid, 'check');
-            let _context = _GET_STEP_TYPE(re.pid + '_c', 'value');
-
-            if (re.rtype.includes(value)) return <>
-                <div className='row border'>
-                    {re.title ? <div className='col-3 text-center fw-bold'>{re.title}</div> : ''}
-                    <input type='hidden' value={re.items.length} name={'rar_limits'} id={'rar_limit_' + re.pid} />
-                    <input type='hidden' value={re.title} name={'rar_parents'} id={'rar_parent_' + re.pid} />
-                    <div className='col'>
-                        {re.items.map(it => {
-                            if (it.rtype.includes(value)) return <>
-                                {it.hide ? <>
-                                    <input type='hidden' value={it.name} name={'rar_values_' + re.pid} id={'rar_values_' + re.pid + '_' + it.v} />
-                                    <input type='hidden' value={2} name={'rar_checks_' + re.pid} id={'rar_checks_' + re.pid + '_' + it.c} />
-                                </>
-                                    : <div className='row border'>
-                                        <div className='col'>
-                                            <label className={it.className ?? ''}>{it.name}</label>
-                                            {_check[it.c] == 0
-                                                ? <input type="text" defaultValue={_context[it.v]} name={'rar_context_' + re.pid} id={'rar_context_' + re.pid + '_' + it.v}
-                                                    className="form-control form-control-sm" onBlur={() => manage_rar_context()} style={{backgroundColor: 'LightPink'}} />
-                                                : <input type='hidden' value={''} name={'rar_context_' + re.pid} id={'rar_context_' + re.pid + '_' + it.v} />
-                                            }
-                                        </div>
-                                        <input type='hidden' value={it.name} name={'rar_values_' + re.pid} id={'rar_values_' + re.pid + '_' + it.v} />
-                                        <div className='col-2 text-center'><select className={_GET_SELECT_COLOR_VALUE(_check[it.c])}
-                                            name={"rar_checks_" + re.pid} id={'rar_checks_' + re.pid + '_' + it.c}
-                                            defaultValue={_check[it.c] ?? 1} onChange={() => manage_rar_rew(false)} >
-                                            <option value="0" className="text-danger">NO CUMPLE</option>
-                                            <option value="1" className="text-success">CUMPLE</option>
-                                            <option value="2" className="text-warning">NO APLICA</option>
-                                        </select></div>
-                                    </div>}
-                            </>
-                        })}
-                    </div>
-                </div>
-            </>
-        })
-
-    }
-
-
-    // ******************* APIS ******************* //
-    let manage_rar = (e) => {
-        if (e) e.preventDefault();
-        let formData = new FormData();
-        let checks = [];
-        let checks_html;
-        let values = [];
-
-        let values_html = document.getElementsByName('rar_t_value');
-        for (var i = 0; i < values_html.length; i++) {
-            values.push(values_html[i].value)
+    let _GET_REVIEW_TYPE = () => {
+        let STEPS = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
+        for (const step of STEPS) {
+            if (step.version == currentVersionR && step.name.includes('TIPO DE REVISION ')) {
+                if (step.name.includes('URBANISMO')) return 1;
+                if (step.name.includes('ARQUITECTURA')) return 2;
+                if (step.name.includes('ESTRUCTURAL')) return 3;
+                if (step.name.includes('GEOTECNIA')) return 4;
+                if (step.name.includes('ELECTRICO')) return 5;
+                if (step.name.includes('HIDRAULICO')) return 6;
+                if (step.name.includes('INCENDIOS')) return 7;
+            }
         }
+        return 0;
+    }
 
-        formData.set('value', values.join(';'));
+    const handleChange = (rePid, itV, itC, field) => (e) => {
+        const key = `${rePid}_${itV}`;
+        setStateMap(prev => {
+            const next = new Map(prev);
+            const existing = next.get(key) || { value: '', check: '1', context: '' };
+            next.set(key, { ...existing, [field]: e.target.value });
+            return next;
+        });
+    };
 
-        formData.set('version', currentVersionR);
+    let manage_rar = async (e, value) => {
+        if (e) e.preventDefault();
+        const formData = new FormData();
         formData.set('recordPhId', currentRecord.id);
-        formData.set('id_public', 'rar_t');
-
-        save_step('rar_t', false, formData);
+        formData.set('version', currentVersionR);
+        let _types = {
+            1: 'URBANISMO',
+            2: 'ARQUITECTURA',
+            3: 'ESTRUCTURAL',
+            4: 'GEOTECNIA',
+            5: 'ELECTRICO',
+            6: 'HIDRAULICO',
+            7: 'INCENDIOS',
+        };
+        let _type = _types[value] ?? '';
+        formData.set('name', 'TIPO DE REVISION ' + _type);
+        formData.set('value', value);
+        formData.set('check', '');
+        formData.set('desc', _type);
+        formData.set('id_public', 'phrew');
+        formData.set('json', JSON.stringify({
+            '0': { value: value, desc: _type, check: '' },
+        }));
+        await execute(savePHStep(RECORD_PH_SERVICE, 'phrew', formData), {
+            operationName: 'guardar tipo de revisión',
+            success: true,
+            error: true,
+            onSuccess: () => {
+                setRewType(value);
+                requestUpdateRecord(currentItem.id);
+            },
+        });
     }
 
-    let manage_rar_rew = (e) => {
+    let manage_rar_rew = async (e) => {
         if (e) e.preventDefault();
-        let _rev_master = REVIEW;
-        _SAVE_STEPS = 0;
         let _LIMIT_STEPS = 0;
-        _rev_master.map((rew) => {
-            let conParent = document.getElementById('rar_parent_' + rew.pid);
-            if (conParent) _LIMIT_STEPS++
-        })
+        REVIEW.forEach((rew) => {
+            if (rew.rtype.includes('ph')) _LIMIT_STEPS++;
+        });
 
-        let formData = new FormData();
-        let checks = [];
-        let check_html;
-        let values = [];
-        let value_html;
+        let _SAVE_STEPS = 0;
+        for (const rew of REVIEW) {
+            if (!rew.rtype.includes('ph')) continue;
+            _SAVE_STEPS++;
+            const values = [rew.title ?? ''];
+            const checks = ['0'];
 
-        _rev_master.map(rew => {
-            formData = new FormData();
-            values = [];
-            checks = [];
-            let conParent = document.getElementById('rar_parent_' + rew.pid)
-            // FATHER VAR
-            if (conParent) {
-                _SAVE_STEPS++;
-                let _v = conParent.value;
-                //let _c = document.getElementById('rar_checks_' + rew.pid + '_' + c).value;
-                values.push(_v);
-                checks.push('0');
+            rew.items.forEach(it => {
+                if (!it.rtype.includes('ph')) return;
+                const key = `${rew.pid}_${it.v}`;
+                const st = stateMap.get(key) || { value: '', check: '1' };
+                values.push(st.value);
+                checks.push(st.check);
+            });
 
-                rew.items.map(it => {
-                    value_html = document.getElementById('rar_values_' + rew.pid + '_' + it.v);
-                    check_html = document.getElementById('rar_checks_' + rew.pid + '_' + it.c);
+            const formData = new FormData();
+            formData.set('json', rew.rtype.join(';'));
+            formData.set('value', values.join(';'));
+            formData.set('check', checks.join(';'));
+            formData.set('version', currentVersionR);
+            formData.set('recordPhId', currentRecord.id);
+            formData.set('id_public', rew.pid);
 
-                    if (value_html) {
-                        values.push(value_html.value);
-                        checks.push(check_html.value);
-                    } else {
-                        values.push('');
-                        checks.push('2');
-                    }
-                })
-
-                formData.set('json', rew.rtype.join(';'));
-                formData.set('value', values.join(';'));
-                formData.set('check', checks.join(';'));
-
-                formData.set('version', currentVersionR);
-                formData.set('recordPhId', currentRecord.id);
-                formData.set('id_public', rew.pid);
-            }
-            if (conParent) save_step(rew.pid, false, formData, _SAVE_STEPS, _LIMIT_STEPS);
-
-        })
-
-
-
-    }
-
-    let manage_rar_context = (e) => {
-        if (e) e.preventDefault();
-        let _rev_master = REVIEW;
-        _SAVE_STEPS = 0;
-        let _LIMIT_STEPS = 0;
-        _rev_master.map((rew) => {
-            let conParent = document.getElementById('rar_parent_' + rew.pid);
-            if (conParent) _LIMIT_STEPS++
-        })
-
-        let formData = new FormData();
-        let checks = [];
-        let check_html;
-        let values = [];
-        let value_html;
-
-        _rev_master.map(rew => {
-            formData = new FormData();
-            values = [];
-            checks = [];
-            let conParent = document.getElementById('rar_parent_' + rew.pid)
-            // FATHER VAR
-            if (conParent) {
-                _SAVE_STEPS++;
-                let _v = conParent.value;
-                //let _c = document.getElementById('rar_checks_' + rew.pid + '_' + c).value;
-                values.push(_v);
-                //checks.push('0');
-
-                rew.items.map(it => {
-                    value_html = document.getElementById('rar_context_' + rew.pid + '_' + it.v);
-
-                    if (value_html) {
-                        values.push(value_html.value);
-                    } else {
-                        values.push('');
-                    }
-                })
-
-
-                formData.set('value', values.join(';'));
-
-                formData.set('version', currentVersionR);
-                formData.set('recordPhId', currentRecord.id);
-                formData.set('id_public', rew.pid + '_c');
-            }
-            if (conParent) save_step(rew.pid + '_c', false, formData, _SAVE_STEPS, _LIMIT_STEPS);
-
-        })
-
-
-
-    }
-
-    let save_step = (_id_public, useSwal, formData, start, end) => {
-        var STEP = LOAD_STEP(_id_public);
-
-        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        if (STEP.id) {
-            RECORD_PH_SERVICE.update_step(STEP.id, formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        if (start != undefined) {
-                            if (start == end) props.requestUpdateRecord(currentItem.id);
-                        }
-                        else props.requestUpdateRecord(currentItem.id);
-                    } else {
-                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
-        }
-        else {
-            RECORD_PH_SERVICE.create_step(formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        if (start != undefined) {
-                            if (start == end) props.requestUpdateRecord(currentItem.id);
-                        }
-                        else props.requestUpdateRecord(currentItem.id);
-                    } else {
-                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
+            const isLast = _SAVE_STEPS === _LIMIT_STEPS;
+            await execute(savePHStep(RECORD_PH_SERVICE, rew.pid, formData), {
+                operationName: `guardar revisión ${rew.pid}`,
+                success: false,
+                error: true,
+                onSuccess: isLast ? () => requestUpdateRecord(currentItem.id) : undefined,
+            });
         }
     }
+
+    let manage_rar_context = async (e) => {
+        if (e) e.preventDefault();
+        let _LIMIT_STEPS = 0;
+        REVIEW.forEach((rew) => {
+            if (rew.rtype.includes('ph')) _LIMIT_STEPS++;
+        });
+
+        let _SAVE_STEPS = 0;
+        for (const rew of REVIEW) {
+            if (!rew.rtype.includes('ph')) continue;
+            _SAVE_STEPS++;
+            const values = [rew.title ?? ''];
+
+            rew.items.forEach(it => {
+                if (!it.rtype.includes('ph')) return;
+                const key = `${rew.pid}_${it.v}`;
+                const st = stateMap.get(key) || { context: '' };
+                values.push(st.context);
+            });
+
+            const formData = new FormData();
+            formData.set('value', values.join(';'));
+            formData.set('version', currentVersionR);
+            formData.set('recordPhId', currentRecord.id);
+            formData.set('id_public', rew.pid + '_c');
+
+            const isLast = _SAVE_STEPS === _LIMIT_STEPS;
+            await execute(savePHStep(RECORD_PH_SERVICE, rew.pid + '_c', formData), {
+                operationName: `guardar contexto ${rew.pid}`,
+                success: false,
+                error: true,
+                onSuccess: isLast ? () => requestUpdateRecord(currentItem.id) : undefined,
+            });
+        }
+    }
+
+    let _COMPONENT = () => {
+        let _GET_REVIEW_TYPE = () => {
+            let STEPS = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
+            for (const step of STEPS) {
+                if (step.version == currentVersionR && step.name.includes('TIPO DE REVISION ')) {
+                    if (step.name.includes('URBANISMO')) return 1;
+                    if (step.name.includes('ARQUITECTURA')) return 2;
+                    if (step.name.includes('ESTRUCTURAL')) return 3;
+                    if (step.name.includes('GEOTECNIA')) return 4;
+                    if (step.name.includes('ELECTRICO')) return 5;
+                    if (step.name.includes('HIDRAULICO')) return 6;
+                    if (step.name.includes('INCENDIOS')) return 7;
+                }
+            }
+            return 0;
+        }
+        return _GET_REVIEW_TYPE()
+    }
+
     return (
         <div>
-            {_REVIEW_LIST_COMPONENT()}
+            {_MASTER_LIST_COMPONENT()}
+            {REVIEW.map(re => {
+                if (!re.rtype.includes('ph')) return null;
+                return (
+                    <div className='row border' key={re.pid}>
+                        {re.title ? <div className='col-3 text-center fw-bold'>{re.title}</div> : null}
+                        <div className='col'>
+                            {re.items.map(it => {
+                                if (!it.rtype.includes('ph')) return null;
+                                const key = `${re.pid}_${it.v}`;
+                                const st = stateMap.get(key) || { value: '', check: '1', context: '' };
+                                return (
+                                    <div className='row border' key={it.v}>
+                                        <div className='col'>
+                                            <label className={it.className ?? ''}>{it.name}</label>
+                                            {st.check === '0'
+                                                ? <input type="text" value={st.context}
+                                                    className="form-control form-control-sm"
+                                                    onBlur={() => manage_rar_context()}
+                                                    onChange={handleChange(re.pid, it.v, it.c, 'context')}
+                                                    style={{backgroundColor: 'LightPink'}} />
+                                                : <input type='hidden' value={st.context} />
+                                            }
+                                        </div>
+                                        <div className='col-2 text-center'>
+                                            <select className={_GET_SELECT_COLOR_VALUE(st.check)}
+                                                value={st.check}
+                                                onChange={handleChange(re.pid, it.v, it.c, 'check')} >
+                                                <option value="0" className="text-danger">NO CUMPLE</option>
+                                                <option value="1" className="text-success">CUMPLE</option>
+                                                <option value="2" className="text-warning">NO APLICA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            })}
             <div className='row border'>
                 <div className='col'>
                     <label className={'text-primary'}>* ITEMS DE LA LISTA DE CHECKEO</label>
                 </div>
             </div>
-        </div >
+        </div>
     );
+
+    function _MASTER_LIST_COMPONENT() {
+        return (
+            <div className='row border'>
+                <div className='col-3 text-center'>
+                    <select className={_GET_SELECT_COLOR_VALUE(rewType)} defaultValue={''}
+                        value={rewType} onChange={e => manage_rar(e, e.target.value)}>
+                        <option className="text-danger">TIPO DE REVISIÓN</option>
+                        <option className="text-warning" value="1">URBANISMO</option>
+                        <option className="text-warning" value="2">ARQUITECTURA</option>
+                        <option className="text-warning" value="3">ESTRUCTURAL</option>
+                        <option className="text-warning" value="4">GEOTECNIA</option>
+                        <option className="text-warning" value="5">ELECTRICO</option>
+                        <option className="text-warning" value="6">HIDRAULICO</option>
+                        <option className="text-warning" value="7">INCENDIOS</option>
+                    </select>
+                </div>
+                <div className='col text-start'>
+                    <label className='text-danger'>Seleccione el tipo de revisión realizada sobre el proyecto</label>
+                </div>
+            </div>
+        )
+    }
 }
