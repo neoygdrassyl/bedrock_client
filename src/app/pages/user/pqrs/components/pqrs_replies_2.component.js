@@ -5,22 +5,21 @@ function PQRS_COMPONENT_REPLIES_TOSOLICITOR({ translation, swaMsg, globals, curr
         // COMPONENTS JSX
         let _REPLIY_TO_SOLICITOR_COMPONENT = () => {
             var _COMPONENT = [];
-            _COMPONENT.push(<>
-                <div className="row m-2">
+            _COMPONENT.push(<div key={currentItem.id_reply ?? currentItem.id ?? 'reply-to-solicitor'} className="row m-2">
                     <div className="col-6">
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Fecha de Respuesta</lavel>
+                                <label>Fecha de Respuesta</label>
                             </div>
                             <div className="col-6">
-                                <lavel className="fw-bold">{currentItem.pqrs_time.reply_formal
+                                <label className="fw-bold">{currentItem.pqrs_time.reply_formal
                                     ? dateParser(currentItem.pqrs_time.reply_formal)
-                                    : <label className="text-danger fw-bold">NO SE HA DADO RESPUESTA FORMAL</label>}</lavel>
+                                    : <label className="text-danger fw-bold">NO SE HA DADO RESPUESTA FORMAL</label>}</label>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Tiempo en dar Respuesta</lavel>
+                                <label>Tiempo en dar Respuesta</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.pqrs_time.reply_formal
@@ -37,8 +36,7 @@ function PQRS_COMPONENT_REPLIES_TOSOLICITOR({ translation, swaMsg, globals, curr
                             <label>{currentItem.pqrs_info.reply}</label>
                         </div>
                     </div>
-                </div>
-            </>)
+                </div>)
             return <>{_COMPONENT}</>;
         }
 

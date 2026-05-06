@@ -156,7 +156,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                     </div>
 
                     <label>Cuerpo del Documento</label>
-                    <textarea className="form-control mb-3" rows="3" maxlength="1024" id="pqrs_reply_doc_body"
+                    <textarea className="form-control mb-3" rows="3" maxLength="1024" id="pqrs_reply_doc_body"
                         defaultValue={currentItem.pqrs_info.reply}></textarea>
                     <table className="table table-sm table-hover table-bordered">
                         <tbody>

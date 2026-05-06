@@ -5,20 +5,19 @@ function PQRS_COMPONENT_REPLIES_PROFESIONAL_2({ translation, swaMsg, globals, cu
         let _REPLIES_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < currentItem.pqrs_workers.length; i++) {
-                _COMPONENT.push(<>
-                    <div className="row m-2">
+                _COMPONENT.push(<div key={currentItem.pqrs_workers[i].id ?? currentItem.pqrs_workers[i].worker_id ?? `reply-prof-2-${i}`} className="row m-2">
                         <div className="col-6">
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Profesional</lavel>
+                                    <label>Profesional</label>
                                 </div>
                                 <div className="col-6">
-                                    <lavel className="fw-bold">{currentItem.pqrs_workers[i].name}</lavel>
+                                    <label className="fw-bold">{currentItem.pqrs_workers[i].name}</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Competencia</lavel>
+                                    <label>Competencia</label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{currentItem.pqrs_workers[i].competence}</label>
@@ -26,7 +25,7 @@ function PQRS_COMPONENT_REPLIES_PROFESIONAL_2({ translation, swaMsg, globals, cu
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Fecha de Asignación</lavel>
+                                    <label>Fecha de Asignación</label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{dateParser(currentItem.pqrs_workers[i].asign)}</label>
@@ -34,7 +33,7 @@ function PQRS_COMPONENT_REPLIES_PROFESIONAL_2({ translation, swaMsg, globals, cu
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Fecha Respuesta Real</lavel>
+                                    <label>Fecha Respuesta Real</label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{dateParser(currentItem.pqrs_workers[i].date_reply)}</label>
@@ -42,7 +41,7 @@ function PQRS_COMPONENT_REPLIES_PROFESIONAL_2({ translation, swaMsg, globals, cu
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Tiempo de Respuesta</lavel>
+                                    <label>Tiempo de Respuesta</label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{dateParser_dateDiff(currentItem.pqrs_workers[i].asign, currentItem.pqrs_workers[i].date_reply, true) + " dia(s) habiles"}</label>
@@ -50,7 +49,7 @@ function PQRS_COMPONENT_REPLIES_PROFESIONAL_2({ translation, swaMsg, globals, cu
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Fecha Respuesta Esperada</lavel>
+                                    <label>Fecha Respuesta Esperada</label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{dateParser(dateParser_finalDate(currentItem.pqrs_time.legal, currentItem.pqrs_time.time / 2))}</label>
@@ -69,8 +68,7 @@ function PQRS_COMPONENT_REPLIES_PROFESIONAL_2({ translation, swaMsg, globals, cu
                                 </label>
                             </div>
                         </div>
-                    </div>
-                </>)
+                    </div>)
             }
             return <>{_COMPONENT}</>;
         }

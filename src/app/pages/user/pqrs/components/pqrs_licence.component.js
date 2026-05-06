@@ -4,15 +4,15 @@ function PQRS_COMPONENT_LICENCE({ translation, swaMsg, globals, translation_form
             return <>
                 <div className="row">
                     <div className="col-6">
-                        <lavel>Numero de Radicación</lavel>
+                        <label>Numero de Radicación</label>
                     </div>
                     <div className="col-6">
-                        <lavel className="fw-bold">{currentItem.pqrs_fun.id_public}</lavel>
+                        <label className="fw-bold">{currentItem.pqrs_fun.id_public}</label>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
-                        <lavel>Clase de Solicitante</lavel>
+                        <label>Clase de Solicitante</label>
                     </div>
                     <div className="col-6">
                         <label className="fw-bold">{currentItem.pqrs_fun.person}</label>
@@ -20,7 +20,7 @@ function PQRS_COMPONENT_LICENCE({ translation, swaMsg, globals, translation_form
                 </div>
                 <div className="row">
                     <div className="col-6">
-                        <lavel>Numero de Predio</lavel>
+                        <label>Numero de Predio</label>
                     </div>
                     <div className="col-6">
                         <label className="fw-bold">{currentItem.pqrs_fun.catastral}</label>

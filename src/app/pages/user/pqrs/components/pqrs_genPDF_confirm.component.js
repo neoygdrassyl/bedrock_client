@@ -152,7 +152,7 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                     </div>
 
                     <label>Cuerpo del Documento</label>
-                    <textarea className="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
+                    <textarea className="form-control mb-3" rows="3" maxLength="1024" id="pqrs_confirmation_doc_body"
                         defaultValue={_GET_DOC_BODY()}></textarea>
                     <table className="table table-sm table-hover table-bordered">
                         <tbody>

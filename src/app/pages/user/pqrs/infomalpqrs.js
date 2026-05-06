@@ -52,7 +52,7 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
         let _ATTACHS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < attachs; i++) {
-                _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+                _COMPONENT.push(<div key={`informal-pqrs-attach-${i}`} className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
@@ -174,7 +174,7 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                     <li>Si la CUB1 no es competente orientar al peticionario y recomendar el traslado de la PQRS.</li>
                                 </ul>
                                 <div className="text-center m-3">
-                                    <textarea className="form-control m-3" rows="5" maxlength="4096" id="pqrs_informal_reply"></textarea>
+                                    <textarea className="form-control m-3" rows="5" maxLength="4096" id="pqrs_informal_reply"></textarea>
                                 </div>
                                 <hr className="my-3" />
                                 <label className="app-p lead text-start fw-bold">ANEXAR DOCUMENTO</label>

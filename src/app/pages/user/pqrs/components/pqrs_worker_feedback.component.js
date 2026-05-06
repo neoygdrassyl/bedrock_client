@@ -122,7 +122,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                 <div className="row">
                     <div className="col">
                         <label>Argumentación (Máximo 1000 Caracteres)</label>
-                        <textarea className="form-control mb-3" rows="3" maxlength="2000" id="pqrs_worker_feeback_3"></textarea>
+                        <textarea className="form-control mb-3" rows="3" maxLength="2000" id="pqrs_worker_feeback_3"></textarea>
                     </div>
                 </div>
             </>

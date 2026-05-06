@@ -27,13 +27,13 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
 
         // WORKING SELECTS
         const selectTypeMaster = translation_form.form_type_request.map(function (item, i) {
-            return <option value={i}>{item}</option>
+            return <option key={i} value={i}>{item}</option>
         })
-        const selectTypeChannel = translation_form.form_radication_chanel.map(function (item) {
-            return <option>{item}</option>
+        const selectTypeChannel = translation_form.form_radication_chanel.map(function (item, i) {
+            return <option key={i}>{item}</option>
         })
-        const selectCategoryMaster = translation_form.form_category_request.map(function (item) {
-            return <option>{item}</option>
+        const selectCategoryMaster = translation_form.form_category_request.map(function (item, i) {
+            return <option key={i}>{item}</option>
         })
 
         //DATA GETTERS
@@ -277,7 +277,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                 <div className="row">
                     <div className="col">
                         <label>Contenido o descripción de la Solicitud (Máximo 2000 Caracteres)</label>
-                        <textarea className="form-control mb-3" rows="3" maxlength="2000" id="pqrs_edit_info_5" defaultValue={_CHILD.content}></textarea>
+                        <textarea className="form-control mb-3" rows="3" maxLength="2000" id="pqrs_edit_info_5" defaultValue={_CHILD.content}></textarea>
                     </div>
                 </div>
             </>
@@ -306,7 +306,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                 <div className="row">
                     <div className="col">
                         <label>Motivo de la Prorroga (Máximo 2000 caracteres)</label>
-                        <textarea className="form-control mb-3" rows="3" maxlength="2000" id="pqrs_extension_2" disabled={_CHILD.extension ? false : true}
+                        <textarea className="form-control mb-3" rows="3" maxLength="2000" id="pqrs_extension_2" disabled={_CHILD.extension ? false : true}
                             defaultValue={_CHILD.extension_reason}></textarea>
                     </div>
                 </div>

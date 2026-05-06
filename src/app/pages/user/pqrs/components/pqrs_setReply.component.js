@@ -121,7 +121,7 @@ parentRetrieveItem(currentItem.id);
                                     <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={currentItem.id_reply}
-                                    id="pqrs_master_idreply" require />
+                                    id="pqrs_master_idreply" required />
                                 <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                             </div>
                         </div>
@@ -134,14 +134,14 @@ parentRetrieveItem(currentItem.id);
                                 </span>
                                 <input type="date" max="2100-01-01" className="form-control"
                                     defaultValue={currentItem.pqrs_time ? currentItem.pqrs_time.reply_formal : dayjs().format('YYYY-MM-DD')}
-                                    id="pqrs_reply_time_formalReply" require />
+                                    id="pqrs_reply_time_formalReply" required />
                             </div>
                         </div>
 
                     </div>
 
                     <label>Respuesta de Oficio (Máximo 4000 Caracteres)</label>
-                    <textarea className="form-control mb-3" rows="5" maxlength="4096" id="pqrs_info_reply" defaultValue={currentItem.pqrs_info ? currentItem.pqrs_info.reply : ''}></textarea>
+                    <textarea className="form-control mb-3" rows="5" maxLength="4096" id="pqrs_info_reply" defaultValue={currentItem.pqrs_info ? currentItem.pqrs_info.reply : ''}></textarea>
                     <div className="text-center m-3">
                         <Button size="sm" className="my-2"><Icon name="edit" size={16} /> GUARDAR RESPUESTA </Button>
                     </div>

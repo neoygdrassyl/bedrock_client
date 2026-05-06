@@ -67,7 +67,7 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
 
         let _COMPONENT_MANAGE = (_edit) => {
             var _COMPONENT = [];
-            _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+            _COMPONENT.push(<div key={`pqrs-manage-attach-${_edit || 'new'}`} className="row d-flex justify-content-center my-2">
                 <div className="col-6">
                     <div className="input-group">
                         <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
