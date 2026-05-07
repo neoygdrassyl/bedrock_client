@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 
@@ -29,31 +29,50 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
     const [currentVersionR, setCurrentVersionR] = useState(null);
     const [loaded, setLoaded] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
+    const creatingRecordRef = useRef(false);
 
-    const setItem_RecordArc = useCallback(() => {
-        RECORD_PH_SERVICE.getRecord(currentId)
-            .then(response => {
-                if (response.data.length < 1) {
-                    setCurrentRecord(null);
-                    setCurrentVersionR(null);
-                    setLoaded(true);
-                } else {
-                    setCurrentRecord(response.data[0]);
-                    setCurrentVersionR(response.data[0].version);
-                    setLoaded(true);
+    const setItem_RecordArc = useCallback(async () => {
+        if (!currentId) return;
+        setLoaded(false);
+        try {
+            let response = await RECORD_PH_SERVICE.getRecord(currentId);
+            let records = Array.isArray(response.data) ? response.data : [];
+
+            if (records.length < 1) {
+                if (creatingRecordRef.current) return;
+                creatingRecordRef.current = true;
+                const formData = new FormData();
+                formData.set('fun0Id', currentId);
+                formData.set('version', 1);
+                const createResponse = await RECORD_PH_SERVICE.create(formData);
+
+                if (createResponse.data === 'OK') {
+                    response = await RECORD_PH_SERVICE.getRecord(currentId);
+                    records = Array.isArray(response.data) ? response.data : [];
                 }
-            })
-            .catch(e => {
-                console.log(e);
-                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-            });
+                creatingRecordRef.current = false;
+            }
+
+            const record = records[0] ?? null;
+            setCurrentRecord(record);
+            setCurrentVersionR(record?.version ?? null);
+            setLoaded(true);
+        } catch (e) {
+            creatingRecordRef.current = false;
+            console.log(e);
+            setCurrentRecord(null);
+            setCurrentVersionR(null);
+            setLoaded(true);
+            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+        }
     }, [currentId, swaMsg]);
 
     const requestUpdateRecord = (id) => {
         RECORD_PH_SERVICE.getRecord(id)
             .then(response => {
-                setCurrentRecord(response.data[0]);
-                setCurrentVersionR(response.data[0].version);
+                const record = Array.isArray(response.data) ? response.data[0] : null;
+                setCurrentRecord(record ?? null);
+                setCurrentVersionR(record?.version ?? null);
                 setLoaded(true);
             })
             .catch(e => {

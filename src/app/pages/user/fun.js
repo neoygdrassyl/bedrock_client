@@ -566,7 +566,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     }
 
     function requestUpdate(id) {
-        FUNService.get(id).then(response => {
+        return FUNService.get(id).then(response => {
             let item = response.data
             setState({
                 currentItem: item,
@@ -575,6 +575,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             })
             retrievePublish();
         })
+            .catch(e => {
+                console.log(e);
+                swalError({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                });
+            });
     }
     function handleDuplicateSuccess(newId) {
         toggle(); // close current general modal
