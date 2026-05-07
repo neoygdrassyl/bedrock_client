@@ -1,20 +1,36 @@
 import FUNService from '../../../services/fun.service'
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
         var formData = new FormData();
 
+        let _GET_EXISTING_FUN_2 = () => {
+            const child = currentItem.fun_2;
+            const item = Array.isArray(child) ? child.find(entry => entry?.id) : child;
+            if (!item || typeof item !== 'object' || item.id == null || item.id === '') return null;
+            return item;
+        }
+
+        let _GET_RADIO_VALUE = (name) => {
+            const radios = document.getElementsByName(name);
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked == true) return radios[i].value;
+            }
+            return '';
+        }
+
         let _SET_CHILD_2 = () => {
-            var _CHILD = currentItem.fun_2;
+            var _CHILD = _GET_EXISTING_FUN_2();
             var _CHILD_VARS = {
                 item_20: "",
                 item_211: "",
                 item_212: "",
                 item_22: "",
                 item_23: "",
+                item_232: "",
                 item_24: "",
                 item_25: "",
                 item_261: "",
@@ -23,32 +39,34 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 item_264: "",
                 item_265: "",
                 item_266: "",
+                item_267: "",
+                item_268: "",
             }
             if (_CHILD) {
-                _CHILD_VARS.item_20 = _CHILD.id;
-                _CHILD_VARS.item_211 = _CHILD.direccion;
-                _CHILD_VARS.item_212 = _CHILD.direccion_ant;
-                _CHILD_VARS.item_22 = _CHILD.matricula;
-                _CHILD_VARS.item_23 = _CHILD.catastral;
-                _CHILD_VARS.item_232 = _CHILD.catastral_2;
-                _CHILD_VARS.item_24 = _CHILD.suelo; // PARSER
-                _CHILD_VARS.item_25 = _CHILD.lote_pla;// PARSER
+                _CHILD_VARS.item_20 = _CHILD.id ?? "";
+                _CHILD_VARS.item_211 = _CHILD.direccion ?? "";
+                _CHILD_VARS.item_212 = _CHILD.direccion_ant ?? "";
+                _CHILD_VARS.item_22 = _CHILD.matricula ?? "";
+                _CHILD_VARS.item_23 = _CHILD.catastral ?? "";
+                _CHILD_VARS.item_232 = _CHILD.catastral_2 ?? "";
+                _CHILD_VARS.item_24 = _CHILD.suelo ?? ""; // PARSER
+                _CHILD_VARS.item_25 = _CHILD.lote_pla ?? "";// PARSER
 
-                _CHILD_VARS.item_261 = _CHILD.barrio;
-                _CHILD_VARS.item_262 = _CHILD.vereda;
-                _CHILD_VARS.item_263 = _CHILD.comuna;
-                _CHILD_VARS.item_264 = _CHILD.sector;
-                _CHILD_VARS.item_265 = _CHILD.corregimiento;
-                _CHILD_VARS.item_266 = _CHILD.lote;
-                _CHILD_VARS.item_267 = _CHILD.estrato;
-                _CHILD_VARS.item_268 = _CHILD.manzana;
+                _CHILD_VARS.item_261 = _CHILD.barrio ?? "";
+                _CHILD_VARS.item_262 = _CHILD.vereda ?? "";
+                _CHILD_VARS.item_263 = _CHILD.comuna ?? "";
+                _CHILD_VARS.item_264 = _CHILD.sector ?? "";
+                _CHILD_VARS.item_265 = _CHILD.corregimiento ?? "";
+                _CHILD_VARS.item_266 = _CHILD.lote ?? "";
+                _CHILD_VARS.item_267 = _CHILD.estrato ?? "";
+                _CHILD_VARS.item_268 = _CHILD.manzana ?? "";
             }
             return _CHILD_VARS;
         }
         let _CHILD_20 = () => {
             let _CHILD_VARS = _SET_CHILD_2();
 
-            return <input type="hidden" id="f_20_id" value={_CHILD_VARS.item_20} />
+            return <input type="hidden" id="f_20_id" defaultValue={_CHILD_VARS.item_20} />
         }
         // DATA COMVERTERS
         let _REGEX_PREDIAL = (e) => {
@@ -185,7 +203,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                                 <Icon name="question-circle" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
-                                id="f_25_o" defaultChecked={_CHILD_VARS.item_25 != 'A' && _CHILD_VARS.item_25 != 'B' ? _CHILD_VARS.item_25 : ""} />
+                                id="f_25_o" defaultValue={_CHILD_VARS.item_25 != 'A' && _CHILD_VARS.item_25 != 'B' ? _CHILD_VARS.item_25 : ""} />
                         </div>
 
                     </div>
@@ -267,7 +285,8 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             formData = new FormData();
             let fun0Id = currentItem.id;
             formData.set('fun0Id', fun0Id);
-            let fun2Id = document.getElementById("f_20_id").value;
+            const currentFun2 = _GET_EXISTING_FUN_2();
+            let fun2Id = currentFun2?.id ?? document.getElementById("f_20_id").value;
 
             let direccion = document.getElementById("f_211").value;
             formData.set('direccion', direccion);
@@ -299,32 +318,23 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             // ----------------------
 
             let otherOption = null;
-            let radios = null;
-            let suelo = null;
-            let lote_pla = null;
+            let suelo = '';
+            let lote_pla = '';
 
-            radios = document.getElementsByName("f_24");
-            for (var i = 0; i < radios.length; i++) {
-                if (radios[i].checked == true) {
-                    suelo = radios[i].value
-                }
-            } formData.set('suelo', suelo);
+            suelo = _GET_RADIO_VALUE("f_24");
+            formData.set('suelo', suelo);
 
             otherOption = document.getElementById("f_25_o");
             if (otherOption.value) {
                 lote_pla = otherOption.value
             } else {
-                radios = document.getElementsByName("f_25"); // USES OTHER OPTION
-                for (var i = 0; i < radios.length; i++) {
-                    if (radios[i].checked == true) {
-                        lote_pla = radios[i].value
-                    }
-                }
-            } formData.set('lote_pla', lote_pla);
+                lote_pla = _GET_RADIO_VALUE("f_25");
+            }
+            formData.set('lote_pla', lote_pla);
             otherOption = null;
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            if (currentItem.fun_2 == null) {
+            if (!fun2Id) {
                 FUNService.create_fun2(formData)
                     .then(response => {
                         if (response.data === 'OK') {
@@ -345,13 +355,12 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else {
-                            if (response.status == 500) {
-                                swalClose();
-                            }
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
         }

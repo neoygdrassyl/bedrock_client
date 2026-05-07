@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
 import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
     const [dis_m_urb, setDisMUrb] = useState(true);
@@ -726,7 +726,10 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
-            if (currentItem.fun_1s[currentVersion - 1] == null) {
+            const fun1s = Array.isArray(currentItem.fun_1s) ? currentItem.fun_1s : [];
+            const currentFun1 = fun1s[currentVersion - 1];
+
+            if (currentFun1 == null) {
                 FUNService.create_fun1(formData)
                     .then(response => {
                         if (response.data === 'OK') {
@@ -747,13 +750,12 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else {
-                            if (response.status == 500) {
-                                swalClose();
-                            }
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
 
