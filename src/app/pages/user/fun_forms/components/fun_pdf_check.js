@@ -7,6 +7,7 @@ import { dateParser } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { cities, domains, domains_number } from '../../../../components/jsons/vars';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import fileDownload from 'js-file-download';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
@@ -218,7 +219,6 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }, '');
     };
     const getPdfForm = async () => {
-        let swaMsg = swaMsg;
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         let model = currentItem.model
@@ -236,7 +236,6 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
 
         var _child = null;
         var _array = null;
-        const currentItem = currentItem;
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -894,7 +893,6 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         pdfDoc.setTitle('FORMULARIO UNICO NACIONAL LISTA DE REVISION - ' + currentItem.id_public)
 
         var pdfBytes = await pdfDoc.save();
-        var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'FORMULARIO DE REVISION GENERAL' + currentItem.id_public + '.pdf');
         swalClose();
 
