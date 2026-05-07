@@ -72,9 +72,10 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
         versionsToCheck.forEach(version => {
             let clock50 = get_clock_state_version(-50, version);
             let clock5 = get_clock_state_version(-5, version);
+            let clock30 = get_clock_state_version(-30, version);
 
-            // SI EXISTE -5 (Citación) PERO NO EXISTE -50 (Inicio Desistimiento)
-            if (clock5 && !clock50) {
+            // SI EXISTE -5 (Citación) PERO NO EXISTE -50 (Inicio Desistimiento) Y EL PROCESO NO HA FINALIZADO
+            if (clock5 && !clock50 && !clock30) {
                 // Preparamos la data para guardar automaticamente
                 let formDataClock = new FormData();
                 
@@ -405,34 +406,35 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             </>
         }
         let _CANCEL_PROCESS = () => {
-            return <>
-                <form id="fun_clocks_negative_new" onSubmit={cancel_process}>
-                    <div className="row">
-                        <div className="col">
-                            NUEVO ESTADO
-                            <select className='form-select' id="fun_clock_cancel_1" required>
+            let ongoingVersion = _GET_ONGOING_PROCESS();
+            let startClock = _GET_CLOCK_STATE_VERSION(-50, ongoingVersion) || _GET_CLOCK_STATE_VERSION(-5, ongoingVersion);
+            let processLabel = NegativePRocessTitle[String(ongoingVersion)] || 'DESCONOCIDO';
+            return (
+                <form id="fun_clocks_negative_cancel" onSubmit={cancel_active_process}>
+                    <input type="hidden" id="fun_cancel_version" value={ongoingVersion} />
+                    <div className="row align-items-end g-2">
+                        <div className="col-md-4">
+                            <label className="form-label fw-bold text-danger">Proceso activo</label>
+                            <input type="text" className="form-control border-danger" disabled value={processLabel} />
+                            {startClock?.desc && (
+                                <small className="text-muted d-block mt-1">{startClock.desc}</small>
+                            )}
+                        </div>
+                        <div className="col-md-4">
+                            <label className="form-label">Restablecer expediente a</label>
+                            <select className="form-select" id="fun_clock_cancel_1" required>
                                 <option value="1">RADICACIÓN</option>
                                 <option value="5">LEGAL Y DEBIDA FORMA</option>
                             </select>
                         </div>
-                        <div className="col">
-                            Fecha de Evento
-                            <input type="date" className="form-control" max="2100-01-01" id="fun_clock_cancel_2"
-                                defaultValue={dayjs().format('YYYY-MM-DD')} required />
-                        </div>
-                        <div className="col">
-                            Profesional realiza cambio
-                            <input type="text" className="form-control" id="fun_clock_cancel_3" disabled
-                                defaultValue={window.user.name + " " + window.user.surname} />
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col text-center my-2">
-                            <button type="submit" className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors" ><Icon name="times-circle" size={16} /> CANCELAR PROCESO </button>
+                        <div className="col-md-4 text-center">
+                            <Button type="submit" variant="outline" size="sm" className="border-danger text-danger hover:bg-red-50">
+                                <Icon name="times" size={16} /> CANCELAR PROCESO DE DESISTIMIENTO
+                            </Button>
                         </div>
                     </div>
                 </form>
-            </>
+            );
         }
         const ExpandedComponent = ({ data }) => {
             let preData = <pre>{JSON.stringify(data, null, 2)}</pre>;
@@ -741,7 +743,35 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             let new_state = document.getElementById('fun_clock_cancel_1').value;
             formData.set('state', new_state);
             manage_fun_0(true, formData)
+        }
 
+        let cancel_active_process = (e) => {
+            e.preventDefault();
+            let version = document.getElementById('fun_cancel_version').value;
+            let new_state = document.getElementById('fun_clock_cancel_1').value;
+            let startClock = _GET_CLOCK_STATE_VERSION(-50, version) || _GET_CLOCK_STATE_VERSION(-5, version);
+
+            swalConfirm({
+                title: '¿CANCELAR PROCESO DE DESISTIMIENTO?',
+                text: 'Se eliminará el registro de inicio del proceso activo y se restablecerá el estado del expediente. Esta acción no se puede deshacer fácilmente.',
+                icon: 'warning',
+                confirmButtonText: 'Sí, cancelar proceso',
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const doStateChange = () => {
+                        formData = new FormData();
+                        formData.set('state', new_state);
+                        manage_fun_0(true, formData);
+                    };
+                    if (startClock?.id) {
+                        FUN_SERVICE.delete_clock(startClock.id)
+                            .then(doStateChange)
+                            .catch(e => { console.log(e); doStateChange(); });
+                    } else {
+                        doStateChange();
+                    }
+                }
+            });
         }
 
         let save_clock = (data) => {
@@ -832,6 +862,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             if (version == '-3') new_state = 5
             if (version == '-4') new_state = 5
             if (version == '-5') new_state = 5
+            if (version == '-6') new_state = 5
             formData.set('state', new_state);
             manage_fun_0(useMySwal, formData)
         }
@@ -899,7 +930,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
 
-                    save_archive();
+                    save_archive(version);
                     formData = new FormData();
 
                     formData.set('state', 200 + (Number(version) * -1));
@@ -928,134 +959,78 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             }
             setFillActive(state);
         };
+        const hasActiveProcess = _CHECK_IF_PROCESS();
+        const ongoingVersion = _GET_ONGOING_PROCESS();
+        // Tab del proceso activo: versión -N → tab '-10N' (ej: -1 → '-101')
+        const activeTabForOngoing = ongoingVersion !== 0 ? String(ongoingVersion - 100) : null;
+
+        const tabDefs = [
+            { tabId: '-101', version: '-1', label: 'Incompleto',              icon: 'FileX'        },
+            { tabId: '-102', version: '-2', label: 'Falta Valla Informativa', icon: 'Construction' },
+            { tabId: '-103', version: '-3', label: 'No Cumple Acta',          icon: 'ClipboardX'   },
+            { tabId: '-104', version: '-4', label: 'No Paga Expensas',        icon: 'CreditCard'   },
+            { tabId: '-105', version: '-5', label: 'Voluntario',              icon: 'HandHelping'  },
+            { tabId: '-106', version: '-6', label: 'Negada',                  icon: 'Ban'          },
+        ];
+
+        // Cuando hay proceso activo, solo mostramos esa tab.
+        // Cuando no hay proceso activo, mostramos todas las que tienen datos históricos (o todas).
+        const visibleTabs = hasActiveProcess
+            ? tabDefs.filter(t => t.tabId === activeTabForOngoing)
+            : tabDefs.filter(t =>
+                _GET_CLOCK_STATE_VERSION(-50, t.version) ||
+                _GET_CLOCK_STATE_VERSION(-5, t.version) ||
+                true // mostrar todas para facilitar inspección
+              );
+
         return (
             <div className="fun_clocks_negative">
 
-                {!_CHECK_IF_PROCESS() && currentItem.state < 100 ?
+                {hasActiveProcess ? (
                     <>
-                        {currentItem.state == -1 ?
-                            <>
-                                <legend className="my-2 px-3 Collapsible text-white" id="new_process">
-                                    <label className="app-p lead text-center fw-normal">CANCELAR PROCESO DE DESISTIMIENTO</label>
-                                </legend>
-                                {_CANCEL_PROCESS()}
-                            </>
-                            : ""}
-
+                        <legend className="my-2 px-3 bg-danger text-white" id="cancel_process">
+                            <label className="app-p lead text-center fw-normal">PROCESO DE DESISTIMIENTO EN CURSO — CANCELAR</label>
+                        </legend>
+                        {_CANCEL_PROCESS()}
+                    </>
+                ) : currentItem.state < 101 ? (
+                    <>
                         <legend className="my-2 px-3 bg-danger text-white" id="new_process">
                             <label className="app-p lead text-center fw-normal">NUEVO PROCESO DE DESESTIMIENTO</label>
                         </legend>
                         {_NEW_PROCESS()}
                     </>
-                    : ""
-                }
+                ) : null}
 
-                <div className="flex border-b border-border overflow-x-auto" role="tablist">
-                    <button
-                        role="tab"
-                        aria-selected={fillActive == '-101'}
-                        onClick={() => handleFillClick('-101')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            fillActive == '-101'
-                                ? 'border-b-primary text-primary'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="FileX" size={13} />
-                        Incompleto
-                    </button>
-                    <button
-                        role="tab"
-                        aria-selected={fillActive == '-102'}
-                        onClick={() => handleFillClick('-102')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            fillActive == '-102'
-                                ? 'border-b-primary text-primary'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="Construction" size={13} />
-                        Falta Valla Informativa
-                    </button>
-                    <button
-                        role="tab"
-                        aria-selected={fillActive == '-103'}
-                        onClick={() => handleFillClick('-103')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            fillActive == '-103'
-                                ? 'border-b-primary text-primary'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="ClipboardX" size={13} />
-                        No Cumple Acta Correcciones
-                    </button>
-                    <button
-                        role="tab"
-                        aria-selected={fillActive == '-104'}
-                        onClick={() => handleFillClick('-104')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            fillActive == '-104'
-                                ? 'border-b-primary text-primary'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="CreditCard" size={13} />
-                        No Paga Expensas
-                    </button>
-                    <button
-                        role="tab"
-                        aria-selected={fillActive == '-105'}
-                        onClick={() => handleFillClick('-105')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            fillActive == '-105'
-                                ? 'border-b-primary text-primary'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="HandHelping" size={13} />
-                        Voluntario
-                    </button>
-                    <button
-                        role="tab"
-                        aria-selected={fillActive == '-106'}
-                        onClick={() => handleFillClick('-106')}
-                        className={cn(
-                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
-                            fillActive == '-106'
-                                ? 'border-b-primary text-primary'
-                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
-                        )}
-                    >
-                        <Icon name="Ban" size={13} />
-                        Negada
-                    </button>
-                </div>
+                {/* Barra de tabs: solo cuando hay más de una opción visible */}
+                {visibleTabs.length > 1 && (
+                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                        {visibleTabs.map(tab => (
+                            <button
+                                key={tab.tabId}
+                                role="tab"
+                                aria-selected={fillActive === tab.tabId}
+                                onClick={() => handleFillClick(tab.tabId)}
+                                className={cn(
+                                    'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                    fillActive === tab.tabId
+                                        ? 'border-b-primary text-primary'
+                                        : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                                )}
+                            >
+                                <Icon name={tab.icon} size={13} />
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 <div>
-                    <TabPane show={fillActive == '-101'}>
-                        {_MANAGE_NEGATIVE_PROCESS('-1')}
-                    </TabPane>
-                    <TabPane show={fillActive == '-102'}>
-                        {_MANAGE_NEGATIVE_PROCESS('-2')}
-                    </TabPane>
-                    <TabPane show={fillActive == '-103'}>
-                        {_MANAGE_NEGATIVE_PROCESS('-3')}
-                    </TabPane>
-                    <TabPane show={fillActive == '-104'}>
-                        {_MANAGE_NEGATIVE_PROCESS('-4')}
-                    </TabPane>
-                    <TabPane show={fillActive == '-105'}>
-                        {_MANAGE_NEGATIVE_PROCESS('-5')}
-                    </TabPane>
-                    <TabPane show={fillActive == '-106'}>
-                    {_MANAGE_NEGATIVE_PROCESS('-6')}
-                </TabPane>
+                    {visibleTabs.map(tab => (
+                        <TabPane key={tab.tabId} show={visibleTabs.length === 1 || fillActive === tab.tabId}>
+                            {_MANAGE_NEGATIVE_PROCESS(tab.version)}
+                        </TabPane>
+                    ))}
                 </div>
 
                 {currentItem.state < -100 ? <>
