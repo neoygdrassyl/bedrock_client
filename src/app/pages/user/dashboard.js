@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -14,194 +13,34 @@ import SubmitService from '../../services/submit.service';
 import MailboxService from '../../services/mailbox.service';
 import AppointmentsService from '../../services/appointments.service';
 import BookmarkService from '../../services/bookmark.service';
-import {
-  RECENT_EXPEDIENTES_CHANGED_EVENT,
-  getRecentExpedientes,
-} from './fun_forms/utils/expedienteWorkspaceRoute';
-import {
-  DASHBOARD_PREFERENCES_CHANGED_EVENT,
-  readDashboardPreferences,
-} from './dashboardPreferences';
+import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from './fun_forms/utils/expedienteWorkspaceRoute';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-const COUNT_UNAVAILABLE_LABEL = 'Sin conteo';
-
-const DASHBOARD_PALETTES = {
-  dovela: {
-    hero: 'border-primary/15 bg-gradient-to-br from-primary/10 via-card to-accent/10 text-primary',
-    primaryTone: 'bg-primary/10 text-primary',
-    accentTone: 'bg-accent/10 text-accent',
-    warningTone: 'bg-warning/15 text-warning',
-    neutralTone: 'bg-primary/10 text-primary/80',
-    quickCard: 'hover:border-primary/30 hover:bg-primary/5',
-    spotlight: 'border-primary/15 bg-primary/5',
-    groupCard: 'border-primary/20 bg-gradient-to-br from-card via-card to-primary/5 shadow-primary/10',
-  },
-  civic: {
-    hero: 'border-primary/20 bg-primary/5 text-primary',
-    primaryTone: 'bg-primary/10 text-primary',
-    accentTone: 'bg-primary/10 text-primary',
-    warningTone: 'bg-primary/10 text-primary',
-    neutralTone: 'bg-primary/10 text-primary/80',
-    quickCard: 'hover:border-primary/35 hover:bg-primary/5',
-    spotlight: 'border-primary/20 bg-primary/5',
-    groupCard: 'border-primary/20 bg-gradient-to-br from-card via-card to-primary/5 shadow-primary/10',
-  },
-  verde: {
-    hero: 'border-accent/20 bg-accent/5 text-accent',
-    primaryTone: 'bg-accent/10 text-accent',
-    accentTone: 'bg-accent/10 text-accent',
-    warningTone: 'bg-accent/10 text-accent',
-    neutralTone: 'bg-accent/10 text-accent/80',
-    quickCard: 'hover:border-accent/35 hover:bg-accent/5',
-    spotlight: 'border-accent/20 bg-accent/5',
-    groupCard: 'border-accent/20 bg-gradient-to-br from-card via-card to-accent/5 shadow-accent/10',
-  },
-  ambar: {
-    hero: 'border-warning/25 bg-warning/10 text-warning',
-    primaryTone: 'bg-warning/15 text-warning',
-    accentTone: 'bg-warning/15 text-warning',
-    warningTone: 'bg-warning/15 text-warning',
-    neutralTone: 'bg-warning/15 text-warning/90',
-    quickCard: 'hover:border-warning/35 hover:bg-warning/10',
-    spotlight: 'border-warning/20 bg-warning/10',
-    groupCard: 'border-warning/25 bg-gradient-to-br from-card via-card to-warning/10 shadow-warning/10',
-  },
-  graphite: {
-    hero: 'border-foreground/15 bg-muted/60 text-foreground',
-    primaryTone: 'bg-foreground/10 text-foreground',
-    accentTone: 'bg-accent/10 text-accent',
-    warningTone: 'bg-warning/15 text-warning',
-    neutralTone: 'bg-accent/10 text-accent/80',
-    quickCard: 'hover:border-foreground/20 hover:bg-muted/60',
-    spotlight: 'border-foreground/10 bg-muted/50',
-    groupCard: 'border-foreground/15 bg-gradient-to-br from-card via-card to-muted/70 shadow-foreground/10',
-  },
+const ICON_COLORS = {
+  '/licencias': 'bg-primary/8 text-primary',
+  '/licencias/gestion': 'bg-primary/8 text-primary',
+  '/licencias/gestion-nueva': 'bg-primary/8 text-primary',
+  '/peticiones': 'bg-warning/8 text-warning',
+  '/ventanilla': 'bg-accent/8 text-accent',
+  '/configuracion?tab=alarmas': 'bg-warning/8 text-warning',
+  '/calendario': 'bg-accent/8 text-accent',
+  '/normas': 'bg-primary/8 text-primary',
+  '/uso-suelo': 'bg-accent/8 text-accent',
+  '/nomenclatura': 'bg-warning/8 text-warning',
+  '/archivo': 'bg-muted/60 text-muted-foreground',
+  '/documentos': 'bg-primary/8 text-primary',
+  '/consecutivos': 'bg-muted/60 text-muted-foreground',
+  '/publicaciones': 'bg-muted/60 text-muted-foreground',
+  '/mensajes': 'bg-muted/60 text-muted-foreground',
+  '/calculadora': 'bg-accent/8 text-accent',
+  '/profesionales': 'bg-warning/8 text-warning',
+  '/certificados': 'bg-muted/60 text-muted-foreground',
+  '/ayuda': 'bg-muted/60 text-muted-foreground',
+  '/sellos': 'bg-primary/8 text-primary',
 };
 
-const DENSITY_STYLES = {
-  comfortable: {
-    sectionGap: 'space-y-5',
-    quickGrid: 'grid-cols-1 md:grid-cols-2 2xl:grid-cols-3',
-    helperText: 'text-xs',
-  },
-  compact: {
-    sectionGap: 'space-y-4',
-    quickGrid: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3',
-    helperText: 'text-[11px]',
-  },
-};
-
-const MODULES = {
-  radicacion: { key: 'radicacion', title: 'Radicar solicitud', eyebrow: 'Radicación', icon: 'FileText', desc: 'Crear una nueva solicitud', link: '/licencias', tone: 'primary' },
-  ventanilla: { key: 'ventanilla', title: 'Ventanilla Única', eyebrow: 'Recepción', icon: 'FileInput', desc: 'Ingresos y revisión inicial', link: '/ventanilla', tone: 'accent' },
-  'gestion-nueva': { key: 'gestion-nueva', title: 'Gestión nueva', eyebrow: 'Operación', icon: 'Layers', desc: 'Expedientes en desarrollo', link: '/licencias/gestion-nueva', status: 'En desarrollo', tone: 'primary' },
-  gestion: { key: 'gestion', title: 'Gestión de licencias', eyebrow: 'Operación', icon: 'FolderOpen', desc: 'Licencias activas', link: '/licencias/gestion', tone: 'primary' },
-  pqrs: { key: 'pqrs', title: 'PQRS', eyebrow: 'Atención', icon: 'FileSpreadsheet', desc: 'Peticiones y reclamos', link: '/peticiones', tone: 'warning' },
-  alarmas: { key: 'alarmas', title: 'Alarmas', eyebrow: 'SLA', icon: 'BellRing', desc: 'Umbrales y vencimientos', link: '/configuracion?tab=alarmas', status: 'En desarrollo', tone: 'warning' },
-  calendario: { key: 'calendario', title: 'Calendario', eyebrow: 'Agenda', icon: 'Calendar', desc: 'Citas y programación', link: '/calendario', tone: 'accent' },
-  publicaciones: { key: 'publicaciones', title: 'Publicaciones', eyebrow: 'Difusión', icon: 'Newspaper', desc: 'Novedades y resoluciones', link: '/publicaciones', tone: 'neutral', showCount: false },
-  mensajes: { key: 'mensajes', title: 'Buzón de mensajes', eyebrow: 'Correspondencia', icon: 'Mail', desc: 'Bandeja externa', link: '/mensajes', tone: 'neutral' },
-  chat: { key: 'chat', title: 'Chat Curaduría', eyebrow: 'Equipo', icon: 'MessageCircle', desc: 'Conversación interna', link: '/mensajes', tone: 'neutral', showCount: false },
-  archivo: { key: 'archivo', title: 'Archivo', eyebrow: 'Repositorio', icon: 'Archive', desc: 'Expedientes y soportes', link: '/archivo', tone: 'neutral', showCount: false },
-  consecutivos: { key: 'consecutivos', title: 'Consecutivos', eyebrow: 'Consulta', icon: 'Book', desc: 'Series y radicados', link: '/consecutivos', tone: 'neutral', showCount: false },
-  documentos: { key: 'documentos', title: 'Documentos', eyebrow: 'Plantillas', icon: 'FileText', desc: 'Formatos e instrumentos', link: '/documentos', tone: 'primary', showCount: false },
-  calculadora: { key: 'calculadora', title: 'Calculadora de expensas', eyebrow: 'Herramienta', icon: 'Calculator', desc: 'Liquidación de costos', link: '/calculadora', tone: 'accent', showCount: false },
-  profesionales: { key: 'profesionales', title: 'Base de profesionales', eyebrow: 'Consulta', icon: 'HardHat', desc: 'Profesionales registrados', link: '/profesionales', tone: 'warning', showCount: false },
-  certificados: { key: 'certificados', title: 'Historial profesional', eyebrow: 'Consulta', icon: 'Contact', desc: 'Certificaciones emitidas', link: '/certificados', tone: 'neutral', showCount: false },
-  ayuda: { key: 'ayuda', title: 'Manual de usuario', eyebrow: 'Ayuda', icon: 'BookOpen', desc: 'Guía del sistema', link: '/ayuda', tone: 'neutral', showCount: false },
-  sellos: { key: 'sellos', title: 'Sellos', eyebrow: 'Apoyo', icon: 'Stamp', desc: 'Consulta y generación', link: '/sellos', tone: 'primary', showCount: false },
-  nomenclatura: { key: 'nomenclatura', title: 'Nomenclaturas', eyebrow: 'Predial', icon: 'Signpost', desc: 'Asignación predial', link: '/nomenclatura', tone: 'warning' },
-  normas: { key: 'normas', title: 'Normas urbanas', eyebrow: 'Consulta', icon: 'Home', desc: 'Disponible para esta curaduría', link: '/normas', tone: 'primary', enabled: _GLOBAL_ID === 'cb1' },
-  'uso-suelo': { key: 'uso-suelo', title: 'Uso de suelo', eyebrow: 'Consulta', icon: 'MapPin', desc: 'Disponible para esta curaduría', link: '/uso-suelo', tone: 'accent', enabled: _GLOBAL_ID === 'cb1' },
-};
-
-const SECTION_DEFINITIONS = {
-  intake: {
-    title: 'Radicación e ingreso',
-    description: 'Ingreso y recepción de solicitudes.',
-    items: ['radicacion', 'ventanilla'],
-  },
-  reference: {
-    title: 'Otras actuaciones',
-    description: 'Consultas prediales y urbanísticas.',
-    items: ['nomenclatura', 'normas', 'uso-suelo'],
-  },
-  management: {
-    title: 'Gestión curaduría',
-    description: 'Expedientes activos y agenda operativa.',
-    items: ['gestion', 'calendario'],
-  },
-  communications: {
-    title: 'Atención y comunicaciones',
-    description: 'Centraliza PQRS, mensajes, chat interno y novedades.',
-    items: ['pqrs', 'mensajes', 'chat', 'publicaciones', 'calendario'],
-  },
-  archive: {
-    title: 'Archivo y expedición',
-    description: 'Organiza documentos, archivo, consecutivos y sellos.',
-    items: ['archivo', 'documentos', 'consecutivos', 'sellos'],
-  },
-  tools: {
-    title: 'Utilidades documentales',
-    description: 'Herramientas de consulta y apoyo que no deben competir con la operación diaria.',
-    items: ['calculadora', 'profesionales', 'certificados', 'ayuda'],
-  },
-};
-
-const DASHBOARD_PRESETS = {
-  recommended: {
-    eyebrow: 'Dovela recomendado',
-    title: 'Consola operativa del día',
-    description: 'Radica, continúa gestión y revisa señales críticas sin repetir el mismo catálogo de módulos.',
-    quickActionKeys: ['gestion'],
-    processSectionKeys: ['intake', 'management'],
-    supportSectionKeys: ['reference', 'communications', 'archive', 'tools'],
-    focus: ['4 acciones críticas arriba', 'Proceso separado de soporte', 'Seguimiento lateral compacto'],
-    trackingMode: 'side',
-  },
-  intake: {
-    eyebrow: 'Radicación express',
-    title: 'Ingreso rápido de trámites',
-    description: 'Reduce la primera pantalla a recepción, radicación y creación de expedientes.',
-    quickActionKeys: ['gestion'],
-    processSectionKeys: ['intake'],
-    supportSectionKeys: ['reference', 'management', 'communications', 'archive'],
-    focus: ['Recepción primero', 'Ingreso sin ruido', 'Gestión secundaria'],
-    trackingMode: 'side',
-  },
-  management: {
-    eyebrow: 'Gestión curaduría',
-    title: 'Control de expedientes activos',
-    description: 'Prioriza gestión y seguimiento para usuarios que operan expedientes todo el día.',
-    quickActionKeys: ['gestion'],
-    processSectionKeys: ['management'],
-    supportSectionKeys: ['intake', 'reference', 'communications', 'archive'],
-    focus: ['Seguimiento ampliado', 'Alarmas arriba', 'Agenda operativa'],
-    trackingMode: 'prominent',
-  },
-  communications: {
-    eyebrow: 'Atención y comunicaciones',
-    title: 'Frente de atención ciudadana',
-    description: 'Organiza PQRS, mensajes, chat y agenda para responder más rápido.',
-    quickActionKeys: ['gestion'],
-    processSectionKeys: ['communications'],
-    supportSectionKeys: ['management', 'intake', 'reference', 'archive'],
-    focus: ['PQRS visible', 'Buzón y chat unidos', 'Agenda inmediata'],
-    trackingMode: 'side',
-  },
-  archive: {
-    eyebrow: 'Archivo y expedición',
-    title: 'Cierre documental y consultas',
-    description: 'Lleva documentos, consecutivos, archivo y utilidades al primer nivel de trabajo.',
-    quickActionKeys: ['gestion'],
-    processSectionKeys: ['archive', 'tools'],
-    supportSectionKeys: ['reference', 'intake', 'management', 'communications'],
-    focus: ['Documentos primero', 'Consultas agrupadas', 'Operación compacta'],
-    trackingMode: 'side',
-  },
-};
+const DEFAULT_ICON_COLOR = 'bg-muted/60 text-muted-foreground';
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -210,8 +49,11 @@ function getGreeting() {
   return 'Buenas noches';
 }
 
-function getCompactDate() {
-  return new Intl.DateTimeFormat('es-CO', { weekday: 'short', day: '2-digit', month: 'short' }).format(new Date());
+function getFormattedDate() {
+  const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const now = new Date();
+  return `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
 }
 
 function getUserDisplayName() {
@@ -266,7 +108,7 @@ function buildTrackedExpedientes(bookmarks, funData) {
         description: fun1?.description || expediente?.model || 'Sin descripción registrada',
         stateLabel: getExpedienteStateLabel(expediente?.state),
         dateLabel: formatShortDate(expediente?.date || bookmark.createdAt),
-        href: idPublic ? `/funmanage/expediente/${encodeURIComponent(idPublic)}` : '/licencias/gestion',
+        href: idPublic ? `/funmanage/expediente/${encodeURIComponent(idPublic)}` : '/licencias/gestion-nueva',
       };
     })
     .filter(Boolean)
@@ -279,80 +121,20 @@ function buildTrackedExpedientes(bookmarks, funData) {
     .slice(0, 6);
 }
 
-function getToneClasses(palette, tone) {
-  const selected = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
-  if (tone === 'accent') return selected.accentTone;
-  if (tone === 'warning') return selected.warningTone;
-  if (tone === 'neutral') return selected.neutralTone;
-  return selected.primaryTone;
-}
-
-function getToneIconClasses(palette, tone) {
-  const selected = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
-  const toneSource =
-    tone === 'accent'
-      ? selected.accentTone
-      : tone === 'warning'
-        ? selected.warningTone
-        : tone === 'neutral'
-          ? selected.neutralTone
-          : selected.primaryTone;
-
-  return toneSource.split(' ').find((item) => item.startsWith('text-')) || 'text-primary';
-}
-
-function getModule(key) {
-  const item = MODULES[key];
-  if (!item || item.enabled === false) return null;
-  return item;
-}
-
-function buildSection(key) {
-  const definition = SECTION_DEFINITIONS[key];
-  if (!definition) return null;
-
-  const items = definition.items
-    .map(getModule)
-    .filter(Boolean);
-  if (items.length === 0) return null;
-
-  return {
-    key,
-    title: definition.title,
-    description: definition.description,
-    items,
-  };
-}
-
-function buildDashboardSections(layout = 'recommended') {
-  const preset = DASHBOARD_PRESETS[layout] || DASHBOARD_PRESETS.recommended;
-  const quickActions = preset.quickActionKeys.map(getModule).filter(Boolean);
-
-  return {
-    preset,
-    quickActions,
-    processSections: preset.processSectionKeys.map((key) => buildSection(key)).filter(Boolean),
-    supportSections: preset.supportSectionKeys.map((key) => buildSection(key)).filter(Boolean),
-  };
-}
-
-function getShortUserName(userName) {
-  return String(userName || '').trim().split(/\s+/)[0] || 'usuario';
-}
-
+/**
+ * Dashboard — card grid with real-time counts, role-based modules.
+ * Visual reference: Vercel dashboard cards + Stripe data density.
+ */
 function Dashboard({ breadCrums }) {
   const [counts, setCounts] = useState({});
-  const [countFailures, setCountFailures] = useState({});
   const [loadingCounts, setLoadingCounts] = useState(true);
   const [trackedExpedientes, setTrackedExpedientes] = useState({ personal: [], team: [] });
   const [recentExpedientes, setRecentExpedientes] = useState(() => getRecentExpedientes());
   const [loadingTracked, setLoadingTracked] = useState(true);
   const [trackedError, setTrackedError] = useState(null);
-  const [preferences, setPreferences] = useState(() => readDashboardPreferences());
 
   useEffect(() => {
     let cancelled = false;
-
     async function fetchCounts() {
       try {
         const results = await Promise.allSettled([
@@ -362,77 +144,42 @@ function Dashboard({ breadCrums }) {
           MailboxService.getAll(),
           AppointmentsService.getAll(),
           BookmarkService.list({ scope: 'personal' }),
+          BookmarkService.list({ scope: 'team' }),
         ]);
-
         if (cancelled) return;
-
-        const nextFailures = {};
-        const nextCounts = {};
-        const len = (result) =>
-          result.status === 'fulfilled' && Array.isArray(result.value?.data)
-            ? result.value.data.length
-            : null;
-
+        const len = (r) => r.status === 'fulfilled' && Array.isArray(r.value?.data) ? r.value.data.length : null;
         const funData = results[0].status === 'fulfilled' && Array.isArray(results[0].value?.data)
           ? results[0].value.data
           : null;
+        const activeFun = Array.isArray(funData) ? funData.filter(f => f.state > 0 && f.state < 100).length : null;
+        const pendingFun = Array.isArray(funData) ? funData.filter(f => f.state == 1 || f.state == -1).length : null;
 
-        if (Array.isArray(funData)) {
-          nextCounts['/licencias'] = funData.filter((item) => item.state === 1 || item.state === -1).length;
-          nextCounts['/licencias/gestion'] = funData.filter((item) => item.state > 0 && item.state < 100).length;
-        } else {
-          nextFailures['/licencias'] = true;
-          nextFailures['/licencias/gestion'] = true;
-        }
-
-        const countMappings = [
-          ['/peticiones', results[1]],
-          ['/ventanilla', results[2]],
-          ['/mensajes', results[3]],
-          ['/calendario', results[4]],
-        ];
-
-        countMappings.forEach(([key, result]) => {
-          const count = len(result);
-          if (count == null) nextFailures[key] = true;
-          else nextCounts[key] = count;
+        setCounts({
+          '/licencias': pendingFun,
+          '/licencias/gestion': activeFun,
+          '/licencias/gestion-nueva': activeFun,
+          '/peticiones': len(results[1]),
+          '/ventanilla': len(results[2]),
+          '/mensajes': len(results[3]),
+          '/calendario': len(results[4]),
         });
-
-        setCounts(nextCounts);
-        setCountFailures(nextFailures);
 
         const personalBookmarks = results[5].status === 'fulfilled' ? normalizeList(results[5].value?.data) : [];
-
+        const teamBookmarks = results[6].status === 'fulfilled' ? normalizeList(results[6].value?.data) : [];
         setTrackedExpedientes({
           personal: buildTrackedExpedientes(personalBookmarks, funData || []),
-          team: [],
+          team: buildTrackedExpedientes(teamBookmarks, funData || []),
         });
-        setTrackedError(
-          results[5].status === 'rejected'
-            ? 'No se pudieron cargar los marcados.'
-            : null
-        );
+        setTrackedError(results[5].status === 'rejected' || results[6].status === 'rejected' ? 'No se pudieron cargar todos los marcados.' : null);
       } catch {
-        if (!cancelled) {
-          setCountFailures({
-            '/licencias': true,
-            '/licencias/gestion': true,
-            '/peticiones': true,
-            '/ventanilla': true,
-            '/mensajes': true,
-            '/calendario': true,
-          });
-        }
+        // Counts are optional enhancement
       } finally {
         if (!cancelled) setLoadingCounts(false);
         if (!cancelled) setLoadingTracked(false);
       }
     }
-
     fetchCounts();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -448,354 +195,132 @@ function Dashboard({ breadCrums }) {
     };
   }, []);
 
-  useEffect(() => {
-    function syncPreferences() {
-      setPreferences(readDashboardPreferences());
-    }
-
-    window.addEventListener('storage', syncPreferences);
-    window.addEventListener(DASHBOARD_PREFERENCES_CHANGED_EVENT, syncPreferences);
-
-    return () => {
-      window.removeEventListener('storage', syncPreferences);
-      window.removeEventListener(DASHBOARD_PREFERENCES_CHANGED_EVENT, syncPreferences);
-    };
-  }, []);
+  const dashboardGroups = [
+    {
+      key: 'radicacion',
+      title: 'Radicación',
+      description: 'Ingreso, recepción y consulta inicial de solicitudes',
+      items: [
+        { title: 'Nueva radicación', icon: 'FileText', desc: 'Crear y revisar radicaciones realizadas', link: '/licencias' },
+        { title: 'Ventanilla Única', icon: 'FileInput', desc: 'Recepción documental completa', link: '/ventanilla' },
+      ],
+    },
+    {
+      key: 'gestion-curaduria',
+      title: 'Gestión Curaduría',
+      description: 'Control operativo de expedientes, PQRS y alarmas',
+      items: [
+        { title: 'Gestionar Licencias Nuevo', icon: 'Layers', desc: 'Dashboard operativo en desarrollo', link: '/licencias/gestion-nueva', status: 'En desarrollo' },
+        { title: 'Gestionar Licencias', icon: 'FolderOpen', desc: 'Gestión clásica de expedientes', link: '/licencias/gestion' },
+        { title: 'Peticiones PQRS', icon: 'FileSpreadsheet', desc: 'Quejas, reclamos y solicitudes', link: '/peticiones' },
+        { title: 'Alarmas', icon: 'BellRing', desc: 'Configuración y seguimiento SLA', link: '/configuracion?tab=alarmas', status: 'En desarrollo' },
+      ],
+    },
+    {
+      key: 'otras-actuaciones',
+      title: 'Otras actuaciones',
+      description: 'Normas, usos y nomenclaturas según curaduría',
+      items: [
+        ...(_GLOBAL_ID === 'cb1'
+          ? [
+              { title: 'Normas Urbanas', icon: 'Home', desc: 'Disponible para esta curaduría', link: '/normas' },
+              { title: 'Usos del suelo', icon: 'MapPin', desc: 'Disponible para esta curaduría', link: '/uso-suelo' },
+            ]
+          : []),
+        { title: 'Nomenclaturas', icon: 'Signpost', desc: 'Asignación y consulta predial', link: '/nomenclatura' },
+      ],
+    },
+    {
+      key: 'archivo-expedicion',
+      title: 'Archivo y Expedición',
+      description: 'Repositorio, consecutivos y documentos de soporte',
+      items: [
+        { title: 'Archivo', icon: 'Archive', desc: 'Repositorio principal de expedientes', link: '/archivo' },
+        { title: 'Diccionario de consecutivos', icon: 'Book', desc: 'Consulta de radicados y series', link: '/consecutivos' },
+        { title: 'Documentos', icon: 'FileText', desc: 'Plantillas, formatos e instrumentos', link: '/documentos' },
+      ],
+    },
+    {
+      key: 'comunicaciones',
+      title: 'Comunicaciones',
+      description: 'Publicación, mensajería, citas y chat interno',
+      items: [
+        { title: 'Publicaciones', icon: 'Newspaper', desc: 'Novedades y resoluciones', link: '/publicaciones' },
+        { title: 'Buzón de mensajes', icon: 'Mail', desc: 'Mensajes y correspondencia externa', link: '/mensajes' },
+        { title: 'Calendario de citas', icon: 'Calendar', desc: 'Agenda y programación', link: '/calendario' },
+        { key: 'chat-curaduria', title: 'Chat curaduría', icon: 'MessageCircle', desc: 'Conversaciones internas del equipo', link: '/mensajes', showCount: false },
+      ],
+    },
+    {
+      key: 'utilidades',
+      title: 'Utilidades',
+      description: 'Herramientas auxiliares y consultas de apoyo',
+      items: [
+        { title: 'Calculadora de expensas', icon: 'Calculator', desc: 'Liquidación de costos', link: '/calculadora' },
+        { title: 'Base de datos profesionales', icon: 'HardHat', desc: 'Profesionales registrados', link: '/profesionales' },
+        { title: 'Historial de profesionales', icon: 'Contact', desc: 'Certificaciones emitidas', link: '/certificados' },
+        { title: 'Manual de usuario', icon: 'BookOpen', desc: 'Guía de uso del sistema', link: '/ayuda' },
+        { title: 'Sellos', icon: 'Stamp', desc: 'Consulta y generación de sellos', link: '/sellos' },
+      ],
+    },
+  ].filter((group) => group.items.length > 0);
 
   const userName = useMemo(() => getUserDisplayName(), []);
-  const dashboardModel = useMemo(() => buildDashboardSections(preferences.layout), [preferences.layout]);
-  const density = DENSITY_STYLES[preferences.density] || DENSITY_STYLES.comfortable;
-  const palette = DASHBOARD_PALETTES[preferences.palette] || DASHBOARD_PALETTES.dovela;
-  const selectedPreset = dashboardModel.preset;
-  const primaryAction = dashboardModel.quickActions[0] || getModule('gestion');
 
   return (
-    <TooltipProvider delayDuration={140}>
-      <div className={cn('w-full animate-fade-in-up', density.sectionGap)} data-dovela-tour-id="dashboard-main">
-        <WorkdayHeader
-          preset={selectedPreset}
-          userName={userName}
-          palette={palette}
-          paletteKey={preferences.palette}
-          primaryAction={primaryAction}
-          counts={counts}
-          countFailures={countFailures}
-          loadingCounts={loadingCounts}
-          density={preferences.density}
-        />
-
-        <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-start">
-          <div className="min-w-0 space-y-5 2xl:flex-1">
-            {dashboardModel.processSections.length > 0 ? (
-              <section className="space-y-3" data-dovela-tour-id="dashboard-operations">
-                <SectionHeader title="Trabajo principal" badge={selectedPreset.eyebrow} />
-
-                <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-                  {dashboardModel.processSections.map((section) => (
-                    <GroupedActionCard
-                      key={section.key}
-                      title={section.title}
-                      description={section.description}
-                      items={section.items}
-                      counts={counts}
-                      countFailures={countFailures}
-                      loadingCounts={loadingCounts}
-                      palette={preferences.palette}
-                      density={preferences.density}
-                    />
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            <section className="space-y-3">
-              <SectionHeader title="Módulos" />
-              <div className="grid grid-cols-1 gap-3 xl:grid-cols-2 2xl:grid-cols-4">
-                {dashboardModel.supportSections.map((section) => (
-                  <GroupedActionCard
-                    key={section.key}
-                    title={section.title}
-                    description={section.description}
-                    items={section.items}
-                    counts={counts}
-                    countFailures={countFailures}
-                    loadingCounts={loadingCounts}
-                    palette={preferences.palette}
-                    density={preferences.density}
-                  />
-                ))}
-              </div>
-            </section>
-          </div>
-
-          <aside
-            className="space-y-4 2xl:sticky 2xl:top-4 2xl:ml-auto 2xl:w-[24rem] 2xl:flex-none"
-            data-dovela-tour-id="dashboard-tracking"
-          >
-            <RecentExpedientesSummary items={recentExpedientes} palette={preferences.palette} />
-            <TrackedExpedientesSummary
-              personal={trackedExpedientes.personal}
-              loading={loadingTracked}
-              error={trackedError}
-              density={preferences.density}
-              palette={preferences.palette}
-            />
-          </aside>
+    <div className="w-full space-y-5 animate-fade-in-up" data-dovela-tour-id="dashboard-main">
+      {/* Greeting */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between" data-dovela-tour-id="dashboard-hero">
+        <div className="flex flex-col gap-0.5">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            {getGreeting()}, {userName}
+          </h1>
+          <p className="text-xs text-muted-foreground/70">{getFormattedDate()} · Resumen operativo personal</p>
         </div>
       </div>
-    </TooltipProvider>
-  );
-}
 
-function WorkdayHeader({
-  preset,
-  userName,
-  palette,
-  paletteKey,
-  primaryAction,
-  counts,
-  countFailures,
-  loadingCounts,
-  density,
-}) {
-  const dense = density === 'compact';
-  const toneClasses = primaryAction ? getToneClasses(paletteKey, primaryAction.tone) : palette.primaryTone;
-  const toneIconClasses = primaryAction ? getToneIconClasses(paletteKey, primaryAction.tone) : 'text-primary';
-
-  return (
-    <section
-      className={cn('overflow-hidden rounded-2xl border px-3 py-3 shadow-sm sm:px-4', palette.hero)}
-      data-dovela-tour-id="dashboard-hero"
-    >
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-current/15 bg-background/70 text-current shadow-sm">
-            <Icon name="LayoutDashboard" size={18} />
-          </span>
-          <div className="min-w-0">
-            <div className="mb-1 flex min-w-0 flex-wrap items-center gap-1.5">
-              <Badge variant="outline" className="h-5 max-w-full rounded-full border-current/20 bg-background/70 px-2 text-[10px] text-current">
-                <span className="truncate">{preset.eyebrow}</span>
-              </Badge>
-            </div>
-            <h1 className="truncate text-lg font-semibold tracking-tight text-foreground sm:text-xl">Panel de trabajo</h1>
-            <p className={cn('truncate text-muted-foreground', dense ? 'text-[10px]' : 'text-[11px]')}>
-              {getGreeting()}, {getShortUserName(userName)} · {getCompactDate()}
-            </p>
-          </div>
-        </div>
-
-        {primaryAction ? (
-          <ModuleTooltip item={primaryAction}>
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto min-h-11 shrink-0 rounded-xl border-current/15 bg-background/75 p-0 text-left shadow-sm transition-colors hover:bg-background"
-            >
-              <Link to={primaryAction.link} className="flex w-full items-center justify-between gap-3 no-underline px-3 py-2 md:w-[18rem]">
-                <span className="flex min-w-0 items-center gap-2.5">
-                  <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg', toneClasses)}>
-                    <Icon name={primaryAction.icon} size={15} className={toneIconClasses} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-[12px] font-semibold text-foreground">{primaryAction.title}</span>
-                    <span className="block truncate text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">
-                      {primaryAction.eyebrow}
-                    </span>
-                  </span>
-                </span>
-                <ActionMeta
-                  item={primaryAction}
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-start">
+        <div className="space-y-4 xl:w-full xl:max-w-[58rem] xl:flex-none">
+          <section className="space-y-2.5" data-dovela-tour-id="dashboard-operations">
+            <SectionHeader title="Módulos agrupados" count={dashboardGroups.length} />
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-3">
+              {dashboardGroups.map((group) => (
+                <GroupedActionCard
+                  key={group.key}
+                  title={group.title}
+                  description={group.description}
+                  items={group.items}
                   counts={counts}
-                  countFailures={countFailures}
                   loadingCounts={loadingCounts}
-                  compact={dense}
                 />
-              </Link>
-            </Button>
-          </ModuleTooltip>
-        ) : null}
-      </div>
-    </section>
-  );
-}
+              ))}
+            </div>
+          </section>
+        </div>
 
-function SectionHeader({ title, badge }) {
-  return (
-    <div className="flex flex-wrap items-center gap-2.5">
-      <h2 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60">
-        {title}
-      </h2>
-      {badge ? (
-        <Badge variant="secondary" className="h-4 rounded-full px-1.5 text-[9px] font-normal">
-          {badge}
-        </Badge>
-      ) : null}
-      <div className="flex-1 border-t border-border/30" />
+        <aside className="space-y-4 xl:sticky xl:top-4 xl:ml-auto xl:w-[26rem] xl:flex-none" data-dovela-tour-id="dashboard-tracking">
+          <RecentExpedientesSummary items={recentExpedientes} />
+          <TrackedExpedientesSummary
+            personal={trackedExpedientes.personal}
+            team={trackedExpedientes.team}
+            loading={loadingTracked}
+            error={trackedError}
+            stacked
+          />
+        </aside>
+      </div>
     </div>
   );
 }
 
-function ModuleTooltip({ item, children }) {
+function RecentExpedientesSummary({ items }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent
-        side="top"
-        align="start"
-        sideOffset={8}
-        className="max-w-[13rem] rounded-lg border-border/70 bg-background/95 px-2.5 py-2 text-[11px] shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/90"
-      >
-        <div className="space-y-0.5">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/80">{item.eyebrow}</p>
-          <p className="leading-snug text-foreground">{item.desc}</p>
-        </div>
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-function GroupedActionCard({ title, description, items, counts, countFailures, loadingCounts, palette, density }) {
-  const dense = density === 'compact';
-  const paletteClasses = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
-  const leadTone = items[0]?.tone || 'primary';
-  const leadToneClasses = getToneClasses(palette, leadTone);
-  const leadIconClasses = getToneIconClasses(palette, leadTone);
-
-  return (
-    <Card className={cn('overflow-hidden border shadow-lg shadow-black/5', paletteClasses.groupCard)}>
-      <CardContent className="p-3">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', leadToneClasses)}>
-              <Icon name={items[0]?.icon || 'Grid2X2'} size={15} className={leadIconClasses} />
-            </span>
-            <div className="min-w-0">
-              <h3 className="truncate text-sm font-semibold text-foreground">{title}</h3>
-              <p className="truncate text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/65">
-                {items.length} accesos
-              </p>
-            </div>
-          </div>
-          <div className="flex shrink-0 items-center gap-1.5">
-            <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-normal tabular-nums">
-              {items.length}
-            </Badge>
-            {description ? <SectionInfoTooltip title={title} description={description} /> : null}
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-2">
-          {items.map((item) => {
-            const toneClasses = getToneClasses(palette, item.tone);
-            const toneIconClasses = getToneIconClasses(palette, item.tone);
-
-            return (
-              <ModuleTooltip key={item.key || item.link} item={item}>
-                <Button
-                  asChild
-                  variant="outline"
-                  className={cn('h-auto justify-start px-3 py-2', dense ? 'min-h-[2.85rem]' : 'min-h-[3rem]')}
-                >
-                  <Link
-                    to={item.link}
-                    className="flex w-full items-center justify-between gap-2.5 rounded-lg border border-border/50 bg-background/75 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-current/20 hover:bg-background hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <span className="flex min-w-0 items-center gap-2.5">
-                      <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', toneClasses)}>
-                        <Icon name={item.icon} size={15} className={toneIconClasses} />
-                      </span>
-                      <span className="min-w-0 text-left">
-                        <span className="block truncate text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">
-                          {item.eyebrow}
-                        </span>
-                        <span className="block truncate text-[12px] font-semibold text-foreground">{item.title}</span>
-                      </span>
-                    </span>
-
-                    <ActionMeta
-                      item={item}
-                      counts={counts}
-                      countFailures={countFailures}
-                      loadingCounts={loadingCounts}
-                      compact={dense}
-                    />
-                  </Link>
-                </Button>
-              </ModuleTooltip>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function SectionInfoTooltip({ title, description }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          aria-label={`Detalle de ${title}`}
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <Icon name="Info" size={13} />
-        </button>
-      </TooltipTrigger>
-      <TooltipContent
-        side="top"
-        align="end"
-        sideOffset={8}
-        className="max-w-[14rem] rounded-lg border-border/70 bg-background/95 px-2.5 py-2 text-[11px] leading-snug text-foreground shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/90"
-      >
-        {description}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-function ActionMeta({ item, counts, countFailures, loadingCounts, compact = false }) {
-  const countKey = item.countKey || item.link;
-  const showCount = item.showCount !== false;
-  const hasCount = showCount && Object.prototype.hasOwnProperty.call(counts, countKey);
-  const countFailed = showCount && Boolean(countFailures[countKey]);
-  const count = counts[countKey];
-
-  if (loadingCounts && (hasCount || countFailed || showCount)) {
-    return <Skeleton className="h-5 w-10 rounded" />;
-  }
-
-  if (countFailed) {
-    return (
-      <span className={cn('shrink-0 text-right font-medium text-warning', compact ? 'text-[10px]' : 'text-[11px]')}>
-        {COUNT_UNAVAILABLE_LABEL}
-      </span>
-    );
-  }
-
-  if (hasCount && count != null) {
-    return (
-      <Badge variant="secondary" className="shrink-0 rounded-full px-2 text-[10px] font-normal tabular-nums">
-        {count}
-      </Badge>
-    );
-  }
-
-  return <Icon name="ArrowUpRight" size={14} className="shrink-0 text-muted-foreground" />;
-}
-
-function RecentExpedientesSummary({ items, palette }) {
-  const paletteClasses = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
-  const toneClasses = getToneClasses(palette, 'accent');
-  const toneIconClasses = getToneIconClasses(palette, 'accent');
-
-  return (
-    <Card className={cn('overflow-hidden border shadow-sm', paletteClasses.groupCard)}>
+    <Card className="border-border/60 shadow-sm">
       <CardContent className="p-0">
-        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-2.5">
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-3">
           <div className="flex min-w-0 items-center gap-2.5">
-            <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', toneClasses)}>
-              <Icon name="History" size={15} className={toneIconClasses} />
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
+              <Icon name="History" size={15} />
             </span>
             <div className="min-w-0">
               <h2 className="truncate text-sm font-semibold text-foreground">Vistos recientemente</h2>
@@ -807,24 +332,18 @@ function RecentExpedientesSummary({ items, palette }) {
         </div>
 
         {items.length === 0 ? (
-          <div className="px-4 py-4 text-center text-xs text-muted-foreground">
-            Sin recientes.
+          <div className="px-4 py-5 text-center text-xs text-muted-foreground">
+            Aún no hay expedientes recientes.
           </div>
         ) : (
-          <div className="grid gap-2 p-2.5">
+          <div className="grid gap-1.5 p-2">
             {items.map((item) => (
               <Link
                 key={item.radicado}
                 to={item.href}
-                className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 rounded-xl border border-border/55 bg-background/80 px-3 py-2 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/25 hover:bg-background hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex items-center justify-between rounded-md px-2.5 py-2 no-underline transition-colors hover:bg-muted/50"
               >
-                <span className="min-w-0">
-                  <span className="block truncate font-mono text-xs font-semibold text-foreground">{item.radicado}</span>
-                  <span className="block truncate text-[10px] text-muted-foreground">{formatShortDate(item.updatedAt)}</span>
-                </span>
-                <Badge variant="outline" className="h-5 rounded-full px-2 text-[10px] font-normal">
-                  Reciente
-                </Badge>
+                <span className="truncate text-xs font-semibold text-foreground">{item.radicado}</span>
                 <Icon name="ArrowUpRight" size={13} className="text-muted-foreground" />
               </Link>
             ))}
@@ -835,46 +354,120 @@ function RecentExpedientesSummary({ items, palette }) {
   );
 }
 
-function TrackedExpedientesSummary({ personal, loading, error, density, palette }) {
-  const dense = density === 'compact';
-
+function SectionHeader({ title, count }) {
   return (
-    <section className="grid gap-3">
+    <div className="flex items-center gap-2.5">
+      <h2 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60">
+        {title}
+      </h2>
+      {count != null && (
+        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-normal rounded-full">
+          {count}
+        </Badge>
+      )}
+      <div className="flex-1 border-t border-border/30" />
+    </div>
+  );
+}
+
+function GroupedActionCard({ title, description, items, counts, loadingCounts }) {
+  return (
+    <Card className="border-border/60 shadow-sm">
+      <CardContent className="p-3.5">
+        <div className="mb-3">
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <p className="text-xs text-muted-foreground">{description}</p>
+        </div>
+        <div className="grid grid-cols-1 gap-2">
+          {items.map((item) => {
+            const iconColor = ICON_COLORS[item.link] || DEFAULT_ICON_COLOR;
+            const countKey = item.countKey || item.link;
+            const hasCount = item.showCount !== false && Object.prototype.hasOwnProperty.call(counts, countKey);
+            const count = counts[countKey];
+            const status = item.status || null;
+
+            return (
+              <Button
+                key={item.key || item.link}
+                asChild
+                variant="outline"
+                className="h-auto min-h-[3.2rem] justify-start px-3 py-2.5"
+              >
+                <Link to={item.link} className="flex w-full items-center justify-between gap-3 no-underline">
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-md', iconColor)}>
+                      <Icon name={item.icon} size={15} />
+                    </span>
+                    <span className="min-w-0 text-left">
+                      <span className="block truncate text-[13px] font-semibold text-foreground">{item.title}</span>
+                      <span className="block truncate text-[11px] text-muted-foreground">{item.desc}</span>
+                    </span>
+                  </span>
+                  <span className="shrink-0">
+                    {status ? (
+                      <Badge variant="outline" className="rounded-full px-2 text-[10px] font-normal">
+                        {status}
+                      </Badge>
+                    ) : loadingCounts && hasCount ? (
+                      <Skeleton className="h-5 w-7 rounded" />
+                    ) : hasCount && count != null ? (
+                      <Badge variant="secondary" className="rounded-full px-2 text-[10px] font-normal tabular-nums">
+                        {count}
+                      </Badge>
+                    ) : (
+                      <Icon name="ArrowUpRight" size={14} className="text-muted-foreground" />
+                    )}
+                  </span>
+                </Link>
+              </Button>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TrackedExpedientesSummary({ personal, team, loading, error, stacked = false }) {
+  return (
+    <section className={cn('grid gap-3', stacked ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2')}>
       <TrackedExpedientesTable
         title="Marcados para mí"
-        subtitle="Atención directa"
+        subtitle="Expedientes que requieren tu atención directa"
         icon="Bookmark"
         items={personal}
         loading={loading}
-        emptyText="Sin marcados personales."
-        dense={dense}
-        palette={palette}
+        emptyText="No tienes expedientes marcados para seguimiento personal."
       />
-      {error ? (
-        <div className="rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
+      <TrackedExpedientesTable
+        title="Marcados del equipo"
+        subtitle="Prioridades compartidas por el equipo de curaduría"
+        icon="Users"
+        items={team}
+        loading={loading}
+        emptyText="Aún no hay expedientes marcados para el equipo."
+      />
+      {error && (
+        <div className={cn('rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning', !stacked && 'lg:col-span-2')}>
           {error}
         </div>
-      ) : null}
+      )}
     </section>
   );
 }
 
-function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyText, dense, palette }) {
-  const paletteClasses = DASHBOARD_PALETTES[palette] || DASHBOARD_PALETTES.dovela;
-  const toneClasses = getToneClasses(palette, 'primary');
-  const toneIconClasses = getToneIconClasses(palette, 'primary');
-
+function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyText }) {
   return (
-    <Card className={cn('overflow-hidden border shadow-sm', paletteClasses.groupCard)}>
+    <Card className="border-border/60 shadow-sm">
       <CardContent className="p-0">
-        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-2.5">
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-3">
           <div className="flex min-w-0 items-center gap-2.5">
-            <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', toneClasses)}>
-              <Icon name={icon} size={15} className={toneIconClasses} />
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <Icon name={icon} size={15} />
             </span>
             <div className="min-w-0">
               <h2 className="truncate text-sm font-semibold text-foreground">{title}</h2>
-              <p className={cn('truncate text-muted-foreground', dense ? 'text-[10px]' : 'text-[11px]')}>{subtitle}</p>
+              <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p>
             </div>
           </div>
           <Badge variant="secondary" className="rounded-full text-[10px]">
@@ -882,26 +475,26 @@ function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyT
           </Badge>
         </div>
 
-        <div className="grid gap-2 p-2.5">
+        <div className="divide-y divide-border/50">
           {loading ? (
             Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="rounded-xl border border-border/55 bg-background/70 px-3 py-2.5">
+              <div key={index} className="px-3.5 py-3">
                 <Skeleton className="mb-2 h-4 w-1/3" />
                 <Skeleton className="h-3 w-3/4" />
               </div>
             ))
           ) : items.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border/70 px-4 py-4 text-center text-xs text-muted-foreground">
+            <div className="px-4 py-6 text-center text-xs text-muted-foreground">
               {emptyText}
             </div>
           ) : (
-            items.map((item) => <TrackedExpedienteRow key={item.key} item={item} dense={dense} palette={palette} />)
+            items.map((item) => <TrackedExpedienteRow key={item.key} item={item} />)
           )}
         </div>
 
         <div className="border-t border-border/50 px-3.5 py-2.5 text-right">
-          <Link to="/licencias/gestion" className="text-xs font-medium text-primary hover:underline underline-offset-2">
-            Ver gestión de licencias
+          <Link to="/licencias/gestion-nueva" className="text-xs font-medium text-primary hover:underline underline-offset-2">
+            Ver gestión nueva
           </Link>
         </div>
       </CardContent>
@@ -909,34 +502,24 @@ function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyT
   );
 }
 
-function TrackedExpedienteRow({ item, dense, palette }) {
-  const toneClasses = getToneClasses(palette, 'primary');
-  const toneIconClasses = getToneIconClasses(palette, 'primary');
-
+function TrackedExpedienteRow({ item }) {
   return (
-    <Link
-      to={item.href}
-      className={cn(
-        'grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-xl border border-border/55 bg-background/80 px-3 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:bg-background hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        dense ? 'py-2.5' : 'py-3'
-      )}
-    >
-      <span className={cn('mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm', toneClasses)}>
-        <Icon name="FolderOpen" size={14} className={toneIconClasses} />
-      </span>
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="font-mono text-xs font-semibold text-foreground">{item.radicado}</span>
-          <Badge variant="outline" className="h-5 rounded-full px-2 text-[10px] font-normal">
-            {item.stateLabel}
-          </Badge>
+    <Link to={item.href} className="block no-underline hover:bg-muted/40 transition-colors">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 px-3.5 py-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="font-mono text-xs font-semibold text-foreground">{item.radicado}</span>
+            <Badge variant="outline" className="h-5 rounded-full px-2 text-[10px] font-normal">
+              {item.stateLabel}
+            </Badge>
+          </div>
+          <p className="mt-1 truncate text-xs font-medium text-foreground/90">{item.title}</p>
+          <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">{item.description}</p>
         </div>
-        <p className="mt-1 truncate text-xs font-medium text-foreground/90">{item.title}</p>
-        <p className="mt-0.5 truncate text-[10px] text-muted-foreground">{item.description}</p>
-      </div>
-      <div className="flex flex-col items-end justify-between gap-2 text-right">
-        <span className="text-[10px] text-muted-foreground">{item.dateLabel}</span>
-        <Icon name="ArrowUpRight" size={13} className="text-muted-foreground" />
+        <div className="flex flex-col items-end justify-between gap-2 text-right">
+          <span className="text-[10px] text-muted-foreground">{item.dateLabel}</span>
+          <Icon name="ArrowUpRight" size={13} className="text-muted-foreground" />
+        </div>
       </div>
     </Link>
   );
