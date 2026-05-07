@@ -1,7 +1,7 @@
 import FUNService from '../../../services/fun.service'
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
@@ -345,13 +345,12 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else {
-                            if (response.status == 500) {
-                                swalClose();
-                            }
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
         }
