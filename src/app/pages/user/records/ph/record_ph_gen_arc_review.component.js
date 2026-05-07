@@ -112,7 +112,7 @@ export default function RECORD_PH_GEN_ARC_REVIEW(props) {
         formData.set('json', JSON.stringify({
             '0': { value: value, desc: _type, check: '' },
         }));
-        await execute(savePHStep(RECORD_PH_SERVICE, 'phrew', formData), {
+        await execute(savePHStep(RECORD_PH_SERVICE, LOAD_STEP('phrew'), formData), {
             operationName: 'guardar tipo de revisión',
             success: true,
             error: true,
@@ -154,7 +154,7 @@ export default function RECORD_PH_GEN_ARC_REVIEW(props) {
             formData.set('id_public', rew.pid);
 
             const isLast = _SAVE_STEPS === _LIMIT_STEPS;
-            await execute(savePHStep(RECORD_PH_SERVICE, rew.pid, formData), {
+            await execute(savePHStep(RECORD_PH_SERVICE, LOAD_STEP(rew.pid), formData), {
                 operationName: `guardar revisión ${rew.pid}`,
                 success: false,
                 error: true,
@@ -190,7 +190,7 @@ export default function RECORD_PH_GEN_ARC_REVIEW(props) {
             formData.set('id_public', rew.pid + '_c');
 
             const isLast = _SAVE_STEPS === _LIMIT_STEPS;
-            await execute(savePHStep(RECORD_PH_SERVICE, rew.pid + '_c', formData), {
+            await execute(savePHStep(RECORD_PH_SERVICE, LOAD_STEP(rew.pid + '_c'), formData), {
                 operationName: `guardar contexto ${rew.pid}`,
                 success: false,
                 error: true,

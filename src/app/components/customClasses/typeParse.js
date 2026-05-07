@@ -642,26 +642,53 @@ export function formsParser1_exlucde2(object) {
 }
 
 // REGEX GROUP
+function normalizeClassifierText(value) {
+    return String(value ?? '').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function collectClassifierFields(input) {
+    if (!input || typeof input !== 'object') return '';
+    return [
+        input.tipo,
+        input.tramite,
+        input.item_1,
+        input.item_2,
+        input.id_public,
+        input.radicado,
+        input.description,
+        input.desc,
+        input.name,
+        input.list_type_name,
+    ].filter(value => value !== undefined && value !== null).join(' ');
+}
+
 export function regexChecker_isPh(input, parser) {
-    if (parser) return REGEX_MATCH_1100_40_02(formsParser1(input))
+    if (parser) return REGEX_MATCH_1100_40_02(`${formsParser1(input)} ${collectClassifierFields(input)}`)
+    if (input && typeof input === 'object') return REGEX_MATCH_1100_40_02(`${formsParser1(input)} ${collectClassifierFields(input)}`)
     return REGEX_MATCH_1100_40_02(input)
 }
 export function regexChecker_isOA(input) {
+    if (!input) return false;
     let modalidad = input.tramite;
     let tipo = input.tipo;
     if (!modalidad) modalidad = input.item_2;
     if (!tipo) tipo = input.item_1;
-    if (!modalidad) return false;
-    if (!tipo) tipo = "";
-    if (modalidad == 'B' || modalidad == 'D' || tipo.includes('G')) return true;
+    const classifierText = normalizeClassifierText(`${formsParser1(input)} ${collectClassifierFields(input)}`).toLowerCase();
+    if (!modalidad && !tipo) return /prorroga|revalidacion|otras\s+actuaciones/.test(classifierText);
+    const modalidadCode = String(modalidad ?? '').toUpperCase();
+    const tipoCode = String(tipo ?? '').toUpperCase();
+    if (modalidadCode == 'B' || modalidadCode == 'D' || tipoCode.includes('G')) return true;
+    if (/prorroga|revalidacion|otras\s+actuaciones/.test(classifierText)) return true;
     return false;
 }
 export function regexChecker_isOA_2(input) {
     if (!input) return false;
     let modalidad = input.tramite;
-    if (!modalidad) return false;
-    let isPro = modalidad.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes('prorroga');
-    if (modalidad == 'B' || isPro) return true;
+    if (!modalidad) modalidad = input.item_2;
+    const classifierText = normalizeClassifierText(`${modalidad ?? ''} ${formsParser1(input)} ${collectClassifierFields(input)}`).toLowerCase();
+    if (!modalidad && !classifierText) return false;
+    let isPro = classifierText.includes('prorroga');
+    if (String(modalidad ?? '').toUpperCase() == 'B' || isPro) return true;
     return false;
 }
 export function regexChecker_isOA_3(input) {
@@ -692,11 +719,10 @@ function REGEX_MATCH_1100_40_01(input) {
     return regex.test(input);
 }
 function REGEX_MATCH_1100_40_02(_string) {
-    let regex0 = /p\.\s+h/i;
-    let regex1 = /p\.h/i;
-    let regex2 = /PROPIEDAD\s+HORIZONTAL/i;
-    let regex3 = /p\s+h/i;
-    if (regex0.test(_string) || regex2.test(_string) || regex1.test(_string) || regex3.test(_string)) return true;
+    const input = normalizeClassifierText(_string);
+    let regex0 = /(^|[^a-z])p\s*\.?\s*h(?=$|[^a-z])/i;
+    let regex2 = /propiedad\s+horizontal/i;
+    if (regex0.test(input) || regex2.test(input)) return true;
     return false
 }
 function REGEX_MATCH_1100_40_03(input) {

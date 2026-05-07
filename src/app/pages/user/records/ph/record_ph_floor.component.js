@@ -216,10 +216,8 @@ export default function RECORD_PH_FLOOR(props) {
     let _GET_REVIEW = () => {
         const REVIEW = [];
         if (currentRecord != null) {
-            if (currentRecord.record_ph != null) {
-                const value = currentRecord.record_ph.review ?? '';
-                if (value) return value.split(',');
-            }
+            const value = currentRecord.record_ph?.review ?? currentRecord.review ?? '';
+            if (value) return value.split(',');
         }
         return REVIEW;
     }
@@ -253,7 +251,7 @@ export default function RECORD_PH_FLOOR(props) {
         formData.set('version', currentVersionR);
         formData.set('recordPhId', currentRecord.id);
         formData.set('id_public', id);
-        await execute(savePHStep(RECORD_PH_SERVICE, id, formData), {
+        await execute(savePHStep(RECORD_PH_SERVICE, LOAD_STEP(id), formData), {
             operationName: `guardar sección ${id}`,
             success: true,
             error: true,
@@ -266,8 +264,8 @@ export default function RECORD_PH_FLOOR(props) {
         const formData = new FormData();
         const checks = Array.from(checkedReviews).join(',');
         formData.set('review', checks);
-        formData.set('id', currentRecord.record_ph.id);
-        await execute(RECORD_PH_SERVICE.update(formData), {
+        const recordId = currentRecord.record_ph?.id ?? currentRecord.id;
+        await execute(RECORD_PH_SERVICE.update(recordId, formData), {
             operationName: 'guardar lista de checkeo',
             success: true,
             error: true,
@@ -282,7 +280,7 @@ export default function RECORD_PH_FLOOR(props) {
         formData.set('version', currentVersionR);
         formData.set('recordPhId', currentRecord.id);
         formData.set('id_public', id);
-        await execute(savePHStep(RECORD_PH_SERVICE, id, formData), {
+        await execute(savePHStep(RECORD_PH_SERVICE, LOAD_STEP(id), formData), {
             operationName: `guardar sección ${id}`,
             success: false,
             error: true,
@@ -317,7 +315,7 @@ export default function RECORD_PH_FLOOR(props) {
         let _COMPONENT = [];
         for (var i = 0; i < _LIST.length; i++) {
             _COMPONENT.push(
-                <>{checkArrayState[i] ?
+                checkArrayState[i] ?
                     <div className="row border" key={i}>
                         <div className="col">
                             <select className="form-control form-control-sm" value={checkArrayState[i] ?? ''}
@@ -338,7 +336,7 @@ export default function RECORD_PH_FLOOR(props) {
                             <button className="btn btn-danger" onClick={() => removeItem(i)}>BORRAR</button>
                         </div>
                     </div>
-                    : ""}</>
+                    : null
             );
         }
         return _COMPONENT;
@@ -348,7 +346,6 @@ export default function RECORD_PH_FLOOR(props) {
         let _CHILD_VARS = _GET_CHILD_1(currentItem);
         let _CHILD_1 = _GET_CHILD_1_LATER(currentItem);
         let _CHILD_2 = _GET_CHILD_1_LATER_LIST(currentItem);
-        let _CHILD_CUB = _GET_CHILD_CUB();
         let _CHILD_6 = _GET_CHILD_6();
 
         let _JOIN_ARRAY = [];
@@ -390,7 +387,7 @@ export default function RECORD_PH_FLOOR(props) {
                         <div className="row">
                             <label className="app-p lead fw-bold text-uppercase text-start">¿Qué listas incluye?</label>
                             <div className="text-start">
-                                {_COMPONENT_REVIEW().map(rev => <>{rev.name} <br /></>)}
+                                {_COMPONENT_REVIEW().map((rev, index) => <span key={rev.alias || rev.name || index}>{rev.name} <br /></span>)}
                             </div>
                         </div>
                         <div className="row">
