@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import FunDocumentManagementModal from './components/FunDocumentManagementModal';
 import UnifiedDocumentTable from '../shared/UnifiedDocumentTable';
 import UnifiedDocumentCreateModal from '../shared/UnifiedDocumentCreateModal';
+import FunDocumentAuditTab from './components/FunDocumentAuditTab';
 import { buildDocumentEntriesFromLegacyData, normalizeVentanillaDocs } from '../shared/expediente-documental.utils';
 import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../shared/expediente-documental.constants';
 
@@ -47,6 +48,8 @@ function FUN_6_VIEW({
     const [createDocumentsSaving, setCreateDocumentsSaving] = useState(false);
     const [pendingPhysicalDocs, setPendingPhysicalDocs] = useState([]);
     const [pendingPhysicalDocsLoaded, setPendingPhysicalDocsLoaded] = useState(false);
+    const [activeTab, setActiveTab] = useState('documents'); // 'documents' | 'audit'
+    const [rawSubmitList, setRawSubmitList] = useState([]);
 
     const isLoaded = documentsLoaded && ventanillaLoaded;
     const localDocumentEntries = useMemo(
@@ -122,6 +125,7 @@ function FUN_6_VIEW({
 
                 setVRList(vrList);
                 setVentanillaDocs(normalizedDocs);
+                setRawSubmitList(currentList);
                 setVentanillaLoaded(true);
                 if (onVentanillaRowsChange) {
                     onVentanillaRowsChange(normalizedDocs);
@@ -131,6 +135,7 @@ function FUN_6_VIEW({
                 console.log(error);
                 setVRList([]);
                 setVentanillaDocs([]);
+                setRawSubmitList([]);
                 setVentanillaLoaded(true);
                 if (onVentanillaRowsChange) {
                     onVentanillaRowsChange([]);
@@ -574,26 +579,99 @@ function FUN_6_VIEW({
                 });
         }
 
+        const saveDigitalEntryFromModal = async (digitalDoc, values = {}) => {
+            if (!digitalDoc?.id) {
+                swalError({ title: swaMsg.generic_eror_title, text: 'No fue posible identificar la entrada digital a actualizar.' });
+                return;
+            }
+
+            const modalFormData = new FormData();
+            modalFormData.set('attached', false);
+            modalFormData.set('description', digitalDoc.description || 'Documento sin nombre');
+            modalFormData.set('id_public', digitalDoc.id_public || '');
+            modalFormData.set('pages', values.pages ?? digitalDoc.pages ?? '');
+            modalFormData.set('date', digitalDoc.date || '');
+            modalFormData.set('id_replace', values.vr ?? digitalDoc.id_replace ?? '');
+            modalFormData.set('origin_state', digitalDoc.origin_state || DOCUMENT_ORIGIN_STATE.SCANNED);
+            modalFormData.set('medio_recepcion', digitalDoc.medio_recepcion || '');
+
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+
+            try {
+                const response = await FUNService.update_6(digitalDoc.id, modalFormData);
+                if (response.data === 'OK') {
+                    swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                    setEdit(false);
+                    setItem(null);
+                    requestUpdate(currentItem.id);
+                    return;
+                }
+
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+            } catch (error) {
+                console.log(error);
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                throw error;
+            }
+        };
+
         return (
             <div>
-                {mergeVentanilla ? <UnifiedDocumentTable
-                    entries={displayedDocumentEntries}
-                    loading={unifiedDocumentsLoading}
-                    canManage={canManageDocuments}
-                    onAddDocument={() => setCreateModalOpen(true)}
-                    onEditEntry={(digitalDoc) => set_edit_6(digitalDoc)}
-                    onDeleteEntry={(digitalDoc) => delete_6(digitalDoc.id)}
-                /> : _CHILD_6_LIST()}
-                {edit
-                    ? <>
-                        <form id="fun_6_d_edit" onSubmit={edit_6} className="py-3">
-                            {_EDIT_COMPONENT()}
-                            <div className="row text-center">
-                                <div className="col-12">
-                                    <Button type="submit" variant="default" size="sm"><Icon name="archive" size={14} /> Guardar cambios</Button>
-                                </div>
-                            </div>
-                        </form></> : ""}
+                {/* Barra de tabs */}
+                <ul className="nav nav-tabs mb-3">
+                    <li className="nav-item">
+                        <button
+                            className={`nav-link${activeTab === 'documents' ? ' active' : ''}`}
+                            onClick={() => setActiveTab('documents')}
+                            type="button"
+                        >
+                            Documentos
+                        </button>
+                    </li>
+                    <li className="nav-item">
+                        <button
+                            className={`nav-link${activeTab === 'audit' ? ' active' : ''}`}
+                            onClick={() => setActiveTab('audit')}
+                            type="button"
+                        >
+                            🔍 Diagnóstico
+                        </button>
+                    </li>
+                </ul>
+
+                {/* Contenido del tab activo */}
+                {activeTab === 'documents' && (
+                    <>
+                        {mergeVentanilla ? <UnifiedDocumentTable
+                            entries={displayedDocumentEntries}
+                            loading={unifiedDocumentsLoading}
+                            canManage={canManageDocuments}
+                            onAddDocument={() => setCreateModalOpen(true)}
+                            onEditEntry={() => {}}
+                            onSaveDigitalEntry={saveDigitalEntryFromModal}
+                            onDeleteEntry={(digitalDoc) => delete_6(digitalDoc.id)}
+                            vrList={VRList}
+                        /> : _CHILD_6_LIST()}
+                        {edit
+                            ? <>
+                                <form id="fun_6_d_edit" onSubmit={edit_6} className="py-3">
+                                    {_EDIT_COMPONENT()}
+                                    <div className="row text-center">
+                                        <div className="col-12">
+                                            <Button type="submit" variant="default" size="sm"><Icon name="archive" size={14} /> Guardar cambios</Button>
+                                        </div>
+                                    </div>
+                                </form></> : ""}
+                    </>
+                )}
+
+                {activeTab === 'audit' && (
+                    <FunDocumentAuditTab
+                        digitalDocs={currentItem6}
+                        VRList={rawSubmitList}
+                    />
+                )}
+
                 <FunDocumentManagementModal
                     open={managementModalOpen}
                     onClose={closeManagementModal}

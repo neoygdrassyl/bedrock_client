@@ -50,9 +50,27 @@ function FilterButton({ type, activeFilter, activePopover, setActivePopover }) {
             setActivePopover(isOpen ? '' : type);
         }}
         title={`Filtrar por ${FILTER_LABEL[type]}`}
+        aria-label={`Filtrar por ${FILTER_LABEL[type]}`}
     >
         <Icon name={active ? 'filter' : 'chevron-down'} size={10} />
     </button>;
+}
+
+function FolioSummary({ group }) {
+    const summary = group.summary || {};
+
+    if (summary.foliosLabel) {
+        return <div className="space-y-1 text-xs" title={summary.foliosLabel}>
+            <div className="font-mono font-semibold text-foreground">{summary.foliosLabel}</div>
+            <div className="text-[11px] text-muted-foreground">
+                {summary.scanDateTime ? `Escaneo ${summary.scanDateTime}` : ''}
+                {summary.scanDateTime && summary.vrIngressDateTime ? ' · ' : ''}
+                {summary.vrIngressDateTime ? `VR ${summary.vrIngressDateTime}` : ''}
+            </div>
+        </div>;
+    }
+
+    return <span className="font-mono" title="Cantidad de entradas o copias disponibles para este documento">{group.entryCount}</span>;
 }
 
 function OriginIconSet({ group }) {
@@ -100,7 +118,9 @@ function UnifiedDocumentTable({
     canManage = false,
     onAddDocument,
     onEditEntry,
+    onSaveDigitalEntry,
     onDeleteEntry,
+    vrList = [],
 }) {
     const wrapperRef = useRef(null);
     const [activePopover, setActivePopover] = useState('');
@@ -165,24 +185,24 @@ function UnifiedDocumentTable({
         </div>
 
         <div className="max-h-[calc(100vh-310px)] min-h-[260px] overflow-auto rounded-xl border border-border">
-            <table className="w-full table-fixed text-sm">
+            <table className="min-w-[1180px] w-full table-fixed text-sm">
                 <thead className="sticky top-0 z-10 bg-muted text-xs uppercase text-muted-foreground shadow-sm">
                     <tr>
-                        <th className="relative w-[34%] px-3 py-2 text-left">
+                        <th className="relative w-[30%] px-3 py-2 text-left">
                             Documento
                             <FilterButton type="document" activeFilter={filters.document} activePopover={activePopover} setActivePopover={setActivePopover} />
                             {activePopover === 'document' ? <div className="absolute left-2 top-9 z-20 w-72 rounded-xl border border-border bg-background p-3 shadow-xl">
                                 <input className="w-full rounded-lg border border-border px-3 py-2 text-sm normal-case" value={filters.document} onChange={(event) => updateFilter('document', event.target.value)} placeholder="Nombre o código" autoFocus />
                             </div> : null}
                         </th>
-                        <th className="relative w-[16%] px-3 py-2 text-left">
+                        <th className="relative w-[14%] px-3 py-2 text-left">
                             VR
                             <FilterButton type="vr" activeFilter={filters.vr} activePopover={activePopover} setActivePopover={setActivePopover} />
                             {activePopover === 'vr' ? <div className="absolute left-2 top-9 z-20 w-56 rounded-xl border border-border bg-background p-3 shadow-xl">
                                 <input className="w-full rounded-lg border border-border px-3 py-2 text-sm normal-case" value={filters.vr} onChange={(event) => updateFilter('vr', event.target.value)} placeholder="Filtrar VR" autoFocus />
                             </div> : null}
                         </th>
-                        <th className="relative w-[18%] px-3 py-2 text-left">
+                        <th className="relative w-[17%] px-3 py-2 text-left">
                             Origen
                             <FilterButton type="origins" activeFilter={filters.origins} activePopover={activePopover} setActivePopover={setActivePopover} />
                             {activePopover === 'origins' ? <div className="absolute right-2 top-9 z-20 w-64 rounded-xl border border-border bg-background p-3 text-left normal-case shadow-xl">
@@ -195,8 +215,8 @@ function UnifiedDocumentTable({
                                 })}
                             </div> : null}
                         </th>
-                        <th className="w-[14%] px-3 py-2 text-left">Medio de recepción</th>
-                        <th className="w-[8%] px-3 py-2 text-center" title="Cantidad de entradas o copias disponibles para este documento">Copias</th>
+                        <th className="w-[13%] px-3 py-2 text-left">Medio de recepción</th>
+                        <th className="w-[16%] px-3 py-2 text-left" title="Folios del escaneo y de la entrada VR">Folios y tiempos</th>
                         <th className="w-[10%] px-3 py-2 text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -208,19 +228,19 @@ function UnifiedDocumentTable({
                             <div className="font-medium leading-snug text-foreground" title={group.documentName}>{group.documentName}</div>
                             {group.documentCode ? <div className="text-xs font-mono text-muted-foreground">{group.documentCode}</div> : null}
                         </td>
-                        <td className="truncate px-3 py-2 font-mono text-xs" title={group.latestVr || 'Sin VR'}>{group.latestVr || 'Sin VR'}</td>
+                        <td className="px-3 py-2 font-mono text-xs leading-snug" title={group.latestVr || 'Sin VR'}>{group.latestVr || 'Sin VR'}</td>
                         <td className="px-3 py-2"><OriginIconSet group={group} /></td>
                         <td className="px-3 py-2"><ReceptionMediumSummary group={group} /></td>
-                        <td className="px-3 py-2 text-center font-mono" title="Cantidad de entradas o copias disponibles para este documento">{group.entryCount}</td>
+                        <td className="px-3 py-2"><FolioSummary group={group} /></td>
                         <td className="px-3 py-2">
                             <div className="flex justify-center gap-1">
-                                <Button type="button" variant="ghost" size="sm" title="Consultar entradas históricas" onClick={() => openModal(group, 'history')}>
+                                <Button type="button" variant="ghost" size="sm" title="Consultar entradas históricas" aria-label="Consultar entradas históricas" onClick={() => openModal(group, 'history')}>
                                     <Icon name="search" size={13} />
                                 </Button>
-                                <Button type="button" variant="ghost" size="sm" title="Editar entradas digitales" onClick={() => openModal(group, 'edit')} disabled={!canManage || !group.entries.some((entry) => entry.canEdit)}>
+                                <Button type="button" variant="ghost" size="sm" title="Editar entradas digitales" aria-label="Editar entradas digitales" onClick={() => openModal(group, 'edit')} disabled={!canManage || !group.entries.some((entry) => entry.canEdit)}>
                                     <Icon name="edit" size={13} />
                                 </Button>
-                                <Button type="button" variant="ghost" size="sm" title="Ver evaluación documental" onClick={() => openModal(group, 'evaluation')}>
+                                <Button type="button" variant="ghost" size="sm" title="Ver evaluación documental" aria-label="Ver evaluación documental" onClick={() => openModal(group, 'evaluation')}>
                                     <Icon name="clipboard-check" size={13} />
                                 </Button>
                             </div>
@@ -246,7 +266,9 @@ function UnifiedDocumentTable({
             canManage={canManage}
             onClose={closeModal}
             onEditEntry={onEditEntry}
+            onSaveDigitalEntry={onSaveDigitalEntry}
             onDeleteEntry={onDeleteEntry}
+            vrList={vrList}
         />
     </div>;
 }
