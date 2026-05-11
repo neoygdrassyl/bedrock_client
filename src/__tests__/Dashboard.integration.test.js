@@ -96,20 +96,20 @@ describe('Dashboard — Integración del panel principal', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Operación y Gestión')).toBeInTheDocument();
+    expect(screen.getByText('Módulos agrupados')).toBeInTheDocument();
 
     expect(screen.getByRole('heading', { level: 3, name: 'Radicación' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: 'Gestión' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'Gestión Curaduría' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 3, name: 'Otras actuaciones' })).toBeInTheDocument();
 
-    expect(screen.getByRole('link', { name: /V\.U\..*Ventanilla Única/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Radicación.*Nueva solicitud/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /LIC\. Nuevo.*En desarrollo/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /LIC\. Clásico.*Gestión actual/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Nomenclaturas.*Asignación predial/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Ventanilla Única.*Recepción documental completa/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Nueva radicación.*Crear y revisar radicaciones realizadas/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Gestionar Licencias Nuevo.*Dashboard operativo en desarrollo/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Gestionar Licencias.*Gestión clásica de expedientes/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Nomenclaturas.*Asignación y consulta predial/i })).toBeInTheDocument();
 
-    expect(screen.getByText('Coordinación y Soporte')).toBeInTheDocument();
-    expect(screen.getByText('Mensajes y Chat')).toBeInTheDocument();
+    expect(screen.getByText('Comunicaciones')).toBeInTheDocument();
+    expect(screen.getByText('Buzón de mensajes')).toBeInTheDocument();
   });
 
   it('expone anclas para el tutorial guiado del dashboard', () => {
@@ -131,14 +131,14 @@ describe('Dashboard — Integración del panel principal', () => {
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
-    expect(screen.getByText('Utilidades y Documentación')).toBeInTheDocument();
+    expect(screen.getByText('Utilidades')).toBeInTheDocument();
 
     // Cards de utilidades presentes
-    expect(screen.getByText('Documentos')).toBeInTheDocument();
-    expect(screen.getByText('Calculadora de Expensas')).toBeInTheDocument();
-    expect(screen.getByText('Consecutivos')).toBeInTheDocument();
-    expect(screen.getByText('Manual de Usuario')).toBeInTheDocument();
-    expect(screen.getByText('Base de Datos Profesionales')).toBeInTheDocument();
+    expect(screen.getByText('Calculadora de expensas')).toBeInTheDocument();
+    expect(screen.getByText('Base de datos profesionales')).toBeInTheDocument();
+    expect(screen.getByText('Historial de profesionales')).toBeInTheDocument();
+    expect(screen.getByText('Manual de usuario')).toBeInTheDocument();
+    expect(screen.getByText('Sellos')).toBeInTheDocument();
   });
 
   it('oculta cards condicionales (Normas/Uso Suelo) cuando GLOBAL_ID != cb1', () => {
@@ -159,7 +159,7 @@ describe('Dashboard — Integración del panel principal', () => {
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
-    expect(screen.getByText('Historial de Profesionales')).toBeInTheDocument();
+    expect(screen.getByText('Historial de profesionales')).toBeInTheDocument();
   });
 
   it('renderiza links correctos a nuevas rutas en español', () => {
