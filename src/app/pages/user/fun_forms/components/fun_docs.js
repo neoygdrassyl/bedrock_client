@@ -291,41 +291,8 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     />
 
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 Collapsible">
-                            <label className="app-p lead fw-normal" id="fund_2">2. ANEXAR DOCUMENTOS</label>
-                        </legend>
-                        <p className="app-p">GUÍA PARA ANEXAR DOCUMENTOS</p>
-                        <ul>
-                            <li>Para anexar un documento se debe de dar click en el botón de "Añadir", tantas veces como archivos anexos se deseen añadir al sistema.</li>
-                            <li>Cada archivo posee su formulario de información que complementará la información de la lista de arriba, para esto, en la caja de "Código" se debe indicar el código del documento usado, representado en paréntesis al inicio del nombre de documento en la lista de arriba.</li>
-                            <li>Este código debe de coincidir para que el sistema pueda identificar la información, de no ser asi, esta información será ignorada por el sistema.</li>
-                            <li>En la caja de "Descripción del documento" indique el código del documento al que se esta refiriendo, el sistema le mostrará los posibles documentos asociados a ese código y después elija el documento acorde al código deseado.</li>
-                        </ul>
-                        <div className="row">
-                            <div className="col text-end m-3">
-
-                                {attachs > 0
-                                    ? <Button type="button" variant="outline" size="sm" className="mx-2" onClick={() => minusAttach()}><Icon name="minus-circle" size={14} /> Remover último</Button>
-                                    : ""}
-                                <Button type="button" variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={14} /> Añadir</Button>
-                            </div>
-                        </div>
-
-                        <form id="form_fun6" onSubmit={addDocument} enctype="multipart/form-data">
-                            {_ATTACHS_COMPONENT()}
-                            <FUN6DATALIST />
-                            {attachs > 0
-                                ? <div className="row text-center">
-                                    <div className="col-12">
-                                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3"><Icon name="file-alt" size={14} /> Añadir {attachs} documento(s)</Button>
-                                    </div>
-                                </div> : ""}
-                        </form>
-                    </fieldset>
-
-                    <fieldset className="p-3">
                         <legend className="my-2 px-3 Collapsible" id="fund_3">
-                            <label className="app-p lead fw-normal">3. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
+                            <label className="app-p lead fw-normal">2. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
                         </legend>
                         <FUN_CHECKLIST_N
                             translation={translation}
@@ -338,7 +305,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         />
                     </fieldset>
 
-                    <h3 className="text-center py-3" id="fund_4">4. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
+                    <h3 className="text-center py-3" id="fund_4">3. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
 
                     <div id="fund_pdf">
                         <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">PDF Formulario Único Nacional</label>}>
@@ -500,7 +467,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         </Collapsible>
                     </div>
 
-                    <h3 className="text-center py-3" id="fund_5">5. CONTROL DE DOCUMENTACIÓN ESPECIAL </h3>
+                    <h3 className="text-center py-3" id="fund_5">4. CONTROL DE DOCUMENTACIÓN ESPECIAL </h3>
                     <div id="fund_23" >
                         <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">CONTROL DE DOCUMENTO DE RECONOCIMIENTO</label>}>
                             <div className='text-start'>

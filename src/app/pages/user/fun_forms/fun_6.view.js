@@ -13,6 +13,7 @@ import FunDocumentManagementModal from './components/FunDocumentManagementModal'
 import UnifiedDocumentTable from '../shared/UnifiedDocumentTable';
 import UnifiedDocumentCreateModal from '../shared/UnifiedDocumentCreateModal';
 import { buildDocumentEntriesFromLegacyData, normalizeVentanillaDocs } from '../shared/expediente-documental.utils';
+import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../shared/expediente-documental.constants';
 
 function FUN_6_VIEW({
     translation,
@@ -195,6 +196,10 @@ function FUN_6_VIEW({
             document.getElementById('fun6_codes_edit').value = item.id_public;
             document.getElementById('fun6_pages_edit').value = item.pages;
             document.getElementById('fun6_dates_edit').value = item.date;
+            const originField = document.getElementById('fun6_origin_state_edit');
+            const mediumField = document.getElementById('fun6_medio_recepcion_edit');
+            if (originField) originField.value = item.origin_state || DOCUMENT_ORIGIN_STATE.SCANNED;
+            if (mediumField) mediumField.value = item.medio_recepcion || '';
         }
     }, [item]);
 
@@ -436,6 +441,22 @@ function FUN_6_VIEW({
                         </div>
                     </div>
                 </div>
+                <div className="row d-flex justify-content-start mb-3">
+                    <div className="col-4">
+                        <label className="form-label text-muted">Origen</label>
+                        <select className="form-select" id="fun6_origin_state_edit" defaultValue={item?.origin_state || DOCUMENT_ORIGIN_STATE.SCANNED}>
+                            <option value={DOCUMENT_ORIGIN_STATE.SCANNED}>Digitalizar documento</option>
+                            <option value={DOCUMENT_ORIGIN_STATE.DIGITAL}>Enviado por medio digital</option>
+                        </select>
+                    </div>
+                    <div className="col-4">
+                        <label className="form-label text-muted">Medio de recepción</label>
+                        <select className="form-select" id="fun6_medio_recepcion_edit" defaultValue={item?.medio_recepcion || ''}>
+                            <option value="">Sin registrar</option>
+                            {DOCUMENT_RECEPTION_MEDIUM_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                        </select>
+                    </div>
+                </div>
             </>
         }
         let setChecked6 = (item) => {
@@ -514,6 +535,12 @@ function FUN_6_VIEW({
 
             if (!date) date = null;
             formData.set('date', date);
+            const originState = document.getElementById('fun6_origin_state_edit')?.value || DOCUMENT_ORIGIN_STATE.SCANNED;
+            const receptionMedium = originState === DOCUMENT_ORIGIN_STATE.DIGITAL
+                ? (document.getElementById('fun6_medio_recepcion_edit')?.value || '')
+                : '';
+            formData.set('origin_state', originState);
+            formData.set('medio_recepcion', receptionMedium);
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.update_6(item.id, formData)
                 .then(response => {
