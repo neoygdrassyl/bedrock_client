@@ -33,6 +33,12 @@ class UserslDataService {
   getFun6(id) {
     return http.get(`/${route}/fun6/${id}`);
   }
+  getUnifiedDocumentEntries(fun_id, id_related) {
+    return http.get(`/${route}/documents/unified/${fun_id}/${id_related}`);
+  }
+  getPendingPhysicalDocuments(fun_id, id_related) {
+    return http.get(`/${route}/documents/pending-physical/${fun_id}/${id_related}`);
+  }
   getFun6Doc(path, name) {
     return http.get(`/files/${path}/${name}`);
   }
@@ -172,6 +178,9 @@ class UserslDataService {
   }
   create_fun6(data) {
     return http.post(`/${route}/fun6`, data);
+  }
+  createDocumentEntriesBatch(data) {
+    return http.post(`/${route}/documents/batch`, data);
   }
   create_fun6_h(data) {
     return http.post(`/${route}/fun6h`, data);
