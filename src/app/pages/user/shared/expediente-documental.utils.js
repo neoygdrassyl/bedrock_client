@@ -1,3 +1,21 @@
+import {
+    DOCUMENT_RECEPTION_MEDIUM,
+    DOCUMENT_RECEPTION_MEDIUM_LABEL,
+    DOCUMENT_RECEPTION_MEDIUM_OPTIONS,
+    DOCUMENT_ORIGIN_LABEL,
+    DOCUMENT_ORIGIN_ORDER,
+    DOCUMENT_ORIGIN_STATE,
+} from './expediente-documental.constants';
+
+export {
+    DOCUMENT_ORIGIN_LABEL,
+    DOCUMENT_ORIGIN_ORDER,
+    DOCUMENT_ORIGIN_STATE,
+    DOCUMENT_RECEPTION_MEDIUM,
+    DOCUMENT_RECEPTION_MEDIUM_LABEL,
+    DOCUMENT_RECEPTION_MEDIUM_OPTIONS,
+};
+
 const YES_REVIEW_VALUES = new Set(['SI', 'S', '1', 'TRUE']);
 
 function splitValue(value, separator) {
@@ -20,6 +38,47 @@ function normalizeCode(value) {
 
 function normalizeText(value) {
     return String(value || '').trim();
+}
+
+function normalizeOriginState(value) {
+    const normalizedValue = normalizeCode(value).replace(/\s+/g, '_');
+
+    if (['FISICO', 'FÍSICO', 'PHYSICAL', 'VENTANILLA'].includes(normalizedValue)) {
+        return DOCUMENT_ORIGIN_STATE.PHYSICAL;
+    }
+
+    if (['DIGITALIZADO', 'ESCANEADO', 'SCANNED'].includes(normalizedValue)) {
+        return DOCUMENT_ORIGIN_STATE.SCANNED;
+    }
+
+    if (['MEDIO_DIGITAL', 'DIGITAL', 'DIGITAL_MEDIO'].includes(normalizedValue)) {
+        return DOCUMENT_ORIGIN_STATE.DIGITAL;
+    }
+
+    return '';
+}
+
+function normalizeReceptionMedium(value) {
+    const normalizedValue = normalizeCode(value).replace(/[\s-]+/g, '_');
+
+    if (['WHATSAPP', 'WSP', 'WA'].includes(normalizedValue)) {
+        return DOCUMENT_RECEPTION_MEDIUM.WHATSAPP;
+    }
+
+    if (['CORREO', 'EMAIL', 'E_MAIL', 'CORREO_ELECTRONICO', 'CORREO_ELECTRÓNICO'].includes(normalizedValue)) {
+        return DOCUMENT_RECEPTION_MEDIUM.EMAIL;
+    }
+
+    if (['OTRO', 'OTHER'].includes(normalizedValue)) {
+        return DOCUMENT_RECEPTION_MEDIUM.OTHER;
+    }
+
+    return '';
+}
+
+function getReceptionMediumLabel(value) {
+    const normalizedValue = normalizeReceptionMedium(value);
+    return DOCUMENT_RECEPTION_MEDIUM_LABEL[normalizedValue] || '';
 }
 
 function toPageNumber(value) {
@@ -67,6 +126,10 @@ export function normalizeVentanillaDocs(submitEntries = []) {
                     category: normalizeText(categories[reviewIndex]),
                     code: normalizedCode,
                     page: pages[reviewIndex] || '',
+                    originState: DOCUMENT_ORIGIN_STATE.PHYSICAL,
+                    originLabel: DOCUMENT_ORIGIN_LABEL[DOCUMENT_ORIGIN_STATE.PHYSICAL],
+                    receptionMedium: normalizeReceptionMedium(subList?.medio_recepcion || subList?.receptionMedium),
+                    receptionMediumLabel: getReceptionMediumLabel(subList?.medio_recepcion || subList?.receptionMedium),
                 }];
             });
         });
@@ -195,5 +258,212 @@ export function summarizeUnifiedDocumentRows(rows = []) {
         digital: 0,
         ventanilla: 0,
         pendingDigitization: 0,
+    });
+}
+
+function hasMatchingPhysicalEntry(digitalDoc, physicalEntries = []) {
+    const digitalCode = normalizeCode(digitalDoc?.id_public || digitalDoc?.code || digitalDoc?.documentCode);
+    const digitalName = normalizeText(digitalDoc?.description || digitalDoc?.documentName || digitalDoc?.name).toLowerCase();
+    const digitalVr = normalizeText(digitalDoc?.id_replace || digitalDoc?.vr);
+
+    return physicalEntries.some((physicalEntry) => {
+        const sameVr = digitalVr && digitalVr === normalizeText(physicalEntry?.vr || physicalEntry?.id_public);
+        if (!sameVr) {
+            return false;
+        }
+
+        const physicalCode = normalizeCode(physicalEntry?.documentCode || physicalEntry?.code || physicalEntry?.id_public);
+        if (digitalCode && physicalCode) {
+            return digitalCode === physicalCode;
+        }
+
+        const physicalName = normalizeText(physicalEntry?.documentName || physicalEntry?.name || physicalEntry?.description).toLowerCase();
+        return Boolean(digitalName && physicalName && digitalName === physicalName);
+    });
+}
+
+export function buildDocumentEntriesFromLegacyData(digitalizedDocs = [], ventanillaDocs = []) {
+    const normalizedDigitalizedDocs = Array.isArray(digitalizedDocs) ? digitalizedDocs : [];
+    const normalizedVentanillaDocs = Array.isArray(ventanillaDocs) && ventanillaDocs.some((entry) => Array.isArray(entry?.sub_lists))
+        ? normalizeVentanillaDocs(ventanillaDocs)
+        : (Array.isArray(ventanillaDocs) ? ventanillaDocs : []);
+
+    const physicalEntries = normalizedVentanillaDocs.map((ventanillaEntry, index) => ({
+        entryId: ventanillaEntry.entryId || `sublist:${ventanillaEntry.id || index}`,
+        sourceTable: 'sub_list',
+        documentCode: normalizeCode(ventanillaEntry.documentCode || ventanillaEntry.code || ventanillaEntry.id_public),
+        documentName: normalizeText(ventanillaEntry.documentName || ventanillaEntry.name || ventanillaEntry.description) || 'Documento sin nombre',
+        vr: normalizeText(ventanillaEntry.vr || ventanillaEntry.id_public),
+        date: ventanillaEntry.date || '',
+        time: ventanillaEntry.time || '',
+        pages: ventanillaEntry.pages ?? ventanillaEntry.page ?? '',
+        originState: DOCUMENT_ORIGIN_STATE.PHYSICAL,
+        originLabel: DOCUMENT_ORIGIN_LABEL[DOCUMENT_ORIGIN_STATE.PHYSICAL],
+        receptionMedium: normalizeReceptionMedium(ventanillaEntry.receptionMedium || ventanillaEntry.medio_recepcion || ventanillaEntry.reception_medium),
+        receptionMediumLabel: getReceptionMediumLabel(ventanillaEntry.receptionMedium || ventanillaEntry.medio_recepcion || ventanillaEntry.reception_medium),
+        canPreview: false,
+        canEdit: false,
+        canDelete: false,
+        evaluationSummary: ventanillaEntry.evaluationSummary || { status: null, source: null },
+        sourceId: ventanillaEntry.sourceId || ventanillaEntry.id || null,
+        raw: ventanillaEntry,
+    }));
+
+    const digitalEntries = normalizedDigitalizedDocs.map((digitalDoc, index) => {
+        const explicitOriginState = normalizeOriginState(digitalDoc?.originState || digitalDoc?.origin_state);
+        const originState = explicitOriginState
+            || (hasMatchingPhysicalEntry(digitalDoc, physicalEntries) ? DOCUMENT_ORIGIN_STATE.SCANNED : DOCUMENT_ORIGIN_STATE.DIGITAL);
+
+        return {
+            entryId: digitalDoc.entryId || `fun6:${digitalDoc.id || index}`,
+            sourceTable: 'fun_6',
+            documentCode: normalizeCode(digitalDoc.documentCode || digitalDoc.id_public || digitalDoc.code),
+            documentName: normalizeText(digitalDoc.documentName || digitalDoc.description || digitalDoc.name) || 'Documento sin nombre',
+            vr: normalizeText(digitalDoc.vr || digitalDoc.id_replace),
+            date: digitalDoc.date || '',
+            time: digitalDoc.time || '',
+            pages: digitalDoc.pages ?? digitalDoc.page ?? '',
+            filename: digitalDoc.filename || '',
+            path: digitalDoc.path || '',
+            originState,
+            originLabel: DOCUMENT_ORIGIN_LABEL[originState] || 'Sin origen',
+            receptionMedium: normalizeReceptionMedium(digitalDoc.receptionMedium || digitalDoc.medio_recepcion || digitalDoc.reception_medium),
+            receptionMediumLabel: getReceptionMediumLabel(digitalDoc.receptionMedium || digitalDoc.medio_recepcion || digitalDoc.reception_medium),
+            canPreview: Boolean(digitalDoc.canPreview ?? (digitalDoc.filename && digitalDoc.path)),
+            canEdit: Boolean(digitalDoc.canEdit ?? true),
+            canDelete: Boolean(digitalDoc.canDelete ?? true),
+            evaluationSummary: digitalDoc.evaluationSummary || { status: null, source: null },
+            sourceId: digitalDoc.sourceId || digitalDoc.id || null,
+            raw: digitalDoc,
+        };
+    });
+
+    return [...digitalEntries, ...physicalEntries];
+}
+
+function getEntryDateValue(entry) {
+    const rawValue = [entry?.date, entry?.time].filter(Boolean).join('T');
+    const parsedValue = rawValue ? Date.parse(rawValue) : NaN;
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+}
+
+function getDocumentGroupKey(entry) {
+    const code = normalizeCode(entry?.documentCode || entry?.code || entry?.id_public);
+    const name = normalizeText(entry?.documentName || entry?.name || entry?.description).toLowerCase();
+    return code || name || 'documento-sin-nombre';
+}
+
+function normalizeDocumentEntry(entry = {}, index = 0) {
+    const sourceTable = entry.sourceTable || (entry.digitalDoc ? 'fun_6' : 'sub_list');
+    const originState = normalizeOriginState(entry.originState || entry.origin_state)
+        || (sourceTable === 'sub_list' ? DOCUMENT_ORIGIN_STATE.PHYSICAL : DOCUMENT_ORIGIN_STATE.DIGITAL);
+    const documentCode = normalizeCode(entry.documentCode || entry.code || entry.id_public);
+    const documentName = normalizeText(entry.documentName || entry.name || entry.description) || 'Documento sin nombre';
+
+    return {
+        ...entry,
+        entryId: entry.entryId || `${sourceTable}:${entry.id || index}`,
+        sourceTable,
+        documentCode,
+        documentName,
+        vr: normalizeText(entry.vr || entry.id_replace || entry.id_public),
+        date: entry.date || '',
+        time: entry.time || '',
+        pages: entry.pages ?? entry.page ?? '',
+        originState,
+        originLabel: entry.originLabel || DOCUMENT_ORIGIN_LABEL[originState] || 'Sin origen',
+        receptionMedium: normalizeReceptionMedium(entry.receptionMedium || entry.medio_recepcion || entry.reception_medium),
+        receptionMediumLabel: entry.receptionMediumLabel || getReceptionMediumLabel(entry.receptionMedium || entry.medio_recepcion || entry.reception_medium),
+        canPreview: Boolean(entry.canPreview ?? (entry.filename && entry.path)),
+        canEdit: Boolean(entry.canEdit ?? sourceTable === 'fun_6'),
+        canDelete: Boolean(entry.canDelete ?? sourceTable === 'fun_6'),
+        evaluationSummary: entry.evaluationSummary || { status: null, source: null },
+    };
+}
+
+export function groupDocumentEntries(entries = []) {
+    if (!Array.isArray(entries)) {
+        return [];
+    }
+
+    const groupsByKey = new Map();
+
+    entries.forEach((entry, index) => {
+        const normalizedEntry = normalizeDocumentEntry(entry, index);
+        const key = getDocumentGroupKey(normalizedEntry);
+        const currentGroup = groupsByKey.get(key) || {
+            id: `document-group-${key}`,
+            documentCode: normalizedEntry.documentCode,
+            documentName: normalizedEntry.documentName,
+            entries: [],
+            originPresence: DOCUMENT_ORIGIN_ORDER.reduce((presence, originState) => ({
+                ...presence,
+                [originState]: false,
+            }), {}),
+            vrValues: [],
+            latestVr: '',
+            latestDateValue: 0,
+            entryCount: 0,
+        };
+
+        currentGroup.entries.push(normalizedEntry);
+        currentGroup.originPresence[normalizedEntry.originState] = true;
+
+        if (normalizedEntry.vr && !currentGroup.vrValues.includes(normalizedEntry.vr)) {
+            currentGroup.vrValues.push(normalizedEntry.vr);
+        }
+
+        const dateValue = getEntryDateValue(normalizedEntry);
+        if (dateValue >= currentGroup.latestDateValue) {
+            currentGroup.latestDateValue = dateValue;
+            currentGroup.latestVr = normalizedEntry.vr || currentGroup.latestVr;
+        }
+
+        currentGroup.entryCount = currentGroup.entries.length;
+        groupsByKey.set(key, currentGroup);
+    });
+
+    return Array.from(groupsByKey.values())
+        .map((group) => ({
+            ...group,
+            entries: [...group.entries].sort((a, b) => getEntryDateValue(b) - getEntryDateValue(a)),
+            latestVr: group.latestVr || group.vrValues[group.vrValues.length - 1] || '',
+        }))
+        .sort((a, b) => b.latestDateValue - a.latestDateValue || a.documentName.localeCompare(b.documentName));
+}
+
+export function filterDocumentEntryGroups(groups = [], filters = {}) {
+    const documentFilter = String(filters.document || filters.search || '').trim().toLowerCase();
+    const vrFilter = String(filters.vr || '').trim().toLowerCase();
+    const originFilters = Array.isArray(filters.origins) ? filters.origins.filter(Boolean) : [];
+
+    return groups.filter((group) => {
+        if (documentFilter) {
+            const documentValue = [group.documentName, group.documentCode]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            if (!documentValue.includes(documentFilter)) {
+                return false;
+            }
+        }
+
+        if (vrFilter) {
+            const vrValue = [group.latestVr, ...(group.vrValues || [])]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            if (!vrValue.includes(vrFilter)) {
+                return false;
+            }
+        }
+
+        if (originFilters.length && !originFilters.some((originState) => group.originPresence?.[originState])) {
+            return false;
+        }
+
+        return true;
     });
 }
