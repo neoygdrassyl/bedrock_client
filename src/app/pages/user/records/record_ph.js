@@ -16,7 +16,6 @@ import RECORD_PH_FLOOR from './ph/record_ph_floor.component';
 import RECORD_PH_REVIEW from './ph/record_ph_review.component';
 import RECORD_LAW_DOCSCHECK from './law/record_law_docs_check';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
-import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import RECORD_PH_GEN_REVIEW from './ph/record_ph_gen_arc_review.component';
 import RECORD_PH_CHECK_LIST from './ph/record_ph_check_list.component';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
@@ -222,7 +221,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         <label className="app-p lead fw-normal">DOCUMENTOS DIGITALIZADOS</label>
                                     </legend>
 
-                                    <FUN_6_VIEW
+                                     <FUN_6_VIEW
                                         translation={translation}
                                         swaMsg={swaMsg}
                                         globals={globals}
@@ -231,15 +230,7 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         currentVersion={currentVersion}
                                         requestUpdate={requestUpdate}
                                         readOnly
-                                    />
-
-                                    <legend className="my-2 px-3 bg-light" id="record_eng_411">
-                                        <label className="app-p lead fw-normal">DOCUMENTOS APORTADOS POR VENTANILLA ÚNICA</label>
-                                    </legend>
-
-                                    <SUBMIT_SINGLE_VIEW
-                                        translation={translation} swaMsg={swaMsg} globals={globals}
-                                        id_related={currentItem.id_public}
+                                        mergeVentanilla
                                     />
 
                                     <RECORD_PH_LAW
