@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 
@@ -13,6 +13,8 @@ import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component.js';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 
 function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [new_area, setNewArea] = useState(false);
@@ -23,6 +25,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
     const [sort2, setSort2] = useState('asc');
     const [fillActive, setFillActive] = useState('tab2');
     const [dynamicState, setDynamicState] = useState({});
+    const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
     useEffect(() => {
         if (edit_blueprint !== false) {
@@ -431,9 +434,16 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         <label>Observaciones generales</label>
                     </div>
                 </div>
-                <textarea className="input-group" maxLength="2000" name="s_33_values" rows="4"
-                    defaultValue={values[2]} onBlur={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(false, 'det') }}></textarea>
-                <label> (maximo 2000 caracteres) {_SAVING_STATE(dynamicState.det)}</label>
+                <RichTextEditor
+                    value={values[2]}
+                    hiddenName="s_33_values"
+                    maxLength={2000}
+                    minHeight={170}
+                    placeholder="Registre observaciones generales con imágenes de apoyo si aplica"
+                    uploadFile={uploadRichTextImage}
+                    onBlur={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(false, 'det') }}
+                />
+                <label>{_SAVING_STATE(dynamicState.det)}</label>
             </div>
         }
         let _COMPONENT_5_GEO = () => {

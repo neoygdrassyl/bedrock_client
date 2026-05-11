@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 import Icon from '@/components/icon';
@@ -7,12 +7,15 @@ import DataTable from '@/components/data-table-bridge';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import parkingData from '../../../../components/jsons/parkingData.json'
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 
 function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [newParking, setNewParking] = useState(false);
     const [newLocation, setNewLocation] = useState(false);
     const [editParking, setEditParking] = useState(false);
     const [editLocation, setEditLocation] = useState(false);
+    const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
     useEffect(() => {
         if (editParking) {
@@ -1007,9 +1010,15 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                 </div>
 
-                <textarea className="input-group" maxLength="2000" name="s_35_values" rows="4"
-                    defaultValue={value35[1]} onBlur={() => save_ra_35()}></textarea>
-                <label>(máximo 2000 caracteres)</label>
+                <RichTextEditor
+                    value={value35[1]}
+                    hiddenName="s_35_values"
+                    maxLength={2000}
+                    minHeight={170}
+                    placeholder="Registre observaciones de parqueaderos con imágenes si aplica"
+                    uploadFile={uploadRichTextImage}
+                    onBlur={() => save_ra_35()}
+                />
             </div>
         }
         // FUNCTIONS AND WORKING ENGINES
