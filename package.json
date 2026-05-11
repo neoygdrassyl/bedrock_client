@@ -82,6 +82,7 @@
     "audit:ast": "node scripts/audit-ast-structure.mjs",
     "audit:arrays": "node scripts/audit-array-method-safety.mjs",
     "audit:arrays:strict": "node scripts/audit-array-method-safety.mjs --strict",
+    "audit:react-doctor": "node scripts/react-doctor-audit.mjs --out .sisyphus/evidence/react-doctor/latest",
     "audit:preflight": "npm run audit:ast && npm run audit:arrays",
     "sync:vscode": "node scripts/sync-vscode-customizations.mjs",
     "test": "vitest run",
