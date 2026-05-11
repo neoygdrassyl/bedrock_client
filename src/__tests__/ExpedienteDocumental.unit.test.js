@@ -144,6 +144,7 @@ describe('expediente-documental utils', () => {
                 date: '2026-04-03',
                 pages: 2,
                 originState: DOCUMENT_ORIGIN_STATE.DIGITAL,
+                receptionMediumLabel: 'Correo electrónico',
                 canPreview: true,
                 canEdit: true,
             },
@@ -157,6 +158,7 @@ describe('expediente-documental utils', () => {
             documentName: 'Poder especial',
             latestVr: 'VR-2002',
             entryCount: 1,
+            receptionMediumLabels: ['Correo electrónico'],
             originPresence: {
                 FISICO: false,
                 DIGITALIZADO: false,
