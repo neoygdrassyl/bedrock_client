@@ -16,7 +16,7 @@
 | Production build | `npm run build` | Reached `✓ built`, then Node OOM after output generation | `.sisyphus/evidence/react-doctor/final/build.log` |
 | Production build with heap | `NODE_OPTIONS=--max-old-space-size=4096 npm run build` | Passed; `✓ built in 29.77s` | `.sisyphus/evidence/react-doctor/final/build-heap4096.log` |
 | Combined static/test/build gate | `NODE_OPTIONS=--max-old-space-size=4096 bash -lc 'npm run audit:preflight && npm test -- --run && npm run build'` | Passed; preflight, `102` test files / `551` tests, and build completed | `.sisyphus/evidence/react-doctor/final/static-test-build.log` |
-| Playwright F3 smoke | `npm run test:e2e -- --grep 'login|FUN|radic|modal'` | Blocked; `20` passed, `2` skipped, `9` failed | `.sisyphus/evidence/react-doctor/final/e2e-smoke.log`, `.sisyphus/evidence/react-doctor/final/F3-playwright-qa.md` |
+| Playwright F3 smoke | `npm run test:e2e -- --grep 'login|FUN|radic|modal'` | Passed; `25` passed, `2` skipped, `0` failed | `.sisyphus/evidence/react-doctor/final/e2e-smoke-after-fixes.log`, `.sisyphus/evidence/react-doctor/final/F3-playwright-qa.md` |
 
 ## Canonical React Doctor Delta
 
@@ -39,13 +39,12 @@
 ## Residual Risk
 
 - `402` remaining React Doctor errors are covered by `.sisyphus/evidence/react-doctor/waivers.md` and should be handled in focused follow-up batches.
-- Warning count increased by `6` relative to baseline, primarily due current dirty-worktree/generated-context drift outside the narrow error-remediation scope.
+- Warning count increased by `6` relative to baseline, primarily due generated/context drift outside the narrow error-remediation scope.
 - Plain `npm run build` reaches build completion but exits with Node heap OOM after output generation in this environment; use `NODE_OPTIONS=--max-old-space-size=4096 npm run build` as the reliable build gate until bundle/build memory is optimized.
 - The combined final gate was run with `NODE_OPTIONS=--max-old-space-size=4096` and passed end-to-end.
 - `knip/files`, `knip/exports`, giant components, design/copy rules, and broad accessibility labels remain report-only/advisory unless explicitly approved for separate remediation.
-- Final Verification Wave F3 is blocked by existing Playwright smoke failures in FUN/radicación/relojes flows. This prevents a full final-wave approval until the user chooses targeted E2E remediation or accepts the documented F3 blocker.
-- Final Verification Wave F4 is blocked if the final handoff/commit boundary includes the full dirty worktree, because unrelated pre-existing FUN document workflow and `src/app/services/fun.service.js` changes are outside React Doctor scope.
-- Final Verification Wave F1 and F2 are also blocked if the final handoff/commit boundary includes the full dirty worktree, for the same protected service/FUN document workflow scope issue.
+- Final Verification Wave F3 is now passing after Playwright spec remediation for current FUN/radicación/relojes runtime contracts.
+- The formerly dirty FUN document workflow was saved in commit `409361d2`; it is no longer an unstaged-worktree contaminant, but remains a separate committed feature outside the React Doctor mitigation scope.
 
 ## Evidence Package
 

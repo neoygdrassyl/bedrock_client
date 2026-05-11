@@ -1,0 +1,13 @@
+
+> curaduria@1.20.95 test:e2e
+> playwright test e2e/flows/funmanage-table-compact.spec.js --project=chromium
+
+[Playwright] Temp directory initialized: /tmp/dovela-playwright
+
+Running 2 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/flows/funmanage-table-compact.spec.js:108:7 › Gestion Licencias Nuevo development state › renders the intentional closed-state surface at 1280x800 (5.0s)
+  ✓  2 [chromium] › e2e/flows/funmanage-table-compact.spec.js:117:7 › Gestion Licencias Nuevo development state › closed-state actions remain visible in dark mode (6.5s)
+[Playwright] Cleanup complete: /tmp/dovela-playwright
+
+  2 passed (12.9s)

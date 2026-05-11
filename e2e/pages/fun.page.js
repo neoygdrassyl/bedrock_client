@@ -9,10 +9,10 @@ import { expect } from '@playwright/test';
  *
  * Key DOM elements (from src/app/pages/user/fun.js):
  * - Heading: "RADICACION DE SOLICITUDES"
- * - Create form: #f_01 (date), #f_02 (id_public), "GENERAR LIC" button, "CREAR" submit
+ * - Create form: #f_01 (date), #f_02 (id_public), "GENERAR" button, "CREAR" submit
  * - Search form: #search_0 (select), #search_1 (input), "CONSULTAR" submit
  * - DataTable with tabs: Radicacion, Evaluacion, Expedicion, OA, Desistimiento, Archivadas
- * - Row action popover: Detalles, Tiempos, Documentos, Actualizar, etc.
+ * - Row action popover: Abrir solicitud, Tiempos, Documentos, Actualizar, etc.
  */
 export class FunPage {
   /**
@@ -27,7 +27,7 @@ export class FunPage {
     // --- Creation form ---
     this.dateInput = page.locator('#f_01');
     this.idPublicInput = page.locator('#f_02');
-    this.generateIdButton = page.locator('button', { hasText: /GENERAR LIC/i });
+    this.generateIdButton = page.locator('button', { hasText: /^GENERAR( LIC)?$/i });
     this.createButton = page.locator('button', { hasText: /CREAR/i });
 
     // --- Search form ---
@@ -125,7 +125,7 @@ export class FunPage {
   /**
    * Open the action popover for a row, then click an action.
    * @param {string} rowText - Text to identify the row (e.g. id_public)
-   * @param {'Detalles' | 'Tiempos' | 'Documentos' | 'Actualizar'} action
+   * @param {'Abrir solicitud' | 'Tiempos' | 'Documentos' | 'Actualizar'} action
    */
   async openRowAction(rowText, action) {
     // Click the popover trigger (ellipsis button) in the matching row
