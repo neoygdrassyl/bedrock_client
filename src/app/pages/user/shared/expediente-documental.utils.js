@@ -401,6 +401,7 @@ export function groupDocumentEntries(entries = []) {
                 [originState]: false,
             }), {}),
             vrValues: [],
+            receptionMediumLabels: [],
             latestVr: '',
             latestDateValue: 0,
             entryCount: 0,
@@ -411,6 +412,10 @@ export function groupDocumentEntries(entries = []) {
 
         if (normalizedEntry.vr && !currentGroup.vrValues.includes(normalizedEntry.vr)) {
             currentGroup.vrValues.push(normalizedEntry.vr);
+        }
+
+        if (normalizedEntry.receptionMediumLabel && !currentGroup.receptionMediumLabels.includes(normalizedEntry.receptionMediumLabel)) {
+            currentGroup.receptionMediumLabels.push(normalizedEntry.receptionMediumLabel);
         }
 
         const dateValue = getEntryDateValue(normalizedEntry);
