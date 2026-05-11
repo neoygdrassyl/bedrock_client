@@ -17,6 +17,20 @@ function getEntryTitle(entry) {
     return [entry?.documentName, entry?.documentCode].filter(Boolean).join(' · ') || 'Documento sin nombre';
 }
 
+function toEditableDocument(entry) {
+    return {
+        ...(entry?.raw || {}),
+        id: entry?.raw?.id || entry?.sourceId || entry?.id,
+        description: entry?.raw?.description || entry?.documentName || '',
+        id_public: entry?.raw?.id_public || entry?.documentCode || '',
+        id_replace: entry?.raw?.id_replace || entry?.vr || '',
+        pages: entry?.raw?.pages ?? entry?.pages ?? '',
+        date: entry?.raw?.date || entry?.date || '',
+        origin_state: entry?.originState || entry?.raw?.origin_state || '',
+        medio_recepcion: entry?.receptionMedium || entry?.raw?.medio_recepcion || '',
+    };
+}
+
 function UnifiedDocumentEntryModal({
     open,
     group,
@@ -86,7 +100,7 @@ function UnifiedDocumentEntryModal({
                                                 <Button type="button" variant="ghost" size="sm" onClick={() => setSelectedEntryId(entry.entryId)} title="Ver esta entrada">
                                                     <Icon name="eye" size={13} />
                                                 </Button>
-                                                {isEditMode && editable ? <Button type="button" variant="ghost" size="sm" onClick={() => onEditEntry?.(entry.raw || entry)} title="Editar entrada digital">
+                                                {isEditMode && editable ? <Button type="button" variant="ghost" size="sm" onClick={() => onEditEntry?.(toEditableDocument(entry))} title="Editar entrada digital">
                                                     <Icon name="edit" size={13} />
                                                 </Button> : null}
                                                 {isEditMode && editable && entry.canDelete ? <Button type="button" variant="ghost" size="sm" onClick={() => onDeleteEntry?.(entry.raw || entry)} title="Eliminar entrada digital">
