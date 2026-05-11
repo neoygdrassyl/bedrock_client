@@ -78,14 +78,14 @@ function RailButton({ item, isActive, onSelect }) {
           className={cn(
             'relative flex items-center justify-center w-9 h-9 rounded-md transition-all duration-200',
             isActive
-              ? 'bg-sidebar-accent text-white shadow-[0_0_12px_rgba(37,99,235,0.25)]'
-              : 'text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-white/[0.08] hover:shadow-[0_0_8px_rgba(37,99,235,0.12)] active:scale-95'
+              ? 'bg-sidebar-accent text-sidebar-foreground shadow-[0_0_12px_hsl(var(--sidebar-accent)/0.25)]'
+              : 'bg-sidebar-foreground/5 text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-foreground/10 hover:shadow-[0_0_8px_hsl(var(--sidebar-accent)/0.16)] active:scale-95'
           )}
           aria-label={item.label}
           aria-current={isActive ? 'page' : undefined}
         >
           {isActive && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[2px] w-[3px] h-4 rounded-r-full bg-white/90 transition-all duration-200" />
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[2px] w-[3px] h-4 rounded-r-full bg-sidebar-foreground transition-all duration-200" />
           )}
           <Icon name={item.icon} size={18} />
         </button>

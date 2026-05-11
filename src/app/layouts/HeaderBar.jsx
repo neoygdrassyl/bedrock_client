@@ -76,7 +76,7 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
   }, []);
 
   return (
-    <header className="flex items-center h-11 px-2.5 border-b border-border/60 bg-card/50 backdrop-blur-sm gap-1.5 select-none">
+    <header className="flex items-center h-11 px-2.5 border-b border-border bg-card backdrop-blur-sm gap-1.5 select-none">
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -100,19 +100,19 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-0.5 text-[13px] flex-1 min-w-0">
-        <Link to="/dashboard" className="text-muted-foreground/60 hover:text-foreground no-underline transition-colors text-[13px]">
+        <Link to="/dashboard" className="text-muted-foreground hover:text-foreground no-underline transition-colors text-[13px]">
           Inicio
         </Link>
         {breadcrumb.map((crumb, i) => (
           <span key={crumb.path} className="flex items-center gap-0.5">
-            <ChevronRight className="h-3 w-3 text-muted-foreground/30" />
+            <ChevronRight className="h-3 w-3 text-muted-foreground" />
             {i === breadcrumb.length - 1 ? (
               <span className="text-foreground font-medium truncate flex items-center gap-1">
                 {crumb.icon && <Icon name={crumb.icon} size={13} className="text-primary/80 shrink-0" />}
                 {crumb.label}
               </span>
             ) : (
-              <Link to={crumb.path} className="text-muted-foreground/60 hover:text-foreground no-underline transition-colors">
+              <Link to={crumb.path} className="text-muted-foreground hover:text-foreground no-underline transition-colors">
                 {crumb.label}
               </Link>
             )}
@@ -124,12 +124,12 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
       <button
         type="button"
         onClick={() => setSearchOpen(true)}
-        className="flex h-7 w-7 items-center justify-center rounded-md border border-border/50 bg-muted/30 text-xs text-muted-foreground/60 transition-colors hover:bg-muted/60 hover:text-muted-foreground md:w-auto md:justify-start md:gap-1.5 md:px-2.5"
+        className="flex h-7 w-7 items-center justify-center rounded-md border border-border bg-muted text-xs text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground md:w-auto md:justify-start md:gap-1.5 md:px-2.5"
         aria-label="Buscar expediente"
       >
         <Search className="h-3 w-3" />
         <span className="hidden md:inline">Expediente...</span>
-        <kbd className="ml-3 hidden rounded border border-border/40 bg-background/80 px-1 py-0.5 font-mono text-[9px] lg:inline">⌘K</kbd>
+        <kbd className="ml-3 hidden rounded border border-border bg-background px-1 py-0.5 font-mono text-[9px] lg:inline">⌘K</kbd>
       </button>
 
       {/* Chat & notifications */}
@@ -158,7 +158,7 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs font-medium hidden md:inline text-foreground/80">
+            <span className="text-xs font-medium hidden md:inline text-foreground">
               {user?.name}
             </span>
           </Button>

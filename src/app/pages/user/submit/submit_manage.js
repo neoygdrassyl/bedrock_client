@@ -285,26 +285,24 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             : ""}
                     </div>
                 </div>
-                {!edit
-                    ? <div className="row text-end">
-                        <div className="col-8">
-                            <div className="form-check my-3 px-5">
-                                <input className="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
-                                <p className="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
-                            </div>
-                        </div>
-                        <div className="col-4">
-                            {payment
-                                ? <>
-                                    <Button size="sm" type="button" className="me-1"
-                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
-                                    <Button size="sm" type="button"
-                                        onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
-                                </>
-                                : ""}
+                <div className="row text-end">
+                    <div className="col-8">
+                        <div className="form-check my-3 px-5">
+                            <input className="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
+                            <p className="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
                         </div>
                     </div>
-                    : ""}
+                    <div className="col-4">
+                        {payment
+                            ? <>
+                                <Button size="sm" type="button" className="me-1"
+                                    onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
+                                <Button size="sm" type="button"
+                                    onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
+                            </>
+                            : ""}
+                    </div>
+                </div>
 
                 <div className="row text-end">
                     <div className="col-12">
