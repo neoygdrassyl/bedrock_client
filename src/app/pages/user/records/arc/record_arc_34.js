@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 import DataTable from '@/components/data-table-bridge';
@@ -11,12 +11,15 @@ import parkingData from '../../../../components/jsons/parkingData.json'
 import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../components/vars.global';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 
 function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [newGen, setNewGen] = useState(false);
     const [newK, setNewK] = useState(false);
     const [editK, setEditK] = useState(false);
     const [saveStates, setSaveStates] = useState({});
+    const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
     useEffect(() => {
         if (editK !== false) {
@@ -1495,9 +1498,15 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         <label>Observaciones análisis de determinantes de predio</label>
                     </div>
                 </div>
-                <textarea className="input-group" maxLength="2000" name="s_34_values" rows="4"
-                    defaultValue={value34[10]} onBlur={() => manage_ra_34()}></textarea>
-                <label> (maximo 2000 caracteres)</label>
+                <RichTextEditor
+                    value={value34[10]}
+                    hiddenName="s_34_values"
+                    maxLength={2000}
+                    minHeight={170}
+                    placeholder="Registre observaciones, evidencias e imágenes sobre determinantes urbanísticas"
+                    uploadFile={uploadRichTextImage}
+                    onBlur={() => manage_ra_34()}
+                />
             </div>
         }
 
