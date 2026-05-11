@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -13,6 +13,9 @@ import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
+import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -20,6 +23,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
     const [VRDocs, setVRDocs] = useState([]);
     const [load, setLoad] = useState(false);
     const [rewState, setRewState] = useState({});
+    const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
     useEffect(() => {
         if (currentItem && currentItem.id_public) {
@@ -297,7 +301,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
         const value36_detail = _GET_STEP_TYPE('s36', 'value');
         // COMPONENTS JSX
         let _COMPONENT_0 = () => {
-            let _RESUME = `-Observaciones (Descripcion de la Actuacion Urbanistica): \n${value33_detail[2] ?? ''}\n\n-Observaciones (Analisis de las determinantes urbanas del predio): \n${value34_detail[10] ?? ''}\n\n-Observaciones (Parqueaderos): \n${value35_detail[1] ?? ''}\n\n-Observaciones (Espacio Publico): \n${value36_detail[8] ?? ''}`;
+            let _RESUME = `-Observaciones (Descripcion de la Actuacion Urbanistica): \n${richTextToPlainText(value33_detail[2])}\n\n-Observaciones (Analisis de las determinantes urbanas del predio): \n${richTextToPlainText(value34_detail[10])}\n\n-Observaciones (Parqueaderos): \n${richTextToPlainText(value35_detail[1])}\n\n-Observaciones (Espacio Publico): \n${richTextToPlainText(value36_detail[8])}`;
 
             return <>
                 <div className="row py-3">
@@ -361,9 +365,15 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                             <label>Observaciones finales del Proyecto</label>
                         </div>
                     </div>
-                    <textarea className="input-group" maxLength="8000" id="r_a_38_1" rows="4"
-                        defaultValue={_CHILD.detail} onBlur={() => save_ra_38(false)}></textarea>
-                    <label>(Máximo 8000 caracteres)</label>
+                    <RichTextEditor
+                        value={_CHILD.detail}
+                        hiddenId="r_a_38_1"
+                        maxLength={8000}
+                        minHeight={180}
+                        placeholder="Registre observaciones finales, conclusiones e imágenes de soporte"
+                        uploadFile={uploadRichTextImage}
+                        onBlur={() => save_ra_38(false)}
+                    />
                 </div>
             </>
         }
@@ -883,16 +893,17 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                 const value35_detail = _GET_STEP_TYPE('s35', 'value', 'record_arc_steps');
                 const value36_detail = _GET_STEP_TYPE('s36', 'value', 'record_arc_steps');
 
-                if (value33_detail[2]) _RESUME.push(`- Observaciones (Descripcion de la Actuacion Urbanistica): \n${value33_detail[2]}`)
-                if (value34_detail[14]) _RESUME.push(`- Observaciones (Analisis de las determinantes urbanas del predio): \n${value34_detail[14]}`)
-                if (value35_detail[1]) _RESUME.push(`- Observaciones (Parqueaderos): \n${value35_detail[1]}`)
-                if (value36_detail[8]) _RESUME.push(`- Observaciones (Espacio Publico): \n${value36_detail[8]}`)
-                if (_CHILD.detail) _RESUME.push(`- Observaciones fianles: \n${_CHILD.detail}`)
+                const arc34Observation = value34_detail[14] ?? value34_detail[10];
+                if (value33_detail[2]) _RESUME.push(`- Observaciones (Descripcion de la Actuacion Urbanistica): \n${richTextToPlainText(value33_detail[2])}`)
+                if (arc34Observation) _RESUME.push(`- Observaciones (Analisis de las determinantes urbanas del predio): \n${richTextToPlainText(arc34Observation)}`)
+                if (value35_detail[1]) _RESUME.push(`- Observaciones (Parqueaderos): \n${richTextToPlainText(value35_detail[1])}`)
+                if (value36_detail[8]) _RESUME.push(`- Observaciones (Espacio Publico): \n${richTextToPlainText(value36_detail[8])}`)
+                if (_CHILD.detail) _RESUME.push(`- Observaciones fianles: \n${richTextToPlainText(_CHILD.detail)}`)
                 if (_RESUME) _RESUME = _RESUME.join('\n\n')
 
                 checks = _GET_STEP_TYPE('s33', 'check', 'record_arc_steps');
             } else {
-                if (_CHILD.detail) _RESUME.push(`- Observaciones y conclusiones: \n${_CHILD.detail}`)
+                if (_CHILD.detail) _RESUME.push(`- Observaciones y conclusiones: \n${richTextToPlainText(_CHILD.detail)}`)
                 if (_RESUME) _RESUME = _RESUME.join('\n\n')
 
                 checks = [];
