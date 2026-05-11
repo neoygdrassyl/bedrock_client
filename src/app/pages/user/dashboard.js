@@ -283,7 +283,7 @@ function Dashboard() {
         <div className="space-y-4 xl:w-full xl:max-w-[58rem] xl:flex-none">
           <section className="space-y-2.5" data-dovela-tour-id="dashboard-operations">
             <SectionHeader title="Módulos agrupados" count={dashboardGroups.length} />
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-3" data-dovela-tour-id="dashboard-quick-actions">
               {dashboardGroups.map((group) => (
                 <GroupedActionCard
                   key={group.key}
@@ -413,6 +413,10 @@ function GroupedActionCard({ title, description, items, counts, loadingCounts })
                     ) : hasCount && count != null ? (
                       <Badge variant="secondary" className="rounded-full px-2 text-[10px] font-normal tabular-nums">
                         {count}
+                      </Badge>
+                    ) : hasCount ? (
+                      <Badge variant="outline" className="rounded-full px-2 text-[10px] font-normal text-muted-foreground">
+                        conteo no disponible
                       </Badge>
                     ) : (
                       <Icon name="ArrowUpRight" size={14} className="text-muted-foreground" />

@@ -140,7 +140,7 @@ export default function FUN_CLOCK_EVENTS(props) {
                     <label>Para:</label>
                     <input list="option_workers" className="form-select form-select-sm" id="clock_event_2" autoComplete='off'></input>
                     <datalist id="option_workers">
-                        {workers.map(worker => <option>{worker.name} {worker.surname}</option>)}
+                        {workers.map(worker => <option key={worker.id ?? `${worker.name}-${worker.surname}`}>{worker.name} {worker.surname}</option>)}
                     </datalist>
                 </div>
                 <div className="col">

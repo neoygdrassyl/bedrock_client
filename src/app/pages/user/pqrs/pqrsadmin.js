@@ -31,6 +31,36 @@ import { Icon } from '@/components/icon';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
+
+function PendingComponent({ pendingOpen, setPendingOpen, pending }) {
+    return (
+        <div className="col-lg-11 col-md-12">
+            <div className="alert alert-warning">
+
+                <div className="row">
+                    <div className="col-10">
+                        <span className="font-semibold text-sm">PQRS PENDIENTES POR VENTANILLA ÚNICA: </span>
+                    </div>
+                    <div className="col text-end">
+                        <Button variant="ghost" size="sm" title="Ver Listado" onClick={() => setPendingOpen(prev => !prev)}>
+                            <Icon name="info-circle" size={16} />
+                        </Button>
+                    </div>
+                </div>
+                {pendingOpen && (
+                    <div className="row">
+                        <div className="col-10">
+                            <ul>
+                                {pending.map((i) => <li key={i.id_pending}>{i.id_pending}</li>)}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div >
+    );
+}
+
 function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums }) {
     // State
     const [error, setError] = useState(null);
@@ -481,32 +511,6 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
         }
 
-    const PENDING_COMPONENT = () => (
-            <div className="col-lg-11 col-md-12">
-                <div className="alert alert-warning">
-
-                    <div className="row">
-                        <div className="col-10">
-                            <span className="font-semibold text-sm">PQRS PENDIENTES POR VENTANILLA ÚNICA: </span>
-                        </div>
-                        <div className="col text-end">
-                            <Button variant="ghost" size="sm" title="Ver Listado" onClick={() => setPending_open(prev => !prev)}>
-                                <Icon name="info-circle" size={16} />
-                            </Button>
-                        </div>
-                    </div>
-                    {pending_open && (
-                        <div className="row">
-                            <div className="col-10">
-                                <ul>
-                                    {pending.map((i) => <li>{i.id_pending}</li>)}
-                                </ul>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div >
-        )
         // -----------------
         const rowSelectedStyle = [
             {
@@ -773,7 +777,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 
                 <div className="row mb-4 d-flex justify-content-center">
 
-                    {pending.length > 0 ? PENDING_COMPONENT() : ''}
+{pending.length > 0 ? <PendingComponent pendingOpen={pending_open} setPendingOpen={setPending_open} pending={pending} /> : ''}
 
                     <div className="col-lg-11 col-md-12">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">

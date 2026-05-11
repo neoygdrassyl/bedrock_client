@@ -242,7 +242,7 @@ export default function FUN_CERTIFICATION(props) {
             name: 'Acción',
             center: true,
             maxWidth: '80px',
-            cell: row => <Button size="sm" onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
+            cell: row => <Button onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
             color="danger" size="sm" className='m-0 p-1 px-2'><Icon name="file-download" size={16} /></Button>
 
         },

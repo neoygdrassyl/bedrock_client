@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -362,13 +363,13 @@ export const ENG_MANPOSTERIA = (props) => {
         <div className="row mb-1 mt-5">
             <div className='col'>
                 <div className="row">
-                    {MANPOSTERIA_1.map(item => <>
+                    {MANPOSTERIA_1.map(item => <Fragment key={item.i > -1 ? `mamposteria_01_${item.i}` : `mamposteria_01_c_${item.c}`}>
                         <div className="col-3 mb-1">{item.name}</div>
                         <div className="col-3 mb-1">
                             {item.i > -1 ? <>
                                 {item.values ? <select className='form-select form-control form-control-sm' name="mamposteria_01" id={'mamposteria_01_' + item.i}
                                     defaultValue={_GET_STEP_TYPE_INDEX('mamposteria_01', 'value', item.i) ?? 'SI'} onChange={() => SAVE_STEP_MAMPOSTERIA_1()} >
-                                    {item.values.map(v => <option>{v}</option>)}
+                                    {item.values.map(v => <option key={`mamposteria_01_${item.i}_${v}`}>{v}</option>)}
                                 </select> : <input type={item.open ? "number" : "text"} step="0.01"
                                     className="form-control" name="mamposteria_01" id={'mamposteria_01_' + item.i} disabled={item.open !== true}
                                     onBlur={() => SAVE_STEP_MAMPOSTERIA_1()}
@@ -382,7 +383,7 @@ export const ENG_MANPOSTERIA = (props) => {
                             </select>}
 
                         </div>
-                    </>)}
+                    </Fragment>)}
                 </div>
             </div>
         </div>
