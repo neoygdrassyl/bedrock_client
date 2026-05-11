@@ -60,7 +60,7 @@ test.describe('E2E: Radicacion de Proyecto', () => {
     await funPage.goto();
     await funPage.waitForPageLoad();
 
-    // Click "GENERAR LIC" to auto-generate a license number
+    // Click "GENERAR" to auto-generate a license number
     await funPage.generateIdButton.click();
     
     // Add stability wait after click
@@ -141,7 +141,7 @@ test.describe('E2E: Radicacion de Proyecto', () => {
     await expect(popoverMenu).toBeVisible();
 
     // Check for key menu items
-    await expect(popoverMenu.locator('text=Detalles')).toBeVisible();
+    await expect(popoverMenu.locator('text=Abrir solicitud')).toBeVisible();
     await expect(popoverMenu.locator('text=Tiempos')).toBeVisible();
     await expect(popoverMenu.locator('text=Documentos')).toBeVisible();
   });
