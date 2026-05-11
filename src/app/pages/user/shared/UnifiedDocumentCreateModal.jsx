@@ -288,6 +288,11 @@ function UnifiedDocumentCreateModal({
                             </tbody>
                         </table>
                     </div>
+                    <div className="mt-3 flex justify-end">
+                        <Button type="button" variant="outline" size="sm" onClick={() => setRows((currentRows) => [...currentRows, createRow('manual')])}>
+                            <Icon name="plus" size={14} /> Agregar fila
+                        </Button>
+                    </div>
                 </section>
 
                 <aside className="min-h-0 overflow-auto bg-muted/20 p-3">

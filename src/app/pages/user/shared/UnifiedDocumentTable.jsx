@@ -56,7 +56,13 @@ function FilterButton({ type, activeFilter, activePopover, setActivePopover }) {
 }
 
 function OriginIconSet({ group }) {
-    return <div className="flex items-center justify-center gap-1" title="Origen documental disponible para este tipo documental">
+    const activeOrigins = DOCUMENT_ORIGIN_ORDER
+        .filter((originState) => group.originPresence?.[originState])
+        .map((originState) => DOCUMENT_ORIGIN_META[originState]?.label)
+        .filter(Boolean);
+
+    return <div className="space-y-1" title="Origen documental disponible para este tipo documental">
+        <div className="flex items-center justify-start gap-1">
         {DOCUMENT_ORIGIN_ORDER.map((originState) => {
             const meta = DOCUMENT_ORIGIN_META[originState];
             const active = Boolean(group.originPresence?.[originState]);
@@ -69,6 +75,22 @@ function OriginIconSet({ group }) {
                 <Icon name={meta.icon} size={13} />
             </span>;
         })}
+        </div>
+        <p className="mb-0 text-[11px] leading-snug text-muted-foreground">{activeOrigins.join(' · ') || 'Sin origen'}</p>
+    </div>;
+}
+
+function ReceptionMediumSummary({ group }) {
+    const labels = group.receptionMediumLabels || [];
+
+    if (!labels.length) {
+        return <span className="text-xs text-muted-foreground">Sin registrar</span>;
+    }
+
+    return <div className="flex flex-wrap gap-1" title={labels.join(', ')}>
+        {labels.map((label) => <span key={label} className="rounded-full border border-border bg-muted/40 px-2 py-1 text-[11px] text-foreground">
+            {label}
+        </span>)}
     </div>;
 }
 
@@ -146,7 +168,7 @@ function UnifiedDocumentTable({
             <table className="w-full table-fixed text-sm">
                 <thead className="sticky top-0 z-10 bg-muted text-xs uppercase text-muted-foreground shadow-sm">
                     <tr>
-                        <th className="relative w-[42%] px-3 py-2 text-left">
+                        <th className="relative w-[34%] px-3 py-2 text-left">
                             Documento
                             <FilterButton type="document" activeFilter={filters.document} activePopover={activePopover} setActivePopover={setActivePopover} />
                             {activePopover === 'document' ? <div className="absolute left-2 top-9 z-20 w-72 rounded-xl border border-border bg-background p-3 shadow-xl">
@@ -160,7 +182,7 @@ function UnifiedDocumentTable({
                                 <input className="w-full rounded-lg border border-border px-3 py-2 text-sm normal-case" value={filters.vr} onChange={(event) => updateFilter('vr', event.target.value)} placeholder="Filtrar VR" autoFocus />
                             </div> : null}
                         </th>
-                        <th className="relative w-[16%] px-3 py-2 text-center">
+                        <th className="relative w-[18%] px-3 py-2 text-left">
                             Origen
                             <FilterButton type="origins" activeFilter={filters.origins} activePopover={activePopover} setActivePopover={setActivePopover} />
                             {activePopover === 'origins' ? <div className="absolute right-2 top-9 z-20 w-64 rounded-xl border border-border bg-background p-3 text-left normal-case shadow-xl">
@@ -173,13 +195,14 @@ function UnifiedDocumentTable({
                                 })}
                             </div> : null}
                         </th>
-                        <th className="w-[10%] px-3 py-2 text-center" title="Cantidad de entradas o copias disponibles para este documento">Copias</th>
-                        <th className="w-[16%] px-3 py-2 text-center">Acciones</th>
+                        <th className="w-[14%] px-3 py-2 text-left">Medio de recepción</th>
+                        <th className="w-[8%] px-3 py-2 text-center" title="Cantidad de entradas o copias disponibles para este documento">Copias</th>
+                        <th className="w-[10%] px-3 py-2 text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {loading ? <tr><td className="px-3 py-8 text-center text-muted-foreground" colSpan={5}>CARGANDO...</td></tr> : null}
-                    {!loading && visibleGroups.length === 0 ? <tr><td className="px-3 py-8 text-center text-muted-foreground" colSpan={5}>No hay documentos registrados</td></tr> : null}
+                    {loading ? <tr><td className="px-3 py-8 text-center text-muted-foreground" colSpan={6}>CARGANDO...</td></tr> : null}
+                    {!loading && visibleGroups.length === 0 ? <tr><td className="px-3 py-8 text-center text-muted-foreground" colSpan={6}>No hay documentos registrados</td></tr> : null}
                     {!loading && visibleGroups.map((group) => <tr key={group.id} className="border-t border-border align-middle hover:bg-muted/30">
                         <td className="px-3 py-2">
                             <div className="font-medium leading-snug text-foreground" title={group.documentName}>{group.documentName}</div>
@@ -187,6 +210,7 @@ function UnifiedDocumentTable({
                         </td>
                         <td className="truncate px-3 py-2 font-mono text-xs" title={group.latestVr || 'Sin VR'}>{group.latestVr || 'Sin VR'}</td>
                         <td className="px-3 py-2"><OriginIconSet group={group} /></td>
+                        <td className="px-3 py-2"><ReceptionMediumSummary group={group} /></td>
                         <td className="px-3 py-2 text-center font-mono" title="Cantidad de entradas o copias disponibles para este documento">{group.entryCount}</td>
                         <td className="px-3 py-2">
                             <div className="flex justify-center gap-1">
