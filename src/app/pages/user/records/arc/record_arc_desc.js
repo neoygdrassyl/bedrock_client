@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import DataTable from '@/components/data-table-bridge';
 
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -8,10 +8,13 @@ import RECORD_ARC_AREAS from './record_arc_areas.component';
 import EXP_AREAS_RECORD from '../exp_areas_record.component';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 
 function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [editBlueprint, setEditBlueprint] = useState(false);
     const [saveState, setSaveState] = useState({});
+    const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
     useEffect(() => {
         if (editBlueprint) {
@@ -73,9 +76,16 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
                         </div>
                     </div>
 
-                    <textarea className="input-group" maxLength="8000" name="s_33_values" rows="4"
-                        defaultValue={values[0]} onBlur={() => {setSaveState(prev => ({...prev, ant: '1'})); manage_ra_33(false, 'ant')}}></textarea>
-                    <label>  (maximo 8000 caracteres) {_SAVING_STATE(saveState.ant)}</label>
+                    <RichTextEditor
+                        value={values[0]}
+                        hiddenName="s_33_values"
+                        maxLength={8000}
+                        minHeight={180}
+                        placeholder="Registre antecedentes, notas de evaluación e imágenes de soporte"
+                        uploadFile={uploadRichTextImage}
+                        onBlur={() => {setSaveState(prev => ({...prev, ant: '1'})); manage_ra_33(false, 'ant')}}
+                    />
+                    <label>{_SAVING_STATE(saveState.ant)}</label>
                 </div>
 
                 <div className="row">
@@ -93,9 +103,16 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
                             <label>Descripción del proyecto Arquitectónica</label>
                         </div>
                     </div>
-                    <textarea className="input-group" maxLength="8000" name="s_33_values" rows="4"
-                        defaultValue={values[1]} onBlur={() => {setSaveState(prev => ({...prev, desc: '1'})); manage_ra_33(false, 'desc')}}></textarea>
-                    <label>  (maximo 8000 caracteres) {_SAVING_STATE(saveState.desc)}</label>
+                    <RichTextEditor
+                        value={values[1]}
+                        hiddenName="s_33_values"
+                        maxLength={8000}
+                        minHeight={180}
+                        placeholder="Describa la evaluación arquitectónica del proyecto"
+                        uploadFile={uploadRichTextImage}
+                        onBlur={() => {setSaveState(prev => ({...prev, desc: '1'})); manage_ra_33(false, 'desc')}}
+                    />
+                    <label>{_SAVING_STATE(saveState.desc)}</label>
                 </div>
             </>
         }

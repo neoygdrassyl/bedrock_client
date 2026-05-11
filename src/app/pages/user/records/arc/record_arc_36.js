@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import perfilData from '../../../../components/jsons/perfilesData.json';
 import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARC_36_TABLE from './record_arc_36.table';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 
 function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [editElement, setEditElement] = useState(false);
+    const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
     useEffect(() => {
         if (editElement) {
@@ -243,9 +246,15 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                         <label>Observaciones espacio publico</label>
                     </div>
                 </div>
-                <textarea className="input-group" maxLength="2000" name="s_36_values" rows="4"
-                    defaultValue={value36[8]} onBlur={() => save_ra_36()}></textarea>
-                <label>(máximo 2000 caracteres)</label>
+                <RichTextEditor
+                    value={value36[8]}
+                    hiddenName="s_36_values"
+                    maxLength={2000}
+                    minHeight={170}
+                    placeholder="Registre observaciones de espacio público con soporte visual si aplica"
+                    uploadFile={uploadRichTextImage}
+                    onBlur={() => save_ra_36()}
+                />
             </div>
         }
 
