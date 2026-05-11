@@ -36,9 +36,9 @@ function renderDashboard(props = {}) {
 }
 
 describe('Dashboard (redesigned)', () => {
-  it('renders operation section heading', () => {
+  it('renders grouped modules section heading', () => {
     renderDashboard();
-    expect(screen.getByText(/operaci[oó]n y gesti[oó]n/i)).toBeInTheDocument();
+    expect(screen.getByText(/m[oó]dulos agrupados/i)).toBeInTheDocument();
   });
 
   it('renders utility section heading', () => {
@@ -48,7 +48,7 @@ describe('Dashboard (redesigned)', () => {
 
   it('renders Licencias module card', () => {
     renderDashboard();
-    expect(screen.getByText(/radicar licencias/i)).toBeInTheDocument();
+    expect(screen.getByText(/nueva radicaci[oó]n/i)).toBeInTheDocument();
   });
 
   it('renders links to new Spanish routes', () => {

@@ -1,12 +1,13 @@
 import React from 'react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-const { setScopeMock, getFunByPublicMock, getFunMock } = vi.hoisted(() => ({
+const { setScopeMock, getFunByPublicMock, getFunMock, getSummaryByIdPublicMock } = vi.hoisted(() => ({
   setScopeMock: vi.fn(),
   getFunByPublicMock: vi.fn(),
   getFunMock: vi.fn(),
+  getSummaryByIdPublicMock: vi.fn(),
 }));
 
 vi.mock('../app/pages/user/fun_forms/hooks/useBookmarks', () => ({
@@ -26,6 +27,7 @@ vi.mock('../app/services/fun.service', () => ({
   default: {
     get_fun_IdPublic: getFunByPublicMock,
     get: getFunMock,
+    getSummaryByIdPublic: getSummaryByIdPublicMock,
   },
 }));
 
@@ -94,6 +96,10 @@ const expediente = {
 };
 
 describe('FunExpedienteFullscreen bookmarks', () => {
+  beforeEach(() => {
+    getSummaryByIdPublicMock.mockResolvedValue({ data: null });
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
     document.body.className = '';

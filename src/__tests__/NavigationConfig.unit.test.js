@@ -18,7 +18,7 @@ describe('navigation-config', () => {
       expect(ids).toContain('normas');
     });
 
-    it('returns limited items for USER role', () => {
+    it('returns all items for USER role while role filtering is disabled', () => {
       const items = getNavItems('USER');
       const ids = items.map((i) => i.id);
       expect(ids).toContain('dashboard');
@@ -26,10 +26,9 @@ describe('navigation-config', () => {
       expect(ids).toContain('ventanilla');
       expect(ids).toContain('peticiones');
       expect(ids).toContain('normas');
-      // USER should NOT see admin-only modules
-      expect(ids).not.toContain('mensajes');
-      expect(ids).not.toContain('archivo');
-      expect(ids).not.toContain('publicaciones');
+      expect(ids).toContain('mensajes');
+      expect(ids).toContain('archivo');
+      expect(ids).toContain('publicaciones');
     });
 
     it('returns all items when role is null (legacy fallback)', () => {

@@ -3,6 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import FUN from '@/app/pages/user/fun';
 
+const { openExpedienteWorkspaceMock } = vi.hoisted(() => ({
+  openExpedienteWorkspaceMock: vi.fn(),
+}));
+
 const funRow = {
   id: 1,
   id_public: '68001-1-26-0001',
@@ -24,6 +28,11 @@ vi.mock('@/app/pages/user/fun_forms/components/table_components/table.component_
 
 vi.mock('@/app/pages/user/fun_forms/components/icon_progress.compoennt', () => ({
   default: () => <div data-testid="progress-icons">icons</div>,
+}));
+
+vi.mock('@/app/pages/user/fun_forms/utils/expedienteWorkspaceRoute', () => ({
+  LEGACY_MODULE_TO_WORKSPACE: {},
+  openExpedienteWorkspace: openExpedienteWorkspaceMock,
 }));
 
 vi.mock('@/app/services/users.service', () => ({
@@ -62,10 +71,11 @@ vi.mock('@/app/components/customClasses/typeParse', async (importOriginal) => {
 
 describe('FUN quick preview sheet', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     window.user = { id: 1, roleId: 1 };
   });
 
-  it('abre la vista rápida lateral al seleccionar una fila', async () => {
+  it('abre el workspace de expediente al seleccionar una fila', async () => {
     const user = userEvent.setup();
 
     render(<FUN translation={{}} globals={{}} swaMsg={{}} breadCrums={{}} />);
@@ -73,8 +83,6 @@ describe('FUN quick preview sheet', () => {
     const radicado = await screen.findByText('68001-1-26-0001');
     await user.click(radicado);
 
-    expect(await screen.findByRole('button', { name: /Abrir detalles/i })).toBeVisible();
-    expect(screen.getByText(/Revise el expediente sin salir de la tabla/i)).toBeVisible();
-    expect(screen.getByText(/Tipo de trámite/i)).toBeVisible();
+    expect(openExpedienteWorkspaceMock).toHaveBeenCalledWith(funRow, { module: 'general' });
   });
 });
