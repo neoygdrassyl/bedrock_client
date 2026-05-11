@@ -1,0 +1,12 @@
+Rule: react-doctor/no-layout-transition-inline
+Severity: warning
+Category: Performance
+Count: 2
+
+Transitioning layout property "width" causes layout thrash every frame — use transform and opacity instead
+
+Suggestion: Use `transform` and `opacity` for transitions — they run on the compositor thread. For height animations, use `grid-template-rows: 0fr → 1fr`
+
+Files:
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:230
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:359

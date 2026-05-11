@@ -1,0 +1,15 @@
+Rule: react-doctor/rendering-hoist-jsx
+Severity: warning
+Category: Performance
+Count: 5
+
+Static JSX "dayOffTag" inside a component — hoist to module scope so it isn't recreated each render
+
+Suggestion: Move the static JSX to module scope: `const ICON = <svg>...</svg>` outside the component so it isn't recreated each render
+
+Files:
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:765
+  src/app/pages/user/fun_forms/components/clocks_control.component.js:392
+  src/app/pages/user/fun_forms/components/clocks_control.component.js:401
+  src/app/pages/user/fun_forms/components/clocks_control.component.js:409
+  src/app/pages/user/fun_forms/components/fun_g_reports.component.js:350

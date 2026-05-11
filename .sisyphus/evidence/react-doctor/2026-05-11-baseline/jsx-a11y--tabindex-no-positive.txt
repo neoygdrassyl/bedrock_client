@@ -1,0 +1,18 @@
+Rule: jsx-a11y/tabindex-no-positive
+Severity: warning
+Category: Accessibility
+Count: 6
+
+Avoid positive integer values for `tabIndex`.
+
+Suggestion: Change the `tabIndex` prop to a non-positive value.
+
+Docs: https://oxc.rs/docs/guide/usage/linter/rules/jsx_a11y/tabindex-no-positive.html
+
+Files:
+  src/app/pages/user/fun_forms/components/fun_report_data_jodit.compoent.js:240
+  src/app/pages/user/pqrs/components/pqrs_setReply2.component.js:321
+  src/app/pages/user/pqrs/pqrs_manage.view.js:1065
+  src/app/pages/user/expeditions/exp_res_2.component.js:197
+  src/app/pages/user/pqrs/components/pqrs_replies_22.component.js:78
+  src/app/pages/user/pqrs/components/pqrs_replices_11.component.js:105

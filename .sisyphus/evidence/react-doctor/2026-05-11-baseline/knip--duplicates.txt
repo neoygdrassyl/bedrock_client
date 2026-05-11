@@ -1,0 +1,16 @@
+Rule: knip/duplicates
+Severity: warning
+Category: Dead Code
+Count: 8
+
+Duplicate export: DataTableBridge|default
+
+Files:
+  src/components/data-table-bridge.jsx
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx
+  src/app/pages/user/fun_forms/components/FunmanageDataTable.jsx
+  src/components/icon.jsx
+  src/components/legacy-modal.jsx
+  src/app/pages/user/records/components/RecordReviewWorkspace.jsx
+  src/app/utils/iconSvgString.js
+  src/app/pages/user/dashboardPreferences.js

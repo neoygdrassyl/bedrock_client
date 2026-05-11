@@ -1,0 +1,39 @@
+Rule: jsx-a11y/anchor-is-valid
+Severity: warning
+Category: Accessibility
+Count: 27
+
+Missing `href` attribute for the `a` element.
+
+Suggestion: Provide the `href` attribute for the `a` element.
+
+Docs: https://oxc.rs/docs/guide/usage/linter/rules/jsx_a11y/anchor-is-valid.html
+
+Files:
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:798
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:818
+  src/app/pages/user/records/law/record_law_gen2_fun52.js:234
+  src/app/pages/user/records/law/record_law_gen2_fun52.js:235
+  src/app/pages/user/records/law/record_law_gen2_fun52.js:236
+  src/app/pages/user/records/law/record_law_gen2_fun52.js:237
+  src/app/pages/user/fun_forms/components/clocks_control.component.js:442
+  src/app/pages/user/fun_forms/fun_n_52.js:1080
+  src/app/pages/user/fun_forms/fun_n_52.js:1081
+  src/app/pages/user/fun_forms/fun_n_52.js:1082
+  src/app/pages/user/fun_forms/fun_n_52.js:1083
+  src/app/pages/user/fun_forms/fun_n_52.js:1084
+  src/app/pages/user/fun_forms/fun_n_52.js:1085
+  src/app/pages/user/fun_forms/components/fun_versionNav.js:17
+  src/app/pages/user/fun_forms/components/fun_versionNav.js:24
+  src/app/pages/user/fun_forms/fun_g.js:991
+  src/app/pages/user/fun_forms/fun_g.js:992
+  src/app/pages/user/fun_forms/fun_g.js:993
+  src/app/pages/user/fun_forms/fun_g.js:994
+  src/app/pages/user/fun_forms/fun_g.js:995
+  src/app/pages/user/dictionary.page.js:169
+  src/app/pages/user/dictionary.page.js:181
+  src/app/pages/user/dictionary.page.js:188
+  src/app/pages/user/dictionary.page.js:474
+  src/app/pages/user/dictionary.page.js:475
+  src/app/pages/user/dictionary.page.js:476
+  src/app/pages/user/dictionary.page.js:477

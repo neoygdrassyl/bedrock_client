@@ -1,0 +1,16 @@
+Rule: react-doctor/js-hoist-intl
+Severity: warning
+Category: Performance
+Count: 6
+
+new Intl.DateTimeFormat() inside a function — hoist to module scope or wrap in useMemo so it isn't recreated each call
+
+Suggestion: Hoist `new Intl.NumberFormat(...)` to module scope or wrap in `useMemo` — Intl constructors allocate dozens of objects per locale lookup
+
+Files:
+  src/app/layouts/GlobalSearchDialog.jsx:141
+  src/app/pages/user/SettingsPage.jsx:51
+  src/app/pages/user/dashboard.js:85
+  src/app/pages/user/chat/InternalChatPanel.jsx:33
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx:142
+  src/app/pages/user/ErrorReportsPanel.jsx:69

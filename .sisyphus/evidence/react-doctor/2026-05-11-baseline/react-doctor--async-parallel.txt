@@ -1,0 +1,21 @@
+Rule: react-doctor/async-parallel
+Severity: warning
+Category: Performance
+Count: 11
+
+4 sequential await statements that appear independent — use Promise.all() for parallel execution
+
+Suggestion: Use `const [a, b] = await Promise.all([fetchA(), fetchB()])` to run independent operations concurrently
+
+Files:
+  e2e/pages/fun.page.js:73
+  e2e/pages/fun.page.js:114
+  e2e/pages/fun.page.js:118
+  e2e/pages/login.page.js:44
+  e2e/pages/archive.page.js:45
+  e2e/pages/archive.page.js:73
+  e2e/pages/archive.page.js:94
+  e2e/pages/submit.page.js:77
+  e2e/pages/submit.page.js:92
+  e2e/pages/submit.page.js:103
+  e2e/fixtures/auth.fixture.js:314

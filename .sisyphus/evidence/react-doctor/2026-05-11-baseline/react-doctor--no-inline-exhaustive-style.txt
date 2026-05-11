@@ -1,0 +1,18 @@
+Rule: react-doctor/no-inline-exhaustive-style
+Severity: warning
+Category: Architecture
+Count: 8
+
+12 inline style properties — extract to a CSS class, CSS module, or styled component for maintainability and reuse
+
+Suggestion: Move styles to a CSS class, CSS module, Tailwind utilities, or a styled component — inline objects with many properties hurt readability and create new references every render
+
+Files:
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:29
+  src/app/components/MermaidDiagram.component.js:197
+  src/app/components/MermaidDiagram.component.js:213
+  src/app/components/MermaidDiagram.component.js:310
+  src/app/components/MermaidDiagram.component.js:327
+  src/components/legacy-modal.jsx:153
+  src/app/pages/user/records/arc/record_arc_areas_2.component.js:1217
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:133

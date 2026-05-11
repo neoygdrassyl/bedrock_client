@@ -1,0 +1,653 @@
+
+> curaduria@1.20.95 test:e2e
+> playwright test --grep login|FUN|radic|modal
+
+[Playwright] Temp directory initialized: /tmp/dovela-playwright
+
+Running 31 tests using 6 workers
+
+  ✓   3 [chromium] › e2e/flows/login.e2e.spec.js:22:7 › E2E: Login page › login page renders with email, password, and submit button (2.7s)
+  ✓   7 [chromium] › e2e/flows/login.e2e.spec.js:32:7 › E2E: Login page › unauthenticated user accessing /dashboard is redirected to /login (2.6s)
+  ✓   8 [chromium] › e2e/flows/login.e2e.spec.js:40:7 › E2E: Login page › unauthenticated user accessing /licencias is redirected to /login (4.0s)
+  ✓   1 [chromium] › e2e/flows/archivo.e2e.spec.js:138:7 › E2E: Archivo Documental › clicking "NUEVA CAJA" opens the creation modal (13.3s)
+  ✓   4 [chromium] › e2e/flows/b07-modal-overlay-smoke.e2e.spec.js:19:5 › B-07 smoke: el modal base de Ventanilla cubre todo el viewport (13.4s)
+  ✓   9 [chromium] › e2e/flows/login.e2e.spec.js:47:7 › E2E: Login page › unauthenticated user accessing /ventanilla is redirected to /login (4.6s)
+  ✓   2 [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:40:7 › E2E: Radicacion de Proyecto › navigate to /licencias and verify the page loads with heading and form (14.7s)
+  ✓   5 [chromium] › e2e/flows/relojes.e2e.spec.js:73:7 › E2E: Relojes Legales › FUN page loads and action popover contains "Tiempos" option (15.1s)
+  ✓  12 [chromium] › e2e/flows/login.e2e.spec.js:56:11 › E2E: Authenticated session › auth fixture grants access to /dashboard (6.1s)
+  -  15 [chromium] › e2e/flows/login.e2e.spec.js:65:12 › E2E: Authenticated session › authenticated user can navigate to /licencias — times out, may need backend data
+  ✓  10 [chromium] › e2e/flows/ventanilla.e2e.spec.js:46:7 › E2E: Ventanilla Unica › clicking "NUEVA ENTRADA" opens the creation modal with form fields (8.7s)
+  ✓  11 [chromium] › e2e/flows/b07-modal-overlay-smoke.e2e.spec.js:29:5 › B-05 smoke: el modal de nueva entrada en Ventanilla queda centrado y con ancho operativo (8.8s)
+  ✘   6 [chromium] › e2e/flows/funmanage-table-compact.spec.js:154:7 › Gestion Licencias v2 compact table › renders compact table without horizontal scroll at 1280x800 (23.6s)
+  ✓  16 [chromium] › e2e/flows/login.e2e.spec.js:73:11 › E2E: Authenticated session › authenticated user can navigate to /ventanilla (6.3s)
+  -  20 [chromium] › e2e/flows/login.e2e.spec.js:80:12 › E2E: Authenticated session › authenticated user can navigate to /archivo — times out, may need backend data
+  ✓  18 [chromium] › e2e/flows/b07-modal-overlay-smoke.e2e.spec.js:54:5 › B-05 smoke: el modal de actualización en Ventanilla muestra la jerarquía documental nueva (7.4s)
+  ✓  17 [chromium] › e2e/flows/ventanilla.e2e.spec.js:65:7 › E2E: Ventanilla Unica › generate button auto-fills the radicacion number (7.5s)
+  ✓  21 [chromium] › e2e/flows/login.e2e.spec.js:87:11 › E2E: Authenticated session › logout clears session and redirects to login (4.8s)
+  ✓  23 [chromium] › e2e/flows/ventanilla.e2e.spec.js:94:7 › E2E: Ventanilla Unica › search by radicado number (VR) returns results or empty (5.1s)
+  ✘  13 [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:59:7 › E2E: Radicacion de Proyecto › auto-generate license ID fills the id field with a consecutive number (24.5s)
+  ✘  14 [chromium] › e2e/flows/relojes.e2e.spec.js:99:7 › E2E: Relojes Legales › clicking "Tiempos" opens the clock modal (25.6s)
+  ✓  22 [chromium] › e2e/flows/b07-modal-overlay-smoke.e2e.spec.js:69:5 › B-07 smoke: el macromodal de Gestión Licencias cubre todo el viewport (12.5s)
+  ✘  19 [chromium] › e2e/flows/funmanage-table-compact.spec.js:154:7 › Gestion Licencias v2 compact table › renders compact table without horizontal scroll at 1280x800 (retry #1) (22.5s)
+  ✘  24 [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:59:7 › E2E: Radicacion de Proyecto › auto-generate license ID fills the id field with a consecutive number (retry #1) (22.0s)
+  ✘  25 [chromium] › e2e/flows/relojes.e2e.spec.js:99:7 › E2E: Relojes Legales › clicking "Tiempos" opens the clock modal (retry #1) (22.9s)
+  ✘  26 [chromium] › e2e/flows/funmanage-table-compact.spec.js:168:7 › Gestion Licencias v2 compact table › row click opens preview drawer and explicit fullscreen action opens workspace (18.2s)
+  ✓  27 [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:73:7 › E2E: Radicacion de Proyecto › DataTable renders with license tabs (Radicacion, Evaluacion, Expedicion, etc.) (5.1s)
+  ✓  29 [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:86:7 › E2E: Radicacion de Proyecto › switching tabs shows different data sets (6.2s)
+  ✓  31 [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:105:7 › E2E: Radicacion de Proyecto › search by radicado number returns results or empty state (10.1s)
+  ✘  28 [chromium] › e2e/flows/relojes.e2e.spec.js:134:7 › E2E: Relojes Legales › clock modal displays clock content after opening (22.9s)
+  ✘  30 [chromium] › e2e/flows/funmanage-table-compact.spec.js:168:7 › Gestion Licencias v2 compact table › row click opens preview drawer and explicit fullscreen action opens workspace (retry #1) (20.6s)
+  ✘  32 [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:124:7 › E2E: Radicacion de Proyecto › row action popover opens with expected menu items for a license (20.0s)
+  ✘  34 [chromium] › e2e/flows/funmanage-table-compact.spec.js:181:7 › Gestion Licencias v2 compact table › bookmark menu and preview buttons remain visible in dark mode (18.2s)
+  ✘  33 [chromium] › e2e/flows/relojes.e2e.spec.js:134:7 › E2E: Relojes Legales › clock modal displays clock content after opening (retry #1) (22.1s)
+  ✘  35 [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:124:7 › E2E: Radicacion de Proyecto › row action popover opens with expected menu items for a license (retry #1) (21.6s)
+  ✘  36 [chromium] › e2e/flows/funmanage-table-compact.spec.js:181:7 › Gestion Licencias v2 compact table › bookmark menu and preview buttons remain visible in dark mode (retry #1) (19.1s)
+  ✘  37 [chromium] › e2e/flows/relojes.e2e.spec.js:174:7 › E2E: Relojes Legales › clock modal can be closed and FUN page remains intact (20.1s)
+  ✘  38 [chromium] › e2e/flows/relojes.e2e.spec.js:174:7 › E2E: Relojes Legales › clock modal can be closed and FUN page remains intact (retry #1) (21.2s)
+  ✘  39 [chromium] › e2e/flows/relojes.e2e.spec.js:220:7 › E2E: Relojes Legales › opening "Detalles" from action menu shows license detail modal (19.5s)
+  ✘  40 [chromium] › e2e/flows/relojes.e2e.spec.js:220:7 › E2E: Relojes Legales › opening "Detalles" from action menu shows license detail modal (retry #1) (21.7s)
+[Playwright] Cleanup complete: /tmp/dovela-playwright
+
+
+  1) [chromium] › e2e/flows/funmanage-table-compact.spec.js:154:7 › Gestion Licencias v2 compact table › renders compact table without horizontal scroll at 1280x800 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('funmanage-table')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByTestId('funmanage-table')[22m
+
+
+      149 |     await authenticatedPage.goto('/licencias/gestion-nueva');
+      150 |     await authenticatedPage.waitForLoadState('domcontentloaded');
+    > 151 |     await expect(authenticatedPage.getByTestId('funmanage-table')).toBeVisible();
+          |                                                                    ^
+      152 |   });
+      153 |
+      154 |   test('renders compact table without horizontal scroll at 1280x800', async ({ authenticatedPage }) => {
+        at /home/diego/dovela/frontend/e2e/flows/funmanage-table-compact.spec.js:151:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-64ecf-rizontal-scroll-at-1280x800-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-64ecf-rizontal-scroll-at-1280x800-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('funmanage-table')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByTestId('funmanage-table')[22m
+
+
+      149 |     await authenticatedPage.goto('/licencias/gestion-nueva');
+      150 |     await authenticatedPage.waitForLoadState('domcontentloaded');
+    > 151 |     await expect(authenticatedPage.getByTestId('funmanage-table')).toBeVisible();
+          |                                                                    ^
+      152 |   });
+      153 |
+      154 |   test('renders compact table without horizontal scroll at 1280x800', async ({ authenticatedPage }) => {
+        at /home/diego/dovela/frontend/e2e/flows/funmanage-table-compact.spec.js:151:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-64ecf-rizontal-scroll-at-1280x800-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-64ecf-rizontal-scroll-at-1280x800-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-64ecf-rizontal-scroll-at-1280x800-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-64ecf-rizontal-scroll-at-1280x800-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/flows/funmanage-table-compact.spec.js:168:7 › Gestion Licencias v2 compact table › row click opens preview drawer and explicit fullscreen action opens workspace 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('funmanage-table')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByTestId('funmanage-table')[22m
+
+
+      149 |     await authenticatedPage.goto('/licencias/gestion-nueva');
+      150 |     await authenticatedPage.waitForLoadState('domcontentloaded');
+    > 151 |     await expect(authenticatedPage.getByTestId('funmanage-table')).toBeVisible();
+          |                                                                    ^
+      152 |   });
+      153 |
+      154 |   test('renders compact table without horizontal scroll at 1280x800', async ({ authenticatedPage }) => {
+        at /home/diego/dovela/frontend/e2e/flows/funmanage-table-compact.spec.js:151:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-dfc84-reen-action-opens-workspace-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-dfc84-reen-action-opens-workspace-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('funmanage-table')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByTestId('funmanage-table')[22m
+
+
+      149 |     await authenticatedPage.goto('/licencias/gestion-nueva');
+      150 |     await authenticatedPage.waitForLoadState('domcontentloaded');
+    > 151 |     await expect(authenticatedPage.getByTestId('funmanage-table')).toBeVisible();
+          |                                                                    ^
+      152 |   });
+      153 |
+      154 |   test('renders compact table without horizontal scroll at 1280x800', async ({ authenticatedPage }) => {
+        at /home/diego/dovela/frontend/e2e/flows/funmanage-table-compact.spec.js:151:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-dfc84-reen-action-opens-workspace-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-dfc84-reen-action-opens-workspace-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-dfc84-reen-action-opens-workspace-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-dfc84-reen-action-opens-workspace-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/flows/funmanage-table-compact.spec.js:181:7 › Gestion Licencias v2 compact table › bookmark menu and preview buttons remain visible in dark mode 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('funmanage-table')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByTestId('funmanage-table')[22m
+
+
+      149 |     await authenticatedPage.goto('/licencias/gestion-nueva');
+      150 |     await authenticatedPage.waitForLoadState('domcontentloaded');
+    > 151 |     await expect(authenticatedPage.getByTestId('funmanage-table')).toBeVisible();
+          |                                                                    ^
+      152 |   });
+      153 |
+      154 |   test('renders compact table without horizontal scroll at 1280x800', async ({ authenticatedPage }) => {
+        at /home/diego/dovela/frontend/e2e/flows/funmanage-table-compact.spec.js:151:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-640c2-remain-visible-in-dark-mode-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-640c2-remain-visible-in-dark-mode-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('funmanage-table')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByTestId('funmanage-table')[22m
+
+
+      149 |     await authenticatedPage.goto('/licencias/gestion-nueva');
+      150 |     await authenticatedPage.waitForLoadState('domcontentloaded');
+    > 151 |     await expect(authenticatedPage.getByTestId('funmanage-table')).toBeVisible();
+          |                                                                    ^
+      152 |   });
+      153 |
+      154 |   test('renders compact table without horizontal scroll at 1280x800', async ({ authenticatedPage }) => {
+        at /home/diego/dovela/frontend/e2e/flows/funmanage-table-compact.spec.js:151:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-640c2-remain-visible-in-dark-mode-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-640c2-remain-visible-in-dark-mode-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-640c2-remain-visible-in-dark-mode-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/funmanage-table-compact-Ge-640c2-remain-visible-in-dark-mode-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:59:7 › E2E: Radicacion de Proyecto › auto-generate license ID fills the id field with a consecutive number 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button').filter({ hasText: /GENERAR LIC/i })[22m
+
+
+      62 |
+      63 |     // Click "GENERAR LIC" to auto-generate a license number
+    > 64 |     await funPage.generateIdButton.click();
+         |                                    ^
+      65 |     
+      66 |     // Add stability wait after click
+      67 |     await authenticatedPage.waitForTimeout(500);
+        at /home/diego/dovela/frontend/e2e/flows/radicar-proyecto.e2e.spec.js:64:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-22e42-d-with-a-consecutive-number-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-22e42-d-with-a-consecutive-number-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button').filter({ hasText: /GENERAR LIC/i })[22m
+
+
+      62 |
+      63 |     // Click "GENERAR LIC" to auto-generate a license number
+    > 64 |     await funPage.generateIdButton.click();
+         |                                    ^
+      65 |     
+      66 |     // Add stability wait after click
+      67 |     await authenticatedPage.waitForTimeout(500);
+        at /home/diego/dovela/frontend/e2e/flows/radicar-proyecto.e2e.spec.js:64:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-22e42-d-with-a-consecutive-number-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-22e42-d-with-a-consecutive-number-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-22e42-d-with-a-consecutive-number-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-22e42-d-with-a-consecutive-number-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:124:7 › E2E: Radicacion de Proyecto › row action popover opens with expected menu items for a license 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.fun-action-menu').locator('text=Detalles')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('.fun-action-menu').locator('text=Detalles')[22m
+
+
+      142 |
+      143 |     // Check for key menu items
+    > 144 |     await expect(popoverMenu.locator('text=Detalles')).toBeVisible();
+          |                                                        ^
+      145 |     await expect(popoverMenu.locator('text=Tiempos')).toBeVisible();
+      146 |     await expect(popoverMenu.locator('text=Documentos')).toBeVisible();
+      147 |   });
+        at /home/diego/dovela/frontend/e2e/flows/radicar-proyecto.e2e.spec.js:144:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-31e9b-ed-menu-items-for-a-license-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-31e9b-ed-menu-items-for-a-license-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.fun-action-menu').locator('text=Detalles')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('.fun-action-menu').locator('text=Detalles')[22m
+
+
+      142 |
+      143 |     // Check for key menu items
+    > 144 |     await expect(popoverMenu.locator('text=Detalles')).toBeVisible();
+          |                                                        ^
+      145 |     await expect(popoverMenu.locator('text=Tiempos')).toBeVisible();
+      146 |     await expect(popoverMenu.locator('text=Documentos')).toBeVisible();
+      147 |   });
+        at /home/diego/dovela/frontend/e2e/flows/radicar-proyecto.e2e.spec.js:144:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-31e9b-ed-menu-items-for-a-license-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-31e9b-ed-menu-items-for-a-license-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-31e9b-ed-menu-items-for-a-license-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/radicar-proyecto.e2e-E2E-R-31e9b-ed-menu-items-for-a-license-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › e2e/flows/relojes.e2e.spec.js:99:7 › E2E: Relojes Legales › clicking "Tiempos" opens the clock modal 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.ReactModal__Content:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('.ReactModal__Content:visible').first()[22m
+
+
+      122 |     // Wait for the modal to open with proper polling
+      123 |     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())
+    > 124 |       .toBeVisible({ timeout: 15_000 });
+          |        ^
+      125 |
+      126 |     // A react-modal should now be visible
+      127 |     const modalVisible = await clocksPage.isModalVisible();
+        at /home/diego/dovela/frontend/e2e/flows/relojes.e2e.spec.js:124:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f6450-empos-opens-the-clock-modal-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f6450-empos-opens-the-clock-modal-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f6450-empos-opens-the-clock-modal-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.ReactModal__Content:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('.ReactModal__Content:visible').first()[22m
+
+
+      122 |     // Wait for the modal to open with proper polling
+      123 |     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())
+    > 124 |       .toBeVisible({ timeout: 15_000 });
+          |        ^
+      125 |
+      126 |     // A react-modal should now be visible
+      127 |     const modalVisible = await clocksPage.isModalVisible();
+        at /home/diego/dovela/frontend/e2e/flows/relojes.e2e.spec.js:124:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f6450-empos-opens-the-clock-modal-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f6450-empos-opens-the-clock-modal-chromium-retry1/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f6450-empos-opens-the-clock-modal-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f6450-empos-opens-the-clock-modal-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f6450-empos-opens-the-clock-modal-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › e2e/flows/relojes.e2e.spec.js:134:7 › E2E: Relojes Legales › clock modal displays clock content after opening 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.ReactModal__Content:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('.ReactModal__Content:visible').first()[22m
+
+
+      156 |     // Wait for the modal to open
+      157 |     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())
+    > 158 |       .toBeVisible({ timeout: 15_000 });
+          |        ^
+      159 |
+      160 |     // The modal should contain some content (clock rows, gantt, or info)
+      161 |     const modal = authenticatedPage.locator('.ReactModal__Content').last();
+        at /home/diego/dovela/frontend/e2e/flows/relojes.e2e.spec.js:158:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f35f8-clock-content-after-opening-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f35f8-clock-content-after-opening-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f35f8-clock-content-after-opening-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.ReactModal__Content:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('.ReactModal__Content:visible').first()[22m
+
+
+      156 |     // Wait for the modal to open
+      157 |     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())
+    > 158 |       .toBeVisible({ timeout: 15_000 });
+          |        ^
+      159 |
+      160 |     // The modal should contain some content (clock rows, gantt, or info)
+      161 |     const modal = authenticatedPage.locator('.ReactModal__Content').last();
+        at /home/diego/dovela/frontend/e2e/flows/relojes.e2e.spec.js:158:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f35f8-clock-content-after-opening-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f35f8-clock-content-after-opening-chromium-retry1/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f35f8-clock-content-after-opening-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f35f8-clock-content-after-opening-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-f35f8-clock-content-after-opening-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › e2e/flows/relojes.e2e.spec.js:174:7 › E2E: Relojes Legales › clock modal can be closed and FUN page remains intact 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.ReactModal__Content:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('.ReactModal__Content:visible').first()[22m
+
+
+      196 |     // Wait for the modal to open
+      197 |     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())
+    > 198 |       .toBeVisible({ timeout: 15_000 });
+          |        ^
+      199 |
+      200 |     // Verify modal is open
+      201 |     expect(await clocksPage.isModalVisible()).toBeTruthy();
+        at /home/diego/dovela/frontend/e2e/flows/relojes.e2e.spec.js:198:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-24a78-and-FUN-page-remains-intact-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-24a78-and-FUN-page-remains-intact-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-24a78-and-FUN-page-remains-intact-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.ReactModal__Content:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('.ReactModal__Content:visible').first()[22m
+
+
+      196 |     // Wait for the modal to open
+      197 |     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())
+    > 198 |       .toBeVisible({ timeout: 15_000 });
+          |        ^
+      199 |
+      200 |     // Verify modal is open
+      201 |     expect(await clocksPage.isModalVisible()).toBeTruthy();
+        at /home/diego/dovela/frontend/e2e/flows/relojes.e2e.spec.js:198:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-24a78-and-FUN-page-remains-intact-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-24a78-and-FUN-page-remains-intact-chromium-retry1/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-24a78-and-FUN-page-remains-intact-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-24a78-and-FUN-page-remains-intact-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-24a78-and-FUN-page-remains-intact-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › e2e/flows/relojes.e2e.spec.js:220:7 › E2E: Relojes Legales › opening "Detalles" from action menu shows license detail modal 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.fun-action-menu [role="menuitem"]').filter({ hasText: /Detalles/i })[22m
+
+
+      239 |
+      240 |     const detallesOption = authenticatedPage.locator('.fun-action-menu [role="menuitem"]', { hasText: /Detalles/i });
+    > 241 |     await detallesOption.click();
+          |                          ^
+      242 |
+      243 |     // Wait for the modal and its content to load
+      244 |     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())
+        at /home/diego/dovela/frontend/e2e/flows/relojes.e2e.spec.js:241:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-314fa--shows-license-detail-modal-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-314fa--shows-license-detail-modal-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.fun-action-menu [role="menuitem"]').filter({ hasText: /Detalles/i })[22m
+
+
+      239 |
+      240 |     const detallesOption = authenticatedPage.locator('.fun-action-menu [role="menuitem"]', { hasText: /Detalles/i });
+    > 241 |     await detallesOption.click();
+          |                          ^
+      242 |
+      243 |     // Wait for the modal and its content to load
+      244 |     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())
+        at /home/diego/dovela/frontend/e2e/flows/relojes.e2e.spec.js:241:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-314fa--shows-license-detail-modal-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-314fa--shows-license-detail-modal-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-314fa--shows-license-detail-modal-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../tmp/dovela-playwright/relojes.e2e-E2E-Relojes-Le-314fa--shows-license-detail-modal-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9 failed
+    [chromium] › e2e/flows/funmanage-table-compact.spec.js:154:7 › Gestion Licencias v2 compact table › renders compact table without horizontal scroll at 1280x800 
+    [chromium] › e2e/flows/funmanage-table-compact.spec.js:168:7 › Gestion Licencias v2 compact table › row click opens preview drawer and explicit fullscreen action opens workspace 
+    [chromium] › e2e/flows/funmanage-table-compact.spec.js:181:7 › Gestion Licencias v2 compact table › bookmark menu and preview buttons remain visible in dark mode 
+    [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:59:7 › E2E: Radicacion de Proyecto › auto-generate license ID fills the id field with a consecutive number 
+    [chromium] › e2e/flows/radicar-proyecto.e2e.spec.js:124:7 › E2E: Radicacion de Proyecto › row action popover opens with expected menu items for a license 
+    [chromium] › e2e/flows/relojes.e2e.spec.js:99:7 › E2E: Relojes Legales › clicking "Tiempos" opens the clock modal 
+    [chromium] › e2e/flows/relojes.e2e.spec.js:134:7 › E2E: Relojes Legales › clock modal displays clock content after opening 
+    [chromium] › e2e/flows/relojes.e2e.spec.js:174:7 › E2E: Relojes Legales › clock modal can be closed and FUN page remains intact 
+    [chromium] › e2e/flows/relojes.e2e.spec.js:220:7 › E2E: Relojes Legales › opening "Detalles" from action menu shows license detail modal 
+  2 skipped
+  20 passed (3.4m)

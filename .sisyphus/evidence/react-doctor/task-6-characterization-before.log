@@ -1,0 +1,21 @@
+
+> curaduria@1.20.95 test
+> vitest run src/__tests__/PQRS.integration.test.js src/__tests__/workflows --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/home/diego/dovela/frontend[39m
+
+ [32m✓[39m src/__tests__/workflows/submit-to-fun.workflow.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 67[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/react-doctor-characterization.workflow.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/clocks-legal-flow.workflow.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/error-resilience.workflow.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 170[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/legal-process.workflow.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 151[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/pqrs-full-cycle.workflow.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/submit-fun-records-expedition.workflow.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 188[2mms[22m[39m
+ [32m✓[39m src/__tests__/PQRS.integration.test.js [2m([22m[2m7 tests[22m[2m)[22m[33m 436[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m      Tests [22m [1m[32m26 passed[39m[22m[90m (26)[39m
+[2m   Start at [22m 13:46:40
+[2m   Duration [22m 1.90s[2m (transform 1.05s, setup 554ms, import 3.15s, tests 1.39s, environment 3.63s)[22m
+

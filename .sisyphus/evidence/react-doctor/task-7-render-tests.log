@@ -1,0 +1,23 @@
+
+> curaduria@1.20.95 test
+> vitest run src/__tests__/PQRS.integration.test.js src/__tests__/Dashboard.integration.test.js --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/home/diego/dovela/frontend[39m
+
+ [31m❯[39m src/__tests__/Dashboard.integration.test.js [2m([22m[2m8 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 410[2mms[22m[39m
+     [32m✓[39m renderiza sin crash[32m 132[2mms[22m[39m
+[31m     [31m×[31m muestra los grupos operativos reorganizados para licencias[39m[32m 58[2mms[22m[39m
+[31m     [31m×[31m expone anclas para el tutorial guiado del dashboard[39m[32m 35[2mms[22m[39m
+[31m     [31m×[31m muestra sección de utilidades y documentación[39m[32m 52[2mms[22m[39m
+     [32m✓[39m oculta cards condicionales (Normas/Uso Suelo) cuando GLOBAL_ID != cb1[32m 28[2mms[22m[39m
+[31m     [31m×[31m muestra card de historial de profesionales[39m[32m 43[2mms[22m[39m
+     [32m✓[39m renderiza links correctos a nuevas rutas en español[32m 31[2mms[22m[39m
+     [32m✓[39m usa el endpoint curado de FUN para los conteos del dashboard[32m 30[2mms[22m[39m
+ [32m✓[39m src/__tests__/PQRS.integration.test.js [2m([22m[2m7 tests[22m[2m)[22m[33m 453[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m11 passed[39m[22m[90m (15)[39m
+[2m   Start at [22m 13:49:26
+[2m   Duration [22m 1.62s[2m (transform 663ms, setup 148ms, import 943ms, tests 863ms, environment 704ms)[22m
+

@@ -1,0 +1,28 @@
+Rule: react-doctor/prefer-dynamic-import
+Severity: warning
+Category: Bundle Size
+Count: 18
+
+"recharts" is a heavy library — use React.lazy() or next/dynamic for code splitting
+
+Suggestion: Use `const Component = dynamic(() => import('library'), { ssr: false })` from next/dynamic or React.lazy()
+
+Files:
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_time.component.js:6
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_macroGant.component.js:6
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record2.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_worker.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_type.compoennt.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_negative.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_type2.compoennt.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_lawR.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_arcR.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_workerReport.component.js:2
+  src/app/pages/user/fun_forms/components/FunmanagePhaseChart.jsx:3
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_payment.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_category.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_state.component.js:2
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_engR.component.js:2
+  src/app/pages/user/fun_forms/components/func_clock_chart.js:4
+  src/app/pages/user/fun_forms/components/FunmanageScatterChart.jsx:4

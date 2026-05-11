@@ -1,0 +1,19 @@
+Rule: react-doctor/no-tiny-text
+Severity: warning
+Category: Accessibility
+Count: 9
+
+Font size 11px is too small — body text should be at least 12px for readability, 16px is ideal
+
+Suggestion: Use at least 12px for body content, 16px is ideal. Small text is hard to read, especially on high-DPI mobile screens
+
+Files:
+  src/app/pages/user/submit/submit_manage.js:335
+  src/app/pages/user/fun_forms/components/FunDashboardKPIs.jsx:140
+  src/app/pages/user/fun_forms/components/FunDashboardKPIs.jsx:148
+  src/app/pages/user/fun_forms/components/FunDashboardKPIs.jsx:175
+  src/app/pages/user/fun_forms/components/FunDashboardKPIs.jsx:180
+  src/app/pages/user/fun_forms/components/FunDashboardKPIs.jsx:245
+  src/app/pages/user/legal_flow_guide/components/FlowRouteSummary.js:100
+  src/app/pages/user/clocks/components/ScheduleModal.js:259
+  src/app/pages/user/clocks/components/gantt/GanttModal.js:348

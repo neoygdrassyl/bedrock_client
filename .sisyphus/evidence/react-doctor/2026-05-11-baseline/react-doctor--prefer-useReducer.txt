@@ -1,0 +1,83 @@
+Rule: react-doctor/prefer-useReducer
+Severity: warning
+Category: State & Effects
+Count: 73
+
+Component "FUN_CHART_TIME" has 51 useState calls — consider useReducer for related state
+
+Suggestion: Group related state: `const [state, dispatch] = useReducer(reducer, { field1, field2, ... })`
+
+Files:
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_time.component.js:15
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_macroGant.component.js:79
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:46
+  src/app/layouts/GlobalSearchDialog.jsx:281
+  src/app/pages/user/fun_forms/components/fun_daily.component.js:124
+  src/app/pages/user/fun_forms/components/fun_worker_asign.component.js:50
+  src/app/pages/user/fun_forms/components/FunDocumentManagementModal.jsx:78
+  src/app/pages/user/dashboard.js:128
+  src/app/pages/user/records/law/record_law_fun_52.component.js:15
+  src/app/pages/user/nomenclature/nomenclature.js:18
+  src/components/rich-text-editor.jsx:29
+  src/app/pages/user/records/record_eng.js:39
+  src/app/pages/user/fun_forms/components/table_components/table.component_expanded.js:16
+  src/app/pages/user/fun_forms/components/fun_6_history.component.js:12
+  src/app/pages/user/chat/InternalChatPanel.jsx:41
+  src/app/pages/user/records/arc/record_arc_areas.component.js:12
+  src/app/pages/user/records/arc/record_arc_33.js:19
+  src/app/pages/user/AlarmsV2ConfigPanel.jsx:108
+  src/app/pages/user/records/arc/record_arc_areas_2.component.js:14
+  src/app/pages/user/norms/norm_geeral.component.js:27
+  src/app/pages/user/records/arc/record_arc_37.js:10
+  src/app/pages/user/records/record_arc.js:38
+  src/app/pages/user/records/ph/record_ph_floor.component.js:10
+  src/app/pages/user/norms/norms.page.js:42
+  src/app/pages/user/norms/norm_predio.component.js:9
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx:976
+  src/app/pages/user/records/record_law.js:36
+  src/app/pages/user/fun_forms/components/fun_clocks_events.component.js:11
+  src/app/pages/user/norms/norm_resume.component.js:26
+  src/app/pages/user/records/exp_areas_record.component.js:12
+  src/app/pages/user/fun_forms/components/fun_report_data_edit.js:16
+  src/app/pages/user/appointments.js:15
+  src/app/pages/user/mail.js:10
+  src/app/pages/user/funmanage.page.js:44
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:67
+  src/app/pages/user/profesionals/profesionals.page.js:37
+  src/app/pages/user/submit/submit_list.component.js:14
+  src/app/pages/user/submit/submit_manage.js:15
+  src/app/pages/user/fun_forms/components/fun_docs.js:36
+  src/app/pages/user/submit/submit_x_fun.component.js:17
+  src/app/pages/user/fun_forms/fun_alertn.js:24
+  src/app/pages/user/submit/submit.js:14
+  src/app/pages/user/fun_forms/components/fun_doc_confirmlegal.js:13
+  src/app/pages/user/dev_guide/dev_guide.page.js:20
+  src/app/pages/user/fun_forms/components/func_clock_chart.js:11
+  src/app/pages/user/pqrs/components/pqrs_workersEmails.component.js:10
+  src/app/pages/user/guide_user/guide_user.page.js:11
+  src/app/pages/user/fun_forms/fun_c.js:23
+  src/app/pages/user/publish.js:17
+  src/app/pages/user/seal.js:11
+  src/app/pages/user/archive/archive_x_fun.component.js:42
+  src/app/pages/user/pqrs/pqrsadmin.functional.js:49
+  src/app/pages/user/pqrs/asignpqrs.js:18
+  src/app/pages/user/pqrs/pqrs_manage.view.js:35
+  src/app/pages/user/pqrs/lockpqrs.js:24
+  src/app/pages/user/archive/archive.page.js:29
+  src/app/pages/user/pqrs/pqrsadmin.js:34
+  src/app/pages/user/fun_forms/fun_reports/fun_gen.report.js:14
+  src/app/pages/user/clocks/centralClocks.component.js:39
+  src/app/pages/user/dictionary.page.js:19
+  src/app/components/pdfViewer.component.js:71
+  src/app/pages/user/fun_forms/fun_6.view.js:31
+  src/app/pages/user/expeditions/exp_act_desist.component.js:21
+  src/app/pages/user/records/eng/record_eng_sismic.component.js:10
+  src/app/components/viewer.component.js:41
+  src/app/pages/user/pqrs/components/pqrs_emails.component.js:12
+  src/app/pages/user/expeditions/exp_1.component.js:17
+  src/app/pages/user/certifications/certification.page.js:10
+  src/app/pages/user/expeditions/expedition.page.js:46
+  src/app/pages/user/ErrorReportsPanel.jsx:142
+  src/app/pages/user/expeditions/exp_calc.component.js:221
+  src/app/pages/user/expeditions/exp_docs.component.js:26
+  src/app/pages/user/zone_use/zone_use.page.js:39

@@ -1,0 +1,311 @@
+{
+  "before": 5381,
+  "after": 5376,
+  "delta": -5,
+  "rules": {
+    "jsx-a11y/alt-text": {
+      "before": 2,
+      "after": 0
+    },
+    "jsx-a11y/anchor-is-valid": {
+      "before": 27,
+      "after": 27
+    },
+    "jsx-a11y/click-events-have-key-events": {
+      "before": 44,
+      "after": 44
+    },
+    "jsx-a11y/heading-has-content": {
+      "before": 4,
+      "after": 4
+    },
+    "jsx-a11y/label-has-associated-control": {
+      "before": 2990,
+      "after": 2990
+    },
+    "jsx-a11y/no-autofocus": {
+      "before": 9,
+      "after": 9
+    },
+    "jsx-a11y/no-static-element-interactions": {
+      "before": 37,
+      "after": 37
+    },
+    "jsx-a11y/role-has-required-aria-props": {
+      "before": 1,
+      "after": 0
+    },
+    "jsx-a11y/tabindex-no-positive": {
+      "before": 6,
+      "after": 6
+    },
+    "knip/duplicates": {
+      "before": 8,
+      "after": 8
+    },
+    "knip/exports": {
+      "before": 83,
+      "after": 83
+    },
+    "knip/files": {
+      "before": 108,
+      "after": 108
+    },
+    "react-doctor/advanced-event-handler-refs": {
+      "before": 1,
+      "after": 1
+    },
+    "react-doctor/async-await-in-loop": {
+      "before": 16,
+      "after": 16
+    },
+    "react-doctor/async-parallel": {
+      "before": 11,
+      "after": 11
+    },
+    "react-doctor/client-localstorage-no-version": {
+      "before": 3,
+      "after": 3
+    },
+    "react-doctor/client-passive-event-listeners": {
+      "before": 5,
+      "after": 5
+    },
+    "react-doctor/design-no-bold-heading": {
+      "before": 15,
+      "after": 15
+    },
+    "react-doctor/design-no-default-tailwind-palette": {
+      "before": 5,
+      "after": 5
+    },
+    "react-doctor/design-no-em-dash-in-jsx-text": {
+      "before": 52,
+      "after": 54
+    },
+    "react-doctor/design-no-redundant-padding-axes": {
+      "before": 40,
+      "after": 40
+    },
+    "react-doctor/design-no-redundant-size-axes": {
+      "before": 182,
+      "after": 182
+    },
+    "react-doctor/design-no-three-period-ellipsis": {
+      "before": 117,
+      "after": 117
+    },
+    "react-doctor/js-batch-dom-css": {
+      "before": 45,
+      "after": 45
+    },
+    "react-doctor/js-cache-property-access": {
+      "before": 12,
+      "after": 12
+    },
+    "react-doctor/js-cache-storage": {
+      "before": 3,
+      "after": 3
+    },
+    "react-doctor/js-combine-iterations": {
+      "before": 62,
+      "after": 62
+    },
+    "react-doctor/js-flatmap-filter": {
+      "before": 8,
+      "after": 8
+    },
+    "react-doctor/js-hoist-intl": {
+      "before": 6,
+      "after": 6
+    },
+    "react-doctor/js-index-maps": {
+      "before": 2,
+      "after": 2
+    },
+    "react-doctor/js-min-max-loop": {
+      "before": 1,
+      "after": 1
+    },
+    "react-doctor/js-set-map-lookups": {
+      "before": 156,
+      "after": 156
+    },
+    "react-doctor/js-tosorted-immutable": {
+      "before": 26,
+      "after": 26
+    },
+    "react-doctor/no-array-index-as-key": {
+      "before": 102,
+      "after": 102
+    },
+    "react-doctor/no-cascading-set-state": {
+      "before": 27,
+      "after": 27
+    },
+    "react-doctor/no-derived-state-effect": {
+      "before": 8,
+      "after": 8
+    },
+    "react-doctor/no-derived-useState": {
+      "before": 5,
+      "after": 5
+    },
+    "react-doctor/no-effect-chain": {
+      "before": 6,
+      "after": 6
+    },
+    "react-doctor/no-effect-event-handler": {
+      "before": 16,
+      "after": 16
+    },
+    "react-doctor/no-fetch-in-effect": {
+      "before": 2,
+      "after": 2
+    },
+    "react-doctor/no-generic-handler-names": {
+      "before": 8,
+      "after": 8
+    },
+    "react-doctor/no-giant-component": {
+      "before": 143,
+      "after": 143
+    },
+    "react-doctor/no-inline-exhaustive-style": {
+      "before": 8,
+      "after": 8
+    },
+    "react-doctor/no-layout-transition-inline": {
+      "before": 2,
+      "after": 2
+    },
+    "react-doctor/no-mirror-prop-effect": {
+      "before": 1,
+      "after": 1
+    },
+    "react-doctor/no-mutable-in-deps": {
+      "before": 1,
+      "after": 1
+    },
+    "react-doctor/no-nested-component-definition": {
+      "before": 258,
+      "after": 256
+    },
+    "react-doctor/no-outline-none": {
+      "before": 2,
+      "after": 2
+    },
+    "react-doctor/no-polymorphic-children": {
+      "before": 1,
+      "after": 1
+    },
+    "react-doctor/no-prevent-default": {
+      "before": 1,
+      "after": 1
+    },
+    "react-doctor/no-prop-callback-in-effect": {
+      "before": 2,
+      "after": 2
+    },
+    "react-doctor/no-react19-deprecated-apis": {
+      "before": 74,
+      "after": 74
+    },
+    "react-doctor/no-render-in-render": {
+      "before": 23,
+      "after": 23
+    },
+    "react-doctor/no-tiny-text": {
+      "before": 9,
+      "after": 9
+    },
+    "react-doctor/no-uncontrolled-input": {
+      "before": 50,
+      "after": 50
+    },
+    "react-doctor/no-usememo-simple-expression": {
+      "before": 4,
+      "after": 4
+    },
+    "react-doctor/no-wide-letter-spacing": {
+      "before": 7,
+      "after": 7
+    },
+    "react-doctor/no-z-index-9999": {
+      "before": 7,
+      "after": 7
+    },
+    "react-doctor/prefer-dynamic-import": {
+      "before": 18,
+      "after": 18
+    },
+    "react-doctor/prefer-use-effect-event": {
+      "before": 1,
+      "after": 1
+    },
+    "react-doctor/prefer-use-sync-external-store": {
+      "before": 1,
+      "after": 1
+    },
+    "react-doctor/prefer-useReducer": {
+      "before": 73,
+      "after": 73
+    },
+    "react-doctor/rendering-hoist-jsx": {
+      "before": 5,
+      "after": 5
+    },
+    "react-doctor/rendering-hydration-mismatch-time": {
+      "before": 11,
+      "after": 11
+    },
+    "react-doctor/rendering-hydration-no-flicker": {
+      "before": 5,
+      "after": 5
+    },
+    "react-doctor/rerender-functional-setstate": {
+      "before": 20,
+      "after": 20
+    },
+    "react-doctor/rerender-lazy-state-init": {
+      "before": 26,
+      "after": 26
+    },
+    "react-doctor/rerender-memo-with-default-value": {
+      "before": 18,
+      "after": 20
+    },
+    "react-doctor/rerender-state-only-in-handlers": {
+      "before": 123,
+      "after": 123
+    },
+    "react-doctor/server-sequential-independent-await": {
+      "before": 32,
+      "after": 34
+    },
+    "react-hooks/rules-of-hooks": {
+      "before": 6,
+      "after": 6
+    },
+    "react/jsx-key": {
+      "before": 143,
+      "after": 139
+    },
+    "react/jsx-no-duplicate-props": {
+      "before": 2,
+      "after": 0
+    },
+    "react/no-children-prop": {
+      "before": 3,
+      "after": 3
+    },
+    "react/no-danger": {
+      "before": 2,
+      "after": 2
+    },
+    "react/no-unknown-property": {
+      "before": 38,
+      "after": 38
+    }
+  }
+}

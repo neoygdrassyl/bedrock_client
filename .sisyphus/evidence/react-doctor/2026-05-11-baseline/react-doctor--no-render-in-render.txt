@@ -1,0 +1,33 @@
+Rule: react-doctor/no-render-in-render
+Severity: warning
+Category: Architecture
+Count: 23
+
+Inline render function "renderBadges()" — extract to a separate component for proper reconciliation
+
+Suggestion: Extract to a named component: `const ListItem = ({ item }) => <div>{item.name}</div>`
+
+Files:
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:810
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:826
+  src/app/pages/user/fun_forms/components/FunDocumentManagementModal.jsx:398
+  src/app/pages/user/fun_forms/components/FunDocumentManagementModal.jsx:517
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_state.component.js:206
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_state.component.js:207
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_state.component.js:208
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_state.component.js:209
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_state.component.js:210
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_state.component.js:211
+  src/app/pages/user/fun_forms/components/FunmanageScatterChart.jsx:348
+  src/app/pages/user/fun_forms/fun_macrotable..js:3020
+  src/app/pages/user/fun_forms/fun_macrotable..js:3061
+  src/app/pages/user/fun_forms/fun_macrotable..js:3102
+  src/app/pages/user/clocks/centralClocks.component.js:1063
+  src/app/pages/user/clocks/components/ClockRow.js:789
+  src/app/pages/user/clocks/components/ClockRow.js:802
+  src/app/pages/user/clocks/components/ClockRow.js:808
+  src/app/pages/user/clocks/components/gantt/GanttChart.js:783
+  src/app/pages/user/clocks/components/gantt/GanttChart.js:786
+  src/app/pages/user/clocks/components/gantt/GanttChart.js:791
+  src/app/pages/user/clocks/components/gantt/GanttChart.js:796
+  src/app/pages/user/clocks/components/gantt/GanttChart.js:798

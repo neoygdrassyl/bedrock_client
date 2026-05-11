@@ -1,0 +1,55 @@
+Rule: react-doctor/js-batch-dom-css
+Severity: warning
+Category: Performance
+Count: 45
+
+Multiple sequential element.style assignments — batch with cssText or classList for fewer reflows
+
+Suggestion: Batch DOM/CSS reads and writes — interleaving them inside a loop causes layout thrashing. Read first, then write
+
+Files:
+  src/app/components/ui/index.js:547
+  src/app/components/ui/index.js:555
+  src/app/components/ui/index.js:558
+  src/app/components/ui/index.js:656
+  src/app/components/ui/index.js:680
+  src/app/utils/TemplateModifier.js:467
+  src/app/utils/TemplateModifier.js:386
+  src/app/utils/TemplateModifier.js:387
+  src/app/utils/TemplateModifier.js:388
+  src/app/utils/TemplateModifier.js:413
+  src/app/utils/TemplateModifier.js:414
+  src/app/utils/TemplateModifier.js:415
+  src/app/utils/TemplateModifier.js:484
+  src/app/utils/TemplateModifier.js:495
+  src/app/utils/TemplateModifier.js:506
+  src/app/utils/TemplateModifier.js:623
+  src/app/utils/TemplateModifier.js:637
+  src/app/utils/TemplateModifier.js:671
+  src/app/utils/TemplateModifier.js:685
+  src/app/utils/TemplateModifier.js:729
+  src/app/utils/TemplateModifier.js:1211
+  src/app/utils/TemplateModifier.js:1125
+  src/app/utils/TemplateModifier.js:1153
+  src/app/utils/TemplateModifier.js:1186
+  src/app/utils/BaseDocumentUtils.js:202
+  src/app/utils/BaseDocumentUtils.js:218
+  src/app/utils/BaseDocumentUtils.js:826
+  src/app/utils/BaseDocumentUtils.js:706
+  src/app/utils/BaseDocumentUtils.js:707
+  src/app/utils/BaseDocumentUtils.js:708
+  src/app/utils/BaseDocumentUtils.js:760
+  src/app/utils/BaseDocumentUtils.js:761
+  src/app/utils/BaseDocumentUtils.js:762
+  src/app/utils/BaseDocumentUtils.js:843
+  src/app/utils/BaseDocumentUtils.js:854
+  src/app/utils/BaseDocumentUtils.js:865
+  src/app/utils/BaseDocumentUtils.js:993
+  src/app/utils/BaseDocumentUtils.js:1007
+  src/app/utils/BaseDocumentUtils.js:1043
+  src/app/utils/BaseDocumentUtils.js:1057
+  src/app/utils/BaseDocumentUtils.js:1106
+  src/app/utils/ResoEngineTemplate.js:512
+  src/app/utils/ResoEngineTemplate.js:422
+  src/app/utils/ResoEngineTemplate.js:452
+  src/app/utils/ResoEngineTemplate.js:487

@@ -1,0 +1,38 @@
+Rule: knip/exports
+Severity: warning
+Category: Dead Code
+Count: 83
+
+Unused export: getArtifactPath
+
+Files:
+  src/__playwright/config.js
+  src/app/components/jsons/global-id.js
+  e2e/fixtures/auth.fixture.js
+  src/components/data-table-bridge.jsx
+  src/app/pages/user/shared/expediente-documental.utils.js
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx
+  src/app/pages/user/fun_forms/components/FunmanageDataTable.jsx
+  src/components/legacy-modal.jsx
+  src/app/layouts/navigation-config.js
+  src/__tests__/mocks/server.js
+  src/app/translation/i18n.js
+  src/app/utils/errorReporting.js
+  src/app/pages/user/fun_forms/utils/expedienteWorkspaceRoute.js
+  src/app/pages/user/clocks/utils/scheduleUtils.js
+  src/components/ui/button.jsx
+  src/components/ui/card.jsx
+  src/app/components/customClasses/typeParse.js
+  src/app/utils/iconSvgString.js
+  src/components/ui/badge.jsx
+  src/components/ui/table.jsx
+  src/components/ui/dropdown-menu.jsx
+  src/components/ui/dialog.jsx
+  src/components/ui/scroll-area.jsx
+  src/app/pages/user/fun_forms/utils/filters.js
+  src/app/components/vars.global.js
+  src/app/pages/user/dashboardPreferences.js
+  src/components/ui/select.jsx
+  src/app/utils/richTextBlockNote.js
+  src/app/pages/user/records/ph/utils/phSaveStep.js
+  src/components/ui/avatar.jsx

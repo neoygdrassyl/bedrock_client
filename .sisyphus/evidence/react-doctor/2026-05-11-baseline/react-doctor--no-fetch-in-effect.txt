@@ -1,0 +1,12 @@
+Rule: react-doctor/no-fetch-in-effect
+Severity: warning
+Category: State & Effects
+Count: 2
+
+fetch() inside useEffect — use a data fetching library (react-query, SWR) or server component
+
+Suggestion: Use `useQuery()` from @tanstack/react-query, `useSWR()`, or fetch in a Server Component instead
+
+Files:
+  src/app/pages/user/dev_guide/dev_guide.page.js:30
+  src/app/pages/user/guide_user/guide_user.page.js:21

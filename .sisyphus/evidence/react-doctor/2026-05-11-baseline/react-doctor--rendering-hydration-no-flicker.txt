@@ -1,0 +1,15 @@
+Rule: react-doctor/rendering-hydration-no-flicker
+Severity: warning
+Category: Performance
+Count: 5
+
+useEffect(setState, []) on mount causes a flash — consider useSyncExternalStore or suppressHydrationWarning
+
+Suggestion: Use `useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)` or add `suppressHydrationWarning` to the element
+
+Files:
+  src/app/pages/user/records/law/record_law_review.js:55
+  src/app/pages/user/records/law/record_law_docs_check.js:35
+  src/app/pages/user/fun_forms/components/func_clock_chart.js:19
+  src/app/pages/user/records/eng/record_eng_review.component.js:23
+  src/app/pages/user/expeditions/exp_areas.component.js:47

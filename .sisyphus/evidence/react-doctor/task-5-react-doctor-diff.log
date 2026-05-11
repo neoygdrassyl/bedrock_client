@@ -1,0 +1,11 @@
+{
+  "before": 143,
+  "after": 139,
+  "delta": -4,
+  "rules": {
+    "react/jsx-key": {
+      "before": 143,
+      "after": 139
+    }
+  }
+}

@@ -1,0 +1,72 @@
+Rule: react-doctor/js-combine-iterations
+Severity: warning
+Category: Performance
+Count: 62
+
+.filter().map() iterates the array twice — combine into a single loop with .reduce() or for...of
+
+Suggestion: Combine `.map().filter()` (or similar chains) into a single pass with `.reduce()` or a `for...of` loop to avoid iterating the array twice
+
+Files:
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:145
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:146
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:152
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:153
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:154
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:232
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:237
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:271
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:276
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_record1.component.js:282
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:666
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:666
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:683
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:683
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:702
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:702
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:733
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:790
+  src/app/pages/user/fun_forms/components/fun_asign.component.js:810
+  src/app/layouts/GlobalSearchDialog.jsx:250
+  src/components/data-table-bridge.jsx:82
+  src/app/pages/user/fun_forms/components/clocks_control.component.js:338
+  src/app/pages/user/fun_forms/components/fun_worker_asign.component.js:286
+  src/app/pages/user/dashboard.js:95
+  src/app/utils/developerAccess.js:22
+  src/app/pages/user/expeditions/exp_clocks_diagram.component.js:293
+  src/app/pages/user/expeditions/exp._res.component.js:444
+  src/app/pages/user/expeditions/exp._res.component.js:453
+  src/app/pages/user/AlarmsV2ConfigPanel.jsx:462
+  src/app/pages/user/records/arc/record_arc_areas_2.component.js:1023
+  src/app/pages/user/records/arc/record_arc_areas_2.component.js:1053
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx:462
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx:483
+  src/app/pages/user/norms/norm_resume.component.js:213
+  src/app/pages/home.js:414
+  src/app/pages/user/appointments.js:192
+  src/app/pages/user/appointments.js:194
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_payment.component.js:237
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_payment.component.js:242
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_payment.component.js:248
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_payment.component.js:254
+  src/app/pages/user/shared/UnifiedDocumentTable.jsx:77
+  src/app/pages/user/fun_forms/components/fun_duplicate.component.js:137
+  src/app/pages/user/shared/UnifiedDocumentCreateModal.jsx:167
+  src/app/pages/user/fun_forms/components/FunmanageScatterChart.jsx:154
+  src/app/pages/user/fun_forms/components/FunmanageScatterChart.jsx:154
+  src/app/pages/user/pqrs/pqrs_macrotable.js:331
+  src/app/pages/user/pqrs/pqrs_macrotable.js:336
+  src/app/pages/user/shared/expediente-documental.utils.js:224
+  src/app/pages/user/funmanage_new.page.js:59
+  src/app/pages/user/fun_forms/fun_macrotable..js:2756
+  src/app/pages/user/fun_forms/fun_macrotable..js:2758
+  src/app/pages/user/fun_forms/fun_macrotable..js:2783
+  src/app/pages/user/fun_forms/fun_macrotable..js:2785
+  src/app/pages/user/dictionary.page.js:498
+  src/app/pages/user/legal_flow_guide/components/FlowRouteSummary.js:25
+  src/app/pages/user/legal_flow_guide/components/FlowRouteSummary.js:52
+  src/app/pages/user/fun_forms/fun_6.view.js:118
+  src/app/pages/user/fun.js:1350
+  src/app/pages/user/fun.js:1352
+  src/app/pages/user/certifications/certification.page.js:100
+  src/app/pages/user/certifications/certification.page.js:102

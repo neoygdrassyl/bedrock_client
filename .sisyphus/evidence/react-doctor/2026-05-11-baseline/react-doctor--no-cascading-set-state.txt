@@ -1,0 +1,37 @@
+Rule: react-doctor/no-cascading-set-state
+Severity: warning
+Category: State & Effects
+Count: 27
+
+4 setState calls in a single useEffect — consider using useReducer or deriving state
+
+Suggestion: Combine into useReducer: `const [state, dispatch] = useReducer(reducer, initialState)`
+
+Files:
+  src/app/pages/user/fun_forms/components/charts_components.js/chart_macroGant.component.js:89
+  src/app/App.js:353
+  src/app/components/MermaidDiagram.component.js:362
+  src/app/pages/user/dashboard.js:136
+  src/app/pages/user/AlarmsV2ConfigPanel.jsx:126
+  src/app/pages/user/records/ph/record_ph_floor.component.js:67
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx:999
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx:1044
+  src/app/pages/user/fun_forms/components/FunExpedienteFullscreen.jsx:1219
+  src/app/components/DovelaSupportLayer.jsx:82
+  src/app/pages/user/pqrs/components/pqrs_setReply.component.js:14
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:77
+  src/app/pages/user/submit/submit_x_fun.component.js:74
+  src/app/pages/user/dev_guide/dev_guide.page.js:30
+  src/app/pages/user/fun_forms/fun_g.js:36
+  src/app/pages/user/guide_user/guide_user.page.js:21
+  src/app/pages/user/fun_forms/fun_reports/fun_gen.report.js:61
+  src/app/pages/user/fun_forms/fun_n_1.js:12
+  src/app/pages/user/clocks/centralClocks.component.js:221
+  src/app/components/pdfViewer.component.js:83
+  src/app/pages/user/fun_forms/fun_6.view.js:163
+  src/app/pages/user/fun_forms/fun_6.view.js:178
+  src/app/pages/user/fun_forms/fun_6.view.js:206
+  src/app/pages/user/clocks/components/SidebarInfo.js:294
+  src/app/pages/user/expeditions/exp_res_2.component.js:38
+  src/app/components/viewer.component.js:55
+  src/app/pages/user/certifications/certification.page.js:21

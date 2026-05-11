@@ -1,0 +1,202 @@
+
+> curaduria@1.20.95 test
+> vitest run --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/home/diego/dovela/frontend[39m
+
+[90mstdout[2m | src/__tests__/Nomenclature.integration.test.js[2m > [22m[2mNomenclature — Integración CRUD y búsqueda[2m > [22m[2mmaneja error del servicio getAll sin crash
+[22m[39mError: Network error
+    at [90m/home/diego/dovela/frontend/[39msrc/__tests__/Nomenclature.integration.test.js:224:7
+    at [90mfile:///home/diego/dovela/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:145:11
+    at [90mfile:///home/diego/dovela/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:915:26
+    at [90mfile:///home/diego/dovela/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///home/diego/dovela/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///home/diego/dovela/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1653:37
+    at Traces.$ [90m(file:///home/diego/dovela/frontend/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
+    at trace [90m(file:///home/diego/dovela/frontend/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///home/diego/dovela/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1653:12[90m)[39m
+
+ [32m✓[39m src/__tests__/DataTable.unit.test.js [2m([22m[2m6 tests[22m[2m)[22m[33m 476[2mms[22m[39m
+ [32m✓[39m src/__tests__/Nomenclature.integration.test.js [2m([22m[2m8 tests[22m[2m)[22m[33m 459[2mms[22m[39m
+ [32m✓[39m src/__tests__/Dashboard.integration.test.js [2m([22m[2m8 tests[22m[2m)[22m[33m 1038[2mms[22m[39m
+     [33m[2m✓[22m[39m muestra los grupos operativos reorganizados para licencias [33m 397[2mms[22m[39m
+[90mstdout[2m | src/__tests__/Clocks.integration.test.js[2m > [22m[2mCLOCKS — Integración profunda[2m > [22m[2mmaneja error de service sin crash y muestra feedback
+[22m[39m📝 Sincronizando valla: reloj → formulario { clockDate: [32m'2026-05-11'[39m, formDate: [1mnull[22m }
+
+ [32m✓[39m src/__tests__/ExpeditionComponents.render.test.js [2m([22m[2m13 tests[22m[2m)[22m[33m 1897[2mms[22m[39m
+     [33m[2m✓[22m[39m exp_1 renders without crashing [33m 551[2mms[22m[39m
+     [33m[2m✓[22m[39m exp_docs renders without crashing [33m 896[2mms[22m[39m
+ [32m✓[39m src/__tests__/Clocks.integration.test.js [2m([22m[2m7 tests[22m[2m)[22m[33m 1058[2mms[22m[39m
+     [33m[2m✓[22m[39m maneja error de service sin crash y muestra feedback [33m 401[2mms[22m[39m
+ [32m✓[39m src/__tests__/LazyRouteImports.unit.test.js [2m([22m[2m8 tests[22m[2m)[22m[33m 2651[2mms[22m[39m
+     [33m[2m✓[22m[39m loads 'profesionals page' without missing wrapper exports [33m 1021[2mms[22m[39m
+     [33m[2m✓[22m[39m loads 'guide user page' without missing wrapper exports [33m 472[2mms[22m[39m
+     [33m[2m✓[22m[39m loads 'norms page' without missing wrapper exports [33m 512[2mms[22m[39m
+ [32m✓[39m src/__tests__/Profesionals.smoke.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 649[2mms[22m[39m
+     [33m[2m✓[22m[39m profesionals.page.js se importa sin error [33m 629[2mms[22m[39m
+ [32m✓[39m src/__tests__/Norms.smoke.test.js [2m([22m[2m8 tests[22m[2m)[22m[33m 659[2mms[22m[39m
+     [33m[2m✓[22m[39m norms.page.js se importa sin error [33m 654[2mms[22m[39m
+ [32m✓[39m src/__tests__/RecordsArc.render.test.js [2m([22m[2m13 tests[22m[2m)[22m[33m 703[2mms[22m[39m
+ [32m✓[39m src/__tests__/Submit.integration.test.js [2m([22m[2m14 tests[22m[2m)[22m[33m 868[2mms[22m[39m
+[90mstdout[2m | src/__tests__/Records.integration.test.js[2m > [22m[2mRECORDS — Integración inicial LAW/ARC/ENG[2m > [22m[2mLAW: sin informe existente permite generar informe en blanco
+[22m[39mTypeError: Cannot read properties of undefined (reading 'version')
+    at [90m/home/diego/dovela/frontend/[39msrc/app/pages/user/records/record_law.js:88:53
+
+[90mstdout[2m | src/__tests__/ZoneUse.integration.test.js[2m > [22m[2mZoneUse — Integración CRUD y búsqueda[2m > [22m[2mmuestra error de duplicación en creación
+[22m[39m{ response: { data: { message: [32m'Validation error'[39m } } }
+
+[90mstdout[2m | src/__tests__/Records.integration.test.js[2m > [22m[2mRECORDS — Integración inicial LAW/ARC/ENG[2m > [22m[2mARC: sin informe existente permite generar informe en blanco
+[22m[39mTypeError: Cannot set properties of null (setting 'record_arc_steps')
+    at [90m/home/diego/dovela/frontend/[39msrc/app/pages/user/records/record_arc.js:49:28
+
+[90mstdout[2m | src/__tests__/Records.integration.test.js[2m > [22m[2mRECORDS — Integración inicial LAW/ARC/ENG[2m > [22m[2mARC: sin informe existente permite generar informe en blanco
+[22m[39mTypeError: Cannot set properties of null (setting 'record_arc_steps')
+    at [90m/home/diego/dovela/frontend/[39msrc/app/pages/user/records/record_arc.js:49:28
+
+ [32m✓[39m src/__tests__/ZoneUse.integration.test.js [2m([22m[2m10 tests[22m[2m)[22m[33m 685[2mms[22m[39m
+[90mstdout[2m | src/__tests__/Records.integration.test.js[2m > [22m[2mRECORDS — Integración inicial LAW/ARC/ENG[2m > [22m[2mENG: sin informe existente permite generar informe en blanco
+[22m[39mTypeError: Cannot read properties of undefined (reading 'version')
+    at [90m/home/diego/dovela/frontend/[39msrc/app/pages/user/records/record_eng.js:106:53
+
+ [32m✓[39m src/__tests__/Navigation.smoke.test.js [2m([22m[2m41 tests[22m[2m)[22m[33m 1125[2mms[22m[39m
+ [32m✓[39m src/__tests__/Records.integration.test.js [2m([22m[2m11 tests[22m[2m)[22m[33m 843[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunManage.integration.test.js [2m([22m[2m12 tests[22m[2m)[22m[33m 1050[2mms[22m[39m
+ [32m✓[39m src/__tests__/Home.render.test.jsx [2m([22m[2m2 tests[22m[2m)[22m[33m 873[2mms[22m[39m
+     [33m[2m✓[22m[39m renders current CTA routes without React DOM warnings [33m 650[2mms[22m[39m
+ [32m✓[39m src/__tests__/AppShell.smoke.test.js [2m([22m[2m5 tests[22m[2m)[22m[33m 1187[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the icon rail [33m 603[2mms[22m[39m
+ [32m✓[39m src/__tests__/Modules.smoke.test.js [2m([22m[2m13 tests[22m[2m)[22m[33m 6622[2mms[22m[39m
+     [33m[2m✓[22m[39m 1. centralClocks.component.js se importa sin error [33m 1482[2mms[22m[39m
+     [33m[2m✓[22m[39m 1. record_eng.js se importa sin error [33m 3644[2mms[22m[39m
+     [33m[2m✓[22m[39m 2. record_law.js se importa sin error [33m 542[2mms[22m[39m
+     [33m[2m✓[22m[39m 3. record_arc.js se importa sin error [33m 311[2mms[22m[39m
+     [33m[2m✓[22m[39m 4. record_ph.js se importa sin error [33m 519[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunDaily.progressive-load.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 663[2mms[22m[39m
+     [33m[2m✓[22m[39m defers heavy valla sections until expanded while keeping the legacy scatter mounted [33m 661[2mms[22m[39m
+ [32m✓[39m src/__tests__/Dictionary.smoke.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 680[2mms[22m[39m
+     [33m[2m✓[22m[39m dictionary.page.js se importa sin error [33m 678[2mms[22m[39m
+ [32m✓[39m src/__tests__/PQRSComponents.render.test.js [2m([22m[2m9 tests[22m[2m)[22m[33m 686[2mms[22m[39m
+     [33m[2m✓[22m[39m pqrs_manage_info renders without crashing [33m 381[2mms[22m[39m
+ [32m✓[39m src/__tests__/PQRSReplies.render.test.js [2m([22m[2m10 tests[22m[2m)[22m[33m 576[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunmanageDataTable.compact.test.jsx [2m([22m[2m4 tests[22m[2m)[22m[33m 858[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps row click separate from bookmark and action buttons [33m 500[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunLicenses.smoke.test.js [2m([22m[2m35 tests[22m[2m)[22m[33m 8136[2mms[22m[39m
+     [33m[2m✓[22m[39m fun.js (contenedor principal) se importa sin error [33m 7358[2mms[22m[39m
+     [33m[2m✓[22m[39m fun_macrotable..js (tabla macro) se importa sin error [33m 490[2mms[22m[39m
+ [32m✓[39m src/__tests__/DashboardNew.render.test.js [2m([22m[2m5 tests[22m[2m)[22m[33m 905[2mms[22m[39m
+     [33m[2m✓[22m[39m renders grouped modules section heading [33m 312[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunSearchEmptyState.unit.test.jsx [2m([22m[2m1 test[22m[2m)[22m[33m 1120[2mms[22m[39m
+     [33m[2m✓[22m[39m shows a visible empty-state result after a search with no matches [33m 1117[2mms[22m[39m
+ [32m✓[39m src/__tests__/PublicModuleShell.smoke.test.js [2m([22m[2m2 tests[22m[2m)[22m[33m 766[2mms[22m[39m
+     [33m[2m✓[22m[39m renders /normas inside AppShell when session exists [33m 423[2mms[22m[39m
+     [33m[2m✓[22m[39m renders /certificados inside AppShell when session exists [33m 341[2mms[22m[39m
+ [32m✓[39m src/__tests__/Archive.integration.test.js [2m([22m[2m17 tests[22m[2m)[22m[33m 1217[2mms[22m[39m
+ [32m✓[39m src/__tests__/GlobalSearchDialog.unit.test.jsx [2m([22m[2m2 tests[22m[2m)[22m[33m 987[2mms[22m[39m
+     [33m[2m✓[22m[39m consulta expedientes en FUN y muestra fase, término y solicitante relevantes [33m 655[2mms[22m[39m
+     [33m[2m✓[22m[39m permite cambiar el criterio y sigue buscando solo expedientes [33m 330[2mms[22m[39m
+ [32m✓[39m src/__tests__/AppFunManageRoute.regression.test.jsx [2m([22m[2m2 tests[22m[2m)[22m[33m 718[2mms[22m[39m
+     [33m[2m✓[22m[39m routes /licencias/gestion to the old FUN management page [33m 382[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps /licencias/gestion-nueva pointing to the new FUN workspace page [33m 333[2mms[22m[39m
+ [32m✓[39m src/__tests__/Seals.smoke.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 564[2mms[22m[39m
+     [33m[2m✓[22m[39m seal.js se importa sin error [33m 562[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunRowActionMenu.integration.test.jsx [2m([22m[2m3 tests[22m[2m)[22m[33m 2465[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps row open and action menu open isolated [33m 1132[2mms[22m[39m
+     [33m[2m✓[22m[39m opens actualizar in the workspace [33m 691[2mms[22m[39m
+     [33m[2m✓[22m[39m opens publicidad in the workspace [33m 639[2mms[22m[39m
+ [32m✓[39m src/__tests__/ExpeditionResolutionEditor.unit.test.jsx [2m([22m[2m3 tests[22m[2m)[22m[33m 640[2mms[22m[39m
+     [33m[2m✓[22m[39m descarga el HTML editado desde el estado del editor y no desde una ref obsoleta [33m 328[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunForms.render.test.js [2m([22m[2m8 tests[22m[2m)[22m[33m 614[2mms[22m[39m
+ [32m✓[39m src/__tests__/Appointments.smoke.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 530[2mms[22m[39m
+     [33m[2m✓[22m[39m appointments.js se importa sin error [33m 522[2mms[22m[39m
+ [32m✓[39m src/__tests__/Liquidator.smoke.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 516[2mms[22m[39m
+     [33m[2m✓[22m[39m liquidator.js se importa sin error [33m 514[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunExpedienteFullscreen.bookmarks.test.jsx [2m([22m[2m3 tests[22m[2m)[22m[33m 679[2mms[22m[39m
+ [32m✓[39m src/__tests__/Expedition.integration.test.js [2m([22m[2m13 tests[22m[2m)[22m[33m 506[2mms[22m[39m
+ [32m✓[39m src/__tests__/Publish.smoke.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 682[2mms[22m[39m
+     [33m[2m✓[22m[39m publish.js se importa sin error [33m 679[2mms[22m[39m
+ [32m✓[39m src/__tests__/Certifications.smoke.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 568[2mms[22m[39m
+     [33m[2m✓[22m[39m certification.page.js se importa sin error [33m 566[2mms[22m[39m
+ [32m✓[39m src/__tests__/AppShellRouteFallback.unit.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 484[2mms[22m[39m
+     [33m[2m✓[22m[39m does not mark dashboard as active for private routes outside the icon rail [33m 481[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/pqrs-full-cycle.workflow.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 337[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunComponents.render.test.js [2m([22m[2m6 tests[22m[2m)[22m[33m 544[2mms[22m[39m
+ [32m✓[39m src/__tests__/Mail.smoke.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 454[2mms[22m[39m
+     [33m[2m✓[22m[39m mail.js se importa sin error [33m 452[2mms[22m[39m
+ [32m✓[39m src/__tests__/DashboardCountFailures.unit.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 545[2mms[22m[39m
+     [33m[2m✓[22m[39m shows a visible fallback instead of silent zeroes when count services fail [33m 543[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunQuickPreview.unit.test.jsx [2m([22m[2m1 test[22m[2m)[22m[33m 1077[2mms[22m[39m
+     [33m[2m✓[22m[39m abre el workspace de expediente al seleccionar una fila [33m 1075[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/submit-fun-records-expedition.workflow.test.js [2m([22m[2m3 tests[22m[2m)[22m[33m 306[2mms[22m[39m
+ [32m✓[39m src/__tests__/RecordsPH.render.test.js [2m([22m[2m5 tests[22m[2m)[22m[33m 414[2mms[22m[39m
+ [32m✓[39m src/__tests__/PQRS.integration.test.js [2m([22m[2m7 tests[22m[2m)[22m[33m 1329[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunManage.load-behavior.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 546[2mms[22m[39m
+     [33m[2m✓[22m[39m mounts only the active tab on first paint and mounts the rest on demand [33m 543[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/error-resilience.workflow.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 311[2mms[22m[39m
+ [32m✓[39m src/__tests__/ThemeProvider.unit.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 294[2mms[22m[39m
+ [32m✓[39m src/__tests__/RecordsLaw.render.test.js [2m([22m[2m7 tests[22m[2m)[22m[33m 389[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunClocks.render.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 263[2mms[22m[39m
+ [32m✓[39m src/__tests__/DataTableBridgeLegacyPagination.unit.test.jsx [2m([22m[2m2 tests[22m[2m)[22m[33m 457[2mms[22m[39m
+     [33m[2m✓[22m[39m uses legacy pagination options to change rows per page [33m 308[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/clocks-legal-flow.workflow.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 222[2mms[22m[39m
+ [32m✓[39m src/__tests__/RecordsEng.render.test.js [2m([22m[2m7 tests[22m[2m)[22m[33m 421[2mms[22m[39m
+ [32m✓[39m src/__tests__/PQRSReplyEditor.unit.test.jsx [2m([22m[2m3 tests[22m[2m)[22m[33m 472[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunHeadingContract.unit.test.jsx [2m([22m[2m1 test[22m[2m)[22m[33m 718[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the visible h1 used by legacy flows and route-level automation [33m 716[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunForms51-53.render.test.js [2m([22m[2m6 tests[22m[2m)[22m[33m 412[2mms[22m[39m
+ [32m✓[39m src/__tests__/LoginPage.render.test.js [2m([22m[2m5 tests[22m[2m)[22m[33m 347[2mms[22m[39m
+ [32m✓[39m src/__tests__/Collapsible.unit.test.jsx [2m([22m[2m4 tests[22m[2m)[22m[32m 216[2mms[22m[39m
+ [32m✓[39m src/__tests__/Login.smoke.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 310[2mms[22m[39m
+ [32m✓[39m src/__tests__/OSHA.smoke.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 354[2mms[22m[39m
+     [33m[2m✓[22m[39m osha.js se importa sin error [33m 351[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/legal-process.workflow.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 255[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunDocumentManagementModal.unit.test.jsx [2m([22m[2m1 test[22m[2m)[22m[33m 346[2mms[22m[39m
+     [33m[2m✓[22m[39m abre una previsualización fullscreen dedicada para el archivo [33m 343[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunGeneral.request-race.test.jsx [2m([22m[2m1 test[22m[2m)[22m[33m 342[2mms[22m[39m
+     [33m[2m✓[22m[39m ignores stale detail failures after the active request already loaded the item [33m 340[2mms[22m[39m
+ [32m✓[39m src/__tests__/SubmitXFun.simple-loading.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 393[2mms[22m[39m
+     [33m[2m✓[22m[39m skips heavy fetches on first render and loads the missing-docs list only when expanded [33m 390[2mms[22m[39m
+ [32m✓[39m src/__tests__/FUNPdf.download.test.js [2m([22m[2m2 tests[22m[2m)[22m[33m 402[2mms[22m[39m
+     [33m[2m✓[22m[39m shows the missing model alert instead of throwing a ReferenceError [33m 359[2mms[22m[39m
+ [32m✓[39m src/__tests__/LegacyModalCompat.unit.test.jsx [2m([22m[2m4 tests[22m[2m)[22m[33m 400[2mms[22m[39m
+ [32m✓[39m src/__tests__/RecordReviewWorkspace.unit.test.jsx [2m([22m[2m1 test[22m[2m)[22m[32m 260[2mms[22m[39m
+ [32m✓[39m src/__tests__/LegacyMacroGantt.loading.test.js [2m([22m[2m1 test[22m[2m)[22m[33m 381[2mms[22m[39m
+     [33m[2m✓[22m[39m shows a loading bar first and disables scatter animations so NO RADICO VALLA does not lag behind [33m 371[2mms[22m[39m
+ [32m✓[39m src/__tests__/App.smoke.test.js [2m([22m[2m6 tests[22m[2m)[22m[33m 417[2mms[22m[39m
+ [32m✓[39m src/__tests__/ClocksManager.unit.test.js [2m([22m[2m19 tests[22m[2m)[22m[32m 210[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunReports.render.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 228[2mms[22m[39m
+ [32m✓[39m src/__tests__/TabPane.unit.test.jsx [2m([22m[2m4 tests[22m[2m)[22m[32m 204[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunDaily.loading.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 180[2mms[22m[39m
+ [32m✓[39m src/__tests__/HolidayCalendar.unit.test.jsx [2m([22m[2m1 test[22m[2m)[22m[32m 155[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/react-doctor-characterization.workflow.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 186[2mms[22m[39m
+ [32m✓[39m src/__tests__/HttpCommon.unit.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32m✓[39m src/__tests__/Icon.unit.test.js [2m([22m[2m14 tests[22m[2m)[22m[32m 136[2mms[22m[39m
+ [32m✓[39m src/__tests__/DataTableLegacyCompat.unit.test.jsx [2m([22m[2m2 tests[22m[2m)[22m[32m 98[2mms[22m[39m
+ [32m✓[39m src/__tests__/useAlarmsV2.unit.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 98[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunmanageScatterChart.loading.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 105[2mms[22m[39m
+ [32m✓[39m src/__tests__/workflows/submit-to-fun.workflow.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 130[2mms[22m[39m
+ [32m✓[39m src/__tests__/VarsEnv.unit.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+ [32m✓[39m src/__tests__/EmptyState.unit.test.jsx [2m([22m[2m4 tests[22m[2m)[22m[32m 94[2mms[22m[39m
+ [32m✓[39m src/__tests__/Alarms.unit.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunManageNewPage.compact.integration.test.jsx [2m([22m[2m2 tests[22m[2m)[22m[32m 123[2mms[22m[39m
+ [32m✓[39m src/__tests__/swalAdapter.unit.test.js [2m([22m[2m9 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunmanageNew.request-race.test.jsx [2m([22m[2m1 test[22m[2m)[22m[32m 76[2mms[22m[39m
+ [32m✓[39m src/__tests__/FunmanageNew.workspace-tabs.test.jsx [2m([22m[2m1 test[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32m✓[39m src/__tests__/ProcessPhases.unit.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+ [32m✓[39m src/__tests__/TemplateEngine.unit.test.js [2m([22m[2m12 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/__tests__/ExpedienteDocumental.unit.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/__tests__/AppHomeRoute.regression.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m src/__tests__/NavigationConfig.unit.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/__tests__/BusinessDays.unit.test.js [2m([22m[2m17 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/__tests__/ViteOptimizeDeps.unit.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/__tests__/DataServiceSession.unit.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/__tests__/LegacyWrapperImports.unit.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/__tests__/NavigationRoleCodes.unit.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/__tests__/ClockColumns.unit.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m102 passed[39m[22m[90m (102)[39m
+[2m      Tests [22m [1m[32m551 passed[39m[22m[90m (551)[39m
+[2m   Start at [22m 14:09:18
+[2m   Duration [22m 23.39s[2m (transform 26.48s, setup 11.67s, import 76.68s, tests 64.91s, environment 71.45s)[22m
+

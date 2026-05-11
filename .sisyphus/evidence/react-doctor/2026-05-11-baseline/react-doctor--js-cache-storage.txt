@@ -1,0 +1,13 @@
+Rule: react-doctor/js-cache-storage
+Severity: warning
+Category: Performance
+Count: 3
+
+localStorage.getItem("dovela_token") called multiple times — cache the result in a variable
+
+Suggestion: Cache repeated `localStorage`/`sessionStorage` reads in a local variable — each access serializes/deserializes
+
+Files:
+  src/app/services/data.service.js:35
+  src/__tests__/HttpCommon.unit.test.js:116
+  src/__tests__/HttpCommon.unit.test.js:117

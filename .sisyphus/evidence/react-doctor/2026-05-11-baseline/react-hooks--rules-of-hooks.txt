@@ -1,0 +1,16 @@
+Rule: react-hooks/rules-of-hooks
+Severity: error
+Category: Correctness
+Count: 6
+
+React Hook "useImperativeHandle" is called in function "Anonymous" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".
+
+Docs: https://oxc.rs/docs/guide/usage/linter/rules/react/rules-of-hooks.html
+
+Files:
+  src/__tests__/ExpeditionResolutionEditor.unit.test.jsx:12
+  e2e/fixtures/auth.fixture.js:336
+  src/app/pages/user/dictionary.page.js:225
+  src/app/pages/user/expeditions/exp_eje.component.js:249
+  src/app/pages/user/expeditions/exp_eje.component.js:253
+  src/app/pages/user/expeditions/exp_eje.component.js:254

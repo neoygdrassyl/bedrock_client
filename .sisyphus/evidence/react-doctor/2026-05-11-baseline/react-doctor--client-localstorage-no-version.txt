@@ -1,0 +1,13 @@
+Rule: react-doctor/client-localstorage-no-version
+Severity: warning
+Category: Correctness
+Count: 3
+
+localStorage.setItem("dovela_user", JSON.stringify(...)) — bake a version into the key (e.g. "dovela_user:v1") so a future schema change can ignore old data instead of crashing on it
+
+Suggestion: Bake a version into the storage key (e.g. "myKey:v1"); a future schema change can ignore old data instead of crashing on it
+
+Files:
+  src/__tests__/PublicModuleShell.smoke.test.js:91
+  src/app/services/data.service.js:21
+  e2e/fixtures/auth.fixture.js:323

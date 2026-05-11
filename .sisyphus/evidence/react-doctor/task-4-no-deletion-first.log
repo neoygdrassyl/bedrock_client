@@ -1,0 +1,8 @@
+Task 4 no deletion-first guidance verification rerun: PASS
+
+Checked file: .sisyphus/evidence/react-doctor/mitigation-report.md
+
+Result:
+- Report keeps `knip/files` and `knip/exports` as report-only.
+- Report does not recommend deleting routes, services, public templates, or legal modules to satisfy React Doctor.
+- Report explicitly requires approval/evidence before any dead-code elimination.

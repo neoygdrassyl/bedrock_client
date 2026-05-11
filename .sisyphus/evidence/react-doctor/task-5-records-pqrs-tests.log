@@ -1,0 +1,31 @@
+
+> curaduria@1.20.95 test
+> vitest run src/__tests__/Records.integration.test.js src/__tests__/PQRS.integration.test.js --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/home/diego/dovela/frontend[39m
+
+ [32m✓[39m src/__tests__/PQRS.integration.test.js [2m([22m[2m7 tests[22m[2m)[22m[33m 627[2mms[22m[39m
+[90mstdout[2m | src/__tests__/Records.integration.test.js[2m > [22m[2mRECORDS — Integración inicial LAW/ARC/ENG[2m > [22m[2mLAW: sin informe existente permite generar informe en blanco
+[22m[39mTypeError: Cannot read properties of undefined (reading 'version')
+    at [90m/home/diego/dovela/frontend/[39msrc/app/pages/user/records/record_law.js:88:53
+
+[90mstdout[2m | src/__tests__/Records.integration.test.js[2m > [22m[2mRECORDS — Integración inicial LAW/ARC/ENG[2m > [22m[2mARC: sin informe existente permite generar informe en blanco
+[22m[39mTypeError: Cannot set properties of null (setting 'record_arc_steps')
+    at [90m/home/diego/dovela/frontend/[39msrc/app/pages/user/records/record_arc.js:49:28
+
+[90mstdout[2m | src/__tests__/Records.integration.test.js[2m > [22m[2mRECORDS — Integración inicial LAW/ARC/ENG[2m > [22m[2mARC: sin informe existente permite generar informe en blanco
+[22m[39mTypeError: Cannot set properties of null (setting 'record_arc_steps')
+    at [90m/home/diego/dovela/frontend/[39msrc/app/pages/user/records/record_arc.js:49:28
+
+[90mstdout[2m | src/__tests__/Records.integration.test.js[2m > [22m[2mRECORDS — Integración inicial LAW/ARC/ENG[2m > [22m[2mENG: sin informe existente permite generar informe en blanco
+[22m[39mTypeError: Cannot read properties of undefined (reading 'version')
+    at [90m/home/diego/dovela/frontend/[39msrc/app/pages/user/records/record_eng.js:106:53
+
+ [32m✓[39m src/__tests__/Records.integration.test.js [2m([22m[2m11 tests[22m[2m)[22m[33m 402[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m18 passed[39m[22m[90m (18)[39m
+[2m   Start at [22m 13:45:40
+[2m   Duration [22m 2.54s[2m (transform 1.73s, setup 137ms, import 2.26s, tests 1.03s, environment 795ms)[22m
+

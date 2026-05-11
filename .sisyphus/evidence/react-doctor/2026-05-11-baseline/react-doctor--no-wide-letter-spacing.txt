@@ -1,0 +1,17 @@
+Rule: react-doctor/no-wide-letter-spacing
+Severity: warning
+Category: Architecture
+Count: 7
+
+Letter spacing 0.06em on body text disrupts natural character groupings. Reserve wide tracking for short uppercase labels only
+
+Suggestion: Reserve wide tracking (letter-spacing > 0.05em) for short uppercase labels, navigation items, and buttons — not body text
+
+Files:
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:151
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:293
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:337
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:397
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:454
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:472
+  src/app/pages/user/fun_forms/components/FunExpedienteDetail.jsx:627
