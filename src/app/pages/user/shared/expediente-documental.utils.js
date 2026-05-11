@@ -95,6 +95,65 @@ function sumPages(entries) {
     return totalPages > 0 ? totalPages : null;
 }
 
+function getApiBaseUrl() {
+    return String(import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+}
+
+function ensureInlinePreview(url) {
+    if (!url) {
+        return '';
+    }
+
+    const separator = url.includes('?') ? '&' : '?';
+    return url.includes('inline=1') ? url : `${url}${separator}inline=1`;
+}
+
+function removeInlinePreview(url) {
+    if (!url) {
+        return '';
+    }
+
+    return url
+        .replace(/[?&]inline=1(?=&|$)/, (match) => match.startsWith('?') ? '?' : '')
+        .replace(/[?&]$/, '');
+}
+
+export function buildDocumentDownloadUrl(entry = {}) {
+    entry = entry || {};
+
+    if (entry.downloadUrl) {
+        return entry.downloadUrl.startsWith('/api/')
+            ? `${getApiBaseUrl()}${entry.downloadUrl.replace(/^\/api/, '')}`
+            : entry.downloadUrl;
+    }
+
+    if (entry.previewUrl) {
+        const url = entry.previewUrl.startsWith('/api/')
+            ? `${getApiBaseUrl()}${entry.previewUrl.replace(/^\/api/, '')}`
+            : entry.previewUrl;
+        return removeInlinePreview(url);
+    }
+
+    if (!entry.path || !entry.filename) {
+        return '';
+    }
+
+    return `${getApiBaseUrl()}/files/${entry.path}/${encodeURIComponent(entry.filename)}`;
+}
+
+export function buildDocumentPreviewUrl(entry = {}) {
+    entry = entry || {};
+
+    if (entry.previewUrl) {
+        const url = entry.previewUrl.startsWith('/api/')
+            ? `${getApiBaseUrl()}${entry.previewUrl.replace(/^\/api/, '')}`
+            : entry.previewUrl;
+        return ensureInlinePreview(url);
+    }
+
+    return ensureInlinePreview(buildDocumentDownloadUrl(entry));
+}
+
 export function normalizeVentanillaDocs(submitEntries = []) {
     if (!Array.isArray(submitEntries)) {
         return [];
@@ -348,12 +407,55 @@ function getEntryDateValue(entry) {
 }
 
 function getDocumentGroupKey(entry) {
+    if (entry?.consolidationKey) {
+        return entry.consolidationKey;
+    }
+
     const code = normalizeCode(entry?.documentCode || entry?.code || entry?.id_public);
     const name = normalizeText(entry?.documentName || entry?.name || entry?.description).toLowerCase();
-    return code || name || 'documento-sin-nombre';
+    const vr = normalizeText(entry?.vr || entry?.id_replace || entry?.id_public).toLowerCase();
+    return [vr, code || name || 'documento-sin-nombre'].filter(Boolean).join('|');
 }
 
 function normalizeDocumentEntry(entry = {}, index = 0) {
+    if (entry?.contractVersion >= 3 && entry?.isConsolidated) {
+        const sources = Array.isArray(entry.sources) ? entry.sources : [];
+        const previewSource = sources.find((source) => source.entryId === entry.summary?.previewSourceEntryId)
+            || sources.find((source) => source.canPreview)
+            || sources[0]
+            || {};
+        const editableSource = sources.find((source) => source.entryId === entry.summary?.editableSourceEntryId)
+            || sources.find((source) => source.canEdit)
+            || null;
+        const originState = normalizeOriginState(entry.originState || previewSource.originState)
+            || DOCUMENT_ORIGIN_STATE.PHYSICAL;
+
+        return {
+            ...entry,
+            entryId: entry.entryId || entry.consolidationKey || `consolidated:${index}`,
+            sourceTable: 'fun_document_consolidation',
+            documentCode: normalizeCode(entry.documentCode || previewSource.documentCode),
+            documentName: normalizeText(entry.documentName || previewSource.documentName) || 'Documento sin nombre',
+            vr: normalizeText(entry.vrInfo?.label || entry.vr || previewSource.vr),
+            date: entry.date || previewSource.date || '',
+            time: entry.time || previewSource.time || '',
+            pages: entry.summary?.foliosTotal ?? entry.pages ?? previewSource.pages ?? '',
+            originState,
+            originLabel: entry.originLabel || DOCUMENT_ORIGIN_LABEL[originState] || 'Sin origen',
+            receptionMedium: normalizeReceptionMedium(entry.receptionMedium || previewSource.receptionMedium),
+            receptionMediumLabel: entry.receptionMediumLabel || getReceptionMediumLabel(entry.receptionMedium || previewSource.receptionMedium),
+            canPreview: Boolean(entry.canPreview || entry.previewUrl || previewSource.canPreview),
+            canEdit: Boolean(entry.canEdit || editableSource?.canEdit),
+            canDelete: Boolean(entry.canDelete || editableSource?.canDelete),
+            evaluationSummary: entry.evaluationSummary || { status: null, source: null },
+            previewUrl: buildDocumentPreviewUrl(entry.previewUrl ? entry : previewSource),
+            downloadUrl: buildDocumentDownloadUrl(entry.downloadUrl ? entry : previewSource),
+            sources,
+            editableSource,
+            summary: entry.summary || {},
+        };
+    }
+
     const sourceTable = entry.sourceTable || (entry.digitalDoc ? 'fun_6' : 'sub_list');
     const originState = normalizeOriginState(entry.originState || entry.origin_state)
         || (sourceTable === 'sub_list' ? DOCUMENT_ORIGIN_STATE.PHYSICAL : DOCUMENT_ORIGIN_STATE.DIGITAL);
@@ -378,6 +480,8 @@ function normalizeDocumentEntry(entry = {}, index = 0) {
         canEdit: Boolean(entry.canEdit ?? sourceTable === 'fun_6'),
         canDelete: Boolean(entry.canDelete ?? sourceTable === 'fun_6'),
         evaluationSummary: entry.evaluationSummary || { status: null, source: null },
+        previewUrl: buildDocumentPreviewUrl(entry),
+        downloadUrl: buildDocumentDownloadUrl(entry),
     };
 }
 
@@ -405,6 +509,8 @@ export function groupDocumentEntries(entries = []) {
             latestVr: '',
             latestDateValue: 0,
             entryCount: 0,
+            summary: normalizedEntry.summary || null,
+            isConsolidated: Boolean(normalizedEntry.isConsolidated),
         };
 
         currentGroup.entries.push(normalizedEntry);
@@ -424,7 +530,11 @@ export function groupDocumentEntries(entries = []) {
             currentGroup.latestVr = normalizedEntry.vr || currentGroup.latestVr;
         }
 
-        currentGroup.entryCount = currentGroup.entries.length;
+        if (!currentGroup.summary && normalizedEntry.summary) {
+            currentGroup.summary = normalizedEntry.summary;
+        }
+        currentGroup.isConsolidated = currentGroup.isConsolidated || Boolean(normalizedEntry.isConsolidated);
+        currentGroup.entryCount = currentGroup.summary?.sourceCount || currentGroup.entries.length;
         groupsByKey.set(key, currentGroup);
     });
 

@@ -14,6 +14,12 @@ function _isValidFileUrl(str) {
     return true;
 }
 
+function addInlinePreview(url) {
+    if (!url) return '';
+    const separator = url.includes('?') ? '&' : '?';
+    return url.includes('inline=1') ? url : `${url}${separator}inline=1`;
+}
+
 function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
     const [modal, setModal] = useState(false);
     const [localURL, setLocalURL] = useState('');
@@ -61,7 +67,7 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
             return;
         }
         var re = /(?:\.([^.]+))?$/;
-        var ext = re.exec(URL)[1];
+        var ext = re.exec(URL.split('?')[0])[1];
         if (ext == "pdf" || ext == "PDF" ) {
             setLoadError(null);
             setModal(true);
@@ -84,7 +90,7 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
         .then(response => {
             const fileUrl = response.data.path + '/' + response.data.filename;
             setLocalURL(fileUrl);
-            _OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + fileUrl)
+            _OPEN_WINDOW(addInlinePreview(import.meta.env.VITE_API_URL + apipath + fileUrl))
         })
         .catch(e => {
             let message = 'No se pudo cargar la información del documento.';
@@ -108,6 +114,7 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
     }
 
     const fullUrl = import.meta.env.VITE_API_URL + apipath + url;
+    const previewFullUrl = addInlinePreview(fullUrl);
     const isValidUrl = _isValidFileUrl(fullUrl);
 
     let aWrapper = iconWrapper ?? "btn btn-sm btn-light m-0 p-2 shadow-none"
@@ -124,9 +131,9 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
     return (<>
 
         {icon
-            ? <button type="button"  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(fullUrl)}><Icon name={icon} size={20} style={{...iconStyle, color: color }} /></button>
+            ? <button type="button"  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(previewFullUrl)}><Icon name={icon} size={20} style={{...iconStyle, color: color }} /></button>
             : <MDBTooltip tag="span" title='Visualizar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button type="button" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(fullUrl)}>
+                <button type="button" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(previewFullUrl)}>
                     <Icon name="search" size={16} /></button> </MDBTooltip>
         }
 

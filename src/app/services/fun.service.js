@@ -34,7 +34,7 @@ class UserslDataService {
     return http.get(`/${route}/fun6/${id}`);
   }
   getUnifiedDocumentEntries(fun_id, id_related) {
-    return http.get(`/${route}/documents/unified/${fun_id}/${id_related}`);
+    return http.get(`/${route}/documents/unified/${fun_id}/${id_related}?consolidated=1`);
   }
   getPendingPhysicalDocuments(fun_id, id_related) {
     return http.get(`/${route}/documents/pending-physical/${fun_id}/${id_related}`);
