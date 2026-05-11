@@ -257,7 +257,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
 
                     {/* Submit button */}
                     <div className="text-center mt-3">
-                        <button type="button"
+                        <button
                             color="primary"
                             type="submit"
                             disabled={isSubmitting}

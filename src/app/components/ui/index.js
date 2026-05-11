@@ -482,8 +482,8 @@ export const MDBTabsItem = ({ tag: Tag = 'li', className, children, ...rest }) =
   <Tag className={clsx('nav-item', className)} role="presentation" {...rest}>{children}</Tag>
 );
 
-export const MDBTabsLink = ({ tag: Tag = 'a', active, className, children, ...rest }) => (
-  <Tag className={clsx('nav-link', active && 'active', className)} role="tab" {...rest}>{children}</Tag>
+export const MDBTabsLink = ({ tag: Tag = 'a', active, className, children, 'aria-selected': ariaSelected, ...rest }) => (
+  <Tag className={clsx('nav-link', active && 'active', className)} role="tab" aria-selected={ariaSelected ?? (active ? 'true' : 'false')} {...rest}>{children}</Tag>
 );
 
 export const MDBTabsContent = ({ tag: Tag = 'div', className, children, ...rest }) => (

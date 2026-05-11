@@ -17,8 +17,8 @@ function LanguageSwitcher() {
     }
     return (
         <div>
-            <MDBBtn color='link'  id="es" onClick={handleClick}><img src={ES_Flag} height="30px" id="es" onClick={handleClick}/></MDBBtn>
-            <MDBBtn color='link'  id="en" onClick={handleClick}><img src={US_Flag} height="30px" id="en" onClick={handleClick}/></MDBBtn>
+            <MDBBtn color='link'  id="es" onClick={handleClick}><img src={ES_Flag} height="30px" id="es" onClick={handleClick} alt="Cambiar idioma a español" /></MDBBtn>
+            <MDBBtn color='link'  id="en" onClick={handleClick}><img src={US_Flag} height="30px" id="en" onClick={handleClick} alt="Change language to English" /></MDBBtn>
         </div>
     );
 }
