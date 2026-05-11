@@ -28,19 +28,19 @@ const ICON_COLORS = {
   '/normas': 'bg-primary/8 text-primary',
   '/uso-suelo': 'bg-accent/8 text-accent',
   '/nomenclatura': 'bg-warning/8 text-warning',
-  '/archivo': 'bg-muted/60 text-muted-foreground',
+  '/archivo': 'bg-muted text-muted-foreground',
   '/documentos': 'bg-primary/8 text-primary',
-  '/consecutivos': 'bg-muted/60 text-muted-foreground',
-  '/publicaciones': 'bg-muted/60 text-muted-foreground',
-  '/mensajes': 'bg-muted/60 text-muted-foreground',
+  '/consecutivos': 'bg-muted text-muted-foreground',
+  '/publicaciones': 'bg-muted text-muted-foreground',
+  '/mensajes': 'bg-muted text-muted-foreground',
   '/calculadora': 'bg-accent/8 text-accent',
   '/profesionales': 'bg-warning/8 text-warning',
-  '/certificados': 'bg-muted/60 text-muted-foreground',
-  '/ayuda': 'bg-muted/60 text-muted-foreground',
+  '/certificados': 'bg-muted text-muted-foreground',
+  '/ayuda': 'bg-muted text-muted-foreground',
   '/sellos': 'bg-primary/8 text-primary',
 };
 
-const DEFAULT_ICON_COLOR = 'bg-muted/60 text-muted-foreground';
+const DEFAULT_ICON_COLOR = 'bg-muted text-muted-foreground';
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -125,7 +125,7 @@ function buildTrackedExpedientes(bookmarks, funData) {
  * Dashboard — card grid with real-time counts, role-based modules.
  * Visual reference: Vercel dashboard cards + Stripe data density.
  */
-function Dashboard({ breadCrums }) {
+function Dashboard() {
   const [counts, setCounts] = useState({});
   const [loadingCounts, setLoadingCounts] = useState(true);
   const [trackedExpedientes, setTrackedExpedientes] = useState({ personal: [], team: [] });
@@ -275,7 +275,7 @@ function Dashboard({ breadCrums }) {
           <h1 className="text-xl font-semibold tracking-tight text-foreground">
             {getGreeting()}, {userName}
           </h1>
-          <p className="text-xs text-muted-foreground/70">{getFormattedDate()} · Resumen operativo personal</p>
+          <p className="text-xs text-muted-foreground">{getFormattedDate()} · Resumen operativo personal</p>
         </div>
       </div>
 
@@ -315,9 +315,9 @@ function Dashboard({ breadCrums }) {
 
 function RecentExpedientesSummary({ items }) {
   return (
-    <Card className="border-border/60 shadow-sm">
+    <Card className="border-border shadow-sm">
       <CardContent className="p-0">
-        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-3">
+        <div className="flex items-center justify-between gap-3 border-b border-border px-3.5 py-3">
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
               <Icon name="History" size={15} />
@@ -357,7 +357,7 @@ function RecentExpedientesSummary({ items }) {
 function SectionHeader({ title, count }) {
   return (
     <div className="flex items-center gap-2.5">
-      <h2 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60">
+      <h2 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
         {title}
       </h2>
       {count != null && (
@@ -365,14 +365,14 @@ function SectionHeader({ title, count }) {
           {count}
         </Badge>
       )}
-      <div className="flex-1 border-t border-border/30" />
+      <div className="flex-1 border-t border-border" />
     </div>
   );
 }
 
 function GroupedActionCard({ title, description, items, counts, loadingCounts }) {
   return (
-    <Card className="border-border/60 shadow-sm">
+    <Card className="border-border shadow-sm">
       <CardContent className="p-3.5">
         <div className="mb-3">
           <h3 className="text-sm font-semibold text-foreground">{title}</h3>
@@ -391,7 +391,7 @@ function GroupedActionCard({ title, description, items, counts, loadingCounts })
                 key={item.key || item.link}
                 asChild
                 variant="outline"
-                className="h-auto min-h-[3.2rem] justify-start px-3 py-2.5"
+                className="h-auto min-h-[3.2rem] justify-start border-border bg-background px-3 py-2.5 shadow-sm"
               >
                 <Link to={item.link} className="flex w-full items-center justify-between gap-3 no-underline">
                   <span className="flex min-w-0 items-center gap-3">
@@ -458,9 +458,9 @@ function TrackedExpedientesSummary({ personal, team, loading, error, stacked = f
 
 function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyText }) {
   return (
-    <Card className="border-border/60 shadow-sm">
+    <Card className="border-border shadow-sm">
       <CardContent className="p-0">
-        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-3">
+        <div className="flex items-center justify-between gap-3 border-b border-border px-3.5 py-3">
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
               <Icon name={icon} size={15} />
@@ -492,7 +492,7 @@ function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyT
           )}
         </div>
 
-        <div className="border-t border-border/50 px-3.5 py-2.5 text-right">
+        <div className="border-t border-border px-3.5 py-2.5 text-right">
           <Link to="/licencias/gestion-nueva" className="text-xs font-medium text-primary hover:underline underline-offset-2">
             Ver gestión nueva
           </Link>
@@ -513,7 +513,7 @@ function TrackedExpedienteRow({ item }) {
               {item.stateLabel}
             </Badge>
           </div>
-          <p className="mt-1 truncate text-xs font-medium text-foreground/90">{item.title}</p>
+          <p className="mt-1 truncate text-xs font-medium text-foreground">{item.title}</p>
           <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">{item.description}</p>
         </div>
         <div className="flex flex-col items-end justify-between gap-2 text-right">

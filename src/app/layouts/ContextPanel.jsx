@@ -26,7 +26,7 @@ export function ContextPanel({ title, items = [], collapsed = false }) {
   return (
     <aside
       className={cn(
-        'h-full border-r border-border/60 bg-card/80 backdrop-blur-sm transition-all duration-200 shrink-0 overflow-hidden',
+        'h-full border-r border-border bg-card backdrop-blur-sm transition-all duration-200 shrink-0 overflow-hidden',
         isEmpty ? 'w-0 border-r-0' : 'w-[180px]'
       )}
       aria-hidden={isEmpty}
@@ -34,14 +34,14 @@ export function ContextPanel({ title, items = [], collapsed = false }) {
       {!isEmpty && (
         <ScrollArea className="h-full">
           <div className="px-2.5 py-3.5">
-            <h2 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/70 mb-2.5 px-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-2.5 px-2">
               {title}
             </h2>
 
             {groupKeys.map((groupKey, gi) => (
               <div key={groupKey}>
                 {groupKey !== '_default' && (
-                  <h3 className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50 mt-3 mb-1 px-2">
+                  <h3 className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground mt-3 mb-1 px-2">
                     {groupKey}
                   </h3>
                 )}
@@ -58,7 +58,7 @@ export function ContextPanel({ title, items = [], collapsed = false }) {
                           'relative flex items-center gap-2 rounded-md px-2 py-[5px] text-[12.5px] transition-all duration-150 no-underline group',
                           isActive
                             ? 'bg-primary/10 text-primary font-medium'
-                            : 'text-foreground/60 hover:bg-muted/80 hover:text-foreground'
+                            : 'text-foreground hover:bg-muted hover:text-foreground'
                         )}
                         style={{ animationDelay: `${itemIdx * 30}ms` }}
                       >
@@ -68,7 +68,7 @@ export function ContextPanel({ title, items = [], collapsed = false }) {
                         {item.icon && (
                           <Icon name={item.icon} size={14} className={cn(
                             'shrink-0 transition-colors duration-150',
-                            isActive ? 'text-primary' : 'text-muted-foreground/60 group-hover:text-muted-foreground'
+                            isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
                           )} />
                         )}
                         <span className="truncate flex-1">{item.label}</span>
@@ -82,7 +82,7 @@ export function ContextPanel({ title, items = [], collapsed = false }) {
                   })}
                 </nav>
                 {gi < groupKeys.length - 1 && (
-                  <div className="my-1.5 mx-2 border-t border-border/30" />
+                  <div className="my-1.5 mx-2 border-t border-border" />
                 )}
               </div>
             ))}
