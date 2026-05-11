@@ -211,6 +211,114 @@ table,
   font-feature-settings: 'tnum' 1, 'lnum' 1;
 }
 
+.rich-text-editor-field {
+  width: 100%;
+}
+
+.rich-text-editor-shell {
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--background));
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+}
+
+.rich-text-editor-shell:focus-within {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.14);
+}
+
+.rich-text-editor-shell--readonly {
+  background: hsl(var(--muted) / 0.45);
+}
+
+.rich-text-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.35rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.36);
+}
+
+.rich-text-editor-toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.rich-text-editor-toolbar-group + .rich-text-editor-toolbar-group {
+  padding-left: 0.35rem;
+  border-left: 1px solid hsl(var(--border));
+}
+
+.rich-text-editor-toolbar-group--grow {
+  flex: 1 1 12rem;
+  justify-content: flex-end;
+}
+
+.rich-text-editor-toolbar .inline-flex {
+  min-width: 2rem;
+}
+
+.rich-text-editor-save {
+  min-width: 6.25rem;
+}
+
+.rich-text-editor-shell .bn-container {
+  width: 100%;
+  min-height: var(--rich-text-min-height, 150px);
+  border-radius: var(--radius);
+  background: transparent;
+  color: hsl(var(--foreground));
+}
+
+.rich-text-editor-shell .bn-editor {
+  min-height: var(--rich-text-min-height, 150px);
+  padding-block: 0.75rem;
+}
+
+.rich-text-editor-shell .bn-block-content {
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.rich-text-editor-shell .bn-file-block-content-wrapper,
+.rich-text-editor-shell .bn-visual-media-wrapper {
+  max-width: 100%;
+}
+
+.rich-text-editor-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+}
+
+.rich-text-editor-status {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .rich-text-editor-toolbar {
+    align-items: stretch;
+  }
+
+  .rich-text-editor-toolbar-group {
+    flex-wrap: wrap;
+  }
+
+  .rich-text-editor-toolbar-group--grow {
+    justify-content: flex-start;
+  }
+}
+
 /* Fullscreen de expediente: remover shell/menús legacy durante la sesión activa */
 body.workspace-fullscreen-open .app-shell-rail,
 body.workspace-fullscreen-open .app-shell-context,

@@ -122,9 +122,17 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined;
 
-          // Core React + UI runtime — merged to avoid circular deps
-          // (rsuite imports react internals, creating a cycle if split)
-          if (/react-dom|react\/|scheduler|react-router|rsuite|styled-components|@emotion/.test(id)) return 'vendor-react';
+          // React core runtime — aislado en su propio chunk sin dependencias externas.
+          // CRÍTICO: evita "can't access property 'createContext' of undefined" que ocurre
+          // cuando vendor-pdf (react-pdf) se ejecuta antes de que vendor-react termine de
+          // inicializarse. Al separar react/react-dom/scheduler aquí, Rollup garantiza que
+          // este chunk cargue primero y esté listo para cualquier otro chunk que lo necesite.
+          if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'vendor-react-core';
+
+          // React UI ecosystem — rsuite y react-router dependen de vendor-react-core.
+          // rsuite puede acceder a internals de react, pero eso es OK porque vendor-react-core
+          // ya es independiente y siempre estará inicializado antes.
+          if (/react-router|rsuite|rsuite-table|styled-components|@emotion/.test(id)) return 'vendor-react';
 
           // PDF generation & viewing (heavy, only needed in doc views)
           if (/react-pdf|pdfjs-dist|pdf-lib|jspdf|html2canvas/.test(id)) return 'vendor-pdf';
