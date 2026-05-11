@@ -114,9 +114,9 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
-                minWidth: '300px',
+                minWidth: '160px',
                 center: true,
-                cell: row => <span className="text-sm">{row.type}</span>
+                cell: row => <span className="text-sm d-inline-block text-truncate" style={{ maxWidth: '200px' }} title={row.type}>{row.type}</span>
             },
             {
                 name: 'Fecha Radicación',
@@ -140,8 +140,8 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
             {
                 name: 'Acción',
                 button: true,
-                minWidth: '100px',
-                cell: row => <div className="flex items-center gap-1">
+                minWidth: '90px',
+                cell: row => <div className="flex items-center gap-1 flex-nowrap">
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toggle(row)} title="Abrir">
                         <Icon name="FolderOpen" size={14} />
                     </Button>
@@ -395,7 +395,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         <SUBTMIT_MANAGE
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             refreshList={refreshList}
-                            closeModal={toggle_new}
+                            closeModal={toggle}
                             currentId={currentId}
                             edit />
                     </div>

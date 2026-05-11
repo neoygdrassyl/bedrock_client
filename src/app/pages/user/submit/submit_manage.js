@@ -522,6 +522,12 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
         let manage_submit = (id_public) => {
             let _CHILD = GET_SUBMIT();
 
+            // Protección: si estamos en modo edición pero currentItem no ha cargado, bloquear
+            if (edit && (!_CHILD.id || !currentItem)) {
+                swalError({ title: "DATOS NO CARGADOS", text: "Los datos aún se están cargando. Por favor espere un momento e intente nuevamente." });
+                return;
+            }
+
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 formData.set('new_id', document.getElementById("submit_1").value);
@@ -573,14 +579,14 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             Información general
                         </p>
                         <h3 className="text-base font-semibold text-foreground">
-                            {currentItem ? 'Actualizar entrada' : 'Nueva entrada'}
+                            {edit || currentItem ? 'Actualizar entrada' : 'Nueva entrada'}
                         </h3>
                     </div>
 
                     <form id="form_manage_submit" onSubmit={save_submit} onKeyDown={handleFormKeyDown} className="space-y-4 p-4 md:p-5">
                         {COMPONENT_NEW()}
                         <div className="flex justify-end border-t border-border/60 pt-4">
-                            {currentItem
+                            {edit || currentItem
                                 ? <Button size="sm"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
                                 : <Button size="sm"><Icon name="plus-circle" size={16} /> CREAR </Button>}
                         </div>
