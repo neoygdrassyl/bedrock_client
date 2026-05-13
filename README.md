@@ -1,70 +1,175 @@
-# Getting Started with Create React App
+# Dovela Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+SPA de React 19 + Vite 6 para la gestion de procesos de curaduria urbana. Este README resume los comandos que necesita un desarrollador nuevo para levantar, compilar, validar y desplegar el frontend.
 
-## Available Scripts
+## Requisitos
 
-In the project directory, you can run:
+- Node 22+
+- npm
+- Backend local disponible en `http://localhost:3001` si se va a usar el proxy `/api`
+
+Instala dependencias con:
+
+```bash
+npm ci
+```
+
+## Desarrollo local
+
+### `npm run dev`
+
+Levanta Vite en modo `development` usando `.env.development`.
+
+```bash
+npm run dev
+```
+
+La aplicacion queda disponible en `http://localhost:3000`.
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Alias de desarrollo equivalente a `npm run dev`.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+npm start
+```
 
-### `npm test`
+## Builds inteligentes
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Los builds usan modos explicitos de Vite para cargar variables diferentes segun el entorno. Todos generan la salida estatica en `build/`.
+
+| Comando | Modo Vite | Uso recomendado |
+|---|---|---|
+| `npm run build` | `production` | Build productivo por defecto. |
+| `npm run build:prod` | `production` | Build productivo explicito para despliegue. |
+| `npm run build:production` | `production` | Alias descriptivo de produccion. |
+| `npm run build:dev` | `development` | Build con variables de desarrollo para validar integraciones locales. |
+| `npm run build:analyze` | `production` | Build productivo con reporte visual de chunks. |
+
+Los scripts de build usan `build-tools/run-vite-build.mjs`, un runner Node compatible con Linux, macOS y Windows. El runner agrega `NODE_OPTIONS=--max-old-space-size=4096` al proceso de Vite porque el empaquetado de Rollup de esta SPA puede superar el heap default de Node durante `rendering chunks`.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Compila con `.env.production`. Es el build productivo por defecto.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm run build
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `npm run build:prod`
 
-### `npm run eject`
+Comando recomendado para CI/CD y despliegues productivos.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+npm run build:prod
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### `npm run build:dev`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Compila con `.env.development`. Sirve para revisar que el bundle compile usando endpoints y valores de desarrollo.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm run build:dev
+```
 
-## Learn More
+### `npm run build:analyze`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Compila en modo produccion y activa `VITE_BUILD_ANALYZE=true` desde el runner para generar `build/stats.html`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm run build:analyze
+```
 
-### Code Splitting
+Usa este comando cuando necesites revisar peso de chunks o dependencias incluidas en el bundle.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Variables de entorno
 
-### Analyzing the Bundle Size
+Vite carga variables segun el modo:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+| Archivo | Cuando se usa |
+|---|---|
+| `.env.development` | `npm run dev`, `npm start`, `npm run build:dev` |
+| `.env.production` | `npm run build`, `npm run build:prod`, `npm run build:production`, `npm run build:analyze` |
+| `.env.example` | Plantilla para documentar variables requeridas. |
+| `.env.local`, `.env.development.local`, `.env.production.local` | Overrides locales no versionados. |
 
-### Making a Progressive Web App
+Toda variable expuesta al frontend debe empezar por `VITE_`. Estas variables quedan embebidas en el bundle del navegador, asi que no pongas secretos privados en archivos `VITE_*`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Para desarrollo, `.env.development` usa la llave publica de prueba oficial de Google reCAPTCHA v2:
 
-### Advanced Configuration
+```bash
+VITE_GOOGLE_CAPTCHA_HTML="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+En produccion reemplazala desde `.env.production.local` o desde el pipeline con la llave publica real del sitio. Si la variable queda vacia, la pantalla de login muestra un aviso de configuracion y no intenta montar `ReCAPTCHA`, evitando el error `Missing required parameters: sitekey`.
 
-### Deployment
+Produccion queda configurada por defecto para CUB1:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```bash
+VITE_GLOBAL_ID="cb1"
+VITE_API_URL="https://prod.curaduria1bucaramanga.com.co/api"
+```
 
-### `npm run build` fails to minify
+## Despliegue
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+El servidor final solo necesita el contenido de `build/`. No necesita `node_modules`, Vitest, Playwright ni herramientas de desarrollo.
+
+Flujo recomendado en la maquina de build o pipeline:
+
+```bash
+npm ci
+npm run build:prod
+```
+
+Luego despliega unicamente el contenido de:
+
+```bash
+build/
+```
+
+No uses este flujo para compilar:
+
+```bash
+npm ci --omit=dev
+npm run build
+```
+
+`vite` y `@vitejs/plugin-react` viven correctamente en `devDependencies`: son necesarios para compilar, pero no para servir el resultado estatico. Si necesitas mas detalle, revisa `BUILD_DEPLOYMENT.md`.
+
+## Pruebas y auditorias
+
+### `npm test`
+
+Ejecuta la suite de Vitest una sola vez.
+
+```bash
+npm test
+```
+
+Para ejecutar una prueba especifica:
+
+```bash
+npm test -- src/__tests__/SmartBuildConfig.unit.test.js
+```
+
+### `npm run test:e2e`
+
+Ejecuta Playwright.
+
+```bash
+npm run test:e2e
+```
+
+### `npm run audit:preflight`
+
+Ejecuta auditorias estaticas rapidas antes de cerrar cambios relevantes.
+
+```bash
+npm run audit:preflight
+```
+
+## Referencias utiles
+
+- `BUILD_DEPLOYMENT.md`: contrato completo de build y despliegue.
+- `AGENTS.md`: reglas operativas del frontend para agentes y colaboradores.
+- `ai/system-map.md`: mapa funcional del sistema cuando el cambio toca dominio, rutas, auth o integraciones.
