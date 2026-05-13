@@ -17,12 +17,12 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('react-google-recaptcha', () => {
   const React = require('react');
-  const ReCAPTCHA = ({ ref, ...props }) => {
+  const ReCAPTCHA = ({ ref, sitekey, size }) => {
     React.useImperativeHandle(ref, () => ({
       execute: () => Promise.resolve('mock-token'),
       reset: vi.fn(),
     }));
-    return <div data-testid="recaptcha-mock" />;
+    return <div data-testid="recaptcha-mock" data-sitekey={sitekey} data-size={size} />;
   };
   return { default: ReCAPTCHA };
 });
@@ -55,15 +55,29 @@ vi.mock('../http-common', () => ({
 
 import LoginPage from '@/app/pages/auth/LoginPage';
 
+const originalCaptchaSiteKey = import.meta.env.VITE_GOOGLE_CAPTCHA_HTML;
+const routerFutureFlags = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+};
+
 function renderLogin() {
   return render(
-    <MemoryRouter>
+    <MemoryRouter future={routerFutureFlags}>
       <LoginPage signin={vi.fn()} />
     </MemoryRouter>
   );
 }
 
 describe('LoginPage (redesigned)', () => {
+  beforeEach(() => {
+    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = 'test-site-key';
+  });
+
+  afterEach(() => {
+    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = originalCaptchaSiteKey;
+  });
+
   it('renders email and password inputs', () => {
     renderLogin();
     expect(screen.getByLabelText(/correo/i)).toBeInTheDocument();
@@ -93,5 +107,20 @@ describe('LoginPage (redesigned)', () => {
     // Two logos: one in desktop brand panel, one in mobile header
     const logos = screen.getAllByAltText(/logo/i);
     expect(logos.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('passes the configured site key to the invisible recaptcha', () => {
+    renderLogin();
+    expect(screen.getByTestId('recaptcha-mock')).toHaveAttribute('data-sitekey', 'test-site-key');
+    expect(screen.getByTestId('recaptcha-mock')).toHaveAttribute('data-size', 'invisible');
+  });
+
+  it('does not mount recaptcha when the site key is missing', () => {
+    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = '';
+
+    renderLogin();
+
+    expect(screen.queryByTestId('recaptcha-mock')).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(/captcha no configurado/i);
   });
 });
