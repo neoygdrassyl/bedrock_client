@@ -24,6 +24,7 @@ import './gantt.css';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Icon } from '@/components/icon';
+import { getLicenseCompletionClock } from '../shared/processClosure.helpers';
 
 import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose, swalFormDialog, Swal } from '../../../utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -57,6 +58,7 @@ export default function EXP_CLOCKS(props) {
   const [visibleColumns, setVisibleColumns] = useState(() => ({ ...DEFAULT_CLOCK_COLUMN_VISIBILITY }));
   const [pendingDateEdits, setPendingDateEdits] = useState({});
   const [isSavingPendingDates, setIsSavingPendingDates] = useState(false);
+  const [archiveDate, setArchiveDate] = useState('');
 
   const sidebarRef = useRef(null);
   
@@ -172,6 +174,10 @@ export default function EXP_CLOCKS(props) {
   }, [clocksData]);
 
   const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate, phaseOptions);
+  const completionClock = useMemo(
+    () => getLicenseCompletionClock({ ...currentItem, fun_clocks: clocksData }),
+    [currentItem, clocksData]
+  );
 
   const conGI = _GLOBAL_ID === 'cb1';
   const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
@@ -310,6 +316,10 @@ export default function EXP_CLOCKS(props) {
   }, [currentItem?.fun_law?.sign, clocksData, recentDeletions]);
 
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
+
+  useEffect(() => {
+    setArchiveDate(getClock(101)?.date_start || '');
+  }, [currentItem?.id, clocksData]);
 
   const filterAfterDesist = (items) => {
     if (!manager.isDesisted) return items;
@@ -473,6 +483,129 @@ export default function EXP_CLOCKS(props) {
     } else {
       return FUN_SERVICE.create_clock(formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
     }
+  };
+
+  const closeProcess = () => {
+    swalConfirm({
+      title: 'CERRAR SOLICITUD',
+      text: '¿Está seguro de cerrar esta Solicitud?',
+      icon: 'question',
+      confirmButtonText: 'CERRAR',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      const formData = new FormData();
+      formData.set('state', 100);
+      swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+
+      FUN_SERVICE.update(currentItem.id, formData)
+        .then((response) => {
+          if (response.data === 'OK') {
+            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+            props.requestUpdate(currentItem.id);
+          } else {
+            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+          }
+        })
+        .catch((e) => {
+          console.error('Error cerrando solicitud desde tiempos:', e);
+          swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+        });
+    });
+  };
+
+  const archiveProcess = () => {
+    if (!archiveDate) {
+      swalError({ title: 'Fecha requerida', text: 'Seleccione la fecha de archivación antes de continuar.', icon: 'warning' });
+      return;
+    }
+
+    swalConfirm({
+      title: 'ARCHIVAR SOLICITUD',
+      text: '¿Está seguro de archivar esta Solicitud? No se podrá modificar de ninguna forma.',
+      icon: 'question',
+      confirmButtonText: 'ARCHIVAR',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      const formData = new FormData();
+      formData.set('state', 101);
+      swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+
+      FUN_SERVICE.update(currentItem.id, formData)
+        .then(async (response) => {
+          if (response.data !== 'OK') {
+            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+            return;
+          }
+
+          const formDataClock = new FormData();
+          const worker = `${window?.user?.name || ''} ${window?.user?.surname || ''}`.trim();
+          formDataClock.set('date_start', archiveDate);
+          formDataClock.set('name', 'ARCHIVACIÓN');
+          formDataClock.set('desc', `Fue enviado al archivo por: ${worker}`);
+          formDataClock.set('state', 101);
+
+          const savedArchiveClock = await manage_clock(false, 101, undefined, formDataClock, true);
+          if (savedArchiveClock) {
+            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+          }
+        })
+        .catch((e) => {
+          console.error('Error archivando solicitud desde tiempos:', e);
+          swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+        });
+    });
+  };
+
+  const renderProcessClosurePanel = () => {
+    const processState = Number(currentItem?.state || 0);
+    const canCloseProcess = Boolean(completionClock.dateStart) && processState < 100;
+    const canArchiveProcess = Boolean(completionClock.dateStart) && processState === 100;
+    const isArchivedProcess = processState === 101;
+
+    if (!completionClock.dateStart && !isArchivedProcess) return null;
+
+    return (
+      <div className="border-t border-border bg-muted/30 px-4 py-3">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-foreground">Cierre y archivo</p>
+            <p className="text-xs text-muted-foreground">
+              {isArchivedProcess
+                ? 'La solicitud ya se encuentra archivada.'
+                : `${completionClock.label}: ${completionClock.dateStart}`}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            {canCloseProcess && (
+              <Button type="button" variant="destructive" size="sm" onClick={closeProcess}>
+                <Icon name="unlock-alt" size={16} />
+                Finalizar proceso
+              </Button>
+            )}
+
+            {canArchiveProcess && (
+              <>
+                <input
+                  type="date"
+                  className="form-control h-9 min-w-[170px] text-sm"
+                  max="2100-01-01"
+                  value={archiveDate}
+                  onChange={(event) => setArchiveDate(event.target.value)}
+                  aria-label="Fecha de archivación"
+                />
+                <Button type="button" size="sm" onClick={archiveProcess}>
+                  <Icon name="file-archive" size={16} />
+                  Archivar solicitud
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const savePendingDateChanges = async () => {
@@ -1063,6 +1196,8 @@ export default function EXP_CLOCKS(props) {
                   {renderClockList()}
                </div>
             </div>
+
+            {renderProcessClosurePanel()}
 
             <div className="clock-table-footer-tools" aria-label="Herramientas de guardado y columnas de la tabla de tiempos">
               <div className="clock-save-group">

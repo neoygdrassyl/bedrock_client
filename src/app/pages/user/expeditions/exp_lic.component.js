@@ -2,10 +2,12 @@ import FUN_SERVICE from '../../../services/fun.service';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { getLicenseCompletionClock } from '../shared/processClosure.helpers';
 
 export default function EXP_LIC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
     var formData = new FormData();
+    const completionClock = getLicenseCompletionClock(currentItem);
     // ***************************  DATA GETTERS *********************** //
     let _GET_CLOCK = () => {
         var _CHILD = currentItem.fun_clocks;
@@ -37,10 +39,10 @@ export default function EXP_LIC(props) {
                 <>
                     <div className="row mx-2 my-0">
                         <div className="col-3 border">
-                            <label className="fw-bold mt-2 text-end ">FECHA DE LICENCIA:</label>
+                            <label className="fw-bold mt-2 text-end ">{completionClock.label?.toUpperCase() || 'FECHA DE LICENCIA'}:</label>
                         </div>
                         <div className="col border py-1">
-                            <label className="fw-bold mt-2 text-end ">{_GET_CLOCK_STATE(99).date_start}</label>
+                            <label className="fw-bold mt-2 text-end ">{completionClock.dateStart}</label>
                         </div>
                         <div className="col border py-1 text-center">
                             {currentItem.state < 100 ?
@@ -56,7 +58,7 @@ export default function EXP_LIC(props) {
                             <div className="col border py-1">
                                 {currentItem.state == 100 ?
                                     <input type="date" className="form-control" id={'clock_arch_date'} max="2100-01-01" required
-                                        defaultValue={_GET_CLOCK_STATE(101).date_start ?? ''} />
+                                        defaultValue={_GET_CLOCK_STATE(101)?.date_start ?? ''} />
                                     : ''}
                             </div>
                             <div className="col border py-1 text-center">
@@ -203,9 +205,9 @@ export default function EXP_LIC(props) {
             <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_4">
                 <label className="app-p lead fw-normal">CERRAR SOLICITUD</label>
             </legend>
-            {_GET_CLOCK_STATE(99).date_start
+            {completionClock.dateStart
                 ? _COMPONENT_LIC()
-                : <div className='row text-center'><label className="app-p lead fw-normal text-danger">Para cerrar y archivar la solicitud es necesario determinar la Fecha de expedición Licencia</label></div>}
+                : <div className='row text-center'><label className="app-p lead fw-normal text-danger">Para cerrar y archivar la solicitud es necesario determinar la Fecha de expedición o Entrega de Licencia en Tiempos</label></div>}
 
         </div >
     );
