@@ -15,10 +15,11 @@ import { swalError } from '@/app/utils/swalAdapter';
  * @param {(cb: Function) => void} props.signin - auth.signin from ProvideAuth
  */
 export default function LoginPage({ signin }) {
-  const { t } = useTranslation();
+  useTranslation();
   const navigate = useNavigate();
   const recaptchaRef = React.useRef(null);
   const credentialsRef = React.useRef({ email: '', password: '' });
+  const recaptchaSiteKey = import.meta.env.VITE_GOOGLE_CAPTCHA_HTML?.trim();
 
   const from = { pathname: '/dashboard' };
 
@@ -30,6 +31,15 @@ export default function LoginPage({ signin }) {
     const showAuthError = ({ title, text, footer }) => {
       swalError({ title, text, footer, icon: 'error' });
     };
+
+    if (!recaptchaSiteKey || !recaptchaRef.current) {
+      showAuthError({
+        title: 'CAPTCHA NO CONFIGURADO',
+        text: 'No fue posible iniciar sesion porque falta la llave publica de reCAPTCHA.',
+        footer: 'Configure VITE_GOOGLE_CAPTCHA_HTML para este entorno',
+      });
+      return;
+    }
 
     recaptchaRef.current
       .execute()
@@ -223,11 +233,20 @@ export default function LoginPage({ signin }) {
               Iniciar sesión
             </button>
 
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              size="invisible"
-              sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
-            />
+            {recaptchaSiteKey ? (
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                size="invisible"
+                sitekey={recaptchaSiteKey}
+              />
+            ) : (
+              <p
+                role="status"
+                className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-[12px] leading-relaxed text-destructive"
+              >
+                Captcha no configurado para este entorno. Configure VITE_GOOGLE_CAPTCHA_HTML antes de iniciar sesion.
+              </p>
+            )}
           </form>
 
           {/* Footer branding */}
