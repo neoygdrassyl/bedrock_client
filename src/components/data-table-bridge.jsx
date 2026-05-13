@@ -184,6 +184,12 @@ export function DataTableBridge({
     return '';
   };
 
+  const isInteractiveElement = (target) => {
+    if (!(target instanceof Element)) return false;
+
+    return Boolean(target.closest('button, a, input, select, textarea, [role="button"]'));
+  };
+
   const cellPadding = dense ? 'py-1 px-2 text-xs' : 'py-2 px-3 text-sm';
   const rowsPerPageOptions = Array.isArray(paginationRowsPerPageOptions) && paginationRowsPerPageOptions.length
     ? paginationRowsPerPageOptions
@@ -266,7 +272,10 @@ export function DataTableBridge({
                       getRowClassName(row.original),
                     )}
                     style={getRowStyle(row.original)}
-                    onClick={onRowClicked ? () => onRowClicked(row.original) : undefined}
+                    onClick={onRowClicked ? (event) => {
+                      if (isInteractiveElement(event.target)) return;
+                      onRowClicked(row.original);
+                    } : undefined}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell

@@ -79,6 +79,7 @@ function UnifiedDocumentEntryModal({
     const [selectedEntryId, setSelectedEntryId] = useState('');
     const [editForm, setEditForm] = useState(null);
     const [savingEdit, setSavingEdit] = useState(false);
+    const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
     const selectedEntry = sortedEntries.find((entry) => entry.entryId === selectedEntryId) || sortedEntries[0] || null;
     const selectedOrigin = selectedEntry?.originState || DOCUMENT_ORIGIN_STATE.PHYSICAL;
     const originMeta = DOCUMENT_ORIGIN_META[selectedOrigin] || DOCUMENT_ORIGIN_META[DOCUMENT_ORIGIN_STATE.PHYSICAL];
@@ -90,6 +91,7 @@ function UnifiedDocumentEntryModal({
     useEffect(() => {
         setEditForm(null);
         setSelectedEntryId('');
+        setIsPreviewFullscreen(false);
     }, [open, group?.id, mode]);
 
     useEffect(() => {
@@ -253,15 +255,39 @@ function UnifiedDocumentEntryModal({
                         /> : <div className="rounded-xl border border-dashed border-border bg-muted/20 p-5 text-center text-sm text-muted-foreground">
                             Esta entrada no tiene archivo digital para previsualizar.
                         </div>}
-                {downloadUrl && previewUrl ? <div className="mt-3 flex justify-end">
-                  <Button type="button" variant="outline" size="sm" aria-label="Descargar archivo previsualizado" onClick={() => window.open(downloadUrl, '_blank', 'noopener,noreferrer')}>
-                                <Icon name="Download" size={14} /> Descargar archivo
+                {previewUrl ? <div className="mt-3 flex flex-wrap justify-end gap-2">
+                            <Button type="button" variant="outline" size="sm" aria-label="Ver archivo previsualizado en pantalla completa" onClick={() => setIsPreviewFullscreen(true)}>
+                                <Icon name="expand-arrows-alt" size={14} /> Pantalla completa
                             </Button>
-                        </div> : null}
+                            {downloadUrl ? <Button type="button" variant="outline" size="sm" aria-label="Descargar archivo previsualizado" onClick={() => window.open(downloadUrl, '_blank', 'noopener,noreferrer')}>
+                                 <Icon name="Download" size={14} /> Descargar archivo
+                             </Button> : null}
+                         </div> : null}
                     </>}
                 </div>
             </div>
         </div>
+
+        {isPreviewFullscreen && previewUrl ? <div className="fixed inset-0 z-[1080] flex flex-col bg-slate-950/85 p-4" role="dialog" aria-modal="true" aria-label="Previsualización documental en pantalla completa">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
+                <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+                    <div className="min-w-0">
+                        <p className="mb-0 truncate text-sm font-semibold text-foreground">{getEntryTitle(selectedEntry)}</p>
+                        <p className="mb-0 text-xs text-muted-foreground">Vista en pantalla completa · no descarga el archivo</p>
+                    </div>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setIsPreviewFullscreen(false)} aria-label="Cerrar previsualización en pantalla completa">
+                        <Icon name="times" size={14} /> Cerrar
+                    </Button>
+                </div>
+                <div className="min-h-0 flex-1 overflow-hidden p-4">
+                    <iframe
+                        title={`Vista completa ${selectedEntry?.documentName || 'documento'}`}
+                        src={previewUrl}
+                        className="h-full min-h-[calc(100vh-10rem)] w-full rounded-xl border border-border bg-muted"
+                    />
+                </div>
+            </div>
+        </div> : null}
     </div>;
 }
 
