@@ -8,6 +8,28 @@ import '@testing-library/jest-dom/vitest';
 import React from 'react';
 globalThis.React = React;
 
+const reactRouterFutureFlags = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+};
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+
+  return {
+    ...actual,
+    MemoryRouter: ({ future, ...props }) => (
+      <actual.MemoryRouter
+        {...props}
+        future={{
+          ...reactRouterFutureFlags,
+          ...future,
+        }}
+      />
+    ),
+  };
+});
+
 // mdb-react-ui-kit eliminated — components replaced by src/app/components/ui/
 
 // jsdom doesn't implement window.matchMedia — required by ThemeProvider & sonner
