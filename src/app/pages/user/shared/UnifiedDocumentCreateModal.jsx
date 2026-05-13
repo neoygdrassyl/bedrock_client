@@ -1,13 +1,99 @@
 import { useEffect, useMemo, useState } from 'react';
+import dayjs from 'dayjs';
+import { PDFDocument } from 'pdf-lib';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import ListJson from '@/app/components/jsons/fun6DocsList.json';
 import {
     DOCUMENT_ORIGIN_LABEL,
     DOCUMENT_ORIGIN_STATE,
     DOCUMENT_RECEPTION_MEDIUM_OPTIONS,
 } from './expediente-documental.constants';
+
+const ACCEPTED_DOCUMENT_FILE_TYPES = new Set(['image/png', 'image/jpeg', 'application/pdf']);
+const ACCEPTED_DOCUMENT_FILE_LABEL = 'PDF, JPG o PNG';
+const STICKY_NAME_COLUMN_CLASS = 'sticky left-0 z-10 w-[380px] min-w-[380px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+const STICKY_VR_COLUMN_CLASS = 'sticky left-[380px] z-10 w-[240px] min-w-[240px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+
+function normalizeFileList(fileList) {
+    return Array.from(fileList || []);
+}
+
+function fileKey(file) {
+    return `${file.name}-${file.size}-${file.lastModified}`;
+}
+
+function mergeFiles(currentFiles = [], incomingFiles = []) {
+    const filesByKey = new Map();
+    currentFiles.forEach((file) => filesByKey.set(fileKey(file), file));
+    incomingFiles.forEach((file) => filesByKey.set(fileKey(file), file));
+    return Array.from(filesByKey.values());
+}
+
+function formatFileSize(size = 0) {
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function hasDraggedFiles(event) {
+    return Array.from(event.dataTransfer?.types || []).includes('Files');
+}
+
+function isPdfFile(file) {
+    return file?.type === 'application/pdf' || String(file?.name || '').toLowerCase().endsWith('.pdf');
+}
+
+function isImageFile(file) {
+    return ['image/png', 'image/jpeg'].includes(file?.type)
+        || /\.(png|jpe?g)$/i.test(String(file?.name || ''));
+}
+
+async function countFilePages(file) {
+    if (!file) return '';
+
+    if (isImageFile(file)) {
+        return 1;
+    }
+
+    if (!isPdfFile(file)) {
+        return '';
+    }
+
+    const buffer = await file.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(buffer);
+    return pdfDoc.getPages().length;
+}
+
+async function buildFilePageCounts(files = []) {
+    const entries = await Promise.all(files.map(async (file) => {
+        try {
+            return [fileKey(file), await countFilePages(file)];
+        } catch (error) {
+            console.warn('No fue posible contar los folios del archivo.', file?.name, error);
+            return [fileKey(file), ''];
+        }
+    }));
+
+    return Object.fromEntries(entries);
+}
+
+function getFilesPageTotal(files = [], pageCounts = {}) {
+    const values = files
+        .map((file) => Number(pageCounts[fileKey(file)]))
+        .filter((value) => Number.isFinite(value) && value > 0);
+
+    if (!values.length) return '';
+    return String(values.reduce((total, value) => total + value, 0));
+}
+
+function getFilePreviewKind(file) {
+    if (isPdfFile(file)) return 'pdf';
+    if (isImageFile(file)) return 'image';
+    return '';
+}
 
 function buildDocumentOptions() {
     return Object.entries(ListJson).map(([code, name]) => ({ code, name }));
@@ -23,10 +109,14 @@ function createRow(source = 'manual', base = {}) {
         documentName: base.documentName || base.name || '',
         vr: base.vr || '',
         pages: base.pages || base.page || '',
-        date: base.date || '',
+        date: base.date || dayjs().format('YYYY-MM-DD'),
         originState: base.originState || DOCUMENT_ORIGIN_STATE.SCANNED,
         receptionMedium: base.receptionMedium || '',
         file: null,
+        files: [],
+        filePageCounts: {},
+        filePagesLoading: false,
+        fileError: '',
     };
 }
 
@@ -44,14 +134,14 @@ function DocsComboboxInline({ rowId, code, name, onSelect }) {
 
     const displayValue = [code, name].filter(Boolean).join(' · ');
 
-    return <div className="relative min-w-[300px]">
+    return <div className="relative min-w-[340px]">
         <button
             type="button"
-            className="flex min-h-10 w-full items-center justify-between gap-2 rounded-md border border-border bg-background px-3 py-2 text-left text-xs text-foreground transition-colors hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring"
+            className="flex min-h-9 w-full items-center justify-between gap-2 rounded-md border border-border bg-background px-2.5 py-1.5 text-left text-[11px] text-foreground transition-colors hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring"
             onClick={() => setOpen((current) => !current)}
             title={displayValue || 'Seleccionar documento'}
         >
-            <span className="line-clamp-2 leading-snug">{displayValue || 'Seleccionar documento'}</span>
+            <span className="min-w-0 whitespace-normal leading-tight">{displayValue || 'Seleccionar documento'}</span>
             <Icon name={open ? 'chevron-up' : 'chevron-down'} size={14} className="shrink-0 text-muted-foreground" />
         </button>
         {open ? <div className="absolute left-0 top-[calc(100%+4px)] z-40 w-[min(720px,70vw)] rounded-xl border border-border bg-background p-2 shadow-2xl">
@@ -86,6 +176,77 @@ function DocsComboboxInline({ rowId, code, name, onSelect }) {
                 <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>Cerrar</Button>
             </div>
         </div> : null}
+    </div>;
+}
+
+function VrSelectInline({ value, vrList = [], onChange }) {
+    const options = useMemo(() => {
+        const uniqueValues = new Set(vrList.filter(Boolean));
+        if (value) uniqueValues.add(value);
+        return Array.from(uniqueValues);
+    }, [value, vrList]);
+
+    return <select
+        className="h-9 w-full min-w-[220px] rounded-md border border-border bg-background px-2 font-mono text-[11px] leading-none text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        value={value || ''}
+        onChange={(event) => onChange(event.target.value)}
+        title={value || 'SIN VR'}
+    >
+        <option value="">SIN VR</option>
+        {options.map((vr) => <option key={vr} value={vr}>{vr}</option>)}
+    </select>;
+}
+
+function FileDropCell({ row, onFilesSelected, onFileRemove, onClearFiles, onFilePreview }) {
+    const files = Array.isArray(row.files) ? row.files : (row.file ? [row.file] : []);
+
+    return <div className="min-w-[340px] space-y-1.5">
+        <label className="flex min-h-[54px] cursor-pointer flex-col justify-center rounded-lg border border-dashed border-border bg-muted/20 px-2.5 py-2 text-[11px] text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/5">
+            <span className="flex items-center gap-2 font-semibold text-foreground">
+                <Icon name="upload" size={13} className="text-primary" />
+                Arrastra aquí o selecciona archivos
+            </span>
+            <span>{ACCEPTED_DOCUMENT_FILE_LABEL} · sin límite artificial de previsualización</span>
+            <input
+                type="file"
+                accept="image/png,image/jpeg,application/pdf"
+                multiple
+                className="sr-only"
+                onChange={(event) => {
+                    onFilesSelected(row.id, event.target.files);
+                    event.target.value = '';
+                }}
+            />
+        </label>
+        {row.fileError ? <p className="mb-0 rounded-md border border-warning/30 bg-warning/10 px-2 py-1 text-[10px] font-medium text-warning">{row.fileError}</p> : null}
+        {files.length ? <div className="max-h-32 space-y-1 overflow-y-auto rounded-md border border-border bg-background p-1" aria-label="Archivos seleccionados">
+            {files.map((file) => <div key={fileKey(file)} className="flex items-center justify-between gap-2 rounded border border-border/70 bg-muted/20 px-2 py-1 text-[10px] text-foreground">
+                <span className="min-w-0 flex-1 truncate" title={file.name}>{file.name}</span>
+                <span className="shrink-0 font-mono text-muted-foreground">{formatFileSize(file.size)}</span>
+                {row.filePageCounts?.[fileKey(file)] ? <span className="shrink-0 rounded-full border border-border bg-background px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
+                    {row.filePageCounts[fileKey(file)]} folio(s)
+                </span> : null}
+                {getFilePreviewKind(file) ? <button
+                    type="button"
+                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-primary/10 hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring"
+                    onClick={() => onFilePreview(file)}
+                    aria-label={`Ver ${file.name} en pantalla completa`}
+                    title="Pantalla completa"
+                >
+                    <Icon name="expand-arrows-alt" size={10} />
+                </button> : null}
+                <button
+                    type="button"
+                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-destructive/10 hover:text-destructive focus:outline-none focus:ring-2 focus:ring-ring"
+                    onClick={() => onFileRemove(row.id, fileKey(file))}
+                    aria-label={`Quitar ${file.name}`}
+                >
+                    <Icon name="times" size={10} />
+                </button>
+            </div>)}
+        </div> : <p className="mb-0 text-[10px] text-muted-foreground">Sin archivos adjuntos en esta fila.</p>}
+        {row.filePagesLoading ? <p className="mb-0 text-[10px] font-medium text-primary">Calculando folios...</p> : null}
+        {files.length ? <button type="button" className="text-[10px] font-semibold text-primary hover:underline" onClick={() => onClearFiles(row.id)}>Limpiar archivos ({files.length})</button> : null}
     </div>;
 }
 
@@ -127,6 +288,8 @@ function UnifiedDocumentCreateModal({
 }) {
     const [rows, setRows] = useState([createRow('manual')]);
     const [selectedVrValues, setSelectedVrValues] = useState([]);
+    const [dragOverRowId, setDragOverRowId] = useState(null);
+    const [previewFile, setPreviewFile] = useState(null);
     const pendingGroups = useMemo(() => groupPendingDocuments(pendingPhysicalDocs), [pendingPhysicalDocs]);
     const selectedCount = rows.filter((row) => row.selected).length;
 
@@ -134,8 +297,16 @@ function UnifiedDocumentCreateModal({
         if (open) {
             setRows([createRow('manual')]);
             setSelectedVrValues([]);
+            setDragOverRowId(null);
+            setPreviewFile(null);
         }
     }, [open]);
+
+    useEffect(() => () => {
+        if (previewFile?.url) {
+            URL.revokeObjectURL(previewFile.url);
+        }
+    }, [previewFile?.url]);
 
     if (!open) {
         return null;
@@ -179,13 +350,121 @@ function UnifiedDocumentCreateModal({
         setRows((currentRows) => [...currentRows, ...vrRows]);
     };
 
+    const openFilePreview = (file) => {
+        const previewKind = getFilePreviewKind(file);
+        if (!previewKind) return;
+
+        setPreviewFile({
+            key: fileKey(file),
+            name: file.name,
+            url: URL.createObjectURL(file),
+            kind: previewKind,
+        });
+    };
+
+    const addFilesToRow = async (rowId, fileList) => {
+        const incomingFiles = normalizeFileList(fileList);
+        if (!incomingFiles.length) return;
+
+        const acceptedFiles = incomingFiles.filter((file) => ACCEPTED_DOCUMENT_FILE_TYPES.has(file.type));
+        const rejectedFiles = incomingFiles.length - acceptedFiles.length;
+
+        setRows((currentRows) => currentRows.map((row) => {
+            if (row.id !== rowId) return row;
+            const currentFiles = Array.isArray(row.files) ? row.files : (row.file ? [row.file] : []);
+            const mergedFiles = mergeFiles(currentFiles, acceptedFiles);
+            return {
+                ...row,
+                selected: true,
+                file: mergedFiles[0] || null,
+                files: mergedFiles,
+                filePagesLoading: acceptedFiles.length > 0,
+                fileError: rejectedFiles ? `${rejectedFiles} archivo(s) omitido(s). Solo se aceptan ${ACCEPTED_DOCUMENT_FILE_LABEL}.` : '',
+            };
+        }));
+
+        if (!acceptedFiles.length) return;
+
+        const incomingPageCounts = await buildFilePageCounts(acceptedFiles);
+        setRows((currentRows) => currentRows.map((row) => {
+            if (row.id !== rowId) return row;
+            const currentFiles = Array.isArray(row.files) ? row.files : (row.file ? [row.file] : []);
+            const nextPageCounts = { ...(row.filePageCounts || {}), ...incomingPageCounts };
+            const nextPages = getFilesPageTotal(currentFiles, nextPageCounts);
+
+            return {
+                ...row,
+                pages: nextPages || row.pages,
+                filePageCounts: nextPageCounts,
+                filePagesLoading: false,
+            };
+        }));
+    };
+
+    const removeFileFromRow = (rowId, keyToRemove) => {
+        setRows((currentRows) => currentRows.map((row) => {
+            if (row.id !== rowId) return row;
+            const currentFiles = Array.isArray(row.files) ? row.files : (row.file ? [row.file] : []);
+            const nextFiles = currentFiles.filter((file) => fileKey(file) !== keyToRemove);
+            const nextFilePageCounts = { ...(row.filePageCounts || {}) };
+            delete nextFilePageCounts[keyToRemove];
+            const nextPages = getFilesPageTotal(nextFiles, nextFilePageCounts);
+            return {
+                ...row,
+                file: nextFiles[0] || null,
+                files: nextFiles,
+                pages: nextPages,
+                filePageCounts: nextFilePageCounts,
+                fileError: '',
+            };
+        }));
+    };
+
+    const clearFilesFromRow = (rowId) => {
+        setRows((currentRows) => currentRows.map((row) => row.id === rowId ? {
+            ...row,
+            file: null,
+            files: [],
+            pages: '',
+            filePageCounts: {},
+            filePagesLoading: false,
+            fileError: '',
+        } : row));
+    };
+
+    const handleRowDragEnter = (event, rowId) => {
+        if (!hasDraggedFiles(event)) return;
+        event.preventDefault();
+        setDragOverRowId(rowId);
+    };
+
+    const handleRowDragOver = (event, rowId) => {
+        if (!hasDraggedFiles(event)) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+        setDragOverRowId(rowId);
+    };
+
+    const handleRowDragLeave = (event, rowId) => {
+        if (event.currentTarget.contains(event.relatedTarget)) return;
+        setDragOverRowId((currentRowId) => currentRowId === rowId ? null : currentRowId);
+    };
+
+    const handleRowDrop = (event, rowId) => {
+        if (!hasDraggedFiles(event)) return;
+        event.preventDefault();
+        setDragOverRowId(null);
+        addFilesToRow(rowId, event.dataTransfer.files);
+    };
+
     const saveRows = () => {
         const selectedRows = rows.filter((row) => row.selected);
         if (!selectedRows.length) return;
         onSave?.(selectedRows);
     };
 
-    return <div className="fixed inset-0 z-[1065] flex items-center justify-center bg-black/50 px-4 py-5" role="dialog" aria-modal="true">
+    return <>
+    <div className="fixed inset-0 z-[1065] flex items-center justify-center bg-black/50 px-4 py-5" role="dialog" aria-modal="true">
         <div className="flex max-h-[90dvh] w-[min(92vw,1680px)] flex-col overflow-hidden rounded-xl border border-border bg-background shadow-2xl">
             <div className="flex items-start justify-between gap-4 border-b border-border px-4 py-3">
                 <div>
@@ -209,34 +488,37 @@ function UnifiedDocumentCreateModal({
                         </Button>
                     </div>
 
-                    <div className="overflow-auto rounded-xl border border-border">
-                        <table className="w-full min-w-[1180px] text-sm">
+                    <div className="max-w-full overflow-x-auto rounded-xl border border-border">
+                        <table className="w-full min-w-[1780px] text-xs">
                             <thead className="sticky top-0 z-20 bg-muted text-xs uppercase text-muted-foreground shadow-sm">
                                 <tr>
-                                    <th className="w-12 px-2 py-2 text-center">Guardar</th>
-                                    <th className="w-[34%] px-2 py-2 text-left">Nombre</th>
-                                    <th className="w-28 px-2 py-2 text-left">VR</th>
+                                    <th className={cn(STICKY_NAME_COLUMN_CLASS, 'z-30 bg-muted px-2 py-2 text-left')}>Nombre</th>
+                                    <th className={cn(STICKY_VR_COLUMN_CLASS, 'z-30 bg-muted px-2 py-2 text-left')}>VR</th>
+                                    <th className="w-[360px] px-2 py-2 text-left">Archivo</th>
                                     <th className="w-24 px-2 py-2 text-left">Folios</th>
                                     <th className="w-36 px-2 py-2 text-left">Fecha</th>
                                     <th className="w-44 px-2 py-2 text-left">Origen</th>
                                     <th className="w-44 px-2 py-2 text-left">Medio de recepción</th>
-                                    <th className="w-56 px-2 py-2 text-left">Archivo</th>
+                                    <th className="w-20 px-2 py-2 text-center">Guardar</th>
                                     <th className="w-12 px-2 py-2 text-center">Quitar</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {rows.map((row) => {
                                     const isDigitalReception = row.originState === DOCUMENT_ORIGIN_STATE.DIGITAL;
-                                    return <tr key={row.id} className="border-t border-border align-top hover:bg-muted/30">
-                                        <td className="px-2 py-2 text-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={row.selected}
-                                                onChange={(event) => updateRow(row.id, { selected: event.target.checked })}
-                                                aria-label="Guardar fila"
-                                            />
-                                        </td>
-                                        <td className="px-2 py-2">
+                                    const isDraggingFiles = dragOverRowId === row.id;
+                                    return <tr
+                                        key={row.id}
+                                        className={cn(
+                                            'border-t border-border align-top transition-colors',
+                                            isDraggingFiles ? 'bg-primary/5 shadow-[inset_0_-2px_0_hsl(var(--primary))] ring-1 ring-primary/30' : 'hover:bg-muted/30'
+                                        )}
+                                        onDragEnter={(event) => handleRowDragEnter(event, row.id)}
+                                        onDragOver={(event) => handleRowDragOver(event, row.id)}
+                                        onDragLeave={(event) => handleRowDragLeave(event, row.id)}
+                                        onDrop={(event) => handleRowDrop(event, row.id)}
+                                    >
+                                        <td className={cn(STICKY_NAME_COLUMN_CLASS, 'px-2 py-2 align-top', isDraggingFiles && 'bg-primary/5')}>
                                             <DocsComboboxInline
                                                 rowId={row.id}
                                                 code={row.documentCode}
@@ -244,24 +526,33 @@ function UnifiedDocumentCreateModal({
                                                 onSelect={(option) => updateRow(row.id, { documentCode: option.code, documentName: option.name })}
                                             />
                                         </td>
-                                        <td className="px-2 py-2">
-                                            <Input value={row.vr} onChange={(event) => updateRow(row.id, { vr: event.target.value })} className="h-10 text-xs" placeholder="VR" />
+                                        <td className={cn(STICKY_VR_COLUMN_CLASS, 'px-2 py-2 align-top', isDraggingFiles && 'bg-primary/5')}>
+                                            <VrSelectInline value={row.vr} vrList={vrList} onChange={(value) => updateRow(row.id, { vr: value })} />
                                         </td>
-                                        <td className="px-2 py-2">
-                                            <Input value={row.pages} onChange={(event) => updateRow(row.id, { pages: event.target.value })} className="h-10 text-xs" type="number" min="0" placeholder="0" />
+                                        <td className="px-2 py-2 align-top">
+                                            <FileDropCell
+                                                row={row}
+                                                onFilesSelected={addFilesToRow}
+                                                onFileRemove={removeFileFromRow}
+                                                onClearFiles={clearFilesFromRow}
+                                                onFilePreview={openFilePreview}
+                                            />
                                         </td>
-                                        <td className="px-2 py-2">
-                                            <Input value={row.date} onChange={(event) => updateRow(row.id, { date: event.target.value })} className="h-10 text-xs" type="date" />
+                                        <td className="px-2 py-2 align-top">
+                                            <Input value={row.pages} onChange={(event) => updateRow(row.id, { pages: event.target.value })} className="h-9 min-w-[84px] text-[11px]" type="number" min="0" placeholder="0" />
                                         </td>
-                                        <td className="px-2 py-2">
-                                            <select className="h-10 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground" value={row.originState} onChange={(event) => updateRow(row.id, { originState: event.target.value })}>
+                                        <td className="px-2 py-2 align-top">
+                                            <Input value={row.date} onChange={(event) => updateRow(row.id, { date: event.target.value })} className="h-9 min-w-[132px] text-[11px]" type="date" />
+                                        </td>
+                                        <td className="px-2 py-2 align-top">
+                                            <select className="h-9 w-full min-w-[160px] rounded-md border border-border bg-background px-2 text-[11px] text-foreground" value={row.originState} onChange={(event) => updateRow(row.id, { originState: event.target.value })}>
                                                 <option value={DOCUMENT_ORIGIN_STATE.SCANNED}>Digitalizar documento</option>
                                                 <option value={DOCUMENT_ORIGIN_STATE.DIGITAL}>Enviado por medio digital</option>
                                             </select>
                                         </td>
-                                        <td className="px-2 py-2">
+                                        <td className="px-2 py-2 align-top">
                                             <select
-                                                className="h-10 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                                                className="h-9 w-full min-w-[164px] rounded-md border border-border bg-background px-2 text-[11px] text-foreground disabled:cursor-not-allowed disabled:opacity-50"
                                                 value={row.receptionMedium}
                                                 onChange={(event) => updateRow(row.id, { receptionMedium: event.target.value })}
                                                 disabled={!isDigitalReception}
@@ -270,15 +561,15 @@ function UnifiedDocumentCreateModal({
                                                 {DOCUMENT_RECEPTION_MEDIUM_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                                             </select>
                                         </td>
-                                        <td className="px-2 py-2">
+                                        <td className="px-2 py-2 text-center align-top">
                                             <input
-                                                type="file"
-                                                accept="image/png,image/jpeg,application/pdf"
-                                                className="block w-full text-xs text-muted-foreground file:mr-2 file:rounded-md file:border-0 file:bg-primary file:px-2 file:py-1.5 file:text-xs file:font-semibold file:text-primary-foreground"
-                                                onChange={(event) => updateRow(row.id, { file: event.target.files?.[0] || null })}
+                                                type="checkbox"
+                                                checked={row.selected}
+                                                onChange={(event) => updateRow(row.id, { selected: event.target.checked })}
+                                                aria-label="Guardar fila"
                                             />
                                         </td>
-                                        <td className="px-2 py-2 text-center">
+                                        <td className="px-2 py-2 text-center align-top">
                                             <Button type="button" variant="ghost" size="sm" onClick={() => removeRow(row.id)} disabled={rows.length <= 1} aria-label="Quitar fila">
                                                 <Icon name="trash" size={13} />
                                             </Button>
@@ -339,7 +630,31 @@ function UnifiedDocumentCreateModal({
                 </div>
             </div>
         </div>
-    </div>;
+    </div>
+
+    {previewFile ? <div className="fixed inset-0 z-[1080] flex flex-col bg-slate-950/85 p-4" role="dialog" aria-modal="true" aria-label="Previsualización en pantalla completa">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
+            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+                <div className="min-w-0">
+                    <p className="mb-0 truncate text-sm font-semibold text-foreground">{previewFile.name}</p>
+                    <p className="mb-0 text-xs text-muted-foreground">Vista en pantalla completa · no descarga el archivo</p>
+                </div>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setPreviewFile(null)} aria-label="Cerrar previsualización en pantalla completa">
+                    <Icon name="times" size={14} /> Cerrar
+                </Button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-auto bg-muted/20 p-4">
+                {previewFile.kind === 'pdf' ? <iframe
+                    title={`Vista previa ${previewFile.name}`}
+                    src={previewFile.url}
+                    className="h-full min-h-[calc(100vh-10rem)] w-full rounded-xl border border-border bg-background"
+                /> : <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
+                    <img src={previewFile.url} alt={previewFile.name} className="max-h-[calc(100vh-10rem)] max-w-full rounded-xl object-contain" />
+                </div>}
+            </div>
+        </div>
+    </div> : null}
+    </>;
 }
 
 export default UnifiedDocumentCreateModal;
