@@ -62,6 +62,8 @@ const ZONE_USE = lazy(() => import('./pages/user/zone_use/zone_use.page'));
 const SETTINGS = lazy(() => import('./pages/user/SettingsPage'));
 import LEGAL_FLOW_GUIDE from './pages/user/legal_flow_guide/LegalFlowGuide.page';
 
+const loadingFallbackItems = Array.from({ length: 8 }, (_, index) => `route-loading-card-${index + 1}`);
+
 // ── Loading fallback for Suspense ───────────────────────────────────
 function LoadingFallback() {
   return (
@@ -73,8 +75,8 @@ function LoadingFallback() {
       </div>
       {/* Content skeleton — mimics card grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="rounded-lg border border-border/40 p-4 space-y-3" style={{ animationDelay: `${i * 50}ms` }}>
+        {loadingFallbackItems.map((itemKey, index) => (
+          <div key={itemKey} className="rounded-lg border border-border/40 p-4 space-y-3" style={{ animationDelay: `${index * 50}ms` }}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-muted animate-pulse" />
               <div className="flex-1 space-y-1.5">
@@ -179,7 +181,12 @@ export default function App() {
   return (
     <ProvideAuth>
       <ThemeProvider defaultTheme="system" storageKey="dovela-theme">
-        <Router>
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
               <Toaster position="bottom-right" richColors closeButton />
 
               <RoutesWithBoundary>
