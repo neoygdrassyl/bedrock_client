@@ -16,6 +16,10 @@ import FunDocumentAuditTab from './components/FunDocumentAuditTab';
 import { buildDocumentEntriesFromLegacyData, normalizeVentanillaDocs } from '../shared/expediente-documental.utils';
 import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../shared/expediente-documental.constants';
 
+function fileKey(file) {
+    return `${file.name}-${file.size}-${file.lastModified}`;
+}
+
 function FUN_6_VIEW({
     translation,
     swaMsg,
@@ -74,6 +78,16 @@ function FUN_6_VIEW({
             retrieveUnifiedDocumentEntries(id, currentItem.id_public);
             retrievePendingPhysicalDocuments(id, currentItem.id_public);
         }
+    };
+    const requestDocumentUpdate = (id) => {
+        if (mergeVentanilla && currentItem?.id_public) {
+            retrieveUnifiedDocumentEntries(id, currentItem.id_public);
+            retrievePendingPhysicalDocuments(id, currentItem.id_public);
+            return;
+        }
+
+        setDocumentsLoaded(false);
+        retrieveItem(id);
     };
     const retrieveUnifiedDocumentEntries = (funId, idRelated) => {
         if (!funId || !idRelated) {
@@ -249,24 +263,35 @@ function FUN_6_VIEW({
             const fun0Id = currentId || currentItem?.id;
             const creationYear = dayjs(currentItem?.createdAt || new Date()).format('YY');
             const folder = currentItem?.id_public || String(fun0Id || 'documentos');
-            const payloadRows = rowsToSave.map((row) => {
-                const fileField = row.file ? `file_${row.id}` : '';
-                if (row.file) {
-                    batchFormData.append(fileField, row.file, `fun6_${creationYear}_${folder}_${row.file.name}`);
+            const buildPayloadRow = (row, fileField = '', pagesOverride = row.pages) => ({
+                fun0Id,
+                selected: true,
+                documentCode: row.documentCode,
+                documentName: row.documentName,
+                vr: row.vr,
+                pages: pagesOverride,
+                date: row.date,
+                originState: row.originState,
+                receptionMedium: row.receptionMedium,
+                fileField,
+            });
+
+            const payloadRows = rowsToSave.flatMap((row) => {
+                const rowFiles = Array.isArray(row.files) && row.files.length
+                    ? row.files.filter(Boolean)
+                    : (row.file ? [row.file] : []);
+
+                if (!rowFiles.length) {
+                    return [buildPayloadRow(row)];
                 }
 
-                return {
-                    fun0Id,
-                    selected: true,
-                    documentCode: row.documentCode,
-                    documentName: row.documentName,
-                    vr: row.vr,
-                    pages: row.pages,
-                    date: row.date,
-                    originState: row.originState,
-                    receptionMedium: row.receptionMedium,
-                    fileField,
-                };
+                return rowFiles.map((file, fileIndex) => {
+                    const fileField = `file_${row.id}_${fileIndex}`;
+                    const filePages = row.filePageCounts?.[fileKey(file)] || row.pages;
+                    batchFormData.append(fileField, file, `fun6_${creationYear}_${folder}_${fileIndex + 1}_${file.name}`);
+
+                    return buildPayloadRow(row, fileField, filePages);
+                });
             });
 
             batchFormData.set('fun0Id', fun0Id);
@@ -279,7 +304,7 @@ function FUN_6_VIEW({
                     if (response.data?.status === 'OK' || response.data === 'OK') {
                         swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                         setCreateModalOpen(false);
-                        requestUpdate(fun0Id);
+                        requestDocumentUpdate(fun0Id);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
