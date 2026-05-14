@@ -101,7 +101,7 @@ Para desarrollo, `.env.development` usa la llave publica de prueba oficial de Go
 VITE_GOOGLE_CAPTCHA_HTML="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
 ```
 
-En produccion reemplazala desde `.env.production.local` o desde el pipeline con la llave publica real del sitio. Si la variable queda vacia, la pantalla de login muestra un aviso de configuracion y no intenta montar `ReCAPTCHA`, evitando el error `Missing required parameters: sitekey`.
+En produccion reemplazala desde `.env.production.local` o desde el pipeline con la llave publica real del sitio. Si la variable queda vacia, la pantalla de login omite `ReCAPTCHA` y sigue con el flujo normal, evitando el error `Missing required parameters: sitekey`.
 
 Produccion queda configurada por defecto para CUB1:
 
