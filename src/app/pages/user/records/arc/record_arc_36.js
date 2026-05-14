@@ -7,6 +7,7 @@ import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
+import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 
 function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [editElement, setEditElement] = useState(false);
@@ -254,6 +255,7 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                     placeholder="Registre observaciones de espacio público con soporte visual si aplica"
                     uploadFile={uploadRichTextImage}
                     onBlur={() => save_ra_36()}
+                    onSave={() => save_ra_36(true)}
                 />
             </div>
         }
@@ -405,7 +407,7 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
 
             var values_html = document.getElementsByName('s_36_values');
             for (var i = 0; i < values_html.length; i++) {
-                values.push(values_html[i].value.replaceAll(';', ','))
+                values.push(sanitizeRichTextForLegacyJoin(values_html[i].value))
             }
             formData.set('value', values.join(';'));
 

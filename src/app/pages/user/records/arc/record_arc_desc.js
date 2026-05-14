@@ -10,6 +10,7 @@ import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
+import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 
 function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [editBlueprint, setEditBlueprint] = useState(false);
@@ -84,6 +85,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
                         placeholder="Registre antecedentes, notas de evaluación e imágenes de soporte"
                         uploadFile={uploadRichTextImage}
                         onBlur={() => {setSaveState(prev => ({...prev, ant: '1'})); manage_ra_33(false, 'ant')}}
+                        onSave={() => {setSaveState(prev => ({...prev, ant: '1'})); manage_ra_33(true, 'ant')}}
                     />
                     <label>{_SAVING_STATE(saveState.ant)}</label>
                 </div>
@@ -111,6 +113,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
                         placeholder="Describa la evaluación arquitectónica del proyecto"
                         uploadFile={uploadRichTextImage}
                         onBlur={() => {setSaveState(prev => ({...prev, desc: '1'})); manage_ra_33(false, 'desc')}}
+                        onSave={() => {setSaveState(prev => ({...prev, desc: '1'})); manage_ra_33(true, 'desc')}}
                     />
                     <label>{_SAVING_STATE(saveState.desc)}</label>
                 </div>
@@ -137,7 +140,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
 
             var values_html = document.getElementsByName('s_33_values');
             for (var i = 0; i < values_html.length; i++) {
-                values.push(values_html[i].value.replaceAll(';', ','))
+                values.push(sanitizeRichTextForLegacyJoin(values_html[i].value))
             }
             
             formData.set('value', values.join(';'));

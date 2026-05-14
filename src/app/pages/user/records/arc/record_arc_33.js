@@ -15,6 +15,7 @@ import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
+import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 
 function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [new_area, setNewArea] = useState(false);
@@ -442,6 +443,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                     placeholder="Registre observaciones generales con imágenes de apoyo si aplica"
                     uploadFile={uploadRichTextImage}
                     onBlur={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(false, 'det') }}
+                    onSave={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(true, 'det') }}
                 />
                 <label>{_SAVING_STATE(dynamicState.det)}</label>
             </div>
@@ -758,7 +760,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
 
             var values_html = document.getElementsByName('s_33_values');
             for (var i = 0; i < values_html.length; i++) {
-                values.push(values_html[i].value.replaceAll(';', ','))
+                values.push(sanitizeRichTextForLegacyJoin(values_html[i].value))
             }
 
             formData.set('value', values.join(';'));

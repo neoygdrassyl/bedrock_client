@@ -13,6 +13,7 @@ import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
+import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 
 function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [newGen, setNewGen] = useState(false);
@@ -1505,7 +1506,8 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     minHeight={170}
                     placeholder="Registre observaciones, evidencias e imágenes sobre determinantes urbanísticas"
                     uploadFile={uploadRichTextImage}
-                    onBlur={() => manage_ra_34()}
+                    onBlur={() => manage_ra_34('a41')}
+                    onSave={() => manage_ra_34('a41')}
                 />
             </div>
         }
@@ -1870,11 +1872,11 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
 
             var values_html = document.getElementsByName('s_34_values');
             for (var i = 0; i < values_html.length; i++) {
-                values.push(values_html[i].value.replaceAll(';', ','))
+                values.push(sanitizeRichTextForLegacyJoin(values_html[i].value))
             }
             var values_html = document.getElementsByName('s_34_values_2');
             for (var i = 0; i < values_html.length; i++) {
-                values.push(values_html[i].value.replaceAll(';', ','))
+                values.push(sanitizeRichTextForLegacyJoin(values_html[i].value))
             }
             formData.set('value', values.join(';'));
 

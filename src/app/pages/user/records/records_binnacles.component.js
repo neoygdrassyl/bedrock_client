@@ -50,6 +50,7 @@ export default function RECORDS_BINNACLE(props) {
                     uploadFile={uploadRichTextImage}
                     onPlainTextChange={cal_tacl}
                     onBlur={() => setBinnacle(false)}
+                    onSave={() => setBinnacle(true)}
                 />
                 : <textarea className="input-group" defaultValue={BINNACLE} rows="3" style={{ backgroundColor: readOnly ? 'gainsboro' : 'lightblue' }}
                     id={"binnable_ta_" + AIM} onChange={() => cal_tacl('binnable_ta_'+ AIM)} maxLength="4000" onBlur={() => setBinnacle(false)} readOnly={readOnly}></textarea>}
