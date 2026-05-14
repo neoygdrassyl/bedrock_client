@@ -54,4 +54,4 @@ Vite carga `.env.development` con modo `development` y `.env.production` con mod
 
 Toda variable `VITE_*` queda embebida en el bundle del navegador. No pongas secretos privados en estos archivos.
 
-`VITE_GOOGLE_CAPTCHA_HTML` es la llave publica de reCAPTCHA v2. En desarrollo puede usarse la llave publica de prueba de Google; en produccion debe venir de `.env.production.local` o del pipeline. Si queda vacia, el login no monta `ReCAPTCHA` y muestra un aviso de configuracion en lugar de romper la ruta.
+`VITE_GOOGLE_CAPTCHA_HTML` es la llave publica de reCAPTCHA v2. En desarrollo puede usarse la llave publica de prueba de Google; en produccion debe venir de `.env.production.local` o del pipeline. Si queda vacia, el login omite `ReCAPTCHA` y sigue el flujo normal en lugar de romper la ruta.
