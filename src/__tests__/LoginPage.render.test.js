@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock external dependencies used by LoginPage
@@ -26,6 +26,35 @@ vi.mock('react-google-recaptcha', () => {
   };
   return { default: ReCAPTCHA };
 });
+
+vi.mock('@/app/services/custom.service', () => ({
+  __esModule: true,
+  default: {
+    appLoginCompatible: vi.fn(() =>
+      Promise.resolve({
+        data: {
+          token: 'mock-token',
+          user: {
+            name: 'Ada',
+            surname: 'Lovelace',
+            Role: { name: 'Admin', short: 'adm', desc: 'Administrator' },
+            active: true,
+            roleId: 1,
+            id: 7,
+          },
+        },
+      })
+    ),
+  },
+}));
+
+vi.mock('@/app/services/data.service', () => ({
+  __esModule: true,
+  default: {
+    saveToken: vi.fn(),
+    setUser: vi.fn(),
+  },
+}));
 
 vi.mock('sweetalert2', () => ({
   default: {
@@ -54,6 +83,7 @@ vi.mock('../http-common', () => ({
 }));
 
 import LoginPage from '@/app/pages/auth/LoginPage';
+import CustomsDataService from '@/app/services/custom.service';
 
 const originalCaptchaSiteKey = import.meta.env.VITE_GOOGLE_CAPTCHA_HTML;
 const routerFutureFlags = {
@@ -121,6 +151,22 @@ describe('LoginPage (redesigned)', () => {
     renderLogin();
 
     expect(screen.queryByTestId('recaptcha-mock')).not.toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent(/captcha no configurado/i);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('submits the login even when the site key is missing', async () => {
+    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = '';
+
+    renderLogin();
+
+    fireEvent.change(screen.getByLabelText(/correo/i), { target: { value: 'ada@example.com' } });
+    fireEvent.change(screen.getByLabelText(/contraseña/i), { target: { value: 'secret123' } });
+    fireEvent.click(screen.getByRole('button', { name: /iniciar sesión/i }));
+
+    await waitFor(() => {
+      expect(CustomsDataService.appLoginCompatible).toHaveBeenCalledTimes(1);
+    });
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 });

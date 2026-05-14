@@ -25,95 +25,95 @@ export default function LoginPage({ signin }) {
 
   // ── Authentication logic (unchanged) ────────────────────────────────
 
+  const performLogin = () => {
+    CustomsDataService.appLoginCompatible(credentialsRef.current)
+      .then((response) => {
+        let userInfo = {};
+
+        if (response.data.token && response.data.user) {
+          const u = response.data.user;
+          userInfo.name = u.name;
+          userInfo.surname = u.surname;
+          userInfo.role = u.Role.name;
+          userInfo.role_short = u.Role.short;
+          userInfo.roleDesc = u.Role.desc;
+          userInfo.active = u.active;
+          userInfo.roleId = u.roleId;
+          userInfo.id = u.id;
+          userInfo.name_short = u.name + ' ' + u.surname;
+          userInfo.name_full =
+            u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
+          DataSerive.saveToken(response.data.token);
+          DataSerive.setUser(userInfo);
+          doLogin();
+        } else if (Array.isArray(response.data) && response.data.length === 1) {
+          const u = response.data[0];
+          userInfo.name = u.name;
+          userInfo.surname = u.surname;
+          userInfo.role = u.role?.name;
+          userInfo.role_short = u.role?.short;
+          userInfo.roleDesc = u.role?.desc;
+          userInfo.active = u.active;
+          userInfo.roleId = u.roleId;
+          userInfo.id = u.id;
+          userInfo.name_short = u.name + ' ' + u.surname;
+          userInfo.name_full =
+            u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
+          DataSerive.setUser(userInfo);
+          doLogin();
+        } else {
+          swalError({
+            title: 'CERTIFICACION FALLIDA',
+            text: 'Respuesta de autenticaci\u00f3n inv\u00e1lida',
+            footer: 'El servidor respondi\u00f3 sin token o sin datos de usuario',
+            icon: 'error',
+          });
+        }
+      })
+      .catch((e) => {
+        console.log('[AUTH] Login error', e);
+
+        if (!e.response) {
+          swalError({
+            title: 'ERROR DE CONEXION',
+            text: 'No fue posible conectar con el servidor',
+            footer: 'Verifique que el backend est\u00e9 en l\u00ednea y VITE_API_URL apunte correctamente',
+            icon: 'error',
+          });
+          return;
+        }
+
+        if (e.response.status === 401) {
+          swalError({
+            title: 'CREDENCIALES INVALIDAS',
+            text: 'Usuario o contrase\u00f1a incorrectos',
+            footer: 'Revise sus credenciales e intentelo nuevamente',
+            icon: 'error',
+          });
+          return;
+        }
+
+        swalError({
+          title: 'ERROR EN EL SERVIDOR',
+          text: 'No fue posible iniciar sesi\u00f3n en este momento',
+          footer: 'Intente nuevamente o contacte al administrador',
+          icon: 'error',
+        });
+      });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const showAuthError = ({ title, text, footer }) => {
-      swalError({ title, text, footer, icon: 'error' });
-    };
-
     if (!recaptchaSiteKey || !recaptchaRef.current) {
-      showAuthError({
-        title: 'CAPTCHA NO CONFIGURADO',
-        text: 'No fue posible iniciar sesion porque falta la llave publica de reCAPTCHA.',
-        footer: 'Configure VITE_GOOGLE_CAPTCHA_HTML para este entorno',
-      });
+      performLogin();
       return;
     }
 
     recaptchaRef.current
       .execute()
       .then(() => {
-        CustomsDataService.appLoginCompatible(credentialsRef.current)
-          .then((response) => {
-            let userInfo = {};
-
-            if (response.data.token && response.data.user) {
-              const u = response.data.user;
-              userInfo.name = u.name;
-              userInfo.surname = u.surname;
-              userInfo.role = u.Role.name;
-              userInfo.role_short = u.Role.short;
-              userInfo.roleDesc = u.Role.desc;
-              userInfo.active = u.active;
-              userInfo.roleId = u.roleId;
-              userInfo.id = u.id;
-              userInfo.name_short = u.name + ' ' + u.surname;
-              userInfo.name_full =
-                u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
-              DataSerive.saveToken(response.data.token);
-              DataSerive.setUser(userInfo);
-              doLogin();
-            } else if (Array.isArray(response.data) && response.data.length === 1) {
-              const u = response.data[0];
-              userInfo.name = u.name;
-              userInfo.surname = u.surname;
-              userInfo.role = u.role?.name;
-              userInfo.role_short = u.role?.short;
-              userInfo.roleDesc = u.role?.desc;
-              userInfo.active = u.active;
-              userInfo.roleId = u.roleId;
-              userInfo.id = u.id;
-              userInfo.name_short = u.name + ' ' + u.surname;
-              userInfo.name_full =
-                u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
-              DataSerive.setUser(userInfo);
-              doLogin();
-            } else {
-              showAuthError({
-                title: 'CERTIFICACION FALLIDA',
-                text: 'Respuesta de autenticaci\u00f3n inv\u00e1lida',
-                footer: 'El servidor respondi\u00f3 sin token o sin datos de usuario',
-              });
-            }
-          })
-          .catch((e) => {
-            console.log('[AUTH] Login error', e);
-
-            if (!e.response) {
-              showAuthError({
-                title: 'ERROR DE CONEXION',
-                text: 'No fue posible conectar con el servidor',
-                footer: 'Verifique que el backend est\u00e9 en l\u00ednea y VITE_API_URL apunte correctamente',
-              });
-              return;
-            }
-
-            if (e.response.status === 401) {
-              showAuthError({
-                title: 'CREDENCIALES INVALIDAS',
-                text: 'Usuario o contrase\u00f1a incorrectos',
-                footer: 'Revise sus credenciales e intentelo nuevamente',
-              });
-              return;
-            }
-
-            showAuthError({
-              title: 'ERROR EN EL SERVIDOR',
-              text: 'No fue posible iniciar sesi\u00f3n en este momento',
-              footer: 'Intente nuevamente o contacte al administrador',
-            });
-          });
+        performLogin();
       })
       .catch((e) => {
         console.log(e);
@@ -239,14 +239,7 @@ export default function LoginPage({ signin }) {
                 size="invisible"
                 sitekey={recaptchaSiteKey}
               />
-            ) : (
-              <p
-                role="status"
-                className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-[12px] leading-relaxed text-destructive"
-              >
-                Captcha no configurado para este entorno. Configure VITE_GOOGLE_CAPTCHA_HTML antes de iniciar sesion.
-              </p>
-            )}
+            ) : null}
           </form>
 
           {/* Footer branding */}
