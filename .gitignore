@@ -67,6 +67,9 @@ test-output-full.log
 
 # AI config files
 .github/
-.vscode/
 ai/
 scripts/
+
+.env.development
+.env.production
+/.sisyphus
