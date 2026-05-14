@@ -373,6 +373,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                         placeholder="Registre observaciones finales, conclusiones e imágenes de soporte"
                         uploadFile={uploadRichTextImage}
                         onBlur={() => save_ra_38(false)}
+                        onSave={() => save_ra_38(true)}
                     />
                 </div>
             </>
@@ -678,7 +679,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
         let save_ra_38 = (useMySwal) => {
             formData = new FormData();
 
-            let detail = document.getElementById("r_a_38_1").value.replaceAll(';', ',');
+            let detail = document.getElementById("r_a_38_1").value;
             formData.set('detail', detail);
 
             manage_ra_38(useMySwal);
