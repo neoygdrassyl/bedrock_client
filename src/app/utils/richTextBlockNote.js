@@ -1,6 +1,7 @@
 export const RICH_TEXT_PREFIX = '__DOVELA_BLOCKNOTE_V1__:';
 
-const EMPTY_BLOCKS = [{ type: 'paragraph', content: '' }];
+const EMPTY_BLOCKS = [{ type: 'paragraph', content: [] }];
+const MAX_RECOVERY_DEPTH = 8;
 
 function encodeBase64Url(value) {
     const bytes = new TextEncoder().encode(value);
@@ -32,6 +33,117 @@ export function isRichTextValue(value) {
 
 function normalizeBlocks(blocks) {
     return Array.isArray(blocks) && blocks.length ? blocks : EMPTY_BLOCKS;
+}
+
+function plainTextToBlocks(value) {
+    const lines = String(value || '').split(/\r?\n/);
+    const blocks = lines.length ? lines.map((line) => ({ type: 'paragraph', content: line ? [{ type: 'text', text: line, styles: {} }] : [] })) : EMPTY_BLOCKS;
+    return normalizeBlocks(blocks);
+}
+
+function decodeJsonStringFragment(value) {
+    try {
+        return JSON.parse(`"${value}"`);
+    } catch (error) {
+        return String(value || '')
+            .replace(/\\n/g, '\n')
+            .replace(/\\r/g, '\r')
+            .replace(/\\t/g, '\t')
+            .replace(/\\"/g, '"')
+            .replace(/\\\\/g, '\\');
+    }
+}
+
+function extractJsonTextValues(rawJson) {
+    const values = [];
+    const matcher = /"text"\s*:\s*"/g;
+    let match = matcher.exec(rawJson);
+
+    while (match) {
+        let escaped = false;
+        let closed = false;
+        let buffer = '';
+
+        for (let i = matcher.lastIndex; i < rawJson.length; i += 1) {
+            const char = rawJson[i];
+
+            if (escaped) {
+                buffer += `\\${char}`;
+                escaped = false;
+                continue;
+            }
+
+            if (char === '\\') {
+                escaped = true;
+                continue;
+            }
+
+            if (char === '"') {
+                closed = true;
+                matcher.lastIndex = i + 1;
+                break;
+            }
+
+            buffer += char;
+        }
+
+        values.push({ text: decodeJsonStringFragment(buffer), closed });
+        if (!closed) break;
+        match = matcher.exec(rawJson);
+    }
+
+    return values;
+}
+
+export function canParseRichTextBlocks(value) {
+    if (!isRichTextValue(value)) return true;
+
+    try {
+        JSON.parse(decodeBase64Url(value.slice(RICH_TEXT_PREFIX.length)));
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+export function recoverRichTextPlainText(value) {
+    const originalValue = String(value || '');
+    if (!isRichTextValue(originalValue)) return originalValue.trim();
+
+    const recoveredTexts = [];
+    const seenValues = new Set();
+    let currentValue = originalValue;
+
+    for (let depth = 0; depth < MAX_RECOVERY_DEPTH; depth += 1) {
+        if (!isRichTextValue(currentValue) || seenValues.has(currentValue)) break;
+        seenValues.add(currentValue);
+
+        let rawJson = '';
+        try {
+            rawJson = decodeBase64Url(currentValue.slice(RICH_TEXT_PREFIX.length));
+        } catch (error) {
+            break;
+        }
+
+        try {
+            const parsed = JSON.parse(rawJson);
+            const plainText = richTextBlocksToPlainText(parsed);
+            if (plainText) return plainText;
+            break;
+        } catch (error) {
+            const textValues = extractJsonTextValues(rawJson)
+                .map((item) => item.text)
+                .filter(Boolean);
+            const nestedValue = textValues.find(isRichTextValue);
+            const visibleTexts = textValues.filter((text) => !isRichTextValue(text));
+
+            recoveredTexts.push(...visibleTexts);
+            if (!nestedValue) break;
+            currentValue = nestedValue;
+        }
+    }
+
+    return recoveredTexts.join('\n').trim() || originalValue.trim();
 }
 
 function getInlineText(content) {
@@ -90,9 +202,7 @@ export function parseRichTextBlocks(value) {
     }
 
     if (!isRichTextValue(value)) {
-        const lines = String(value || '').split(/\r?\n/);
-        const blocks = lines.length ? lines.map((line) => ({ type: 'paragraph', content: line })) : EMPTY_BLOCKS;
-        return normalizeBlocks(blocks);
+        return plainTextToBlocks(value);
     }
 
     try {
@@ -101,7 +211,7 @@ export function parseRichTextBlocks(value) {
         return normalizeBlocks(parsed);
     } catch (error) {
         console.warn('No fue posible leer contenido BlockNote; se mostrara como texto plano.', error);
-        return [{ type: 'paragraph', content: String(value || '') }];
+        return plainTextToBlocks(recoverRichTextPlainText(value));
     }
 }
 
