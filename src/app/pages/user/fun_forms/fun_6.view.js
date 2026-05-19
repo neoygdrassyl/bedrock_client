@@ -653,7 +653,7 @@ function FUN_6_VIEW({
                             Documentos
                         </button>
                     </li>
-                    <li className="nav-item">
+                    {/* <li className="nav-item">
                         <button
                             className={`nav-link${activeTab === 'audit' ? ' active' : ''}`}
                             onClick={() => setActiveTab('audit')}
@@ -661,7 +661,7 @@ function FUN_6_VIEW({
                         >
                             🔍 Diagnóstico
                         </button>
-                    </li>
+                    </li> */}
                 </ul>
 
                 {/* Contenido del tab activo */}

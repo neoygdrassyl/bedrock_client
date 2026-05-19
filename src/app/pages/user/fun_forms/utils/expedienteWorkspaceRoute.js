@@ -10,7 +10,7 @@ const WORKSPACE_SECTIONS = new Set([
   'expedicion',
 ]);
 
-const WORKSPACE_REPORTS = new Set(['juridico', 'arquitectonico', 'estructural']);
+const WORKSPACE_REPORTS = new Set(['juridico', 'arquitectonico', 'estructural', 'ph']);
 const RECENT_EXPEDIENTES_STORAGE_KEY = 'dovela.recentExpedientes';
 const RECENT_EXPEDIENTES_CHANGED_EVENT = 'dovela:recent-expedientes-changed';
 
@@ -24,6 +24,7 @@ export const LEGACY_MODULE_TO_WORKSPACE = {
   record_law: { section: 'informes', report: 'juridico' },
   record_arc: { section: 'informes', report: 'arquitectonico' },
   record_eng: { section: 'informes', report: 'estructural' },
+  record_ph: { section: 'informes', report: 'ph' },
   record_review: { section: 'acta' },
   expedition: { section: 'expedicion' },
 };

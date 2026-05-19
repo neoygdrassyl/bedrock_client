@@ -75,9 +75,11 @@ vi.mock('../app/pages/user/records/record_arc', () => ({ __esModule: true, defau
 vi.mock('../app/pages/user/records/record_law', () => ({ __esModule: true, default: () => <div data-testid="module-law" /> }));
 vi.mock('../app/pages/user/records/record_eng', () => ({ __esModule: true, default: () => <div data-testid="module-eng" /> }));
 vi.mock('../app/pages/user/records/record_review', () => ({ __esModule: true, default: () => <div data-testid="module-review" /> }));
+vi.mock('../app/pages/user/records/record_ph', () => ({ __esModule: true, default: () => <div data-testid="module-ph" /> }));
 vi.mock('../app/pages/user/expeditions/expedition.page', () => ({ __esModule: true, default: () => <div data-testid="module-expedition" /> }));
 
 import { FunExpedienteFullscreen } from '../app/pages/user/fun_forms/components/FunExpedienteFullscreen';
+import { buildExpedienteWorkspaceUrl, parseExpedienteWorkspaceSearch } from '../app/pages/user/fun_forms/utils/expedienteWorkspaceRoute';
 
 const expediente = {
   id: 123,
@@ -93,6 +95,11 @@ const expediente = {
   dias_habiles_limite: 20,
   fecha_radicacion: '2026-04-01',
   fecha_limite: '2026-05-01',
+};
+
+const phExpediente = {
+  ...expediente,
+  fun_1s: [{ tipo: 'G', tramite: 'A', item_2: 'Propiedad Horizontal', description: 'Propiedad Horizontal' }],
 };
 
 describe('FunExpedienteFullscreen bookmarks', () => {
@@ -171,5 +178,38 @@ describe('FunExpedienteFullscreen bookmarks', () => {
 
     expect(screen.getByRole('button', { name: /actualizar/i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /publicidad/i })).not.toBeInTheDocument();
+  });
+
+  it('mapea el módulo legacy record_ph al informe PH del workspace', () => {
+    expect(buildExpedienteWorkspaceUrl(expediente, { module: 'record_ph' })).toBe(
+      '/funmanage/expediente/2026-00123?section=informes&report=ph'
+    );
+
+    expect(parseExpedienteWorkspaceSearch('?section=informes&report=ph')).toMatchObject({
+      section: 'informes',
+      report: 'ph',
+      rightPanel: false,
+    });
+  });
+
+  it('muestra solo Informe P.H. y renderiza RECORD_PH para expedientes de propiedad horizontal', () => {
+    render(
+      <FunExpedienteFullscreen
+        expediente={phExpediente}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+        initialSection="informes"
+        initialReport="ph"
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /informe p\.h\./i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /jurídico/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /arquitectónico/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /estructural/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /acta/i })).not.toBeInTheDocument();
+    expect(screen.getByTestId('module-ph')).toBeInTheDocument();
   });
 });

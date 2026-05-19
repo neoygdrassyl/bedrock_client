@@ -26,10 +26,11 @@ import RECORD_ARC from '../../records/record_arc';
 import RECORD_LAW from '../../records/record_law';
 import RECORD_ENG from '../../records/record_eng';
 import RECORD_REVIEW from '../../records/record_review';
+import RECORD_PH from '../../records/record_ph';
 import EXPEDITION from '../../expeditions/expedition.page';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 import { useBookmarks } from '../hooks/useBookmarks';
-import { formsParser1, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+import { formsParser1, regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
 const SECTION_GROUPS = [
   {
@@ -60,11 +61,15 @@ const SECTION_GROUPS = [
 
 const SECTION_ITEMS = SECTION_GROUPS.flatMap((group) => group.items);
 
-const REPORT_ITEMS = [
+const STANDARD_REPORT_ITEMS = [
   { id: 'juridico', label: 'Jurídico', icon: 'Scale' },
   { id: 'arquitectonico', label: 'Arquitectónico', icon: 'Building' },
   { id: 'estructural', label: 'Estructural', icon: 'Cog' },
 ];
+
+const PH_REPORT_ITEM = { id: 'ph', label: 'Informe P.H.', icon: 'PenTool' };
+
+const REPORT_ITEMS = [...STANDARD_REPORT_ITEMS, PH_REPORT_ITEM];
 
 const STATUS_META = {
   EN_TERMINO: {
@@ -429,6 +434,24 @@ function matchesLegacyPropertyHorizontal(type) {
   return /p\.?\s*h|propiedad\s+horizontal/i.test(type || '');
 }
 
+function getVersionFun1(expediente, version) {
+  const fun1List = Array.isArray(expediente?.fun_1s) ? expediente.fun_1s : [];
+  const targetIndex = Math.max(Math.min((version || 1) - 1, fun1List.length - 1), 0);
+  return fun1List[targetIndex] ?? fun1List[0] ?? null;
+}
+
+function isPropertyHorizontalExpediente(expediente, version) {
+  const fun1 = getVersionFun1(expediente, version);
+
+  return regexChecker_isPh(fun1, true)
+    || matchesLegacyPropertyHorizontal(formsParser1(fun1))
+    || matchesLegacyPropertyHorizontal(getFirstValue(expediente?.tipo_licencia, expediente?.tramite, expediente?.categoria));
+}
+
+function getReportItemsForExpediente(expediente, version) {
+  return isPropertyHorizontalExpediente(expediente, version) ? [PH_REPORT_ITEM] : STANDARD_REPORT_ITEMS;
+}
+
 function isEditableLegacyExpediente(expediente) {
   if (typeof expediente?.state !== 'number') {
     return false;
@@ -443,26 +466,25 @@ function canShowLegacyPublicidad(expediente, version) {
   }
 
   const rules = expediente?.rules ? String(expediente.rules).split(';') : [];
-  if (rules[0] == 1) {
+  if (String(rules[0]) === '1') {
     return false;
   }
 
-  const fun1List = Array.isArray(expediente?.fun_1s) ? expediente.fun_1s : [];
-  const targetIndex = Math.max(Math.min((version || 1) - 1, fun1List.length - 1), 0);
-  const fun1 = fun1List[targetIndex] ?? fun1List[0] ?? null;
-  const type = formsParser1(fun1);
+  const fun1 = getVersionFun1(expediente, version);
 
-  return !matchesLegacyPropertyHorizontal(type) && !regexChecker_isOA_2(fun1);
+  return !isPropertyHorizontalExpediente(expediente, version) && !regexChecker_isOA_2(fun1);
 }
 
 function getVisibleSectionGroups(expediente, version) {
   const showActualizar = isEditableLegacyExpediente(expediente);
   const showPublicidad = canShowLegacyPublicidad(expediente, version);
+  const isPH = isPropertyHorizontalExpediente(expediente, version);
 
   return SECTION_GROUPS
     .map((group) => ({
       ...group,
       items: group.items.filter((item) => {
+        if (isPH && item.id === 'acta') return false;
         if (item.requiresPublicidad) return showPublicidad;
         if (item.requiresEdit) return showActualizar;
         return true;
@@ -939,6 +961,9 @@ function renderModuleContent(activeSection, activeReport, moduleProps) {
     case 'publicidad':
       return <FUN_ALERT {...moduleProps} />;
     case 'informes':
+      if (activeReport === 'ph') {
+        return <RECORD_PH {...moduleProps} />;
+      }
       if (activeReport === 'arquitectonico') {
         return <RECORD_ARC {...moduleProps} />;
       }
@@ -1175,6 +1200,10 @@ export function FunExpedienteFullscreen({
         setActiveSection('informes');
         setActiveReport('estructural');
         break;
+      case 'record_ph':
+        setActiveSection('informes');
+        setActiveReport('ph');
+        break;
       case 'record_review':
         setActiveSection('acta');
         break;
@@ -1203,8 +1232,9 @@ export function FunExpedienteFullscreen({
     if (nextSection !== 'informes') {
       return;
     }
-    setActiveReport((prev) => prev || 'juridico');
-  }, []);
+    const nextReportItems = getReportItemsForExpediente(summary, currentVersion);
+    setActiveReport((prev) => nextReportItems.some((item) => item.id === prev) ? prev : nextReportItems[0]?.id || 'juridico');
+  }, [currentVersion, summary]);
 
   const bitacoraEntries = useMemo(() => normalizeBitacoraEntries(summary), [summary]);
   const bitacoraGroups = useMemo(() => getBitacoraGroups(bitacoraEntries), [bitacoraEntries]);
@@ -1309,13 +1339,27 @@ export function FunExpedienteFullscreen({
     [visibleSectionGroups]
   );
 
+  const visibleReportItems = useMemo(
+    () => getReportItemsForExpediente(summary, currentVersion),
+    [currentVersion, summary]
+  );
+
+  const activeReportIsVisible = visibleReportItems.some((item) => item.id === activeReport);
+  const effectiveActiveReport = activeReportIsVisible ? activeReport : visibleReportItems[0]?.id || 'juridico';
+
   useEffect(() => {
     if (!visibleSectionIds.includes(activeSection)) {
       setActiveSection('detalles');
     }
   }, [activeSection, visibleSectionIds]);
 
-  const moduleContent = renderModuleContent(activeSection, activeReport, moduleProps);
+  useEffect(() => {
+    if (activeSection === 'informes' && !activeReportIsVisible) {
+      setActiveReport(effectiveActiveReport);
+    }
+  }, [activeReportIsVisible, activeSection, effectiveActiveReport]);
+
+  const moduleContent = renderModuleContent(activeSection, effectiveActiveReport, moduleProps);
 
   const content = (
     <div
@@ -1449,11 +1493,11 @@ export function FunExpedienteFullscreen({
             <div className="w-full min-w-0 space-y-4 p-3 sm:p-5">
               {activeSection === 'informes' ? (
                 <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card/80 p-2 shadow-sm">
-                  {REPORT_ITEMS.map((item) => (
+                  {visibleReportItems.map((item) => (
                     <Button
                       key={item.id}
                       type="button"
-                      variant={activeReport === item.id ? 'default' : 'ghost'}
+                      variant={effectiveActiveReport === item.id ? 'default' : 'ghost'}
                       size="sm"
                       onClick={() => setActiveReport(item.id)}
                     >

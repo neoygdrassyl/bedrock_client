@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import './helpers/mockExternals';
@@ -85,7 +85,31 @@ vi.mock('../app/components/Collapsible', () => ({
 
 vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
-  default: () => <div data-testid="data-table-stub" />,
+  default: ({ columns = [], data = [], noDataComponent = 'No hay Items' }) => (
+    <div data-testid="data-table-stub">
+      <div>
+        {columns.map((column, index) => (
+          <span key={`header-${column.name || index}`}>{column.name}</span>
+        ))}
+      </div>
+      {data.length === 0 ? (
+        <div>{noDataComponent}</div>
+      ) : (
+        data.map((row, rowIndex) => (
+          <div key={row.id || rowIndex}>
+            {columns.map((column, columnIndex) => {
+              const value = column.cell
+                ? column.cell(row)
+                : column.selector
+                  ? column.selector(row)
+                  : row[column.name];
+              return <span key={`${row.id || rowIndex}-${column.name || columnIndex}`}>{value}</span>;
+            })}
+          </div>
+        ))
+      )}
+    </div>
+  ),
 }));
 
 // record_ph_review uses `domains_number` JSX from vars.js which is not in
@@ -112,6 +136,7 @@ import RECORD_PH_GEN from '../app/pages/user/records/ph/record_ph_gen.component'
 import RECORD_PH_BUILDING from '../app/pages/user/records/ph/record_ph_building.component';
 import RECORD_PH_FLOOR from '../app/pages/user/records/ph/record_ph_floor.component';
 import RECORD_PH_BLUEPRINT from '../app/pages/user/records/ph/record_ph_blueprint.component';
+import RECORD_PH_PROFESIONAL from '../app/pages/user/records/ph/record_ph_profesional.component';
 import RECORD_PH_REVIEW from '../app/pages/user/records/ph/record_ph_review.component';
 
 // ─── shared fixtures ──────────────────────────────────────────────────────────
@@ -120,9 +145,25 @@ const baseRecord = {
   id: 55,
   version: 1,
   review_gen: null,
+  review_check: '0;1;1;1;1;1;1;1;1',
   record_ph_buildings: [],
   record_ph_floors: [],
   record_ph_blueprints: [],
+};
+
+const phFloorRecord = {
+  ...baseRecord,
+  record_ph_floors: [
+    {
+      id: 101,
+      floor: 'Piso 1',
+      division: 'Apto 101',
+      division_build: '19.20',
+      division_free: '19.25',
+      common: '11.05;0;0;0',
+      fixed: '',
+    },
+  ],
 };
 
 const baseItem = {
@@ -136,6 +177,17 @@ const baseItem = {
   fun_6s: [],
   fun_rs: [],
   fun_clocks: [],
+};
+
+const phProfessional = {
+  id: 7,
+  role: 'ARQUITECTO PROYECTISTA',
+  name: 'IVAN FRANCISCO',
+  surname: 'SOLANO FUENTES',
+  registration_date: '1998-05-14',
+  expirience: 0,
+  sanction: false,
+  docs: '',
 };
 
 const baseProps = {
@@ -198,6 +250,33 @@ describe('RecordsPH — Render', () => {
     const { container } = renderInRouter(RECORD_PH_FLOOR);
     expect(container).toBeTruthy();
     expect(container.firstChild).toBeTruthy();
+  });
+
+  test('record_ph_profesional restores FUN 5.2 professional data instead of empty PH CRUD rows', { timeout: 60000 }, async () => {
+    renderInRouter(RECORD_PH_PROFESIONAL, {
+      _FUN_52: [phProfessional],
+      _FUN_6: [],
+      currentRecord: baseRecord,
+    });
+
+    expect(screen.getByText(/PROFESIONAL RESPONSABLE DE LOS PLANOS/i)).toBeInTheDocument();
+    expect(screen.getByText(/ARQUITECTO PROYECTISTA/i)).toBeInTheDocument();
+    expect(screen.getByText(/IVAN FRANCISCO SOLANO FUENTES/i)).toBeInTheDocument();
+    expect(screen.getByText(/1998-05-14/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Nuevo Profesional/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/No hay Items/i)).not.toBeInTheDocument();
+  });
+
+  test('record_ph_floor renders common and private areas from record_ph_floors', { timeout: 60000 }, async () => {
+    renderInRouter(RECORD_PH_FLOOR, { currentRecord: phFloorRecord });
+
+    expect(screen.getByText(/AREAS COMUNES Y PRIVADAS/i)).toBeInTheDocument();
+    expect(screen.getByText(/Piso 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Apto 101/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Área Privada Construida/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Área Total Construida/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/30.25/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/^AREA TOTAL$/i)).not.toBeInTheDocument();
   });
 
   test('record_ph_blueprint renders without crashing', { timeout: 60000 }, async () => {

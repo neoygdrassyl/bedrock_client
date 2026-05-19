@@ -421,7 +421,7 @@ const paymentsClocks = (props) => {
             desc: "Pago de expensas variables", 
             // limit: [[[56, 57], 30]], 
             limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
-            show: conOA, 
+            show: conOA || conGI, 
             spentDaysConfig: { startState: [56, 57] } 
         },
         { 
@@ -429,7 +429,7 @@ const paymentsClocks = (props) => {
             name: namePayment, 
             desc: "Pago de impuestos municipales o delineación", 
             limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
-            show: conOA, 
+            show: conOA || conGI, 
             spentDaysConfig: { startState: [56, 57] } 
         },
         { 

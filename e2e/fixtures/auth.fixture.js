@@ -75,13 +75,56 @@ const E2E_FUN_RECORDS = [
   },
 ];
 
+const E2E_PH_PROFESSIONAL = {
+  id: 501,
+  role: 'ARQUITECTO PROYECTISTA',
+  name: 'IVAN FRANCISCO',
+  surname: 'SOLANO FUENTES',
+  registration_date: '1998-05-14',
+  expirience: 0,
+  sanction: false,
+  docs: '',
+};
+
+const E2E_RECORD_PH = {
+  id: 301,
+  fun0Id: 1,
+  version: 1,
+  review_check: '1',
+  detail: 'Observación planimétrica E2E',
+  review_gen: '',
+  record_ph_buildings: [],
+  record_ph_blueprints: [
+    {
+      id: 401,
+      id_public: '1',
+      floor: 'Piso 1',
+      area: '30.25',
+      units: '1;0;0;0;0;0;0',
+      units_other: '',
+    },
+  ],
+  record_ph_floors: [
+    {
+      id: 402,
+      floor: 'Piso 1',
+      division: 'Apto 101',
+      division_build: '19.20',
+      division_free: '19.25',
+      common: '11.05;0;0;0',
+      fixed: '',
+    },
+  ],
+  record_ph_steps: [],
+};
+
 const E2E_FUN_DETAILS = {
   1: {
     ...E2E_FUN_RECORDS[0],
     fun_1s: [{ id: 11, tramite: 'ii', tipo: 'Licencia', m_urb: '0', m_sub: '0', m_lic: 'ii', usos: 'VIVIENDA', area: '120', description: 'Solicitud de prueba activa' }],
     fun_2: { id: 21, direccion: 'Calle 10 # 11-12', direccion_ant: '', matricula: '300-001', catastral: '001', catastral_2: '', suelo: 'URBANO', lote_pla: 'SI', barrio: 'Centro', vereda: '', comuna: '1', sector: 'A', corregimiento: '', lote: '1', estrato: '3', manzana: 'A' },
     fun_51s: [],
-    fun_52s: [],
+    fun_52s: [E2E_PH_PROFESSIONAL],
     fun_53s: [],
     fun_clocks: [
       { id: 1, fun_id: 1, state: 0, date_start: '2026-03-10', version: '1', description: 'Radicacion' },
@@ -91,6 +134,7 @@ const E2E_FUN_DETAILS = {
     fun_rs: [],
     fun_law: null,
     record_review: null,
+    tipo_licencia: 'Propiedad Horizontal',
   },
   2: {
     ...E2E_FUN_RECORDS[1],
@@ -132,6 +176,11 @@ const E2E_RECORD_ARC = {
 
 const E2E_CLOCKS = Object.values(E2E_FUN_DETAILS).flatMap((item) => item.fun_clocks || []);
 
+/**
+ * @param {import('@playwright/test').Route} route
+ * @param {unknown} data
+ * @param {number} [status]
+ */
 function jsonResponse(route, data, status = 200) {
   return route.fulfill({
     status,
@@ -140,6 +189,7 @@ function jsonResponse(route, data, status = 200) {
   });
 }
 
+/** @param {string} pathname */
 function filterSubmitEntries(pathname) {
   const searchToken = pathname.split('/submit/getsearch/')[1] || '';
   const [field, rawQuery = ''] = searchToken.split('&');
@@ -158,6 +208,7 @@ function filterSubmitEntries(pathname) {
   });
 }
 
+/** @param {string} pathname */
 function filterFunRecords(pathname) {
   const searchToken = pathname.split('/fun/getsearch/')[1] || '';
   const [, rawQuery = ''] = searchToken.split('&');
@@ -170,6 +221,7 @@ function filterFunRecords(pathname) {
   return E2E_FUN_RECORDS.filter((entry) => entry.id_public.toLowerCase().includes(query));
 }
 
+/** @param {import('@playwright/test').Page} page */
 async function installE2EMocks(page) {
   await page.route('**/*', async (route) => {
     const request = route.request();
@@ -243,6 +295,18 @@ async function installE2EMocks(page) {
       return jsonResponse(route, E2E_FUN_DETAILS[funId] || E2E_FUN_DETAILS[1]);
     }
 
+    if (request.method() === 'GET' && /\/fun\/get\/idpublic\/.+$/.test(pathname)) {
+      const idPublic = decodeURIComponent(pathname.split('/fun/get/idpublic/')[1] || '');
+      const detail = Object.values(E2E_FUN_DETAILS).find((item) => item.id_public === idPublic);
+      return jsonResponse(route, detail || null, detail ? 200 : 404);
+    }
+
+    if (request.method() === 'GET' && /\/fun\/get\/summary\/.+$/.test(pathname)) {
+      const idPublic = decodeURIComponent(pathname.split('/fun/get/summary/')[1] || '');
+      const detail = Object.values(E2E_FUN_DETAILS).find((item) => item.id_public === idPublic);
+      return jsonResponse(route, detail || null, detail ? 200 : 404);
+    }
+
     if (request.method() === 'GET' && /\/expedition\/findrecord\/\d+$/.test(pathname)) {
       return jsonResponse(route, E2E_EXPEDITION_RECORDS);
     }
@@ -272,7 +336,7 @@ async function installE2EMocks(page) {
     }
 
     if (request.method() === 'GET' && /\/recordph\/findrecord\/\d+$/.test(pathname)) {
-      return jsonResponse(route, []);
+      return jsonResponse(route, [E2E_RECORD_PH]);
     }
 
     if (request.method() === 'GET' && pathname.includes('/cubXVr/getByFUN/')) {

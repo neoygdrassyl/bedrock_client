@@ -46,7 +46,6 @@ import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms
 import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
-import { getPaymentDateRows, getPrimaryPaymentDate } from './shared/processClosure.helpers';
 
 // JSONS
 import dayjs from 'dayjs';
@@ -750,19 +749,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             );
         };
 
-        const renderPaymentDatesCell = (row) => (
-            <div className="flex min-w-[190px] flex-col gap-0.5 py-1 text-left text-[10px] leading-tight">
-                {getPaymentDateRows(row).map(paymentRow => (
-                    <div key={paymentRow.key} className="flex items-center justify-between gap-2">
-                        <span className="text-muted-foreground">{paymentRow.label}</span>
-                        <span className={cn('font-mono tabular-nums', paymentRow.value === '—' ? 'text-muted-foreground' : 'text-foreground')}>
-                            {paymentRow.value}
-                        </span>
-                    </div>
-                ))}
-            </div>
-        );
-
         // ---------------------
         const columns = [
             {
@@ -789,13 +775,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: 'FECHAS DE PAGO',
-                selector: row => getPrimaryPaymentDate(row),
+                name: 'FECHA PAGO EXPENSAS',
+                selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
-                minWidth: '220px',
-                cell: row => renderPaymentDatesCell(row)
+                cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
                 name: 'FECHA LÍMITE LyDF',
@@ -854,13 +839,12 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => _GET_MISSING_CONTEXT(row.state)
             },
             {
-                name: 'FECHAS DE PAGO',
-                selector: row => getPrimaryPaymentDate(row),
+                name: 'FECHA PAGO EXPENSAS',
+                selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
-                minWidth: '220px',
-                cell: row => renderPaymentDatesCell(row)
+                cell: row => <span className={compactNumericCellClass}>{row.clock_payment}</span>
             },
             {
                 name: 'ACCIÓN',
@@ -964,15 +948,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 center: true,
                 maxWidth: '90px',
                 cell: row => <Badge variant="outline" className={compactCategoryBadgeClass}>{_fun_0_type[row.type]}</Badge>
-            },
-            {
-                name: 'FECHAS DE PAGO',
-                selector: row => getPrimaryPaymentDate(row),
-                sortable: true,
-                filterable: true,
-                center: true,
-                minWidth: '220px',
-                cell: row => renderPaymentDatesCell(row)
             },
             {
                 name: 'FECHA LyDF',
