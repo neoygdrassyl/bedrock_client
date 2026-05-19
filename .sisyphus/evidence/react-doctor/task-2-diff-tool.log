@@ -1,3 +1,0 @@
-node scripts/react-doctor-diff.mjs --before .sisyphus/evidence/react-doctor/2026-05-11-baseline/diagnostics.json --after .sisyphus/evidence/react-doctor/tooling-smoke/diagnostics.json --mode report-only
-Exit code: 0
-Package script npm run audit:react-doctor also exited 0 and wrote latest/diagnostics.json.

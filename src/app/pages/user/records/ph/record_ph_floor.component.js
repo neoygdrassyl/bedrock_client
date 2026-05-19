@@ -1,554 +1,318 @@
-import { useState, useEffect } from 'react';
-
-import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
+import { useEffect, useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
-import RECORD_LAW_SERVICE from '../../../../services/record_law.service';
-import { swalConfirm, swalError } from '../../../../utils/swalAdapter';
+import { Icon } from '@/components/icon';
+import { swalConfirm } from '@/app/utils/swalAdapter';
 import usePHSave from './hooks/usePHSave';
-import { savePHStep } from './utils/phSaveStep';
 
-export default function RECORD_PH_FLOOR(props) {
-    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, attachs } = props;
-    const { execute } = usePHSave({ swaMsg });
-    const REVIEW = REVIEW_DOCS;
+const EMPTY_FORM = {
+    floor: '',
+    divisions: [{ name: '', build: '', free: '' }],
+    common: ['', '', '', ''],
+    fixedEnabled: false,
+    fixed: ['', '', '', ''],
+};
 
-    const [a1, setA1] = useState({ f01: '', f02: '', f03: '', f04: '' });
-    const [a2, setA2] = useState({ f01: '', f02: '', f03: '', f04: '', f05: '', f06: '' });
-    const [i1, setI1] = useState({ f01: '' });
-    const [n2, setN2] = useState({ f01: '', f02: '' });
-    const [m1, setM1] = useState({ f01: '' });
-    const [m2, setM2] = useState({ f01: '' });
-    const [n3, setN3] = useState({ f01: '', f02: '', f03: '' });
-    const [n3v, setN3v] = useState({ f01: '', f02: '', f03: '' });
-    const [n3t, setN3t] = useState({ f01: '', f02: '', f03: '' });
-    const [o1, setO1] = useState({ f01: '', f02: '' });
-    const [o2, setO2] = useState({ f01: '' });
-    const [n4, setN4] = useState({ f01: '', f02: '', f03: '', f04: '' });
-    const [v1, setV1] = useState({ f01: '' });
-    const [v2, setV2] = useState({ f01: '' });
-    const [v3, setV3] = useState({ f01: '', f02: '', f03: '' });
-    const [v4, setV4] = useState({ f01: '' });
-    const [s1, setS1] = useState({ f01: '', f02: '', f03: '' });
-    const [v5, setV5] = useState({ f01: '' });
-    const [d1, setD1] = useState({ f01: '' });
-    const [p1, setP1] = useState({ f01: '' });
-    const [e1, setE1] = useState({ f01: '' });
-    const [e2, setE2] = useState({ f01: '', f02: '' });
-    const [h1, setH1] = useState({ f01: '', f02: '', f03: '' });
-    const [h2, setH2] = useState({ f01: '', f02: '', f03: '', f04: '', f05: '', f06: '', f07: '', f08: '', f09: '', f10: '' });
-    const [f1, setF1] = useState({ f01: '', f02: '', f03: '', f04: '', f05: '' });
-    const [c1, setC1] = useState({ f01: '' });
-    const [r1, setR1] = useState({ f01: '' });
+const toNumber = (value) => Number(value || 0) || 0;
+const toMoney = (value) => toNumber(value).toFixed(2);
+const splitValue = (value) => value ? value.split(';') : [];
 
-    const [showIncluir, setShowIncluir] = useState(false);
-    const [showCub, setShowCub] = useState(false);
-    const [showAnexo, setShowAnexo] = useState(false);
-    const [incluyeSelect, setIncluyeSelect] = useState('');
-    const [cub0, setCub0] = useState('');
-    const [cub1, setCub1] = useState('');
-    const [ext0, setExt0] = useState(false);
-    const [ext1, setExt1] = useState('');
-    const [ext2, setExt2] = useState(false);
-    const [ext3, setExt3] = useState('');
-    const [checkArrayState, setCheckArrayState] = useState([null, null, null, null, null, null]);
-    const [checkedReviews, setCheckedReviews] = useState(new Set());
+const buildFormFromRow = (row) => {
+    const names = splitValue(row?.division);
+    const builds = splitValue(row?.division_build);
+    const frees = splitValue(row?.division_free);
+    const common = splitValue(row?.common);
+    const fixed = splitValue(row?.fixed);
+    const max = Math.max(names.length, builds.length, frees.length, 1);
 
-    const [toggle, setToggle] = useState(0);
-    const [cubSelected, setCubSelected] = useState({
-        item_1: null,
-        item_2: null,
-        item_3: null,
-        item_4: null,
-        item_5: null,
-        item_6: null,
-    });
-    const [lastButton, setLastButton] = useState(false);
+    return {
+        floor: row?.floor || '',
+        divisions: Array.from({ length: max }, (_, index) => ({
+            name: names[index] || '',
+            build: builds[index] || '',
+            free: frees[index] || '',
+        })),
+        common: Array.from({ length: 4 }, (_, index) => common[index] || ''),
+        fixedEnabled: fixed[0] === '&&',
+        fixed: Array.from({ length: 4 }, (_, index) => fixed[index + 1] || ''),
+    };
+};
+
+function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdateRecord }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [form, setForm] = useState({ ...EMPTY_FORM, divisions: [...EMPTY_FORM.divisions], common: [...EMPTY_FORM.common], fixed: [...EMPTY_FORM.fixed] });
+    const [editForm, setEditForm] = useState({ ...EMPTY_FORM, divisions: [...EMPTY_FORM.divisions], common: [...EMPTY_FORM.common], fixed: [...EMPTY_FORM.fixed] });
+    const { execute, isSaving } = usePHSave({ swaMsg });
 
     useEffect(() => {
-        const _CHILD = _GET_CHILD_1(currentItem);
-        setToggle(_CHILD.item_1);
-        const _CHILD_1 = _GET_CHILD_1_LATER(currentItem);
-        setLastButton(_CHILD_1.item_2);
-        setCub0(_CHILD_1.item_0 ?? '');
-        setCub1(_CHILD_1.item_1 ?? '');
-        const _CHILD_1_LATER = _GET_CHILD_1_LATER_LIST(currentItem);
-        if (_CHILD_1_LATER && Array.isArray(_CHILD_1_LATER)) {
-            const next = {};
-            _CHILD_1_LATER.forEach(it => { next[it.type] = it; });
-            setCubSelected({
-                item_1: next['cub1'] || null,
-                item_2: next['cub2'] || null,
-                item_3: next['cub3'] || null,
-                item_4: next['cub4'] || null,
-                item_5: next['cub5'] || null,
-                item_6: next['cub6'] || null,
+        if (edit) setEditForm(buildFormFromRow(edit));
+    }, [edit]);
+
+    const floors = Array.isArray(currentRecord.record_ph_floors) ? currentRecord.record_ph_floors : [];
+
+    const totals = useMemo(() => {
+        return floors.reduce((acc, row) => {
+            const common = splitValue(row.common);
+            if (common[0] === '&&') {
+                acc.common_total += toNumber(common[1]);
+            } else {
+                acc.common_build += toNumber(common[0]);
+                acc.common_free += toNumber(common[1]);
+                acc.exclusive_build += toNumber(common[2]);
+                acc.exclusive_free += toNumber(common[3]);
+                acc.common_total += toNumber(common[0]) + toNumber(common[2]);
+            }
+
+            const builds = splitValue(row.division_build);
+            const frees = splitValue(row.division_free);
+            builds.forEach((build, index) => {
+                acc.private_build += toNumber(build);
+                acc.private_free += toNumber(frees[index]);
+                acc.private_total += toNumber(build) + toNumber(frees[index]);
             });
-        }
-        const _CHILD_VARS = _GET_CHILD_1(currentItem);
-        setExt0(_CHILD_VARS.item_0 == 1);
-        setExt1(_CHILD_VARS.item_1 ?? '');
-        setExt2(_CHILD_VARS.item_2 == 1);
-        setExt3(_CHILD_VARS.item_3 ?? '');
-        const _CHILD_6 = _GET_CHILD_6();
-        const nextChecks = [null, null, null, null, null, null];
-        for (let i = 0; i < 6; i++) {
-            nextChecks[i] = _CHILD_6['item_' + i] ?? null;
-        }
-        setCheckArrayState(nextChecks);
-        const review = _GET_REVIEW();
-        setCheckedReviews(new Set(review));
-    }, [currentItem]);
 
-    const SECTION_MAP = [
-        { id: 'phfa', state: a1, set: setA1, labels: ['AREA TOTAL', 'AREA NO BALCON', 'AREA POR PISO', 'ALTURA PROMEDIO'] },
-        { id: 'phfb', state: a2, set: setA2, labels: ['AREA SEMISOTANO', 'AREA ZINJA', 'AREA BALCON', 'AREA MEZANINE', 'AREA COMUN', 'AREA CONSTRUIDA'] },
-        { id: 'phfi', state: i1, set: setI1, labels: ['NUMERO DE PARQUEADEROS'] },
-        { id: 'phfn', state: n2, set: setN2, labels: ['SEPARACION FRONTAL MINIMA', 'SEPARACION LATERAL MINIMA'] },
-        { id: 'phfm', state: m1, set: setM1, labels: ['ANCHO FRONTAL MINIMO'] },
-        { id: 'phfm2', state: m2, set: setM2, labels: ['PROFUNDIDAD MINIMA'] },
-        { id: 'phfn3', state: n3, set: setN3, labels: ['SEPARACION POSTERIOR', 'SEPARACION LATERAL 1', 'SEPARACION LATERAL 2'] },
-        { id: 'phfn3v', state: n3v, set: setN3v, labels: ['VIVIENDAS', 'VIVIENDAS', 'VIVIENDAS'] },
-        { id: 'phfn3t', state: n3t, set: setN3t, labels: ['TERRENOS', 'TERRENOS', 'TERRENOS'] },
-        { id: 'phfo', state: o1, set: setO1, labels: ['CARRERA', 'CALLE'] },
-        { id: 'phfo2', state: o2, set: setO2, labels: ['ESQUINA'] },
-        { id: 'phfn4', state: n4, set: setN4, labels: ['METROS SUPERFICIE 1', 'METROS SUPERFICIE 2', 'METROS SUPERFICIE 3', 'METROS SUPERFICIE 4'] },
-        { id: 'phfv', state: v1, set: setV1, labels: ['VIVIENDA VIS'] },
-        { id: 'phfv2', state: v2, set: setV2, labels: ['VIVIENDA VIP'] },
-        { id: 'phfv3', state: v3, set: setV3, labels: ['ESTRATO 1', 'ESTRATO 2', 'ESTRATO 3'] },
-        { id: 'phfv4', state: v4, set: setV4, labels: ['DESPLAZADOS'] },
-        { id: 'phfs', state: s1, set: setS1, labels: ['SOTANO', 'SEMISOTANO', 'ZINJA'] },
-        { id: 'phfv5', state: v5, set: setV5, labels: ['CONJUNTO CERRADO'] },
-        { id: 'phfd', state: d1, set: setD1, labels: ['DENSIDAD'] },
-        { id: 'phfp', state: p1, set: setP1, labels: ['CONSTRUCCION DE VIVIENDA'] },
-        { id: 'phfe', state: e1, set: setE1, labels: ['EXCESO EN ALTURA'] },
-        { id: 'phfe2', state: e2, set: setE2, labels: ['RETIRO SUPERIOR', 'RETIRO SUPERIOR NORMA'] },
-        { id: 'phfh', state: h1, set: setH1, labels: ['ALTURA EDIFICACION', 'NIVELES', 'ALTURA EN NIVELES'] },
-        { id: 'phfh2', state: h2, set: setH2, labels: ['ALTURA BASICA', 'ALTURA BASICA PLUS', 'ALTURA ESPECIAL', 'INDICE', 'INDICE PLUS', 'INDICE ESPECIAL', 'INDICE ADICIONAL', 'ESCALONADA', 'ESCALONADA PLUS', 'ESCALONADA ESPECIAL'] },
-        { id: 'phff', state: f1, set: setF1, labels: ['FACHADA', 'MATERIAL', 'HASTA', 'RESTO', 'MODIFICACION'] },
-        { id: 'phfc', state: c1, set: setC1, labels: ['NUMERO DE PISOS'] },
-        { id: 'phfr', state: r1, set: setR1, labels: ['RENOVACION'] },
-    ];
+            acc.total = acc.common_build + acc.exclusive_build + acc.private_build;
+            return acc;
+        }, {
+            common_total: 0,
+            common_build: 0,
+            common_free: 0,
+            exclusive_build: 0,
+            exclusive_free: 0,
+            private_build: 0,
+            private_free: 0,
+            private_total: 0,
+            total: 0,
+        });
+    }, [floors]);
 
-    const _JSON_VECTOR = ['phfa', 'phfb', 'phfi', 'phfn', 'phfm', 'phfm2', 'phfn3', 'phfn3v', 'phfn3t', 'phfo', 'phfo2', 'phfn4', 'phfv', 'phfv2', 'phfv3', 'phfv4', 'phfs', 'phfv5', 'phfd', 'phfp', 'phfe', 'phfe2', 'phfh', 'phfh2', 'phff', 'phfc', 'phfr'];
-
-    let _GET_CHILD_1 = (_item) => {
-        var _CHILD = _item.fun_1s;
-        var _CURRENT_VERSION = currentVersion - 1;
-        var _CHILD_VARS = {
-            item_0: "",
-            item_1: "",
-            item_2: "",
-            item_3: "",
-        }
-        if (_CHILD) {
-            if (_CHILD[_CURRENT_VERSION] != null) {
-                _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id ?? "";
-                _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ?? "";
-                _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ?? "";
-                _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ?? "";
-            }
-        }
-        return _CHILD_VARS;
-    }
-
-    let _GET_CHILD_1_LATER = (_item) => {
-        var _CHILD = _item.fun_1;
-        var _CHILD_VARS = {
-            item_0: "",
-            item_1: "",
-            item_2: "",
-        }
-        if (_CHILD) {
-            _CHILD_VARS.item_0 = _CHILD.id ?? "";
-            _CHILD_VARS.item_1 = _CHILD.tipo ?? "";
-            _CHILD_VARS.item_2 = _CHILD.tramite ?? "";
-        }
-        return _CHILD_VARS;
-    }
-
-    let _GET_CHILD_1_LATER_LIST = (_item) => {
-        var _CHILD = _item.fun_1_list;
-        var _LIST = [];
-        if (_CHILD) {
-            _LIST = _CHILD;
-        }
-        return _LIST;
-    }
-
-    const _GET_CHILD_6 = () => {
-        var _CHILD = currentItem.fun_rs;
-        var _CURRENT_VERSION = currentVersion - 1;
-        var _CHILD_VARS = {
-            item_0: null,
-            item_1: null,
-            item_2: null,
-            item_3: null,
-            item_4: null,
-            item_5: null,
-        }
-        if (_CHILD && _CHILD[_CURRENT_VERSION]) {
-            for (var i = 0; i < _CHILD[_CURRENT_VERSION].length; i++) {
-                if (_CHILD[_CURRENT_VERSION][i] != null) {
-                    _CHILD_VARS['item_' + i] = _CHILD[_CURRENT_VERSION][i];
-                }
-            }
-        }
-        return _CHILD_VARS;
-    }
-
-    let LOAD_STEP = (_id_public) => {
-        var _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
-        for (var i = 0; i < _CHILD.length; i++) {
-            if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
-        }
-        return []
-    }
-
-    let _GET_STEP_TYPE = (_id_public, _type) => {
-        var STEP = LOAD_STEP(_id_public);
-        if (!STEP.id) return [];
-        var value = STEP[_type]
-        if (!value) return [];
-        value = value.split(';');
-        return value
-    }
-
-    let _GET_REVIEW = () => {
-        const REVIEW = [];
-        if (currentRecord != null) {
-            const value = currentRecord.record_ph?.review ?? currentRecord.review ?? '';
-            if (value) return value.split(',');
-        }
-        return REVIEW;
-    }
-
-    let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
-        if (_VALUE === '0' || _VALUE === 'NO CUMPLE') {
-            return 'form-select text-danger form-select-sm';
-        }
-        if (_VALUE === '1' || _VALUE === 'CUMPLE') {
-            return 'form-select text-success form-select-sm';
-        }
-        if (_VALUE === '2' || _VALUE === 'NO APLICA') {
-            return 'form-select text-warning form-select-sm';
-        }
-        return 'form-select form-select-sm';
-    }
-
-    const handleSectionChange = (setState) => (field) => (e) => {
-        let val = e.target.value;
-        if (e.target.type === 'number') val = val.replaceAll(',', '.').replace(/[^0-9.]/g, '');
-        setState(prev => ({ ...prev, [field]: val }));
+    const rowPrivateTotals = (row) => {
+        const builds = splitValue(row.division_build);
+        const frees = splitValue(row.division_free);
+        return builds.map((build, index) => toMoney(toNumber(build) + toNumber(frees[index])));
     };
 
-    let manage_item = async (e, id) => {
-        if (e) e.preventDefault();
-        const section = SECTION_MAP.find(s => s.id === id);
-        if (!section) return;
-        const values = Object.values(section.state);
+    const rowSubtotal = (row) => {
+        const common = splitValue(row.common);
+        if (common[0] === '&&') return toMoney(common[1]);
+        const privateBuild = splitValue(row.division_build).reduce((acc, value) => acc + toNumber(value), 0);
+        return toMoney(privateBuild + toNumber(common[0]) + toNumber(common[2]));
+    };
+
+    const renderList = (value) => {
+        const items = splitValue(value);
+        return <ul className="list-group list-group-flush">
+            {items.length ? items.map(item => <li className="list-group-item mx-0 p-1" key={item || 'empty-value'}>{item || '-'}</li>) : <li className="list-group-item mx-0 p-1">-</li>}
+        </ul>;
+    };
+
+    const columns = [
+        { name: 'Piso', selector: row => row.floor, sortable: true, center: true, cell: row => <span>{row.floor}</span> },
+        { name: 'División', center: true, compact: true, cell: row => renderList(row.division) },
+        { name: 'Área Privada Construida', center: true, compact: true, cell: row => renderList(row.division_build) },
+        { name: 'Área Privada Libre', center: true, compact: true, cell: row => renderList(row.division_free) },
+        { name: 'Área Total Privada', center: true, cell: row => renderList(rowPrivateTotals(row).join(';')) },
+        { name: 'Área Común Construida', selector: row => splitValue(row.common)[0], sortable: true, center: true, cell: row => <span>{splitValue(row.common)[0] || '0'}</span> },
+        { name: 'Área Común Libre', selector: row => splitValue(row.common)[1], sortable: true, center: true, cell: row => <span>{splitValue(row.common)[1] || '0'}</span> },
+        { name: 'Área Exclusiva Construida', selector: row => splitValue(row.common)[2], sortable: true, center: true, cell: row => <span>{splitValue(row.common)[2] || '0'}</span> },
+        { name: 'Área Exclusiva Libre', selector: row => splitValue(row.common)[3], sortable: true, center: true, cell: row => <span>{splitValue(row.common)[3] || '0'}</span> },
+        { name: 'Total Común Construida', selector: row => toMoney(toNumber(splitValue(row.common)[0]) + toNumber(splitValue(row.common)[2])), sortable: true, center: true, cell: row => <span className="fw-bold text-secondary">{toMoney(toNumber(splitValue(row.common)[0]) + toNumber(splitValue(row.common)[2]))}</span> },
+        { name: 'Area Total Visto Bueno', selector: rowSubtotal, sortable: true, center: true, cell: row => <span className="fw-bold text-danger">{rowSubtotal(row)}</span> },
+        {
+            name: 'ACCION',
+            button: true,
+            minWidth: '120px',
+            cell: row => <>
+                <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
+                <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => deleteItem(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+            </>,
+        },
+    ];
+
+    const updateDivision = (setter, index, field, value) => {
+        setter(prev => ({
+            ...prev,
+            divisions: prev.divisions.map((division, currentIndex) => currentIndex === index ? { ...division, [field]: value } : division),
+        }));
+    };
+
+    const updateCommon = (setter, index, value) => {
+        setter(prev => ({
+            ...prev,
+            common: prev.common.map((item, currentIndex) => currentIndex === index ? value : item),
+        }));
+    };
+
+    const updateFixed = (setter, index, value) => {
+        setter(prev => ({
+            ...prev,
+            fixed: prev.fixed.map((item, currentIndex) => currentIndex === index ? value : item),
+        }));
+    };
+
+    const addDivision = (setter) => setter(prev => ({ ...prev, divisions: [...prev.divisions, { name: '', build: '', free: '' }] }));
+    const removeDivision = (setter) => setter(prev => ({ ...prev, divisions: prev.divisions.length > 1 ? prev.divisions.slice(0, -1) : prev.divisions }));
+
+    const buildPayload = (data) => {
         const formData = new FormData();
-        formData.set('value', values.join(';'));
-        formData.set('version', currentVersionR);
         formData.set('recordPhId', currentRecord.id);
-        formData.set('id_public', id);
-        await execute(savePHStep(RECORD_PH_SERVICE, LOAD_STEP(id), formData), {
-            operationName: `guardar sección ${id}`,
-            success: true,
-            error: true,
-            onSuccess: () => requestUpdateRecord(currentItem.id),
+        if (data.floor) formData.set('floor', data.floor);
+        formData.set('division', data.divisions.map(item => item.name).join(';'));
+        formData.set('division_build', data.divisions.map(item => item.build).join(';'));
+        formData.set('division_free', data.divisions.map(item => item.free).join(';'));
+        formData.set('common', data.common.join(';'));
+        formData.set('fixed', data.fixedEnabled ? ['&&', ...data.fixed].join(';') : '');
+        return formData;
+    };
+
+    const resetForm = () => setForm({ ...EMPTY_FORM, divisions: [{ name: '', build: '', free: '' }], common: ['', '', '', ''], fixed: ['', '', '', ''] });
+
+    const newItem = async (event) => {
+        event.preventDefault();
+        await execute(RECORD_PH_SERVICE.create_floor(buildPayload(form)), {
+            operationName: 'crear área',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                resetForm();
+                setIsNew(false);
+            },
         });
-    }
+    };
 
-    let manage_rar = async (e) => {
-        if (e) e.preventDefault();
-        const formData = new FormData();
-        const checks = Array.from(checkedReviews).join(',');
-        formData.set('review', checks);
-        const recordId = currentRecord.record_ph?.id ?? currentRecord.id;
-        await execute(RECORD_PH_SERVICE.update(recordId, formData), {
-            operationName: 'guardar lista de checkeo',
-            success: true,
-            error: true,
-            onSuccess: () => requestUpdateRecord(currentItem.id),
+    const editItem = async (event) => {
+        event.preventDefault();
+        await execute(RECORD_PH_SERVICE.update_floor(edit.id, buildPayload(editForm)), {
+            operationName: 'actualizar área',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                setEdit(false);
+            },
         });
-    }
+    };
 
-    let save_item_61 = async (e, id) => {
-        if (e) e.preventDefault();
-        const formData = new FormData();
-        formData.set('value', e.target.value);
-        formData.set('version', currentVersionR);
-        formData.set('recordPhId', currentRecord.id);
-        formData.set('id_public', id);
-        await execute(savePHStep(RECORD_PH_SERVICE, LOAD_STEP(id), formData), {
-            operationName: `guardar sección ${id}`,
-            success: false,
-            error: true,
+    const deleteItem = async (id) => {
+        const confirmed = await swalConfirm({ title: 'ELIMINAR ESTE ITEM', text: '¿Esta seguro de eliminar de forma permanente este item?', icon: 'question', confirmButtonText: 'ELIMINAR' });
+        if (!confirmed.isConfirmed) return;
+
+        await execute(RECORD_PH_SERVICE.delete_floor(id), {
+            operationName: 'eliminar área',
+            onSuccess: () => {
+                requestUpdateRecord(currentItem.id);
+                setEdit(false);
+            },
         });
-    }
+    };
 
-    let toggle_not = (setter) => setter(prev => !prev);
-
-    let removeItem = (id) => {
-        swalConfirm('Remover elemento', '¿Esta seguro de remover este elemento de la informacion?', () => {
-            RECORD_LAW_SERVICE.delete(id)
-                .then(response => {
-                    if (response.data === 'OK') requestUpdateRecord(currentItem.id);
-                })
-                .catch(e => swalError({ title: 'Error en eliminación', text: e.message }));
-        });
-    }
-
-    let _COMPONENT_REVIEW = () => {
-        const _COMPONENT_RETURN = _GET_REVIEW().map(review => {
-            const found = REVIEW.find(re => re['alias'] == review);
-            const item = { ...found };
-            if (item.name) item.name = item.name.toUpperCase();
-            if (item.desc) item.desc = item.desc.toUpperCase();
-            return item;
-        })
-        return _COMPONENT_RETURN;
-    }
-
-    let _CHECK_ARRAY = () => {
-        let _LIST = [0, 1, 2, 3, 4, 5];
-        let _COMPONENT = [];
-        for (var i = 0; i < _LIST.length; i++) {
-            _COMPONENT.push(
-                checkArrayState[i] ?
-                    <div className="row border" key={i}>
-                        <div className="col">
-                            <select className="form-control form-control-sm" value={checkArrayState[i] ?? ''}
-                                onChange={(e) => {
-                                    const next = [...checkArrayState];
-                                    next[i] = e.target.value;
-                                    setCheckArrayState(next);
-                                }}>
-                                <option value="1">INCLUIR CONTRIBUYENTES INMUEBLE</option>
-                                <option value="2">INCLUIR CONTRIBUYENTES LINDEROS</option>
-                                <option value="3">INCLUIR PROPIETARIOS PREDIO</option>
-                                <option value="4">INCLUIR PROPIETARIOS LINDEROS</option>
-                                <option value="5">INCLUIR TITULARES APROBACION</option>
-                                <option value="6">INCLUIR AUTORIZA DESPUES</option>
-                            </select>
-                        </div>
-                        <div className="col-3">
-                            <button className="btn btn-danger" onClick={() => removeItem(i)}>BORRAR</button>
-                        </div>
-                    </div>
-                    : null
-            );
-        }
-        return _COMPONENT;
-    }
-
-    let _COMPONENT = () => {
-        let _CHILD_VARS = _GET_CHILD_1(currentItem);
-        let _CHILD_1 = _GET_CHILD_1_LATER(currentItem);
-        let _CHILD_2 = _GET_CHILD_1_LATER_LIST(currentItem);
-        let _CHILD_6 = _GET_CHILD_6();
-
-        let _JOIN_ARRAY = [];
-        if (attachs) _JOIN_ARRAY = attachs;
-
-        return (
-            <div className='record_ph_i container'>
-                {SECTION_MAP.map(sec => {
-                    const data = _GET_STEP_TYPE(sec.id, 'value');
-                    return (
-                        <div className='row border' key={sec.id}>
-                            {sec.labels.map((label, i) => {
-                                const field = `f0${i + 1}`;
-                                return (
-                                    <div className='col' key={field}>
-                                        <div className="row">
-                                            <div className="col-6">
-                                                <label>{label}</label>
-                                            </div>
-                                            <div className="col">
-                                                <input type={field === 'f01' ? "text" : "number"}
-                                                    className='form-control'
-                                                    value={sec.state[field]}
-                                                    onChange={handleSectionChange(sec.set)(field)} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            <div className="col-3">
-                                <button className="btn btn-danger btn-block" onClick={(e) => manage_item(e, sec.id)}>GUARDAR</button>
-                            </div>
-                        </div>
-                    );
-                })}
-
-                <div className='row border'>
-                    <div className="col">
-                        <div className="row">
-                            <label className="app-p lead fw-bold text-uppercase text-start">¿Qué listas incluye?</label>
-                            <div className="text-start">
-                                {_COMPONENT_REVIEW().map((rev, index) => <span key={rev.alias || rev.name || index}>{rev.name} <br /></span>)}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="row">
-                                <div className="col">
-                                    <label>ESTA SOLICITUD INCLUYE: </label>
-                                </div>
-                                <div className="col">
-                                <select className="form-select" value={incluyeSelect}
-                                    onChange={(e) => { setIncluyeSelect(e.target.value); save_item_61(e, 'phfpr'); }}>
-                                    <option value="">APLIQUE PARA AGREGAR O ELIMINAR</option>
-                                    <option value="1">INCLUIR CONTRIBUYENTES INMUEBLE</option>
-                                    <option value="2">INCLUIR CONTRIBUYENTES LINDEROS</option>
-                                    <option value="3">INCLUIR PROPIETARIOS PREDIO</option>
-                                    <option value="4">INCLUIR PROPIETARIOS LINDEROS</option>
-                                    <option value="5">INCLUIR TITULARES APROBACION</option>
-                                    <option value="6">INCLUIR AUTORIZA DESPUES</option>
-                                </select>
-                                </div>
-                            </div>
-                            {_CHECK_ARRAY()}
-                        </div>
-                    </div>
+    const renderForm = (data, setter, prefix) => <>
+        <div className="row mb-2">
+            <div className="col-12 col-md-3">
+                <label htmlFor={`${prefix}-floor`}>Piso</label>
+                <div className="input-group my-1">
+                    <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={16} /></span>
+                    <input id={`${prefix}-floor`} type="text" className="form-control" value={data.floor} onChange={(event) => setter(prev => ({ ...prev, floor: event.target.value }))} required />
                 </div>
-
-                <div className="row">
-                    <div className="col-1">
-                        <button className="btn btn-danger btn-block" onClick={() => toggle_not(setShowIncluir)}>INCLUIR</button>
-                    </div>
-                    <div className="col-1">
-                        <button className="btn btn-info btn-block" onClick={() => toggle_not(setShowCub)}>CUB</button>
-                    </div>
-                </div>
-
-                {showIncluir && (
-                    <div className='row border'>
-                        <div className="col">
-                            <div className="row">
-                                <div className="col">
-                                    <h3 className="text-center">INCLUIR DOCUMENTO</h3>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col">
-                                    <div className="row">
-                                        <label className="app-p lead text-start fw-bold">DOCUMENTO EXTERNO ANEXO</label>
-                                        <div className="col">
-                                            <div className="form-check ms-5">
-                                                <input className="form-check-input" type="checkbox" checked={ext0}
-                                                    onChange={(e) => { setExt0(e.target.checked); save_item_61(e, 'phfpr0'); }} />
-                                                <label className="form-check-label">INCLUIR</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col">
-                                            <label>DESCRIPCION</label>
-                                            <textarea className="form-control mb-3" rows="3" maxLength="2000"
-                                                value={ext1}
-                                                onChange={(e) => setExt1(e.target.value)}
-                                                onBlur={(e) => save_item_61(e, 'phfpr1')}
-                                                placeholder="DESCRIPCION DEL DOCUMENTO (MAXIMO 2000 CARACTERES)"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {showCub && (
-                    <div className='row border'>
-                        <div className="col">
-                            <div className="row">
-                                <div className="col">
-                                    <h3 className="text-center">INCLUIR CUB</h3>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col">
-                                    <div className="row">
-                                        <div className="col">
-                                            <div className="input-group">
-                                                <select className="form-select" value={cub0}
-                                                    onChange={(e) => { setCub0(e.target.value); manage_item(e, 'phfpr_cub_0'); }}>
-                                                    <option value="">SELECCIONE UNA CATEGORIA DE CUB</option>
-                                                    <option value="1">CUB 1</option>
-                                                    <option value="2">CUB 2</option>
-                                                    <option value="3">CUB 3</option>
-                                                    <option value="4">CUB 4</option>
-                                                    <option value="5">CUB 5</option>
-                                                    <option value="6">CUB 6</option>
-                                                </select>
-                                                <select className="form-select" value={cub1}
-                                                    onChange={(e) => { setCub1(e.target.value); manage_item(e, 'phfpr_cub_1'); }}>
-                                                    <option value="">SELECCIONE UNA CATEGORIA DE CUB</option>
-                                                    <option value="1">CUB 1</option>
-                                                    <option value="2">CUB 2</option>
-                                                    <option value="3">CUB 3</option>
-                                                    <option value="4">CUB 4</option>
-                                                    <option value="5">CUB 5</option>
-                                                    <option value="6">CUB 6</option>
-                                                </select>
-                                                <button className="btn btn-danger" onClick={(e) => manage_item(e, 'phfpr_cub')}>GENERAR</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                <div className="row">
-                    <div className="col-1">
-                        <button className="btn btn-danger btn-block" onClick={() => toggle_not(setShowAnexo)}>ANEXO</button>
-                    </div>
-                </div>
-
-                {showAnexo && (
-                    <div className='row border'>
-                        <div className="col">
-                            <div className="row">
-                                <div className="col">
-                                    <h3 className="text-center">ANEXO</h3>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col">
-                                    <div className="row">
-                                        <label className="app-p lead text-start fw-bold">DOCUMENTO EXTERNO ANEXO</label>
-                                        <div className="col">
-                                            <div className="form-check ms-5">
-                                                <input className="form-check-input" type="checkbox" checked={ext2}
-                                                    onChange={(e) => { setExt2(e.target.checked); save_item_61(e, 'phfpr2'); }} />
-                                                <label className="form-check-label">INCLUIR</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col">
-                                            <label>DESCRIPCION</label>
-                                            <textarea className="form-control mb-3" rows="3" maxLength="2000"
-                                                value={ext3}
-                                                onChange={(e) => setExt3(e.target.value)}
-                                                onBlur={(e) => save_item_61(e, 'phfpr3')}
-                                                placeholder="DESCRIPCION DEL DOCUMENTO (MAXIMO 2000 CARACTERES)"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
-        )
-    }
-
-    return (
-        <div className="record_ph_i container">
-            {_COMPONENT()}
         </div>
-    )
+
+        <div className="row mb-2 align-items-start">
+            <div className="col-12 col-lg-8 border border-info rounded-2 p-2">
+                <div className="fw-bold mb-2">Unidades</div>
+                {data.divisions.map((division, index) => <div className="row" key={`${division.name}-${division.build}-${division.free}`}>
+                    <div className="col-12 col-md">
+                        <label htmlFor={`${prefix}-division-name-${index}`}>Unidad {index + 1}</label>
+                        <input id={`${prefix}-division-name-${index}`} type="text" className="form-control my-1" value={division.name} onChange={(event) => updateDivision(setter, index, 'name', event.target.value)} />
+                    </div>
+                    <div className="col-12 col-md">
+                        <label htmlFor={`${prefix}-division-build-${index}`}>Área Priv. Construida</label>
+                        <input id={`${prefix}-division-build-${index}`} type="number" min="0" step="0.01" className="form-control my-1" value={division.build} onChange={(event) => updateDivision(setter, index, 'build', event.target.value)} />
+                    </div>
+                    <div className="col-12 col-md">
+                        <label htmlFor={`${prefix}-division-free-${index}`}>Área Priv. Libre</label>
+                        <input id={`${prefix}-division-free-${index}`} type="number" min="0" step="0.01" className="form-control my-1" value={division.free} onChange={(event) => updateDivision(setter, index, 'free', event.target.value)} />
+                    </div>
+                </div>)}
+            </div>
+            <div className="col-12 col-lg-4 text-lg-end mt-2 mt-lg-0">
+                {data.divisions.length > 1 ? <Button type="button" variant="outline" size="sm" className="mx-2" onClick={() => removeDivision(setter)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO</Button> : null}
+                <Button type="button" variant="outline" size="sm" onClick={() => addDivision(setter)}><Icon name="plus-circle" size={16} /> AÑADIR</Button>
+            </div>
+        </div>
+
+        <div className="row mb-2">
+            <div className="fw-bold">Área Común</div>
+            <div className="col-12 col-lg-6 border border-info rounded-2 p-2">
+                <div className="fw-bold">Área de uso Común</div>
+                <div className="row">
+                    <div className="col"><label htmlFor={`${prefix}-common-build`}>Construida</label><input id={`${prefix}-common-build`} type="number" min="0" step="0.01" className="form-control my-1" value={data.common[0]} onChange={(event) => updateCommon(setter, 0, event.target.value)} /></div>
+                    <div className="col"><label htmlFor={`${prefix}-common-free`}>Libre</label><input id={`${prefix}-common-free`} type="number" min="0" step="0.01" className="form-control my-1" value={data.common[1]} onChange={(event) => updateCommon(setter, 1, event.target.value)} /></div>
+                </div>
+            </div>
+            <div className="col-12 col-lg-6 border border-info rounded-2 p-2">
+                <div className="fw-bold">Área de uso Exclusivo</div>
+                <div className="row">
+                    <div className="col"><label htmlFor={`${prefix}-exclusive-build`}>Construida</label><input id={`${prefix}-exclusive-build`} type="number" min="0" step="0.01" className="form-control my-1" value={data.common[2]} onChange={(event) => updateCommon(setter, 2, event.target.value)} /></div>
+                    <div className="col"><label htmlFor={`${prefix}-exclusive-free`}>Libre</label><input id={`${prefix}-exclusive-free`} type="number" min="0" step="0.01" className="form-control my-1" value={data.common[3]} onChange={(event) => updateCommon(setter, 3, event.target.value)} /></div>
+                </div>
+            </div>
+        </div>
+
+        <div className="form-check ms-2 my-3">
+            <input id={`${prefix}-fixed-enabled`} className="form-check-input" type="checkbox" checked={data.fixedEnabled} onChange={(event) => setter(prev => ({ ...prev, fixedEnabled: event.target.checked }))} />
+            <label className="form-check-label" htmlFor={`${prefix}-fixed-enabled`}>Área no modificable</label>
+        </div>
+        <div className="border border-info rounded-2 p-2 my-2">
+            <div className="row">
+                <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-writing`}>Escritura</label><input id={`${prefix}-fixed-writing`} type="text" className="form-control my-1" value={data.fixed[0]} onChange={(event) => updateFixed(setter, 0, event.target.value)} /></div>
+                <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-date`}>Fecha</label><input id={`${prefix}-fixed-date`} type="date" max="2100-01-01" className="form-control my-1" value={data.fixed[1]} onChange={(event) => updateFixed(setter, 1, event.target.value)} /></div>
+                <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-notary`}>Notaria</label><input id={`${prefix}-fixed-notary`} type="number" min="0" step="1" className="form-control my-1" value={data.fixed[2]} onChange={(event) => updateFixed(setter, 2, event.target.value)} /></div>
+                <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-city`}>Ciudad</label><input id={`${prefix}-fixed-city`} type="text" className="form-control my-1" value={data.fixed[3]} onChange={(event) => updateFixed(setter, 3, event.target.value)} /></div>
+            </div>
+        </div>
+    </>;
+
+    return <div className="record_law_gen_11 container my-2">
+        <div className="app-p lead fw-bold">AREAS COMUNES Y PRIVADAS</div>
+        <div className="form-check ms-5">
+            <input id="ph-floor-new-toggle" className="form-check-input" type="checkbox" checked={isNew} onChange={(event) => setIsNew(event.target.checked)} />
+            <label className="form-check-label" htmlFor="ph-floor-new-toggle">Nuevo Área</label>
+        </div>
+        {isNew ? <form id="form_ph_floor_new" onSubmit={newItem}>
+            {renderForm(form, setForm, 'ph-floor-new')}
+            <div className="row mb-3 text-center"><div className="col-12"><Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> AÑADIR ITEM</Button></div></div>
+        </form> : null}
+
+        <DataTable
+            conditionalRowStyles={[{ when: row => row.fixed?.includes('&&'), style: { backgroundColor: 'hsl(var(--warning) / 0.12)' } }]}
+            noDataComponent="No hay Items"
+            striped="true"
+            columns={columns}
+            data={floors}
+            highlightOnHover
+            className="data-table-component"
+            noHeader
+        />
+
+        <div className="row border border-dark mx-2 py-2"><div className="col-12 text-center"><span className="fw-bold">Totales:</span></div></div>
+        <div className="row mx-2 text-center ph-floor-totals">
+            <div className="col border border-dark"><span className="small">Área Privada Construida</span><br /><span className="fw-bold">{toMoney(totals.private_build)}</span></div>
+            <div className="col border border-dark"><span className="small">Área Privada Libre</span><br /><span className="fw-bold">{toMoney(totals.private_free)}</span></div>
+            <div className="col border border-dark"><span className="small">Total Área Privada</span><br /><span className="fw-bold text-secondary">{toMoney(totals.private_total)}</span></div>
+            <div className="col border border-dark"><span className="small">Área Común Construida</span><br /><span className="fw-bold">{toMoney(totals.common_build)}</span></div>
+            <div className="col border border-dark"><span className="small">Área Común Libre</span><br /><span className="fw-bold">{toMoney(totals.common_free)}</span></div>
+            <div className="col border border-dark"><span className="small">Área Exclusiva Construida</span><br /><span className="fw-bold">{toMoney(totals.exclusive_build)}</span></div>
+            <div className="col border border-dark"><span className="small">Área Exclusiva Libre</span><br /><span className="fw-bold">{toMoney(totals.exclusive_free)}</span></div>
+            <div className="col border border-dark"><span className="small">Total Común Construida</span><br /><span className="fw-bold text-secondary">{toMoney(totals.common_total)}</span></div>
+            <div className="col border border-dark"><span className="small">Área Total Construida</span><br /><span className="fw-bold text-danger">{toMoney(totals.total)}</span></div>
+        </div>
+
+        {edit ? <form id="form_ph_floor_edit" onSubmit={editItem}>
+            <h3 className="my-3 text-center">Actualizar Área</h3>
+            {renderForm(editForm, setEditForm, 'ph-floor-edit')}
+            <div className="row mb-3 text-center"><div className="col-12"><Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS</Button></div></div>
+        </form> : null}
+    </div>;
 }
+
+export default RECORD_PH_FLOOR;

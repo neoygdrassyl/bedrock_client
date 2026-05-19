@@ -1,6 +1,0 @@
-{
-  "command": "npx --yes react-doctor@0.1.6 . --verbose --json",
-  "status": 1,
-  "signal": null,
-  "error": null
-}

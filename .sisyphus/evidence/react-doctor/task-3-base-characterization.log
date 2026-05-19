@@ -1,3 +1,0 @@
-npm test -- src/__tests__/workflows --run
-Exit code: 0
-Result: 7 test files passed, 19 tests passed.

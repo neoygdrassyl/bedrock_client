@@ -9,7 +9,7 @@ import usePHSave from './hooks/usePHSave';
 
 const INITIAL_FORM = { id_public: '', floor: '', area: '', units_other: '', units: ['','','','','','',''] };
 
-function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+function RECORD_PH_BLUEPRINT({ swaMsg, currentItem, currentRecord, requestUpdateRecord }) {
     const [isNew, setIsNew] = useState(false);
     const [edit, setEdit] = useState(false);
     const [form, setForm] = useState({ ...INITIAL_FORM });
@@ -73,7 +73,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 center: true,
                 minWidth: "40px",
                 compact: true,
-                cell: row => <label >{(row.units).split(";")[0]}</label>
+                cell: row => <span>{(row.units).split(";")[0]}</span>
             },
             {
                 name: 'Locales / Lockers',
@@ -83,7 +83,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 center: true,
                 minWidth: "40px",
                 compact: true,
-                cell: row => <label >{(row.units).split(";")[1]}</label>
+                cell: row => <span>{(row.units).split(";")[1]}</span>
             },
             {
                 name: 'Parcelas / Lotes',
@@ -93,7 +93,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 center: true,
                 minWidth: "40px",
                 compact: true,
-                cell: row => <label >{(row.units).split(";")[2]}</label>
+                cell: row => <span>{(row.units).split(";")[2]}</span>
             },
             {
                 name: 'Parqueos',
@@ -103,7 +103,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 center: true,
                 minWidth: "40px",
                 compact: true,
-                cell: row => <label >{(row.units).split(";")[3]}</label>
+                cell: row => <span>{(row.units).split(";")[3]}</span>
             },
             {
                 name: 'Oficinas',
@@ -113,7 +113,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 center: true,
                 minWidth: "40px",
                 compact: true,
-                cell: row => <label >{(row.units).split(";")[4]}</label>
+                cell: row => <span>{(row.units).split(";")[4]}</span>
             },
             {
                 name: 'Bodegas',
@@ -123,7 +123,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 center: true,
                 minWidth: "40px",
                 compact: true,
-                cell: row => <label >{(row.units).split(";")[5]}</label>
+                cell: row => <span>{(row.units).split(";")[5]}</span>
             },
             {
                 name: 'Número Parqueos',
@@ -133,7 +133,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 center: true,
                 minWidth: "40px",
                 compact: true,
-                cell: row => <label >{(row.units).split(";")[6]}</label>
+                cell: row => <span>{(row.units).split(";")[6]}</span>
             },
             {
                 name: 'Descripción otros bienes (espacios)',
@@ -142,7 +142,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 filterable: true,
                 center: true,
                 minWidth: "180px",
-                cell: row => <label >{row.units_other}</label>
+                cell: row => <span>{row.units_other}</span>
             },
             {
                 name: 'ACCION',
@@ -154,15 +154,17 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 </>
             },
         ]
-        return <DataTable
-            noDataComponent="No hay Items"
-            striped="true"
-            columns={columns}
-            data={_LIST}
-            highlightOnHover
-            className="data-table-component"
-            noHeader
-        />
+        return <div className="table-responsive rounded-3 border bg-background">
+            <DataTable
+                noDataComponent="No hay Items"
+                striped="true"
+                columns={columns}
+                data={_LIST}
+                highlightOnHover
+                className="data-table-component"
+                noHeader
+            />
+        </div>
     }
 
     let _COMPONENT_MANAGE = (isEditing = false) => {
@@ -183,9 +185,9 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
         };
 
         return <>
-            <div className="row mb-1">
-                <div className="col-3">
-                    <label>ID Plano</label>
+            <div className="row mb-2 g-2">
+                <div className="col-12 col-md-4">
+                    <label htmlFor={"r_ph_bl_1" + suffix}>ID Plano</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="hashtag" size={16} />
@@ -193,8 +195,8 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                         <input type="text" className="form-control" id={"r_ph_bl_1" + suffix} value={data.id_public} onChange={handleChange('id_public')} />
                     </div>
                 </div>
-                <div className="col-3">
-                    <label>Sótano / Piso</label>
+                <div className="col-12 col-md-4">
+                    <label htmlFor={"r_ph_bl_2" + suffix}>Sótano / Piso</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="home" size={16} />
@@ -202,8 +204,8 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                         <input type="text" className="form-control" id={"r_ph_bl_2" + suffix} value={data.floor} onChange={handleChange('floor')} />
                     </div>
                 </div>
-                <div className="col-3">
-                    <label>Área total Construida m2</label>
+                <div className="col-12 col-md-4">
+                    <label htmlFor={"r_ph_bl_3" + suffix}>Área total Construida m2</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-primary text-primary-foreground">
                             <Icon name="ruler" size={16} />
@@ -212,56 +214,56 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     </div>
                 </div>
             </div>
-            <div className="row border border-info p-2">
-                <label className="fw-bold">Número de unidades privadas</label>
-                <div className="col">
-                    <label>Viviendas/ Apartamentos</label>
+            <div className="row border border-info rounded-2 p-2 mx-0 g-2">
+                <div className="fw-bold">Número de unidades privadas</div>
+                <div className="col-12 col-md-4 col-xl-2">
+                    <label htmlFor={"r_ph_bl_4_0" + suffix}>Viviendas/ Apartamentos</label>
                     <div className="input-group my-1">
-                        <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + suffix} value={data.units[0]} onChange={handleUnitChange(0)} />
+                        <input id={"r_ph_bl_4_0" + suffix} type="number" min="0" className="form-control" value={data.units[0]} onChange={handleUnitChange(0)} />
                     </div>
                 </div>
-                <div className="col">
-                    <label>Locales / Lockers</label>
+                <div className="col-12 col-md-4 col-xl-2">
+                    <label htmlFor={"r_ph_bl_4_1" + suffix}>Locales / Lockers</label>
                     <div className="input-group my-1">
-                        <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + suffix} value={data.units[1]} onChange={handleUnitChange(1)} />
+                        <input id={"r_ph_bl_4_1" + suffix} type="number" min="0" className="form-control" value={data.units[1]} onChange={handleUnitChange(1)} />
                     </div>
                 </div>
-                <div className="col">
-                    <label>Parcelas / Lotes</label>
+                <div className="col-12 col-md-4 col-xl-2">
+                    <label htmlFor={"r_ph_bl_4_2" + suffix}>Parcelas / Lotes</label>
                     <div className="input-group my-1">
-                        <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + suffix} value={data.units[2]} onChange={handleUnitChange(2)} />
+                        <input id={"r_ph_bl_4_2" + suffix} type="number" min="0" className="form-control" value={data.units[2]} onChange={handleUnitChange(2)} />
                     </div>
                 </div>
-                <div className="col">
-                    <label>Parqueos</label>
+                <div className="col-12 col-md-4 col-xl-2">
+                    <label htmlFor={"r_ph_bl_4_3" + suffix}>Parqueos</label>
                     <div className="input-group my-1">
-                        <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + suffix} value={data.units[3]} onChange={handleUnitChange(3)} />
+                        <input id={"r_ph_bl_4_3" + suffix} type="number" min="0" className="form-control" value={data.units[3]} onChange={handleUnitChange(3)} />
                     </div>
                 </div>
-                <div className="col">
-                    <label>Oficinas</label>
+                <div className="col-12 col-md-4 col-xl-2">
+                    <label htmlFor={"r_ph_bl_4_4" + suffix}>Oficinas</label>
                     <div className="input-group my-1">
-                        <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + suffix} value={data.units[4]} onChange={handleUnitChange(4)} />
+                        <input id={"r_ph_bl_4_4" + suffix} type="number" min="0" className="form-control" value={data.units[4]} onChange={handleUnitChange(4)} />
                     </div>
                 </div>
-                <div className="col">
-                    <label>Bodegas</label>
+                <div className="col-12 col-md-4 col-xl-2">
+                    <label htmlFor={"r_ph_bl_4_5" + suffix}>Bodegas</label>
                     <div className="input-group my-1">
-                        <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + suffix} value={data.units[5]} onChange={handleUnitChange(5)} />
+                        <input id={"r_ph_bl_4_5" + suffix} type="number" min="0" className="form-control" value={data.units[5]} onChange={handleUnitChange(5)} />
                     </div>
                 </div>
             </div>
 
-            <div className="row border border-info p-2">
-                <label className="fw-bold">Bienes comunes (Espacios)</label>
-                <div className="col-3">
-                    <label>Número Parqueos</label>
+            <div className="row border border-info rounded-2 p-2 mx-0 mt-2 g-2">
+                <div className="fw-bold">Bienes comunes (Espacios)</div>
+                <div className="col-12 col-md-4">
+                    <label htmlFor={"r_ph_bl_4_6" + suffix}>Número Parqueos</label>
                     <div className="input-group my-1">
-                        <input type="number" min="0" className="form-control" name={"r_ph_bl_4" + suffix} value={data.units[6]} onChange={handleUnitChange(6)} />
+                        <input id={"r_ph_bl_4_6" + suffix} type="number" min="0" className="form-control" value={data.units[6]} onChange={handleUnitChange(6)} />
                     </div>
                 </div>
-                <div className="col-6">
-                    <label>Descripción otros bienes (espacios)</label>
+                <div className="col-12 col-md-8">
+                    <label htmlFor={"r_ph_bl_5" + suffix}>Descripción otros bienes (espacios)</label>
                     <div className="input-group my-1">
                         <input type="text" className="form-control" id={"r_ph_bl_5" + suffix} value={data.units_other} onChange={handleChange('units_other')} />
                     </div>
@@ -274,7 +276,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
         let _LIST = _GET_CHILD_BLUEPRINTS();
         let _area = 0;
         let _units = [0, 0, 0, 0, 0, 0, 0]
-        for (var i = 0; i < _LIST.length; i++) {
+        for (let i = 0; i < _LIST.length; i++) {
             _area += Number(_LIST[i].area);
             let split = (_LIST[i].units).split(';');
             _units[0] += Number(split[0] ?? 0);
@@ -288,35 +290,35 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
         return <>
             <div className="row">
                 <div className="col-12 border p-2 text-center">
-                    <label className="fw-bold">Totales:</label>
+                    <span className="fw-bold">Totales:</span>
                 </div>
             </div>
             <div className="row border p-2">
                 <div className="col-12">
-                    <label>Construido: </label> <label className="fw-bold">{(_area).toFixed(2)} m2</label>
+                    <span>Construido: </span> <span className="fw-bold">{(_area).toFixed(2)} m2</span>
                 </div>
             </div>
             <div className="row border p-2">
                 <div className="col">
-                    <label>Vivienda / Aptos: </label>  <label className="fw-bold">{_units[0]}</label>
+                    <span>Vivienda / Aptos: </span>  <span className="fw-bold">{_units[0]}</span>
                 </div>
                 <div className="col">
-                    <label>Locales / Lockers: </label>  <label className="fw-bold">{_units[1]}</label>
+                    <span>Locales / Lockers: </span>  <span className="fw-bold">{_units[1]}</span>
                 </div>
                 <div className="col">
-                    <label>Parcelas Lotes: </label>  <label className="fw-bold">{_units[2]}</label>
+                    <span>Parcelas Lotes: </span>  <span className="fw-bold">{_units[2]}</span>
                 </div>
                 <div className="col">
-                    <label>Parqueos: </label>   <label className="fw-bold">{_units[3]}</label>
+                    <span>Parqueos: </span>   <span className="fw-bold">{_units[3]}</span>
                 </div>
                 <div className="col">
-                    <label>Oficinas:  </label>  <label className="fw-bold">{_units[4]}</label>
+                    <span>Oficinas:  </span>  <span className="fw-bold">{_units[4]}</span>
                 </div>
                 <div className="col">
-                    <label>Bodegas: </label>  <label className="fw-bold">{_units[5]}</label>
+                    <span>Bodegas: </span>  <span className="fw-bold">{_units[5]}</span>
                 </div>
                 <div className="col">
-                    <label>Número Parqueos: </label>  <label className="fw-bold">{_units[6]}</label>
+                    <span>Número Parqueos: </span>  <span className="fw-bold">{_units[6]}</span>
                 </div>
             </div>
         </>
@@ -374,12 +376,12 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
     }
 
     return (
-        <div className="record_law_gen_11 container my-2">
-            <label className="app-p lead fw-bold">RELACIÓN DE PLANOS PRESENTADOS</label>
+        <div className="record_law_gen_11 container-xl my-3 px-3">
+            <div className="app-p lead fw-bold">RELACIÓN DE PLANOS PRESENTADOS</div>
 
             <div className="form-check ms-5">
-                <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                <label className="form-check-label" htmlFor="flexCheckDefault">
+                <input id="ph-blueprint-new-toggle" className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                <label className="form-check-label" htmlFor="ph-blueprint-new-toggle">
                     Nuevo Plano
                 </label>
             </div>
