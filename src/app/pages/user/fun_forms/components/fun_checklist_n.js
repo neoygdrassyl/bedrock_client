@@ -2,6 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import FUNService from '../../../../services/fun.service'
+import FunCorrelatedDocumentControl from './FunCorrelatedDocumentControl';
 
 import JsonDocList from '../../../../components/jsons/fun6DocsList.json'
 import { regexChecker_cota, regexChecker_isPh, regexChecker_modPlano, regexChecker_movTierra, regexChecker_piscina } from '../../../../components/customClasses/typeParse';
@@ -176,6 +177,26 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
                 else return false;
             }
         }
+
+        const getCorrelatedCheckValue = (_CODE) => {
+            try {
+                if (_CHECK_INDEXVALUE(_CODE, 1)) return 'SI';
+                if (_CHECK_INDEXVALUE(_CODE, 0)) return 'NO';
+                if (_CHECK_INDEXVALUE(_CODE, 2)) return 'N/A';
+            } catch (_error) {
+                return 'sin_definir';
+            }
+            return 'sin_definir';
+        };
+
+        const isCorrelatedRequirementApplicable = (_CODE) => {
+            if (!dvCheckList[_CODE]) return false;
+            try {
+                return Boolean(dvCheckList[_CODE](currentItem));
+            } catch (_error) {
+                return false;
+            }
+        };
 
         let m_2022 = Number(currentItem.model) >= 2022
 
@@ -652,6 +673,15 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
                 {_SET_660()}
                 {_SET_670()}
                 {_SET_680()}
+                <FunCorrelatedDocumentControl
+                    currentItem={currentItem}
+                    currentVersion={currentVersion}
+                    codes={fatherValues}
+                    labels={JsonDocList}
+                    getCheckValue={getCorrelatedCheckValue}
+                    isRequirementApplicable={isCorrelatedRequirementApplicable}
+                    readOnly={readOnly}
+                />
                 {readOnly ?
                     ''
                     : <div className="row text-center">
