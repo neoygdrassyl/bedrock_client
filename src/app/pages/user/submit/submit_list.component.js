@@ -32,10 +32,22 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
     const [localDigitalDocuments, setLocalDigitalDocuments] = useState([]);
     const currentSubLists = currentItem?.sub_lists ?? [];
     const normalizeDocumentCode = (value) => String(value || '').trim().toUpperCase();
-    const displayedDigitalDocuments = [
-        ...localDigitalDocuments,
-        ...digitalDocuments.filter((documentItem) => !localDigitalDocuments.some((localDocument) => localDocument?.id === documentItem?.id || normalizeDocumentCode(localDocument?.id_public) === normalizeDocumentCode(documentItem?.id_public))),
-    ];
+    const currentVrCode = normalizeDocumentCode(currentItem?.id_public);
+    const belongsToCurrentVr = (documentItem) => {
+        const documentVrCode = normalizeDocumentCode(documentItem?.id_replace || documentItem?.idReplace || documentItem?.vr || documentItem?.idRelated);
+        return Boolean(currentVrCode && documentVrCode === currentVrCode);
+    };
+    const displayedDigitalDocuments = [...localDigitalDocuments, ...digitalDocuments]
+        .filter(belongsToCurrentVr)
+        .filter((documentItem, index, scopedDocuments) => {
+            const documentId = documentItem?.id ? `id:${documentItem.id}` : '';
+            const documentKey = documentId || `${normalizeDocumentCode(documentItem?.id_public || documentItem?.documentCode || documentItem?.code)}:${normalizeDocumentCode(documentItem?.id_replace)}`;
+            return scopedDocuments.findIndex((candidate) => {
+                const candidateId = candidate?.id ? `id:${candidate.id}` : '';
+                const candidateKey = candidateId || `${normalizeDocumentCode(candidate?.id_public || candidate?.documentCode || candidate?.code)}:${normalizeDocumentCode(candidate?.id_replace)}`;
+                return candidateKey === documentKey;
+            }) === index;
+        });
     const CONTRIBUTOR_OPTIONS = ['', 'Solicitante', 'Curaduría'];
 
     const splitListField = (value, separator = ',') => value ? String(value).split(separator) : [];
@@ -148,7 +160,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
         const itemCount = Math.max(names.length, categories.length, codes.length, pages.length, contributors.length);
 
         return Array.from({ length: itemCount }).reduce((items, _, originalIndex) => {
-            if (!hasPositivePages(pages[originalIndex])) return items;
+            if (![names[originalIndex], categories[originalIndex], codes[originalIndex], pages[originalIndex], contributors[originalIndex]].some((value) => String(value || '').trim())) return items;
 
             items.push({
                 originalIndex,
@@ -260,7 +272,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
 
             let items = Math.max(name.length, category.length, code.length, page.length, contributor.length);
             let isExtra = checkIfExtra(row.list_title)
-            const tableGridClass = "grid grid-cols-[92px_82px_150px_minmax(240px,1fr)_72px_88px_132px_84px] gap-2";
+            const tableGridClass = "grid grid-cols-[56px_76px_112px_minmax(320px,1fr)_70px_84px_132px_84px] gap-2";
 
             const StatusBadge = ({ active, icon, label, description, tone = 'primary' }) => {
                 const activeClass = tone === 'success'
@@ -342,13 +354,6 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                             label={provided ? 'Aportado en ventanilla única' : 'No aportado en ventanilla única'}
                                             description={provided ? `${currentPages} folio${String(currentPages) === '1' ? '' : 's'} registrado${String(currentPages) === '1' ? '' : 's'} · ${contributorText}` : 'Ingrese un número de folios mayor a 0 para marcarlo como aportado.'}
                                             tone="primary"
-                                        />
-                                        <StatusBadge
-                                            active={scanned}
-                                            icon="SearchCheck"
-                                            label={scanned ? 'Escaneado cargado' : 'Sin escaneado cargado'}
-                                            description={scanned ? 'Existe un documento digitalizado asociado a este código.' : 'Aún no se ha encontrado un escaneado asociado a este código.'}
-                                            tone="success"
                                         />
                                     </div>
 
@@ -796,7 +801,8 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             const physicalPages = pagesInputs[rowIndex]?.value || defaults.pages || '';
             const digitalPages = getPhysicalDraftValue(listId, rowIndex, 'digitalPages', defaults.digitalPages || physicalPages || '');
             const pages = Number(digitalPages) > 0 ? digitalPages : physicalPages;
-            const existingDocument = defaults.existingDocument || getScannedDocument(documentCode);
+            const candidateExistingDocument = defaults.existingDocument || getScannedDocument(documentCode);
+            const existingDocument = belongsToCurrentVr(candidateExistingDocument) ? candidateExistingDocument : null;
 
             if (!file || !documentCode || !documentName || !pages || Number(pages) < 1) {
                 swalError({
@@ -870,7 +876,9 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         origin_state: DOCUMENT_ORIGIN_STATE.SCANNED,
                         active: 1,
                     };
-                    const documentsToMerge = savedRows.length ? savedRows : [fallbackDocument];
+                    const documentsToMerge = (savedRows.length ? savedRows : [fallbackDocument])
+                        .map((documentItem) => ({ ...documentItem, id_replace: documentItem?.id_replace || currentItem.id_public }))
+                        .filter(belongsToCurrentVr);
 
                     setLocalDigitalDocuments((currentDocuments) => {
                         const incomingIds = new Set(documentsToMerge.map((documentItem) => documentItem?.id).filter(Boolean));
@@ -902,6 +910,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
 
         let deleteScannedDocument = (documentItem) => {
             if (!documentItem?.id) return;
+            if (!belongsToCurrentVr(documentItem)) {
+                swalError({ title: 'Escaneado fuera del VR activo', text: 'Este documento no pertenece a la entrada de ventanilla seleccionada.' });
+                return;
+            }
 
             swalConfirm({ title: 'Eliminar escaneado', text: '¿Desea eliminar el archivo escaneado asociado a este documento?', icon: 'question', confirmButtonText: 'ELIMINAR' }).then(SweetAlertResult => {
                 if (!SweetAlertResult.isConfirmed) return;
@@ -1096,7 +1108,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border bg-muted/20 px-4 py-3">
                             <div className="min-w-0">
                                 <h3 className="mb-1 text-base font-semibold">Gestionar escaneados</h3>
-                                <p className="mb-0 text-sm text-muted-foreground">Consulte, previsualice, reemplace o elimine los escaneados de documentos con folios registrados.</p>
+                                <p className="mb-0 text-sm text-muted-foreground">Consulte, previsualice, reemplace o elimine escaneados únicamente para documentos de la lista activa de este VR.</p>
                             </div>
                             <Button type="button" variant="outline" size="sm" className="h-8 shrink-0 px-2" onClick={() => setScanModalOpen(false)}>
                                 <Icon name="XCircle" size={14} /> Cerrar
@@ -1106,7 +1118,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         <div className="min-h-0 flex-1 overflow-y-auto p-3">
                             {reviewedDocuments.length
                                 ? <div className="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
-                                    <div className="grid grid-cols-[120px_minmax(220px,1fr)_90px_110px_150px] gap-2 border-b border-border/70 bg-muted/25 px-3 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                                    <div className="grid grid-cols-[105px_minmax(260px,1fr)_90px_110px_150px] gap-2 border-b border-border/70 bg-muted/25 px-3 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                                         <span>Código</span>
                                         <span>Documento</span>
                                         <span className="text-center">Folios dig.</span>
@@ -1122,7 +1134,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                             const digitalPages = getPhysicalDraftValue(activeList.id, documentItem.originalIndex, 'digitalPages', scanDraft.digitalPages || scannedDocument?.pages || documentItem.pages || '');
 
                                             return (
-                                                <div key={`${activeList.id}-${documentItem.originalIndex}`} className="grid grid-cols-[120px_minmax(220px,1fr)_90px_110px_150px] gap-2 px-3 py-2 text-sm transition-colors hover:bg-muted/20">
+                                                <div key={`${activeList.id}-${documentItem.originalIndex}`} className="grid grid-cols-[105px_minmax(260px,1fr)_90px_110px_150px] gap-2 px-3 py-2 text-sm transition-colors hover:bg-muted/20">
                                                     <div className="min-w-0">
                                                         <span className="block truncate font-mono text-xs font-semibold text-foreground">{documentItem.code || 'Sin código'}</span>
                                                         <span className="text-[0.7rem] text-muted-foreground">{documentItem.category || 'Sin categoría'} · {documentItem.pages || 0} físico{String(documentItem.pages) === '1' ? '' : 's'}</span>
@@ -1191,7 +1203,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                     </div>
                                 </div>
                                 : <div className="flex min-h-48 items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
-                                    Esta lista no tiene documentos con folios registrados para gestionar escaneados.
+                                    Esta lista no tiene documentos para gestionar escaneados.
                                 </div>}
                         </div>
                     </section>
