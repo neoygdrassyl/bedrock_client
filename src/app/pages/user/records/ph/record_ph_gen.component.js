@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Icon from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import VIZUALIZER from '../../../../components/vizualizer.component';
@@ -11,19 +11,23 @@ function RECORD_PH_GEN(props) {
 
     const [form, setForm] = useState(Array(15).fill(''));
     const [dutyEnabled, setDutyEnabled] = useState(false);
+    const lastReviewGenRef = useRef(null);
 
     useEffect(() => {
-        const _CHILD = currentRecord.review_gen;
+        const reviewGen = currentRecord?.review_gen ?? null;
+        if (reviewGen === lastReviewGenRef.current) return;
+        lastReviewGenRef.current = reviewGen;
+
         let _LIST = Array(15).fill('');
-        if (_CHILD) {
-            const parts = _CHILD.split(';');
+        if (reviewGen) {
+            const parts = reviewGen.split(';');
             for (let i = 0; i < parts.length && i < 15; i++) {
                 _LIST[i] = parts[i];
             }
         }
         setForm(_LIST);
         setDutyEnabled(_LIST[10] === 'SI');
-    }, [currentRecord.review_gen]);
+    }, [currentRecord?.review_gen]);
 
     let _GET_CHILD_51 = () => {
         var _CHILD = currentItem.fun_51s;
@@ -59,20 +63,25 @@ function RECORD_PH_GEN(props) {
         return <>{_COMPONENT}</>
     }
 
-    const handleChange = (index) => (e) => {
-        const next = [...form];
-        next[index] = e.target.value;
-        setForm(next);
+    const handleChange = useCallback((index) => (e) => {
+        const value = e.target.value;
+        setForm((prev) => {
+            const next = [...prev];
+            next[index] = value;
+            return next;
+        });
         if (index === 10) {
-            setDutyEnabled(e.target.value === 'SI');
+            setDutyEnabled(value === 'SI');
         }
-    };
+    }, []);
 
-    const handleRadio = (index, value) => () => {
-        const next = [...form];
-        next[index] = value;
-        setForm(next);
-    };
+    const handleRadio = useCallback((index, value) => () => {
+        setForm((prev) => {
+            const next = [...prev];
+            next[index] = value;
+            return next;
+        });
+    }, []);
 
     let manage_item = async (e) => {
         e.preventDefault();
