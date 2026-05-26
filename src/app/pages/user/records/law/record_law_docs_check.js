@@ -8,46 +8,25 @@ import submitService from '../../../../services/submit.service';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { Button } from '@/components/ui/button';
 
-const normalizeReportStatus = (status) => {
-    const value = String(status || '').trim().toLowerCase();
-    if (value === 'cumple' || value === 'no_cumple' || value === 'revisar') return value;
-    return 'pendiente';
-}
-
-const normalizeEvaluationRows = (responseData) => {
-    const rows = Array.isArray(responseData?.data) ? responseData.data : responseData;
-    if (!Array.isArray(rows)) return {};
-
-    return rows.reduce((acc, row) => {
-        const code = String(row.requirement_code || row.requirementCode || row.code || '');
-        if (!code) return acc;
-        acc[code] = {
-            status: normalizeReportStatus(row.status),
-            observation: row.observation || '',
-        };
-        return acc;
-    }, {});
-}
-
 function RECORD_LAW_DOCSCHECK(props) {
     const [VRDocs, setVRDocs] = useState([]);
     const [load, setLoad] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
     const [hideNotApplicable, setHideNotApplicable] = useState(Boolean(props.hideNotApplicableDefault));
-    const [reportEvaluations, setReportEvaluations] = useState({});
-    const [savingReportEvaluations, setSavingReportEvaluations] = useState(false);
 
     const {
+        translation,
         swaMsg,
+        globals,
         currentItem,
+        _FUN_1,
         _FUN_R,
         _FUN_6,
         readOnly,
         docsScope,
-        ownerRecordId,
         showFilters = false,
         title = 'Inventario de Informacion Aportada',
     } = props;
-    const reportOwnerRecordId = ownerRecordId ?? currentItem?.id ?? '';
 
     useEffect(() => {
         setHideNotApplicable(Boolean(props.hideNotApplicableDefault));
@@ -57,35 +36,13 @@ function RECORD_LAW_DOCSCHECK(props) {
         setVRList(currentItem ? currentItem.id_public : false);
     }, []);
 
-    useEffect(() => {
-        if (!currentItem?.id || !docsScope) {
-            setReportEvaluations({});
-            return;
-        }
-
-        let mounted = true;
-        FUN_SERVICE.getDocumentEvaluations(currentItem.id, docsScope, reportOwnerRecordId)
-            .then(response => {
-                if (!mounted) return;
-                setReportEvaluations(normalizeEvaluationRows(response.data));
-            })
-            .catch(e => {
-                console.log(e);
-                if (mounted) setReportEvaluations({});
-            });
-
-        return () => {
-            mounted = false;
-        }
-    }, [currentItem?.id, docsScope, reportOwnerRecordId]);
-
     const setVRList = (id_public) => {
         if (!id_public) return;
         if (load) return;
         submitService.getIdRelated(currentItem.id_public).then(response => {
             let newList = [];
             let List = Array.isArray(response.data) ? response.data : [];
-            List.map((value) => {
+            List.map((value, i) => {
                 let subList = Array.isArray(value.sub_lists) ? value.sub_lists : [];
                 subList.map(valuej => {
                     let name = valuej.list_name ? valuej.list_name.split(";") : []
@@ -109,15 +66,13 @@ function RECORD_LAW_DOCSCHECK(props) {
             })
             setVRDocs(newList);
             setLoad(true);
-        }).catch(() => {
-            setVRDocs([]);
-            setLoad(true);
         })
 
     };
 
     const _docsScope = docsScope ? VR_DOCUMENTS_OF_INTEREST[docsScope] : [];
 
+    const _CODE_LIST = []
     // DATA GETTER
     let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -274,24 +229,6 @@ function RECORD_LAW_DOCSCHECK(props) {
         if (!_id6) return 0;
         return _id6.id;
     }
-    const _GET_REPORT_EVALUATION = (code) => {
-        const value = reportEvaluations[String(code)] || {};
-        return {
-            status: normalizeReportStatus(value.status),
-            observation: value.observation || '',
-        }
-    }
-    const updateReportEvaluation = (code, field, value) => {
-        const key = String(code);
-        setReportEvaluations(current => ({
-            ...current,
-            [key]: {
-                ..._GET_REPORT_EVALUATION(key),
-                ...current[key],
-                [field]: field === 'status' ? normalizeReportStatus(value) : value,
-            },
-        }));
-    }
 
     const conditionalRowStyles = [
         {
@@ -317,6 +254,8 @@ function RECORD_LAW_DOCSCHECK(props) {
         if (!_FUN_R) return []
         let _DOCS = _FUN_R.code;
         let _VALUE = _FUN_R.checked;
+        let _REVIEW = _FUN_R.review;
+        let _ID6 = _FUN_R.id6;
         if (!_DOCS || !_VALUE) return []
         _DOCS = _DOCS.split(',');
         _VALUE = _VALUE.split(',');
@@ -369,7 +308,7 @@ function RECORD_LAW_DOCSCHECK(props) {
             cell: row => _GET_VALUE_BADGE(row)
         },
         {
-            name: 'EVALUACIÓN FUN',
+            name: 'EVALUACION',
             minWidth: '130px',
             cell: row => _GET_EVA_VAKUE(row) ? <div className="input-group input-group-sm">
                 <input type="hidden" value={row.doc} name={'r_l_g2_doc_code'} />
@@ -378,38 +317,6 @@ function RECORD_LAW_DOCSCHECK(props) {
                     <option value="0" className="text-danger">NO CUMPLE</option>
                     <option value="1" className="text-success">CUMPLE</option>
                 </select></div> : ''
-        },
-        {
-            name: 'EVALUACIÓN INFORME',
-            minWidth: '260px',
-            cell: row => {
-                const reportEvaluation = _GET_REPORT_EVALUATION(row.code);
-                const disabled = readOnly ? true : !_GET_EDIT_POWERS(row);
-                return <div className="flex min-w-[240px] flex-col gap-1 py-1">
-                    <label className="sr-only" htmlFor={`report-doc-evaluation-${row.code}`}>Evaluación del informe {row.code}</label>
-                    <select
-                        id={`report-doc-evaluation-${row.code}`}
-                        className="form-select input-group-sm"
-                        value={reportEvaluation.status}
-                        onChange={(event) => updateReportEvaluation(row.code, 'status', event.target.value)}
-                        disabled={disabled}
-                    >
-                        <option value="pendiente">PENDIENTE</option>
-                        <option value="cumple">CUMPLE</option>
-                        <option value="no_cumple">NO CUMPLE</option>
-                        <option value="revisar">REVISAR</option>
-                    </select>
-                    <label className="sr-only" htmlFor={`report-doc-observation-${row.code}`}>Observación del informe {row.code}</label>
-                    <textarea
-                        id={`report-doc-observation-${row.code}`}
-                        className="form-control min-h-[52px] text-xs"
-                        defaultValue={reportEvaluation.observation}
-                        onBlur={(event) => updateReportEvaluation(row.code, 'observation', event.target.value)}
-                        disabled={disabled}
-                        placeholder="Observación del informe"
-                    />
-                </div>
-            }
         },
         {
             name: 'ANEXO',
@@ -528,38 +435,7 @@ function RECORD_LAW_DOCSCHECK(props) {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 });
-            }
-    }
-
-    const saveReportEvaluations = () => {
-        if (!currentItem?.id || !docsScope) return;
-        setSavingReportEvaluations(true);
-        const entries = allRows.map(row => {
-            const reportEvaluation = _GET_REPORT_EVALUATION(row.code);
-            const observationInput = document.getElementById(`report-doc-observation-${row.code}`);
-            return {
-                requirement_code: String(row.code),
-                requirement_label: row.name ?? FUN6JSON[row.code] ?? String(row.code),
-                status: reportEvaluation.status,
-                observation: observationInput ? observationInput.value : reportEvaluation.observation,
-            }
-        });
-
-        FUN_SERVICE.saveDocumentEvaluations(currentItem.id, docsScope, {
-            owner_record_id: reportOwnerRecordId,
-            entries,
-        })
-            .then(response => {
-                const normalizedRows = normalizeEvaluationRows(response.data?.rows || response.data);
-                if (Object.keys(normalizedRows).length) setReportEvaluations(normalizedRows);
-                props.requestUpdate?.(currentItem.id);
-            })
-            .catch(e => {
-                console.log(e);
-            })
-            .finally(() => {
-                setSavingReportEvaluations(false);
-            });
+        }
     }
 
     return (
@@ -568,20 +444,11 @@ function RECORD_LAW_DOCSCHECK(props) {
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <p className="text-sm font-semibold text-foreground">{title}</p>
-                        <p className="text-xs text-muted-foreground">Lista compacta para revisar aporte, evaluación FUN, evaluación por informe y soporte asociado.</p>
+                        <p className="text-xs text-muted-foreground">Lista compacta para revisar aporte, evaluación y soporte asociado.</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         <span className="rounded-full border border-border bg-background px-3 py-1.5">Visibles: {visibleRows.length}</span>
                         <span className="rounded-full border border-border bg-background px-3 py-1.5">No aplica: {notApplicableRows}</span>
-                        {docsScope ? <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={saveReportEvaluations}
-                            disabled={readOnly || savingReportEvaluations}
-                        >
-                            {savingReportEvaluations ? 'Guardando...' : 'Guardar evaluación del informe'}
-                        </Button> : null}
                         <Button
                             type="button"
                             variant={hideNotApplicable ? 'default' : 'outline'}
@@ -615,6 +482,7 @@ function RECORD_LAW_DOCSCHECK(props) {
 
                 className="data-table-component"
                 noHeader
+                onRowClicked={(e) => setSelectedRow(e.id)}
             />
         </div >
     );
