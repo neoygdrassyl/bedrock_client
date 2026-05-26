@@ -210,7 +210,9 @@ export function buildUnifiedDocumentRows(digitalizedDocs = [], ventanillaDocs = 
             return normalizeCode(ventanillaEntry.code) === digitalCode;
         });
 
-        relatedVentanillaEntries.forEach((ventanillaEntry) => assignedVentanillaIds.add(ventanillaEntry.id));
+        relatedVentanillaEntries.forEach((ventanillaEntry) => {
+            assignedVentanillaIds.add(ventanillaEntry.id);
+        });
 
         return {
             id: `digital-${digitalDoc?.id || digitalIndex}`,
@@ -545,6 +547,212 @@ export function groupDocumentEntries(entries = []) {
             latestVr: group.latestVr || group.vrValues[group.vrValues.length - 1] || '',
         }))
         .sort((a, b) => b.latestDateValue - a.latestDateValue || a.documentName.localeCompare(b.documentName));
+}
+
+export const DOCUMENT_PREVIEW_MEDIUM = {
+    PHYSICAL: 'physical',
+    DIGITAL: 'digital',
+};
+
+export const INTERNAL_REPORT_VR_FILTER = '__internal_report__';
+
+const INTERNAL_REPORT_VR_VALUES = new Set(['eng', 'arq', 'arc', 'jur', 'law', 'est']);
+
+export function isInternalReportVr(value) {
+    return INTERNAL_REPORT_VR_VALUES.has(String(value || '').trim().toLowerCase());
+}
+
+export function getDocumentVrDisplayValue(value) {
+    return isInternalReportVr(value) ? 'INFORME' : (normalizeText(value) || 'Sin VR');
+}
+
+function normalizePreviewMedium(value) {
+    return value === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL
+        ? DOCUMENT_PREVIEW_MEDIUM.PHYSICAL
+        : DOCUMENT_PREVIEW_MEDIUM.DIGITAL;
+}
+
+function getMediumLabel(value) {
+    return normalizePreviewMedium(value) === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL ? 'Físico' : 'Digital';
+}
+
+function getDateOnly(value) {
+    return String(value || '').split(/[T ]/)[0];
+}
+
+function normalizePreviewSources(entry = {}, index = 0) {
+    const rawSources = Array.isArray(entry.sources)
+        ? entry.sources
+        : (Array.isArray(entry.entries) ? entry.entries : []);
+
+    if (!rawSources.length) {
+        return [normalizeDocumentEntry(entry, index)];
+    }
+
+    return rawSources.map((source, sourceIndex) => normalizeDocumentEntry(source, sourceIndex));
+}
+
+function getPreviewRowDateValue(row = {}) {
+    const rawValue = [row.latestDocumentDate || row.date, row.latestDocumentTime || row.time].filter(Boolean).join('T');
+    const parsedValue = rawValue ? Date.parse(rawValue) : NaN;
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+}
+
+function normalizePreviewDocumentRow(entry = {}, index = 0) {
+    const medium = normalizePreviewMedium(entry.medium);
+    const sources = normalizePreviewSources(entry, index);
+    const scanned = entry.scanned || {};
+    const folios = entry.folios || {};
+    const originPresence = entry.originPresence || {
+        [DOCUMENT_ORIGIN_STATE.PHYSICAL]: medium === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL,
+        [DOCUMENT_ORIGIN_STATE.SCANNED]: Boolean(scanned.value),
+        [DOCUMENT_ORIGIN_STATE.DIGITAL]: medium === DOCUMENT_PREVIEW_MEDIUM.DIGITAL,
+    };
+    const mediumPresence = {
+        [DOCUMENT_PREVIEW_MEDIUM.PHYSICAL]: Boolean(entry.mediumPresence?.[DOCUMENT_PREVIEW_MEDIUM.PHYSICAL]
+            || originPresence[DOCUMENT_ORIGIN_STATE.PHYSICAL]
+            || medium === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL),
+        [DOCUMENT_PREVIEW_MEDIUM.DIGITAL]: Boolean(entry.mediumPresence?.[DOCUMENT_PREVIEW_MEDIUM.DIGITAL]
+            || originPresence[DOCUMENT_ORIGIN_STATE.DIGITAL]
+            || medium === DOCUMENT_PREVIEW_MEDIUM.DIGITAL),
+    };
+    const mediumLabel = entry.mediumLabel || (mediumPresence[DOCUMENT_PREVIEW_MEDIUM.PHYSICAL] && mediumPresence[DOCUMENT_PREVIEW_MEDIUM.DIGITAL]
+        ? 'Físico y digital'
+        : getMediumLabel(medium));
+
+    return {
+        ...entry,
+        id: entry.id || entry.previewKey || `preview-document-${index}`,
+        documentCode: normalizeCode(entry.documentCode || sources[0]?.documentCode),
+        documentName: normalizeText(entry.documentName || sources[0]?.documentName) || 'Documento sin nombre',
+        entries: sources,
+        entryCount: entry.entryCount || entry.counts?.sources || sources.length,
+        latestVr: normalizeText(entry.latestVr || entry.vr || sources[0]?.vr),
+        vrValues: Array.isArray(entry.vrValues) ? entry.vrValues : sources.map((source) => source.vr).filter(Boolean),
+        latestDocumentDate: getDateOnly(entry.latestDocumentDate || entry.date || sources[0]?.date),
+        latestDocumentTime: entry.latestDocumentTime || entry.time || sources[0]?.time || '',
+        latestDateValue: getPreviewRowDateValue(entry),
+        medium,
+        mediumLabel,
+        mediumPresence,
+        scanned: {
+            applies: Boolean(scanned.applies),
+            value: Boolean(scanned.value),
+            count: Number(scanned.count || 0),
+            label: scanned.label || (scanned.applies ? (scanned.value ? 'Sí' : 'No') : 'No aplica'),
+        },
+        folios: {
+            digital: Number(folios.digital || entry.summary?.foliosDigital || 0),
+            physical: Number(folios.physical || entry.summary?.foliosPhysical || 0),
+            total: Number(folios.total || entry.summary?.foliosTotal || 0),
+            label: folios.label || entry.summary?.foliosLabel || '',
+        },
+        originPresence,
+        canEdit: Boolean(entry.canEdit || sources.some((source) => source.canEdit)),
+        canPreview: Boolean(entry.canPreview || sources.some((source) => source.canPreview)),
+        canDelete: Boolean(entry.canDelete || sources.some((source) => source.canDelete)),
+    };
+}
+
+function normalizeLegacyDocumentGroup(group = {}) {
+    const entries = group.entries || [];
+    const originPresence = group.originPresence || {};
+    const hasPhysical = Boolean(originPresence[DOCUMENT_ORIGIN_STATE.PHYSICAL]);
+    const hasScanned = Boolean(originPresence[DOCUMENT_ORIGIN_STATE.SCANNED]);
+    const hasDigital = Boolean(originPresence[DOCUMENT_ORIGIN_STATE.DIGITAL]);
+    const foliosDigital = Number(group.summary?.foliosDigital ?? group.summary?.foliosScanned ?? entries
+        .filter((entry) => entry.originState === DOCUMENT_ORIGIN_STATE.SCANNED || entry.originState === DOCUMENT_ORIGIN_STATE.DIGITAL)
+        .reduce((total, entry) => total + Number(entry.pages || 0), 0));
+    const foliosPhysical = Number(group.summary?.foliosPhysical ?? group.summary?.foliosVr ?? entries
+        .filter((entry) => entry.originState === DOCUMENT_ORIGIN_STATE.PHYSICAL)
+        .reduce((total, entry) => total + Number(entry.pages || 0), 0));
+
+    return {
+        ...group,
+        medium: hasPhysical ? DOCUMENT_PREVIEW_MEDIUM.PHYSICAL : DOCUMENT_PREVIEW_MEDIUM.DIGITAL,
+        mediumLabel: hasPhysical && hasDigital ? 'Físico y digital' : (hasPhysical ? 'Físico' : 'Digital'),
+        mediumPresence: {
+            [DOCUMENT_PREVIEW_MEDIUM.PHYSICAL]: hasPhysical,
+            [DOCUMENT_PREVIEW_MEDIUM.DIGITAL]: hasDigital || !hasPhysical,
+        },
+        latestDocumentDate: getDateOnly(entries[0]?.date || ''),
+        latestDocumentTime: entries[0]?.time || '',
+        scanned: {
+            applies: hasPhysical,
+            value: hasScanned,
+            count: hasScanned ? entries.filter((entry) => entry.originState === DOCUMENT_ORIGIN_STATE.SCANNED).length : 0,
+            label: hasPhysical ? (hasScanned ? 'Sí' : 'No') : 'No aplica',
+        },
+        folios: {
+            digital: foliosDigital,
+            physical: foliosPhysical,
+            total: foliosDigital + foliosPhysical,
+            label: `Digitales ${foliosDigital || 0} / Físicos ${foliosPhysical || 0}`,
+        },
+    };
+}
+
+export function buildDocumentTableRows(entries = []) {
+    if (!Array.isArray(entries)) {
+        return [];
+    }
+
+    if (entries.some((entry) => entry?.isPreviewRow)) {
+        return entries
+            .map((entry, index) => normalizePreviewDocumentRow(entry, index))
+            .sort((a, b) => b.latestDateValue - a.latestDateValue || a.documentName.localeCompare(b.documentName));
+    }
+
+    return groupDocumentEntries(entries).map(normalizeLegacyDocumentGroup);
+}
+
+export function filterDocumentTableRows(rows = [], filters = {}) {
+    const documentFilter = String(filters.document || filters.search || '').trim().toLowerCase();
+    const vrFilter = String(filters.vr || '').trim().toLowerCase();
+    const mediumFilters = Array.isArray(filters.mediums) ? filters.mediums.filter(Boolean) : [];
+    const statusFilters = Array.isArray(filters.statuses) ? filters.statuses.filter(Boolean) : [];
+
+    return rows.filter((row) => {
+        if (documentFilter) {
+            const documentValue = [row.documentName, row.documentCode]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            if (!documentValue.includes(documentFilter)) {
+                return false;
+            }
+        }
+
+        if (vrFilter) {
+            const vrValues = [row.latestVr, ...(row.vrValues || [])]
+                .filter(Boolean)
+                .map((value) => String(value));
+            const vrValue = vrValues.join(' ').toLowerCase();
+            const vrDisplayValue = vrValues.map(getDocumentVrDisplayValue).join(' ').toLowerCase();
+            const matchesInternalReport = vrFilter === INTERNAL_REPORT_VR_FILTER.toLowerCase() && vrValues.some(isInternalReportVr);
+
+            if (!matchesInternalReport && !vrValue.includes(vrFilter) && !vrDisplayValue.includes(vrFilter)) {
+                return false;
+            }
+        }
+
+        if (mediumFilters.length && !mediumFilters.some((medium) => row.mediumPresence?.[medium] || row.medium === medium)) {
+            return false;
+        }
+
+        if (statusFilters.length) {
+            const status = row.scanned?.applies
+                ? (row.scanned?.value ? 'scanned' : 'pending_scan')
+                : 'not_applicable';
+
+            if (!statusFilters.includes(status)) {
+                return false;
+            }
+        }
+
+        return true;
+    });
 }
 
 export function filterDocumentEntryGroups(groups = [], filters = {}) {
