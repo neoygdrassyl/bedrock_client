@@ -60,6 +60,7 @@ const E2E_FUN_RECORDS = [
     rules: '0;0',
     clock_payment: '2026-03-10',
     owner: 'Propietario Test',
+    description: 'Solicitud de Propiedad Horizontal',
   },
   {
     id: 2,
@@ -403,3 +404,4 @@ export const test = base.extend({
 
 export { expect };
 export { TEST_USER, TEST_TOKEN };
+export { installE2EMocks };

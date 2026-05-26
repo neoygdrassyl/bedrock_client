@@ -85,7 +85,6 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
 
     const closeModal = () => {
         propCloseModal();
-        requesRefresh();
     };
 
     const retrieveItem = useCallback((id) => {
