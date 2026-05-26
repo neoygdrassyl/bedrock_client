@@ -20,10 +20,59 @@ function addInlinePreview(url) {
     return url.includes('inline=1') ? url : `${url}${separator}inline=1`;
 }
 
-function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
+function getApiBaseUrl() {
+    return String(import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+}
+
+function normalizeApiFileUrl(value) {
+    if (!value || typeof value !== 'string') return '';
+
+    const apiBaseUrl = getApiBaseUrl();
+    if (apiBaseUrl && value.startsWith(apiBaseUrl)) {
+        return value.slice(apiBaseUrl.length) || '/';
+    }
+
+    if (value.startsWith('/api/')) {
+        return value.replace(/^\/api/, '');
+    }
+
+    return value;
+}
+
+function buildViewerRequest(value, fallbackApipath, fallbackUrl) {
+    const normalizedValue = normalizeApiFileUrl(value);
+
+    if (normalizedValue.startsWith('/files/')) {
+        return {
+            apipath: '/files/',
+            url: normalizedValue.replace(/^\/files\//, ''),
+        };
+    }
+
+    return {
+        apipath: fallbackApipath || '',
+        url: fallbackUrl || '',
+    };
+}
+
+function buildBrowserUrl(value, fallbackApipath, fallbackUrl) {
+    const normalizedValue = normalizeApiFileUrl(value);
+    const apiBaseUrl = getApiBaseUrl();
+
+    if (normalizedValue.startsWith('/')) {
+        return `${apiBaseUrl}${normalizedValue}`;
+    }
+
+    if (normalizedValue) {
+        return normalizedValue;
+    }
+
+    return `${apiBaseUrl}${fallbackApipath || ''}${fallbackUrl || ''}`;
+}
+
+function VIZUALIZER({ url, id, apipath, previewUrl, downloadUrl, icon, color, iconWrapper, iconStyle }) {
     const [modal, setModal] = useState(false);
     const [localURL, setLocalURL] = useState('');
-    const [localAPI, setLocalAPI] = useState(false);
     const [loadError, setLoadError] = useState(null);
 
     const toggle = () => {
@@ -66,14 +115,14 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
             setModal(true);
             return;
         }
-        var re = /(?:\.([^.]+))?$/;
-        var ext = re.exec(URL.split('?')[0])[1];
-        if (ext == "pdf" || ext == "PDF" ) {
+        const re = /(?:\.([^.]+))?$/;
+        const ext = re.exec(URL.split('?')[0])[1];
+        if (ext === "pdf" || ext === "PDF" ) {
             setLoadError(null);
             setModal(true);
-        } else if (ext == "png" || ext == "jpg" || ext == "jpeg") {
-            var img = '<img src="' + URL + '">';
-            var popup = window.open();
+        } else if (ext === "png" || ext === "jpg" || ext === "jpeg") {
+            const img = '<img src="' + URL + '">';
+            const popup = window.open();
             popup.document.write(img);
         }
         else{
@@ -82,7 +131,7 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
     }
 
     let _DOWNLOAD = () => {
-        window.open(import.meta.env.VITE_API_URL + apipath + url, '_blank');
+        window.open(buildBrowserUrl(downloadUrl, apipath, url), '_blank');
     }
     let _LOAD_BY_ID = () => {
         setLoadError(null);
@@ -113,9 +162,10 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
         });
     }
 
-    const fullUrl = import.meta.env.VITE_API_URL + apipath + url;
-    const previewFullUrl = addInlinePreview(fullUrl);
-    const isValidUrl = _isValidFileUrl(fullUrl);
+    const rawPreviewUrl = previewUrl || `${apipath || ''}${url || ''}`;
+    const previewFullUrl = addInlinePreview(buildBrowserUrl(rawPreviewUrl, apipath, url));
+    const viewerRequest = buildViewerRequest(addInlinePreview(rawPreviewUrl), apipath, url);
+    const isValidUrl = _isValidFileUrl(previewFullUrl);
 
     let aWrapper = iconWrapper ?? "btn btn-sm btn-light m-0 p-2 shadow-none"
 
@@ -144,7 +194,7 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
             ariaHideApp={false}
         >
             <div className="my-4 d-flex justify-content-end">
-                <div className='btn-close' color='none' onClick={() => toggle()}></div>
+                <button type="button" className='btn-close' aria-label="Cerrar" onClick={() => toggle()}></button>
             </div>
             <hr />
             {loadError ? (
@@ -155,13 +205,13 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
                 </div>
             ) : (
                 <PDF_VIEWER
-                    url={url || localURL} apipath={apipath || localAPI}
+                    url={viewerRequest.url || url || localURL} apipath={viewerRequest.apipath || apipath || ''}
                 />
             )}
             <hr />
             <div className="text-end py-4 mt-3">
-                <button className="btn btn-lg btn-danger me-2" onClick={() => _DOWNLOAD()}><Icon name="Download" size={16} /> DESCARGAR </button>
-                <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="XCircle" size={16} /> CERRAR </button>
+                <button type="button" className="btn btn-lg btn-danger me-2" onClick={() => _DOWNLOAD()}><Icon name="Download" size={16} /> DESCARGAR </button>
+                <button type="button" className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="XCircle" size={16} /> CERRAR </button>
             </div>
         </Modal>
     </>
