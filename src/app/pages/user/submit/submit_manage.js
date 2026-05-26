@@ -18,6 +18,9 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
     const [vrWarning, setVrWarning] = useState(null);
     const [isVrDuplicate, setIsVrDuplicate] = useState(false);
     const [payment, setPayment] = useState(false);
+    const [documentPanel, setDocumentPanel] = useState('physical');
+    const [digitalCount, setDigitalCount] = useState(0);
+    const [digitalDocuments, setDigitalDocuments] = useState([]);
 
     useEffect(() => {
         refreshItem();
@@ -34,6 +37,11 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
     function refreshList(id) {
         propRefreshList(id);
+    }
+
+    function handleDigitalDocumentsChange(count, rows = []) {
+        setDigitalCount(count);
+        setDigitalDocuments(Array.isArray(rows) ? rows : []);
     }
 
 
@@ -244,81 +252,52 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
         let COMPONENT_NEW = () => {
             let _CHILD = GET_SUBMIT();
             return <>
-                <div className="row">
-                    <div className="col-4">
-                        <label >1. Número de radicación</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="hashtag" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="submit_1" required
-                                defaultValue={_CHILD.id_public}
-                                onBlur={() => _VERIFY_VR_DUPLICATE()} />
-                            <Button size="sm" type="button" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
+                <div className="space-y-3 text-[clamp(0.78rem,0.72rem+0.2vw,0.92rem)] leading-snug">
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_1" className="mb-1 block font-semibold text-foreground">1. Número de radicación</label>
+                        <div className="input-group input-group-sm">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                            <input type="text" className="form-control form-control-sm" id="submit_1" required defaultValue={_CHILD.id_public} onBlur={() => _VERIFY_VR_DUPLICATE()} />
+                            <Button size="sm" type="button" className="h-[31px] px-2 text-[11px]" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
-                        {vrWarning}
+                        {vrWarning ? <div className="mt-1 text-[11px] leading-snug">{vrWarning}</div> : null}
                     </div>
-                    <div className="col-5">
-                        <label >2. Número de solicitud</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="hashtag" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="submit_2"
-                                defaultValue={_CHILD.id_related} />
-                            <Button size="sm" type="button" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
+
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_2" className="mb-1 block font-semibold text-foreground">2. Número de solicitud</label>
+                        <div className="input-group input-group-sm">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                            <input type="text" className="form-control form-control-sm" id="submit_2" defaultValue={_CHILD.id_related} />
+                            <Button size="sm" type="button" className="h-[31px] bg-warning px-2 text-[11px] text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
                         </div>
-                        {verifyMSG}
+                        {verifyMSG ? <div className="mt-1 text-[11px] leading-snug">{verifyMSG}</div> : null}
                     </div>
-                    <div className="col-3">
+
+                    <div className="rounded-lg border border-border/70 bg-muted/10 p-2.5">
+                        <div className="form-check m-0 flex items-start gap-2 p-0">
+                            <input className="form-check-input mt-1 ms-0" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
+                            <label className="form-check-label flex-1 text-[0.82em] font-semibold leading-snug text-foreground" htmlFor="payment_cb">Se entrega pago de expensas fijas y generar solicitud</label>
+                        </div>
                         {payment
-                            ? <>
-                                <label >2.1 Consecutivo Pago</label>
-                                <div className="input-group mb-1">
-                                    <span className="input-group-text bg-primary text-primary-foreground">
-                                        <Icon name="hashtag" size={16} />
-                                    </span>
-                                    <input type="text" className="form-control" id="submit_21" required
-                                        defaultValue={_CHILD.id_related} />
+                            ? <div className="mt-2 space-y-2 border-t border-border/60 pt-2">
+                                <label htmlFor="submit_21" className="mb-1 block text-[0.82em] font-semibold text-muted-foreground">2.1 Consecutivo pago</label>
+                                <div className="input-group input-group-sm">
+                                    <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                                    <input type="text" className="form-control form-control-sm" id="submit_21" required defaultValue={_CHILD.id_related} />
                                 </div>
-                            </>
-                            : ""}
+                                <div className="grid grid-cols-2 gap-2">
+                                    <Button size="sm" type="button" className="h-8 text-[11px]" onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
+                                    <Button size="sm" type="button" className="h-8 text-[11px]" onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
+                                </div>
+                            </div>
+                            : null}
                     </div>
-                </div>
-                <div className="row text-end">
-                    <div className="col-8">
-                        <div className="form-check my-3 px-5">
-                            <input className="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
-                            <p className="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        {payment
-                            ? <>
-                                <Button size="sm" type="button" className="me-1"
-                                    onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
-                                <Button size="sm" type="button"
-                                    onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
-                            </>
-                            : ""}
-                    </div>
-                </div>
 
-                <div className="row text-end">
-                    <div className="col-12">
-
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-12">
-                        <label >3.1 Tipo</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="check-square" size={16} />
-                            </span>
-                            <input list="submit_type" className="form-control" id="submit_4"
-                                defaultValue={_CHILD.type} autoComplete="off" maxLength={250}
-                                placeholder="Seleccione o escriba un tipo..." />
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_4" className="mb-1 block font-semibold text-foreground">3.1 Tipo</label>
+                        <div className="input-group input-group-sm">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="check-square" size={14} /></span>
+                            <input list="submit_type" className="form-control form-control-sm" id="submit_4" defaultValue={_CHILD.type} autoComplete="off" maxLength={250} placeholder="Seleccione o escriba un tipo..." />
                             <datalist id="submit_type">
                                 <option value="LICENCIA" />
                                 <option value="URBANIZACION" />
@@ -332,119 +311,79 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                 <option value="EXPENSAS / IMPUESTOS " />
                             </datalist>
                         </div>
-                        <small className="text-muted d-block mt-1" style={{ fontSize: '11px' }}>
-                            <Icon name="info-circle" size={12} /> Opciones: LICENCIA, URBANIZACION, PARCELACION, SUBDIVICON, RECONOCIMIENTO, COSTRUCCION, OTRAS ACTUACIONES, VISTO BUENO, PROPIEDAD HORIZONTAL, EXPENSAS / IMPUESTOS. También puede escribir un valor libre.
-                        </small>
+                        <p className="mb-0 mt-1 text-[0.75em] leading-snug text-muted-foreground"><Icon name="info-circle" size={12} /> Puede escoger una opción o escribir un valor libre.</p>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label >3.2 Estado</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="hashtag" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_42" className="mb-1 block font-semibold text-foreground">3.2 Estado</label>
+                            <div className="input-group input-group-sm">
+                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                                <input type="text" className="form-control form-control-sm" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-6">
-                        <label >3.3 Tipo de Radicación</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="check-square" size={16} />
-                            </span>
-                            <select className='form-select' id="submit_41" defaultValue={_CHILD.list_type}>
-                                <option value={1} selected={_CHILD.list_type == 1}>RADICACIÓN SOLICITUD</option>
-                                <option value={2} selected={_CHILD.list_type == 2}>ASESORÍA TÉCNICA</option>
-                                <option value={3} selected={_CHILD.list_type == 3}>CORRECCIONES SOLICITUD</option>
-                                <option value={4} selected={_CHILD.list_type == 4}>TRAMITE</option>
-                                <option value={5} selected={_CHILD.list_type == 5}>PQRS</option>
-                                <option value={0} selected={_CHILD.list_type == 0}>OTRO</option>
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_41" className="mb-1 block font-semibold text-foreground">3.3 Tipo de radicación</label>
+                            <select className='form-select form-select-sm' id="submit_41" defaultValue={_CHILD.list_type}>
+                                <option value={1}>RADICACIÓN SOLICITUD</option>
+                                <option value={2}>ASESORÍA TÉCNICA</option>
+                                <option value={3}>CORRECCIONES SOLICITUD</option>
+                                <option value={4}>TRAMITE</option>
+                                <option value={5}>PQRS</option>
+                                <option value={0}>OTRO</option>
                                 {_GLOBAL_ID == 'cp1' ?
                                     <>
-                                        <option value={6} selected={_CHILD.list_type == 6}>FOTO VALLA</option>
-                                        <option value={7} selected={_CHILD.list_type == 7}>SOLICITUD LICENCIAS URBANISTICA </option>
-                                        <option value={8} selected={_CHILD.list_type == 8}>SOLICITUD MODIFICACION LICENCIA VIGENTE</option>
-                                        <option value={9} selected={_CHILD.list_type == 9}>SOLICITUD DE CONCEPTO DE USO</option>
-                                        <option value={10} selected={_CHILD.list_type == 10}>SOLICITUD DE NORMA URBANA</option>
-                                        <option value={11} selected={_CHILD.list_type == 11}>SOLICITUD OTRAS ACTUACIONES</option>
-                                        <option value={12} selected={_CHILD.list_type == 12}>SOLICITUD PRORROGA</option>
-                                        <option value={13} selected={_CHILD.list_type == 13}>SOLICITUD REVALIDACION</option>
-                                        <option value={14} selected={_CHILD.list_type == 14}>PAGO EXPENSAS Y/O IMPUESTOS / OTROS</option>
-                                        <option value={15} selected={_CHILD.list_type == 15}>DOCUMENTOS PARA RLDF</option>
-                                        <option value={16} selected={_CHILD.list_type == 16}>DOCUMENTOS ACTAS OBSERVACIONES</option>
-                                        <option value={17} selected={_CHILD.list_type == 17}>DOCUMENTOS TRAMITE</option>
+                                        <option value={6}>FOTO VALLA</option>
+                                        <option value={7}>SOLICITUD LICENCIAS URBANISTICA </option>
+                                        <option value={8}>SOLICITUD MODIFICACION LICENCIA VIGENTE</option>
+                                        <option value={9}>SOLICITUD DE CONCEPTO DE USO</option>
+                                        <option value={10}>SOLICITUD DE NORMA URBANA</option>
+                                        <option value={11}>SOLICITUD OTRAS ACTUACIONES</option>
+                                        <option value={12}>SOLICITUD PRORROGA</option>
+                                        <option value={13}>SOLICITUD REVALIDACION</option>
+                                        <option value={14}>PAGO EXPENSAS Y/O IMPUESTOS / OTROS</option>
+                                        <option value={15}>DOCUMENTOS PARA RLDF</option>
+                                        <option value={16}>DOCUMENTOS ACTAS OBSERVACIONES</option>
+                                        <option value={17}>DOCUMENTOS TRAMITE</option>
                                     </>
                                     : null}
                             </select>
                         </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label >4 Fecha y hora ingreso</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="calendar-alt" size={16} />
-                            </span>
-                            <input type="date" max="2100-01-01" className="form-control" id="submit_3" required
-                                defaultValue={_CHILD.date} />
-                            <input type="time" className="form-control" id="submit_32"
-                                defaultValue={_CHILD.time} />
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_3" className="mb-1 block font-semibold text-foreground">4. Fecha y hora de ingreso</label>
+                            <div className="grid grid-cols-[minmax(0,1fr)_112px] gap-2">
+                                <input type="date" max="2100-01-01" className="form-control form-control-sm" id="submit_3" required defaultValue={_CHILD.date} />
+                                <input type="time" className="form-control form-control-sm" id="submit_32" defaultValue={_CHILD.time} />
+                            </div>
+                        </div>
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_5" className="mb-1 block font-semibold text-foreground">5. Propietarios</label>
+                            <input type="text" className="form-control form-control-sm" id="submit_5" maxLength={250} defaultValue={_CHILD.owner} />
                         </div>
                     </div>
 
-                    <div className="col-6">
-                        <label >5. Propietarios</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="user" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="submit_5" maxLength={250}
-                                defaultValue={_CHILD.owner} />
-                        </div>
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_7" className="mb-1 block font-semibold text-foreground">7. Funcionario que recibe</label>
+                        <input type="text" className="form-control form-control-sm" id="submit_7" disabled defaultValue={_CHILD.worker_reciever} />
                     </div>
-                </div>
 
-                <div className="row">
-                    <div className="col-4">
-                        <label >7. Funcionario que recibe</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="user" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="submit_7" disabled
-                                defaultValue={_CHILD.worker_reciever} />
+                    <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_150px]">
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_8" className="mb-1 block font-semibold text-foreground">8. Persona que entrega</label>
+                            <input type="text" className="form-control form-control-sm" id="submit_8" maxLength={250} defaultValue={_CHILD.name_retriever} />
+                        </div>
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_81" className="mb-1 block font-semibold text-foreground">8.1 C.C.</label>
+                            <input type="text" className="form-control form-control-sm" id="submit_81" maxLength={250} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} defaultValue={_CHILD.id_number_retriever} />
                         </div>
                     </div>
-                    <div className="col-4">
-                        <label >8. Persona que entrega</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="user" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="submit_8" maxLength={250}
-                                defaultValue={_CHILD.name_retriever} />
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        <label >8.1 C.C. Persona</label>
-                        <div className="input-group mb-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="user" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="submit_81" maxLength={250}
-                                onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
-                                defaultValue={_CHILD.id_number_retriever} />
-                        </div>
-                    </div>
-                </div>
 
-                <div className="row mt-2">
-                    <div className="col-12">
-                        <label >9. Observaciones y detalles (Maximo 2000 Caracteres)</label>
-                        <textarea className="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
-                            defaultValue={_CHILD.details}></textarea>
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_9" className="mb-1 block font-semibold text-foreground">9. Observaciones y detalles</label>
+                        <textarea className="form-control form-control-sm" rows="4" maxLength="2000" id="submit_9" defaultValue={_CHILD.details}></textarea>
                     </div>
                 </div>
 
@@ -569,65 +508,72 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
             }
         }
 
-        return (
-            <div className="space-y-5">
-                <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
-                    <div className="border-b border-border/60 bg-muted/20 px-4 py-3 md:px-5">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                            Información general
-                        </p>
-                        <h3 className="text-base font-semibold text-foreground">
-                            {edit || currentItem ? 'Actualizar entrada' : 'Nueva entrada'}
-                        </h3>
-                    </div>
+        let renderPrimarySubmitAction = () => (
+            edit || currentItem
+                ? <Button type="submit" size="sm" className="w-full justify-center md:w-auto"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                : <Button type="submit" size="sm" className="w-full justify-center md:w-auto"><Icon name="plus-circle" size={16} /> CREAR </Button>
+        );
 
-                    <form id="form_manage_submit" onSubmit={save_submit} onKeyDown={handleFormKeyDown} className="space-y-4 p-4 md:p-5">
-                        {COMPONENT_NEW()}
-                        <div className="flex justify-end border-t border-border/60 pt-4">
-                            {edit || currentItem
-                                ? <Button size="sm"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
-                                : <Button size="sm"><Icon name="plus-circle" size={16} /> CREAR </Button>}
+        return (
+            <div className="grid h-full min-h-0 grid-cols-1 gap-2 xl:grid-cols-[minmax(390px,0.36fr)_minmax(0,0.64fr)]">
+                <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
+                    <form id="form_manage_submit" onSubmit={save_submit} onKeyDown={handleFormKeyDown} className="flex min-h-0 flex-1 flex-col">
+                        <div className="min-h-0 flex-1 overflow-y-auto p-2">
+                            <div className="space-y-3">
+                                {COMPONENT_NEW()}
+                            </div>
+                        </div>
+
+                        <div className="sticky bottom-0 z-10 shrink-0 space-y-2 border-t border-border/60 bg-card/95 px-3 py-2 backdrop-blur">
+                            <div className="flex justify-end">
+                                {renderPrimarySubmitAction()}
+                            </div>
                         </div>
                     </form>
+
+                    {currentItem ? <div className="shrink-0 border-t border-border/60 bg-card px-2 py-2">
+                        <SUBMIT_ANEX
+                            swaMsg={swaMsg}
+                            currentItem={currentItem}
+                            refreshList={refreshList}
+                            refreshItem={refreshItem}
+                            variant="primary"
+                            onDigitalCountChange={handleDigitalDocumentsChange}
+                        />
+                    </div> : null}
+                </aside>
+
+                <section className="flex min-h-0 flex-col overflow-hidden">
+                    {currentItem
+                        ? <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
+                                <div className="min-h-0 flex-1 overflow-hidden p-1.5">
+                                    <SUBMIT_LIST
+                                        translation={translation}
+                                        swaMsg={swaMsg}
+                                        globals={globals}
+                                        currentItem={currentItem}
+                                        refreshList={refreshItem}
+                                        activePanel={documentPanel}
+                                        digitalCount={digitalCount}
+                                        digitalDocuments={digitalDocuments}
+                                        onPanelChange={setDocumentPanel}
+                                        renderDigitalPanel={() => <SUBMIT_ANEX
+                                            swaMsg={swaMsg}
+                                            currentItem={currentItem}
+                                            refreshList={refreshList}
+                                            refreshItem={refreshItem}
+                                            variant="digital"
+                                            onDigitalCountChange={handleDigitalDocumentsChange}
+                                        />}
+                                    />
+                                </div>
+                            </section>
+                        : <div className="flex min-h-64 flex-1 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 p-6 text-center">
+                            <p className="mb-0 max-w-md text-sm text-muted-foreground">
+                                Primero guarda la entrada para habilitar listas físicas y documentos digitales.
+                            </p>
+                        </div>}
                 </section>
-
-                {currentItem
-                    ? <>
-                        <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
-                            <div className="border-b border-border/60 bg-muted/20 px-4 py-3 md:px-5">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                                    Documentos adjuntos
-                                </p>
-                                <h3 className="text-base font-semibold text-foreground">Listas documentales</h3>
-                            </div>
-
-                            <div className="p-4 md:p-5">
-                                <SUBMIT_LIST
-                                    translation={translation} swaMsg={swaMsg} globals={globals}
-                                    currentItem={currentItem}
-                                    refreshList={refreshItem} />
-                            </div>
-                        </section>
-
-                        <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
-                            <div className="border-b border-border/60 bg-muted/20 px-4 py-3 md:px-5">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                                    Digitalización
-                                </p>
-                                <h3 className="text-base font-semibold text-foreground">Documento principal</h3>
-                            </div>
-
-                            <div className="p-4 md:p-5">
-                                <SUBMIT_ANEX
-                                    translation={translation} swaMsg={swaMsg} globals={globals}
-                                    currentItem={currentItem}
-                                    refreshList={refreshList}
-                                    refreshItem={refreshItem}
-                                />
-                            </div>
-                        </section>
-                    </>
-                    : ""}
             </div>
         );
 }
