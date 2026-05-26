@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 
 const lazyRouteModules = [
   {
@@ -33,6 +34,10 @@ const lazyRouteModules = [
     name: 'zone use page',
     load: () => import('@/app/pages/user/zone_use/zone_use.page'),
   },
+  {
+    name: 'legal flow guide page',
+    load: () => import('@/app/pages/user/legal_flow_guide/LegalFlowGuide.page'),
+  },
 ];
 
 describe('lazy route module imports', () => {
@@ -40,5 +45,16 @@ describe('lazy route module imports', () => {
     const module = await load();
 
     expect(module.default).toBeTypeOf('function');
+  });
+
+  it('keeps legal flow guide out of the eager app entry bundle', () => {
+    const appSource = readFileSync('src/app/App.js', 'utf8');
+
+    expect(appSource).toContain(
+      "const LEGAL_FLOW_GUIDE = lazy(() => import('./pages/user/legal_flow_guide/LegalFlowGuide.page'))",
+    );
+    expect(appSource).not.toContain(
+      "import LEGAL_FLOW_GUIDE from './pages/user/legal_flow_guide/LegalFlowGuide.page'",
+    );
   });
 });
