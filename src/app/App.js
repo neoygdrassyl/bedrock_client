@@ -60,7 +60,7 @@ const NORMS = lazy(() => import('./pages/user/norms/norms.page'));
 const CERTIFICATE_WORKER = lazy(() => import('./pages/user/certifications/certification.page'));
 const ZONE_USE = lazy(() => import('./pages/user/zone_use/zone_use.page'));
 const SETTINGS = lazy(() => import('./pages/user/SettingsPage'));
-import LEGAL_FLOW_GUIDE from './pages/user/legal_flow_guide/LegalFlowGuide.page';
+const LEGAL_FLOW_GUIDE = lazy(() => import('./pages/user/legal_flow_guide/LegalFlowGuide.page'));
 
 const loadingFallbackItems = Array.from({ length: 8 }, (_, index) => `route-loading-card-${index + 1}`);
 
@@ -354,7 +354,11 @@ function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
   );
 
   const closeExpedienteWindow = () => {
-    window.location.assign('/dashboard');
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.assign('/dashboard');
+    }
   };
 
   useEffect(() => {
