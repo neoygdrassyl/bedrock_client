@@ -1,5 +1,6 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/icon';
 import FUNService from '../../../../services/fun.service'
 import FunCorrelatedDocumentControl from './FunCorrelatedDocumentControl';
@@ -20,13 +21,13 @@ const fatherValues = ['511', '512', '513', '516', '517', '518', '519',
     '680', '681', '682', '683', '684', '685', '686', '687', '6862', '688', '689', '6891', '6892', '6893'];
 
 const dvCheckList = {
-    '511': item => true,
-    '512': item => true,
-    '513': item => true,
-    '516': item => true,
-    '517': item => true,
-    '518': item => true,
-    '519': item => true,
+    '511': () => true,
+    '512': () => true,
+    '513': () => true,
+    '516': () => true,
+    '517': () => true,
+    '518': () => true,
+    '519': () => true,
 
     '621': item => item.fun_1s[0] ? item.fun_1s[0].m_urb == 'A' : true,
     '601a': item => item.fun_1s[0] ? item.fun_1s[0].m_urb == 'A' : true,
@@ -70,7 +71,7 @@ const dvCheckList = {
     '660c': item => item.fun_1s[0] ? item.fun_1s[0].area == 'D' : true,
     '660d': item => item.fun_1s[0] ? item.fun_1s[0].area == 'C' : true,
     '660e': item => item.fun_1s[0] ? item.fun_1s[0].area == 'D' : true,
-    '660f': item => true,
+    '660f': () => true,
     '6607': item => item.fun_1s[0] ? item.fun_1s[0].area == 'B' || item.fun_1s[0].area == 'C' || item.fun_1s[0].area == 'D' : true,
     '6608': item => item.fun_1s[0] ? item.fun_1s[0].area == 'B' || item.fun_1s[0].area == 'C' || item.fun_1s[0].area == 'D' : true,
     '6609': item => item.fun_1s[0] ? item.fun_1s[0].cultural ? item.fun_1s[0].cultural == 'A' : true : true,
@@ -99,9 +100,9 @@ const dvCheckList = {
     '6862': item => item.fun_1s[0] ? item.fun_1s[0].tramite ? regexChecker_piscina(item.fun_1s[0].tramite) : true : true,
     '688': item => item.fun_1s[0] ? item.fun_1s[0].tramite ? regexChecker_modPlano(item.fun_1s[0].tramite) : true : true,
     '689': item => item.fun_1s[0] ? item.fun_1s[0].tramite ? regexChecker_modPlano(item.fun_1s[0].tramite) : true : true,
-    '6891': item => true,
-    '6892': item => true,
-    '6893': item => true,
+    '6891': () => true,
+    '6892': () => true,
+    '6893': () => true,
 }
 function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate, swaMsg }) {
 
@@ -124,6 +125,7 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
             var _CHILD = currentItem.fun_1s;
             var _CURRENT_VERSION = currentVersion - 1;
             var _CHILD_VARS = {
+                item_0: "",
                 item_1: "",
                 item_2: "",
                 item_3: "",
@@ -199,6 +201,81 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
         };
 
         let m_2022 = Number(currentItem.model) >= 2022
+
+        const toCorrelatedRequirement = (_CODE) => ({
+            code: _CODE,
+            label: JsonDocList[_CODE] || `Requisito ${_CODE}`,
+        });
+
+        const createCorrelatedSection = (id, title, codes) => {
+            const requirements = codes
+                .filter(isCorrelatedRequirementApplicable)
+                .map(toCorrelatedRequirement);
+
+            if (!requirements.length) return null;
+            return { id, title, requirements };
+        };
+
+        const buildCorrelatedSections = () => {
+            const _CHILD_VARS = _SET_CHILD();
+            const sections = [
+                createCorrelatedSection('6.1', '6.1 DOCUMENTOS COMUNES A TODA SOLICITUD', ['511', '512', '513', '516', '517', '518', '519']),
+            ];
+
+            if (_CHILD_VARS.item_1.includes('A')) {
+                if (_CHILD_VARS.item_3.includes('A')) sections.push(createCorrelatedSection('6.2-a', '6.2 DOCUNENTOS ADICIONALES EN LICENCIA DE URBANIZACIÓN / A. Modalidad Desarrollo', ['621', '601a', '622', '602a']));
+                if (_CHILD_VARS.item_3.includes('B')) sections.push(createCorrelatedSection('6.2-b', '6.2 DOCUNENTOS ADICIONALES EN LICENCIA DE URBANIZACIÓN / B. Modalidad Saneamiento', ['623', '601b', '602b', '624', '625']));
+                if (_CHILD_VARS.item_3.includes('C')) sections.push(createCorrelatedSection('6.2-c', '6.2 DOCUNENTOS ADICIONALES EN LICENCIA DE URBANIZACIÓN / C. Modalidad de Reurbanización', ['626', '627', '601c', '602c']));
+            }
+
+            if (_CHILD_VARS.item_1.includes('B')) {
+                sections.push(createCorrelatedSection('6.3-main', '6.3 DOCUMENTOS ADICIONALES EN LA LICENCIA DE PARCELACION', ['630', '631', '632', '633']));
+                sections.push(createCorrelatedSection('6.3-saneamiento', '6.3 DOCUMENTOS ADICIONALES EN LA LICENCIA DE PARCELACION / Documentos adicionales en licencia de parcaleación para saneamiento', ['634', '635', '636']));
+            }
+
+            if (_CHILD_VARS.item_1.includes('C')) {
+                sections.push(createCorrelatedSection('6.4-a', '6.4 DOCUMENTOS ADICIONALES EN LA LICENCIA DE SUBDIVISION / A. Modalidad Subdivisión Urbana y Rural', ['641']));
+                sections.push(createCorrelatedSection('6.4-b', '6.4 DOCUMENTOS ADICIONALES EN LA LICENCIA DE SUBDIVISION / B. Modalidad Reloteo', ['642', '643']));
+            }
+
+            if (_CHILD_VARS.item_1.includes('F')) {
+                sections.push(createCorrelatedSection('6.5', '6.5 DOCUMENTOS RECONOCIMIENTO DE EDIFICACIONES', ['651', '652', '653']));
+            }
+
+            if (_CHILD_VARS.item_1.includes('D')) {
+                sections.push(createCorrelatedSection('6.6-main', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN', ['6601', '6602', '6603', '6604', '6605', '911']));
+                sections.push(createCorrelatedSection('6.6-revision', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN / Revisión indepenciente de los diseños estructurales', ['660a', '660b', '660c', '660d', '660e', '660f', '6607', '6608']));
+                sections.push(createCorrelatedSection('6.6-bic', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN / Bien de interés cultural', ['6609']));
+                sections.push(createCorrelatedSection('6.6-ph', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN / Propiedad Horizontal', ['6610']));
+                sections.push(createCorrelatedSection('6.6-reforzamiento', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN / Reforzamiento Estructural para Edificaciones en riesgo por daños en la estructura', ['6611']));
+                sections.push(createCorrelatedSection('6.6-equipamientos', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN / Equipamientos en suelos objeto de entrega de cesiones anticipadas', ['6612', '6613']));
+                sections.push(createCorrelatedSection('6.6-autoridad', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN / Trámite presentado ante autoridad distinta a la que otorgo la licencia inicial', ['6614']));
+                sections.push(createCorrelatedSection('6.6-modificacion', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN / Modalidad de Modificacion y Adecuacion', ['6615']));
+                sections.push(createCorrelatedSection('6.6-demolicion', '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN / Modalidad de Demolicion y Cerramiento', ['6616', '6617', '6618', '6619']));
+            }
+
+            if (_CHILD_VARS.item_1.includes('E')) {
+                sections.push(createCorrelatedSection('6.7', '6.7 DOCUMENTOS ADICIONALES EN LICENCIAS DE INTERVENCIÓN Y OCUPACIÓN DEL ESPACIO PÚBLICO', ['671', '672']));
+            }
+
+            if (_CHILD_VARS.item_1.includes('G')) {
+                sections.push(createCorrelatedSection('6.8-cotas', 'Ajuste de cotas y áreas', ['680']));
+                sections.push(createCorrelatedSection('6.8-ph', 'Aprobación de los planos de propiedad horizontal', ['681', '682', '683', '684', '685']));
+                sections.push(createCorrelatedSection('6.8-tierras', 'Autorización para el movimiento de tierras', ['686']));
+                sections.push(createCorrelatedSection('6.8-piscinas', 'Aprobación de piscinas', ['687', '6862']));
+                sections.push(createCorrelatedSection('6.8-plano', 'Modificación del plano urbanístico', ['688', '689']));
+                if (m_2022) {
+                    sections.push(createCorrelatedSection('6.8-norma', 'Concepto de norma urbanística y uso del suelo', ['6891', '6892']));
+                    sections.push(createCorrelatedSection('6.8-publico', 'Bienes destinados al uso público o con vocación al uso público', ['6893']));
+                }
+            }
+
+            return sections.filter(Boolean);
+        };
+
+        const correlatedSections = buildCorrelatedSections();
+        const correlatedCodes = correlatedSections.flatMap((section) => section.requirements.map((requirement) => requirement.code));
+        const [activeChecklistTab, setActiveChecklistTab] = useState('control');
 
         let _SET_610 = () => {
             return <>
@@ -664,34 +741,52 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
         }
 
         return (
-            <div>
-                {_SET_610()}
-                {_SET_620()}
-                {_SET_630()}
-                {_SET_640()}
-                {_SET_650()}
-                {_SET_660()}
-                {_SET_670()}
-                {_SET_680()}
-                <FunCorrelatedDocumentControl
-                    currentItem={currentItem}
-                    currentVersion={currentVersion}
-                    codes={fatherValues}
-                    labels={JsonDocList}
-                    getCheckValue={getCorrelatedCheckValue}
-                    isRequirementApplicable={isCorrelatedRequirementApplicable}
-                    readOnly={readOnly}
-                />
-                {readOnly ?
-                    ''
-                    : <div className="row text-center">
-                        <div className="col-12">
-                            <Button size="sm" className="my-3" onClick={() => setCheckList()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</Button>
-                        </div>
-                    </div>}
+            <Tabs value={activeChecklistTab} onValueChange={setActiveChecklistTab} className="w-full">
+                <div className="mb-3 flex justify-end rounded-xl border border-border bg-card/80 p-2 text-foreground shadow-sm">
+                    <TabsList className="h-9" aria-label="Vistas del checklist FUN">
+                        <TabsTrigger value="control" className="px-3 py-1 text-xs">Control documental</TabsTrigger>
+                        <TabsTrigger value="legacy" className="px-3 py-1 text-xs">Checklist legacy</TabsTrigger>
+                    </TabsList>
+                </div>
+
+                <TabsContent value="control" className="mt-0">
+                    <FunCorrelatedDocumentControl
+                        currentItem={currentItem}
+                        currentVersion={currentVersion}
+                        codes={correlatedCodes}
+                        sections={correlatedSections}
+                        labels={JsonDocList}
+                        getCheckValue={getCorrelatedCheckValue}
+                        isRequirementApplicable={isCorrelatedRequirementApplicable}
+                        currentReview={_SET_CHILD_REVIEW()}
+                        readOnly={readOnly}
+                        requestUpdate={requestUpdate}
+                        swaMsg={swaMsg}
+                    />
+                </TabsContent>
+
+                <TabsContent value="legacy" className="mt-0">
+                    <div>
+                        {_SET_610()}
+                        {_SET_620()}
+                        {_SET_630()}
+                        {_SET_640()}
+                        {_SET_650()}
+                        {_SET_660()}
+                        {_SET_670()}
+                        {_SET_680()}
+                        {readOnly ?
+                            ''
+                            : <div className="row text-center">
+                                <div className="col-12">
+                                    <Button size="sm" className="my-3" onClick={() => setCheckList()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</Button>
+                                </div>
+                            </div>}
+                    </div>
+                </TabsContent>
 
                 <hr />
-            </div>
+            </Tabs>
         );
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import FUNService from '../../../services/fun.service'
 
 import DataTable from '@/components/data-table-bridge';
@@ -12,8 +12,7 @@ import { Button } from '@/components/ui/button';
 import FunDocumentManagementModal from './components/FunDocumentManagementModal';
 import UnifiedDocumentTable from '../shared/UnifiedDocumentTable';
 import UnifiedDocumentCreateModal from '../shared/UnifiedDocumentCreateModal';
-import FunDocumentAuditTab from './components/FunDocumentAuditTab';
-import { buildDocumentEntriesFromLegacyData, normalizeVentanillaDocs } from '../shared/expediente-documental.utils';
+import { normalizeVentanillaDocs } from '../shared/expediente-documental.utils';
 import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../shared/expediente-documental.constants';
 
 function fileKey(file) {
@@ -52,19 +51,8 @@ function FUN_6_VIEW({
     const [createDocumentsSaving, setCreateDocumentsSaving] = useState(false);
     const [pendingPhysicalDocs, setPendingPhysicalDocs] = useState([]);
     const [pendingPhysicalDocsLoaded, setPendingPhysicalDocsLoaded] = useState(false);
-    const [activeTab, setActiveTab] = useState('documents'); // 'documents' | 'audit'
-    const [rawSubmitList, setRawSubmitList] = useState([]);
 
-    const isLoaded = documentsLoaded && ventanillaLoaded;
-    const localDocumentEntries = useMemo(
-        () => buildDocumentEntriesFromLegacyData(currentItem6, ventanillaDocs),
-        [currentItem6, ventanillaDocs],
-    );
-    const shouldUseLocalDocumentEntries = mergeVentanilla && documentEntriesLoaded && !documentEntries.length && localDocumentEntries.length;
-    const displayedDocumentEntries = shouldUseLocalDocumentEntries
-        ? localDocumentEntries
-        : documentEntries;
-    const unifiedDocumentsLoading = !documentEntriesLoaded || (mergeVentanilla && documentEntriesLoaded && !documentEntries.length && !isLoaded);
+    const unifiedDocumentsLoading = !documentEntriesLoaded;
     const currentUser = typeof window === 'undefined' ? null : window.user;
     const canManageDocuments = !readOnly && (
         Number(currentUser?.id) === 1
@@ -97,13 +85,13 @@ function FUN_6_VIEW({
         }
 
         setDocumentEntriesLoaded(false);
-        FUN_SERVICE.getUnifiedDocumentEntries(funId, idRelated)
+        FUN_SERVICE.getUnifiedDocumentPreviewEntries(funId, idRelated)
             .then((response) => {
                 setDocumentEntries(Array.isArray(response.data) ? response.data : []);
                 setDocumentEntriesLoaded(true);
             })
             .catch((error) => {
-                console.warn('No fue posible consultar el expediente documental unificado; se usará respaldo local.', error);
+                console.warn('No fue posible consultar el expediente documental unificado.', error);
                 setDocumentEntries([]);
                 setDocumentEntriesLoaded(true);
             });
@@ -139,7 +127,6 @@ function FUN_6_VIEW({
 
                 setVRList(vrList);
                 setVentanillaDocs(normalizedDocs);
-                setRawSubmitList(currentList);
                 setVentanillaLoaded(true);
                 if (onVentanillaRowsChange) {
                     onVentanillaRowsChange(normalizedDocs);
@@ -149,7 +136,6 @@ function FUN_6_VIEW({
                 console.log(error);
                 setVRList([]);
                 setVentanillaDocs([]);
-                setRawSubmitList([]);
                 setVentanillaLoaded(true);
                 if (onVentanillaRowsChange) {
                     onVentanillaRowsChange([]);
@@ -263,7 +249,7 @@ function FUN_6_VIEW({
             const fun0Id = currentId || currentItem?.id;
             const creationYear = dayjs(currentItem?.createdAt || new Date()).format('YY');
             const folder = currentItem?.id_public || String(fun0Id || 'documentos');
-            const buildPayloadRow = (row, fileField = '', pagesOverride = row.pages) => ({
+            const buildPayloadRow = (row, fileField = '', pagesOverride = row.pages, uploadIndex = null) => ({
                 fun0Id,
                 selected: true,
                 documentCode: row.documentCode,
@@ -274,7 +260,9 @@ function FUN_6_VIEW({
                 originState: row.originState,
                 receptionMedium: row.receptionMedium,
                 fileField,
+                uploadIndex,
             });
+            let uploadIndex = 0;
 
             const payloadRows = rowsToSave.flatMap((row) => {
                 const rowFiles = Array.isArray(row.files) && row.files.length
@@ -287,10 +275,12 @@ function FUN_6_VIEW({
 
                 return rowFiles.map((file, fileIndex) => {
                     const fileField = `file_${row.id}_${fileIndex}`;
+                    const currentUploadIndex = uploadIndex;
                     const filePages = row.filePageCounts?.[fileKey(file)] || row.pages;
                     batchFormData.append(fileField, file, `fun6_${creationYear}_${folder}_${fileIndex + 1}_${file.name}`);
+                    uploadIndex += 1;
 
-                    return buildPayloadRow(row, fileField, filePages);
+                    return buildPayloadRow(row, fileField, filePages, currentUploadIndex);
                 });
             });
 
@@ -642,60 +632,26 @@ function FUN_6_VIEW({
 
         return (
             <div>
-                {/* Barra de tabs */}
-                <ul className="nav nav-tabs mb-3">
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link${activeTab === 'documents' ? ' active' : ''}`}
-                            onClick={() => setActiveTab('documents')}
-                            type="button"
-                        >
-                            Documentos
-                        </button>
-                    </li>
-                    {/* <li className="nav-item">
-                        <button
-                            className={`nav-link${activeTab === 'audit' ? ' active' : ''}`}
-                            onClick={() => setActiveTab('audit')}
-                            type="button"
-                        >
-                            🔍 Diagnóstico
-                        </button>
-                    </li> */}
-                </ul>
-
-                {/* Contenido del tab activo */}
-                {activeTab === 'documents' && (
-                    <>
-                        {mergeVentanilla ? <UnifiedDocumentTable
-                            entries={displayedDocumentEntries}
-                            loading={unifiedDocumentsLoading}
-                            canManage={canManageDocuments}
-                            onAddDocument={() => setCreateModalOpen(true)}
-                            onEditEntry={() => {}}
-                            onSaveDigitalEntry={saveDigitalEntryFromModal}
-                            onDeleteEntry={(digitalDoc) => delete_6(digitalDoc.id)}
-                            vrList={VRList}
-                        /> : _CHILD_6_LIST()}
-                        {edit
-                            ? <>
-                                <form id="fun_6_d_edit" onSubmit={edit_6} className="py-3">
-                                    {_EDIT_COMPONENT()}
-                                    <div className="row text-center">
-                                        <div className="col-12">
-                                            <Button type="submit" variant="default" size="sm"><Icon name="archive" size={14} /> Guardar cambios</Button>
-                                        </div>
-                                    </div>
-                                </form></> : ""}
-                    </>
-                )}
-
-                {activeTab === 'audit' && (
-                    <FunDocumentAuditTab
-                        digitalDocs={currentItem6}
-                        VRList={rawSubmitList}
-                    />
-                )}
+                {mergeVentanilla ? <UnifiedDocumentTable
+                    entries={documentEntries}
+                    loading={unifiedDocumentsLoading}
+                    canManage={canManageDocuments}
+                    onAddDocument={() => setCreateModalOpen(true)}
+                    onEditEntry={() => {}}
+                    onSaveDigitalEntry={saveDigitalEntryFromModal}
+                    onDeleteEntry={(digitalDoc) => delete_6(digitalDoc.id)}
+                    vrList={VRList}
+                /> : _CHILD_6_LIST()}
+                {edit
+                    ? <>
+                        <form id="fun_6_d_edit" onSubmit={edit_6} className="py-3">
+                            {_EDIT_COMPONENT()}
+                            <div className="row text-center">
+                                <div className="col-12">
+                                    <Button type="submit" variant="default" size="sm"><Icon name="archive" size={14} /> Guardar cambios</Button>
+                                </div>
+                            </div>
+                        </form></> : ""}
 
                 <FunDocumentManagementModal
                     open={managementModalOpen}

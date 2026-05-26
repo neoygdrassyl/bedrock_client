@@ -1042,13 +1042,16 @@ export function FunExpedienteFullscreen({
   useEffect(() => {
     const previousTitle = document.title;
     if (currentPublic) {
-      document.title = `${currentPublic} · DOVELA`;
+      const isPH = isPropertyHorizontalExpediente(summary, currentVersion);
+      document.title = isPH
+        ? `${currentPublic} · Propiedad Horizontal · DOVELA`
+        : `${currentPublic} · DOVELA`;
     }
 
     return () => {
       document.title = previousTitle;
     };
-  }, [currentPublic]);
+  }, [currentPublic, summary, currentVersion]);
 
   useEffect(() => {
     const { overflow } = document.body.style;
