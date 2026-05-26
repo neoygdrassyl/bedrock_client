@@ -97,18 +97,18 @@ export function normalizeEvidenceEntry(entry = {}, index = 0) {
 
 export function getEvidenceSummary(evidence = EMPTY_ARRAY) {
     if (!evidence.length) {
-        return { key: 'none', label: 'No aportado con VR' };
+        return { key: 'none', label: 'Sin evidencia registrada' };
     }
 
     const hasDigital = evidence.some((entry) => entry.sourceType === 'digital');
     const hasPhysical = evidence.some((entry) => entry.sourceType === 'physical');
     const hasVR = evidence.some((entry) => Boolean(normalizeText(entry.vr)));
 
-    if (hasDigital && hasVR) return { key: 'digital-vr', label: 'Documento aportado con VR' };
-    if (hasDigital) return { key: 'digital', label: 'Documento aportado' };
-    if (hasPhysical && hasVR) return { key: 'physical-vr', label: 'Documento aportado con VR' };
-    if (hasPhysical) return { key: 'physical', label: 'Documento aportado físico' };
-    return { key: 'registered', label: 'Documento aportado' };
+    if (hasDigital && hasVR) return { key: 'digital-vr', label: 'Digital con VR' };
+    if (hasDigital) return { key: 'digital', label: 'Digital' };
+    if (hasPhysical && hasVR) return { key: 'physical-vr', label: 'Físico con VR' };
+    if (hasPhysical) return { key: 'physical', label: 'Aportado físicamente' };
+    return { key: 'registered', label: 'Evidencia registrada' };
 }
 
 export function getPreviewState(evidence = EMPTY_ARRAY) {
@@ -126,37 +126,19 @@ export function detectSupersededEvaluation(evidence = EMPTY_ARRAY, selectedEntry
 
 export function buildCorrelatedRequirementRows({
     codes = EMPTY_ARRAY,
-    sections = EMPTY_ARRAY,
     labels = {},
     getCheckValue = () => 'sin_definir',
     isRequirementApplicable = () => false,
     unifiedEntries = EMPTY_ARRAY,
     legacyFun6Docs = EMPTY_ARRAY,
     existingEvaluationContext = {},
-    onlyApplicable = false,
 }) {
     const normalizedEvidence = [...unifiedEntries, ...legacyFun6Docs]
         .map(normalizeEvidenceEntry)
         .filter((entry) => entry.code);
-    const sectionRequirements = flattenSectionRequirements(sections);
-    const baseRequirements = sectionRequirements.length
-        ? sectionRequirements
-        : codes.map((codeValue) => {
-            const code = normalizeRequirementCode(codeValue);
-            return {
-                code,
-                label: labels[code] || `Requisito ${code}`,
-                section: getRequirementSection(code),
-                sectionTitle: getRequirementSection(code),
-            };
-        });
 
-    return baseRequirements.map((requirement) => {
-        const code = normalizeRequirementCode(requirement.code);
-        const applicable = isRequirementApplicable(code);
-
-        if (onlyApplicable && !applicable) return null;
-
+    return codes.map((codeValue) => {
+        const code = normalizeRequirementCode(codeValue);
         const evidence = normalizedEvidence
             .filter((entry) => entry.code === code)
             .sort((a, b) => String(a.date).localeCompare(String(b.date)));
@@ -164,65 +146,20 @@ export function buildCorrelatedRequirementRows({
         const selectedEntryId = String(evaluationContext.entryId || '');
 
         return {
-            section: requirement.section || getRequirementSection(code),
-            sectionTitle: requirement.sectionTitle || requirement.section || getRequirementSection(code),
+            section: getRequirementSection(code),
             code,
-            label: requirement.label || labels[code] || `Requisito ${code}`,
-            applicability: applicable ? 'aplica' : 'no_aplica',
+            label: labels[code] || `Requisito ${code}`,
+            applicability: isRequirementApplicable(code) ? 'aplica' : 'no_aplica',
             checkValue: getCheckValue(code),
             evidence,
             evidenceSummary: getEvidenceSummary(evidence),
             relatedVRs: getUniqueVRLabels(evidence),
             selectedEvaluationEntry: selectedEntryId,
-            evaluationStatus: evaluationContext.status || '',
+            evaluationStatus: evaluationContext.status || 'pendiente',
             supersededByNewVR: detectSupersededEvaluation(evidence, selectedEntryId),
             previewState: getPreviewState(evidence),
         };
-    }).filter(Boolean);
-}
-
-function flattenSectionRequirements(sections = EMPTY_ARRAY) {
-    if (!Array.isArray(sections)) return EMPTY_ARRAY;
-
-    return sections.flatMap((section) => {
-        const requirements = Array.isArray(section?.requirements) ? section.requirements : [];
-        return requirements.map((requirement) => {
-            const code = normalizeRequirementCode(requirement?.code ?? requirement);
-            return {
-                code,
-                label: requirement?.label,
-                section: section?.id || section?.title || getRequirementSection(code),
-                sectionTitle: section?.title || section?.id || getRequirementSection(code),
-            };
-        }).filter((requirement) => requirement.code);
     });
-}
-
-function parseCodeValueCsv(value = '') {
-    return String(value || '')
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean)
-        .reduce((entries, item) => {
-            const [code, entryValue = ''] = item.split('&');
-            const normalizedCode = normalizeRequirementCode(code);
-            if (!normalizedCode) return entries;
-            return { ...entries, [normalizedCode]: String(entryValue) };
-        }, {});
-}
-
-export function parseFunReviewMap(funReview = {}) {
-    const reviewByCode = parseCodeValueCsv(funReview.review);
-    const id6ByCode = parseCodeValueCsv(funReview.id6);
-    const codes = new Set([...Object.keys(reviewByCode), ...Object.keys(id6ByCode)]);
-
-    return Array.from(codes).reduce((context, code) => ({
-        ...context,
-        [code]: {
-            status: reviewByCode[code] || '',
-            entryId: id6ByCode[code] || '',
-        },
-    }), {});
 }
 
 export function getRequirementSection(code) {
@@ -240,7 +177,7 @@ export function getRequirementSection(code) {
 
 export function getRequirementVisualState(row = {}) {
     if (row.applicability === 'no_aplica') return REQUIREMENT_VISUAL_STATE.MUTED;
-    if (row.evaluationStatus === 'no_cumple' || row.evaluationStatus === '0') return REQUIREMENT_VISUAL_STATE.DESTRUCTIVE;
+    if (row.evaluationStatus === 'no_cumple') return REQUIREMENT_VISUAL_STATE.DESTRUCTIVE;
     if (row.supersededByNewVR || row.previewState === 'not_uploaded' || row.previewState === 'physical_only') {
         return REQUIREMENT_VISUAL_STATE.WARNING;
     }

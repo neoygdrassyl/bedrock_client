@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import {
     buildCorrelatedRequirementRows,
     getRequirementVisualState,
-    parseFunReviewMap,
 } from '../app/pages/user/fun_forms/utils/correlatedDocumentControl.utils';
 
 describe('correlatedDocumentControl.utils', () => {
@@ -31,7 +30,7 @@ describe('correlatedDocumentControl.utils', () => {
             checkValue: 'NO',
             previewState: 'not_uploaded',
         });
-        expect(rows[0].evidenceSummary.label).toBe('No aportado con VR');
+        expect(rows[0].evidenceSummary.label).toBe('Sin evidencia registrada');
         expect(getRequirementVisualState(rows[0])).toBe('warning');
     });
 
@@ -58,7 +57,7 @@ describe('correlatedDocumentControl.utils', () => {
 
         expect(rows[0].evidence[0].sourceType).toBe('physical');
         expect(rows[0].previewState).toBe('physical_only');
-        expect(rows[0].evidenceSummary.label).toBe('Documento aportado físico');
+        expect(rows[0].evidenceSummary.label).toBe('Aportado físicamente');
     });
 
     it('deduplicates related VR labels while preserving evidence order', () => {
@@ -151,7 +150,7 @@ describe('correlatedDocumentControl.utils', () => {
         });
 
         expect(rows[0].previewState).toBe('physical_only');
-        expect(rows[0].evidenceSummary.label).toBe('Documento aportado con VR');
+        expect(rows[0].evidenceSummary.label).toBe('Físico con VR');
     });
 
     it('builds renderable preview and download URLs for legacy digital evidence with path and filename', () => {
@@ -183,59 +182,5 @@ describe('correlatedDocumentControl.utils', () => {
             previewUrl: 'http://localhost/dovela-backend/public/files/fun/2026/91/formulario.pdf?inline=1',
             downloadUrl: 'http://localhost/dovela-backend/public/files/fun/2026/91/formulario.pdf',
         });
-    });
-
-    it('filters non-applicable codes and preserves section grouping for the primary control', () => {
-        const sections = [
-            {
-                id: '6.1',
-                title: '6.1 DOCUMENTOS COMUNES A TODA SOLICITUD',
-                requirements: [
-                    { code: '511', label: 'Formulario Único Nacional' },
-                    { code: '621', label: 'Plano urbanístico' },
-                ],
-            },
-            {
-                id: '6.8-cotas',
-                title: 'Ajuste de cotas y áreas',
-                requirements: [{ code: '680', label: 'Copia del plano correspondiente' }],
-            },
-        ];
-
-        const rows = buildCorrelatedRequirementRows({
-            codes: ['511', '621', '680'],
-            sections,
-            labels,
-            getCheckValue: (code) => (code === '621' ? 'N/A' : 'SI'),
-            isRequirementApplicable: (code) => code !== '621',
-            unifiedEntries: [],
-            legacyFun6Docs: [],
-            existingEvaluationContext: {},
-            onlyApplicable: true,
-        });
-
-        expect(rows.map((row) => row.code)).toEqual(['511', '680']);
-        expect(rows[0]).toMatchObject({ section: '6.1', sectionTitle: '6.1 DOCUMENTOS COMUNES A TODA SOLICITUD' });
-        expect(rows[1]).toMatchObject({ section: '6.8-cotas', sectionTitle: 'Ajuste de cotas y áreas' });
-    });
-
-    it('inherits previous review and id6 values from fun_r compatible CSV fields', () => {
-        const inherited = parseFunReviewMap({
-            review: '511&1,680&0',
-            id6: '511&91,680&-1',
-        });
-
-        const rows = buildCorrelatedRequirementRows({
-            codes: ['511', '680'],
-            labels,
-            getCheckValue: () => 'SI',
-            isRequirementApplicable: () => true,
-            unifiedEntries: [],
-            legacyFun6Docs: [],
-            existingEvaluationContext: inherited,
-        });
-
-        expect(rows[0]).toMatchObject({ code: '511', evaluationStatus: '1', selectedEvaluationEntry: '91' });
-        expect(rows[1]).toMatchObject({ code: '680', evaluationStatus: '0', selectedEvaluationEntry: '-1' });
     });
 });
