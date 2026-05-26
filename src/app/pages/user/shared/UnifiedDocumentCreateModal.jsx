@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import dayjs from 'dayjs';
 import { PDFDocument } from 'pdf-lib';
 import { Button } from '@/components/ui/button';
@@ -14,8 +15,10 @@ import {
 
 const ACCEPTED_DOCUMENT_FILE_TYPES = new Set(['image/png', 'image/jpeg', 'application/pdf']);
 const ACCEPTED_DOCUMENT_FILE_LABEL = 'PDF, JPG o PNG';
-const STICKY_NAME_COLUMN_CLASS = 'sticky left-0 z-10 w-[380px] min-w-[380px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
-const STICKY_VR_COLUMN_CLASS = 'sticky left-[380px] z-10 w-[240px] min-w-[240px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+const STICKY_SELECT_COLUMN_CLASS = 'sticky left-0 z-20 w-[84px] min-w-[84px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+const STICKY_NAME_COLUMN_CLASS = 'sticky left-[84px] z-10 w-[380px] min-w-[380px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+const STICKY_VR_COLUMN_CLASS = 'sticky left-[464px] z-10 w-[240px] min-w-[240px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+const DOCUMENT_SELECTOR_POPOVER_Z_INDEX = 10050;
 
 function normalizeFileList(fileList) {
     return Array.from(fileList || []);
@@ -27,8 +30,12 @@ function fileKey(file) {
 
 function mergeFiles(currentFiles = [], incomingFiles = []) {
     const filesByKey = new Map();
-    currentFiles.forEach((file) => filesByKey.set(fileKey(file), file));
-    incomingFiles.forEach((file) => filesByKey.set(fileKey(file), file));
+    currentFiles.forEach((file) => {
+        filesByKey.set(fileKey(file), file);
+    });
+    incomingFiles.forEach((file) => {
+        filesByKey.set(fileKey(file), file);
+    });
     return Array.from(filesByKey.values());
 }
 
@@ -101,15 +108,17 @@ function buildDocumentOptions() {
 
 function createRow(source = 'manual', base = {}) {
     const rowId = `${source}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const hasDate = Object.prototype.hasOwnProperty.call(base, 'date');
     return {
         id: rowId,
-        selected: source === 'manual',
+        selected: typeof base.selected === 'boolean' ? base.selected : source === 'manual' || source === 'pendingPhysical',
         source,
+        pendingEntryId: base.pendingEntryId || '',
         documentCode: base.documentCode || base.code || '',
         documentName: base.documentName || base.name || '',
         vr: base.vr || '',
-        pages: base.pages || base.page || '',
-        date: base.date || dayjs().format('YYYY-MM-DD'),
+        pages: base.pages ?? base.page ?? '',
+        date: hasDate ? (base.date || '') : dayjs().format('YYYY-MM-DD'),
         originState: base.originState || DOCUMENT_ORIGIN_STATE.SCANNED,
         receptionMedium: base.receptionMedium || '',
         file: null,
@@ -120,9 +129,37 @@ function createRow(source = 'manual', base = {}) {
     };
 }
 
+function getPendingEntryKey(entry = {}) {
+    return String(entry.entryId || entry.sourceId || [
+        entry.documentCode || entry.code || '',
+        entry.documentName || entry.name || '',
+        entry.vr || entry.id_public || '',
+        entry.date || '',
+        entry.pages ?? entry.page ?? '',
+    ].join('|'));
+}
+
+function buildPendingPhysicalRow(entry = {}) {
+    return createRow('pendingPhysical', {
+        pendingEntryId: getPendingEntryKey(entry),
+        selected: true,
+        documentCode: entry.documentCode || entry.code || '',
+        documentName: entry.documentName || entry.name || '',
+        vr: entry.vr || entry.id_public || '',
+        pages: entry.pages ?? entry.page ?? '',
+        date: entry.date || '',
+        originState: DOCUMENT_ORIGIN_STATE.SCANNED,
+        receptionMedium: '',
+    });
+}
+
 function DocsComboboxInline({ rowId, code, name, onSelect }) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
+    const [menuPosition, setMenuPosition] = useState(null);
+    const triggerRef = useRef(null);
+    const menuRef = useRef(null);
+    const searchInputRef = useRef(null);
     const documentOptions = useMemo(() => buildDocumentOptions(), []);
     const normalizedSearch = search.trim().toLowerCase();
     const filteredOptions = useMemo(() => {
@@ -134,8 +171,100 @@ function DocsComboboxInline({ rowId, code, name, onSelect }) {
 
     const displayValue = [code, name].filter(Boolean).join(' · ');
 
+    useEffect(() => {
+        if (!open) return undefined;
+
+        const updatePosition = () => {
+            const triggerRect = triggerRef.current?.getBoundingClientRect();
+            if (!triggerRect) return;
+
+            const viewportPadding = 16;
+            const maxWidth = Math.min(720, window.innerWidth - (viewportPadding * 2));
+            const width = Math.max(Math.min(maxWidth, Math.max(triggerRect.width, 420)), Math.min(triggerRect.width, maxWidth));
+            const left = Math.min(Math.max(triggerRect.left, viewportPadding), window.innerWidth - width - viewportPadding);
+            const spaceBelow = window.innerHeight - triggerRect.bottom - viewportPadding;
+            const top = spaceBelow < 320
+                ? Math.max(viewportPadding, triggerRect.top - 340)
+                : triggerRect.bottom + 4;
+
+            setMenuPosition({ left, top, width });
+        };
+
+        updatePosition();
+        window.requestAnimationFrame(() => {
+            window.setTimeout(() => {
+                searchInputRef.current?.focus();
+            }, 0);
+        });
+        window.addEventListener('resize', updatePosition);
+        window.addEventListener('scroll', updatePosition, true);
+        return () => {
+            window.removeEventListener('resize', updatePosition);
+            window.removeEventListener('scroll', updatePosition, true);
+        };
+    }, [open]);
+
+    useEffect(() => {
+        if (!open) return undefined;
+
+        const handlePointerDown = (event) => {
+            if (triggerRef.current?.contains(event.target) || menuRef.current?.contains(event.target)) {
+                return;
+            }
+            setOpen(false);
+        };
+
+        document.addEventListener('mousedown', handlePointerDown);
+        return () => document.removeEventListener('mousedown', handlePointerDown);
+    }, [open]);
+
+    const menu = open && typeof document !== 'undefined' ? createPortal(<div
+        ref={menuRef}
+        className="rounded-xl border border-border bg-background p-2 shadow-2xl"
+        style={{
+            position: 'fixed',
+            top: menuPosition?.top ?? 0,
+            left: menuPosition?.left ?? 0,
+            width: menuPosition?.width ?? 420,
+            zIndex: DOCUMENT_SELECTOR_POPOVER_Z_INDEX,
+            visibility: menuPosition ? 'visible' : 'hidden',
+        }}
+    >
+        <div className="mb-2 flex h-11 items-center gap-2 rounded-lg border border-input bg-background px-3 text-foreground ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+            <Icon name="search" size={15} className="shrink-0 text-muted-foreground" />
+            <input
+                ref={searchInputRef}
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Buscar por código o nombre"
+                className="min-w-0 flex-1 border-0 bg-transparent p-0 text-sm leading-none text-foreground outline-none placeholder:text-muted-foreground"
+            />
+        </div>
+        <div className="max-h-72 overflow-auto rounded-lg border border-border">
+            {filteredOptions.length ? filteredOptions.map((option) => <button
+                key={`${rowId}-${option.code}`}
+                type="button"
+                className="flex w-full gap-3 border-b border-border/70 px-3 py-2 text-left text-xs last:border-b-0 hover:bg-muted/50 focus:bg-muted/60 focus:outline-none"
+                onClick={() => {
+                    onSelect(option);
+                    setSearch('');
+                    setOpen(false);
+                }}
+                title={`${option.code} · ${option.name}`}
+            >
+                <span className="w-16 shrink-0 font-mono text-muted-foreground">{option.code}</span>
+                <span className="min-w-0 whitespace-normal leading-snug text-foreground">{option.name}</span>
+            </button>) : <div className="px-3 py-8 text-center text-xs text-muted-foreground">No hay documentos para esa búsqueda</div>}
+        </div>
+        <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+            <span>{filteredOptions.length} resultado(s) visibles</span>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>Cerrar</Button>
+        </div>
+    </div>, document.body) : null;
+
     return <div className="relative min-w-[340px]">
         <button
+            ref={triggerRef}
             type="button"
             className="flex min-h-9 w-full items-center justify-between gap-2 rounded-md border border-border bg-background px-2.5 py-1.5 text-left text-[11px] text-foreground transition-colors hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring"
             onClick={() => setOpen((current) => !current)}
@@ -144,38 +273,7 @@ function DocsComboboxInline({ rowId, code, name, onSelect }) {
             <span className="min-w-0 whitespace-normal leading-tight">{displayValue || 'Seleccionar documento'}</span>
             <Icon name={open ? 'chevron-up' : 'chevron-down'} size={14} className="shrink-0 text-muted-foreground" />
         </button>
-        {open ? <div className="absolute left-0 top-[calc(100%+4px)] z-40 w-[min(720px,70vw)] rounded-xl border border-border bg-background p-2 shadow-2xl">
-            <div className="relative mb-2">
-                <Icon name="search" size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Buscar por código o nombre"
-                    className="pl-9 text-sm"
-                    autoFocus
-                />
-            </div>
-            <div className="max-h-72 overflow-auto rounded-lg border border-border">
-                {filteredOptions.length ? filteredOptions.map((option) => <button
-                    key={`${rowId}-${option.code}`}
-                    type="button"
-                    className="flex w-full gap-3 border-b border-border/70 px-3 py-2 text-left text-xs last:border-b-0 hover:bg-muted/50 focus:bg-muted/60 focus:outline-none"
-                    onClick={() => {
-                        onSelect(option);
-                        setSearch('');
-                        setOpen(false);
-                    }}
-                    title={`${option.code} · ${option.name}`}
-                >
-                    <span className="w-16 shrink-0 font-mono text-muted-foreground">{option.code}</span>
-                    <span className="min-w-0 whitespace-normal leading-snug text-foreground">{option.name}</span>
-                </button>) : <div className="px-3 py-8 text-center text-xs text-muted-foreground">No hay documentos para esa búsqueda</div>}
-            </div>
-            <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                <span>{filteredOptions.length} resultado(s) visibles</span>
-                <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>Cerrar</Button>
-            </div>
-        </div> : null}
+        {menu}
     </div>;
 }
 
@@ -219,7 +317,7 @@ function FileDropCell({ row, onFilesSelected, onFileRemove, onClearFiles, onFile
             />
         </label>
         {row.fileError ? <p className="mb-0 rounded-md border border-warning/30 bg-warning/10 px-2 py-1 text-[10px] font-medium text-warning">{row.fileError}</p> : null}
-        {files.length ? <div className="max-h-32 space-y-1 overflow-y-auto rounded-md border border-border bg-background p-1" aria-label="Archivos seleccionados">
+        {files.length ? <div className="max-h-32 space-y-1 overflow-y-auto rounded-md border border-border bg-background p-1" title="Archivos seleccionados">
             {files.map((file) => <div key={fileKey(file)} className="flex items-center justify-between gap-2 rounded border border-border/70 bg-muted/20 px-2 py-1 text-[10px] text-foreground">
                 <span className="min-w-0 flex-1 truncate" title={file.name}>{file.name}</span>
                 <span className="shrink-0 font-mono text-muted-foreground">{formatFileSize(file.size)}</span>
@@ -268,6 +366,7 @@ function groupPendingDocuments(pendingPhysicalDocs = []) {
         }
 
         currentGroup.entries.push(entry);
+        currentGroup.entries.sort((firstEntry, secondEntry) => String(secondEntry.date || '').localeCompare(String(firstEntry.date || '')) || String(firstEntry.vr || '').localeCompare(String(secondEntry.vr || '')));
         groups.set(key, currentGroup);
     });
 
@@ -291,6 +390,7 @@ function UnifiedDocumentCreateModal({
     const [dragOverRowId, setDragOverRowId] = useState(null);
     const [previewFile, setPreviewFile] = useState(null);
     const pendingGroups = useMemo(() => groupPendingDocuments(pendingPhysicalDocs), [pendingPhysicalDocs]);
+    const pendingRowKeys = useMemo(() => new Set(rows.map((row) => row.pendingEntryId).filter(Boolean)), [rows]);
     const selectedCount = rows.filter((row) => row.selected).length;
 
     useEffect(() => {
@@ -348,6 +448,20 @@ function UnifiedDocumentCreateModal({
 
         if (!vrRows.length) return;
         setRows((currentRows) => [...currentRows, ...vrRows]);
+    };
+
+    const addPendingPhysicalEntry = (entry) => {
+        const pendingEntryId = getPendingEntryKey(entry);
+        if (pendingRowKeys.has(pendingEntryId)) return;
+        setRows((currentRows) => [...currentRows, buildPendingPhysicalRow(entry)]);
+    };
+
+    const addPendingPhysicalGroup = (group) => {
+        const nextRows = group.entries
+            .filter((entry) => !pendingRowKeys.has(getPendingEntryKey(entry)))
+            .map((entry) => buildPendingPhysicalRow(entry));
+        if (!nextRows.length) return;
+        setRows((currentRows) => [...currentRows, ...nextRows]);
     };
 
     const openFilePreview = (file) => {
@@ -481,7 +595,7 @@ function UnifiedDocumentCreateModal({
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                         <div>
                             <p className="mb-0 text-sm font-semibold text-foreground">Documentos a cargar</p>
-                            <p className="mb-0 text-xs text-muted-foreground">Las filas manuales se guardan por defecto; las importadas desde VR quedan sin marcar.</p>
+                            <p className="mb-0 text-xs text-muted-foreground">Las filas manuales y pendientes se guardan por defecto; las importadas desde VR quedan sin marcar.</p>
                         </div>
                         <Button type="button" variant="outline" size="sm" onClick={() => setRows((currentRows) => [...currentRows, createRow('manual')])}>
                             <Icon name="plus" size={14} /> Agregar fila
@@ -492,6 +606,7 @@ function UnifiedDocumentCreateModal({
                         <table className="w-full min-w-[1780px] text-xs">
                             <thead className="sticky top-0 z-20 bg-muted text-xs uppercase text-muted-foreground shadow-sm">
                                 <tr>
+                                    <th className={cn(STICKY_SELECT_COLUMN_CLASS, 'z-40 bg-muted px-2 py-2 text-center')}>Seleccionar</th>
                                     <th className={cn(STICKY_NAME_COLUMN_CLASS, 'z-30 bg-muted px-2 py-2 text-left')}>Nombre</th>
                                     <th className={cn(STICKY_VR_COLUMN_CLASS, 'z-30 bg-muted px-2 py-2 text-left')}>VR</th>
                                     <th className="w-[360px] px-2 py-2 text-left">Archivo</th>
@@ -499,7 +614,6 @@ function UnifiedDocumentCreateModal({
                                     <th className="w-36 px-2 py-2 text-left">Fecha</th>
                                     <th className="w-44 px-2 py-2 text-left">Origen</th>
                                     <th className="w-44 px-2 py-2 text-left">Medio de recepción</th>
-                                    <th className="w-20 px-2 py-2 text-center">Guardar</th>
                                     <th className="w-12 px-2 py-2 text-center">Quitar</th>
                                 </tr>
                             </thead>
@@ -518,6 +632,17 @@ function UnifiedDocumentCreateModal({
                                         onDragLeave={(event) => handleRowDragLeave(event, row.id)}
                                         onDrop={(event) => handleRowDrop(event, row.id)}
                                     >
+                                        <td className={cn(STICKY_SELECT_COLUMN_CLASS, 'px-2 py-2 text-center align-top', isDraggingFiles && 'bg-primary/5')}>
+                                            <label className="inline-flex min-h-9 cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-border bg-background px-2 text-[10px] font-medium text-muted-foreground hover:border-primary/40 hover:text-foreground">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={row.selected}
+                                                    onChange={(event) => updateRow(row.id, { selected: event.target.checked })}
+                                                    aria-label="Seleccionar fila para guardar"
+                                                />
+                                                Guardar
+                                            </label>
+                                        </td>
                                         <td className={cn(STICKY_NAME_COLUMN_CLASS, 'px-2 py-2 align-top', isDraggingFiles && 'bg-primary/5')}>
                                             <DocsComboboxInline
                                                 rowId={row.id}
@@ -562,14 +687,6 @@ function UnifiedDocumentCreateModal({
                                             </select>
                                         </td>
                                         <td className="px-2 py-2 text-center align-top">
-                                            <input
-                                                type="checkbox"
-                                                checked={row.selected}
-                                                onChange={(event) => updateRow(row.id, { selected: event.target.checked })}
-                                                aria-label="Guardar fila"
-                                            />
-                                        </td>
-                                        <td className="px-2 py-2 text-center align-top">
                                             <Button type="button" variant="ghost" size="sm" onClick={() => removeRow(row.id)} disabled={rows.length <= 1} aria-label="Quitar fila">
                                                 <Icon name="trash" size={13} />
                                             </Button>
@@ -608,13 +725,52 @@ function UnifiedDocumentCreateModal({
                         {pendingLoading ? <p className="mb-0 px-2 py-4 text-center text-xs text-muted-foreground">Cargando pendientes...</p> : null}
                         {!pendingLoading && !pendingGroups.length ? <p className="mb-0 px-2 py-4 text-center text-xs text-muted-foreground">No hay documentos físicos pendientes por digitalizar</p> : null}
                         <div className="space-y-2">
-                            {!pendingLoading && pendingGroups.map((group) => <div key={group.key} className="rounded-lg border border-border bg-muted/20 p-2">
-                                <p className="mb-1 line-clamp-3 text-xs font-semibold text-foreground" title={group.documentName}>{group.documentName}</p>
-                                {group.documentCode ? <p className="mb-2 font-mono text-[11px] text-muted-foreground">{group.documentCode}</p> : null}
-                                <div className="flex flex-wrap gap-1">
-                                    {group.vrs.map((vr) => <span key={vr} className="rounded-full border border-border bg-background px-2 py-1 text-[10px] font-mono text-muted-foreground">{vr}</span>)}
-                                </div>
-                            </div>)}
+                            {!pendingLoading && pendingGroups.map((group) => {
+                                const remainingEntries = group.entries.filter((entry) => !pendingRowKeys.has(getPendingEntryKey(entry)));
+                                return <div key={group.key} className="rounded-lg border border-border bg-muted/20 p-2">
+                                    <div className="mb-2 flex items-start justify-between gap-2">
+                                        <div className="min-w-0">
+                                            <p className="mb-1 line-clamp-3 text-xs font-semibold text-foreground" title={group.documentName}>{group.documentName}</p>
+                                            {group.documentCode ? <p className="mb-0 font-mono text-[11px] text-muted-foreground">{group.documentCode}</p> : null}
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-7 shrink-0 px-2 text-[10px]"
+                                            onClick={() => addPendingPhysicalGroup(group)}
+                                            disabled={!remainingEntries.length}
+                                        >
+                                            <Icon name="plus" size={11} /> Todos
+                                        </Button>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        {group.entries.map((entry) => {
+                                            const pendingEntryId = getPendingEntryKey(entry);
+                                            const alreadyAdded = pendingRowKeys.has(pendingEntryId);
+                                            return <div key={pendingEntryId} className="rounded-md border border-border bg-background p-2">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="min-w-0 text-[10px] text-muted-foreground">
+                                                        <p className="mb-0 font-mono text-foreground">{entry.vr || 'SIN VR'}</p>
+                                                        <p className="mb-0">Fecha: {entry.date || 'Sin fecha'} · Folios: {entry.pages ?? entry.page ?? '0'}</p>
+                                                    </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant={alreadyAdded ? 'ghost' : 'default'}
+                                                        size="sm"
+                                                        className="h-7 shrink-0 px-2 text-[10px]"
+                                                        onClick={() => addPendingPhysicalEntry(entry)}
+                                                        disabled={alreadyAdded}
+                                                        aria-label={`Agregar pendiente físico ${entry.documentName || group.documentName}`}
+                                                    >
+                                                        <Icon name={alreadyAdded ? 'check' : 'plus'} size={11} /> {alreadyAdded ? 'Agregado' : 'Agregar'}
+                                                    </Button>
+                                                </div>
+                                            </div>;
+                                        })}
+                                    </div>
+                                </div>;
+                            })}
                         </div>
                     </div>
                 </aside>
