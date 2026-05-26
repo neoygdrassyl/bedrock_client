@@ -36,7 +36,6 @@ import { DiasHabilesColombia } from '../../utils/BusinessDaysCol';
 // RECORDS
 import RECORD_ARC from './records/record_arc';
 import RECORD_LAW from './records/record_law';
-import RECORD_PH from './records/record_ph';
 import RECORD_ENG from './records/record_eng';
 import FUN_WORKER_ASIGN from './fun_forms/components/fun_worker_asign.component';
 import RECORD_REVIEW from './records/record_review';
@@ -70,7 +69,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             modal_record_arc: false,
             modal_record_law: false,
             modal_record_eng: false,
-            modal_record_ph: false,
             modal_record_review: false,
             modal_exp: false,
             modal_macro: false,
@@ -368,17 +366,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const getToggle_recordEng = () => {
         return state.modal_record_eng;
     }
-    const getToggle_recordPH = () => {
-        return state.modal_record_ph;
-    }
-    const toggle_recordPH = (item) => {
-        if (item) {
-            setItem(item)
-        }
-        setState({
-            modal_record_ph: !state.modal_record_ph
-        });
-    }
     const toggle_recordReview = (item) => {
         if (item) {
             setItem(item)
@@ -477,9 +464,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             case "record_eng":
                 toggle_recordEng(false)
                 break;
-            case "record_ph":
-                toggle_recordPH(false)
-                break;
             case "record_review":
                 toggle_recordReview(false)
                 break;
@@ -524,9 +508,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 break;
             case "record_eng":
                 toggle_recordEng(item)
-                break;
-            case "record_ph":
-                toggle_recordPH(item)
                 break;
             case "record_review":
                 toggle_recordReview(item)
@@ -1194,7 +1175,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                     Checkeo
                                 </DropdownMenuItem>
                                 {isPH ? (
-                                    <DropdownMenuItem onClick={(event) => runMenuAction(event, () => toggle_recordPH(row))}>
+                                    <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'record_ph'))}>
                                         <Icon name="PenTool" size={14} className="text-warning" />
                                         Inf. P.H.
                                     </DropdownMenuItem>
@@ -1808,25 +1789,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <ModalFooter onClose={toggle_recordLaw} />
-                </Modal>
-
-                <Modal contentLabel="RECORDS PH"
-                    isOpen={state.modal_record_ph}
-                    style={customStylesForModal()}
-                    ariaHideApp={false}
-                >
-                    <FunModalHeader icon="PencilRuler" title="Informe Propiedad Horizontal" onClose={toggle_recordPH} />
-
-                    <RECORD_PH translation={translation} swaMsg={swaMsg} globals={globals}
-                        currentId={currentId}
-                        currentVersion={currentVersion}
-                        requestUpdate={requestUpdate}
-                        requesRefresh={retrievePublish}
-                        closeModal={toggle_recordPH}
-                        NAVIGATION={navigation}
-                        NAVIGATION_VERSION={navigation_version} />
-
-                    <ModalFooter onClose={toggle_recordPH} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS ENG"
