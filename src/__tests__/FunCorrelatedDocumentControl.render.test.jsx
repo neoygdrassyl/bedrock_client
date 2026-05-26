@@ -10,270 +10,313 @@ import FUNService from '../app/services/fun.service';
 vi.mock('../app/services/fun.service', () => ({
   default: {
     getUnifiedDocumentEntries: vi.fn(() => Promise.resolve({ data: [] })),
+    getDocumentEvaluations: vi.fn(() => Promise.resolve({ data: [] })),
+    saveDocumentEvaluations: vi.fn(() => Promise.resolve({ data: { rows: [] } })),
+    update_r: vi.fn(() => Promise.resolve({ data: 'OK' })),
+    create_funr: vi.fn(() => Promise.resolve({ data: 'OK' })),
   },
 }));
+
+vi.mock('../app/utils/swalAdapter', () => ({
+  swalError: vi.fn(),
+  swalLoading: vi.fn(),
+  swalSuccess: vi.fn(),
+}));
+
+const labels = {
+  511: 'Formulario Único Nacional',
+  621: 'Plano urbanístico',
+  680: 'Copia del plano correspondiente',
+  681: 'Reglamento de propiedad horizontal',
+  6891: 'Concepto de norma urbanística',
+};
+
+const baseSections = [
+  {
+    id: '6.1',
+    title: '6.1 DOCUMENTOS COMUNES A TODA SOLICITUD',
+    requirements: [
+      { code: '511', label: labels[511] },
+      { code: '621', label: labels[621] },
+    ],
+  },
+  {
+    id: '6.8-cotas',
+    title: 'Ajuste de cotas y áreas',
+    requirements: [{ code: '680', label: labels[680] }],
+  },
+];
+
+const swaMsg = {
+  title_wait: 'Espere...',
+  text_wait: 'Procesando...',
+  generic_success_title: 'Éxito',
+  generic_success_text: 'Guardado',
+  generic_eror_title: 'Error',
+  generic_error_text: 'No guardado',
+};
+
+function renderControl(extraProps = {}) {
+  const props = {
+    currentItem: { id: 10, id_public: 'FUN-10', fun_6s: [] },
+    currentVersion: 1,
+    codes: ['511', '621', '680'],
+    sections: baseSections,
+    labels,
+    getCheckValue: (code) => (code === '621' ? 'N/A' : 'SI'),
+    isRequirementApplicable: (code) => code !== '621',
+    currentReview: { id: 22, review: '511&1,680&0', id6: '511&91,680&-1' },
+    readOnly: false,
+    requestUpdate: vi.fn(),
+    swaMsg,
+    ...extraProps,
+  };
+
+  return render(<FunCorrelatedDocumentControl {...props} />);
+}
 
 describe('FunCorrelatedDocumentControl', () => {
   beforeEach(() => {
     FUNService.getUnifiedDocumentEntries.mockReset();
     FUNService.getUnifiedDocumentEntries.mockResolvedValue({ data: [] });
+    FUNService.getDocumentEvaluations.mockReset();
+    FUNService.getDocumentEvaluations.mockResolvedValue({ data: [] });
+    FUNService.saveDocumentEvaluations.mockReset();
+    FUNService.saveDocumentEvaluations.mockResolvedValue({ data: { rows: [] } });
+    FUNService.update_r.mockReset();
+    FUNService.update_r.mockResolvedValue({ data: 'OK' });
+    FUNService.create_funr.mockReset();
+    FUNService.create_funr.mockResolvedValue({ data: 'OK' });
   });
 
-  it('renders a correlated table without treating missing evidence as an error', async () => {
-    render(
-      <FunCorrelatedDocumentControl
-        currentItem={{ id: 10, id_public: 'FUN-10', fun_6s: [] }}
-        currentVersion={1}
-        codes={['511']}
-        labels={{ 511: 'Formulario Único Nacional' }}
-        getCheckValue={() => 'NO'}
-        isRequirementApplicable={() => true}
-        readOnly={false}
-      />,
-    );
+  it('renders a compact primary control with one concise title, no Checklist column, and no KPI counters', async () => {
+    renderControl();
 
-    expect(await screen.findByText('Control documental correlacionado')).toBeInTheDocument();
-    const row = screen.getByRole('row', { name: /511/i });
-    expect(within(row).getByText('Sin evidencia registrada')).toBeInTheDocument();
-    expect(screen.getByText(/No bloquea el envío a Legal y debida forma/i)).toBeInTheDocument();
+    const control = await screen.findByRole('region', { name: /Control documental FUN/i });
+    expect(within(control).getByRole('heading', { name: /Control documental FUN/i })).toBeInTheDocument();
+    expect(within(control).getByRole('columnheader', { name: /Requisito/i })).toBeInTheDocument();
+    expect(within(control).getByRole('columnheader', { name: /Documento seleccionado/i })).toBeInTheDocument();
+    expect(within(control).queryByRole('columnheader', { name: /Evaluación/i })).not.toBeInTheDocument();
+    expect(within(control).getByRole('columnheader', { name: /Gestionar/i })).toBeInTheDocument();
+    expect(within(control).queryByRole('columnheader', { name: /^Checklist$/i })).not.toBeInTheDocument();
+    expect(within(control).queryByText(/Aplicables:/i)).not.toBeInTheDocument();
+    expect(within(control).queryByText(/Consultables:/i)).not.toBeInTheDocument();
+    expect(within(control).queryByText(/Control de requisitos FUN/i)).not.toBeInTheDocument();
+    expect(within(control).queryByText(/Control documental correlacionado/i)).not.toBeInTheDocument();
+    expect(within(control).queryByText(/Cruza requisitos aplicables/i)).not.toBeInTheDocument();
+    expect(within(control).queryByText(/Requisitos correlacionados con documentos/i)).not.toBeInTheDocument();
+
+    const scrollContainer = within(control).getByTestId('fun-correlated-table-scroll');
+    expect(scrollContainer).toHaveClass('max-h-[min(54vh,42rem)]');
+    expect(scrollContainer).toHaveClass('overflow-y-auto');
   });
 
-  it('opens detail for a previewable entry and shows related VRs plus iframe preview', async () => {
+  it('shows only applicable rows with stronger section hierarchy than document rows', async () => {
+    renderControl();
+
+    const control = await screen.findByRole('region', { name: /Control documental FUN/i });
+    const sectionHeading = within(control).getByText('6.1 DOCUMENTOS COMUNES A TODA SOLICITUD');
+    expect(sectionHeading).toHaveClass('text-sm');
+    expect(sectionHeading).toHaveClass('font-bold');
+    expect(within(control).getByText('Ajuste de cotas y áreas')).toBeInTheDocument();
+    expect(within(control).getByRole('row', { name: /511.*Formulario Único Nacional/i })).toBeInTheDocument();
+    expect(within(control).getByRole('row', { name: /680.*Copia del plano correspondiente/i })).toBeInTheDocument();
+    expect(within(control).queryByRole('row', { name: /621.*Plano urbanístico/i })).not.toBeInTheDocument();
+  });
+
+  it('does not expose report evaluation toggles or observation fields in chequeo', async () => {
+    renderControl();
+
+    const control = await screen.findByRole('region', { name: /Control documental FUN/i });
+    expect(within(control).queryByRole('button', { name: /Ver evaluación/i })).not.toBeInTheDocument();
+    expect(within(control).queryByRole('button', { name: /Ver todo/i })).not.toBeInTheDocument();
+    expect(within(control).queryByLabelText(/Observación documental/i)).not.toBeInTheDocument();
+    expect(FUNService.getDocumentEvaluations).not.toHaveBeenCalled();
+    expect(FUNService.saveDocumentEvaluations).not.toHaveBeenCalled();
+  });
+
+  it('inherits review and id6 and saves only the chequeo through FUNService.update_r', async () => {
     const user = userEvent.setup();
+    renderControl();
 
+    expect(screen.queryByLabelText(/Evaluación requerida 511/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId('selected-document-511')).toHaveTextContent(/91/);
+
+    await user.click(screen.getByRole('button', { name: /Guardar control documental/i }));
+
+    await waitFor(() => expect(FUNService.update_r).toHaveBeenCalledTimes(1));
+    expect(FUNService.saveDocumentEvaluations).not.toHaveBeenCalled();
+    const [funRId, formData] = FUNService.update_r.mock.calls[0];
+    expect(funRId).toBe(22);
+    expect(formData.get('review')).toContain('511&1');
+    expect(formData.get('review')).toContain('680&0');
+    expect(formData.get('id6')).toContain('511&91');
+    expect(formData.get('id6')).toContain('680&-1');
+  });
+
+  it('persists legacy review and id6 on first creation without report evaluation payloads', async () => {
+    const user = userEvent.setup();
+    renderControl({ currentReview: null });
+
+    await screen.findByRole('region', { name: /Control documental FUN/i });
+    expect(screen.queryByLabelText(/Evaluación requerida/i)).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Guardar control documental/i }));
+
+    await waitFor(() => expect(FUNService.create_funr).toHaveBeenCalledTimes(1));
+    expect(FUNService.saveDocumentEvaluations).not.toHaveBeenCalled();
+    const [formData] = FUNService.create_funr.mock.calls[0];
+    expect(formData.get('review')).toContain('511&1');
+    expect(formData.get('review')).toContain('680&1');
+    expect(formData.get('id6')).toContain('511&0');
+    expect(formData.get('id6')).toContain('680&0');
+  });
+
+  it('opens Gestionar in a modal for rows without aportado/VR and keeps legal absence visible', async () => {
+    const user = userEvent.setup();
+    renderControl({ currentReview: { id: 22, review: '', id6: '' } });
+
+    const row = await screen.findByRole('row', { name: /511.*Formulario Único Nacional/i });
+    expect(within(row).getByText(/No aportado con VR/i)).toBeInTheDocument();
+
+    await user.click(within(row).getByRole('button', { name: /Gestionar documento 511/i }));
+
+    const modal = screen.getByRole('dialog', { name: /Gestionar documento 511/i });
+    expect(within(modal).getByText(/No hay documento ni VR asociado a este requisito/i)).toBeInTheDocument();
+    expect(within(modal).getByText(/ausencia queda visible como información para revisión legal/i)).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /Acción documental 511/i })).not.toBeInTheDocument();
+  });
+
+  it('lists related and grouped attached entries in the modal and changes the selected VR for chequeo', async () => {
+    const user = userEvent.setup();
     FUNService.getUnifiedDocumentEntries.mockResolvedValueOnce({
       data: [
         {
-          id: 'physical-511',
+          id: 'digital-511-a',
           documentCode: '511',
-          documentName: 'Formulario Único Nacional físico',
-          originState: 'FISICO',
-          vr: 'VR-456',
-          date: '2026-05-19',
-          canPreview: false,
-        },
-        {
-          id: 'digital-511',
-          documentCode: '511',
-          documentName: 'Formulario Único Nacional digital',
+          documentName: 'Formulario Único Nacional digital A',
           sourceType: 'digital',
           vr: 'VR-123',
           date: '2026-05-20',
           canPreview: true,
-          previewUrl: '/files/fun6/doc-digital.pdf',
+          previewUrl: '/files/fun6/doc-a.pdf',
         },
-      ],
-    });
-
-    render(
-      <FunCorrelatedDocumentControl
-        currentItem={{ id: 11, id_public: 'FUN-11', fun_6s: [] }}
-        currentVersion={1}
-        codes={['511']}
-        labels={{ 511: 'Formulario Único Nacional' }}
-        getCheckValue={() => 'SI'}
-        isRequirementApplicable={() => true}
-        readOnly={false}
-      />,
-    );
-
-    expect(await screen.findByText(/VR-123/)).toBeInTheDocument();
-    const detailButton = screen.getByRole('button', { name: /ver detalle para requisito 511/i });
-    expect(detailButton).toBeEnabled();
-
-    await user.click(detailButton);
-
-    const panel = screen.getByRole('region', { name: /detalle documental 511/i });
-    expect(within(panel).getByRole('heading', { name: /511.*Formulario Único Nacional/i })).toBeInTheDocument();
-    expect(within(panel).getAllByText('VR-123').length).toBeGreaterThan(0);
-    expect(within(panel).getAllByText('VR-456').length).toBeGreaterThan(0);
-    expect(within(panel).getByText(/Entrada seleccionada para evaluación/i)).toBeInTheDocument();
-
-    const iframe = within(panel).getByTitle(/Previsualización documental Formulario Único Nacional digital/i);
-    expect(iframe).toHaveAttribute('src', '/files/fun6/doc-digital.pdf?inline=1');
-  });
-
-  it('switches the selected evaluation entry to physical-only and hides the iframe preview', async () => {
-    const user = userEvent.setup();
-
-    FUNService.getUnifiedDocumentEntries.mockResolvedValueOnce({
-      data: [
         {
-          id: 'digital-511',
+          id: 'digital-511-b',
           documentCode: '511',
-          documentName: 'Formulario Único Nacional digital',
+          documentName: 'Formulario Único Nacional digital B',
           sourceType: 'digital',
-          vr: 'VR-123',
-          date: '2026-05-20',
-          canPreview: true,
-          previewUrl: '/files/fun6/doc-digital.pdf',
-        },
-        {
-          id: 'physical-511',
-          documentCode: '511',
-          documentName: 'Formulario Único Nacional físico',
-          originState: 'FISICO',
-          vr: '',
+          vr: 'VR-124',
           date: '2026-05-21',
-          canPreview: false,
+          canPreview: true,
+          previewUrl: '/files/fun6/doc-b.pdf',
+        },
+        {
+          id: 'digital-680-a',
+          documentCode: '680',
+          documentName: 'Plano de cotas adjunto',
+          sourceType: 'digital',
+          vr: 'VR-680',
+          date: '2026-05-22',
+          canPreview: true,
+          previewUrl: '/files/fun6/doc-c.pdf',
         },
       ],
     });
 
-    render(
-      <FunCorrelatedDocumentControl
-        currentItem={{ id: 12, id_public: 'FUN-12', fun_6s: [] }}
-        currentVersion={1}
-        codes={['511']}
-        labels={{ 511: 'Formulario Único Nacional' }}
-        getCheckValue={() => 'SI'}
-        isRequirementApplicable={() => true}
-        readOnly={false}
-      />,
-    );
+    renderControl({ currentReview: { id: 22, review: '511&1', id6: '511&digital-511-a' } });
 
-    await user.click(await screen.findByRole('button', { name: /ver detalle para requisito 511/i }));
-    const panel = screen.getByRole('region', { name: /detalle documental 511/i });
-    expect(within(panel).getByTitle(/Previsualización documental Formulario Único Nacional digital/i)).toBeInTheDocument();
+    const row = await screen.findByRole('row', { name: /511.*Documento aportado con VR/i });
+    await user.click(within(row).getByRole('button', { name: /Gestionar documento 511/i }));
 
-    await user.click(within(panel).getByRole('button', { name: /Formulario Único Nacional físico/i }));
+    let modal = screen.getByRole('dialog', { name: /Gestionar documento 511/i });
+    expect(within(modal).getAllByRole('columnheader', { name: /Entrada/i }).length).toBeGreaterThan(0);
+    expect(within(modal).getAllByRole('columnheader', { name: /^VR$/i }).length).toBeGreaterThan(0);
+    expect(within(modal).getAllByText(/Formulario Único Nacional digital A/i).length).toBeGreaterThan(0);
+    expect(within(modal).getAllByText(/Formulario Único Nacional digital B/i).length).toBeGreaterThan(0);
+    expect(within(modal).getByText(/Otros documentos adjuntos/i)).toBeInTheDocument();
+    expect(within(modal).getByText(/Plano de cotas adjunto/i)).toBeInTheDocument();
+    expect(within(modal).getByTitle(/Documento aportado Opción 1 · Formulario Único Nacional digital A/i)).toHaveAttribute('src', '/files/fun6/doc-a.pdf?inline=1');
 
-    expect(within(panel).queryByTitle(/Previsualización documental/i)).not.toBeInTheDocument();
-    expect(within(panel).getByText(/Documento físico: no tiene previsualización digital/i)).toBeInTheDocument();
-    expect(within(panel).getAllByText(/Sin VR/i).length).toBeGreaterThan(0);
-    expect(within(panel).getByText(/Entrada seleccionada para evaluación/i)).toBeInTheDocument();
+    await user.click(within(modal).getByRole('button', { name: /Seleccionar para chequeo.*VR-124/i }));
+    expect(screen.getByTestId('selected-document-511')).toHaveTextContent(/Formulario Único Nacional digital B/);
+    expect(screen.getByTestId('selected-document-511')).toHaveTextContent(/VR-124/);
+
+    await user.keyboard('{Escape}');
+    await user.click(within(row).getByRole('button', { name: /Gestionar documento 511/i }));
+
+    modal = screen.getByRole('dialog', { name: /Gestionar documento 511/i });
+    expect(within(modal).getByRole('button', { name: /Usado en chequeo.*VR-124/i })).toBeDisabled();
+    expect(within(modal).getAllByText(/Formulario Único Nacional digital A/i).length).toBeGreaterThan(0);
   });
 
-  it('marks the row updated when the selected evaluation entry has newer VR evidence', async () => {
+  it('identifies duplicate unnamed Gestionar options with visible option labels', async () => {
     const user = userEvent.setup();
-
     FUNService.getUnifiedDocumentEntries.mockResolvedValueOnce({
       data: [
         {
-          id: 'old-511',
+          id: 'digital-511-a',
           documentCode: '511',
-          documentName: 'Formulario Único Nacional anterior',
           sourceType: 'digital',
-          vr: 'VR-001',
-          date: '2026-05-01',
-          canPreview: false,
+          vr: 'VR-123',
+          date: '2026-05-20',
+          pages: 6,
+          canPreview: true,
+          previewUrl: '/files/fun6/doc-a.pdf',
         },
         {
-          id: 'new-511',
+          id: 'digital-511-b',
           documentCode: '511',
-          documentName: 'Formulario Único Nacional actualizado',
           sourceType: 'digital',
-          vr: 'VR-002',
-          date: '2026-05-20',
+          vr: 'VR-123',
+          date: '2026-05-21',
+          pages: 4,
           canPreview: true,
-          previewUrl: '/files/fun6/doc-actualizado.pdf',
+          previewUrl: '/files/fun6/doc-b.pdf',
         },
       ],
     });
 
-    render(
-      <FunCorrelatedDocumentControl
-        currentItem={{ id: 16, id_public: 'FUN-16', fun_6s: [] }}
-        currentVersion={1}
-        codes={['511']}
-        labels={{ 511: 'Formulario Único Nacional' }}
-        getCheckValue={() => 'SI'}
-        isRequirementApplicable={() => true}
-        readOnly={false}
-      />,
-    );
+    renderControl({ currentReview: { id: 22, review: '511&1', id6: '511&digital-511-a' } });
 
-    expect(await screen.findByText('Actualizados: 0')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /ver detalle para requisito 511/i }));
+    const row = await screen.findByRole('row', { name: /511.*Documento aportado con VR/i });
+    await user.click(within(row).getByRole('button', { name: /Gestionar documento 511/i }));
 
-    const panel = screen.getByRole('region', { name: /detalle documental 511/i });
-    expect(within(panel).getByTitle(/Previsualización documental Formulario Único Nacional actualizado/i)).toBeInTheDocument();
-
-    await user.click(within(panel).getByRole('button', { name: /Formulario Único Nacional anterior/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/Evaluado con VR anterior; hay actualización posterior/i)).toBeInTheDocument();
-      expect(screen.getByText('Actualizados: 1')).toBeInTheDocument();
-    });
+    const modal = screen.getByRole('dialog', { name: /Gestionar documento 511/i });
+    expect(within(modal).getAllByText(/^Opción 1$/i).length).toBeGreaterThan(0);
+    expect(within(modal).getAllByText(/^Opción 2$/i).length).toBeGreaterThan(0);
+    expect(within(modal).getByText(/Opción 1 · Documento sin nombre/i)).toBeInTheDocument();
+    expect(within(modal).getByRole('button', { name: /Usado en chequeo.*Opción 1.*VR-123/i })).toBeDisabled();
+    expect(within(modal).getByRole('button', { name: /Seleccionar para chequeo.*Opción 2.*VR-123/i })).toBeEnabled();
   });
 
-  it('keeps detail opening disabled in readOnly mode even when preview exists', async () => {
+  it('hides report evaluation controls in readOnly mode while locking save and document selection', async () => {
     const user = userEvent.setup();
-
     FUNService.getUnifiedDocumentEntries.mockResolvedValueOnce({
-      data: [{ id: 'doc-511', documentCode: '511', documentName: 'Formulario Único Nacional', vr: 'VR-123', canPreview: true, previewUrl: '/files/fun6/doc.pdf' }],
-    });
-
-    render(
-      <FunCorrelatedDocumentControl
-        currentItem={{ id: 13, id_public: 'FUN-13', fun_6s: [] }}
-        currentVersion={1}
-        codes={['511']}
-        labels={{ 511: 'Formulario Único Nacional' }}
-        getCheckValue={() => 'SI'}
-        isRequirementApplicable={() => true}
-        readOnly
-      />,
-    );
-
-    expect(await screen.findByText(/VR-123/)).toBeInTheDocument();
-    const detailButton = screen.getByRole('button', { name: /solo lectura para requisito 511/i });
-    expect(detailButton).toBeDisabled();
-
-    await user.click(detailButton);
-
-    expect(screen.queryByRole('region', { name: /detalle documental 511/i })).not.toBeInTheDocument();
-  });
-
-  it('clears old evidence and closes detail when switching current item before new evidence loads', async () => {
-    const user = userEvent.setup();
-
-    FUNService.getUnifiedDocumentEntries
-      .mockResolvedValueOnce({
-        data: [{
-          id: 'old-doc-511',
+      data: [
+        {
+          id: 'digital-511-a',
           documentCode: '511',
-          documentName: 'Documento anterior',
-          vr: 'VR-OLD',
+          documentName: 'Formulario Único Nacional digital A',
+          sourceType: 'digital',
+          vr: 'VR-123',
+          date: '2026-05-20',
           canPreview: true,
-          previewUrl: '/files/fun6/old.pdf',
-        }],
-      })
-      .mockImplementationOnce(() => new Promise(() => {}));
-
-    const { rerender } = render(
-      <FunCorrelatedDocumentControl
-        currentItem={{ id: 14, id_public: 'FUN-14', fun_6s: [] }}
-        currentVersion={1}
-        codes={['511']}
-        labels={{ 511: 'Formulario Único Nacional' }}
-        getCheckValue={() => 'SI'}
-        isRequirementApplicable={() => true}
-        readOnly={false}
-      />,
-    );
-
-    await user.click(await screen.findByRole('button', { name: /ver detalle para requisito 511/i }));
-    expect(screen.getByTitle(/Previsualización documental Documento anterior/i)).toHaveAttribute('src', '/files/fun6/old.pdf?inline=1');
-    expect(screen.getAllByText(/VR-OLD/i).length).toBeGreaterThan(0);
-
-    rerender(
-      <FunCorrelatedDocumentControl
-        currentItem={{ id: 15, id_public: 'FUN-15', fun_6s: [] }}
-        currentVersion={1}
-        codes={['511']}
-        labels={{ 511: 'Formulario Único Nacional' }}
-        getCheckValue={() => 'SI'}
-        isRequirementApplicable={() => true}
-        readOnly={false}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(screen.queryByRole('region', { name: /detalle documental 511/i })).not.toBeInTheDocument();
-      expect(screen.queryByTitle(/Previsualización documental Documento anterior/i)).not.toBeInTheDocument();
-      expect(screen.queryAllByText(/VR-OLD/i)).toHaveLength(0);
+          previewUrl: '/files/fun6/doc-a.pdf',
+        },
+      ],
     });
+
+    renderControl({ readOnly: true });
+
+    await screen.findByRole('region', { name: /Control documental FUN/i });
+    expect(screen.queryByLabelText(/Evaluación requerida 511/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Guardar control documental/i })).toBeDisabled();
+
+    const row = screen.getByRole('row', { name: /511.*Formulario Único Nacional/i });
+    await user.click(within(row).getByRole('button', { name: /Gestionar documento 511/i }));
+
+    const modal = screen.getByRole('dialog', { name: /Gestionar documento 511/i });
+    expect(within(modal).getByRole('button', { name: /Seleccionar para chequeo.*VR-123/i })).toBeDisabled();
   });
 });
 
@@ -281,68 +324,69 @@ describe('FUN_CHECKLIST_N correlated document integration', () => {
   beforeEach(() => {
     FUNService.getUnifiedDocumentEntries.mockReset();
     FUNService.getUnifiedDocumentEntries.mockResolvedValue({ data: [] });
+    FUNService.getDocumentEvaluations.mockReset();
+    FUNService.getDocumentEvaluations.mockResolvedValue({ data: [] });
+    FUNService.saveDocumentEvaluations.mockReset();
+    FUNService.saveDocumentEvaluations.mockResolvedValue({ data: { rows: [] } });
+    FUNService.update_r.mockReset();
+    FUNService.update_r.mockResolvedValue({ data: 'OK' });
+    FUNService.create_funr.mockReset();
+    FUNService.create_funr.mockResolvedValue({ data: 'OK' });
   });
 
-  it('renders correlated control after section 6.8 and before the save action with legacy checklist values', async () => {
+  it('selects the new correlated control tab by default and keeps the legacy checklist available for comparison', async () => {
+    const user = userEvent.setup();
+
     render(
       <FUN_CHECKLIST_N
         currentItem={{
           id: 10,
           id_public: 'FUN-10',
           model: 2022,
-          fun_1s: [{ id: 1, tipo: 'G', tramite: 'A', m_urb: '', m_sub: '', m_lic: '', area: '', cultural: '' }],
-          fun_rs: [{ id: 22, code: '680,6891', checked: '1,2' }],
+          fun_1s: [{ id: 1, tipo: 'G', tramite: 'ajuste de cotas', m_urb: '', m_sub: '', m_lic: '', area: '', cultural: '' }],
+          fun_rs: [{ id: 22, code: '680,681,6891', checked: '1,2,1', review: '680&1', id6: '680&-1' }],
           fun_6s: [],
         }}
         currentVersion={1}
         readOnly={false}
         requestUpdate={vi.fn()}
-        swaMsg={{
-          title_wait: 'Espere...',
-          text_wait: 'Procesando...',
-          generic_success_title: 'Éxito',
-          generic_success_text: 'Guardado',
-          generic_eror_title: 'Error',
-          generic_error_text: 'No guardado',
-        }}
+        swaMsg={swaMsg}
       />,
     );
 
-    const legacySection680 = screen.getByText(/6\.8 DOCUMENTOS PARA OTRAS ACTUACIONES/i);
-    const correlatedTitle = await screen.findByRole('heading', { name: /Control documental correlacionado/i });
-    const saveButton = screen.getByRole('button', { name: /GUARDAR CAMBIOS/i });
+    const newTab = screen.getByRole('tab', { name: /Control documental/i });
+    expect(newTab).toHaveAttribute('aria-selected', 'true');
+    expect(await screen.findByRole('region', { name: /Control documental FUN/i })).toBeInTheDocument();
+    expect(screen.queryByText(/6\.8 DOCUMENTOS PARA OTRAS ACTUACIONES/i)).not.toBeInTheDocument();
 
-    expect(legacySection680.compareDocumentPosition(correlatedTitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(correlatedTitle.compareDocumentPosition(saveButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(screen.getByRole('row', { name: /680.*Checklist: SI/i })).toBeInTheDocument();
-    expect(screen.getByRole('row', { name: /6891.*Checklist: N\/A/i })).toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: /Checklist legacy/i }));
+    expect(screen.getByText(/6\.8 DOCUMENTOS PARA OTRAS ACTUACIONES/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /GUARDAR CAMBIOS/i })).toBeInTheDocument();
   });
 
-  it('renders correlated control when FUN 1 data is missing', async () => {
+  it('passes only dynamically applicable section rows from the legacy branching logic into the new control', async () => {
     render(
       <FUN_CHECKLIST_N
         currentItem={{
           id: 11,
           id_public: 'FUN-11',
           model: 2022,
-          fun_rs: [],
+          fun_1s: [{ id: 1, tipo: 'G', tramite: 'ajuste de cotas', m_urb: '', m_sub: '', m_lic: '', area: '', cultural: '' }],
+          fun_rs: [{ id: 23, code: '680,681,6891', checked: '1,2,1', review: '680&1', id6: '680&-1' }],
           fun_6s: [],
         }}
         currentVersion={1}
-        readOnly={true}
+        readOnly={false}
         requestUpdate={vi.fn()}
-        swaMsg={{
-          title_wait: 'Espere...',
-          text_wait: 'Procesando...',
-          generic_success_title: 'Éxito',
-          generic_success_text: 'Guardado',
-          generic_eror_title: 'Error',
-          generic_error_text: 'No guardado',
-        }}
+        swaMsg={swaMsg}
       />,
     );
 
-    expect(await screen.findByRole('heading', { name: /Control documental correlacionado/i })).toBeInTheDocument();
-    expect(screen.getByRole('row', { name: /621.*No aplica.*Checklist: sin_definir/i })).toBeInTheDocument();
+    const control = await screen.findByRole('region', { name: /Control documental FUN/i });
+    expect(within(control).getByText(/Ajuste de cotas y áreas/i)).toBeInTheDocument();
+    expect(within(control).getByRole('row', { name: /680.*Copia del plano correspondiente/i })).toBeInTheDocument();
+    expect(within(control).queryByRole('row', { name: /681.*Reglamento de propiedad horizontal/i })).not.toBeInTheDocument();
+    expect(within(control).getByText(/Concepto de norma urbanística y uso del suelo/i)).toBeInTheDocument();
+        expect(within(control).getByRole('row', { name: /6891.*Dirección oficial del predio/i })).toBeInTheDocument();
   });
 });
