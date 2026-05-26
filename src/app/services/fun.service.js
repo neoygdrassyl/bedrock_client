@@ -36,6 +36,13 @@ class UserslDataService {
   getUnifiedDocumentEntries(fun_id, id_related) {
     return http.get(`/${route}/documents/unified/${fun_id}/${id_related}?consolidated=1`);
   }
+  getUnifiedDocumentPreviewEntries(fun_id, id_related) {
+    return http.get(`/${route}/documents/unified/${fun_id}/${id_related}?consolidated=1&preview=1`);
+  }
+  getDocumentEvaluations(fun_id, owner_scope, owner_record_id = '') {
+    const ownerRecordParam = owner_record_id === null || owner_record_id === undefined ? '' : owner_record_id;
+    return http.get(`/${route}/documents/evaluations/${fun_id}/${owner_scope}/${ownerRecordParam}`);
+  }
   getPendingPhysicalDocuments(fun_id, id_related) {
     return http.get(`/${route}/documents/pending-physical/${fun_id}/${id_related}`);
   }
@@ -115,7 +122,10 @@ class UserslDataService {
     return http.get(`/${route}/getall/incdocs`);
   }
   getAll_VrFun(fun_id, vr_id) {
-    return http.get(`/${route}/vrxfun6/${fun_id}&${vr_id}`);
+    return http.get(`/${route}/documents/vr-digital/${fun_id}&${vr_id}`);
+  }
+  getVrDigitalDocuments(fun_id, vr_id) {
+    return http.get(`/${route}/documents/vr-digital/${fun_id}&${vr_id}`);
   }
 
   create(data) {
@@ -181,6 +191,9 @@ class UserslDataService {
   }
   createDocumentEntriesBatch(data) {
     return http.post(`/${route}/documents/batch`, data);
+  }
+  saveDocumentEvaluations(fun_id, owner_scope, data) {
+    return http.post(`/${route}/documents/evaluations/${fun_id}/${owner_scope}`, data);
   }
   create_fun6_h(data) {
     return http.post(`/${route}/fun6h`, data);
