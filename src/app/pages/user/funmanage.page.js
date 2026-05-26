@@ -23,7 +23,6 @@ import RECORD_ARC from './records/record_arc';
 import RECORD_LAW from './records/record_law';
 import FUN_MACROTABLE from './fun_forms/fun_macrotable.';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
-import RECORD_PH from './records/record_ph';
 import RECORD_ENG from './records/record_eng';
 import FUN_WORKER_ASIGN from './fun_forms/components/fun_worker_asign.component';
 import RECORD_REVIEW from './records/record_review';
@@ -57,7 +56,6 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const [modal_record_arc, setModal_record_arc] = useState(false);
     const [modal_record_law, setModal_record_law] = useState(false);
     const [modal_record_eng, setModal_record_eng] = useState(false);
-    const [modal_record_ph, setModal_record_ph] = useState(false);
     const [modal_record_review, setModal_record_review] = useState(false);
     const [showVersionBanner, setShowVersionBanner] = useState(
         () => localStorage.getItem('dovela.fun.banner.dismissed') !== '1'
@@ -284,15 +282,6 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const getToggle_recordEng = () => {
         return modal_record_eng;
     }
-    const getToggle_recordPH = () => {
-        return modal_record_ph;
-    }
-    const toggle_recordPH = (item) => {
-        if (item) {
-            setItemData(item);
-        }
-        setModal_record_ph(prev => !prev);
-    }
     const toggle_recordReview = (item) => {
         if (item) {
             setItemData(item);
@@ -366,9 +355,6 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             case "record_eng":
                 toggle_recordEng(false)
                 break;
-            case "record_ph":
-                toggle_recordPH(false)
-                break;
             case "record_review":
                 toggle_recordReview(false)
                 break;
@@ -413,9 +399,6 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 break;
             case "record_eng":
                 toggle_recordEng(item)
-                break;
-            case "record_ph":
-                toggle_recordPH(item)
                 break;
             case "record_review":
                 toggle_recordReview(item)
@@ -1018,38 +1001,6 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="flex justify-end py-3 mt-3 border-t border-border/60">
                         <Button variant="outline" size="sm" onClick={toggle_recordLaw}><Icon name="X" size={14} /> Cerrar</Button>
-                    </div>
-                </Modal>}
-
-                {modal_record_ph && <Modal contentLabel="RECORDS PH"
-                    isOpen={modal_record_ph}
-                    style={customStylesForModal()}
-                    ariaHideApp={false}
-                >
-                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
-                                <Icon name="pencil-ruler" size={14} className="text-primary" />
-                            </div>
-                            <h2 className="text-sm font-semibold tracking-tight">Informe propiedad horizontal — Rad. {currentPublic}</h2>
-                        </div>
-                        <button type="button" onClick={() => toggle_recordPH()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
-                            <Icon name="X" size={16} className="text-muted-foreground" />
-                        </button>
-                    </div>
-                    {modalHeader}
-
-                    <RECORD_PH translation={translation} swaMsg={swaMsg} globals={globals}
-                        currentId={currentId}
-                        currentVersion={currentVersion}
-                        requestUpdate={requestUpdate}
-                        requesRefresh={retrievePublish}
-                        closeModal={toggle_recordPH}
-                        NAVIGATION={navigation}
-                        NAVIGATION_VERSION={navigation_version} />
-
-                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
-                        <Button variant="outline" size="sm" onClick={toggle_recordPH}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>}
 
