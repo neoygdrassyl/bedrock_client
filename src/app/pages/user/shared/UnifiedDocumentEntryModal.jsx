@@ -80,7 +80,12 @@ function UnifiedDocumentEntryModal({
     const [editForm, setEditForm] = useState(null);
     const [savingEdit, setSavingEdit] = useState(false);
     const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
-    const selectedEntry = sortedEntries.find((entry) => entry.entryId === selectedEntryId) || sortedEntries[0] || null;
+    const defaultEntry = sortedEntries[0] || null;
+    const selectedEntry = sortedEntries.find((entry) => entry.entryId === selectedEntryId) || defaultEntry;
+    const resetKey = `${open ? 'open' : 'closed'}:${group?.id || ''}:${mode}`;
+    const selectedEntryKey = selectedEntry?.entryId || '';
+    const selectedEntryPages = selectedEntry?.pages || '';
+    const selectedEntryVr = selectedEntry?.vr || '';
     const selectedOrigin = selectedEntry?.originState || DOCUMENT_ORIGIN_STATE.PHYSICAL;
     const originMeta = DOCUMENT_ORIGIN_META[selectedOrigin] || DOCUMENT_ORIGIN_META[DOCUMENT_ORIGIN_STATE.PHYSICAL];
     const previewUrl = buildDocumentPreviewUrl(selectedEntry);
@@ -89,22 +94,26 @@ function UnifiedDocumentEntryModal({
     const isEvaluationMode = mode === 'evaluation';
 
     useEffect(() => {
+        if (!resetKey) {
+            return;
+        }
+
         setEditForm(null);
         setSelectedEntryId('');
         setIsPreviewFullscreen(false);
-    }, [open, group?.id, mode]);
+    }, [resetKey]);
 
     useEffect(() => {
-        if (!editForm || !selectedEntry) {
+        if (!selectedEntryKey) {
             return;
         }
 
         setEditForm((current) => current ? {
             ...current,
-            pages: selectedEntry.pages || '',
-            vr: selectedEntry.vr || '',
+            pages: selectedEntryPages,
+            vr: selectedEntryVr,
         } : current);
-    }, [selectedEntry?.entryId]);
+    }, [selectedEntryKey, selectedEntryPages, selectedEntryVr]);
 
     const startInlineEdit = (entry) => {
         setSelectedEntryId(entry.entryId);
