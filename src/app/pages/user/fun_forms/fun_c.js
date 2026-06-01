@@ -799,6 +799,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         requestUpdate={requestUpdate}
+                        vrDocs={VRDocs}
                     />
                     <fieldset className="p-3">
                         <legend className="my-2 px-3 bg-danger" id="func_pdf">

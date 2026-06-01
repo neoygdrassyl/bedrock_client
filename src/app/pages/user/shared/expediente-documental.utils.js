@@ -58,6 +58,13 @@ function normalizeOriginState(value) {
     return '';
 }
 
+function buildOriginPresence(entries = []) {
+    return DOCUMENT_ORIGIN_ORDER.reduce((presence, originState) => ({
+        ...presence,
+        [originState]: entries.some((entry) => normalizeOriginState(entry?.originState || entry?.origin_state) === originState),
+    }), {});
+}
+
 function normalizeReceptionMedium(value) {
     const normalizedValue = normalizeCode(value).replace(/[\s-]+/g, '_');
 
@@ -422,6 +429,7 @@ function getDocumentGroupKey(entry) {
 function normalizeDocumentEntry(entry = {}, index = 0) {
     if (entry?.contractVersion >= 3 && entry?.isConsolidated) {
         const sources = Array.isArray(entry.sources) ? entry.sources : [];
+        const sourceOriginPresence = buildOriginPresence(sources);
         const previewSource = sources.find((source) => source.entryId === entry.summary?.previewSourceEntryId)
             || sources.find((source) => source.canPreview)
             || sources[0]
@@ -454,6 +462,7 @@ function normalizeDocumentEntry(entry = {}, index = 0) {
             downloadUrl: buildDocumentDownloadUrl(entry.downloadUrl ? entry : previewSource),
             sources,
             editableSource,
+            originPresence: sourceOriginPresence,
             summary: entry.summary || {},
         };
     }
@@ -517,6 +526,9 @@ export function groupDocumentEntries(entries = []) {
 
         currentGroup.entries.push(normalizedEntry);
         currentGroup.originPresence[normalizedEntry.originState] = true;
+        DOCUMENT_ORIGIN_ORDER.forEach((originState) => {
+            currentGroup.originPresence[originState] = Boolean(currentGroup.originPresence[originState] || normalizedEntry.originPresence?.[originState]);
+        });
 
         if (normalizedEntry.vr && !currentGroup.vrValues.includes(normalizedEntry.vr)) {
             currentGroup.vrValues.push(normalizedEntry.vr);
@@ -657,7 +669,7 @@ function normalizePreviewDocumentRow(entry = {}, index = 0) {
 function normalizeLegacyDocumentGroup(group = {}) {
     const entries = group.entries || [];
     const originPresence = group.originPresence || {};
-    const hasPhysical = Boolean(originPresence[DOCUMENT_ORIGIN_STATE.PHYSICAL]);
+    const hasPhysical = Boolean(originPresence[DOCUMENT_ORIGIN_STATE.PHYSICAL] || originPresence[DOCUMENT_ORIGIN_STATE.SCANNED]);
     const hasScanned = Boolean(originPresence[DOCUMENT_ORIGIN_STATE.SCANNED]);
     const hasDigital = Boolean(originPresence[DOCUMENT_ORIGIN_STATE.DIGITAL]);
     const foliosDigital = Number(group.summary?.foliosDigital ?? group.summary?.foliosScanned ?? entries

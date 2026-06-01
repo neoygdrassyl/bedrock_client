@@ -9,7 +9,6 @@ import FUN_DOC_CONFIRMLEGAL from './fun_doc_confirmlegal';
 import FUND_NAV from './fun_d_nav';
 import FUN_MODULE_NAV from './fun_moduleNav';
 import FUN_VERSION_NAV from './fun_versionNav';
-import FUN_CHECKLIST_N from './fun_checklist_n';
 import FUN_ALERT_NEIGHBOUR from './fun_alertNeighbour';
 import FUN_REPORT_DATA_EDIT from './fun_report_data_edit';
 import FUN_PDF from './fun_pdf';
@@ -289,21 +288,6 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         mergeVentanilla
                         onVentanillaRowsChange={setFunVRList}
                     />
-
-                    <fieldset className="p-3">
-                        <legend className="my-2 px-3 Collapsible" id="fund_3">
-                            <label className="app-p lead fw-normal">2. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
-                        </legend>
-                        <FUN_CHECKLIST_N
-                            translation={translation}
-                            swaMsg={swaMsg}
-                            globals={globals}
-                            currentItem={currentItem}
-                            currentVersion={currentVersion}
-                            requestUpdate={requestUpdate}
-                            readOnly
-                        />
-                    </fieldset>
 
                     <h3 className="text-center py-3" id="fund_4">3. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
 

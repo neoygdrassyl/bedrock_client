@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest';
 import {
     DOCUMENT_ORIGIN_STATE,
     buildDocumentEntriesFromLegacyData,
+    buildDocumentTableRows,
     buildUnifiedDocumentRows,
     filterDocumentEntryGroups,
+    filterDocumentTableRows,
     filterUnifiedDocumentRows,
     groupDocumentEntries,
     normalizeVentanillaDocs,
@@ -246,5 +248,28 @@ describe('expediente-documental utils', () => {
                 MEDIO_DIGITAL: false,
             },
         });
+    });
+
+    it('clasifica como escaneadas las filas consolidadas v3 con fuentes escaneadas y VR físico', () => {
+        const rows = buildDocumentTableRows([
+            {
+                entryId: 'source:fun_6:fun6:37720|doc:900',
+                contractVersion: 3,
+                isConsolidated: true,
+                consolidationKey: 'VR25-5008|900',
+                documentCode: '900',
+                documentName: 'Escrituras Publicas',
+                originState: DOCUMENT_ORIGIN_STATE.SCANNED,
+                sources: [
+                    { entryId: 'fun6:37720', source: 'scanned', originState: DOCUMENT_ORIGIN_STATE.SCANNED, documentCode: '900', documentName: 'Escrituras Publicas', vr: 'VR25-5008', pages: 5 },
+                    { entryId: 'sublist:20', source: 'vr', originState: DOCUMENT_ORIGIN_STATE.PHYSICAL, documentCode: '900', documentName: 'Escrituras Publicas', vr: 'VR25-5008', pages: 12 },
+                ],
+                summary: { sourceCount: 2, foliosScanned: 5, foliosVr: 12, foliosTotal: 17 },
+            },
+        ]);
+
+        expect(rows).toHaveLength(1);
+        expect(rows[0].scanned).toMatchObject({ applies: true, value: true });
+        expect(filterDocumentTableRows(rows, { statuses: ['scanned'] })).toEqual(rows);
     });
 });
