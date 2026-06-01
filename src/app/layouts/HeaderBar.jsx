@@ -34,6 +34,7 @@ const MODULE_ICONS = {
   publicaciones: 'Newspaper',
   nomenclatura: 'PenLine',
   normas: 'Home',
+  simulador: 'SearchCheck',
   documentos: 'FileText',
   calculadora: 'Calculator',
   consecutivos: 'Book',

@@ -28,6 +28,8 @@ const ICON_COLORS = {
   '/normas': 'bg-primary/8 text-primary',
   '/uso-suelo': 'bg-accent/8 text-accent',
   '/nomenclatura': 'bg-warning/8 text-warning',
+  '/simulador/documentos': 'bg-primary/8 text-primary',
+  '/simulador/legal': 'bg-accent/8 text-accent',
   '/archivo': 'bg-muted text-muted-foreground',
   '/documentos': 'bg-primary/8 text-primary',
   '/consecutivos': 'bg-muted text-muted-foreground',
@@ -249,6 +251,15 @@ function Dashboard() {
         { title: 'Buzón de mensajes', icon: 'Mail', desc: 'Mensajes y correspondencia externa', link: '/mensajes' },
         { title: 'Calendario de citas', icon: 'Calendar', desc: 'Agenda y programación', link: '/calendario' },
         { key: 'chat-curaduria', title: 'Chat curaduría', icon: 'MessageCircle', desc: 'Conversaciones internas del equipo', link: '/mensajes', showCount: false },
+      ],
+    },
+    {
+      key: 'simulador',
+      title: 'Simulador',
+      description: 'Herramientas de consulta previa sin modificar expedientes',
+      items: [
+        { title: 'Documentos', icon: 'FileText', desc: 'Simula requisitos por actuación, trámite y modalidad', link: '/simulador/documentos' },
+        { title: 'Legal', icon: 'Gavel', desc: 'Revisa la guía jurídica existente del flujo legal', link: '/simulador/legal' },
       ],
     },
     {
