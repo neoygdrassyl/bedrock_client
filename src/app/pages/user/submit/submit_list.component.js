@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import SubmitService from '../../../services/submit.service';
 import funService from '../../../services/fun.service';
 import dayjs from 'dayjs';
+import { PDFDocument } from 'pdf-lib';
 
 // LISTS
 import Fun6DocList from '../../../components/jsons/fun6DocsList.json'
@@ -272,7 +273,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
 
             let items = Math.max(name.length, category.length, code.length, page.length, contributor.length);
             let isExtra = checkIfExtra(row.list_title)
-            const tableGridClass = "grid grid-cols-[56px_76px_112px_minmax(320px,1fr)_70px_84px_132px_84px] gap-2";
+            const tableGridClass = "grid grid-cols-[52px_58px_74px_70px_minmax(260px,1fr)_62px_74px_124px] gap-1.5 lg:gap-2";
 
             const StatusBadge = ({ active, icon, label, description, tone = 'primary' }) => {
                 const activeClass = tone === 'success'
@@ -309,13 +310,13 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     <div className="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
                         <div className={`${tableGridClass} border-b border-border/70 bg-muted/25 px-2 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-muted-foreground`}>
                             <span>Estado</span>
+                            <span className="text-center">Carga</span>
                             <span>Cat.</span>
-                            <span>Código</span>
+                            <span className="text-center">Código</span>
                             <span>Descripción</span>
                             <span className="text-center">Folios</span>
                             <span className="text-center">Folios dig.</span>
                             <span>Quién aporta</span>
-                            <span className="text-center">Escaneado</span>
                         </div>
 
                         <div className="divide-y divide-border/70">
@@ -328,8 +329,9 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                 const contributorText = currentContributor || 'Sin definir';
                                 const uploadKey = getScanUploadKey(ID, i);
                                 const uploadState = scanUploadStates[uploadKey] || {};
-                                const currentDigitalPages = getPhysicalDraftValue(ID, i, 'digitalPages', scannedDocument?.pages || currentPages || '');
+                                const currentDigitalPages = getPhysicalDraftValue(ID, i, 'digitalPages', scannedDocument?.pages || '');
                                 const rowIsDragOver = dragOverScanKey === uploadKey;
+                                const isUploadingScan = uploadState.status === 'uploading';
 
                                 return <fieldset
                                     aria-label={`Documento ${code[i] || i + 1}. Suelte un archivo para cargar escaneado`}
@@ -357,6 +359,34 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                         />
                                     </div>
 
+                                    <div className="flex flex-col items-center justify-center gap-1 text-center">
+                                        <input
+                                            type="file"
+                                            id={`direct_scan_${ID}_${i}`}
+                                            className="sr-only"
+                                            accept="application/pdf,image/jpeg,image/png"
+                                            onChange={(event) => {
+                                                const file = event.target.files?.[0];
+                                                if (file) uploadScannedDocument(activeList, i, file, { code: code[i], name: name[i], pages: currentPages, digitalPages: currentDigitalPages, existingDocument: scannedDocument });
+                                                event.target.value = '';
+                                            }}
+                                        />
+                                        <div className="flex items-center justify-center gap-1">
+                                            <button
+                                                type="button"
+                                                className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 ${isUploadingScan ? 'cursor-wait border-primary/60 bg-primary/10 text-primary' : scanned ? 'border-emerald-500/60 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'border-border/70 bg-muted/30 text-muted-foreground hover:border-primary/40 hover:text-primary'}`}
+                                                onClick={() => document.getElementById(`direct_scan_${ID}_${i}`)?.click()}
+                                                aria-label={scanned ? 'Reemplazar escaneado' : 'Subir escaneado'}
+                                                title={isUploadingScan ? (uploadState.message || 'Subiendo escaneado...') : scanned ? 'Reemplazar escaneado de esta fila' : 'Subir escaneado para esta fila'}
+                                                disabled={isUploadingScan}
+                                            >
+                                                <Icon name={isUploadingScan ? 'Loader2' : scanned ? 'FileCheck' : 'FileUp'} size={16} className={isUploadingScan ? 'animate-spin' : ''} />
+                                            </button>
+                                            {scannedDocument ? <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/70 bg-background text-muted-foreground transition-colors hover:text-primary" onClick={() => openScanPreview(scannedDocument)} aria-label="Previsualizar escaneado" title="Previsualizar escaneado"><Icon name="Eye" size={16} /></button> : null}
+                                        </div>
+                                        <span className={`max-w-[56px] truncate text-[0.62rem] leading-none ${scanned ? 'text-emerald-700' : 'text-muted-foreground'}`}>{isUploadingScan ? 'Subiendo' : scanned ? 'Cargado' : 'Arrastre'}</span>
+                                    </div>
+
                                     <select className="form-select form-select-sm h-8 w-[78px] px-1 text-[0.76rem]" name={"submit_list_category_" + ID} defaultValue={category[i]}>
                                         <option>DC</option>
                                         <option>DA-OA</option>
@@ -372,7 +402,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                     <div className="flex min-w-0 items-center gap-1">
                                         <input
                                             type="text"
-                                            className="form-control form-control-sm h-8 min-w-0 text-center text-[0.78rem]"
+                                            className="form-control form-control-sm h-8 min-w-0 px-1 text-center font-mono text-[0.74rem]"
                                             name={"submit_list_code_" + ID}
                                             id={'edit_list_code_' + ID + '_' + i}
                                             defaultValue={code[i]}
@@ -407,7 +437,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                         className="form-control form-control-sm h-8 text-center text-[0.78rem]"
                                         name={"submit_list_digital_pages_" + ID}
                                         value={currentDigitalPages}
-                                        placeholder={currentPages || '1'}
+                                        placeholder={scannedDocument?.pages || currentPages || 'Auto'}
                                         onChange={(e) => updatePhysicalDraft(ID, i, 'digitalPages', e.target.value)}
                                         aria-label="Folios digitales"
                                     />
@@ -417,29 +447,6 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                         value={currentContributor}
                                         onChange={(e) => updatePhysicalDraft(ID, i, 'contributor', e.target.value)}
                                     />
-
-                                    <div className="flex items-center justify-center gap-1">
-                                        <input
-                                            type="file"
-                                            id={`direct_scan_${ID}_${i}`}
-                                            className="sr-only"
-                                            accept="application/pdf,image/jpeg,image/png"
-                                            onChange={(event) => {
-                                                const file = event.target.files?.[0];
-                                                if (file) uploadScannedDocument(activeList, i, file, { code: code[i], name: name[i], pages: currentPages, digitalPages: currentDigitalPages, existingDocument: scannedDocument });
-                                                event.target.value = '';
-                                            }}
-                                        />
-                                        <button
-                                            type="button"
-                                            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-all duration-200 ${uploadState.status === 'uploading' ? 'border-primary/60 bg-primary/10 text-primary' : scanned ? 'border-emerald-500/60 bg-emerald-50 text-emerald-700' : 'border-border/70 bg-muted/30 text-muted-foreground hover:border-primary/40 hover:text-primary'}`}
-                                            onClick={() => document.getElementById(`direct_scan_${ID}_${i}`)?.click()}
-                                            aria-label={scanned ? 'Reemplazar escaneado' : 'Subir escaneado'}
-                                        >
-                                            <Icon name={uploadState.status === 'uploading' ? 'Loader2' : scanned ? 'FileCheck' : 'FileUp'} size={16} className={uploadState.status === 'uploading' ? 'animate-spin' : ''} />
-                                        </button>
-                                        {scannedDocument ? <button type="button" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border/70 bg-background text-muted-foreground transition-colors hover:text-primary" onClick={() => openScanPreview(scannedDocument)} aria-label="Previsualizar escaneado"><Icon name="Eye" size={16} /></button> : null}
-                                    </div>
                                 </fieldset>
                             })}
                         </div>
@@ -474,14 +481,13 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
         }
         let _GET_DATA_FOR_TITLE = () => {
             let _LIST = list_new ? [list_new] : [Lists.list_61];
-            return <label className="fw-bold submit_list_title" id="new_list_title">
-                {Object.keys(_LIST[0])}</label>
+            return <span className="fw-bold submit_list_title" id="new_list_title">
+                {Object.keys(_LIST[0])}</span>
         }
         let _GET_DATA_FOR_LIST = () => {
             let _LIST = list_new ? [list_new] : [Lists.list_61];
-            for (var ITEM in _LIST) {
-                var items_set = Object.values(_LIST[ITEM]);
-                items_set = items_set[0] ?? [];
+            for (const ITEM in _LIST) {
+                const items_set = Object.values(_LIST[ITEM])[0] ?? [];
                 return items_set.map((value) => {
                     return {
                         id: value,
@@ -508,6 +514,21 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     }
                 })
             }
+        }
+        let getStandardListRows = () => {
+            let _LIST = list_new ? [list_new] : [Lists.list_61];
+            for (const ITEM in _LIST) {
+                const items_set = Object.values(_LIST[ITEM])[0] ?? [];
+                return items_set.map((value) => ({
+                    category: 'DC',
+                    code: value,
+                    name: Fun6DocList[value] || '',
+                    pages: '',
+                    contributor: '',
+                }));
+            }
+
+            return [];
         }
         var data = {
             columns: [
@@ -640,7 +661,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             _COMPONENT.push(<>
                 <div className="row">
                     <div className="text-start col-6 my-3">
-                        <label>NUEVA LISTA</label>
+                        <label htmlFor="submit_list_type">NUEVA LISTA</label>
                         <select className="form-select" required id={"submit_list_type"}
                             onChange={(e) => _SET_LIST(e)} >
                             {_LIST_COMPONENT()}
@@ -654,29 +675,23 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     </div>
                 </div></>)
 
-            for (var ITEM in _LIST) {
+            for (const ITEM in _LIST) {
 
                 if (Object.keys(_LIST[ITEM])[0]) {
-                    const rows = _GET_DATA_FOR_LIST();
+                    const rows = getStandardListRows();
                     _COMPONENT.push(<>
-                        <table className="table table-striped table-bordered table-sm">
-                            <thead>
-                                <tr>
-                                    {data.columns.map((col, idx) => (
-                                        <th key={idx} style={col.width ? { width: col.width } : {}}>{col.label}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {rows.map((row, idx) => (
-                                    <tr key={idx}>
-                                        {data.columns.map((col, cidx) => (
-                                            <td key={cidx}>{row[col.field]}</td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm text-muted-foreground">
+                            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                                <div className="min-w-0">
+                                    <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Lista seleccionada</span>
+                                    {_GET_DATA_FOR_TITLE()}
+                                    <p className="mb-0 mt-1">Al guardar, esta lista quedará disponible en las pestañas superiores para editar folios, cargar escaneados por fila y previsualizarlos.</p>
+                                </div>
+                                <span className="inline-flex w-fit items-center rounded-full border border-border bg-background px-2 py-1 text-xs font-semibold text-foreground">
+                                    {rows.length} documento{rows.length === 1 ? '' : 's'} base
+                                </span>
+                            </div>
+                        </div>
                     </>)
                 } else {
                     _COMPONENT.push(<>{_COMPONENT_EXTRA_LIST()}</>)
@@ -690,25 +705,25 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             _COMPONENT.push(<>
                 <div className="row text-center border border-secondary py-2 bg-secondary text-white">
                     <div className="col-2">
-                        <label className="fw-bold">Nomenclatura</label>
+                        <span className="fw-bold">Nomenclatura</span>
                     </div>
                     <div className="col-2">
-                        <label className="fw-bold">COD</label>
+                        <span className="fw-bold">COD</span>
                     </div>
                     <div className="col-4">
                         <input type="text" className="form-control" id="new_list_title"
                             placeholder="Titulo..." />
                     </div>
                     <div className="col-2">
-                        <label className="fw-bold">Quién aporta</label>
+                        <span className="fw-bold">Quién aporta</span>
                     </div>
                     <div className="col-2">
-                        <label className="fw-bold"># FOLIOS / PLANOS</label>
+                        <span className="fw-bold"># FOLIOS / PLANOS</span>
                     </div>
                 </div>
             </>)
 
-            for (var i = 0; i < extra_items; i++) {
+            for (let i = 0; i < extra_items; i++) {
                 _COMPONENT.push(<>
                     <div className="row border border-secondary py-1 text-center">
                         <div className="col-2">
@@ -748,7 +763,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             _COMPONENT.push(<>
                 <div className="row text-center border border-secondary py-2 text-white">
                     <div className="col-6">
-                        <label className="fw-bold text-dark">ITEMS TOTALES: {extra_items}</label>
+                        <span className="fw-bold text-dark">ITEMS TOTALES: {extra_items}</span>
                     </div>
                     <div className="col-6 text-end">
                         {extra_items > 0
@@ -791,6 +806,27 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                 .catch(() => []);
         };
 
+        let resolveDigitalPagesFromFile = (file, fallbackPages = '') => {
+            const fallback = String(fallbackPages || '').trim();
+            if (!file) return Promise.resolve(fallback);
+
+            const fileType = String(file.type || '').toLowerCase();
+            const fileName = String(file.name || '').toLowerCase();
+            const isPdf = fileType === 'application/pdf' || fileName.endsWith('.pdf');
+            const isImage = fileType.startsWith('image/') || /\.(jpe?g|png)$/i.test(fileName);
+
+            if (isPdf && file.arrayBuffer) {
+                return file.arrayBuffer()
+                    .then((buffer) => PDFDocument.load(buffer, { ignoreEncryption: true }))
+                    .then((pdfDocument) => String(pdfDocument.getPageCount()))
+                    .catch(() => fallback);
+            }
+
+            if (isImage) return Promise.resolve(fallback || '1');
+
+            return Promise.resolve(fallback);
+        };
+
         let uploadScannedDocument = (row, rowIndex, file, defaults = {}) => {
             const listId = row.id;
             const codeInput = document.getElementById('edit_list_code_' + listId + '_' + rowIndex);
@@ -800,11 +836,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             const documentName = (nameInput?.value || defaults.name || '').trim();
             const physicalPages = pagesInputs[rowIndex]?.value || defaults.pages || '';
             const digitalPages = getPhysicalDraftValue(listId, rowIndex, 'digitalPages', defaults.digitalPages || physicalPages || '');
-            const pages = Number(digitalPages) > 0 ? digitalPages : physicalPages;
             const candidateExistingDocument = defaults.existingDocument || getScannedDocument(documentCode);
             const existingDocument = belongsToCurrentVr(candidateExistingDocument) ? candidateExistingDocument : null;
 
-            if (!file || !documentCode || !documentName || !pages || Number(pages) < 1) {
+            if (!file || !documentCode || !documentName) {
                 swalError({
                     title: 'Escaneado incompleto',
                     text: 'Seleccione archivo, código, descripción y folios digitales para guardar el escaneado.',
@@ -813,9 +848,26 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                 return Promise.resolve(false);
             }
 
-            updateScanUploadState(listId, rowIndex, { status: 'uploading', message: existingDocument ? 'Reemplazando...' : 'Subiendo...' });
+            updateScanUploadState(listId, rowIndex, { status: 'uploading', message: 'Calculando folios...' });
 
-            return resolveRelatedFun()
+            return resolveDigitalPagesFromFile(file, digitalPages || physicalPages)
+                .then((resolvedPages) => {
+                    const pages = Number(resolvedPages) > 0 ? resolvedPages : physicalPages;
+
+                    if (!pages || Number(pages) < 1) {
+                        updateScanUploadState(listId, rowIndex, { status: 'error', message: 'Sin folios' });
+                        swalError({
+                            title: 'Folios digitales requeridos',
+                            text: 'No fue posible contar los folios del archivo. Ingrese el número de folios digitales y vuelva a cargarlo.',
+                            icon: 'warning',
+                        });
+                        return false;
+                    }
+
+                    updatePhysicalDraft(listId, rowIndex, 'digitalPages', String(pages));
+                    updateScanUploadState(listId, rowIndex, { status: 'uploading', message: existingDocument ? 'Reemplazando...' : 'Subiendo...' });
+
+                    return resolveRelatedFun()
                 .then((relatedFun) => {
                     const fileName = buildScanFilename(relatedFun, documentCode, file);
 
@@ -900,6 +952,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         refreshList();
                         return true;
                     });
+                });
                 })
                 .catch((error) => {
                     updateScanUploadState(listId, rowIndex, { status: 'error', message: 'Error' });
@@ -951,17 +1004,13 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             formData.set('submitId', currentItem.id);
             let new_list_type = document.getElementById("submit_list_type").value;
 
-            if (new_list_type == "LISTA EXTRA" && extra_items == 0) {
+            if (new_list_type === "LISTA EXTRA" && extra_items === 0) {
                 swalError({ title: "LISTA EXTRA VACIA", text: "Para crear una Lista Extra de documentos, debe añadir almenos un elemeno.", icon: 'warning' });
                 return 1
             }
 
-            let submit_list_category = document.getElementsByName("submit_list_category");
-            let submit_list_code = document.getElementsByName("submit_list_code");
-            let submit_list_name = document.getElementsByName("submit_list_name");
-            let submit_list_aportante = document.getElementsByName("submit_list_aportante");
-            let submit_list_pages = document.getElementsByName("submit_list_pages");
-            let list_title = document.getElementById("new_list_title").textContent ? document.getElementById("new_list_title").textContent : document.getElementById("new_list_title").value;
+            let listTitleElement = document.getElementById("new_list_title");
+            let list_title = listTitleElement?.textContent || listTitleElement?.value || new_list_type;
             formData.set('list_title', list_title);
 
             let list_category = [];
@@ -971,15 +1020,32 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             let list_pages = [];
             let list_aportante = [];
 
-            for (var i = 0; i < submit_list_pages.length; i++) {
-                list_category.push(submit_list_category[i].value);
-                list_code.push(submit_list_code[i].value);
-                list_name.push(submit_list_name[i].value);
-                const currentPages = submit_list_pages[i].value;
-                const currentContributor = submit_list_aportante[i]?.value || '';
-                list_pages.push(currentPages);
-                list_review.push(deriveReviewFromPages(currentPages));
-                list_aportante.push(normalizeContributor(currentContributor));
+            if (new_list_type === "LISTA EXTRA") {
+                let submit_list_category = document.getElementsByName("submit_list_category");
+                let submit_list_code = document.getElementsByName("submit_list_code");
+                let submit_list_name = document.getElementsByName("submit_list_name");
+                let submit_list_aportante = document.getElementsByName("submit_list_aportante");
+                let submit_list_pages = document.getElementsByName("submit_list_pages");
+
+                for (let i = 0; i < submit_list_pages.length; i++) {
+                    list_category.push(submit_list_category[i].value);
+                    list_code.push(submit_list_code[i].value);
+                    list_name.push(submit_list_name[i].value);
+                    const currentPages = submit_list_pages[i].value;
+                    const currentContributor = submit_list_aportante[i]?.value || '';
+                    list_pages.push(currentPages);
+                    list_review.push(deriveReviewFromPages(currentPages));
+                    list_aportante.push(normalizeContributor(currentContributor));
+                }
+            } else {
+                getStandardListRows().forEach((row) => {
+                    list_category.push(row.category);
+                    list_code.push(row.code);
+                    list_name.push(row.name);
+                    list_pages.push(row.pages);
+                    list_review.push(deriveReviewFromPages(row.pages));
+                    list_aportante.push(normalizeContributor(row.contributor));
+                });
             }
             formData.set('list_category', list_category.join(','));
             formData.set('list_code', list_code.join(','));
@@ -994,6 +1060,8 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         refreshList();
+                        onPanelChange?.('physical');
+                        setActiveListIndex(currentSubLists.length);
                         setIsNew(false)
                     }
                     else {
@@ -1026,7 +1094,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             let list_pages = [];
             let list_aportante = [];
 
-            for (var i = 0; i < submit_list_pages.length; i++) {
+            for (let i = 0; i < submit_list_pages.length; i++) {
                 list_category.push(submit_list_category[i].value);
                 list_code.push(submit_list_code[i].value);
                 list_name.push(submit_list_name[i].value);
@@ -1131,7 +1199,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                             const scannedDocument = getScannedDocument(documentItem.code);
                                             const uploadKey = getScanUploadKey(activeList.id, documentItem.originalIndex);
                                             const uploadState = scanUploadStates[uploadKey] || {};
-                                            const digitalPages = getPhysicalDraftValue(activeList.id, documentItem.originalIndex, 'digitalPages', scanDraft.digitalPages || scannedDocument?.pages || documentItem.pages || '');
+                                            const digitalPages = getPhysicalDraftValue(activeList.id, documentItem.originalIndex, 'digitalPages', scanDraft.digitalPages || scannedDocument?.pages || '');
 
                                             return (
                                                 <div key={`${activeList.id}-${documentItem.originalIndex}`} className="grid grid-cols-[105px_minmax(260px,1fr)_90px_110px_150px] gap-2 px-3 py-2 text-sm transition-colors hover:bg-muted/20">
@@ -1149,7 +1217,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                                         step="1"
                                                         className="form-control form-control-sm h-8 text-center text-[0.78rem]"
                                                         value={digitalPages}
-                                                        placeholder={documentItem.pages || '1'}
+                                                        placeholder={documentItem.pages || 'Auto'}
                                                         onChange={(e) => {
                                                             updateScanDraft(activeList.id, documentItem.originalIndex, { digitalPages: e.target.value });
                                                             updatePhysicalDraft(activeList.id, documentItem.originalIndex, 'digitalPages', e.target.value);
@@ -1169,7 +1237,19 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                                             id={`scan_modal_file_${activeList.id}_${documentItem.originalIndex}`}
                                                             className="sr-only"
                                                             accept="application/pdf,image/jpeg,image/png"
-                                                            onChange={(e) => updateScanDraft(activeList.id, documentItem.originalIndex, { file: e.target.files[0] || null })}
+                                                            onChange={(e) => {
+                                                                const file = e.target.files[0] || null;
+                                                                updateScanDraft(activeList.id, documentItem.originalIndex, { file });
+                                                                if (file) {
+                                                                    resolveDigitalPagesFromFile(file, digitalPages || documentItem.pages)
+                                                                        .then((resolvedPages) => {
+                                                                            if (Number(resolvedPages) > 0) {
+                                                                                updateScanDraft(activeList.id, documentItem.originalIndex, { digitalPages: String(resolvedPages) });
+                                                                                updatePhysicalDraft(activeList.id, documentItem.originalIndex, 'digitalPages', String(resolvedPages));
+                                                                            }
+                                                                        });
+                                                                }
+                                                            }}
                                                         />
                                                         <button
                                                             type="button"
