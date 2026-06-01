@@ -15,9 +15,9 @@ import {
 
 const ACCEPTED_DOCUMENT_FILE_TYPES = new Set(['image/png', 'image/jpeg', 'application/pdf']);
 const ACCEPTED_DOCUMENT_FILE_LABEL = 'PDF, JPG o PNG';
-const STICKY_SELECT_COLUMN_CLASS = 'sticky left-0 z-20 w-[84px] min-w-[84px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
-const STICKY_NAME_COLUMN_CLASS = 'sticky left-[84px] z-10 w-[380px] min-w-[380px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
-const STICKY_VR_COLUMN_CLASS = 'sticky left-[464px] z-10 w-[240px] min-w-[240px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+const STICKY_SELECT_COLUMN_CLASS = 'sticky left-0 z-20 w-[64px] min-w-[64px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+const STICKY_NAME_COLUMN_CLASS = 'sticky left-[64px] z-10 w-[380px] min-w-[380px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
+const STICKY_VR_COLUMN_CLASS = 'sticky left-[444px] z-10 w-[160px] min-w-[160px] bg-background shadow-[1px_0_0_hsl(var(--border))]';
 const DOCUMENT_SELECTOR_POPOVER_Z_INDEX = 10050;
 
 function normalizeFileList(fileList) {
@@ -298,8 +298,8 @@ function VrSelectInline({ value, vrList = [], onChange }) {
 function FileDropCell({ row, onFilesSelected, onFileRemove, onClearFiles, onFilePreview }) {
     const files = Array.isArray(row.files) ? row.files : (row.file ? [row.file] : []);
 
-    return <div className="min-w-[340px] space-y-1.5">
-        <label className="flex min-h-[54px] cursor-pointer flex-col justify-center rounded-lg border border-dashed border-border bg-muted/20 px-2.5 py-2 text-[11px] text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/5">
+    return <div className="min-w-[340px] space-y-1">
+        <label className="flex min-h-[36px] cursor-pointer flex-col justify-center gap-0.5 rounded-lg border border-dashed border-border bg-muted/20 px-2.5 py-1 text-[11px] leading-tight text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/5">
             <span className="flex items-center gap-2 font-semibold text-foreground">
                 <Icon name="upload" size={13} className="text-primary" />
                 Arrastra aquí o selecciona archivos
@@ -442,7 +442,7 @@ function UnifiedDocumentCreateModal({
                 documentName: entry.name || entry.documentName,
                 vr: entry.id_public || entry.vr,
                 pages: '',
-                date: '',
+                date: entry.date || '',
                 originState: DOCUMENT_ORIGIN_STATE.SCANNED,
             }));
 
@@ -603,7 +603,7 @@ function UnifiedDocumentCreateModal({
                     </div>
 
                     <div className="max-w-full overflow-x-auto rounded-xl border border-border">
-                        <table className="w-full min-w-[1780px] text-xs">
+                        <table className="w-full min-w-[1680px] text-xs">
                             <thead className="sticky top-0 z-20 bg-muted text-xs uppercase text-muted-foreground shadow-sm">
                                 <tr>
                                     <th className={cn(STICKY_SELECT_COLUMN_CLASS, 'z-40 bg-muted px-2 py-2 text-center')}>Seleccionar</th>
