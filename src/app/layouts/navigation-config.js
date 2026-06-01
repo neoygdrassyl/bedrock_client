@@ -96,6 +96,17 @@ const NAV_ITEMS = [
     ],
   },
   {
+    id: 'simulador',
+    label: 'Simulador',
+    icon: 'SearchCheck',
+    route: '/simulador',
+    roles: [],
+    children: [
+      { id: 'simulador-documentos', label: 'Documentos', route: '/simulador/documentos', icon: 'FileText' },
+      { id: 'simulador-legal', label: 'Legal', route: '/simulador/legal', icon: 'Gavel' },
+    ],
+  },
+  {
     id: 'configuracion',
     label: 'Configuración',
     icon: 'Settings',
