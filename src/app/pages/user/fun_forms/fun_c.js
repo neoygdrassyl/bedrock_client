@@ -8,7 +8,8 @@ import { _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARS
 import FUN_DOC_CONFIRMLEGAL from './components/fun_doc_confirmlegal';
 import FUN_MODULE_NAV from './components/fun_moduleNav';
 import FUN_VERSION_NAV from './components/fun_versionNav';
-import FUN_CHECKLIST_N from './components/fun_checklist_n';
+import FunChecklistWindowSwitcher from './components/FunChecklistWindowSwitcher';
+import FUNG_CHECKLIST from './fun_g_checklist';
 import FUN_PDF_CHECK from './components/fun_pdf_check';
 import FUN_SERVICE from '../../../services/fun.service';
 import Collapsible from '../../../components/Collapsible';
@@ -792,7 +793,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         </Collapsible>
                     </fieldset>
                     <h3 className="text-center py-3" id="func_6">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</h3>
-                    <FUN_CHECKLIST_N
+                    <FunChecklistWindowSwitcher
                         translation={translation}
                         swaMsg={swaMsg}
                         globals={globals}
@@ -800,6 +801,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         currentVersion={currentVersion}
                         requestUpdate={requestUpdate}
                         vrDocs={VRDocs}
+                        LegacyChecklistComponent={FUNG_CHECKLIST}
                     />
                     <fieldset className="p-3">
                         <legend className="my-2 px-3 bg-danger" id="func_pdf">
