@@ -19,7 +19,7 @@ import FUN_G_MIX from './components/fun_g_mix.component';
 import FUN_G_REPORTS from './components/fun_g_reports.component';
 import FUN_ARCHIVE from './components/fun_archive.component';
 import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.compoentn';
-import FUN_CHECKLIST_N from './components/fun_checklist_n';
+import FunChecklistWindowSwitcher from './components/FunChecklistWindowSwitcher';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 import FUN_DUPLICATE from './components/fun_duplicate.component';
 import { swalError } from '@/app/utils/swalAdapter';
@@ -1007,7 +1007,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                             <label className="app-p lead text-center fw-normal">Lista de Checkeo</label>
                         </legend>
                         {_SET_CHILD_C()}
-                        <FUN_CHECKLIST_N
+                        <FunChecklistWindowSwitcher
                             translation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
@@ -1015,6 +1015,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                             currentVersion={currentVersion}
                             requestUpdate={retrieveItem}
                             readOnly
+                            LegacyChecklistComponent={FUNG_CHECKLIST}
                         />
                     </fieldset>
 
