@@ -101,7 +101,7 @@ function RECORD_PH_GEN(props) {
 
         for (var i = 0; i < _CHILDREN.length; i++) {
             if (_CHILDREN[i].role) {
-                if ((_CHILDREN[i].role).includes('PROPIETARIO')) _COMPONENT.push(<>
+                if ((_CHILDREN[i].role).includes('PROPIETARIO')) _COMPONENT.push(
                     <div className="row border p-2 ms-2" key={i}>
                         <div className="col-3">
                             <label>{_CHILDREN[i].name} {_CHILDREN[i].surname}</label>
@@ -116,7 +116,7 @@ function RECORD_PH_GEN(props) {
                             <label>Teléfono: {_CHILDREN[i].nunber}</label>
                         </div>
                     </div>
-                </>)
+                )
             }
         }
         return <>{_COMPONENT}</>
