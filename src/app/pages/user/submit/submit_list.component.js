@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
@@ -702,7 +702,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
         let _COMPONENT_EXTRA_LIST = () => {
             let _COMPONENT = [];
 
-            _COMPONENT.push(<>
+            _COMPONENT.push(<React.Fragment key="extra-list-header">
                 <div className="row text-center border border-secondary py-2 bg-secondary text-white">
                     <div className="col-2">
                         <span className="fw-bold">Nomenclatura</span>
@@ -721,10 +721,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         <span className="fw-bold"># FOLIOS / PLANOS</span>
                     </div>
                 </div>
-            </>)
+            </React.Fragment>)
 
             for (let i = 0; i < extra_items; i++) {
-                _COMPONENT.push(<>
+                _COMPONENT.push(<React.Fragment key={`extra-list-item-${i}`}>
                     <div className="row border border-secondary py-1 text-center">
                         <div className="col-2">
                             <select className="form-select" name="submit_list_category" >
@@ -756,11 +756,11 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                             <input type="number" min="0" step="1" className="form-control" name="submit_list_pages" />
                         </div>
                     </div>
-                </>)
+                </React.Fragment>)
 
             }
 
-            _COMPONENT.push(<>
+            _COMPONENT.push(<React.Fragment key="extra-list-footer">
                 <div className="row text-center border border-secondary py-2 text-white">
                     <div className="col-6">
                         <span className="fw-bold text-dark">ITEMS TOTALES: {extra_items}</span>
@@ -774,7 +774,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                             <Icon name="plus-circle" size={16} /> AÑADIR ITEM </Button>
                     </div>
                 </div>
-            </>)
+            </React.Fragment>)
 
             return <>{_COMPONENT}</>
         }
@@ -1337,7 +1337,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
 
         return (
             <section className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
-                <div className="h-full min-h-0 flex-1 overflow-hidden">
+                <div className="h-full min-h-0 flex-1 overflow-auto">
                     {_COMPONENT_LIST()}
                 </div>
                 {renderScanModal()}
