@@ -276,7 +276,9 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                             <RECORD_PH_PROFESIONALS
                                                 _FUN_52={_GET_CHILD_52()}
                                                 _FUN_6={_GET_CHILD_6()}
-                                                currentRecord={currentRecord} />
+                                                currentItem={currentItem}
+                                                currentRecord={currentRecord}
+                                                requestUpdateRecord={requestUpdateRecord} />
 
                                             <RECORD_PH_BLUEPRINT
                                                 translation={translation} swaMsg={swaMsg} globals={globals}

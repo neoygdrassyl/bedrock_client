@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../../../components/vizualizer.component';
+import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
 
 const REQUIRED_ROLES = ['ARQUITECTO PROYECTISTA'];
 
-function RECORD_PH_PROFESIONAL({ _FUN_52 = [], _FUN_6 = [], currentRecord = {} }) {
+function RECORD_PH_PROFESIONAL({ _FUN_52 = [], _FUN_6 = [], currentRecord = {}, currentItem = {}, requestUpdateRecord }) {
     const professionals = Array.isArray(_FUN_52) ? _FUN_52 : [];
     const documents = Array.isArray(_FUN_6) ? _FUN_6 : [];
 
@@ -11,7 +13,21 @@ function RECORD_PH_PROFESIONAL({ _FUN_52 = [], _FUN_6 = [], currentRecord = {} }
     const findDocument = (id) => documents.find(item => String(item.id) === String(id));
 
     const reviewCheck = currentRecord.review_check ? currentRecord.review_check.split(';') : [];
-    const vigente = reviewCheck[0] || '1';
+    const [vigente, setVigente] = useState(reviewCheck[0] || '1');
+
+    const handleVigenteChange = async (value) => {
+        setVigente(value);
+
+        const nextReviewCheck = [...reviewCheck];
+        while (nextReviewCheck.length < 9) nextReviewCheck.push('');
+        nextReviewCheck[0] = value;
+
+        const formData = new FormData();
+        formData.set('review_check', nextReviewCheck.join(';'));
+
+        const response = await RECORD_PH_SERVICE.update(currentRecord.id, formData);
+        if (response?.data === 'OK') requestUpdateRecord?.(currentItem.id);
+    };
 
     const getExperienceLabel = (role) => {
         const professional = findProfessional(role);
@@ -83,7 +99,7 @@ function RECORD_PH_PROFESIONAL({ _FUN_52 = [], _FUN_6 = [], currentRecord = {} }
         {
             name: '¿VIGENTE?',
             minWidth: '120px',
-            cell: () => <select className="form-select form-select-sm" value={vigente} onChange={() => {}}>
+            cell: () => <select className="form-select form-select-sm" value={vigente} onChange={(e) => handleVigenteChange(e.target.value)}>
                 <option value="1">SI</option>
                 <option value="0">NO</option>
             </select>,

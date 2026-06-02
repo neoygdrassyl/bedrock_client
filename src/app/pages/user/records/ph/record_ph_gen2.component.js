@@ -53,7 +53,7 @@ export default function RECORD_PH_GEN_2(props) {
         const formData = new FormData();
         if (detail) formData.set('detail', detail);
 
-        const review_check = ['0'];
+        const review_check = [checks[0] || '1'];
         for (let i = 1; i <= 8; i++) {
             review_check.push(checks[i] || '');
         }

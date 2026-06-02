@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import './helpers/mockExternals';
@@ -136,6 +136,7 @@ import RECORD_PH_GEN from '../app/pages/user/records/ph/record_ph_gen.component'
 import RECORD_PH_BUILDING from '../app/pages/user/records/ph/record_ph_building.component';
 import RECORD_PH_FLOOR from '../app/pages/user/records/ph/record_ph_floor.component';
 import RECORD_PH_BLUEPRINT from '../app/pages/user/records/ph/record_ph_blueprint.component';
+import RECORD_PH_GEN_2 from '../app/pages/user/records/ph/record_ph_gen2.component';
 import RECORD_PH_PROFESIONAL from '../app/pages/user/records/ph/record_ph_profesional.component';
 import RECORD_PH_REVIEW from '../app/pages/user/records/ph/record_ph_review.component';
 
@@ -289,6 +290,37 @@ describe('RecordsPH — Render', () => {
     expect(screen.getByText(/1998-05-14/i)).toBeInTheDocument();
     expect(screen.queryByText(/Nuevo Profesional/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/No hay Items/i)).not.toBeInTheDocument();
+  });
+
+  test('record_ph_profesional persists vigente without losing planimetric review checks', { timeout: 60000 }, async () => {
+    const requestUpdateRecord = vi.fn();
+    renderInRouter(RECORD_PH_PROFESIONAL, {
+      _FUN_52: [phProfessional],
+      _FUN_6: [],
+      currentRecord: { ...baseRecord, review_check: '1;1;0;1;0;1;0;1;0' },
+      currentItem: baseItem,
+      requestUpdateRecord,
+    });
+
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: '0' } });
+
+    await waitFor(() => expect(hoisted.phService.update).toHaveBeenCalledTimes(1));
+    const formData = hoisted.phService.update.mock.calls[0][1];
+    expect(formData.get('review_check')).toBe('0;1;0;1;0;1;0;1;0');
+    await waitFor(() => expect(requestUpdateRecord).toHaveBeenCalledWith(baseItem.id));
+  });
+
+  test('record_ph_gen2 keeps profesional vigente check when saving planimetric observations', { timeout: 60000 }, async () => {
+    renderInRouter(RECORD_PH_GEN_2, {
+      currentItem: baseItem,
+      currentRecord: { ...baseRecord, review_check: '1;1;1;1;1;1;1;1;1' },
+    });
+
+    fireEvent.submit(document.querySelector('#form_manage_ph_gen_2'));
+
+    await waitFor(() => expect(hoisted.phService.update).toHaveBeenCalledTimes(1));
+    const formData = hoisted.phService.update.mock.calls[0][1];
+    expect(formData.get('review_check')).toBe('1;1;1;1;1;1;1;1;1');
   });
 
   test('record_ph_floor renders common and private areas from record_ph_floors', { timeout: 60000 }, async () => {
