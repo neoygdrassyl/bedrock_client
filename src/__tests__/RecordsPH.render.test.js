@@ -240,6 +240,30 @@ describe('RecordsPH — Render', () => {
     expect(container.firstChild).toBeTruthy();
   });
 
+  test('record_ph_gen renders propietarios from FUN 5.1 in PH context', { timeout: 60000 }, async () => {
+    renderInRouter(RECORD_PH_GEN, {
+      currentItem: {
+        ...baseItem,
+        fun_51s: [
+          {
+            id: 10,
+            role: 'PROPIETARIO',
+            name: 'JUAN',
+            surname: 'PEREZ',
+            id_number: '12345678',
+            email: 'juan@test.com',
+            nunber: '3001234567',
+          },
+        ],
+      },
+    });
+
+    expect(screen.getByText(/JUAN PEREZ/i)).toBeInTheDocument();
+    expect(screen.getByText(/C\.C 12345678/i)).toBeInTheDocument();
+    expect(screen.getByText(/Email: juan@test\.com/i)).toBeInTheDocument();
+    expect(screen.getByText(/Teléfono: 3001234567/i)).toBeInTheDocument();
+  });
+
   test('record_ph_building renders without crashing', { timeout: 60000 }, async () => {
     const { container } = renderInRouter(RECORD_PH_BUILDING);
     expect(container).toBeTruthy();
