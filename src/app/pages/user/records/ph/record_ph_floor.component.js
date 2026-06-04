@@ -6,17 +6,35 @@ import { Icon } from '@/components/icon';
 import { swalConfirm } from '@/app/utils/swalAdapter';
 import usePHSave from './hooks/usePHSave';
 
-const EMPTY_FORM = {
+let nextDivisionRowId = 0;
+
+const createDivisionRow = (values = {}) => ({
+    rowId: `ph-floor-division-${nextDivisionRowId++}`,
+    name: '',
+    build: '',
+    free: '',
+    ...values,
+});
+
+const createEmptyForm = () => ({
     floor: '',
-    divisions: [{ name: '', build: '', free: '' }],
+    divisions: [createDivisionRow()],
     common: ['', '', '', ''],
     fixedEnabled: false,
     fixed: ['', '', '', ''],
-};
+});
 
-const toNumber = (value) => Number(value || 0) || 0;
+const toNumber = (value) => {
+    const normalizedValue = String(value ?? '').trim().replace(',', '.');
+    return Number(normalizedValue || 0) || 0;
+};
 const toMoney = (value) => toNumber(value).toFixed(2);
 const splitValue = (value) => value ? value.split(';') : [];
+const areaInputProps = {
+    type: 'text',
+    inputMode: 'decimal',
+    pattern: '[0-9]*[,.]?[0-9]*',
+};
 
 const buildFormFromRow = (row) => {
     const names = splitValue(row?.division);
@@ -28,7 +46,7 @@ const buildFormFromRow = (row) => {
 
     return {
         floor: row?.floor || '',
-        divisions: Array.from({ length: max }, (_, index) => ({
+        divisions: Array.from({ length: max }, (_, index) => createDivisionRow({
             name: names[index] || '',
             build: builds[index] || '',
             free: frees[index] || '',
@@ -42,8 +60,8 @@ const buildFormFromRow = (row) => {
 function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdateRecord }) {
     const [isNew, setIsNew] = useState(false);
     const [edit, setEdit] = useState(false);
-    const [form, setForm] = useState({ ...EMPTY_FORM, divisions: [...EMPTY_FORM.divisions], common: [...EMPTY_FORM.common], fixed: [...EMPTY_FORM.fixed] });
-    const [editForm, setEditForm] = useState({ ...EMPTY_FORM, divisions: [...EMPTY_FORM.divisions], common: [...EMPTY_FORM.common], fixed: [...EMPTY_FORM.fixed] });
+    const [form, setForm] = useState(createEmptyForm);
+    const [editForm, setEditForm] = useState(createEmptyForm);
     const { execute, isSaving } = usePHSave({ swaMsg });
 
     useEffect(() => {
@@ -152,7 +170,7 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
         }));
     };
 
-    const addDivision = (setter) => setter(prev => ({ ...prev, divisions: [...prev.divisions, { name: '', build: '', free: '' }] }));
+    const addDivision = (setter) => setter(prev => ({ ...prev, divisions: [...prev.divisions, createDivisionRow()] }));
     const removeDivision = (setter) => setter(prev => ({ ...prev, divisions: prev.divisions.length > 1 ? prev.divisions.slice(0, -1) : prev.divisions }));
 
     const buildPayload = (data) => {
@@ -167,7 +185,7 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
         return formData;
     };
 
-    const resetForm = () => setForm({ ...EMPTY_FORM, divisions: [{ name: '', build: '', free: '' }], common: ['', '', '', ''], fixed: ['', '', '', ''] });
+    const resetForm = () => setForm(createEmptyForm());
 
     const newItem = async (event) => {
         event.preventDefault();
@@ -219,18 +237,18 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
         <div className="row mb-2 align-items-start">
             <div className="col-12 col-lg-8 border border-info rounded-2 p-2">
                 <div className="fw-bold mb-2">Unidades</div>
-                {data.divisions.map((division, index) => <div className="row" key={`${division.name}-${division.build}-${division.free}`}>
+                {data.divisions.map((division, index) => <div className="row" key={division.rowId}>
                     <div className="col-12 col-md">
                         <label htmlFor={`${prefix}-division-name-${index}`}>Unidad {index + 1}</label>
                         <input id={`${prefix}-division-name-${index}`} type="text" className="form-control my-1" value={division.name} onChange={(event) => updateDivision(setter, index, 'name', event.target.value)} />
                     </div>
                     <div className="col-12 col-md">
                         <label htmlFor={`${prefix}-division-build-${index}`}>Área Priv. Construida</label>
-                        <input id={`${prefix}-division-build-${index}`} type="number" min="0" step="0.01" className="form-control my-1" value={division.build} onChange={(event) => updateDivision(setter, index, 'build', event.target.value)} />
+                        <input id={`${prefix}-division-build-${index}`} {...areaInputProps} className="form-control my-1" value={division.build} onChange={(event) => updateDivision(setter, index, 'build', event.target.value)} />
                     </div>
                     <div className="col-12 col-md">
                         <label htmlFor={`${prefix}-division-free-${index}`}>Área Priv. Libre</label>
-                        <input id={`${prefix}-division-free-${index}`} type="number" min="0" step="0.01" className="form-control my-1" value={division.free} onChange={(event) => updateDivision(setter, index, 'free', event.target.value)} />
+                        <input id={`${prefix}-division-free-${index}`} {...areaInputProps} className="form-control my-1" value={division.free} onChange={(event) => updateDivision(setter, index, 'free', event.target.value)} />
                     </div>
                 </div>)}
             </div>
@@ -245,15 +263,15 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
             <div className="col-12 col-lg-6 border border-info rounded-2 p-2">
                 <div className="fw-bold">Área de uso Común</div>
                 <div className="row">
-                    <div className="col"><label htmlFor={`${prefix}-common-build`}>Construida</label><input id={`${prefix}-common-build`} type="number" min="0" step="0.01" className="form-control my-1" value={data.common[0]} onChange={(event) => updateCommon(setter, 0, event.target.value)} /></div>
-                    <div className="col"><label htmlFor={`${prefix}-common-free`}>Libre</label><input id={`${prefix}-common-free`} type="number" min="0" step="0.01" className="form-control my-1" value={data.common[1]} onChange={(event) => updateCommon(setter, 1, event.target.value)} /></div>
+                    <div className="col"><label htmlFor={`${prefix}-common-build`}>Construida</label><input id={`${prefix}-common-build`} {...areaInputProps} className="form-control my-1" value={data.common[0]} onChange={(event) => updateCommon(setter, 0, event.target.value)} /></div>
+                    <div className="col"><label htmlFor={`${prefix}-common-free`}>Libre</label><input id={`${prefix}-common-free`} {...areaInputProps} className="form-control my-1" value={data.common[1]} onChange={(event) => updateCommon(setter, 1, event.target.value)} /></div>
                 </div>
             </div>
             <div className="col-12 col-lg-6 border border-info rounded-2 p-2">
                 <div className="fw-bold">Área de uso Exclusivo</div>
                 <div className="row">
-                    <div className="col"><label htmlFor={`${prefix}-exclusive-build`}>Construida</label><input id={`${prefix}-exclusive-build`} type="number" min="0" step="0.01" className="form-control my-1" value={data.common[2]} onChange={(event) => updateCommon(setter, 2, event.target.value)} /></div>
-                    <div className="col"><label htmlFor={`${prefix}-exclusive-free`}>Libre</label><input id={`${prefix}-exclusive-free`} type="number" min="0" step="0.01" className="form-control my-1" value={data.common[3]} onChange={(event) => updateCommon(setter, 3, event.target.value)} /></div>
+                    <div className="col"><label htmlFor={`${prefix}-exclusive-build`}>Construida</label><input id={`${prefix}-exclusive-build`} {...areaInputProps} className="form-control my-1" value={data.common[2]} onChange={(event) => updateCommon(setter, 2, event.target.value)} /></div>
+                    <div className="col"><label htmlFor={`${prefix}-exclusive-free`}>Libre</label><input id={`${prefix}-exclusive-free`} {...areaInputProps} className="form-control my-1" value={data.common[3]} onChange={(event) => updateCommon(setter, 3, event.target.value)} /></div>
                 </div>
             </div>
         </div>

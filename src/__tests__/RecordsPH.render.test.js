@@ -139,6 +139,7 @@ import RECORD_PH_BLUEPRINT from '../app/pages/user/records/ph/record_ph_blueprin
 import RECORD_PH_GEN_2 from '../app/pages/user/records/ph/record_ph_gen2.component';
 import RECORD_PH_PROFESIONAL from '../app/pages/user/records/ph/record_ph_profesional.component';
 import RECORD_PH_REVIEW from '../app/pages/user/records/ph/record_ph_review.component';
+import RECORD_PH_CHECK_LIST from '../app/pages/user/records/ph/record_ph_check_list.component';
 
 // ─── shared fixtures ──────────────────────────────────────────────────────────
 
@@ -333,6 +334,58 @@ describe('RecordsPH — Render', () => {
     expect(screen.getAllByText(/Área Total Construida/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/30.25/i).length).toBeGreaterThan(0);
     expect(screen.queryByText(/^AREA TOTAL$/i)).not.toBeInTheDocument();
+  });
+
+  test('record_ph_floor keeps focus and accepts decimal comma in editable area fields', { timeout: 60000 }, async () => {
+    renderInRouter(RECORD_PH_FLOOR, { currentRecord: baseRecord });
+
+    fireEvent.click(screen.getByLabelText(/Nuevo Área/i));
+    const builtArea = document.querySelector('#ph-floor-new-division-build-0');
+
+    expect(builtArea).toHaveAttribute('inputmode', 'decimal');
+
+    builtArea.focus();
+    fireEvent.change(builtArea, { target: { value: '12,50' } });
+
+    expect(document.activeElement).toBe(builtArea);
+    expect(document.querySelector('#ph-floor-new-division-build-0')).toHaveValue('12,50');
+  });
+
+  test('record_ph_floor totals parse decimal comma without mutating displayed source values', { timeout: 60000 }, async () => {
+    const { container } = renderInRouter(RECORD_PH_FLOOR, {
+      currentRecord: {
+        ...baseRecord,
+        record_ph_floors: [
+          {
+            id: 202,
+            floor: 'Piso 2',
+            division: 'Apto 201',
+            division_build: '10,50',
+            division_free: '2,25',
+            common: '1,50;0;0;0',
+            fixed: '',
+          },
+        ],
+      },
+    });
+
+    const totals = container.querySelector('.ph-floor-totals');
+    expect(screen.getByText('10,50')).toBeInTheDocument();
+    expect(totals).toHaveTextContent('12.75');
+    expect(totals).toHaveTextContent('12.00');
+  });
+
+  test('record_ph_check_list renders PH checklist items from review rules', { timeout: 60000 }, async () => {
+    renderInRouter(RECORD_PH_CHECK_LIST, {
+      currentRecord: {
+        ...baseRecord,
+        record_ph_steps: [],
+      },
+    });
+
+    expect(screen.getByText(/Areas comunes construidas por piso/i)).toBeInTheDocument();
+    expect(screen.getByText(/Linderos del area privada construida/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Metros lineales del cerramiento/i)).not.toBeInTheDocument();
   });
 
   test('record_ph_blueprint renders without crashing', { timeout: 60000 }, async () => {

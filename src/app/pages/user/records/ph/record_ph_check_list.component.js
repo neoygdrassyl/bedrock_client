@@ -4,28 +4,34 @@ import RECORD_PH from '../../../../services/record_ph.service';
 import usePHSave from './hooks/usePHSave';
 import { savePHStep } from './utils/phSaveStep';
 
+const getPHReviewDetails = (sectionId) => {
+    const section = REVIEW_DOCS.find((reviewSection) => reviewSection.pid === sectionId);
+    if (!section) return [];
+
+    return section.items
+        .filter((item) => Array.isArray(item.rtype) && item.rtype.includes('ph'))
+        .map((item) => item.name);
+};
+
+const PH_AREA_DETAILS = getPHReviewDetails('rar_3');
+const PH_PLANT_DETAILS = getPHReviewDetails('rar_4');
+
 export default function RECORD_PH_CHECK_LIST(props) {
-    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;
+    const { swaMsg, currentItem, currentRecord, currentVersionR, requestUpdateRecord } = props;
     const { execute } = usePHSave(swaMsg);
-    const REVIEWS_TYPES = [
-        { name: 'CONSTRUCCIÓN', id: 'con' },
-        { name: 'LOTEO, PARCELACIÓN, SUBDIVISIÓN Y URBANISMO', id: 'sub' },
-        { name: 'CERRAMIENTO', id: 'cer' },
-    ]
-    const REVIEW = REVIEW_DOCS;
 
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
-        for (var i = 0; i < _CHILD.length; i++) {
-            if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
+        const _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
+        for (let i = 0; i < _CHILD.length; i++) {
+            if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }
         return []
     }
 
     let _GET_STEP_TYPE = (_id_public, _type) => {
-        var STEP = LOAD_STEP(_id_public);
+        const STEP = LOAD_STEP(_id_public);
         if (!STEP.id) return [];
-        var value = STEP[_type]
+        let value = STEP[_type]
         if (!value) return [];
         value = value.split(';');
         return value
@@ -78,12 +84,12 @@ export default function RECORD_PH_CHECK_LIST(props) {
             },
             {
                 title: 'Cuadro de áreas', items: [
-                    { desc: 'Cuadro general de las áreas del proyecto arquitectónico', i: 9 },
+                    { desc: 'Cuadro general de las áreas del proyecto arquitectónico', i: 9, details: PH_AREA_DETAILS },
                 ]
             },
             {
                 title: 'Plantas arquitectónicas por piso, sótano o semisótano  cubiertas', items: [
-                    { desc: 'Primera planta relacionada con el espacio público', i: 10 },
+                    { desc: 'Primera planta relacionada con el espacio público', i: 10, details: PH_PLANT_DETAILS },
                     { desc: 'Cotas totales y parciales del proyecto', i: 11 },
                     { desc: 'Ejes y elementos estructurales proyectados (Sistema estructural)', i: 12 },
                     { desc: 'Niveles', i: 13 },
@@ -120,16 +126,26 @@ export default function RECORD_PH_CHECK_LIST(props) {
             },
         ]
 
-        return LIST.map((list, i) => {
-            return <div className="row border">
-                {list.title ? <div className='col-3 text-center '><label className='fw-bold'>{list.title}</label></div> : ''}
+        return LIST.map((list) => {
+            const sectionKey = list.title || `phcl-section-${list.items.map((item) => item.i).join('-')}`;
+            return <div className="row border" key={sectionKey}>
+                {list.title ? <div className='col-3 text-center '><span className='fw-bold'>{list.title}</span></div> : ''}
                 <div className='col'>
-                    {list.items.map((item, j) => {
-                        return <>
-                            <div className='row border'>
-                                <div className='col'><label>{item.desc}</label></div>
+                    {list.items.map((item) => {
+                        return <div className='row border' key={`phcl-item-${item.i}`}>
+                                <div className='col'>
+                                    <span>
+                                        {item.desc}
+                                        {item.details?.length ? (
+                                            <ul className="mb-0 ps-3 small text-muted">
+                                                {item.details.map((detail) => <li key={detail}>{detail}</li>)}
+                                            </ul>
+                                        ) : null}
+                                    </span>
+                                </div>
                                 <div className='col-2'>
                                     <select
+                                        aria-label={item.desc}
                                         className={_GET_SELECT_COLOR_VALUE(checks[item.i])}
                                         value={checks[item.i]}
                                         onChange={(e) => handleCheckChange(item.i, e.target.value)}
@@ -140,7 +156,6 @@ export default function RECORD_PH_CHECK_LIST(props) {
                                     </select>
                                 </div>
                             </div>
-                        </>
                     })}
                 </div>
             </div>
