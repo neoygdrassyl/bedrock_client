@@ -158,7 +158,10 @@ export default function RECORD_ARC_AREAS_2(props) {
     const [dragAnchor, setDragAnchor] = useState(null);
     const [editingCell, setEditingCell] = useState(null);
     const [colWidths, setColWidths] = useState([]);
-    var saveCounter = 0;
+    const [saveError, setSaveError] = useState('');
+    const areaSaveBatchRef = useRef(0);
+    const hasLocalAreaChangesRef = useRef(false);
+    const loadedRecordIdRef = useRef(null);
 
     let _MEASURE_TEXT = (text, fontSize = 12.8) => {
         try {
@@ -195,13 +198,16 @@ export default function RECORD_ARC_AREAS_2(props) {
 
     useEffect(() => {
         if (currentRecord.record_arc_33_areas != null) {
-            _SET_DATA()
+            const recordId = currentRecord?.id ?? null;
+            const changedRecord = loadedRecordIdRef.current !== recordId;
+            if (changedRecord) {
+                hasLocalAreaChangesRef.current = false;
+                loadedRecordIdRef.current = recordId;
+                setSaveError('');
+            }
+            if (!hasLocalAreaChangesRef.current) _SET_DATA()
         }
-    }, [currentRecord.record_arc_33_areas, currentItem.fun_1s]);
-
-    useEffect(() => {
-        if (data.length != 0) manage_areas(false);
-    }, [data.length]);
+    }, [currentRecord.id, currentRecord.record_arc_33_areas, currentItem.fun_1s]);
     // ***************************  DATA GETTERS *********************** //
     let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -955,6 +961,9 @@ export default function RECORD_ARC_AREAS_2(props) {
         }
 
         setData(newData);
+        hasLocalAreaChangesRef.current = true;
+        setSaveError('');
+        manage_areas(newData);
 
     }
     function _REMOVE_TO_TABLE() {
@@ -984,6 +993,9 @@ export default function RECORD_ARC_AREAS_2(props) {
         newData.splice(st, del)
 
         setData(newData)
+        hasLocalAreaChangesRef.current = true;
+        setSaveError('');
+        manage_areas(newData);
     }
     // ******************************* JSX ***************************** // 
     let _handleCellEdit = (rowIdx, cellName, cellId, newValue) => {
@@ -1295,7 +1307,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                         <Button variant={!openConfig ? "outline" : "default"} size="sm"
                             onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</Button>
                         <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</Button>
-                        <Button variant="outline" size="sm" onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</Button>
+                        <Button variant="outline" size="sm" onClick={() => manage_areas(undefined, true)}>GUARDAR CAMBIOS</Button>
                     </div>
                     <div>
                         {saving === 0 ?
@@ -1303,6 +1315,9 @@ export default function RECORD_ARC_AREAS_2(props) {
                             : ''}
                         {saving === 1 ?
                             <label className='fw-bold text-success'>DATOS GUARDADOS</label>
+                            : ''}
+                        {saving === 2 ?
+                            <label className='fw-bold text-danger'>{saveError || 'NO SE PUDO GUARDAR. REVISA LA CONEXIÓN Y VUELVE A INTENTAR.'}</label>
                             : ''}
                     </div>
 
@@ -1478,8 +1493,10 @@ export default function RECORD_ARC_AREAS_2(props) {
 
     // ************
     let change_areas = (changes) => {
-        if (!Array.isArray(changes)) return;
+        if (!Array.isArray(changes) || changes.length === 0) return;
         setSaving(0);
+        setSaveError('');
+        hasLocalAreaChangesRef.current = true;
         let old_data = Array.isArray(data) ? data : [];
         let new_data = [];
 
@@ -1498,10 +1515,20 @@ export default function RECORD_ARC_AREAS_2(props) {
         setData(new_data);
         manage_areas(new_data);
     }
-    let manage_areas = (new_data) => {
+    let manage_areas = (new_data, useSwal = false) => {
+        if (typeof new_data === 'boolean') {
+            useSwal = new_data;
+            new_data = undefined;
+        }
+
+        let usedData = Array.isArray(new_data) ? new_data : (Array.isArray(data) ? data : []);
+        if (!Array.isArray(usedData) || usedData.length === 0) return Promise.resolve();
+
         setSaving(0);
-        saveCounter = 0;
-        let newItems = [];
+        setSaveError('');
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+        const batchId = areaSaveBatchRef.current + 1;
+        areaSaveBatchRef.current = batchId;
         let originalAreas = _GET_CHILD_33_AREAS();
         let getCellByName = (_cells, _name) => {
             let find = _cells.find(c => {
@@ -1578,11 +1605,9 @@ export default function RECORD_ARC_AREAS_2(props) {
         let newCells = [];
         let delCells = [];
 
-        let usedData = Array.isArray(new_data) ? new_data : (Array.isArray(data) ? data : []);
-
         let finish_flag = usedData.length - 2;
 
-        usedData.map((d, i) => {
+        usedData.forEach((d, i) => {
             if (!Array.isArray(d)) return;
             if (i < finish_flag + 1) {
                 let _id = d[0].id;
@@ -1593,86 +1618,76 @@ export default function RECORD_ARC_AREAS_2(props) {
             }
         })
 
-        originalAreas.map(a => {
+        originalAreas.forEach(a => {
             if (!usedData.find(d => Array.isArray(d) && d[0] && d[0].id === a.id)) delCells.push([{ id: a.id }])
 
         })
 
         let end_counter = updateCells.length + delCells.length + newCells.length;
-        updateCells.map((cells, i) => {
+        let requests = [];
+        updateCells.forEach((cells) => {
             if (cells[0].ignore) return;
             let formData = setItem(cells);
-            update_area(cells[0].id, formData, false, i, end_counter);
+            requests.push(update_area(cells[0].id, formData));
         });
-        newCells.map((newItem) => {
+        newCells.forEach((newItem) => {
             let formData = setItem(newItem);
             formData.set('recordArcId', currentRecord.id);
             formData.set('active', 1);
             formData.set('type', "area");
-            create_area(formData, false, newItem.i, end_counter)
+            requests.push(create_area(formData))
         });
-        delCells.map(cell => {
-            delete_areas(cell[0].id, false, end_counter)
+        delCells.forEach(cell => {
+            requests.push(delete_areas(cell[0].id))
         });
-    }
-    let create_area = (formData, useSwal, i, fg) => {
-        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        RECORD_ARCSERVICE.create_arc_33_area(formData)
-            .then(response => {
-                if (response.data === 'OK') {
-                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                    saveCounter++;
-                    if (saveCounter === fg) {
-                        props.requestUpdateRecord(currentItem.id);
-                        setSaving(1);
-                    }
-                } else {
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                }
-            })
-            .catch(e => {
-                console.log(e);
-                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-            });
-    }
-    let update_area = (_id, _form, useSwal, i, fg) => {
-        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        RECORD_ARCSERVICE.update_arc_33_area(_id, _form)
-            .then(response => {
-                if (response.data === 'OK') {
-                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                    saveCounter++;
-                    if (saveCounter === fg) {
-                        props.requestUpdateRecord(currentItem.id);
-                        setSaving(1);
-                    }
-                } else {
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                }
-            })
-            .catch(e => {
-                console.log(e);
-                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-            });
-    }
-    let delete_areas = (id, useSwal, fg) => {
-        RECORD_ARCSERVICE.delete_33_area_byId(id)
-            .then(response => {
-                if (response.data === 'OK') {
-                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                    saveCounter++;
-                    if (saveCounter === fg) {
-                        props.requestUpdateRecord(currentItem.id);
-                        setSaving(1);
-                    }
 
-                } else {
-                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                }
+        if (end_counter === 0 || requests.length === 0) {
+            if (batchId === areaSaveBatchRef.current) {
+                hasLocalAreaChangesRef.current = false;
+                setSaving(1);
+                setSaveError('');
+            }
+            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+            return Promise.resolve();
+        }
+
+        return Promise.all(requests)
+            .then(() => {
+                if (batchId !== areaSaveBatchRef.current) return;
+                hasLocalAreaChangesRef.current = false;
+                setSaveError('');
+                props.requestUpdateRecord(currentItem.id);
+                setSaving(1);
+                if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
             })
             .catch(e => {
                 console.log(e);
+                if (batchId !== areaSaveBatchRef.current) return;
+                hasLocalAreaChangesRef.current = true;
+                setSaving(2);
+                setSaveError('No se pudo guardar la tabla de áreas. Los datos quedan visibles en pantalla; vuelve a intentar guardar.');
                 if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+            });
+    }
+    let create_area = (formData) => {
+        return RECORD_ARCSERVICE.create_arc_33_area(formData)
+            .then(response => {
+                if (response.data === 'OK') return response.data;
+                throw new Error(`create33area: ${response.data}`);
+            });
+    }
+    let update_area = (_id, _form) => {
+        return RECORD_ARCSERVICE.update_arc_33_area(_id, _form)
+            .then(response => {
+                if (response.data === 'OK') return response.data;
+                throw new Error(`update33area ${_id}: ${response.data}`);
+            });
+    }
+    let delete_areas = (id) => {
+        return RECORD_ARCSERVICE.delete_33_area_byId(id)
+            .then(response => {
+                if (response.data === 'OK') return response.data;
+                throw new Error(`delete33areabyId ${id}: ${response.data}`);
             });
 
     }
