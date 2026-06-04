@@ -2,14 +2,17 @@ import http from "../../http-common";
 import { sha256 } from "js-sha256";
 
 class CustomlDataService {
-  appLogin(data) {
-    return http.post(`/login`, data);
+  appLogin(data, config) {
+    return http.post(`/login`, data, config);
   }
 
-  buildLoginFormData(email, password) {
+  buildLoginFormData(email, password, extraFields = {}) {
     const formData = new FormData();
     formData.set("email", email);
     formData.set("password", password);
+    Object.entries(extraFields).forEach(([key, value]) => {
+      formData.set(key, value);
+    });
     return formData;
   }
 
@@ -28,11 +31,14 @@ class CustomlDataService {
   async appLoginCompatible({ email, password }) {
     const safeEmail = (email || "").trim();
     const safePassword = password || "";
+    const legacyPassword = sha256(safePassword);
 
-    const plainPayload = this.buildLoginFormData(safeEmail, safePassword);
+    const plainPayload = this.buildLoginFormData(safeEmail, safePassword, {
+      password_sha256: legacyPassword,
+    });
 
     try {
-      const response = await this.appLogin(plainPayload);
+      const response = await this.appLogin(plainPayload, { skipDovelaErrorCapture: true });
       if (this.isRecognizedLoginResponse(response.data)) {
         return response;
       }
@@ -42,7 +48,9 @@ class CustomlDataService {
       }
     }
 
-    const legacyPayload = this.buildLoginFormData(safeEmail, sha256(safePassword));
+    const legacyPayload = this.buildLoginFormData(safeEmail, legacyPassword, {
+      password_sha256: legacyPassword,
+    });
     return this.appLogin(legacyPayload);
   }
 
@@ -62,7 +70,7 @@ class CustomlDataService {
     return http.get(`/seal/${name}`);
   }
 
-  getRepositoryList(name) {
+  getRepositoryList() {
     return http.get(`/repository/list`);
   }
 
