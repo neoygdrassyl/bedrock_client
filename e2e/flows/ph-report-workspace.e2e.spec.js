@@ -7,6 +7,7 @@ import { test, expect, installE2EMocks } from '../fixtures/auth.fixture';
  * 1. Focus loss al escribir en inputs del submódulo PH (record_ph_gen.component.js)
  * 2. Menú de acciones abre viejo modal en vez del workspace (fun.js -> openFullscreenWorkspace)
  * 3. Cierre del modal redirige al dashboard en vez de volver a la lista (record_ph.js closeModal)
+ * 4. Expedición desde un expediente PH abre la vista nueva y no el modal legacy EXPEDITION
  */
 test.describe('E2E: Flujo de Informe P.H. — fixes de UX y navegación', () => {
   test.beforeEach(async ({ authenticatedPage }) => {
@@ -67,6 +68,46 @@ test.describe('E2E: Flujo de Informe P.H. — fixes de UX y navegación', () => 
 
     // 7. Validar que la barra de navegación del workspace muestra "Informe P.H."
     await expect(newPage.locator('button', { hasText: 'Informe P.H.' })).toBeVisible();
+
+    await newPage.close();
+  });
+
+  test('Bug 4 — abrir Expedición desde expediente PH abre workspace popup (no modal EXPEDITION legacy)', async ({ authenticatedPage }) => {
+    await authenticatedPage.goto('/licencias');
+    await authenticatedPage.waitForLoadState('domcontentloaded');
+    await authenticatedPage.waitForLoadState('networkidle');
+    await authenticatedPage.waitForTimeout(1000);
+
+    await authenticatedPage.waitForSelector('button[role="tab"]', { timeout: 30000 });
+    const otrasActuacionesTab = authenticatedPage.locator('button[role="tab"]').filter({ hasText: /Otras Actuaciones/i });
+    await expect(otrasActuacionesTab).toBeVisible({ timeout: 15000 });
+    await otrasActuacionesTab.click();
+    await authenticatedPage.waitForTimeout(500);
+
+    const phRow = authenticatedPage.locator('table tbody tr').filter({
+      has: authenticatedPage.getByText('68001-1-26-0001', { exact: false }),
+    }).first();
+    await expect(phRow).toBeVisible({ timeout: 15000 });
+
+    const actionMenuBtn = phRow.locator('button').last();
+    await actionMenuBtn.click();
+
+    const expeditionMenuItem = authenticatedPage.getByRole('menuitem', { name: /Expedici[oó]n/i });
+    await expect(expeditionMenuItem).toBeVisible();
+
+    const [newPage] = await Promise.all([
+      authenticatedPage.waitForEvent('popup'),
+      expeditionMenuItem.click(),
+    ]);
+
+    await installE2EMocks(newPage);
+    await newPage.waitForLoadState('domcontentloaded');
+    await newPage.waitForTimeout(1500);
+
+    await expect(newPage).toHaveURL(/\/funmanage\/expediente\/68001-1-26-0001\?section=expedicion/);
+    await expect(newPage.getByRole('dialog', { name: /Detalle del expediente/i })).toBeVisible();
+    await expect(newPage.getByRole('button', { name: /^Expedici[oó]n$/i })).toBeVisible();
+    await expect(authenticatedPage.locator('.ReactModal__Content:visible')).toHaveCount(0);
 
     await newPage.close();
   });

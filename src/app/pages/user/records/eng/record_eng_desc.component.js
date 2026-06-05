@@ -1,10 +1,12 @@
 import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
 
 
 function RECORD_ENG_DESC(props) {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, category, arcSteps, requestUpdateRecord } = props;
+        const { swaMsg, currentItem, currentVersion, currentRecord, currentVersionR, category, arcSteps, requestUpdateRecord } = props;
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -97,6 +99,8 @@ function RECORD_ENG_DESC(props) {
         let COMPONENT_DESC = () => {
             let values = _GET_STEP_TYPE('s33', 'value');
             let values2 = _GET_STEP_TYPE_ENG('s33_exp', 'value');
+            let architectureDescription = values[1] ?? "";
+            let structuralDescription = richTextToPlainText(_GET_REVIEW().desc || architectureDescription);
             return <>
                 <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
@@ -117,8 +121,27 @@ function RECORD_ENG_DESC(props) {
                         <label>Antecedentes</label>
                     </div>
                 </div>
-                <textarea className="input-group" value={values[0]} disabled readOnly rows="4" style={{ backgroundColor: 'gainsboro' }}></textarea>
+                <RichTextEditor
+                    value={values[0] ?? ""}
+                    maxLength={8000}
+                    minHeight={150}
+                    readOnly
+                    placeholder="Antecedentes del proyecto"
+                />
 
+
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
+                    <div className='col'>
+                        <label>Descripción del proyecto Arquitectónica</label>
+                    </div>
+                </div>
+                <RichTextEditor
+                    value={architectureDescription}
+                    maxLength={8000}
+                    minHeight={150}
+                    readOnly
+                    placeholder="Descripción del proyecto Arquitectónica"
+                />
 
                 <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
@@ -126,7 +149,7 @@ function RECORD_ENG_DESC(props) {
                     </div>
                 </div>
                 <textarea className="input-group" id="record_eng_desc" maxLength={4000}
-                    defaultValue={_GET_REVIEW().desc || values[1]} onBlur={() => save_item()} rows="3"></textarea>
+                    defaultValue={structuralDescription} onBlur={() => save_item()} rows="3"></textarea>
                 <label> (Máximo 4000 Caracteres)</label>
 
                 {category == '2' ?
