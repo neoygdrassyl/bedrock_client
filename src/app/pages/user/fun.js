@@ -1194,7 +1194,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                     Checkeo
                                 </DropdownMenuItem>
                                 {isPH ? (
-                                    <DropdownMenuItem onClick={(event) => runMenuAction(event, () => toggle_recordPH(row))}>
+                                    <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'record_ph'))}>
                                         <Icon name="PenTool" size={14} className="text-warning" />
                                         Inf. P.H.
                                     </DropdownMenuItem>
