@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { render, act } from '@testing-library/react';
+import { render, act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // ─── External mocks ──────────────────────────────────────────────────────────
@@ -57,7 +57,7 @@ vi.mock('@/components/legacy-modal', () => ({
 
 vi.mock('dayjs', () => {
   const dayjsFn = (val) => ({
-    format: (fmt) => '2024-01-01',
+    format: () => '2024-01-01',
     subtract: () => dayjsFn(val),
     add: () => dayjsFn(val),
     diff: () => 0,
@@ -107,6 +107,7 @@ vi.mock('../app/services/fun.service', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: mockFunItem })),
+    update: vi.fn(() => Promise.resolve({ data: 'OK' })),
     loadPQRSxFUN: vi.fn(() => Promise.resolve({ data: [] })),
     create_clock: vi.fn(() => Promise.resolve({ data: 'OK' })),
     update_clock: vi.fn(() => Promise.resolve({ data: 'OK' })),
@@ -140,17 +141,22 @@ vi.mock('../app/components/emails.component', () => ({
   default: () => React.createElement('div', { 'data-testid': 'emails-stub' }),
 }));
 
+vi.mock('../app/pages/user/fun_forms/components/fun_clocks_email.component', () => ({
+  __esModule: true,
+  default: () => React.createElement('div', { 'data-testid': 'fun-clocks-emails-stub' }),
+}));
+
 // ─── UI component mocks ──────────────────────────────────────────────────────
 
 vi.mock('../app/components/ui', () => ({
   MDBBtn: ({ children, onClick, className }) =>
-    React.createElement('button', { onClick, className }, children),
+    React.createElement('button', { type: 'button', onClick, className }, children),
   MDBTooltip: ({ children }) => React.createElement('span', null, children),
 }));
 
 vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
-  default: ({ data, noDataComponent }) =>
+  default: ({ noDataComponent }) =>
     React.createElement('div', { 'data-testid': 'datatable-stub' }, noDataComponent),
 }));
 
@@ -174,6 +180,8 @@ import FUNCLOCK from '../app/pages/user/fun_forms/fun_clock';
 import FUN_C_CLOCKS from '../app/pages/user/fun_forms/components/fun_c_clocks.component';
 import FUN_CLOCK_CONTROL from '../app/pages/user/fun_forms/components/fun_clock_control';
 import FUN_CLOCK_EVENTS from '../app/pages/user/fun_forms/components/fun_clocks_events.component';
+import FUN_CLOCKS_NEGATIVE from '../app/pages/user/fun_forms/components/fun_clocks_negative.component';
+import FUN_SERVICE from '../app/services/fun.service';
 
 // ─── Shared props ────────────────────────────────────────────────────────────
 
@@ -212,6 +220,10 @@ const minimalCurrentItem = {
 describe('FunClocks — Render (fun_clock, fun_c_clocks, fun_clock_control, fun_clocks_events)', () => {
   beforeAll(() => {
     window.user = { roleId: 1, name: 'Admin Test', id: 1 };
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
   afterAll(() => {
@@ -373,5 +385,47 @@ describe('FunClocks — Render (fun_clock, fun_c_clocks, fun_clock_control, fun_
       ));
     });
     expect(container).toBeTruthy();
+  }, 60000);
+
+  test('fun_clocks_negative does not restore FUN state when active process cancellation cannot delete start clock', async () => {
+    FUN_SERVICE.delete_clock.mockRejectedValueOnce(new Error('delete failed'));
+    const itemWithActiveDesistimiento = {
+      ...minimalCurrentItem,
+      state: -105,
+      fun_clocks: [
+        {
+          id: 99,
+          state: -50,
+          version: -5,
+          date_start: '2024-01-15',
+          desc: 'Inicio activo',
+          name: 'INICIO DEL PROCESO DE DESISTIMIENTO',
+        },
+      ],
+    };
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <FUN_CLOCKS_NEGATIVE
+            swaMsg={swaMsg}
+            translation={{}}
+            currentItem={itemWithActiveDesistimiento}
+            currentVersion={1}
+            requestRefresh={vi.fn()}
+            requestUpdate={vi.fn()}
+          />
+        </MemoryRouter>
+      );
+    });
+
+    fireEvent.click(screen.getByText(/CANCELAR PROCESO DE DESISTIMIENTO/i));
+
+    await waitFor(() => expect(FUN_SERVICE.delete_clock).toHaveBeenCalledWith(99));
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+
+    expect(FUN_SERVICE.update).not.toHaveBeenCalled();
   }, 60000);
 });

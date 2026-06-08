@@ -1,7 +1,8 @@
+import { Fragment } from 'react';
 import { dateParser_dateDiff, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 
 import Icon from '@/components/icon';
-function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion }) {
+function FUN_CLOCK_CONTROL({ currentItem }) {
 
         // DATA GETTERS
         let _GET_CHILD_CLOCK = () => {
@@ -117,7 +118,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
         let _COMPONENT = () => {
             var _CLOCK = _GET_CHILD_CLOCK();
             var _COMPONENT = [];
-            _COMPONENT.push(<>
+            _COMPONENT.push(<Fragment key="main-events-header">
                 <div className="row text-center text-white ms-0">
                     <div className="col-3 border bg-primary text-primary-foreground">
                         <label className="fw-bold  ">Control de Proceso</label>
@@ -137,11 +138,11 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                         <label className="fw-bold">Eventos principales</label>
                     </div>
                 </div>
-            </>)
+            </Fragment>)
 
             // PRIMARY EVENTS
 
-            _COMPONENT.push(<>
+            _COMPONENT.push(<Fragment key="virtual-filing-event">
                 <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                     <div className="col-3 border border-primary">
                         <label><Icon name="check-circle" size={16} style={{ color: 'DarkBlue' }} /> Radicacion virtual</label>
@@ -153,7 +154,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                         <label>{currentItem.date}</label>
                     </div>
                 </div>
-            </>)
+            </Fragment>)
 
 
 
@@ -167,7 +168,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                         (_CLOCK[i].state >= 30)
                     )
                 )
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={`primary-clock-${_CLOCK[i].id || `${_CLOCK[i].state}-${_CLOCK[i].version}-${i}`}`}>
                         <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                             <div className="col-3" style={{ borderColor: _GET_COLOR_STATE(_CLOCK[i].state), borderStyle: 'solid', borderWidth: '0.5px' }}>
                                 <label>{_GET_ICON_CONTEXT(_CLOCK[i])} {_CLOCK[i].name}</label>
@@ -182,24 +183,24 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                                 <label>{dateParser_finalDate(_CLOCK[i].date_start, _GET_TIME_FOR_CLOCK_STATE(_CLOCK[i].state))} </label>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
             }
 
             // SECONDARY EVENTS
 
-            _COMPONENT.push(<>
+            _COMPONENT.push(<Fragment key="secondary-events-header">
                 <div className="row text-center text-dark ms-0 mb-1">
                     <div className="col bg-light">
                         <label className="fw-bold">Eventos Secundarios</label>
                     </div>
                 </div>
-            </>)
+            </Fragment>)
 
             // SIGN
             if (currentItem.fun_law) {
                 if (currentItem.fun_law.sign) {
                     let _sign = currentItem.fun_law.sign.split(',')
-                    if (_sign[1]) _COMPONENT.push(<>
+                    if (_sign[1]) _COMPONENT.push(<Fragment key="sign-event">
                         <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                             <div className="col-3" style={{ borderColor: 'Purple', borderStyle: 'solid', borderWidth: '0.5px' }}>
                                 <label> <Icon name="dot-circle" size={16} style={{ color: 'Purple' }} /> Radicacion de Valla</label>
@@ -211,14 +212,14 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                                 <label>{_sign[1]}</label>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
                 }
             }
 
             // NEIGHBOURS
             let _neighbours = currentItem.fun_3s;
             for (var i = 0; i < _neighbours.length; i++) {
-                if (_neighbours[i].alerted) _COMPONENT.push(<>
+                if (_neighbours[i].alerted) _COMPONENT.push(<Fragment key={`neighbour-alert-${_neighbours[i].id || i}`}>
                     <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                         <div className="col-3" style={{ borderColor: 'Orchid', borderStyle: 'solid', borderWidth: '0.5px' }}>
                             <label> <Icon name="dot-circle" size={16} style={{ color: 'Orchid' }} /> Vecino Notificado</label>
@@ -230,7 +231,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                             <label>{_neighbours[i].alerted}</label>
                         </div>
                     </div>
-                </>)
+                </Fragment>)
             }
 
 
@@ -238,7 +239,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
 
             for (var i = 0; i < _CLOCK.length; i++) {
                 if ((_CLOCK[i].state > 10 && _CLOCK[i].state < 15))
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={`record-clock-${_CLOCK[i].id || `${_CLOCK[i].state}-${_CLOCK[i].version}-${i}`}`}>
                         <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                             <div className="col-3" style={{ borderColor: _GET_COLOR_STATE(_CLOCK[i].state), borderStyle: 'solid', borderWidth: '0.5px' }}>
                                 <label>{_GET_ICON_CONTEXT(_CLOCK[i])} {_CLOCK[i].name}</label>
@@ -250,14 +251,14 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                                 <label>{_CLOCK[i].date_start}</label>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
             }
 
             //  REPORT REVIEW NOTIFICATION PROCESS
 
             for (var i = 0; i < _CLOCK.length; i++) {
                 if ((_CLOCK[i].state >= 31 && _CLOCK[i].state < 49))
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={`review-notification-clock-${_CLOCK[i].id || `${_CLOCK[i].state}-${_CLOCK[i].version}-${i}`}`}>
                         <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                             <div className="col-3" style={{ borderColor: _GET_COLOR_STATE(_CLOCK[i].state), borderStyle: 'solid', borderWidth: '0.5px' }}>
                                 <label>{_GET_ICON_CONTEXT(_CLOCK[i])} {_CLOCK[i].name}</label>
@@ -269,18 +270,18 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                                 <label>{_CLOCK[i].date_start}</label>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
             }
 
             // CLOSE PROCESS
 
-            _COMPONENT.push(<>
+            _COMPONENT.push(<Fragment key="negative-process-header">
                 <div className="row text-center text-dark ms-0 mb-1">
                     <div className="col bg-light">
                         <label className="fw-bold">Procesos de Desistimientos</label>
                     </div>
                 </div>
-            </>)
+            </Fragment>)
 
             let _LIST_NEGATIVE = []
             let _CLOCKS = _CLOCK;
@@ -303,7 +304,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
             */
             for (var i = 0; i < _LIST_SORTED.length; i++) {
                 if (_LIST_SORTED[i].state < -4)
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={`negative-clock-${_LIST_SORTED[i].id || `${_LIST_SORTED[i].state}-${_LIST_SORTED[i].version}-${i}`}`}>
                         <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                             <div className="col-3" style={{ borderColor: _GET_COLOR_STATE(_LIST_SORTED[i].state), borderStyle: 'solid', borderWidth: '0.5px' }}>
                                 <label>{_GET_ICON_CONTEXT(_LIST_SORTED[i])} {_LIST_SORTED[i].name}</label>
@@ -321,7 +322,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                                 <label>{_GET_TIME_FOR_NEGATIVE_PROCESS(_LIST_SORTED[i])}</label>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
             }
 
             return <>{_COMPONENT}</>
