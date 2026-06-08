@@ -2,7 +2,6 @@ import { useState, useMemo, Fragment, useId } from 'react';
 import {
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   getExpandedRowModel,
@@ -57,9 +56,6 @@ export function DataTableBridge({
   fixedHeaderScrollHeight,
   className,
   title,
-  // Ignored props from react-data-table-component
-  customStyles,     // eslint-disable-line no-unused-vars
-  ...rest           // eslint-disable-line no-unused-vars
 }) {
   const [sorting, setSorting] = useState(() => {
     if (defaultSortFieldId != null) {
@@ -87,6 +83,11 @@ export function DataTableBridge({
           id,
           header: col.name || '',
           enableSorting: !!col.sortable,
+          meta: {
+            button: Boolean(col.button),
+            center: Boolean(col.center || col.button),
+            right: Boolean(col.right),
+          },
         };
 
         // Accessor
@@ -196,6 +197,28 @@ export function DataTableBridge({
     : [paginationPerPage];
   const rowsPerPageText = paginationComponentOptions?.rowsPerPageText || 'Filas por página:';
 
+  const getColumnStyle = (columnDef) => {
+    const style = {};
+
+    if (columnDef.size) style.width = columnDef.size;
+    if (columnDef.minSize) style.minWidth = columnDef.minSize;
+    if (columnDef.maxSize) style.maxWidth = columnDef.maxSize;
+
+    return Object.keys(style).length ? style : undefined;
+  };
+
+  const getColumnAlignmentClass = (columnDef) => {
+    if (columnDef.meta?.right) return 'text-right';
+    if (columnDef.meta?.center) return 'text-center';
+    return '';
+  };
+
+  const getHeaderContentAlignmentClass = (columnDef) => {
+    if (columnDef.meta?.right) return 'justify-end';
+    if (columnDef.meta?.center) return 'justify-center';
+    return '';
+  };
+
   return (
     <div className={cn('space-y-2', className)}>
       {!noHeader && title && (
@@ -223,12 +246,13 @@ export function DataTableBridge({
                       className={cn(
                         cellPadding,
                         'font-semibold text-[0.6875rem] uppercase tracking-wide text-muted-foreground',
+                        getColumnAlignmentClass(header.column.columnDef),
                         header.column.getCanSort() && 'cursor-pointer select-none hover:text-foreground transition-colors'
                       )}
-                      style={header.column.columnDef.size ? { width: header.column.columnDef.size } : undefined}
+                      style={getColumnStyle(header.column.columnDef)}
                       onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
                     >
-                      <div className="flex items-center gap-1">
+                      <div className={cn('flex items-center gap-1', getHeaderContentAlignmentClass(header.column.columnDef))}>
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                         {header.column.getCanSort() && (
                           <ArrowUpDown className="h-3 w-3 opacity-50" />
@@ -280,8 +304,14 @@ export function DataTableBridge({
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className={cn('rdt_TableCell', cellPadding, 'align-middle')}
-                        style={cell.column.columnDef.size ? { width: cell.column.columnDef.size } : undefined}
+                        className={cn(
+                          'rdt_TableCell',
+                          cellPadding,
+                          'align-middle',
+                          getColumnAlignmentClass(cell.column.columnDef),
+                          cell.column.columnDef.meta?.button && 'whitespace-nowrap'
+                        )}
+                        style={getColumnStyle(cell.column.columnDef)}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>

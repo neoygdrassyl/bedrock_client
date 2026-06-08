@@ -27,4 +27,30 @@ describe('DataTable bridge legacy compatibility', () => {
 
     expect(screen.getByText('NO HAY INFORMACION')).toBeInTheDocument();
   });
+
+  it('preserves legacy action-column sizing and alignment semantics', () => {
+    render(
+      <DataTable
+        columns={[
+          { name: 'Nombre', selector: (row) => row.name },
+          {
+            name: 'ACCION',
+            button: true,
+            center: true,
+            minWidth: '120px',
+            cell: () => <button type="button">Editar</button>,
+          },
+        ]}
+        data={[{ id: 1, name: 'Alpha' }]}
+      />,
+    );
+
+    const actionHeader = screen.getByText('ACCION').closest('th');
+    const actionCell = screen.getByRole('button', { name: 'Editar' }).closest('td');
+
+    expect(actionHeader).toHaveStyle({ minWidth: '120px' });
+    expect(actionCell).toHaveStyle({ minWidth: '120px' });
+    expect(actionCell).toHaveClass('text-center');
+    expect(actionCell).toHaveClass('whitespace-nowrap');
+  });
 });
