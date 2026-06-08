@@ -1,21 +1,26 @@
 import dayjs from 'dayjs';
 import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 import FUN_SERVICE from "../../../../services/fun.service"
 import FUN_CLOCKS_EMAILS from './fun_clocks_email.component';
-import { dateParser_finalDate, dateParser_timePassed } from '../../../../components/customClasses/typeParse';
+import { dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import { TabPane } from '@/components/ui/tab-pane';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
+const NEGATIVE_PROCESS_START_STATE = -50;
+const LEGACY_VOLUNTARY_DESISTIMIENTO_STATE = -5;
+const NEGATIVE_PROCESS_END_STATE = -30;
+const NEGATIVE_PROCESS_VERSIONS = [-1, -2, -3, -4, -5, -6];
+
 
 function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg, currentVersion, translation }) {
         const [fillActive, setFillActive] = useState(null);
-        const [edit, setEdit] = useState(false);
+        const [edit] = useState(false);
 
     useEffect(() => {
 
@@ -39,8 +44,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             setFillActive(String(currentItem.state));
         } else {
             // Seleccionar primer tab que tenga datos, o el primero por defecto
-            const versions = ['-1', '-2', '-3', '-4', '-5', '-6'];
-            const activeVersion = versions.find(v => _GET_CLOCK_STATE_VERSION(-50, v) || _GET_CLOCK_STATE_VERSION(-5, v));
+            const activeVersion = NEGATIVE_PROCESS_VERSIONS.find(v => _GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, v) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, v));
             setFillActive(activeVersion ? String(Number(activeVersion) - 100) : '-101');
         }
         autoSaveMissingStartClock();
@@ -67,12 +71,10 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
 
     // --- LOGICA DE AUTOGUARDADO ---
     const autoSaveMissingStartClock = () => {
-        const versionsToCheck = [-1, -2, -3, -4, -5, -6]; // Versiones posibles de desistimiento
-
-        versionsToCheck.forEach(version => {
-            let clock50 = get_clock_state_version(-50, version);
-            let clock5 = get_clock_state_version(-5, version);
-            let clock30 = get_clock_state_version(-30, version);
+        NEGATIVE_PROCESS_VERSIONS.forEach(version => {
+            let clock50 = get_clock_state_version(NEGATIVE_PROCESS_START_STATE, version);
+            let clock5 = get_clock_state_version(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, version);
+            let clock30 = get_clock_state_version(NEGATIVE_PROCESS_END_STATE, version);
 
             // SI EXISTE -5 (Citación) PERO NO EXISTE -50 (Inicio Desistimiento) Y EL PROCESO NO HA FINALIZADO
             if (clock5 && !clock50 && !clock30) {
@@ -84,12 +86,12 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 formDataClock.set('name', "INICIO DEL PROCESO DE DESISTIMIENTO");
                 // Usamos una descripción generica o copiamos la del -5
                 formDataClock.set('desc', "Inicio de proceso generado automáticamente desde Citación."); 
-                formDataClock.set('state', -50);
+                formDataClock.set('state', NEGATIVE_PROCESS_START_STATE);
                 formDataClock.set('version', version);
                 formDataClock.set('fun0Id', currentItem.id);
 
                 // Llamamos a manage_clock en modo silencioso (false)
-                manage_clock(false, -50, version, formDataClock);
+                manage_clock(false, NEGATIVE_PROCESS_START_STATE, version, formDataClock);
             }
         });
     }
@@ -257,47 +259,48 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
         }
 
         let _CHECK_IF_PROCESS = () => {
-            if ((_GET_CLOCK_STATE_VERSION(-50, -1) || _GET_CLOCK_STATE_VERSION(-5, -1)) && !_GET_CLOCK_STATE_VERSION(-30, -1)) return true;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -2) || _GET_CLOCK_STATE_VERSION(-5, -2)) && !_GET_CLOCK_STATE_VERSION(-30, -2)) return true;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -3) || _GET_CLOCK_STATE_VERSION(-5, -3)) && !_GET_CLOCK_STATE_VERSION(-30, -3)) return true;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -4) || _GET_CLOCK_STATE_VERSION(-5, -4)) && !_GET_CLOCK_STATE_VERSION(-30, -4)) return true;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -5) || _GET_CLOCK_STATE_VERSION(-5, -5)) && !_GET_CLOCK_STATE_VERSION(-30, -5)) return true;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -6) || _GET_CLOCK_STATE_VERSION(-5, -6)) && !_GET_CLOCK_STATE_VERSION(-30, -6)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -1) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -1)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -1)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -2) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -2)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -2)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -3) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -3)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -3)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -4) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -4)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -4)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -5) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -5)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -5)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -6) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -6)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -6)) return true;
             return false;
         }
         let _CHECK_IF_PROCESS_ENDED = (version) => {
-            if ((_GET_CLOCK_STATE_VERSION(-50, version) || _GET_CLOCK_STATE_VERSION(-5, version)) && _GET_CLOCK_STATE_VERSION(-30, version)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, version) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, version)) && _GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, version)) return true;
             return false;
         }
         let _GET_DEFAULT_PROCESS = () => {
             let OngoingProcess = _GET_ONGOING_PROCESS();
-            let _clock = _GET_CLOCK_STATE_VERSION(-5, OngoingProcess)
+            let _clock = _GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, OngoingProcess) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, OngoingProcess) || {}
+            let startDate = _clock.date_start ?? '';
             const defaultProcess = {
-                "-5": { "name": _clock.name, "desc": _clock.desc, "date_start": _clock.date_start, "date_end": '' },
-                "-6": { "name": "ENVIO DE EMAIL", "desc": "Notificacion mediante email", "date_start": '', "date_end": _clock.date_start },
-                "-7": { "name": "EL SOLICITANTE SE PRESENTA", "desc": "El responsable de la solicitud se ha presentado", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 5) },
-                "-8": { "name": "NOTIFICACION POR AVISO", "desc": "El solicitante no se presento y se le informo mediante aviso (email / Mensajeria)", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 5) },
-                "-10": { "name": "INTERPONER RECURSO", "desc": "El Solicitante presenta Recurso", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 15) },
-                "-11": { "name": "RECURSO NO INTERPONIDO", "desc": "El Solicitante no interpuso el recurso, la solicititud es archivada", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 15) },
-                "-17": { "name": "LA CURADURIA DA RESPUESTA", "desc": "La curaduria da respuesta al recurso interponido", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 45) },
-                "-18": { "name": "DECLARA: CONTINUA", "desc": "La curaduria declara que continuara con el proceso", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 45) },
-                "-19": { "name": "DECLARA: NO CONTINUA", "desc": "La curaduria declara que NO continuara con el proceso, la solicitud se archiva", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 45) },
-                "-20": { "name": "CITACION PARA NOTIFICACION PERSONA (2° Vez)", "desc": "Se cita al solicitante para informarle de la secisicion (2° Vez)", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 45) },
-                "-21": { "name": "NOTIFICACION POR AVISO (2° Vez)", "desc": "Notificacion mediante email (2° Vez)", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 45) },
-                "-22": { "name": "EL SOLICITANTE SE PRESENTA (2° Vez)", "desc": "El responsable de la solicitud se ha presentado (2° Vez)", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 50) },
-                "-30": { "name": "FINALIZACION", "desc": "El proceso de desistimiento ha finalizado oficialemnte", "date_start": '', "date_end": dateParser_finalDate(_clock.date_start, 50) }
+                "-5": { "name": _clock.name ?? ClockDictionary[NEGATIVE_PROCESS_START_STATE].name, "desc": _clock.desc ?? ClockDictionary[NEGATIVE_PROCESS_START_STATE].desc, "date_start": startDate, "date_end": '' },
+                "-6": { "name": "ENVIO DE EMAIL", "desc": "Notificacion mediante email", "date_start": '', "date_end": startDate },
+                "-7": { "name": "EL SOLICITANTE SE PRESENTA", "desc": "El responsable de la solicitud se ha presentado", "date_start": '', "date_end": dateParser_finalDate(startDate, 5) },
+                "-8": { "name": "NOTIFICACION POR AVISO", "desc": "El solicitante no se presento y se le informo mediante aviso (email / Mensajeria)", "date_start": '', "date_end": dateParser_finalDate(startDate, 5) },
+                "-10": { "name": "INTERPONER RECURSO", "desc": "El Solicitante presenta Recurso", "date_start": '', "date_end": dateParser_finalDate(startDate, 15) },
+                "-11": { "name": "RECURSO NO INTERPONIDO", "desc": "El Solicitante no interpuso el recurso, la solicititud es archivada", "date_start": '', "date_end": dateParser_finalDate(startDate, 15) },
+                "-17": { "name": "LA CURADURIA DA RESPUESTA", "desc": "La curaduria da respuesta al recurso interponido", "date_start": '', "date_end": dateParser_finalDate(startDate, 45) },
+                "-18": { "name": "DECLARA: CONTINUA", "desc": "La curaduria declara que continuara con el proceso", "date_start": '', "date_end": dateParser_finalDate(startDate, 45) },
+                "-19": { "name": "DECLARA: NO CONTINUA", "desc": "La curaduria declara que NO continuara con el proceso, la solicitud se archiva", "date_start": '', "date_end": dateParser_finalDate(startDate, 45) },
+                "-20": { "name": "CITACION PARA NOTIFICACION PERSONA (2° Vez)", "desc": "Se cita al solicitante para informarle de la secisicion (2° Vez)", "date_start": '', "date_end": dateParser_finalDate(startDate, 45) },
+                "-21": { "name": "NOTIFICACION POR AVISO (2° Vez)", "desc": "Notificacion mediante email (2° Vez)", "date_start": '', "date_end": dateParser_finalDate(startDate, 45) },
+                "-22": { "name": "EL SOLICITANTE SE PRESENTA (2° Vez)", "desc": "El responsable de la solicitud se ha presentado (2° Vez)", "date_start": '', "date_end": dateParser_finalDate(startDate, 50) },
+                "-30": { "name": "FINALIZACION", "desc": "El proceso de desistimiento ha finalizado oficialemnte", "date_start": '', "date_end": dateParser_finalDate(startDate, 50) }
             }
 
             return defaultProcess
         }
         let _GET_ONGOING_PROCESS = () => {
             let OngoingProcess = 0;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -1) || _GET_CLOCK_STATE_VERSION(-5, -1)) && !_GET_CLOCK_STATE_VERSION(-30, -1)) OngoingProcess = -1;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -2) || _GET_CLOCK_STATE_VERSION(-5, -2)) && !_GET_CLOCK_STATE_VERSION(-30, -2)) OngoingProcess = -2;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -3) || _GET_CLOCK_STATE_VERSION(-5, -3)) && !_GET_CLOCK_STATE_VERSION(-30, -3)) OngoingProcess = -3;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -4) || _GET_CLOCK_STATE_VERSION(-5, -4)) && !_GET_CLOCK_STATE_VERSION(-30, -4)) OngoingProcess = -4;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -5) || _GET_CLOCK_STATE_VERSION(-5, -5)) && !_GET_CLOCK_STATE_VERSION(-30, -5)) OngoingProcess = -5;
-            if ((_GET_CLOCK_STATE_VERSION(-50, -6) || _GET_CLOCK_STATE_VERSION(-5, -6)) && !_GET_CLOCK_STATE_VERSION(-30, -6)) OngoingProcess = -6;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -1) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -1)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -1)) OngoingProcess = -1;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -2) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -2)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -2)) OngoingProcess = -2;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -3) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -3)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -3)) OngoingProcess = -3;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -4) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -4)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -4)) OngoingProcess = -4;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -5) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -5)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -5)) OngoingProcess = -5;
+            if ((_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, -6) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, -6)) && !_GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_END_STATE, -6)) OngoingProcess = -6;
             return OngoingProcess;
         }
         let _CHILD_6_SELECT = () => {
@@ -341,7 +344,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 }
             }
 
-            let startClock = _GET_CLOCK_STATE_VERSION('-50', version) || _GET_CLOCK_STATE_VERSION('-5', version);
+            let startClock = _GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, version) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, version);
             if (!startClock) return '';
 
             if (state == '-6' || state == '-5') {
@@ -407,7 +410,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
         }
         let _CANCEL_PROCESS = () => {
             let ongoingVersion = _GET_ONGOING_PROCESS();
-            let startClock = _GET_CLOCK_STATE_VERSION(-50, ongoingVersion) || _GET_CLOCK_STATE_VERSION(-5, ongoingVersion);
+            let startClock = _GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, ongoingVersion) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, ongoingVersion);
             let processLabel = NegativePRocessTitle[String(ongoingVersion)] || 'DESCONOCIDO';
             return (
                 <form id="fun_clocks_negative_cancel" onSubmit={cancel_active_process}>
@@ -599,7 +602,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             if (NegativeState == '-4') { stepsToCheck.unshift('-4'); }
             let EVENT_CLOCKS = [];
 
-            let startClockLegacy = _GET_CLOCK_STATE_VERSION('-5', NegativeState);
+            let startClockLegacy = _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, NegativeState);
 
             stepsToCheck.map(value => {
                 let newClock = {
@@ -689,7 +692,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             let worker = document.getElementById('fun_cloclneg_3').value;
             let date = document.getElementById('fun_cloclneg_2').value;
 
-            let alreadyExist = _GET_CLOCK_STATE_VERSION(-50, process) || _GET_CLOCK_STATE_VERSION(-5, process);
+            let alreadyExist = _GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, process) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, process);
             if (alreadyExist) {
                 swalError({ title: 'ESTE PROCESO YA EXISTE', text: 'Ya existe un proceso de desestimiento para este esta solicitud que coincide con el motivo de desestimiento.' });
                 return 1;
@@ -720,7 +723,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 if (result.isConfirmed) {
                     formDataClock = new FormData();
 
-                    let state = -50
+                    let state = NEGATIVE_PROCESS_START_STATE
                     formDataClock.set('date_start', date);
                     formDataClock.set('name', "INICIO DEL PROCESO DE DESISTIMIENTO");
                     formDataClock.set('desc', "Inicio de proceso abierto por: " + worker);
@@ -737,19 +740,11 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 }
             });
         }
-        let cancel_process = (e) => {
-            e.preventDefault();
-            formData = new FormData();
-            let new_state = document.getElementById('fun_clock_cancel_1').value;
-            formData.set('state', new_state);
-            manage_fun_0(true, formData)
-        }
-
         let cancel_active_process = (e) => {
             e.preventDefault();
             let version = document.getElementById('fun_cancel_version').value;
             let new_state = document.getElementById('fun_clock_cancel_1').value;
-            let startClock = _GET_CLOCK_STATE_VERSION(-50, version) || _GET_CLOCK_STATE_VERSION(-5, version);
+            let startClock = _GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, version) || _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, version);
 
             swalConfirm({
                 title: '¿CANCELAR PROCESO DE DESISTIMIENTO?',
@@ -764,9 +759,15 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         manage_fun_0(true, formData);
                     };
                     if (startClock?.id) {
-                        FUN_SERVICE.delete_clock(startClock.id)
-                            .then(doStateChange)
-                            .catch(e => { console.log(e); doStateChange(); });
+            FUN_SERVICE.delete_clock(startClock.id)
+                .then(doStateChange)
+                .catch(() => {
+                    swalError({
+                        title: 'NO SE PUDO CANCELAR EL PROCESO',
+                        text: 'No se restableció el estado del expediente porque no fue posible eliminar el reloj de inicio del desistimiento.',
+                                    icon: 'warning',
+                                });
+                            });
                     } else {
                         doStateChange();
                     }
@@ -978,8 +979,8 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
         const visibleTabs = hasActiveProcess
             ? tabDefs.filter(t => t.tabId === activeTabForOngoing)
             : tabDefs.filter(t =>
-                _GET_CLOCK_STATE_VERSION(-50, t.version) ||
-                _GET_CLOCK_STATE_VERSION(-5, t.version) ||
+                _GET_CLOCK_STATE_VERSION(NEGATIVE_PROCESS_START_STATE, t.version) ||
+                _GET_CLOCK_STATE_VERSION(LEGACY_VOLUNTARY_DESISTIMIENTO_STATE, t.version) ||
                 true // mostrar todas para facilitar inspección
               );
 
