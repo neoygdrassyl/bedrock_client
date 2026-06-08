@@ -767,6 +767,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                     if (response.data === 'OK') {
                         getCurrentItem(currentItem.id);
                         loadAsignClocks(currentItem.id);
+                        retrieveWorkerList();
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
