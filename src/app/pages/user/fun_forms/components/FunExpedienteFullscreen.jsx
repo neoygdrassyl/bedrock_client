@@ -452,6 +452,13 @@ function getReportItemsForExpediente(expediente, version) {
   return isPropertyHorizontalExpediente(expediente, version) ? [PH_REPORT_ITEM] : STANDARD_REPORT_ITEMS;
 }
 
+function getSectionItemForExpediente(item, isPH) {
+  if (!isPH) return item;
+  if (item.id === 'informes') return { ...item, label: 'Informe P.H.' };
+  if (item.id === 'expedicion') return { ...item, label: 'Expedición P.H.' };
+  return item;
+}
+
 function isEditableLegacyExpediente(expediente) {
   if (typeof expediente?.state !== 'number') {
     return false;
@@ -488,7 +495,7 @@ function getVisibleSectionGroups(expediente, version) {
         if (item.requiresPublicidad) return showPublicidad;
         if (item.requiresEdit) return showActualizar;
         return true;
-      }),
+      }).map((item) => getSectionItemForExpediente(item, isPH)),
     }))
     .filter((group) => group.items.length > 0);
 }

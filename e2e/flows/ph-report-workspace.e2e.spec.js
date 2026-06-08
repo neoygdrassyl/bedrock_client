@@ -64,10 +64,11 @@ test.describe('E2E: Flujo de Informe P.H. — fixes de UX y navegación', () => 
     // 6. Validar que estamos en el workspace y NO en un modal legacy
     await expect(newPage).toHaveURL(/\/funmanage\/expediente\/.*\?section=informes&report=ph/);
     await expect(newPage.getByRole('dialog', { name: /Detalle del expediente/i })).toBeVisible();
-    await expect(newPage.getByText('Informe P.H.')).toBeVisible();
+    await expect(newPage.getByRole('button', { name: /^Informe P\.H\.$/i }).first()).toBeVisible();
+    await expect(newPage.getByRole('button', { name: /^Informes$/i })).toHaveCount(0);
 
     // 7. Validar que la barra de navegación del workspace muestra "Informe P.H."
-    await expect(newPage.locator('button', { hasText: 'Informe P.H.' })).toBeVisible();
+    await expect(newPage.locator('button', { hasText: 'Informe P.H.' }).first()).toBeVisible();
 
     await newPage.close();
   });
@@ -106,7 +107,8 @@ test.describe('E2E: Flujo de Informe P.H. — fixes de UX y navegación', () => 
 
     await expect(newPage).toHaveURL(/\/funmanage\/expediente\/68001-1-26-0001\?section=expedicion/);
     await expect(newPage.getByRole('dialog', { name: /Detalle del expediente/i })).toBeVisible();
-    await expect(newPage.getByRole('button', { name: /^Expedici[oó]n$/i })).toBeVisible();
+    await expect(newPage.getByRole('button', { name: /^Expedici[oó]n P\.H\.$/i })).toBeVisible();
+    await expect(newPage.getByRole('button', { name: /^Expedici[oó]n$/i })).toHaveCount(0);
     await expect(authenticatedPage.locator('.ReactModal__Content:visible')).toHaveCount(0);
 
     await newPage.close();

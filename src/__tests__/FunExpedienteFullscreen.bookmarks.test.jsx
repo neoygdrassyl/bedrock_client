@@ -205,7 +205,10 @@ describe('FunExpedienteFullscreen bookmarks', () => {
       />
     );
 
-    expect(screen.getByRole('button', { name: /informe p\.h\./i })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /informe p\.h\./i }).length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByRole('button', { name: /^informes$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /expedici[oó]n p\.h\./i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^expedici[oó]n$/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /jurídico/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /arquitectónico/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /estructural/i })).not.toBeInTheDocument();
