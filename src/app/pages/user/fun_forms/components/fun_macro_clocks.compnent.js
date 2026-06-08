@@ -512,6 +512,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         props.retrieveMacroClocks();
+                        props.retrieveMacro(false);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
@@ -573,6 +574,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         props.retrieveMacroClocks();
+                        props.retrieveMacro(false);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
