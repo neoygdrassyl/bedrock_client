@@ -5,7 +5,7 @@ import { regexChecker_isOA_2 } from '../../../../components/customClasses/typePa
 import './fun_moduleNav_enhanced.css';
 import { Icon } from '@/components/icon';
 
-function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGATION, pqrsxfun }) {
+function FUN_MODULE_NAV({ currentItem, FROM, NAVIGATION, pqrsxfun }) {
     // Check if CSS variable is already set to determine initial state
     const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
     const [isCollapsed, setIsCollapsed] = useState(currentWidth === '60px');
@@ -65,11 +65,11 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
         const editGroup = [];
         editGroup.push({ id: 'archive', icon: 'Archive', label: 'DOCUMENTOS', from: 'archive' });
         
-        if (currentItem.state != 101 && currentItem.state <= 200) {
+        if (currentItem.state !== 101 && currentItem.state <= 200) {
             editGroup.push({ id: 'edit', icon: 'FolderOpen', label: 'ACTUALIZAR', from: 'edit' });
             editGroup.push({ id: 'check', icon: 'CheckSquare', label: 'CHECKEO', from: 'check' });
             
-            if (!isPH && !isOA && rules[0] != 1) {
+            if (!isPH && !isOA && rules[0] !== '1') {
                 editGroup.push({ 
                     id: 'alert', 
                     icon: 'Signpost', 
@@ -89,7 +89,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
         }
 
         // Grupo 3: Informes (solo si el estado lo permite)
-        if (currentItem.state != 101 && currentItem.state <= 200) {
+        if (currentItem.state !== 101 && currentItem.state <= 200) {
             const reportsItems = [];
 
             if (!isPH) {
@@ -98,7 +98,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                 if (!isOA) {
                     reportsItems.push({ id: 'record_arc', icon: 'Building', label: 'INF. ARQ.', from: 'record_arc' });
                     
-                    if (rules[1] != 1) {
+                    if (rules[1] !== '1') {
                         reportsItems.push({ id: 'record_eng', icon: 'Settings', label: 'INF. ESTRUCT.', from: 'record_eng' });
                     }
                 }
@@ -121,7 +121,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                 finalItems.push({ id: 'record_review', icon: 'FileText', label: 'ACTA', from: 'record_review' });
             }
             
-            finalItems.push({ id: 'expedition', icon: 'FileText', label: 'EXPEDICIÓN', from: 'expedition' });
+            finalItems.push({ id: 'expedition', icon: 'FileText', label: isPH ? 'EXPEDICIÓN P.H.' : 'EXPEDICIÓN', from: 'expedition' });
 
             if (finalItems.length > 0) {
                 navGroups.push({
@@ -140,6 +140,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                     <div className={`fun-nav-sidebar ${isCollapsed ? 'collapsed' : 'expanded'}`}>
                         {/* Toggle Button */}
                         <button 
+                            type="button"
                             className="fun-nav-toggle"
                             onClick={toggleSidebar}
                             aria-label={isCollapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'}
@@ -185,6 +186,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                         {/* Botón de cerrar */}
                         <div className="fun-nav-section">
                             <button
+                                type="button"
                                 onClick={() => NAVIGATION(currentItem, "close", FROM)}
                                 className={`fun-nav-item btn-close-module`}
                                 data-tooltip="CERRAR"
@@ -203,6 +205,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                                     
                                     return (
                                         <button
+                                            type="button"
                                             key={item.id}
                                             onClick={() => FROM !== item.from && NAVIGATION(currentItem, item.id, FROM)}
                                             className={`fun-nav-item ${isActive ? 'active' : ''} btn-${itemColor}`}
