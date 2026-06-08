@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { render, act } from '@testing-library/react';
+import { render, act, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // ─── External mocks ──────────────────────────────────────────────────────────
@@ -208,6 +208,65 @@ describe('FunReports — Render (fun_g_reports, fun_g_reportMaster, fun_report_d
       ));
     });
     expect(container).toBeTruthy();
+  }, 60000);
+
+  test('fun_g_reports shows assigned structural reviewer and explicit missing revision state', async () => {
+    const itemWithAssignedStructuralReviewer = {
+      ...minimalCurrentItem,
+      fun_1s: [
+        {
+          id: 1,
+          tipo: 'D',
+          tramite: 'A',
+          m_urb: '',
+          m_sub: '',
+          m_lic: 'A',
+          usos: 'A',
+          area: 'A',
+          vivienda: 'A',
+          cultural: 'B',
+          regla_1: '',
+          regla_2: '',
+        },
+      ],
+      fun_clocks: [
+        { id: 1, state: 12, version: 100, date_start: '2024-01-05', desc: 'Asignación estructural' },
+        { id: 2, state: 12, version: 200, date_start: '', resolver_context: '', desc: '' },
+        { id: 3, state: 12, version: 300, date_start: '', desc: '' },
+      ],
+      record_review: { check: 1 },
+      record_eng: {
+        version: 1,
+        worker_name: 'Carlos Ulloa',
+        worker_id: 'E001',
+        date_asign: '2024-01-05',
+        worker_prev: '',
+        record_eng_reviews: [],
+      },
+    };
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <FUN_G_REPORTS
+            translation={{}}
+            swaMsg={swaMsg}
+            globals={{ id: '1' }}
+            currentItem={itemWithAssignedStructuralReviewer}
+            currentVersion={1}
+            nomenclature="CUB1-2024-0001"
+            noLaw={true}
+            noArc={true}
+            noEng={false}
+            id={1}
+            textAlign="left"
+          />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText('Carlos Ulloa')).toBeInTheDocument();
+    expect(screen.getByText(/Sin revisión registrada/i)).toBeInTheDocument();
   }, 60000);
 
   // ── fun_g_reportMaster ────────────────────────────────────────────────────

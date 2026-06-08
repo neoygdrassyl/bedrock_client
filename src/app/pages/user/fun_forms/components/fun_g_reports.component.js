@@ -118,7 +118,10 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                 return asigns.map((value, index) => <span key={index}>{res[reviews[index]] ?? res['-1']}</span>)
             } else return res[_REVIEW] ?? res['-1']
         }
-        let _GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS) => {
+        let _GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS, hasRegisteredReview = true) => {
+            if (!hasRegisteredReview) {
+                return <span className="text-muted small">Sin revisión registrada</span>;
+            }
             let revies = _REVIEW ?? [-1, -1]
             let res = {
                 '-1': <label className=" me-1"><Icon name="dot-circle" size={16} /></label>,
@@ -333,6 +336,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                         inform: inform_f[i],
                         asign_date: asign_f[i],
                         worker: review.worker_name,
+                        hasRegisteredReview: Boolean(review.id),
                         review: revc_f[i],
                         date: review_f[i],
                         icon: <Icon name="cogs" size={16} className="me-2" />,
@@ -378,6 +382,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                     <div className="col border text-center">
                         <h5 className="fw-normal">{value.asign ||value.worker }</h5>
+                        {value.class == 'eng' && value.asign ? <small className="text-muted">Revisor estructural asignado</small> : ''}
                     </div>
                     <div className="col border text-center">
                         <h5 className="fw-normal">{value.process}</h5>
@@ -390,7 +395,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                     <div className="col-1 border text-center">
                         <label className="">{value.class == 'eng' ?
-                            _GET_REVIEW_ENG(value.review)
+                            _GET_REVIEW_ENG(value.review, undefined, undefined, value.hasRegisteredReview)
                             : _GET_REVIEW(value.review)}
                         </label>
                     </div>

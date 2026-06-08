@@ -112,13 +112,18 @@ function RECORD_ENG_REVIEW(props) {
     }
     const CREATE_CHECK = async (_detail, chekcs, _currentItem, _headers, _date) => {
         let swaMsg = props.swaMsg;
-        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         const currentItem = _currentItem;
         const id_public = currentItem.id_public;
 
         let model = currentItem.model
         if (!model) return swalError({ title: 'SOLICITUD SIN MODELO', text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.' });
+        const assignedStructuralReviewer = props.currentRecord?.worker_name || currentItem.record_eng?.worker_name;
+        if (!assignedStructuralReviewer) return swalError({ title: 'INFORME ESTRUCTURAL SIN REVISOR', text: 'Debe asignar el profesional revisor estructural antes de generar este documento.' });
+        const currentReview = _GET_REVIEW();
+        if (!currentReview.id) return swalError({ title: 'SIN REVISIÓN ESTRUCTURAL REGISTRADA', text: 'Debe registrar la revisión estructural de esta versión antes de generar el informe.' });
+
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
         if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
@@ -389,6 +394,7 @@ function RECORD_ENG_REVIEW(props) {
         }
         let _COMPONENT_REVIEW = () => {
             let _CHILD = _GET_REVIEW();
+            const hasRegisteredReview = Boolean(_CHILD.id);
 
             let _RR = _GET_RECORD_REVIEW();
 
@@ -410,6 +416,9 @@ function RECORD_ENG_REVIEW(props) {
                 {!ALLOW_REVIEW ? <div className="alert alert-danger">
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 4.1.1 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
+                </div> : ''}
+                {!hasRegisteredReview ? <div className="alert alert-warning">
+                    Sin revisión registrada para esta versión. Revisor estructural asignado: {currentRecord.worker_name || 'Sin revisor asignado'}.
                 </div> : ''}
                 <div className="row border bg-primary text-primary-foreground py-1 fw-bold">
                     <div className="col">
