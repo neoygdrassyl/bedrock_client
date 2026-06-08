@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 
 import FUN_SERVICE from '../../../services/fun.service';
@@ -51,10 +51,10 @@ function EXPEDITION(props) {
     const [loaded, setLoaded] = useState(false);
     const [pqrsxfun, setPqrsxfun] = useState(false);
     const [recordArc, setRecordArc] = useState(null);
-    const [outCodes, setOutCodes] = useState([]);
+    const [, setOutCodes] = useState([]);
     const [currentItem, setCurrentItem] = useState(null);
 
-    const requestOutCodes = (id) => {
+    const requestOutCodes = useCallback((id) => {
         CUSTOM_DATA_SERVICE.loadDictionary_cub_id(id)
             .then(response => {
                 setOutCodes(response.data);
@@ -62,9 +62,9 @@ function EXPEDITION(props) {
             .catch(e => {
                 console.log(e);
             });
-    };
+    }, []);
 
-    const retrievePQRSxFUN = (id_public) => {
+    const retrievePQRSxFUN = useCallback((id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
                 setPqrsxfun(response.data);
@@ -72,9 +72,9 @@ function EXPEDITION(props) {
             .catch(e => {
                 console.log(e);
             });
-    };
+    }, []);
 
-    const retrieveItem = (id) => {
+    const retrieveItem = useCallback((id) => {
         FUN_SERVICE.get(id)
             .then(response => {
                 setCurrentItem(response.data);
@@ -85,9 +85,9 @@ function EXPEDITION(props) {
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
-    };
+    }, [requestOutCodes, retrievePQRSxFUN]);
 
-    const setItem_Record = () => {
+    const setItem_Record = useCallback(() => {
         EXPEDITION_SERVICE.getRecord(currentId)
             .then(response => {
                 if (response.data.length < 1) {
@@ -104,7 +104,7 @@ function EXPEDITION(props) {
                 console.log(e);
                 swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
-    };
+    }, [currentId, swaMsg.generic_eror_title, swaMsg.generic_error_text]);
 
     const requestUpdateRecord = (id) => {
         EXPEDITION_SERVICE.getRecord(id)
@@ -128,7 +128,7 @@ function EXPEDITION(props) {
         retrieveItem(id);
     };
 
-    const setItem_RecordArc = () => {
+    const setItem_RecordArc = useCallback(() => {
         RECORD_LAW_SERVICE.getRecord(currentId)
             .then(response => {
                 if (response.data.length < 1) {
@@ -140,7 +140,7 @@ function EXPEDITION(props) {
             .catch(e => {
                 console.log(e);
             });
-    };
+    }, [currentId]);
 
     const closeModal = () => {
         closeModalProp();
@@ -151,7 +151,7 @@ function EXPEDITION(props) {
         setItem_Record();
         retrieveItem(currentId);
         setItem_RecordArc();
-    }, []);
+    }, [currentId, retrieveItem, setItem_Record, setItem_RecordArc]);
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -183,6 +183,8 @@ function EXPEDITION(props) {
         }
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : false)
         let isPH = () => regexChecker_isPh(currentItem ? _GET_CHILD_1() : false, true)
+        const isOtherActuation = currentItem ? conOA() : false;
+        const isPropertyHorizontal = currentItem ? isPH() : false;
         // DATA CONVERTERS
         // JSX CONTROLLERS
 
@@ -225,7 +227,7 @@ function EXPEDITION(props) {
                                     requestUpdate={requestUpdate}
                                     requestUpdateRecord={requestUpdateRecord} />
 
-                                    {!conOA() && !isPH() ? <>
+                                    {!isOtherActuation && !isPropertyHorizontal ? <>
                                         <EXP_AREAS
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
@@ -236,7 +238,7 @@ function EXPEDITION(props) {
                                             requestUpdateRecord={requestUpdateRecord} />
                                     </> : ''}
 
-                                    {!isPH() ?
+                                    {!isPropertyHorizontal ?
                                         <>
                                             <EXP_2
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -279,7 +281,9 @@ function EXPEDITION(props) {
                             </> : <>
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <Button size="sm" onClick={() => new_expedition()}>GENERAR EXPEDICION EN BLANCO</Button>
+                                        <Button size="sm" onClick={() => new_expedition()}>
+                                            {isPropertyHorizontal ? 'GENERAR EXPEDICIÓN P.H. EN BLANCO' : 'GENERAR EXPEDICION EN BLANCO'}
+                                        </Button>
                                     </div>
                                 </fieldset>
                             </>}
@@ -408,5 +412,7 @@ const NAV_FUNA = (_CHILD) => {
         </div>
     );
 }
+
+void NAV_FUNA;
 
 export default EXPEDITION;
