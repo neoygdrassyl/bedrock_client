@@ -4,6 +4,14 @@ import { Button } from '@/components/ui/button';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import usePHSave from './hooks/usePHSave';
 
+const PLANIMETRIC_CHECK_COUNT = 8;
+
+function normalizeBinaryCheck(value, fallback = '0') {
+    const normalized = value == null ? '' : String(value).trim();
+    if (normalized === '0' || normalized === '1') return normalized;
+    return fallback;
+}
+
 export default function RECORD_PH_GEN_2(props) {
     const { swaMsg, currentItem, currentRecord } = props;
     const { isSaving, execute } = usePHSave({ swaMsg });
@@ -36,9 +44,11 @@ export default function RECORD_PH_GEN_2(props) {
 
     const initialChecks = _GET_CHILD_REVIEW_GEN();
     const [checks, setChecks] = useState(() => {
-        const arr = [...initialChecks];
-        while (arr.length < 9) arr.push('');
-        return arr;
+        const hiddenProfessionalCheck = normalizeBinaryCheck(initialChecks[0], '0');
+        const planimetricChecks = Array.from({ length: PLANIMETRIC_CHECK_COUNT }, (_, index) => (
+            normalizeBinaryCheck(initialChecks[index + 1], '0')
+        ));
+        return [hiddenProfessionalCheck, ...planimetricChecks];
     });
     const [detail, setDetail] = useState(currentRecord.detail || '');
 
@@ -53,9 +63,9 @@ export default function RECORD_PH_GEN_2(props) {
         const formData = new FormData();
         if (detail) formData.set('detail', detail);
 
-        const review_check = [checks[0] || '1'];
-        for (let i = 1; i <= 8; i++) {
-            review_check.push(checks[i] || '');
+        const review_check = [normalizeBinaryCheck(checks[0], '0')];
+        for (let i = 1; i <= PLANIMETRIC_CHECK_COUNT; i++) {
+            review_check.push(normalizeBinaryCheck(checks[i], '0'));
         }
         formData.set('review_check', review_check.join(';'));
 

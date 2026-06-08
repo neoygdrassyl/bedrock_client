@@ -324,6 +324,34 @@ describe('RecordsPH — Render', () => {
     expect(formData.get('review_check')).toBe('1;1;1;1;1;1;1;1;1');
   });
 
+  test('record_ph_gen2 defaults missing planimetric checks to NO and saves explicit zeros', { timeout: 60000 }, async () => {
+    renderInRouter(RECORD_PH_GEN_2, {
+      currentItem: baseItem,
+      currentRecord: { ...baseRecord, review_check: '1' },
+    });
+
+    const planimetricChecks = [
+      /Área construida/i,
+      /Unidades Privada/i,
+      /Espacios Comunes/i,
+      /Área del Predio/i,
+      /Diferenciados con color\/áreas/i,
+      /Presentan alinderamiento/i,
+      /Piso por piso/i,
+      /Total construida/i,
+    ];
+
+    planimetricChecks.forEach((label) => {
+      expect(screen.getByLabelText(label)).toHaveValue('0');
+    });
+
+    fireEvent.submit(document.querySelector('#form_manage_ph_gen_2'));
+
+    await waitFor(() => expect(hoisted.phService.update).toHaveBeenCalledTimes(1));
+    const formData = hoisted.phService.update.mock.calls[0][1];
+    expect(formData.get('review_check')).toBe('1;0;0;0;0;0;0;0;0');
+  });
+
   test('record_ph_floor renders common and private areas from record_ph_floors', { timeout: 60000 }, async () => {
     renderInRouter(RECORD_PH_FLOOR, { currentRecord: phFloorRecord });
 
