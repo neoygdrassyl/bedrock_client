@@ -109,6 +109,9 @@ test.describe('E2E: Flujo de Informe P.H. — fixes de UX y navegación', () => 
     await expect(newPage.getByRole('dialog', { name: /Detalle del expediente/i })).toBeVisible();
     await expect(newPage.getByRole('button', { name: /^Expedici[oó]n P\.H\.$/i })).toBeVisible();
     await expect(newPage.getByRole('button', { name: /^Expedici[oó]n$/i })).toHaveCount(0);
+    await expect(newPage.getByText(/3\. APROBACI[OÓ]N/i)).toBeVisible();
+    await expect(newPage.getByText(/CONFIGURACI[OÓ]N RESOLUCI[OÓ]N/i)).toBeVisible();
+    await expect(newPage.getByText(/GENERAR EXPEDICI[OÓ]N P\.H\. EN BLANCO/i)).toHaveCount(0);
     await expect(authenticatedPage.locator('.ReactModal__Content:visible')).toHaveCount(0);
 
     await newPage.close();
