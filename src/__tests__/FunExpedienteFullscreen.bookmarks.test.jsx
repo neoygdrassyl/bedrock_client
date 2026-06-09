@@ -215,4 +215,22 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(screen.queryByRole('button', { name: /acta/i })).not.toBeInTheDocument();
     expect(screen.getByTestId('module-ph')).toBeInTheDocument();
   });
+
+  it('renderiza la aprobación PH legacy al abrir Expedición P.H.', () => {
+    render(
+      <FunExpedienteFullscreen
+        expediente={phExpediente}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+        initialSection="expedicion"
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /expedici[oó]n p\.h\./i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^expedici[oó]n$/i })).not.toBeInTheDocument();
+    expect(screen.getByTestId('module-ph')).toBeInTheDocument();
+    expect(screen.queryByTestId('module-expedition')).not.toBeInTheDocument();
+  });
 });
