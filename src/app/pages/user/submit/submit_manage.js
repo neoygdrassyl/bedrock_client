@@ -302,7 +302,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                 <option value="LICENCIA" />
                                 <option value="URBANIZACION" />
                                 <option value="PARCELACION" />
-                                <option value="SUBDIVICON" />
+                                <option value="SUBDIVISION" />
                                 <option value="RECONOCIMIENTO" />
                                 <option value="COSTRUCCION" />
                                 <option value="OTRAS ACTUACIONES" />
