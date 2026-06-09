@@ -953,7 +953,9 @@ function BitacoraDialog({ open, onOpenChange, entries, groups, currentPublic }) 
   );
 }
 
-function renderModuleContent(activeSection, activeReport, moduleProps) {
+function renderModuleContent(activeSection, activeReport, moduleProps, options = {}) {
+  const { isPropertyHorizontal = false } = options;
+
   switch (activeSection) {
     case 'detalles':
       return <FUNG {...moduleProps} onDuplicateSuccess={() => {}} />;
@@ -981,6 +983,9 @@ function renderModuleContent(activeSection, activeReport, moduleProps) {
     case 'acta':
       return <RECORD_REVIEW {...moduleProps} />;
     case 'expedicion':
+      if (isPropertyHorizontal) {
+        return <RECORD_PH {...moduleProps} />;
+      }
       return <EXPEDITION {...moduleProps} />;
     default:
       return <FUNG {...moduleProps} onDuplicateSuccess={() => {}} />;
@@ -1341,6 +1346,11 @@ export function FunExpedienteFullscreen({
     [currentVersion, summary]
   );
 
+  const isPropertyHorizontal = useMemo(
+    () => isPropertyHorizontalExpediente(summary, currentVersion),
+    [currentVersion, summary]
+  );
+
   const visibleSectionIds = useMemo(
     () => visibleSectionGroups.flatMap((group) => group.items.map((item) => item.id)),
     [visibleSectionGroups]
@@ -1366,7 +1376,25 @@ export function FunExpedienteFullscreen({
     }
   }, [activeReportIsVisible, activeSection, effectiveActiveReport]);
 
-  const moduleContent = renderModuleContent(activeSection, effectiveActiveReport, moduleProps);
+  useEffect(() => {
+    if (activeSection !== 'expedicion' || !isPropertyHorizontal) {
+      return undefined;
+    }
+
+    const scrollToApprovalSection = () => {
+      document.getElementById('record_ph_3')?.scrollIntoView({ block: 'start' });
+    };
+
+    if (typeof window.requestAnimationFrame === 'function') {
+      const frame = window.requestAnimationFrame(scrollToApprovalSection);
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    const timeout = window.setTimeout(scrollToApprovalSection, 0);
+    return () => window.clearTimeout(timeout);
+  }, [activeSection, isPropertyHorizontal]);
+
+  const moduleContent = renderModuleContent(activeSection, effectiveActiveReport, moduleProps, { isPropertyHorizontal });
 
   const content = (
     <div
