@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,15 +13,26 @@ import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/components/theme-provider';
 import { Sun, Moon, LogOut, Search, PanelLeftClose, PanelLeft, ChevronRight, FileText, UserCircle2 } from 'lucide-react';
 import { Icon } from '@/components/icon';
-import { AlarmBell } from '../pages/user/fun_forms/components/AlarmBell';
 import ChatLauncher from '../pages/user/chat/ChatLauncher';
-import { GlobalSearchDialog } from './GlobalSearchDialog';
+import { RUNTIME_FEATURES } from '../config/runtime-features';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+
+const LazyAlarmBell = lazy(() =>
+  import('../pages/user/fun_forms/components/AlarmBell').then((module) => ({
+    default: module.AlarmBell,
+  })),
+);
+
+const LazyGlobalSearchDialog = lazy(() =>
+  import('./GlobalSearchDialog').then((module) => ({
+    default: module.GlobalSearchDialog,
+  })),
+);
 
 const MODULE_ICONS = {
   dashboard: 'LayoutDashboard',
@@ -135,7 +146,11 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
 
       {/* Chat & notifications */}
       <ChatLauncher />
-      <AlarmBell />
+      {RUNTIME_FEATURES.alarmsEnabled && (
+        <Suspense fallback={null}>
+          <LazyAlarmBell />
+        </Suspense>
+      )}
 
       {/* Theme toggle */}
       <Button
@@ -190,7 +205,11 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <GlobalSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+      {searchOpen && (
+        <Suspense fallback={null}>
+          <LazyGlobalSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+        </Suspense>
+      )}
     </header>
   );
 }

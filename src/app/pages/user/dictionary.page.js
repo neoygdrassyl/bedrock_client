@@ -5,6 +5,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 
 import SERVICE_CUSTOM from '../../services/custom.service';
+import {
+    filterCubDictionary,
+    normalizeCubDictionaryPayload,
+} from './dictionary-cub.utils';
 
 import { formsParser1, getJSONFull } from '../../components/customClasses/typeParse';
 import TIPOLOGIA from '../../components/jsons/fun6DocsList.json'
@@ -146,7 +150,10 @@ export default function DICTIONARY(props) {
 
     let _COMPONENT_PAGINATION = (_list, _page, _limit, _func, _filter, process, _key) => {
         var LIST = [];
-        if (process !== '') {
+        if (_key === 'cub') {
+            LIST = filterCubDictionary(_list, _filter, process)
+        }
+        else if (process !== '') {
             LIST = _list.filter(item => item[process] == _filter)
         }
         else {
@@ -223,6 +230,7 @@ export default function DICTIONARY(props) {
     }
     let _COMPONENT_SEARCH_BAR_CUB = (_id, _filter, _func, setProccess, process) => {
         const [proccessSelected, setProccessSelected] = useState('')
+        const selectedProcess = proccessSelected || process || '';
 
         function setFilter() {
             _func(document.getElementById(_id).value);
@@ -283,17 +291,17 @@ export default function DICTIONARY(props) {
                         placeholder="Busqueda..."
                         id={_id}
                         defaultValue={_filter}
-                        onKeyPress={(e) => {
+                        onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 setFilter()
-                                proccessSelected && setProccess(proccessSelected);
+                                setProccess(selectedProcess);
                             };
                         }} />
 
                     {/* Botón Buscar */}
                     <Button variant="secondary" size="sm" onClick={() => {
                         setFilter()
-                        setProccess(proccessSelected);
+                        setProccess(selectedProcess);
                     }}><Icon name="angle-double-right" size={16} /> Buscar</Button>
 
                     {/* Botón Limpiar */}
@@ -305,9 +313,9 @@ export default function DICTIONARY(props) {
                 </div>
 
                 {/* Filtro seleccionado*/}
-                {proccessSelected && (
+                {selectedProcess && (
                     <div className="text-muted mx-3">
-                        <small>Filtro seleccionado: {proccessSelected.toUpperCase()}</small>
+                        <small>Filtro seleccionado: {selectedProcess.toUpperCase()}</small>
                     </div>
                 )}
             </>
@@ -480,9 +488,10 @@ export default function DICTIONARY(props) {
 
     let _COMPONENT_MAIN_LIST = (_list, _filter, process, _key, _limit, _page, _COMPONENT_POP) => {
         var LIST = [];
-        if (process !== '') {
-            console.log(process.toLowerCase())
-            console.log(_filter)
+        if (_key === 'cub') {
+            LIST = filterCubDictionary(_list, _filter, process)
+        }
+        else if (process !== '') {
             LIST = _list.filter(item => item[process] == _filter)
         }
         else {
@@ -532,11 +541,11 @@ export default function DICTIONARY(props) {
             <PopoverContent side="top" className="w-64 text-sm">
                 <p className="font-semibold mb-2">{it.cub}</p>
                 <ul className="list-group list-group-flush">
-                    <li className="list-group-item"><label>Relación: <label className='fw-bold'>{it.id === '1' ? it.vr : it.id}</label></label></li>
+                    <li className="list-group-item"><label>Relación: <label className='fw-bold'>{it.relationValue || it.id || it.vr}</label></label></li>
                     {
-                        it.id !== '1' && <li className="list-group-item"><label>VR: <label className='fw-bold'>{it.vr}</label></label></li>
+                        !it.isPqrsLike && <li className="list-group-item"><label>VR: <label className='fw-bold'>{it.vr}</label></label></li>
                     }
-                    <li className="list-group-item"><label>Proceso: <label className='fw-bold'>{it.res || '—'}</label></label></li>
+                    <li className="list-group-item"><label>Proceso: <label className='fw-bold'>{it.processLabel || it.res || '—'}</label></label></li>
                 </ul>
             </PopoverContent>
         </Popover>
@@ -634,8 +643,8 @@ export default function DICTIONARY(props) {
                         <div className='col text-end'>
                             <Button variant="outline" size="sm" onClick={() => generateCVS(
                                 ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN', "FECHA"],
-                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res || ''}`, 
-                                    i.res === 'Citacion Notificación Resolución' ? (getJSONFull(i.date) || {}).date_doc || i.date : i.date])),
+                                LIST_D.map((i) => ([`${i.cub}`, `${i.relationValue || i.id || i.vr || ''}`, `${i.processLabel || i.res || ''}`, 
+                                    (i.processLabel || i.res) === 'Citacion Notificación Resolución' ? (getJSONFull(i.date) || {}).date_doc || i.date : i.date])),
                                 'LISTADO CONSECUTIVOS DE SALIDA')}
                                 ><Icon name="table" size={16} /> Descargar CSV</Button>
                         </div>
@@ -689,7 +698,7 @@ export default function DICTIONARY(props) {
             });
         SERVICE_CUSTOM.loadDictionary_cub()
             .then(response => {
-                setListD(response.data)
+                setListD(normalizeCubDictionaryPayload(response.data))
             })
             .catch(e => {
                 console.log(e);
