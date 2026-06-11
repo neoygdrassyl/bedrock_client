@@ -1,9 +1,103 @@
 
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
+import RequirementPreviewPanel from './components/RequirementPreviewPanel.jsx';
+import { useRequirementPreview } from './hooks/useRequirementPreview.js';
+
+function normalizeMultiValue(value, mode = 'csv') {
+    if (Array.isArray(value)) return value.map(item => String(item ?? '').trim()).filter(Boolean);
+    if (value == null || value === false) return [];
+    const text = String(value).trim();
+    if (!text) return [];
+    if (text.includes(',')) return text.split(',').map(item => item.trim()).filter(Boolean);
+    if (mode === 'letters' && /^[A-Za-z]+$/.test(text)) return text.split('').filter(Boolean);
+    if (mode === 'usos' && /^[A-D]+$/.test(text)) return text.split('').filter(Boolean);
+    return [text];
+}
+
+function normalizeScalarValue(value) {
+    if (Array.isArray(value)) return value[0] ? String(value[0]).trim() : '';
+    if (value == null || value === false) return '';
+    return String(value).trim();
+}
+
+function getCheckedValues(scope, name) {
+    const root = scope || document;
+    return Array.from(root.querySelectorAll(`input[name="${name}"]`))
+        .filter(input => input.checked)
+        .map(input => input.value)
+        .filter(Boolean);
+}
+
+function getRadioValue(scope, name) {
+    const root = scope || document;
+    const checked = root.querySelector(`input[name="${name}"]:checked`);
+    return checked?.value || '';
+}
+
+function getInputValue(scope, id) {
+    const root = scope || document;
+    return root.querySelector(`#${id}`)?.value?.trim() || '';
+}
+
+function buildPreviewActuacionFromChild(childVars = {}) {
+    return {
+        tipo: normalizeMultiValue(childVars.item_1, 'letters'),
+        tramite: normalizeScalarValue(childVars.item_2),
+        m_urb: normalizeScalarValue(childVars.item_3),
+        m_sub: normalizeScalarValue(childVars.item_4),
+        m_lic: normalizeMultiValue(childVars.item_5, 'letters'),
+        usos: normalizeMultiValue(childVars.item_6, 'usos'),
+        area: normalizeScalarValue(childVars.item_7),
+        vivienda: normalizeScalarValue(childVars.item_8),
+        cultural: normalizeScalarValue(childVars.item_9),
+        regla_1: normalizeScalarValue(childVars.item_101),
+        regla_2: normalizeScalarValue(childVars.item_102),
+    };
+}
+
+function buildPreviewActuacionFromForm(scope, fallback = {}) {
+    const otherTramite = getInputValue(scope, 'f_12_o');
+    const otherUsos = getInputValue(scope, 'f_16_o');
+    const fallbackActuacion = buildPreviewActuacionFromChild(fallback);
+
+    return {
+        ...fallbackActuacion,
+        tipo: getCheckedValues(scope, 'f_11'),
+        tramite: otherTramite || getRadioValue(scope, 'f_12'),
+        m_urb: getRadioValue(scope, 'f_13'),
+        m_sub: getRadioValue(scope, 'f_14'),
+        m_lic: getCheckedValues(scope, 'f_15'),
+        usos: otherUsos ? [otherUsos] : getCheckedValues(scope, 'f_16'),
+    };
+}
+
+function unwrapSavePayload(response) {
+    return response?.data?.data ?? response?.data ?? response ?? null;
+}
+
+function getSnapshotInfoFromPayload(payload) {
+    if (!payload || typeof payload !== 'object') return null;
+    const snapshot = payload.snapshot || payload.requirementSnapshot || payload.requirementsSnapshot || payload.snapshotInfo || null;
+    const snapshotId = snapshot?.id ?? snapshot?.snapshotId ?? payload.snapshotId ?? payload.requirementSnapshotId ?? null;
+    return snapshotId ? { id: snapshotId } : null;
+}
+
+function isSuccessfulSavePayload(payload) {
+    if (payload === 'OK') return true;
+    if (!payload || typeof payload !== 'object') return false;
+    const snapshotInfo = getSnapshotInfoFromPayload(payload);
+    return payload.status === 'OK'
+        || payload.status === 'ok'
+        || payload.message === 'OK'
+        || payload.ok === true
+        || payload.success === true
+        || Boolean(snapshotInfo);
+}
 
 const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVersion, toCreate, aim, requestUpdate }) => {
     var formData = new FormData();
@@ -228,10 +322,41 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
             return _CHILD_VARS;
         }
 
+        const previewScopeRef = useRef(null);
+        const initialPreviewActuacion = useMemo(() => buildPreviewActuacionFromChild(_SET_CHILD_1()), [currentItem, currentVersion]);
+        const [previewActuacion, setPreviewActuacion] = useState(initialPreviewActuacion);
+        const [snapshotInfo, setSnapshotInfo] = useState(null);
+        const initialPreviewSignatureRef = useRef(JSON.stringify(initialPreviewActuacion));
+        const requirementPreviewState = useRequirementPreview(previewActuacion, { configStatus: 'published', debounceMs: 500 });
+
+        useEffect(() => {
+            const nextSignature = JSON.stringify(initialPreviewActuacion);
+            if (initialPreviewSignatureRef.current === nextSignature) return;
+            initialPreviewSignatureRef.current = nextSignature;
+            setPreviewActuacion(initialPreviewActuacion);
+            setSnapshotInfo(null);
+        }, [initialPreviewActuacion]);
+
+        const handlePreviewFormChange = useCallback(() => {
+            setPreviewActuacion(buildPreviewActuacionFromForm(previewScopeRef.current, _SET_CHILD_1()));
+            setSnapshotInfo(null);
+        }, [currentItem, currentVersion]);
+
+        const handleSuccessfulSave = (response) => {
+            const payload = unwrapSavePayload(response);
+            if (isSuccessfulSavePayload(payload)) {
+                setSnapshotInfo(getSnapshotInfoFromPayload(payload));
+                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                requestUpdate(currentItem.id)
+            } else {
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+            }
+        }
+
         let _CHILD_11 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <input type="hidden" id="f_10" defaultValue={_CHILD_VARS.item_0} />
                 <label>1.1 Tipo de Solicitud</label>
                 <div className="form-check">
@@ -283,12 +408,12 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                         G. Otras Actuaciones
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_12 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.2 Objecto del Tramite</label>
                 <div className="form-check">
                     <input className="form-check-input" type="radio" value="A" name="f_12"
@@ -326,12 +451,12 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                         defaultValue={_CHILD_VARS.item_2 != 'A' && _CHILD_VARS.item_2 != 'B' && _CHILD_VARS.item_2 != 'C'
                             && _CHILD_VARS.item_2 != 'D' ? _CHILD_VARS.item_2 : ""} id="f_12_o" />
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_13 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.3 Modalidad Licencia de Urbanizacion</label>
                 <div className="form-check">
                     <input className="form-check-input" type="radio" value="A" name="f_13"
@@ -354,12 +479,12 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                         C. Recuperacion
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_14 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.4 Modalidad Licencia de Subdivicion</label>
                 <div className="form-check">
                     <input className="form-check-input" type="radio" value="A" name="f_14"
@@ -382,12 +507,12 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                         C. Reloteo
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_15 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.5 Modalidad Licencia de Construccion</label>
                 <div className="form-check">
                     <input className="form-check-input" type="checkbox" value="A" name="f_15"
@@ -459,7 +584,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                         I. Cerramiento
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_16 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
@@ -481,7 +606,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                     _otherValue = _CHILD_VARS.item_6;
                 }
             }
-            return <td>
+            return <div>
                 <label>1.6 Usos</label>
                 <div className="form-check">
                     <input className="form-check-input" type="checkbox" value="A" name="f_16"
@@ -518,7 +643,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                     <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                         id="f_16_o" defaultValue={_otherValue} />
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_17 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
@@ -673,14 +798,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
             formData.set('fun2Id', _SET_CHILD_2().item_20);
             formData.set('law_id', _SET_CHILD_LAW().id);
             FUNService.create_version(formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        requestUpdate(currentItem.id)
-                    } else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    }
-                })
+                .then(response => handleSuccessfulSave(response))
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -695,14 +813,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
             formData.set('funrId', _SET_CHILD_R().item_r0);
             formData.set('law_id', _SET_CHILD_LAW().id);
             FUNService.update_version(currentItem.id, formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        requestUpdate(currentItem.id)
-                    } else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    }
-                })
+                .then(response => handleSuccessfulSave(response))
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -716,6 +827,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
 
             formData.set('fun0Id', fun0Id);
             formData.set('state', currentItem.state);
+            setSnapshotInfo(null);
 
             let value = null;
             let checkbox = null;
@@ -815,29 +927,32 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
         return (<>
             {toCreate.fun_1_type
                 ? <>
-                    <div className="row mb-3">
-                        <div className="col-6">
-                            {_CHILD_11()}
+                    <div ref={previewScopeRef} onChange={handlePreviewFormChange} className="space-y-3">
+                        <div className="row mb-3">
+                            <div className="col-6">
+                                {_CHILD_11()}
+                            </div>
+                            <div className="col-6">
+                                {_CHILD_12()}
+                            </div>
                         </div>
-                        <div className="col-6">
-                            {_CHILD_12()}
+                        <div className="row mb-3">
+                            <div className="col-6">
+                                {_CHILD_13()}
+                            </div>
+                            <div className="col-6">
+                                {_CHILD_14()}
+                            </div>
                         </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-6">
-                            {_CHILD_13()}
+                        <div className="row mb-3">
+                            <div className="col-6">
+                                {_CHILD_15()}
+                            </div>
+                            <div className="col-6">
+                                {_CHILD_16()}
+                            </div>
                         </div>
-                        <div className="col-6">
-                            {_CHILD_14()}
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-6">
-                            {_CHILD_15()}
-                        </div>
-                        <div className="col-6">
-                            {_CHILD_16()}
-                        </div>
+                        <RequirementPreviewPanel state={requirementPreviewState} snapshotInfo={snapshotInfo} />
                     </div>
                 </> : ""}
             <div className="row mb-3 text-center">
