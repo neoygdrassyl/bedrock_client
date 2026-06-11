@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Bell, Bug, Check, FileText, LayoutDashboard, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
 import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
+import DocumentRequirementsConfigPanel from './document_requirements/DocumentRequirementsConfigPanel.jsx';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
 import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
 import {
@@ -23,6 +24,12 @@ const NAV_ITEMS = [
     label: 'Alarmas',
     description: 'Umbrales por fase, actor y nivel',
     icon: Bell,
+  },
+  {
+    key: 'requisitos-documentales',
+    label: 'Requisitos documentales',
+    description: 'Borrador, publicación y reglas documentales',
+    icon: FileText,
   },
   {
     key: 'personalizacion',
@@ -128,6 +135,7 @@ export default function SettingsPage() {
 
         <main className="settings-panel" role="main">
           {activeKey === 'alarmas' && <AlarmsV2ConfigPanel />}
+          {activeKey === 'requisitos-documentales' && <DocumentRequirementsConfigPanel />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
           {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
           {activeKey === 'errorReports' && canManageErrorReports && (
