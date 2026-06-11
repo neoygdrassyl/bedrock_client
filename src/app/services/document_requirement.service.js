@@ -1,10 +1,16 @@
 import http from '../../http-common';
 
 const ROUTE = 'document-requirements';
+const READABLE_PREVIEW_STATUSES = new Set(['published', 'draft']);
 
 function buildStatusQuery(status) {
   if (!status) return '';
   return `?status=${encodeURIComponent(status)}`;
+}
+
+function getPreviewStatus(payload = {}, options = {}) {
+  const requestedStatus = options.status || payload?.configStatus || payload?.status || 'published';
+  return READABLE_PREVIEW_STATUSES.has(requestedStatus) ? requestedStatus : 'published';
 }
 
 class DocumentRequirementService {
@@ -28,9 +34,12 @@ class DocumentRequirementService {
     return http.post(`/${ROUTE}/config/publish`);
   }
 
-  previewRequirements(payload = {}) {
-    const status = payload?.configStatus || payload?.status || 'published';
-    return http.post(`/${ROUTE}/preview${buildStatusQuery(status)}`, payload);
+  previewRequirements(payload = {}, options = {}) {
+    const status = getPreviewStatus(payload, options);
+    return http.post(`/${ROUTE}/preview${buildStatusQuery(status)}`, {
+      ...payload,
+      configStatus: status,
+    });
   }
 }
 
