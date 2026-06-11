@@ -38,6 +38,7 @@ function normalizeTraces(traces = []) {
 
 function getTraceClassName(kind) {
   if (kind === 'selection') return 'border-primary/30 bg-primary/10 text-primary';
+  if (kind === 'backend-rule') return 'border-accent/40 bg-accent/10 text-foreground';
   if (kind === 'common') return 'border-border bg-muted/40 text-muted-foreground';
   if (kind === 'current-rule') return 'border-warning/30 bg-warning/10 text-foreground';
   if (kind === 'selection-mismatch') return 'border-border bg-muted/20 text-muted-foreground';
@@ -189,46 +190,72 @@ function SelectionSummary({ summary }) {
   );
 }
 
-function StatusBanner({ status, missingMessages, warnings, error }) {
+const SOURCE_META = {
+  draft: { label: 'Borrador', className: 'text-bg-warning' },
+  published: { label: 'Publicada', className: 'text-bg-success' },
+  legacy: { label: 'Legado', className: 'text-bg-secondary' },
+  error: { label: 'Error', className: 'text-bg-danger' },
+};
+
+function SourceBadge({ source }) {
+  const meta = SOURCE_META[source] || SOURCE_META.legacy;
+  return <span className={`badge rounded-pill ${meta.className}`}>{meta.label}</span>;
+}
+
+function StatusBanner({ status, missingMessages, warnings, error, previewSource }) {
   const statusMeta = {
     initial: {
       className: 'border-primary/30 bg-primary/10 text-foreground',
       icon: 'Info',
       title: 'Estado inicial',
-      text: 'Selecciona una actuación y trámite para iniciar la simulación documental.',
+      text: 'Selecciona una actuación y trámite para consultar el preview documental configurado.',
+    },
+    loading: {
+      className: 'border-primary/30 bg-primary/10 text-foreground',
+      icon: 'Loader2',
+      title: 'Consultando preview',
+      text: 'El simulador está consultando las reglas documentales configuradas en backend.',
     },
     partial: {
       className: 'border-warning/40 bg-warning/10 text-foreground',
       icon: 'AlertTriangle',
       title: 'Selección parcial',
-      text: 'Hay datos pendientes. Se muestran los resultados que el engine puede calcular con la información actual.',
+      text: 'Hay datos pendientes. El resultado oficial proviene del preview backend con la selección actual.',
     },
     ready: {
       className: 'border-accent/40 bg-accent/10 text-foreground',
       icon: 'CheckCircle',
-      title: 'Resultado calculado',
-      text: 'La simulación se recalculó localmente sin llamadas al backend ni persistencia.',
+      title: 'Resultado configurado',
+      text: 'La simulación usa el preview backend y no persiste cambios en expedientes.',
     },
     empty: {
       className: 'border-border bg-muted/30 text-foreground',
       icon: 'SearchX',
       title: 'Sin documentos aplicables',
-      text: 'No se encontraron documentos aplicables para esta combinación o faltan datos relevantes.',
+      text: 'El preview backend no retornó documentos requeridos para esta combinación.',
     },
     error: {
       className: 'border-destructive/40 bg-destructive/10 text-foreground',
       icon: 'AlertCircle',
-      title: 'Error de evaluación',
-      text: error || 'No fue posible calcular la simulación. Revisa los campos o limpia la selección.',
+      title: 'Error de preview backend',
+      text: error || 'No fue posible consultar el preview documental configurado.',
     },
-  }[status];
+  }[status] || {
+    className: 'border-border bg-muted/30 text-foreground',
+    icon: 'Info',
+    title: 'Estado no disponible',
+    text: 'No hay un estado de simulación disponible para mostrar.',
+  };
 
   return (
     <div className={`rounded-xl border px-4 py-3 ${statusMeta.className}`} role={status === 'error' ? 'alert' : 'status'} aria-live="polite">
       <div className="flex gap-3">
         <Icon name={statusMeta.icon} size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
-        <div className="min-w-0">
-          <p className="mb-1 text-sm font-semibold">{statusMeta.title}</p>
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            <p className="mb-0 text-sm font-semibold">{statusMeta.title}</p>
+            <SourceBadge source={previewSource || (status === 'error' ? 'error' : 'legacy')} />
+          </div>
           <p className="mb-0 text-xs leading-5">{statusMeta.text}</p>
           {missingMessages.length ? (
             <ul className="mb-0 mt-2 ps-3 text-xs leading-5">
@@ -246,17 +273,24 @@ function StatusBanner({ status, missingMessages, warnings, error }) {
   );
 }
 
-function GroupedDocuments({ groups }) {
+function GroupedDocuments({
+  groups,
+  title = 'Documentos agrupados como V.U.',
+  description = 'Cada fila muestra la regla o selección que la hace aparecer.',
+  emptyText = 'No hay grupos calculados todavía. La ausencia queda visible para evitar ocultar datos legalmente relevantes.',
+}) {
+  const titleId = `sim-doc-groups-title-${title.replace(/\W+/g, '-').toLowerCase()}`;
+
   return (
-    <section className="rounded-xl border border-border bg-card shadow-sm" aria-labelledby="sim-doc-groups-title">
+    <section className="rounded-xl border border-border bg-card shadow-sm" aria-labelledby={titleId}>
       <div className="flex flex-col gap-2 border-b border-border/70 bg-muted/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <Icon name="ListChecks" size={16} aria-hidden="true" />
           </span>
           <div>
-            <h2 id="sim-doc-groups-title" className="mb-0 text-sm font-semibold text-foreground">Documentos agrupados como V.U.</h2>
-            <p className="mb-0 text-xs text-muted-foreground">Cada fila muestra la regla o selección que la hace aparecer.</p>
+            <h2 id={titleId} className="mb-0 text-sm font-semibold text-foreground">{title}</h2>
+            <p className="mb-0 text-xs text-muted-foreground">{description}</p>
           </div>
         </div>
         <span className="badge rounded-pill text-bg-light border">{groups.length} grupo(s)</span>
@@ -286,7 +320,7 @@ function GroupedDocuments({ groups }) {
         </div>
       ) : (
         <div className="p-4 text-sm text-muted-foreground">
-          No hay grupos V.U. calculados todavía. La ausencia queda visible para evitar ocultar datos legalmente relevantes.
+          {emptyText}
         </div>
       )}
     </section>
@@ -512,12 +546,69 @@ function ChecklistResults({ rows }) {
   );
 }
 
-export default function SimulatorResults({ result, status, missingMessages = [], evaluationError = '' }) {
-  const warnings = Array.isArray(result?.warnings) ? result.warnings : [];
-  const summary = result?.selectionSummary || {};
+function HistoricalDiagnostic({ result, error }) {
+  const [open, setOpen] = useState(false);
   const groups = normalizeGroupedDocuments(result);
   const checklistRows = normalizeChecklistRows(result);
+
+  return (
+    <section className="rounded-xl border border-border bg-card shadow-sm" aria-labelledby="sim-doc-local-diagnostic-title">
+      <div className="flex flex-col gap-3 border-b border-border/70 bg-muted/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+            <Icon name="History" size={16} aria-hidden="true" />
+          </span>
+          <div>
+            <h2 id="sim-doc-local-diagnostic-title" className="mb-0 text-sm font-semibold text-foreground">Reglas locales históricas</h2>
+            <p className="mb-0 text-xs text-muted-foreground">Diagnóstico comparativo; no reemplaza el resultado oficial del preview backend.</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="btn btn-outline-secondary btn-sm shrink-0"
+          aria-expanded={open}
+          onClick={() => setOpen((currentValue) => !currentValue)}
+        >
+          <Icon name={open ? 'ChevronUp' : 'ChevronDown'} size={14} aria-hidden="true" />
+          {open ? 'Ocultar reglas locales históricas' : 'Ver reglas locales históricas'}
+        </button>
+      </div>
+
+      {error ? (
+        <div className="m-3 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-foreground" role="status">
+          {error}
+        </div>
+      ) : null}
+
+      {open ? (
+        <div className="grid gap-3 p-3 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,0.42fr)]">
+          <GroupedDocuments
+            groups={groups}
+            title="Documentos calculados por reglas locales históricas"
+            description="Salida del evaluador anterior, disponible solo para auditoría y comparación."
+            emptyText="El evaluador local histórico no calculó documentos para la selección actual."
+          />
+          <ChecklistResults rows={checklistRows} />
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+export default function SimulatorResults({
+  result,
+  status,
+  missingMessages = [],
+  evaluationError = '',
+  previewSource = 'legacy',
+  localDiagnosticResult = {},
+  localDiagnosticError = '',
+}) {
   const resolvedStatus = evaluationError ? 'error' : status;
+  const warnings = Array.isArray(result?.warnings) ? result.warnings : [];
+  const summary = result?.selectionSummary || localDiagnosticResult?.selectionSummary || {};
+  const groups = normalizeGroupedDocuments(result);
+  const hasOfficialResult = !evaluationError && result && resolvedStatus !== 'initial' && resolvedStatus !== 'loading';
 
   return (
     <div className="space-y-3">
@@ -526,12 +617,18 @@ export default function SimulatorResults({ result, status, missingMessages = [],
         missingMessages={missingMessages}
         warnings={warnings}
         error={evaluationError}
+        previewSource={previewSource}
       />
       <SelectionSummary summary={summary} />
-      <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,0.42fr)]">
-        <GroupedDocuments groups={groups} />
-        <ChecklistResults rows={checklistRows} />
-      </div>
+      {hasOfficialResult ? (
+        <GroupedDocuments
+          groups={groups}
+          title="Requisitos configurados por backend"
+          description="Resultado oficial del endpoint document-requirements/preview para la selección simulada."
+          emptyText="El preview backend respondió sin documentos requeridos para la selección actual."
+        />
+      ) : null}
+      <HistoricalDiagnostic result={localDiagnosticResult} error={localDiagnosticError} />
     </div>
   );
 }
