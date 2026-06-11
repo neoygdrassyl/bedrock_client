@@ -100,6 +100,113 @@ export function buildSimulatedFunItem(selection = {}) {
   };
 }
 
+export function buildDocumentRequirementPreviewPayload(selection = {}, configStatus = 'published') {
+  const normalizedSelection = normalizeSimulatorSelection(selection);
+
+  return {
+    configStatus,
+    actuacion: normalizedSelection,
+  };
+}
+
+function getPreviewGroupLabel(groupKey, groupsByKey) {
+  if (!groupKey) return 'Documentos configurados';
+  return groupsByKey.get(groupKey)?.label || groupKey;
+}
+
+function getPreviewDocumentLabel(document, documentsByCode) {
+  const code = String(document?.code ?? '');
+  return document?.label || documentsByCode.get(code)?.label || JsonDocList[code] || `Sin etiqueta registrada para el código ${code}`;
+}
+
+function buildPreviewTrace(rule) {
+  const ruleKey = rule?.key || 'Regla backend sin identificador';
+  const conditionSummary = rule?.conditionSummary || 'Condición backend sin resumen';
+
+  return createTrace({
+    kind: 'backend-rule',
+    reason: `${ruleKey}: ${conditionSummary}`,
+    source: 'document-requirements/preview',
+    label: ruleKey,
+    value: conditionSummary,
+  });
+}
+
+function normalizeTracesForPreview(traces = []) {
+  if (Array.isArray(traces) && traces.length) return traces;
+
+  return [createTrace({
+    kind: 'backend-rule',
+    reason: 'Documento requerido por preview backend sin traza detallada',
+    source: 'document-requirements/preview',
+  })];
+}
+
+export function normalizeDocumentRequirementPreviewResponse(responseData = {}, selection = {}) {
+  const config = responseData?.config || {};
+  const groupsByKey = new Map((Array.isArray(config.groups) ? config.groups : []).map((group) => [group.key, group]));
+  const documentsByCode = new Map((Array.isArray(config.documents) ? config.documents : []).map((document) => [String(document.code), document]));
+  const matchedRules = Array.isArray(responseData?.matchedRules) ? responseData.matchedRules : [];
+  const tracesByCode = {};
+
+  for (const rule of matchedRules) {
+    const trace = buildPreviewTrace(rule);
+    const documentCodes = Array.isArray(rule?.documentCodes) ? rule.documentCodes : [];
+    for (const rawCode of documentCodes) {
+      const code = String(rawCode);
+      if (!tracesByCode[code]) tracesByCode[code] = [];
+      tracesByCode[code].push(trace);
+    }
+  }
+
+  const requiredDocuments = (Array.isArray(responseData?.requiredDocuments) ? responseData.requiredDocuments : []).map((document) => {
+    const code = String(document?.code ?? '');
+    const configDocument = documentsByCode.get(code) || {};
+    const groupKey = document?.groupKey || configDocument.groupKey || 'backend';
+    const groupLabel = getPreviewGroupLabel(groupKey, groupsByKey);
+
+    return {
+      code,
+      label: getPreviewDocumentLabel(document, documentsByCode),
+      applies: true,
+      groupId: groupKey,
+      groupKey,
+      groupLabel,
+      traces: normalizeTracesForPreview(tracesByCode[code]),
+    };
+  });
+
+  const groupedDocuments = Array.from(requiredDocuments.reduce((groups, document) => {
+    if (!groups.has(document.groupKey)) {
+      groups.set(document.groupKey, {
+        groupId: document.groupKey,
+        groupLabel: document.groupLabel,
+        items: [],
+      });
+    }
+    groups.get(document.groupKey).items.push(document);
+    return groups;
+  }, new Map()).values());
+
+  const diagnostics = Array.isArray(responseData?.diagnostics) ? responseData.diagnostics : [];
+
+  return {
+    source: responseData?.status || 'published',
+    configVersion: responseData?.configVersion ?? null,
+    config,
+    requiredDocuments,
+    matchedRules,
+    diagnostics,
+    checklistItems: requiredDocuments,
+    evaluatedChecklistItems: requiredDocuments,
+    applicableCodes: requiredDocuments.map((document) => document.code),
+    groupedDocuments,
+    ruleTracesByCode: tracesByCode,
+    selectionSummary: normalizeSimulatorSelection(selection),
+    warnings: diagnostics.map((diagnostic) => diagnostic?.message || diagnostic).filter(Boolean),
+  };
+}
+
 const VARIANT_CODE_REGEXES = [
   { pattern: /^601[abc]$/, groupId: 'list_62' },
   { pattern: /^602[abc]$/, groupId: 'list_62' },

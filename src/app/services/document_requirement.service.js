@@ -27,6 +27,11 @@ class DocumentRequirementService {
   publishConfig() {
     return http.post(`/${ROUTE}/config/publish`);
   }
+
+  previewRequirements(payload = {}) {
+    const status = payload?.configStatus || payload?.status || 'published';
+    return http.post(`/${ROUTE}/preview${buildStatusQuery(status)}`, payload);
+  }
 }
 
 export default new DocumentRequirementService();
