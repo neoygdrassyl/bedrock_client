@@ -568,6 +568,21 @@ export const DOCUMENT_PREVIEW_MEDIUM = {
 
 export const INTERNAL_REPORT_VR_FILTER = '__internal_report__';
 
+export const LEGAL_FORM_FILTER = {
+    ALL: 'all',
+    REQUIRED: 'required',
+    MISSING: 'missing',
+    PRESENT: 'present',
+    PENDING_SCAN: 'pending_scan',
+};
+
+export const LEGAL_FORM_SOURCE_LABELS = {
+    snapshot: 'Snapshot activo',
+    legacy_snapshot: 'Checklist legado',
+    no_snapshot: 'Sin snapshot',
+    insufficient_inputs: 'Insumos insuficientes',
+};
+
 const INTERNAL_REPORT_VR_VALUES = new Set(['eng', 'arq', 'arc', 'jur', 'law', 'est']);
 
 export function isInternalReportVr(value) {
@@ -576,6 +591,283 @@ export function isInternalReportVr(value) {
 
 export function getDocumentVrDisplayValue(value) {
     return isInternalReportVr(value) ? 'INFORME' : (normalizeText(value) || 'Sin VR');
+}
+
+function normalizeLegalFormStatus(value) {
+    const normalizedValue = normalizeText(value).toLowerCase();
+
+    if (normalizedValue === 'unknown_code') {
+        return LEGAL_FORM_FILTER.MISSING;
+    }
+
+    if (normalizedValue === LEGAL_FORM_FILTER.MISSING
+        || normalizedValue === LEGAL_FORM_FILTER.PRESENT
+        || normalizedValue === LEGAL_FORM_FILTER.PENDING_SCAN) {
+        return normalizedValue;
+    }
+
+    return '';
+}
+
+function getLegalFormStatusLabel(status) {
+    if (status === LEGAL_FORM_FILTER.MISSING) return 'Faltante';
+    if (status === LEGAL_FORM_FILTER.PRESENT) return 'Presente';
+    if (status === LEGAL_FORM_FILTER.PENDING_SCAN) return 'Pendiente escaneo';
+    return 'Sin estado';
+}
+
+function getLegalFormSourceMessage(source) {
+    if (source === 'no_snapshot') {
+        return 'Sin snapshot · Este expediente aún no tiene snapshot activo de requisitos; no se infieren todos los documentos.';
+    }
+
+    if (source === 'insufficient_inputs') {
+        return 'insufficient_inputs · No hay insumos suficientes para resolver requisitos documentales.';
+    }
+
+    return '';
+}
+
+function getRequirementEvidenceCount(requirement = {}) {
+    return Array.isArray(requirement?.evidence) ? requirement.evidence.length : 0;
+}
+
+function getRequirementMatchKey(requirement = {}) {
+    const code = normalizeCode(requirement?.code);
+    if (code) {
+        return `code:${code}`;
+    }
+
+    const label = normalizeText(requirement?.label).toLowerCase();
+    return label ? `label:${label}` : '';
+}
+
+function getRowMatchKeys(row = {}) {
+    const keys = [];
+    const code = normalizeCode(row?.documentCode);
+    const label = normalizeText(row?.documentName).toLowerCase();
+
+    if (code) {
+        keys.push(`code:${code}`);
+    }
+
+    if (label) {
+        keys.push(`label:${label}`);
+    }
+
+    return keys;
+}
+
+function buildLegalFormPayload(requirement = {}, source = '') {
+    const status = normalizeLegalFormStatus(requirement?.status);
+
+    return status ? {
+        status,
+        statusLabel: getLegalFormStatusLabel(status),
+        statusReason: normalizeText(requirement?.statusReason || requirement?.reason),
+        source,
+        sourceLabel: LEGAL_FORM_SOURCE_LABELS[source] || source || 'Sin fuente',
+        requirementCode: normalizeCode(requirement?.code),
+        requirementLabel: normalizeText(requirement?.label) || 'Documento sin nombre',
+        groupKey: normalizeText(requirement?.groupKey),
+        evidenceCount: getRequirementEvidenceCount(requirement),
+    } : null;
+}
+
+function createSyntheticLegalFormRow(requirement = {}, source = '', index = 0) {
+    const legalForm = buildLegalFormPayload(requirement, source);
+
+    if (!legalForm) {
+        return null;
+    }
+
+    const isPendingScan = legalForm.status === LEGAL_FORM_FILTER.PENDING_SCAN;
+    const originState = isPendingScan ? DOCUMENT_ORIGIN_STATE.PHYSICAL : DOCUMENT_ORIGIN_STATE.DIGITAL;
+    const documentCode = legalForm.requirementCode;
+    const documentName = legalForm.requirementLabel;
+    const entryId = `legal-form:${documentCode || index}`;
+    const entry = {
+        entryId,
+        sourceTable: 'document_requirement',
+        sourceLabel: 'Legal y Debida Forma',
+        documentCode,
+        documentName,
+        vr: '',
+        date: '',
+        time: '',
+        pages: '',
+        originState,
+        originLabel: DOCUMENT_ORIGIN_LABEL[originState] || 'Sin origen',
+        receptionMedium: '',
+        receptionMediumLabel: '',
+        canPreview: false,
+        canEdit: false,
+        canDelete: false,
+        isPreviewRow: true,
+        evaluationSummary: {
+            source,
+            status: legalForm.statusReason || legalForm.statusLabel,
+        },
+    };
+
+    return {
+        id: `legal-form-row:${documentCode || index}`,
+        documentCode,
+        documentName,
+        entries: [entry],
+        entryCount: 0,
+        latestVr: '',
+        vrValues: [],
+        latestDocumentDate: '',
+        latestDocumentTime: '',
+        latestDateValue: -1 - index,
+        medium: isPendingScan ? DOCUMENT_PREVIEW_MEDIUM.PHYSICAL : DOCUMENT_PREVIEW_MEDIUM.DIGITAL,
+        mediumLabel: isPendingScan ? 'Físico pendiente de escaneo' : 'Sin evidencia documental',
+        mediumPresence: {
+            [DOCUMENT_PREVIEW_MEDIUM.PHYSICAL]: isPendingScan,
+            [DOCUMENT_PREVIEW_MEDIUM.DIGITAL]: !isPendingScan,
+        },
+        scanned: {
+            applies: isPendingScan,
+            value: false,
+            count: 0,
+            label: isPendingScan ? 'No' : 'No aplica',
+        },
+        folios: {
+            digital: 0,
+            physical: 0,
+            total: 0,
+            label: 'Digitales 0 / Físicos 0',
+        },
+        originPresence: {
+            [DOCUMENT_ORIGIN_STATE.PHYSICAL]: isPendingScan,
+            [DOCUMENT_ORIGIN_STATE.SCANNED]: false,
+            [DOCUMENT_ORIGIN_STATE.DIGITAL]: !isPendingScan,
+        },
+        receptionMediumLabels: [],
+        summary: {
+            sourceCount: 0,
+            requirementStatus: legalForm.status,
+        },
+        canPreview: false,
+        canEdit: false,
+        canDelete: false,
+        isPreviewRow: true,
+        legalForm,
+    };
+}
+
+export function summarizeLegalFormRequirements(result = {}) {
+    const requirements = Array.isArray(result?.requirements) ? result.requirements : [];
+    const summary = result?.summary || {};
+    const source = normalizeText(result?.source).toLowerCase();
+    const countedRequirements = requirements.reduce((accumulator, requirement) => {
+        const status = normalizeLegalFormStatus(requirement?.status);
+        if (status === LEGAL_FORM_FILTER.MISSING) accumulator.missing += 1;
+        if (status === LEGAL_FORM_FILTER.PRESENT) accumulator.present += 1;
+        if (status === LEGAL_FORM_FILTER.PENDING_SCAN) accumulator.pendingScan += 1;
+        return accumulator;
+    }, { missing: 0, present: 0, pendingScan: 0 });
+    const totalFromSummary = Number(summary?.totalRequirements);
+
+    return {
+        source,
+        sourceLabel: LEGAL_FORM_SOURCE_LABELS[source] || source || 'Sin fuente',
+        sourceMessage: getLegalFormSourceMessage(source),
+        showSourceWarning: ['no_snapshot', 'insufficient_inputs'].includes(source),
+        totalRequired: Number.isFinite(totalFromSummary)
+            ? totalFromSummary
+            : requirements.filter((requirement) => Boolean(normalizeLegalFormStatus(requirement?.status))).length,
+        missing: Number.isFinite(Number(summary?.missing)) ? Number(summary.missing) : countedRequirements.missing,
+        present: Number.isFinite(Number(summary?.present)) ? Number(summary.present) : countedRequirements.present,
+        pendingScan: Number.isFinite(Number(summary?.pendingScan)) ? Number(summary.pendingScan) : countedRequirements.pendingScan,
+    };
+}
+
+export function buildMissingDocumentsSuggestionText(result = {}) {
+    const suggestedRows = Array.isArray(result?.missingDocuments) && result.missingDocuments.length
+        ? result.missingDocuments
+            .map((document) => normalizeText(document?.suggestedText)
+                || (normalizeText(document?.label) ? `Solicitar ${normalizeText(document.label)}.` : ''))
+            .filter(Boolean)
+        : (Array.isArray(result?.requirements) ? result.requirements
+            .filter((requirement) => [LEGAL_FORM_FILTER.MISSING, LEGAL_FORM_FILTER.PENDING_SCAN].includes(normalizeLegalFormStatus(requirement?.status)))
+            .map((requirement) => {
+                const label = normalizeText(requirement?.label) || normalizeCode(requirement?.code) || 'documento sin identificar';
+                return normalizeLegalFormStatus(requirement?.status) === LEGAL_FORM_FILTER.PENDING_SCAN
+                    ? `Digitalizar o cargar ${label}.`
+                    : `Solicitar ${label}.`;
+            })
+            .filter(Boolean)
+            : []);
+
+    return suggestedRows.map((text, index) => `${index + 1}. ${text}`).join('\n');
+}
+
+export function decorateDocumentTableRowsWithLegalForm(rows = [], result = {}) {
+    if (!Array.isArray(rows)) {
+        return [];
+    }
+
+    const requirements = Array.isArray(result?.requirements) ? result.requirements : [];
+
+    if (!requirements.length) {
+        return rows.map((row) => ({
+            ...row,
+            isPreviewRow: Boolean(row?.isPreviewRow),
+            legalForm: row?.legalForm || null,
+        }));
+    }
+
+    const source = normalizeText(result?.source).toLowerCase();
+    const decoratedRows = rows.map((row) => ({
+        ...row,
+        isPreviewRow: Boolean(row?.isPreviewRow),
+        legalForm: row?.legalForm || null,
+    }));
+    const rowIndexesByMatchKey = new Map();
+
+    decoratedRows.forEach((row, index) => {
+        getRowMatchKeys(row).forEach((key) => {
+            if (!rowIndexesByMatchKey.has(key)) {
+                rowIndexesByMatchKey.set(key, []);
+            }
+            rowIndexesByMatchKey.get(key).push(index);
+        });
+    });
+
+    const syntheticRows = [];
+
+    requirements.forEach((requirement, index) => {
+        const legalForm = buildLegalFormPayload(requirement, source);
+        const matchKey = getRequirementMatchKey(requirement);
+        const matchingIndexes = matchKey ? (rowIndexesByMatchKey.get(matchKey) || []) : [];
+
+        if (matchingIndexes.length) {
+            const rowIndex = matchingIndexes[0];
+            decoratedRows[rowIndex] = {
+                ...decoratedRows[rowIndex],
+                legalForm,
+            };
+            return;
+        }
+
+        const syntheticRow = createSyntheticLegalFormRow(requirement, source, index);
+        if (syntheticRow) {
+            syntheticRows.push(syntheticRow);
+        }
+    });
+
+    return [...decoratedRows, ...syntheticRows].sort((firstRow, secondRow) => {
+        const firstValue = Number(firstRow?.latestDateValue || 0);
+        const secondValue = Number(secondRow?.latestDateValue || 0);
+
+        if (secondValue !== firstValue) {
+            return secondValue - firstValue;
+        }
+
+        return String(firstRow?.documentName || '').localeCompare(String(secondRow?.documentName || ''), 'es', { sensitivity: 'base' });
+    });
 }
 
 function normalizePreviewMedium(value) {
@@ -723,6 +1015,7 @@ export function filterDocumentTableRows(rows = [], filters = {}) {
     const vrFilter = String(filters.vr || '').trim().toLowerCase();
     const mediumFilters = Array.isArray(filters.mediums) ? filters.mediums.filter(Boolean) : [];
     const statusFilters = Array.isArray(filters.statuses) ? filters.statuses.filter(Boolean) : [];
+    const legalFormFilter = String(filters.legalForm || LEGAL_FORM_FILTER.ALL).trim().toLowerCase();
 
     return rows.filter((row) => {
         if (documentFilter) {
@@ -759,6 +1052,18 @@ export function filterDocumentTableRows(rows = [], filters = {}) {
                 : 'not_applicable';
 
             if (!statusFilters.includes(status)) {
+                return false;
+            }
+        }
+
+        if (legalFormFilter && legalFormFilter !== LEGAL_FORM_FILTER.ALL) {
+            const rowStatus = normalizeLegalFormStatus(row?.legalForm?.status);
+
+            if (legalFormFilter === LEGAL_FORM_FILTER.REQUIRED) {
+                if (!rowStatus) {
+                    return false;
+                }
+            } else if (rowStatus !== legalFormFilter) {
                 return false;
             }
         }
