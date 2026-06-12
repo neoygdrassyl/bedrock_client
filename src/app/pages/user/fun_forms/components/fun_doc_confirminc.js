@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../components/customClasses/typeParse'
 import FUNService from '../../../../services/fun.service'
@@ -7,28 +7,22 @@ import dayjs from 'dayjs';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 
-import DCO_LIS from '../../../../components/jsons/fun6DocsList.json'
 import SubmitService from '../../../../services/submit.service'
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { buildMissingDocumentsSuggestionText, summarizeLegalFormRequirements } from '../../shared/expediente-documental.utils';
 
 function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, requestUpdate, swaMsg }) {
         const [vrsRelated, setVrsRelated] = useState([]);
         const [vrSelected, setVrSelected] = useState(null);
         const [cubSelected, setCubSelected] = useState(null);
         const [idCUBxVr, setIdCUBxVr] = useState(null);
-    useEffect(() => {
-        if (currentVersion != null) {
-            var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
-            document.getElementById('geni_type').value = formsParser1(_CHILD_1)
-        }
-    }, [currentVersion]);
-
-    useEffect(() => {
-        retrieveItem();
-    }, []);
-
-    let _SET_CHILD_1_FOREIGNER = () => {
+        const [missingFieldValue, setMissingFieldValue] = useState('');
+        const [missingFieldMode, setMissingFieldMode] = useState('auto');
+        const [calculatedMissingSuggestion, setCalculatedMissingSuggestion] = useState('');
+        const [missingSuggestionMeta, setMissingSuggestionMeta] = useState({ loading: false, error: '', sourceMessage: '', sourceLabel: '' });
+        const missingFieldModeRef = useRef('auto');
+    const _SET_CHILD_1_FOREIGNER = useCallback(() => {
         var _CHILD = currentItem.fun_1s;
         var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
@@ -48,8 +42,8 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
             }
         }
         return _CHILD_VARS;
-    }
-    const retrieveItem = async () => {
+    }, [currentItem.fun_1s, currentVersion]);
+    const retrieveItem = useCallback(async () => {
         try {
             await SubmitService.getIdRelated(currentItem.id_public).then(response => {
                 setVrsRelated(response.data)
@@ -66,7 +60,63 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
         } catch (error) {
             console.log(error);
         }
-    }
+    }, [currentItem.id_public]);
+    const retrieveMissingSuggestion = useCallback(async () => {
+        if (!currentItem?.id || !currentItem?.id_public) {
+            setCalculatedMissingSuggestion('');
+            setMissingSuggestionMeta({ loading: false, error: '', sourceMessage: '', sourceLabel: '' });
+            return;
+        }
+
+        setMissingSuggestionMeta((current) => ({ ...current, loading: true, error: '' }));
+
+        try {
+            const response = await FUNService.getMissingDocuments(currentItem.id, currentItem.id_public);
+            const result = response?.data || {};
+            const suggestion = buildMissingDocumentsSuggestionText(result);
+            const summary = summarizeLegalFormRequirements(result);
+
+            setCalculatedMissingSuggestion(suggestion);
+            setMissingSuggestionMeta({
+                loading: false,
+                error: '',
+                sourceMessage: summary.sourceMessage || '',
+                sourceLabel: summary.sourceLabel || '',
+            });
+            setMissingFieldValue((currentValue) => missingFieldModeRef.current === 'manual' ? currentValue : suggestion);
+            if (missingFieldModeRef.current !== 'manual') {
+                setMissingFieldMode('auto');
+                missingFieldModeRef.current = 'auto';
+            }
+        } catch (error) {
+            setCalculatedMissingSuggestion('');
+            setMissingSuggestionMeta({ loading: false, error: 'No fue posible consultar Legal y Debida Forma.', sourceMessage: '', sourceLabel: '' });
+        }
+    }, [currentItem?.id, currentItem?.id_public]);
+
+    useEffect(() => {
+        if (currentVersion != null) {
+            var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
+            document.getElementById('geni_type').value = formsParser1(_CHILD_1)
+        }
+    }, [currentVersion, _SET_CHILD_1_FOREIGNER]);
+
+    useEffect(() => {
+        retrieveItem();
+    }, [retrieveItem]);
+
+    useEffect(() => {
+        const json = getJSONFull(currentItem?.fun_law?.cub_inc_json) || {};
+        const persistedMissing = String(json?.missing || '').trim();
+
+        setMissingFieldValue(persistedMissing);
+        setMissingFieldMode(persistedMissing ? 'manual' : 'auto');
+        missingFieldModeRef.current = persistedMissing ? 'manual' : 'auto';
+    }, [currentItem?.fun_law?.cub_inc_json]);
+
+    useEffect(() => {
+        retrieveMissingSuggestion();
+    }, [retrieveMissingSuggestion]);
 
         function capitalize(s) {
             return s && s[0].toUpperCase() + s.slice(1);
@@ -197,11 +247,13 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
 
         // *********************************
         let _GENDOC_COMPONENT = () => {
-            var _MISSING = _SET_MISSING_FUN_R();
             var _CHILD_1 = _SET_CHILD_1();
             //var _CHILD_2 = _SET_CHILD_2();
             var _CHILD_53 = _SET_CHILD_53();
             let _JSON = getJSONFull(_GET_CHILD_LAW().cub_inc_json);
+            const shouldShowCalculatedSuggestion = missingFieldMode === 'manual'
+                && calculatedMissingSuggestion
+                && calculatedMissingSuggestion !== missingFieldValue;
             return <>
                 <div className="row mb-3">
                     <div className="col">
@@ -287,7 +339,18 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                     </div>
                     <div className="col">
                         <label>5.11 Documentos faltantes</label>
-                        <textarea rows="3" className="form-control mb-3" id="geni_missing" defaultValue={_JSON.missing || _MISSING}></textarea>
+                        <textarea rows="3" className="form-control mb-2" id="geni_missing" value={missingFieldValue} onChange={(event) => {
+                            setMissingFieldValue(event.target.value);
+                            setMissingFieldMode('manual');
+                            missingFieldModeRef.current = 'manual';
+                        }}></textarea>
+                        {missingSuggestionMeta.loading ? <div className="mb-2 text-xs text-muted-foreground" role="status" aria-live="polite">Consultando Legal y Debida Forma...</div> : null}
+                        {missingSuggestionMeta.error ? <div className="mb-2 rounded border border-danger-subtle bg-danger-subtle px-2 py-1 text-xs text-danger-emphasis" role="alert">{missingSuggestionMeta.error}</div> : null}
+                        {missingSuggestionMeta.sourceMessage ? <div className="mb-2 rounded border border-warning-subtle bg-warning-subtle px-2 py-1 text-xs text-warning-emphasis" role="alert">{missingSuggestionMeta.sourceMessage}</div> : null}
+                        {shouldShowCalculatedSuggestion ? <details className="rounded border border-border bg-light px-2 py-2 text-xs text-muted-foreground">
+                            <summary className="cursor-pointer select-none font-semibold text-foreground">Sugerencia calculada</summary>
+                            <div className="mt-2 whitespace-pre-line text-foreground">{calculatedMissingSuggestion}</div>
+                        </details> : null}
                     </div>
                 </div>
             </>

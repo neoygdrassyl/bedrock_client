@@ -52,6 +52,9 @@ function FUN_6_VIEW({
     const [createDocumentsSaving, setCreateDocumentsSaving] = useState(false);
     const [pendingPhysicalDocs, setPendingPhysicalDocs] = useState([]);
     const [pendingPhysicalDocsLoaded, setPendingPhysicalDocsLoaded] = useState(false);
+    const [missingDocumentsResult, setMissingDocumentsResult] = useState(null);
+    const [missingDocumentsLoaded, setMissingDocumentsLoaded] = useState(false);
+    const [missingDocumentsError, setMissingDocumentsError] = useState('');
     const [activeTab, setActiveTab] = useState('documents'); // 'documents' | 'audit'
     const [rawSubmitList, setRawSubmitList] = useState([]);
 
@@ -77,12 +80,14 @@ function FUN_6_VIEW({
             retrieveItemVR(currentItem.id_public);
             retrieveUnifiedDocumentEntries(id, currentItem.id_public);
             retrievePendingPhysicalDocuments(id, currentItem.id_public);
+            retrieveMissingDocuments(id, currentItem.id_public);
         }
     };
     const requestDocumentUpdate = (id) => {
         if (mergeVentanilla && currentItem?.id_public) {
             retrieveUnifiedDocumentEntries(id, currentItem.id_public);
             retrievePendingPhysicalDocuments(id, currentItem.id_public);
+            retrieveMissingDocuments(id, currentItem.id_public);
             return;
         }
 
@@ -125,6 +130,28 @@ function FUN_6_VIEW({
                 console.warn('No fue posible consultar los documentos físicos pendientes.', error);
                 setPendingPhysicalDocs([]);
                 setPendingPhysicalDocsLoaded(true);
+            });
+    };
+    const retrieveMissingDocuments = (funId, idRelated) => {
+        if (!funId || !idRelated) {
+            setMissingDocumentsResult(null);
+            setMissingDocumentsError('');
+            setMissingDocumentsLoaded(true);
+            return;
+        }
+
+        setMissingDocumentsLoaded(false);
+        setMissingDocumentsError('');
+        FUN_SERVICE.getMissingDocuments(funId, idRelated)
+            .then((response) => {
+                setMissingDocumentsResult(response?.data || null);
+                setMissingDocumentsLoaded(true);
+            })
+            .catch((error) => {
+                console.warn('No fue posible consultar Legal y Debida Forma.', error);
+                setMissingDocumentsResult(null);
+                setMissingDocumentsError('No fue posible consultar Legal y Debida Forma.');
+                setMissingDocumentsLoaded(true);
             });
     };
     const retrieveItemVR = (id) => {
@@ -207,6 +234,22 @@ function FUN_6_VIEW({
         }
 
         retrievePendingPhysicalDocuments(currentId, currentItem.id_public);
+    }, [mergeVentanilla, currentId, currentItem?.id_public]);
+
+    useEffect(() => {
+        if (!mergeVentanilla) {
+            setMissingDocumentsLoaded(true);
+            return;
+        }
+
+        if (!currentId || !currentItem?.id_public) {
+            setMissingDocumentsResult(null);
+            setMissingDocumentsError('');
+            setMissingDocumentsLoaded(true);
+            return;
+        }
+
+        retrieveMissingDocuments(currentId, currentItem.id_public);
     }, [mergeVentanilla, currentId, currentItem?.id_public]);
 
     useEffect(() => {
@@ -676,6 +719,9 @@ function FUN_6_VIEW({
                             onSaveDigitalEntry={saveDigitalEntryFromModal}
                             onDeleteEntry={(digitalDoc) => delete_6(digitalDoc.id)}
                             vrList={VRList}
+                            legalFormResult={missingDocumentsResult}
+                            legalFormLoading={!missingDocumentsLoaded}
+                            legalFormError={missingDocumentsError}
                         /> : _CHILD_6_LIST()}
                         {edit
                             ? <>
