@@ -15,6 +15,7 @@ import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { DOCUMENT_ORIGIN_STATE } from '../shared/expediente-documental.constants';
 import { LegacyModal } from '@/components/legacy-modal';
+import MissingDocumentsModal from './MissingDocumentsModal.jsx';
 
 function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshList, activePanel = 'physical', digitalCount = 0, digitalDocuments = [], onPanelChange, renderDigitalPanel }) {
     const [lists, setLists] = useState(0);
@@ -31,7 +32,14 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
     const [scanModalOpen, setScanModalOpen] = useState(false);
     const [scanPreviewDocument, setScanPreviewDocument] = useState(null);
     const [localDigitalDocuments, setLocalDigitalDocuments] = useState([]);
+    const [missingDocumentsModalOpen, setMissingDocumentsModalOpen] = useState(false);
+    const [missingDocumentsResult, setMissingDocumentsResult] = useState(null);
+    const [missingDocumentsLoading, setMissingDocumentsLoading] = useState(false);
+    const [missingDocumentsError, setMissingDocumentsError] = useState('');
     const currentSubLists = currentItem?.sub_lists ?? [];
+    const linkedFunId = currentItem?.id_related || '';
+    const currentVrId = currentItem?.id_public || '';
+    const canReviewMissingDocuments = Boolean(linkedFunId && currentVrId);
     const normalizeDocumentCode = (value) => String(value || '').trim().toUpperCase();
     const currentVrCode = normalizeDocumentCode(currentItem?.id_public);
     const belongsToCurrentVr = (documentItem) => {
@@ -217,6 +225,25 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             return;
         }
         setScanPreviewDocument(documentItem);
+    };
+
+    const openMissingDocumentsModal = () => {
+        if (!canReviewMissingDocuments) return;
+        setMissingDocumentsModalOpen(true);
+        setMissingDocumentsLoading(true);
+        setMissingDocumentsError('');
+        setMissingDocumentsResult(null);
+
+        funService.getMissingDocuments(linkedFunId, currentVrId)
+            .then((response) => {
+                setMissingDocumentsResult(response?.data || null);
+            })
+            .catch(() => {
+                setMissingDocumentsError('No fue posible consultar los documentos faltantes.');
+            })
+            .finally(() => {
+                setMissingDocumentsLoading(false);
+            });
     };
 
     const goToPreviousList = () => {
@@ -570,6 +597,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
         let _COMPONENT_LIST = () => {
             if (isNew) return _COMPONENT_NEW();
 
+            const renderMissingDocumentsButton = () => canReviewMissingDocuments ? <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-[11px]" disabled={missingDocumentsLoading} title="Faltantes" onClick={openMissingDocumentsModal}>
+                <Icon name={missingDocumentsLoading ? 'Loader2' : 'ClipboardList'} size={14} className={missingDocumentsLoading ? 'animate-spin' : ''} /> Faltantes
+            </Button> : null;
+
             return (
                 <div className="flex h-full min-h-0 flex-col gap-1.5 overflow-hidden">
                     <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 bg-background px-2 pt-2">
@@ -639,6 +670,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                         <Button type="button" size="sm" className="h-8 px-2 text-[11px]" disabled={!activeReviewedDocuments.length} title="Gestionar escaneados" onClick={() => setScanModalOpen(true)}>
                                             <Icon name="FileUp" size={14} /> Gestionar escaneados
                                         </Button>
+                                        {renderMissingDocumentsButton()}
                                     </div>
                                 </div>
 
@@ -646,9 +678,14 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                     {_LIST_GEN(activeList)}
                                 </div>
                             </>
-                            : <div className="flex min-h-64 flex-1 items-center justify-center rounded-xl border border-dashed border-border/70 bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
-                                No hay información documental para esta entrada.
-                            </div>}
+                            : <>
+                                {canReviewMissingDocuments ? <div className="flex shrink-0 justify-end border-b border-border/60 bg-muted/20 px-3 py-2">
+                                    {renderMissingDocumentsButton()}
+                                </div> : null}
+                                <div className="flex min-h-64 flex-1 items-center justify-center rounded-xl border border-dashed border-border/70 bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
+                                    No hay información documental para esta entrada.
+                                </div>
+                            </>}
                     </section>
                 </div>
             )
@@ -1340,6 +1377,13 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                 <div className="h-full min-h-0 flex-1 overflow-auto">
                     {_COMPONENT_LIST()}
                 </div>
+                <MissingDocumentsModal
+                    open={missingDocumentsModalOpen}
+                    loading={missingDocumentsLoading}
+                    error={missingDocumentsError}
+                    result={missingDocumentsResult}
+                    onClose={() => setMissingDocumentsModalOpen(false)}
+                />
                 {renderScanModal()}
                 {renderScanPreviewModal()}
             </section>
