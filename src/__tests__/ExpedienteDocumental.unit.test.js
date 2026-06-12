@@ -2,14 +2,20 @@ import { describe, expect, it } from 'vitest';
 
 import {
     DOCUMENT_ORIGIN_STATE,
+    DOCUMENT_PREVIEW_MEDIUM,
     buildDocumentEntriesFromLegacyData,
+    buildDocumentDownloadUrl,
+    buildDocumentPreviewUrl,
     buildDocumentTableRows,
     buildUnifiedDocumentRows,
+    buildMissingDocumentsSuggestionText,
+    decorateDocumentTableRowsWithLegalForm,
     filterDocumentEntryGroups,
     filterDocumentTableRows,
     filterUnifiedDocumentRows,
     groupDocumentEntries,
     normalizeVentanillaDocs,
+    summarizeLegalFormRequirements,
     summarizeUnifiedDocumentRows,
 } from '../app/pages/user/shared/expediente-documental.utils';
 
@@ -271,5 +277,130 @@ describe('expediente-documental utils', () => {
         expect(rows).toHaveLength(1);
         expect(rows[0].scanned).toMatchObject({ applies: true, value: true });
         expect(filterDocumentTableRows(rows, { statuses: ['scanned'] })).toEqual(rows);
+    });
+
+    it('decora filas con Legal y Debida Forma, agrega sintéticas faltantes y filtra por estado legal', () => {
+        const rows = [
+            {
+                id: 'row-present',
+                documentCode: 'DOC-003',
+                documentName: 'Documento de identidad digital',
+                entries: [{
+                    entryId: 'fun6:77',
+                    sourceTable: 'fun_6',
+                    canPreview: true,
+                    canEdit: true,
+                    canDelete: true,
+                    path: 'docs/fun/FUN26-2330',
+                    filename: 'doc-003.pdf',
+                }],
+                entryCount: 1,
+                latestVr: 'VR26-2330',
+                vrValues: ['VR26-2330'],
+                latestDocumentDate: '2026-06-01',
+                medium: DOCUMENT_PREVIEW_MEDIUM.DIGITAL,
+                mediumLabel: 'Digital',
+                mediumPresence: {
+                    [DOCUMENT_PREVIEW_MEDIUM.PHYSICAL]: false,
+                    [DOCUMENT_PREVIEW_MEDIUM.DIGITAL]: true,
+                },
+                scanned: { applies: false, value: false, count: 0, label: 'No aplica' },
+                folios: { digital: 1, physical: 0, total: 1, label: 'Digitales 1 / Físicos 0' },
+            },
+        ];
+        const missingDocumentsResult = {
+            source: 'snapshot',
+            snapshotId: 321,
+            configVersionId: 12,
+            summary: {
+                totalRequirements: 3,
+                missing: 1,
+                pendingScan: 1,
+                present: 1,
+            },
+            requirements: [
+                {
+                    code: 'DOC-001',
+                    label: 'Formulario único nacional',
+                    groupKey: 'base',
+                    status: 'missing',
+                    statusReason: 'required_without_evidence',
+                    evidence: [],
+                },
+                {
+                    code: 'DOC-002',
+                    label: 'Certificado de libertad físico',
+                    groupKey: 'base',
+                    status: 'pending_scan',
+                    statusReason: 'physical_positive_without_digital',
+                    evidence: [{ sourceTable: 'sub_list', sourceId: 42, vrIdPublic: 'VR26-2330' }],
+                },
+                {
+                    code: 'DOC-003',
+                    label: 'Documento de identidad digital',
+                    groupKey: 'identidad',
+                    status: 'present',
+                    statusReason: 'digital_evidence',
+                    evidence: [{ sourceTable: 'fun_6', sourceId: 77, documentName: 'Documento de identidad digital' }],
+                },
+            ],
+        };
+
+        const decoratedRows = decorateDocumentTableRowsWithLegalForm(rows, missingDocumentsResult);
+        const legalSummary = summarizeLegalFormRequirements(missingDocumentsResult);
+        const missingRows = filterDocumentTableRows(decoratedRows, { legalForm: 'missing' });
+        const pendingRows = filterDocumentTableRows(decoratedRows, { legalForm: 'pending_scan' });
+        const requiredRows = filterDocumentTableRows(decoratedRows, { legalForm: 'required' });
+
+        expect(legalSummary).toMatchObject({
+            source: 'snapshot',
+            present: 1,
+            missing: 1,
+            pendingScan: 1,
+            totalRequired: 3,
+            showSourceWarning: false,
+        });
+
+        expect(requiredRows).toHaveLength(3);
+        expect(missingRows).toHaveLength(1);
+        expect(pendingRows).toHaveLength(1);
+        expect(missingRows[0]).toMatchObject({
+            documentCode: 'DOC-001',
+            documentName: 'Formulario único nacional',
+            isPreviewRow: true,
+            canPreview: false,
+            canDelete: false,
+            legalForm: {
+                status: 'missing',
+                source: 'snapshot',
+            },
+        });
+        expect(pendingRows[0]).toMatchObject({
+            documentCode: 'DOC-002',
+            isPreviewRow: true,
+            legalForm: {
+                status: 'pending_scan',
+            },
+        });
+        expect(buildDocumentPreviewUrl(missingRows[0].entries[0])).toBe('');
+        expect(buildDocumentDownloadUrl(missingRows[0].entries[0])).toBe('');
+        expect(decoratedRows.find((row) => row.documentCode === 'DOC-003')).toMatchObject({
+            isPreviewRow: false,
+            legalForm: {
+                status: 'present',
+                source: 'snapshot',
+            },
+        });
+    });
+
+    it('construye texto sugerido para 5.11 desde el endpoint read-only y preserva el orden recibido', () => {
+        const suggestion = buildMissingDocumentsSuggestionText({
+            missingDocuments: [
+                { suggestedText: 'Solicitar Formulario único nacional.' },
+                { suggestedText: 'Digitalizar o cargar Certificado de libertad físico.' },
+            ],
+        });
+
+        expect(suggestion).toBe('1. Solicitar Formulario único nacional.\n2. Digitalizar o cargar Certificado de libertad físico.');
     });
 });
