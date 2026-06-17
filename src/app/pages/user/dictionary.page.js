@@ -20,6 +20,11 @@ import { infoCud } from '../../components/jsons/vars';
 import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+
+function asDictionaryList(list) {
+    return Array.isArray(list) ? list : [];
+}
+
 export default function DICTIONARY(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
 
@@ -150,14 +155,15 @@ export default function DICTIONARY(props) {
 
     let _COMPONENT_PAGINATION = (_list, _page, _limit, _func, _filter, process, _key) => {
         var LIST = [];
+        const sourceList = asDictionaryList(_list);
         if (_key === 'cub') {
-            LIST = filterCubDictionary(_list, _filter, process)
+            LIST = filterCubDictionary(sourceList, _filter, process)
         }
         else if (process !== '') {
-            LIST = _list.filter(item => item[process] == _filter)
+            LIST = sourceList.filter(item => item[process] == _filter)
         }
         else {
-            LIST = _list.filter((arr, i) => {
+            LIST = sourceList.filter((arr, i) => {
                 if (!arr[_key]) return false;
                 let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -488,14 +494,15 @@ export default function DICTIONARY(props) {
 
     let _COMPONENT_MAIN_LIST = (_list, _filter, process, _key, _limit, _page, _COMPONENT_POP) => {
         var LIST = [];
+        const sourceList = asDictionaryList(_list);
         if (_key === 'cub') {
-            LIST = filterCubDictionary(_list, _filter, process)
+            LIST = filterCubDictionary(sourceList, _filter, process)
         }
         else if (process !== '') {
-            LIST = _list.filter(item => item[process] == _filter)
+            LIST = sourceList.filter(item => item[process] == _filter)
         }
         else {
-            LIST = _list.filter((arr, i) => {
+            LIST = sourceList.filter((arr, i) => {
                 if (!arr[_key]) return false;
                 let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -691,7 +698,7 @@ export default function DICTIONARY(props) {
     function loadLists() {
         SERVICE_CUSTOM.loadDictionary_fun()
             .then(response => {
-                setListC(response.data)
+                setListC(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
@@ -699,34 +706,35 @@ export default function DICTIONARY(props) {
         SERVICE_CUSTOM.loadDictionary_cub()
             .then(response => {
                 setListD(normalizeCubDictionaryPayload(response.data))
+                setPag_D(1)
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_vr()
             .then(response => {
-                setListE(response.data)
+                setListE(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_out()
             .then(response => {
-                setListF(response.data)
+                setListF(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_oc()
             .then(response => {
-                setListG(response.data)
+                setListG(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_prof()
             .then(response => {
-                setListH(response.data)
+                setListH(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);

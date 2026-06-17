@@ -15,15 +15,12 @@ import COLOMBIA from '../img/img6.jpg'
 
 
 
-// Logos Carousel
-import CarouselLogos from '../components/carousel.component'
-
 // FRONT PAGE MODAL
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import './home.css'
 import { infoCud } from '../components/jsons/vars';
-import Map from '../components/map';
+import HomeMap from '../components/map';
 import { _news } from '../components/jsons/_news';
 import customService from '../services/custom.service';
 
@@ -218,10 +215,10 @@ function Home({ translation, history }) {
                 <div className="col-7 py-1">
                   <div className="px-0">
                     <span className='col-lg-12'>
-                      <h5 className='fw-normal'> <a style={{ color: 'white' }} href='https://www.google.es/maps/place/Curaduria+Urbana+No.+1+de+Bucaramanga/@7.1236512,-73.1155874,17z/data=!3m1!4b1!4m5!3m4!1s0x8e683f0ec6e6ea35:0xd99c4a977df44614!8m2!3d7.1236459!4d-73.1133987?hl=es' target="_blank" > <Icon name="MapPin" size={16} className="text-light" /> {infoCud.address}</a> </h5>
+                      <h5 className='fw-normal'> <a style={{ color: 'white' }} href='https://www.google.es/maps/place/Curaduria+Urbana+No.+1+de+Bucaramanga/@7.1236512,-73.1155874,17z/data=!3m1!4b1!4m5!3m4!1s0x8e683f0ec6e6ea35:0xd99c4a977df44614!8m2!3d7.1236459!4d-73.1133987?hl=es' target="_blank" rel="noopener noreferrer" > <Icon name="MapPin" size={16} className="text-light" /> {infoCud.address}</a> </h5>
                     </span>
                   </div>
-                  <h5 className='fw-normal' style={{ color: 'white' }}><a href="https://web.whatsapp.com/send?phone=+573162795010" style={{ color: 'white' }} target="_blank" > <Icon name="Smartphone" size={16} className="text-light" /> Whatsapp: {infoCud.number1}</a> <Icon name="Mail" size={16} className="text-light" /> Correo: curaduriaurbana1@gmail.com</h5>
+                  <h5 className='fw-normal' style={{ color: 'white' }}><a href="https://web.whatsapp.com/send?phone=+573162795010" style={{ color: 'white' }} target="_blank" rel="noopener noreferrer" > <Icon name="Smartphone" size={16} className="text-light" /> Whatsapp: {infoCud.number1}</a> <Icon name="Mail" size={16} className="text-light" /> Correo: curaduriaurbana1@gmail.com</h5>
                 </div>
               </div>
             </div>
@@ -416,7 +413,7 @@ function Home({ translation, history }) {
                         <div className="card align-items-center">
                           <img src={value.image} className="card-img-top" alt="Noticias y avisos importantes de la curaduria." style={{ height: '160px' }} />
                           <div className="card-body">
-                            <label className="text-start fw-normal" style={{ color: 'gray' }}>{value.icon_folder} {value.category}</label>
+                            <span className="text-start fw-normal" style={{ color: 'gray' }}>{value.icon_folder} {value.category}</span>
                             <h5 className="card-title fw-normal "><b>{value.title}</b></h5>
                             <Link to={value.url} className="text-dark text-decoration-none">
                               <div className="card-text fw-normal">
@@ -424,7 +421,7 @@ function Home({ translation, history }) {
                                 <span className='text-info'>{value.link}</span>
                               </div>
                             </Link>
-                            <label className="px-1" style={{ color: 'gray' }}>{value.icon_date} {value.date}</label>
+                            <span className="px-1" style={{ color: 'gray' }}>{value.icon_date} {value.date}</span>
                           </div>
                         </div>
                       </div>
@@ -526,7 +523,7 @@ function Home({ translation, history }) {
         <h2 className='text-center' id='ubicacion'> Ubicación {<Button_navigation Iddown={null} Idup={'news'} />}</h2>
         <div className="row justify-content-center px-4 mx-4 px-4 mb-5">
           <div className="col-lg-12 justify-content-center">
-            <Map></Map>
+                    <HomeMap></HomeMap>
           </div>
         </div>
 
