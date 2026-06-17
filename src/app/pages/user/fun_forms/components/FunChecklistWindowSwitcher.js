@@ -41,6 +41,12 @@ function FunChecklistWindowSwitcher({
     vrDocs,
   };
 
+  const legacyProps = {
+    ...sharedProps,
+    requestUpdate,
+    readOnly,
+  };
+
   return (
     <div className="fun-checklist-window-switcher">
       <div className="nav nav-tabs" role="tablist" aria-label="Ventanas de lista de chequeo FUN">
@@ -75,7 +81,7 @@ function FunChecklistWindowSwitcher({
       <div className="border border-top-0 p-3 bg-white">
         {activeTab === LEGACY_TAB && (
           <div id={legacyPanelId} role="tabpanel" aria-labelledby={legacyTabId}>
-            <EffectiveLegacyChecklistComponent {...sharedProps} />
+            <EffectiveLegacyChecklistComponent {...legacyProps} />
           </div>
         )}
 
