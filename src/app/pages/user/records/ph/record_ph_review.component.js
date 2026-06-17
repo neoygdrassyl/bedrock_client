@@ -40,11 +40,11 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             })
             const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'DOCUMENTOS PH / CITACIÓN PARA NOTIFICACIÓN');
-            setCubSelected(data.cub);
-            setIdCUBxVr(data.id);
+            setCubSelected(data?.cub ?? null);
+            setIdCUBxVr(data?.id ?? null);
             const data_ph = responseCubXVr.data.find(item => item.process === 'PROPIEDAD HORIZONTAL');
-            setCubSelected_ph(data_ph.cub);
-            setIdCUBxVr_ph(data_ph.id);
+            setCubSelected_ph(data_ph?.cub ?? null);
+            setIdCUBxVr_ph(data_ph?.id ?? null);
         } catch (error) {
             console.log(error);
         }
