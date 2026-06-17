@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 const { setScopeMock, getFunByPublicMock, getFunMock, getSummaryByIdPublicMock } = vi.hoisted(() => ({
@@ -180,7 +180,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(screen.queryByRole('button', { name: /publicidad/i })).not.toBeInTheDocument();
   });
 
-  it('mapea el módulo legacy record_ph al informe PH del workspace', () => {
+  it('mantiene compatibilidad con el target legacy record_ph del workspace', () => {
     expect(buildExpedienteWorkspaceUrl(expediente, { module: 'record_ph' })).toBe(
       '/funmanage/expediente/2026-00123?section=informes&report=ph'
     );
@@ -192,7 +192,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     });
   });
 
-  it('muestra solo Informe P.H. y renderiza RECORD_PH para expedientes de propiedad horizontal', () => {
+  it('muestra solo Informe P.H. como módulo directo y renderiza RECORD_PH para expedientes de propiedad horizontal', () => {
     render(
       <FunExpedienteFullscreen
         expediente={phExpediente}
@@ -205,15 +205,125 @@ describe('FunExpedienteFullscreen bookmarks', () => {
       />
     );
 
-    expect(screen.getAllByRole('button', { name: /informe p\.h\./i }).length).toBeGreaterThanOrEqual(1);
-    expect(screen.queryByRole('button', { name: /^informes$/i })).not.toBeInTheDocument();
+    const workspaceNav = screen.getByRole('navigation', { name: /m[oó]dulos del expediente/i });
+    const navGroups = within(workspaceNav).getAllByRole('group');
+
+    expect(navGroups).toHaveLength(3);
+    expect(screen.queryByRole('navigation', { name: /subnavegaci[oó]n de informes/i })).not.toBeInTheDocument();
+    expect(within(navGroups[1]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+      'Tiempos',
+      'Informe P.H.',
+    ]);
     expect(screen.getByRole('button', { name: /expedici[oó]n p\.h\./i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^expedici[oó]n$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /informe p\.h\./i })).toHaveAttribute('aria-current', 'page');
     expect(screen.queryByRole('button', { name: /jurídico/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /arquitectónico/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /estructural/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /acta/i })).not.toBeInTheDocument();
     expect(screen.getByTestId('module-ph')).toBeInTheDocument();
+  });
+
+  it('normaliza report=ph como jurídico para expedientes normales aunque description mencione propiedad horizontal', () => {
+    render(
+      <FunExpedienteFullscreen
+        expediente={{
+          ...expediente,
+          id_public: '68001-1-25-0263',
+          tipo_licencia: 'D',
+          categoria: 'III',
+          fun_1s: [{
+            tipo: 'D',
+            tramite: '',
+            m_lic: 'D',
+            m_urb: '',
+            m_sub: '',
+            description: 'MODIFICACION Y REFORZAMIENTO ESTRUCTURAL PARA UNA EDIFICACION SOMETIDA AL REGIMEN DE PROPIEDAD HORIZONTAL',
+          }],
+        }}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+        initialSection="informes"
+        initialReport="ph"
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /informe jurídico/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.queryByRole('button', { name: /informe p\.h\./i })).not.toBeInTheDocument();
+    expect(screen.getByTestId('module-law')).toBeInTheDocument();
+  });
+
+  it('renderiza tres grupos directos de ancho completo, elimina la subnavegación de informes y conserva el cambio de reporte activo', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <FunExpedienteFullscreen
+        expediente={expediente}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+        initialSection="informes"
+        initialReport="arquitectonico"
+      />
+    );
+
+    const workspaceNav = screen.getByRole('navigation', { name: /m[oó]dulos del expediente/i });
+    const navScroller = workspaceNav.firstElementChild;
+    const navGroups = within(workspaceNav).getAllByRole('group');
+
+    expect(screen.queryByRole('navigation', { name: /subnavegaci[oó]n de informes/i })).not.toBeInTheDocument();
+    expect(navScroller).toHaveClass('flex');
+    expect(navGroups).toHaveLength(3);
+    navGroups.forEach((group) => {
+      expect(group).toHaveClass('grid-flow-col', 'auto-cols-max');
+    });
+    expect(within(navGroups[0]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+      'Detalles',
+      'Documentos',
+      'Actualizar',
+      'Chequeo',
+      'Publicidad',
+    ]);
+    expect(within(navGroups[1]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+      'Tiempos',
+      'Inf. Jur',
+      'Inf. Arq',
+      'Inf. Estr',
+    ]);
+    expect(within(navGroups[2]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+      'Acta',
+      'Expedición',
+    ]);
+
+    expect(screen.getByRole('button', { name: /informe arquitectónico/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByTestId('module-arc')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /informe estructural/i }));
+    expect(screen.getByRole('button', { name: /informe estructural/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByTestId('module-eng')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /informe jurídico/i }));
+    expect(screen.getByRole('button', { name: /informe jurídico/i })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByTestId('module-law')).toBeInTheDocument();
+  });
+
+  it('usa una variante activa más visible y mantiene contraste fuerte en botones inactivos del workspace', () => {
+    render(
+      <FunExpedienteFullscreen
+        expediente={expediente}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /detalles/i })).toHaveClass('border-sky-400', 'bg-sky-200/95', 'text-sky-950');
+    expect(screen.getByRole('button', { name: /detalles/i })).not.toHaveClass('bg-sky-700', 'text-white');
+    expect(screen.getByRole('button', { name: /documentos/i })).toHaveClass('text-slate-900', 'bg-white/80');
   });
 
   it('renderiza la aprobación PH legacy al abrir Expedición P.H.', () => {
@@ -232,5 +342,46 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(screen.queryByRole('button', { name: /^expedici[oó]n$/i })).not.toBeInTheDocument();
     expect(screen.getByTestId('module-ph')).toBeInTheDocument();
     expect(screen.queryByTestId('module-expedition')).not.toBeInTheDocument();
+  });
+
+  it('no conserva opciones PH al refrescar hacia un expediente no PH', async () => {
+    const user = userEvent.setup();
+    const phWithTopLevelFlag = {
+      ...phExpediente,
+      id: 321,
+      id_public: '2026-PH',
+      tipo_licencia: 'Propiedad Horizontal',
+    };
+    const nonPhAfterRefresh = {
+      ...expediente,
+      id: 456,
+      id_public: '2026-NOPH',
+    };
+
+    setScopeMock.mockResolvedValue(undefined);
+    getFunByPublicMock.mockResolvedValueOnce({ data: nonPhAfterRefresh });
+
+    render(
+      <FunExpedienteFullscreen
+        expediente={phWithTopLevelFlag}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+        initialSection="expedicion"
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /expedici[oó]n p\.h\./i })).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('fullscreen-bookmark-menu-team-321'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^expedici[oó]n$/i })).toBeInTheDocument();
+    });
+
+    expect(screen.queryByRole('button', { name: /expedici[oó]n p\.h\./i })).not.toBeInTheDocument();
+    expect(screen.getByTestId('module-expedition')).toBeInTheDocument();
+    expect(screen.queryByTestId('module-ph')).not.toBeInTheDocument();
   });
 });
