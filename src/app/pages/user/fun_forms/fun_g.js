@@ -1014,7 +1014,6 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                             currentItem={currentItem}
                             currentVersion={currentVersion}
                             requestUpdate={retrieveItem}
-                            readOnly
                             LegacyChecklistComponent={FUNG_CHECKLIST}
                         />
                     </fieldset>

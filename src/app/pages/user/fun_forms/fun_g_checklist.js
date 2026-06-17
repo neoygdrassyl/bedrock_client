@@ -1,9 +1,15 @@
+import { useState } from 'react';
 import DataTable from '@/components/data-table-bridge';
 
 import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
+import checklistService from '../../../services/checklist.service';
+import { swalError, swalLoading, swalSuccess } from '../../../utils/swalAdapter';
 
-const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion }) => {
+const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, readOnly = false }) => {
+
+        const [isSaving, setIsSaving] = useState(false);
+        const [checkedOverrides, setCheckedOverrides] = useState({});
 
         let _SET_CHILD = () => {
             var _CHILD = currentItem.fun_1s;
@@ -39,13 +45,17 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
             return _CHILD;
         }
         let _CHECK_INDEXVALUE = (_CODE, _VALUE) => {
+            if (checkedOverrides[_CODE] != null) {
+                return String(checkedOverrides[_CODE]) === String(_VALUE);
+            }
+
             const _CHILD_REVIEW = _SET_CHILD_REVIEW();
             if (_CHILD_REVIEW) {
                 let _ARRAY_OF_CODES = _CHILD_REVIEW.code.split(",");
                 let _ARRAY_OF_CHECKEDS = _CHILD_REVIEW.checked.split(",");
                 if (_ARRAY_OF_CODES.indexOf(_CODE) > -1) {
                     let pos = _ARRAY_OF_CODES.indexOf(_CODE);
-                    if (_ARRAY_OF_CHECKEDS[pos] == _VALUE) {
+                    if (String(_ARRAY_OF_CHECKEDS[pos]) === String(_VALUE)) {
                         return true;
                     } else {
                         return false;
@@ -55,6 +65,42 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 }
             } else {
                 return false;
+            }
+        }
+
+        let _HANDLE_CHECK_CHANGE = async (event) => {
+            if (readOnly || isSaving) return;
+
+            const code = event.target.name;
+            const evaluation = event.target.value;
+            if (!currentItem?.id_public || !code) return;
+
+            const previousValue = ['1', '0', '2'].find((value) => _CHECK_INDEXVALUE(code, value));
+            setCheckedOverrides((current) => ({ ...current, [code]: evaluation }));
+            setIsSaving(true);
+            swalLoading({ title: swaMsg?.title_wait || 'Guardando', text: swaMsg?.text_wait || 'Actualizando lista de chequeo...' });
+
+            try {
+                await checklistService.updateRequirementEvaluation(currentItem.id_public, code, {
+                    version: currentVersion,
+                    evaluation,
+                    reason: 'legacy_checklist',
+                });
+                await requestUpdate?.(currentItem.id, false);
+                swalSuccess({ title: swaMsg?.publish_success_title || 'Guardado', text: swaMsg?.publish_success_text || 'Lista de chequeo actualizada.' });
+            } catch (error) {
+                setCheckedOverrides((current) => {
+                    const next = { ...current };
+                    if (previousValue === undefined) {
+                        delete next[code];
+                    } else {
+                        next[code] = previousValue;
+                    }
+                    return next;
+                });
+                swalError({ title: swaMsg?.generic_eror_title || 'Error', text: swaMsg?.generic_error_text || 'No fue posible actualizar la lista de chequeo.' });
+            } finally {
+                setIsSaving(false);
             }
         }
 
@@ -78,134 +124,134 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(611) Formulario Único Nacional (Adoptado por el MVCT).</label>
+                            <label>(511) Formulario Único Nacional (Adoptado por el MVCT).</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="611" value="1"
-                            checked={_CHECK_INDEXVALUE('611', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="1"
+                            checked={_CHECK_INDEXVALUE('511', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="611" value="0"
-                            checked={_CHECK_INDEXVALUE('611', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="0"
+                            checked={_CHECK_INDEXVALUE('511', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="611" value="2"
-                            checked={_CHECK_INDEXVALUE('611', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="2"
+                            checked={_CHECK_INDEXVALUE('511', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(612) Copia del certificado de tradición y libertad del inmueble.</label>
+                            <label>(512) Copia del certificado de tradición y libertad del inmueble.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="612" value="1"
-                            checked={_CHECK_INDEXVALUE('612', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="1"
+                            checked={_CHECK_INDEXVALUE('512', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="612" value="0"
-                            checked={_CHECK_INDEXVALUE('612', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="0"
+                            checked={_CHECK_INDEXVALUE('512', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="612" value="2"
-                            checked={_CHECK_INDEXVALUE('612', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="2"
+                            checked={_CHECK_INDEXVALUE('512', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(613) Copia documento de identidad del solicitante o  certificado de existencia y representación legal.</label>
+                            <label>(513) Copia documento de identidad del solicitante o  certificado de existencia y representación legal.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="613" value="1"
-                            checked={_CHECK_INDEXVALUE('613', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="1"
+                            checked={_CHECK_INDEXVALUE('513', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="613" value="0"
-                            checked={_CHECK_INDEXVALUE('613', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="0"
+                            checked={_CHECK_INDEXVALUE('513', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="613" value="2"
-                            checked={_CHECK_INDEXVALUE('613', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="2"
+                            checked={_CHECK_INDEXVALUE('513', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(614) Poder o autorización debidamente otorgado.</label>
+                            <label>(516) Poder o autorización debidamente otorgado.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="614" value="1"
-                            checked={_CHECK_INDEXVALUE('614', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="1"
+                            checked={_CHECK_INDEXVALUE('516', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="614" value="0"
-                            checked={_CHECK_INDEXVALUE('614', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="0"
+                            checked={_CHECK_INDEXVALUE('516', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="614" value="2"
-                            checked={_CHECK_INDEXVALUE('614', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="2"
+                            checked={_CHECK_INDEXVALUE('516', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(615) Copia del documento o declaración privada del impuesto predial del último año u otro documento oficial (establece la dirección del predio).</label>
+                            <label>(517) Copia del documento o declaración privada del impuesto predial del último año u otro documento oficial (establece la dirección del predio).</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="615" value="1"
-                            checked={_CHECK_INDEXVALUE('615', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="1"
+                            checked={_CHECK_INDEXVALUE('517', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="615" value="0"
-                            checked={_CHECK_INDEXVALUE('615', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="0"
+                            checked={_CHECK_INDEXVALUE('517', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="615" value="2"
-                            checked={_CHECK_INDEXVALUE('615', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="2"
+                            checked={_CHECK_INDEXVALUE('517', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(615) Relación de la dirección delos predios colindantes al proyecto.</label>
+                            <label>(518) Relación de la dirección delos predios colindantes al proyecto.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="616" value="1"
-                            checked={_CHECK_INDEXVALUE('616', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="1"
+                            checked={_CHECK_INDEXVALUE('518', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="616" value="0"
-                            checked={_CHECK_INDEXVALUE('616', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="0"
+                            checked={_CHECK_INDEXVALUE('518', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="616" value="2"
-                            checked={_CHECK_INDEXVALUE('616', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="2"
+                            checked={_CHECK_INDEXVALUE('518', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(617) Copia de la matrícula profesional de los profesionales intervinientes en el trámite y copia de las certificaciones que acrediten su experiencia, para los trámites que así lo requieran.</label>
+                            <label>(519) Copia de la matrícula profesional de los profesionales intervinientes en el trámite y copia de las certificaciones que acrediten su experiencia, para los trámites que así lo requieran.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="617" value="1"
-                            checked={_CHECK_INDEXVALUE('617', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="1"
+                            checked={_CHECK_INDEXVALUE('519', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="617" value="0"
-                            checked={_CHECK_INDEXVALUE('617', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="0"
+                            checked={_CHECK_INDEXVALUE('519', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="617" value="2"
-                            checked={_CHECK_INDEXVALUE('617', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="2"
+                            checked={_CHECK_INDEXVALUE('519', 2)} />
                     </div>
                 </div>
             </>
@@ -251,15 +297,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="621" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="1"
                                 checked={_CHECK_INDEXVALUE('621', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="621" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="0"
                                 checked={_CHECK_INDEXVALUE('621', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="621" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="2"
                                 checked={_CHECK_INDEXVALUE('621', 2)} />
                         </div>
                     </div>
@@ -270,15 +316,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601a" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="1"
                                 checked={_CHECK_INDEXVALUE('601a', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601a" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="0"
                                 checked={_CHECK_INDEXVALUE('601a', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601a" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="2"
                                 checked={_CHECK_INDEXVALUE('601a', 2)} />
                         </div>
                     </div>
@@ -289,15 +335,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="622" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="1"
                                 checked={_CHECK_INDEXVALUE('622', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="622" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="0"
                                 checked={_CHECK_INDEXVALUE('622', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="622" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="2"
                                 checked={_CHECK_INDEXVALUE('622', 2)} />
                         </div>
                     </div>
@@ -308,15 +354,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602a" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="1"
                                 checked={_CHECK_INDEXVALUE('602a', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602a" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="0"
                                 checked={_CHECK_INDEXVALUE('602a', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602a" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="2"
                                 checked={_CHECK_INDEXVALUE('602a', 2)} />
                         </div>
                     </div>
@@ -339,15 +385,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="623" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="1"
                                 checked={_CHECK_INDEXVALUE('623', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="623" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="0"
                                 checked={_CHECK_INDEXVALUE('623', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="623" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="2"
                                 checked={_CHECK_INDEXVALUE('623', 2)} />
                         </div>
                     </div>
@@ -358,15 +404,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601b" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="1"
                                 checked={_CHECK_INDEXVALUE('601b', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601b" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="0"
                                 checked={_CHECK_INDEXVALUE('601b', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601b" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="2"
                                 checked={_CHECK_INDEXVALUE('601b', 2)} />
                         </div>
                     </div>
@@ -377,15 +423,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602b" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="1"
                                 checked={_CHECK_INDEXVALUE('602b', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602b" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="0"
                                 checked={_CHECK_INDEXVALUE('602b', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602b" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="2"
                                 checked={_CHECK_INDEXVALUE('602b', 2)} />
                         </div>
                     </div>
@@ -396,15 +442,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="624" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="1"
                                 checked={_CHECK_INDEXVALUE('624', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="624" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="0"
                                 checked={_CHECK_INDEXVALUE('624', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="624" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="2"
                                 checked={_CHECK_INDEXVALUE('624', 2)} />
                         </div>
                     </div>
@@ -415,15 +461,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="625" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="1"
                                 checked={_CHECK_INDEXVALUE('625', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="625" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="0"
                                 checked={_CHECK_INDEXVALUE('625', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="625" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="2"
                                 checked={_CHECK_INDEXVALUE('625', 2)} />
                         </div>
                     </div>
@@ -446,15 +492,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="626" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="1"
                                 checked={_CHECK_INDEXVALUE('626', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="626" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="0"
                                 checked={_CHECK_INDEXVALUE('626', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="626" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="2"
                                 checked={_CHECK_INDEXVALUE('626', 2)} />
                         </div>
                     </div>
@@ -465,15 +511,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="627" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="1"
                                 checked={_CHECK_INDEXVALUE('627', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="627" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="0"
                                 checked={_CHECK_INDEXVALUE('627', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="627" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="2"
                                 checked={_CHECK_INDEXVALUE('627', 2)} />
                         </div>
                     </div>
@@ -484,15 +530,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601c" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="1"
                                 checked={_CHECK_INDEXVALUE('601c', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601c" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="0"
                                 checked={_CHECK_INDEXVALUE('601c', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="601c" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="2"
                                 checked={_CHECK_INDEXVALUE('601c', 2)} />
                         </div>
                     </div>
@@ -503,15 +549,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602c" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="1"
                                 checked={_CHECK_INDEXVALUE('602c', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602c" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="0"
                                 checked={_CHECK_INDEXVALUE('602c', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="602c" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="2"
                                 checked={_CHECK_INDEXVALUE('602c', 2)} />
                         </div>
                     </div>
@@ -551,15 +597,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="631" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="1"
                             checked={_CHECK_INDEXVALUE('631', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="631" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="0"
                             checked={_CHECK_INDEXVALUE('631', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="631" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="2"
                             checked={_CHECK_INDEXVALUE('631', 2)} />
                     </div>
                 </div>
@@ -570,15 +616,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="632" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="1"
                             checked={_CHECK_INDEXVALUE('632', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="632" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="0"
                             checked={_CHECK_INDEXVALUE('632', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="632" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="2"
                             checked={_CHECK_INDEXVALUE('632', 2)} />
                     </div>
                 </div>
@@ -589,15 +635,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="633" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="1"
                             checked={_CHECK_INDEXVALUE('633', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="633" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="0"
                             checked={_CHECK_INDEXVALUE('633', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="633" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="2"
                             checked={_CHECK_INDEXVALUE('633', 2)} />
                     </div>
                 </div>
@@ -608,15 +654,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6023" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="1"
                             checked={_CHECK_INDEXVALUE('6023', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6023" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="0"
                             checked={_CHECK_INDEXVALUE('6023', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6023" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="2"
                             checked={_CHECK_INDEXVALUE('6023', 2)} />
                     </div>
                 </div>
@@ -636,15 +682,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="634" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="1"
                             checked={_CHECK_INDEXVALUE('634', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="634" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="0"
                             checked={_CHECK_INDEXVALUE('634', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="634" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="2"
                             checked={_CHECK_INDEXVALUE('634', 2)} />
                     </div>
                 </div>
@@ -655,15 +701,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="635" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="1"
                             checked={_CHECK_INDEXVALUE('635', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="635" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="0"
                             checked={_CHECK_INDEXVALUE('635', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="635" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="2"
                             checked={_CHECK_INDEXVALUE('635', 2)} />
                     </div>
                 </div>
@@ -674,15 +720,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="636" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="1"
                             checked={_CHECK_INDEXVALUE('636', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="636" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="0"
                             checked={_CHECK_INDEXVALUE('636', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="636" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="2"
                             checked={_CHECK_INDEXVALUE('636', 2)} />
                     </div>
                 </div>
@@ -719,15 +765,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="641" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="1"
                                 checked={_CHECK_INDEXVALUE('641', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="641" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="0"
                                 checked={_CHECK_INDEXVALUE('641', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="641" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="2"
                                 checked={_CHECK_INDEXVALUE('641', 2)} />
                         </div>
                     </div>
@@ -743,15 +789,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="642" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="1"
                                 checked={_CHECK_INDEXVALUE('642', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="642" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="0"
                                 checked={_CHECK_INDEXVALUE('642', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="642" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="2"
                                 checked={_CHECK_INDEXVALUE('642', 2)} />
                         </div>
                     </div>
@@ -762,15 +808,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="643" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="1"
                                 checked={_CHECK_INDEXVALUE('643', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="643" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="0"
                                 checked={_CHECK_INDEXVALUE('643', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="643" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="2"
                                 checked={_CHECK_INDEXVALUE('643', 2)} />
                         </div>
                     </div>
@@ -803,15 +849,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="651" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="1"
                                 checked={_CHECK_INDEXVALUE('651', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="651" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="0"
                                 checked={_CHECK_INDEXVALUE('651', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="651" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="2"
                                 checked={_CHECK_INDEXVALUE('651', 2)} />
                         </div>
                     </div>
@@ -822,15 +868,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="652" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="1"
                                 checked={_CHECK_INDEXVALUE('652', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="652" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="0"
                                 checked={_CHECK_INDEXVALUE('652', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="652" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="2"
                                 checked={_CHECK_INDEXVALUE('652', 2)} />
                         </div>
                     </div>
@@ -841,15 +887,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="653" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="1"
                                 checked={_CHECK_INDEXVALUE('653', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="653" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="0"
                                 checked={_CHECK_INDEXVALUE('653', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="653" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="2"
                                 checked={_CHECK_INDEXVALUE('653', 2)} />
                         </div>
                     </div>
@@ -895,15 +941,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6601" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="1"
                             checked={_CHECK_INDEXVALUE('6601', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6601" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="0"
                             checked={_CHECK_INDEXVALUE('6601', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6601" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="2"
                             checked={_CHECK_INDEXVALUE('6601', 2)} />
                     </div>
                 </div>
@@ -914,15 +960,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6602" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="1"
                             checked={_CHECK_INDEXVALUE('6602', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6602" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="0"
                             checked={_CHECK_INDEXVALUE('6602', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6602" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="2"
                             checked={_CHECK_INDEXVALUE('6602', 2)} />
                     </div>
                 </div>
@@ -933,15 +979,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6603" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="1"
                             checked={_CHECK_INDEXVALUE('6603', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6603" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="0"
                             checked={_CHECK_INDEXVALUE('6603', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6603" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="2"
                             checked={_CHECK_INDEXVALUE('6603', 2)} />
                     </div>
                 </div>
@@ -952,15 +998,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6604" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="1"
                             checked={_CHECK_INDEXVALUE('6604', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6604" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="0"
                             checked={_CHECK_INDEXVALUE('6604', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6604" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="2"
                             checked={_CHECK_INDEXVALUE('6604', 2)} />
                     </div>
                 </div>
@@ -971,15 +1017,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6605" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="1"
                             checked={_CHECK_INDEXVALUE('6605', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6605" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="0"
                             checked={_CHECK_INDEXVALUE('6605', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6605" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="2"
                             checked={_CHECK_INDEXVALUE('6605', 2)} />
                     </div>
                 </div>
@@ -1004,15 +1050,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6606" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6606" value="1"
                             checked={_CHECK_INDEXVALUE('6606', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6606" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6606" value="0"
                             checked={_CHECK_INDEXVALUE('6606', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6606" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6606" value="2"
                             checked={_CHECK_INDEXVALUE('6606', 2)} />
                     </div>
                 </div>
@@ -1023,15 +1069,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6607" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6607" value="1"
                             checked={_CHECK_INDEXVALUE('6607', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6607" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6607" value="0"
                             checked={_CHECK_INDEXVALUE('6607', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6607" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6607" value="2"
                             checked={_CHECK_INDEXVALUE('6607', 2)} />
                     </div>
                 </div>
@@ -1042,15 +1088,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6608" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6608" value="1"
                             checked={_CHECK_INDEXVALUE('6608', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6608" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6608" value="0"
                             checked={_CHECK_INDEXVALUE('6608', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6608" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6608" value="2"
                             checked={_CHECK_INDEXVALUE('6608', 2)} />
                     </div>
                 </div>
@@ -1061,15 +1107,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6609" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6609" value="1"
                             checked={_CHECK_INDEXVALUE('6609', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6609" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6609" value="0"
                             checked={_CHECK_INDEXVALUE('6609', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6609" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6609" value="2"
                             checked={_CHECK_INDEXVALUE('6609', 2)} />
                     </div>
                 </div>
@@ -1080,15 +1126,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6610" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6610" value="1"
                             checked={_CHECK_INDEXVALUE('6610', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6610" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6610" value="0"
                             checked={_CHECK_INDEXVALUE('6610', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6610" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6610" value="2"
                             checked={_CHECK_INDEXVALUE('6610', 2)} />
                     </div>
                 </div>
@@ -1104,15 +1150,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6611" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="1"
                             checked={_CHECK_INDEXVALUE('6611', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6611" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="0"
                             checked={_CHECK_INDEXVALUE('6611', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6611" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="2"
                             checked={_CHECK_INDEXVALUE('6611', 2)} />
                     </div>
                 </div>
@@ -1123,15 +1169,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6612" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="1"
                             checked={_CHECK_INDEXVALUE('6612', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6612" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="0"
                             checked={_CHECK_INDEXVALUE('6612', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6612" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="2"
                             checked={_CHECK_INDEXVALUE('6612', 2)} />
                     </div>
                 </div>
@@ -1151,15 +1197,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6613" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="1"
                             checked={_CHECK_INDEXVALUE('6613', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6613" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="0"
                             checked={_CHECK_INDEXVALUE('6613', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6613" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="2"
                             checked={_CHECK_INDEXVALUE('6613', 2)} />
                     </div>
                 </div>
@@ -1175,15 +1221,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6614" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="1"
                             checked={_CHECK_INDEXVALUE('6614', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6614" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="0"
                             checked={_CHECK_INDEXVALUE('6614', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6614" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="2"
                             checked={_CHECK_INDEXVALUE('6614', 2)} />
                     </div>
                 </div>
@@ -1199,15 +1245,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6615" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="1"
                             checked={_CHECK_INDEXVALUE('6615', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6615" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="0"
                             checked={_CHECK_INDEXVALUE('6615', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6615" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="2"
                             checked={_CHECK_INDEXVALUE('6615', 2)} />
                     </div>
                 </div>
@@ -1223,15 +1269,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6616" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="1"
                             checked={_CHECK_INDEXVALUE('6616', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6616" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="0"
                             checked={_CHECK_INDEXVALUE('6616', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6616" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="2"
                             checked={_CHECK_INDEXVALUE('6616', 2)} />
                     </div>
                 </div>
@@ -1242,15 +1288,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6617" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="1"
                             checked={_CHECK_INDEXVALUE('6617', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6617" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="0"
                             checked={_CHECK_INDEXVALUE('6617', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6617" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="2"
                             checked={_CHECK_INDEXVALUE('6617', 2)} />
                     </div>
                 </div>
@@ -1266,15 +1312,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6618" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="1"
                             checked={_CHECK_INDEXVALUE('6618', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6618" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="0"
                             checked={_CHECK_INDEXVALUE('6618', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" readOnly type="radio" name="6618" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="2"
                             checked={_CHECK_INDEXVALUE('6618', 2)} />
                     </div>
                 </div>
@@ -1311,15 +1357,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="671" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="1"
                                 checked={_CHECK_INDEXVALUE('671', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="671" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="0"
                                 checked={_CHECK_INDEXVALUE('671', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="671" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="2"
                                 checked={_CHECK_INDEXVALUE('671', 2)} />
                         </div>
                     </div>
@@ -1330,15 +1376,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="672" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="1"
                                 checked={_CHECK_INDEXVALUE('672', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="672" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="0"
                                 checked={_CHECK_INDEXVALUE('672', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="672" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="2"
                                 checked={_CHECK_INDEXVALUE('672', 2)} />
                         </div>
                     </div>
@@ -1381,15 +1427,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="681" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="1"
                                 checked={_CHECK_INDEXVALUE('681', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="681" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="0"
                                 checked={_CHECK_INDEXVALUE('681', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="681" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="2"
                                 checked={_CHECK_INDEXVALUE('681', 2)} />
                         </div>
                     </div>
@@ -1405,15 +1451,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="682" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="1"
                                 checked={_CHECK_INDEXVALUE('682', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="682" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="0"
                                 checked={_CHECK_INDEXVALUE('682', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="682" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="2"
                                 checked={_CHECK_INDEXVALUE('682', 2)} />
                         </div>
                     </div>
@@ -1424,15 +1470,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="683" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="1"
                                 checked={_CHECK_INDEXVALUE('683', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="683" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="0"
                                 checked={_CHECK_INDEXVALUE('683', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="683" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="2"
                                 checked={_CHECK_INDEXVALUE('683', 2)} />
                         </div>
                     </div>
@@ -1443,15 +1489,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="684" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="1"
                                 checked={_CHECK_INDEXVALUE('684', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="684" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="0"
                                 checked={_CHECK_INDEXVALUE('684', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="684" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="2"
                                 checked={_CHECK_INDEXVALUE('684', 2)} />
                         </div>
                     </div>
@@ -1462,15 +1508,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="685" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="1"
                                 checked={_CHECK_INDEXVALUE('685', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="685" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="0"
                                 checked={_CHECK_INDEXVALUE('685', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="685" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="2"
                                 checked={_CHECK_INDEXVALUE('685', 2)} />
                         </div>
                     </div>
@@ -1486,15 +1532,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="6861" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="1"
                                 checked={_CHECK_INDEXVALUE('6861', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="6861" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="0"
                                 checked={_CHECK_INDEXVALUE('6861', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="6861" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="2"
                                 checked={_CHECK_INDEXVALUE('6861', 2)} />
                         </div>
                     </div>
@@ -1510,15 +1556,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="687" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="1"
                                 checked={_CHECK_INDEXVALUE('687', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="687" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="0"
                                 checked={_CHECK_INDEXVALUE('687', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="687" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="2"
                                 checked={_CHECK_INDEXVALUE('687', 2)} />
                         </div>
                     </div>
@@ -1529,15 +1575,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="6862" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="1"
                                 checked={_CHECK_INDEXVALUE('6862', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="6862" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="0"
                                 checked={_CHECK_INDEXVALUE('6862', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="6862" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="2"
                                 checked={_CHECK_INDEXVALUE('6862', 2)} />
                         </div>
                     </div>
@@ -1553,15 +1599,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="688" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="1"
                                 checked={_CHECK_INDEXVALUE('688', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="688" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="0"
                                 checked={_CHECK_INDEXVALUE('688', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="688" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="2"
                                 checked={_CHECK_INDEXVALUE('688', 2)} />
                         </div>
                     </div>
@@ -1572,15 +1618,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="689" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="1"
                                 checked={_CHECK_INDEXVALUE('689', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="689" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="0"
                                 checked={_CHECK_INDEXVALUE('689', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" readOnly type="radio" name="689" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="2"
                                 checked={_CHECK_INDEXVALUE('689', 2)} />
                         </div>
                     </div>
