@@ -25,6 +25,17 @@ import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/a
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
+export function resolveStructuralReviewDate({ reviewDate = '', clocks = [] } = {}) {
+    if (reviewDate) return reviewDate;
+
+    for (const version of [200, 300, 100]) {
+        const clock = clocks.find(item => Number(item?.state) === 12 && Number(item?.version) === version);
+        if (clock?.date_start) return String(clock.date_start).split(';')[0] || '';
+    }
+
+    return '';
+}
+
 function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, translation, globals, currentVersion, closeModal, NAVIGATION, navigation_version }) {
     const [currentRecord, setCurrentRecord] = useState(null);
     const [currentVersionR, setCurrentVersionR] = useState(null);
@@ -783,7 +794,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             ]
             // ***************** ENG ***************** // 
             let _REVIEW_ENG_DELTA = _GET_REVIEW_ENG();
-            let _REVIEW_ENG_WORER = _GET_ENG().worker_name ?? _REVIEW_ENG_DELTA.worker_name;
+            let _REVIEW_ENG_WORER = _GET_ENG().worker_name || _REVIEW_ENG_DELTA.worker_name;
             let _REVIEWS_ENG = _GET_CLOCK_STATE_VERSION(12, 200).resolver_context ? _GET_CLOCK_STATE_VERSION(12, 200).resolver_context.split(';') : [];
             let _REVIEWS_DATES_ENG = _GET_CLOCK_STATE_VERSION(12, 200).date_start ? _GET_CLOCK_STATE_VERSION(12, 200).date_start.split(';') : [];
             let _REVIEWS_DESC_ENG = _GET_CLOCK_STATE_VERSION(12, 200).desc ? _GET_CLOCK_STATE_VERSION(12, 200).desc.split(';') : [];
@@ -810,7 +821,10 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     reviews_eng[i].check = _REVIEW_ENG_DELTA.check || (eng_checks[0] ? eng_checks[0] : 0);
                     reviews_eng[i].check2 = _REVIEW_ENG_DELTA.check_2 || (eng_checks[1] ? eng_checks[1] : 0);
                     reviews_eng[i].check3 = _REVIEW_ENG_DELTA.check_3 || (eng_checks[2] ? eng_checks[2] : 0);
-                    reviews_eng[i].date = _REVIEW_ENG_DELTA.date || (_REVIEWS_DATES_ENG[i] ? _REVIEWS_DATES_ENG[i] : '');
+                    reviews_eng[i].date = resolveStructuralReviewDate({
+                        reviewDate: _REVIEW_ENG_DELTA.date || (_REVIEWS_DATES_ENG[i] ? _REVIEWS_DATES_ENG[i] : ''),
+                        clocks: _GET_CLOCK(),
+                    });
                     reviews_eng[i].c1 = _REVIEW_ENG_DELTA.check_context || (eng_checks_desc[0] ? eng_checks_desc[0] : '');
                     reviews_eng[i].c2 = _REVIEW_ENG_DELTA.check_2_cotext || (eng_checks_desc[1] ? eng_checks_desc[1] : '');
                     reviews_eng[i].c3 = _REVIEW_ENG_DELTA.check_3_cotext || (eng_checks_desc[2] ? eng_checks_desc[2] : '');
