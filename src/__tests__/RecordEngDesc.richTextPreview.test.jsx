@@ -117,4 +117,27 @@ describe('RECORD_ENG_DESC rich-text previews from Arquitectura', () => {
     expect(screen.queryByDisplayValue(architectureDescription)).not.toBeInTheDocument();
     expect(screen.getByDisplayValue('Descripción arquitectónica vinculada')).toBeInTheDocument();
   });
+
+  it('ignores non-string legacy step values instead of crashing the structural report', () => {
+    expect(() => {
+      render(
+        <RECORD_ENG_DESC
+          {...baseProps}
+          arcSteps={[
+            {
+              id: 33,
+              version: 1,
+              id_public: 's33',
+              value: { text: 'valor inesperado' },
+            },
+          ]}
+        />,
+      );
+    }).not.toThrow();
+
+    const previews = screen.getAllByTestId('rich-text-editor-preview');
+
+    expect(previews[0]).toHaveAttribute('data-value', '');
+    expect(previews[1]).toHaveAttribute('data-value', '');
+  });
 });
