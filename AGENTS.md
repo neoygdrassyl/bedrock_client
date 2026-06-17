@@ -59,6 +59,15 @@ Para solicitudes de interfaz, experiencia de usuario, layout, estilos, component
    - `ckm-banner-design` y `ckm-slides` solo para piezas visuales de comunicacion, no para refinamiento de la UI runtime.
 3. Mantener skills de proceso (ej. `brainstorming`, `dispatching-parallel-agents`) antes de skills de implementacion, cuando aplique.
 
+## 3.2 Skill de carga/build frontend
+
+Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite, carga bajo demanda, polling global o vendors pesados:
+
+1. Usa la skill compartida `dovela-frontend-load-review` desde `.agents/skills/`.
+2. Captura baseline antes de editar: `npm run build:analyze`, `build/index.html`, modulepreloads y tamaños principales.
+3. Prefiere cortes reversibles y locales: `import.meta.env.VITE_*`, `React.lazy`, dynamic imports y montaje condicional.
+4. No cambies backend, auth, lockfiles, versiones de librerías, `manualChunks`, PDF worker ni defaults globales de tabs/collapsibles como primera respuesta.
+
 ## 4. Donde vive la verdad operativa
 
 - Router, layout, auth y login: `src/app/App.js`
