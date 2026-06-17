@@ -8,6 +8,13 @@ import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
 function RECORD_ENG_DESC(props) {
         const { swaMsg, currentItem, currentVersion, currentRecord, currentVersionR, category, arcSteps, requestUpdateRecord } = props;
 
+        const splitLegacyStepValue = (value) => {
+            if (value == null || value === '') return [];
+            if (Array.isArray(value)) return value;
+            if (typeof value === 'string') return value.split(';');
+            return [];
+        }
+
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -75,10 +82,7 @@ function RECORD_ENG_DESC(props) {
         let _GET_STEP_TYPE = (_id_public, _type) => {
             var STEP = LOAD_STEP(_id_public);
             if (!STEP.id) return [];
-            var value = STEP[_type] ? STEP[_type] : []
-            if (!value) return [];
-            value = value.split(';');
-            return value
+            return splitLegacyStepValue(STEP[_type]);
         }
         let LOAD_STEP_ENG = (_id_public) => {
             var _CHILD = currentRecord.record_eng_steps;
@@ -89,11 +93,8 @@ function RECORD_ENG_DESC(props) {
         }
         let _GET_STEP_TYPE_ENG = (_id_public, _type) => {
             var STEP = LOAD_STEP_ENG(_id_public);
-            if (!STEP.id) return null;
-            if (!STEP[_type]) return null;
-            var value = STEP[_type]
-            value = value.split(';');
-            return value
+            if (!STEP.id) return [];
+            return splitLegacyStepValue(STEP[_type]);
         }
         // COMPONENT JSX
         let COMPONENT_DESC = () => {
@@ -167,7 +168,7 @@ function RECORD_ENG_DESC(props) {
                             <div className="col-3">
                                 <label className="mt-1">N° Folios Certificación</label>
                                 <input type="number" className="form-control" id="record_eng_detail_4_2" min="0" step="1"
-                                    defaultValue={values2} onBlur={() => manage_step()} />
+                                    defaultValue={values2?.[0] ?? ''} onBlur={() => manage_step()} />
                             </div>
                         </div>
                     </>
