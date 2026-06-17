@@ -30,31 +30,36 @@ import RECORD_PH from '../../records/record_ph';
 import EXPEDITION from '../../expeditions/expedition.page';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 import { useBookmarks } from '../hooks/useBookmarks';
-import { formsParser1, regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
+import { formsParser1, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 
 const SECTION_GROUPS = [
   {
-    id: 'contexto',
+    id: 'principal',
+    tone: 'sky',
     items: [
-      { id: 'detalles', label: 'Detalles', icon: 'FolderOpen', accent: 'sky' },
-      { id: 'tiempos', label: 'Tiempos', icon: 'Clock', accent: 'sky' },
+      { id: 'detalles', label: 'Detalles', icon: 'FolderOpen' },
+      { id: 'documentos', label: 'Documentos', icon: 'Archive' },
+      { id: 'actualizar', label: 'Actualizar', icon: 'RefreshCw', requiresEdit: true },
+      { id: 'chequeo', label: 'Chequeo', icon: 'CheckSquare' },
+      { id: 'publicidad', label: 'Publicidad', icon: 'Megaphone', requiresPublicidad: true },
     ],
   },
   {
-    id: 'gestion',
+    id: 'informes',
+    tone: 'violet',
     items: [
-      { id: 'documentos', label: 'Documentos', icon: 'Archive', accent: 'slate' },
-      { id: 'actualizar', label: 'Actualizar', icon: 'RefreshCw', accent: 'slate', requiresEdit: true },
-      { id: 'chequeo', label: 'Chequeo', icon: 'CheckSquare', accent: 'slate' },
-      { id: 'publicidad', label: 'Publicidad', icon: 'Megaphone', accent: 'amber', requiresPublicidad: true },
+      { id: 'tiempos', label: 'Tiempos', icon: 'Clock' },
+      { id: 'juridico', label: 'Inf. Jur', ariaLabel: 'Informe Jurídico', icon: 'Scale' },
+      { id: 'arquitectonico', label: 'Inf. Arq', ariaLabel: 'Informe Arquitectónico', icon: 'Building' },
+      { id: 'estructural', label: 'Inf. Estr', ariaLabel: 'Informe Estructural', icon: 'Cog' },
     ],
   },
   {
     id: 'cierre',
+    tone: 'amber',
     items: [
-      { id: 'informes', label: 'Informes', icon: 'FileText', accent: 'amber' },
-      { id: 'acta', label: 'Acta', icon: 'FileCheck', accent: 'amber' },
-      { id: 'expedicion', label: 'Expedición', icon: 'FileOutput', accent: 'amber' },
+      { id: 'acta', label: 'Acta', icon: 'FileCheck' },
+      { id: 'expedicion', label: 'Expedición', icon: 'FileOutput' },
     ],
   },
 ];
@@ -62,9 +67,9 @@ const SECTION_GROUPS = [
 const SECTION_ITEMS = SECTION_GROUPS.flatMap((group) => group.items);
 
 const STANDARD_REPORT_ITEMS = [
-  { id: 'juridico', label: 'Jurídico', icon: 'Scale' },
-  { id: 'arquitectonico', label: 'Arquitectónico', icon: 'Building' },
-  { id: 'estructural', label: 'Estructural', icon: 'Cog' },
+  { id: 'juridico', label: 'Inf. Jur', ariaLabel: 'Informe Jurídico', icon: 'Scale' },
+  { id: 'arquitectonico', label: 'Inf. Arq', ariaLabel: 'Informe Arquitectónico', icon: 'Building' },
+  { id: 'estructural', label: 'Inf. Estr', ariaLabel: 'Informe Estructural', icon: 'Cog' },
 ];
 
 const PH_REPORT_ITEM = { id: 'ph', label: 'Informe P.H.', icon: 'PenTool' };
@@ -390,6 +395,31 @@ function getExpedienteId(expediente) {
   return expediente?.id ?? expediente?.fun0Id ?? expediente?.fun_0_id ?? null;
 }
 
+function getExpedientePublicKey(expediente) {
+  const value = getFirstValue(expediente?.id_public, expediente?.radicado);
+  return value == null ? null : String(value).trim();
+}
+
+function hasDifferentExpedienteIdentity(current, next) {
+  if (!current || !next) return false;
+
+  const currentId = getExpedienteId(current);
+  const nextId = getExpedienteId(next);
+  if (currentId != null && nextId != null && String(currentId) !== String(nextId)) {
+    return true;
+  }
+
+  const currentPublic = getExpedientePublicKey(current);
+  const nextPublic = getExpedientePublicKey(next);
+  return Boolean(currentPublic && nextPublic && currentPublic !== nextPublic);
+}
+
+function mergeExpedienteSummary(current, next) {
+  if (!next) return current;
+  if (!current || hasDifferentExpedienteIdentity(current, next)) return next;
+  return { ...current, ...next };
+}
+
 function getBookmarkExpedienteId(bookmark) {
   return bookmark?.fun0Id ?? bookmark?.fun_0_id ?? bookmark?.fun_0?.id ?? bookmark?.id ?? null;
 }
@@ -430,8 +460,26 @@ function getExpedienteApplicant(expediente) {
   return expediente?.solicitante ?? expediente?.applicant ?? expediente?.titular ?? 'Sin solicitante registrado';
 }
 
+function normalizePropertyHorizontalText(value) {
+  return String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
 function matchesLegacyPropertyHorizontal(type) {
-  return /p\.?\s*h|propiedad\s+horizontal/i.test(type || '');
+  const normalizedType = normalizePropertyHorizontalText(type);
+
+  if (!normalizedType) {
+    return false;
+  }
+
+  return (
+    /(?:^|[^a-z0-9])2\s*:\s*ph(?:$|[^a-z0-9])/.test(normalizedType)
+    || /\bpropiedad\s+horizontal\b/.test(normalizedType)
+    || /(?:^|[^a-z0-9])p\.?\s*h(?:$|[^a-z0-9])/.test(normalizedType)
+    || /\bph\b/.test(normalizedType)
+  );
 }
 
 function getVersionFun1(expediente, version) {
@@ -440,23 +488,33 @@ function getVersionFun1(expediente, version) {
   return fun1List[targetIndex] ?? fun1List[0] ?? null;
 }
 
-function isPropertyHorizontalExpediente(expediente, version) {
+function getPropertyHorizontalClassifierText(expediente, version) {
   const fun1 = getVersionFun1(expediente, version);
 
-  return regexChecker_isPh(fun1, true)
-    || matchesLegacyPropertyHorizontal(formsParser1(fun1))
-    || matchesLegacyPropertyHorizontal(getFirstValue(expediente?.tipo_licencia, expediente?.tramite, expediente?.categoria));
+  return [
+    formsParser1(fun1),
+    fun1?.item_1,
+    fun1?.item_2,
+    fun1?.tipo,
+    fun1?.tramite,
+    fun1?.m_urb,
+    fun1?.m_sub,
+    fun1?.m_lic,
+    expediente?.tipo_licencia,
+    expediente?.tramite,
+    expediente?.categoria,
+  ]
+    .filter((value) => value !== undefined && value !== null && value !== '')
+    .join(' ');
 }
 
-function getReportItemsForExpediente(expediente, version) {
-  return isPropertyHorizontalExpediente(expediente, version) ? [PH_REPORT_ITEM] : STANDARD_REPORT_ITEMS;
+function isPropertyHorizontalExpediente(expediente, version) {
+  return matchesLegacyPropertyHorizontal(getPropertyHorizontalClassifierText(expediente, version));
 }
 
-function getSectionItemForExpediente(item, isPH) {
-  if (!isPH) return item;
-  if (item.id === 'informes') return { ...item, label: 'Informe P.H.' };
-  if (item.id === 'expedicion') return { ...item, label: 'Expedición P.H.' };
-  return item;
+function getReportItemsForExpediente(expediente, version, tone) {
+  const items = isPropertyHorizontalExpediente(expediente, version) ? [PH_REPORT_ITEM] : STANDARD_REPORT_ITEMS;
+  return items.map((item) => ({ ...item, accent: tone || item.accent }));
 }
 
 function isEditableLegacyExpediente(expediente) {
@@ -488,15 +546,42 @@ function getVisibleSectionGroups(expediente, version) {
   const isPH = isPropertyHorizontalExpediente(expediente, version);
 
   return SECTION_GROUPS
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => {
-        if (isPH && item.id === 'acta') return false;
-        if (item.requiresPublicidad) return showPublicidad;
-        if (item.requiresEdit) return showActualizar;
-        return true;
-      }).map((item) => getSectionItemForExpediente(item, isPH)),
-    }))
+    .map((group) => {
+      if (group.id === 'principal') {
+        return {
+          ...group,
+          items: group.items
+            .filter((item) => {
+              if (item.requiresPublicidad) return showPublicidad;
+              if (item.requiresEdit) return showActualizar;
+              return true;
+            })
+            .map((item) => ({ ...item, accent: group.tone })),
+        };
+      }
+
+      if (group.id === 'informes') {
+        const [tiemposItem] = group.items;
+        return {
+          ...group,
+          items: [
+            { ...tiemposItem, accent: group.tone },
+            ...getReportItemsForExpediente(expediente, version, group.tone),
+          ],
+        };
+      }
+
+      return {
+        ...group,
+        items: group.items
+          .filter((item) => !(isPH && item.id === 'acta'))
+          .map((item) => ({
+            ...item,
+            label: isPH && item.id === 'expedicion' ? 'Expedición P.H.' : item.label,
+            accent: group.tone,
+          })),
+      };
+    })
     .filter((group) => group.items.length > 0);
 }
 
@@ -559,31 +644,34 @@ function SummaryItem({ icon, label, value }) {
   );
 }
 
-function SectionButton({ item, active, onClick }) {
+function SectionButton({ item, active, onClick, tone = 'sky' }) {
+  const isLongLabel = item.label.length > 10;
   const toneClass = {
     sky: active
-      ? 'border-sky-500 bg-sky-50 text-sky-700'
-      : 'border-transparent text-muted-foreground hover:border-sky-200 hover:bg-sky-50/70 hover:text-sky-700',
-    slate: active
-      ? 'border-slate-400 bg-slate-100 text-slate-900'
-      : 'border-transparent text-muted-foreground hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900',
+      ? 'border-sky-400 bg-sky-200/95 text-sky-950 shadow-sm shadow-sky-950/10'
+      : 'border-sky-100/80 bg-white/80 text-slate-900 hover:border-sky-300 hover:bg-sky-100 hover:text-sky-950',
+    violet: active
+      ? 'border-violet-400 bg-violet-200/95 text-violet-950 shadow-sm shadow-violet-950/10'
+      : 'border-violet-100/80 bg-white/80 text-slate-900 hover:border-violet-300 hover:bg-violet-100 hover:text-violet-950',
     amber: active
-      ? 'border-amber-400 bg-amber-50 text-amber-800'
-      : 'border-transparent text-muted-foreground hover:border-amber-200 hover:bg-amber-50/70 hover:text-amber-800',
+      ? 'border-amber-400 bg-amber-200/95 text-amber-950 shadow-sm shadow-amber-950/10'
+      : 'border-amber-100/80 bg-white/80 text-slate-900 hover:border-amber-300 hover:bg-amber-100 hover:text-amber-950',
   };
 
   return (
     <button
       type="button"
       onClick={() => onClick(item.id)}
+      aria-label={item.ariaLabel || item.label}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'inline-flex items-center gap-2 whitespace-nowrap rounded-lg border-b-2 px-3 py-2.5 text-sm font-medium transition-colors',
-        toneClass[item.accent] || toneClass.slate
+        'inline-flex h-8 min-w-0 items-center justify-center gap-1.5 rounded-md border px-2 text-xs font-medium leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        isLongLabel ? 'w-[clamp(9rem,10vw,11rem)]' : 'w-[clamp(7rem,7.5vw,8.75rem)]',
+        toneClass[tone] || toneClass.sky
       )}
     >
-      <Icon name={item.icon} size={14} />
-      {item.label}
+      <Icon name={item.icon} size={12} className="shrink-0" />
+      <span className="min-w-0 truncate">{item.label}</span>
     </button>
   );
 }
@@ -953,7 +1041,7 @@ function BitacoraDialog({ open, onOpenChange, entries, groups, currentPublic }) 
   );
 }
 
-function renderModuleContent(activeSection, activeReport, moduleProps, options = {}) {
+function renderModuleContent(activeSection, moduleProps, options = {}) {
   const { isPropertyHorizontal = false } = options;
 
   switch (activeSection) {
@@ -969,16 +1057,13 @@ function renderModuleContent(activeSection, activeReport, moduleProps, options =
       return <FUND {...moduleProps} />;
     case 'publicidad':
       return <FUN_ALERT {...moduleProps} />;
-    case 'informes':
-      if (activeReport === 'ph') {
-        return <RECORD_PH {...moduleProps} />;
-      }
-      if (activeReport === 'arquitectonico') {
-        return <RECORD_ARC {...moduleProps} />;
-      }
-      if (activeReport === 'estructural') {
-        return <RECORD_ENG {...moduleProps} />;
-      }
+    case 'ph':
+      return <RECORD_PH {...moduleProps} />;
+    case 'arquitectonico':
+      return <RECORD_ARC {...moduleProps} />;
+    case 'estructural':
+      return <RECORD_ENG {...moduleProps} />;
+    case 'juridico':
       return <RECORD_LAW {...moduleProps} />;
     case 'acta':
       return <RECORD_REVIEW {...moduleProps} />;
@@ -992,7 +1077,24 @@ function renderModuleContent(activeSection, activeReport, moduleProps, options =
   }
 }
 
-function normalizeInitialSection(section) {
+function normalizeInitialSection(section, report, isPropertyHorizontal = false) {
+  if (section === 'informes') {
+    if (isPropertyHorizontal) {
+      return 'ph';
+    }
+
+    const normalizedReport = normalizeInitialReport(report);
+    return normalizedReport === 'ph' ? 'juridico' : normalizedReport;
+  }
+
+  if (isPropertyHorizontal && (section === 'ph' || STANDARD_REPORT_ITEMS.some((item) => item.id === section))) {
+    return 'ph';
+  }
+
+  if (!isPropertyHorizontal && section === 'ph') {
+    return 'juridico';
+  }
+
   return SECTION_ITEMS.some((item) => item.id === section) ? section : 'detalles';
 }
 
@@ -1011,9 +1113,9 @@ export function FunExpedienteFullscreen({
   initialReport = 'juridico',
   defaultRightPanelOpen = false,
 }) {
+  const initialIsPropertyHorizontal = isPropertyHorizontalExpediente(expediente, getExpedienteVersion(expediente));
   const [summary, setSummary] = useState(expediente);
-  const [activeSection, setActiveSection] = useState(() => normalizeInitialSection(initialSection));
-  const [activeReport, setActiveReport] = useState(() => normalizeInitialReport(initialReport));
+  const [activeSection, setActiveSection] = useState(() => normalizeInitialSection(initialSection, initialReport, initialIsPropertyHorizontal));
   const [currentId, setCurrentId] = useState(getExpedienteId(expediente));
   const [currentVersion, setCurrentVersion] = useState(getExpedienteVersion(expediente));
   const [currentPublic, setCurrentPublic] = useState(getExpedienteRadicado(expediente));
@@ -1043,9 +1145,8 @@ export function FunExpedienteFullscreen({
   }, [expediente]);
 
   useEffect(() => {
-    setActiveSection(normalizeInitialSection(initialSection));
-    setActiveReport(normalizeInitialReport(initialReport));
-  }, [initialReport, initialSection]);
+    setActiveSection(normalizeInitialSection(initialSection, initialReport, isPropertyHorizontalExpediente(expediente, getExpedienteVersion(expediente))));
+  }, [expediente, initialReport, initialSection]);
 
   useEffect(() => {
     setRightPanelOpen(defaultRightPanelOpen);
@@ -1130,7 +1231,7 @@ export function FunExpedienteFullscreen({
         }
 
         if (nextData) {
-          setSummary((prev) => ({ ...prev, ...nextData }));
+          setSummary((prev) => mergeExpedienteSummary(prev, nextData));
           setCurrentId(getExpedienteId(nextData));
           setCurrentVersion(getExpedienteVersion(nextData));
           setCurrentPublic(getExpedienteRadicado(nextData));
@@ -1178,7 +1279,7 @@ export function FunExpedienteFullscreen({
       setCurrentId(getExpedienteId(item));
       setCurrentVersion(getExpedienteVersion(item));
       setCurrentPublic(getExpedienteRadicado(item));
-      setSummary((prev) => ({ ...prev, ...item }));
+      setSummary((prev) => mergeExpedienteSummary(prev, item));
     }
 
     switch (nextSection) {
@@ -1201,20 +1302,16 @@ export function FunExpedienteFullscreen({
         setActiveSection('publicidad');
         break;
       case 'record_law':
-        setActiveSection('informes');
-        setActiveReport('juridico');
+        setActiveSection('juridico');
         break;
       case 'record_arc':
-        setActiveSection('informes');
-        setActiveReport('arquitectonico');
+        setActiveSection('arquitectonico');
         break;
       case 'record_eng':
-        setActiveSection('informes');
-        setActiveReport('estructural');
+        setActiveSection('estructural');
         break;
       case 'record_ph':
-        setActiveSection('informes');
-        setActiveReport('ph');
+        setActiveSection('ph');
         break;
       case 'record_review':
         setActiveSection('acta');
@@ -1241,12 +1338,7 @@ export function FunExpedienteFullscreen({
 
   const handleSectionChange = useCallback((nextSection) => {
     setActiveSection(nextSection);
-    if (nextSection !== 'informes') {
-      return;
-    }
-    const nextReportItems = getReportItemsForExpediente(summary, currentVersion);
-    setActiveReport((prev) => nextReportItems.some((item) => item.id === prev) ? prev : nextReportItems[0]?.id || 'juridico');
-  }, [currentVersion, summary]);
+  }, []);
 
   const bitacoraEntries = useMemo(() => normalizeBitacoraEntries(summary), [summary]);
   const bitacoraGroups = useMemo(() => getBitacoraGroups(bitacoraEntries), [bitacoraEntries]);
@@ -1356,25 +1448,23 @@ export function FunExpedienteFullscreen({
     [visibleSectionGroups]
   );
 
-  const visibleReportItems = useMemo(
-    () => getReportItemsForExpediente(summary, currentVersion),
-    [currentVersion, summary]
-  );
-
-  const activeReportIsVisible = visibleReportItems.some((item) => item.id === activeReport);
-  const effectiveActiveReport = activeReportIsVisible ? activeReport : visibleReportItems[0]?.id || 'juridico';
-
   useEffect(() => {
-    if (!visibleSectionIds.includes(activeSection)) {
-      setActiveSection('detalles');
+    if (visibleSectionIds.includes(activeSection)) {
+      return;
     }
-  }, [activeSection, visibleSectionIds]);
 
-  useEffect(() => {
-    if (activeSection === 'informes' && !activeReportIsVisible) {
-      setActiveReport(effectiveActiveReport);
+    if (isPropertyHorizontal && ['juridico', 'arquitectonico', 'estructural'].includes(activeSection)) {
+      setActiveSection('ph');
+      return;
     }
-  }, [activeReportIsVisible, activeSection, effectiveActiveReport]);
+
+    if (!isPropertyHorizontal && activeSection === 'ph') {
+      setActiveSection('juridico');
+      return;
+    }
+
+    setActiveSection('detalles');
+  }, [activeSection, isPropertyHorizontal, visibleSectionIds]);
 
   useEffect(() => {
     if (activeSection !== 'expedicion' || !isPropertyHorizontal) {
@@ -1394,7 +1484,7 @@ export function FunExpedienteFullscreen({
     return () => window.clearTimeout(timeout);
   }, [activeSection, isPropertyHorizontal]);
 
-  const moduleContent = renderModuleContent(activeSection, effectiveActiveReport, moduleProps, { isPropertyHorizontal });
+  const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal });
 
   const content = (
     <div
@@ -1406,7 +1496,7 @@ export function FunExpedienteFullscreen({
       {/* ── Header compacto ──────────────────────────────────────────── */}
       <header className="shrink-0 border-b border-border bg-background/98 backdrop-blur">
         {/* Fila principal compacta */}
-        <div className="flex items-center gap-2 px-3 py-2 sm:px-4">
+        <div className="w-full flex flex-wrap items-center gap-2 px-3 py-2 sm:px-4">
           <Button
             variant="ghost"
             size="icon"
@@ -1435,7 +1525,7 @@ export function FunExpedienteFullscreen({
           </div>
 
           {/* Acciones + toggle detalle + cerrar */}
-          <div className="flex shrink-0 items-center gap-1">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
             <BookmarkQuickMenu
               rowId={currentId || currentPublic || 'actual'}
               bookmarkState={bookmarkState}
@@ -1483,7 +1573,7 @@ export function FunExpedienteFullscreen({
         </div>
 
         {/* Franja de progreso siempre visible (fina) */}
-        <div className="h-0.5 w-full bg-muted">
+        <div className="w-full h-0.5 bg-muted">
           <div
             className={cn('h-full transition-all duration-300', summaryStatus.barClass)}
             style={{ width: `${progressPercent}%` }}
@@ -1492,31 +1582,52 @@ export function FunExpedienteFullscreen({
 
         {/* Detalle expandible */}
         {headerExpanded && (
-          <div className="border-t border-border/60 px-3 py-3 sm:px-4">
-            <p className="mb-2 text-xs text-muted-foreground">
-              {legalSummary?.fase_label || 'Fase por confirmar'} &nbsp;·&nbsp;
-              <span className="font-mono">{usedDays}/{limitDays || 0} días hábiles ({progressPercent}%)</span>
-            </p>
-            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-              <SummaryItem icon="User" label="Solicitante" value={getExpedienteApplicant(legalSummary)} />
-              <SummaryItem icon="Layers" label="Categoría" value={legalSummary?.categoria || legalSummary?.tipo || 'Sin categoría'} />
-              <SummaryItem icon="Calendar" label="Radicación" value={legalSummary?.fecha_radicacion || 'Sin fecha'} />
-              <SummaryItem icon="CalendarDays" label="Fecha límite" value={legalSummary?.fecha_limite || 'Sin fecha límite'} />
+          <div className="border-t border-border/60">
+            <div className="w-full px-3 py-3 sm:px-4">
+              <p className="mb-2 text-xs text-muted-foreground">
+                {legalSummary?.fase_label || 'Fase por confirmar'} &nbsp;·&nbsp;
+                <span className="font-mono">{usedDays}/{limitDays || 0} días hábiles ({progressPercent}%)</span>
+              </p>
+              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                <SummaryItem icon="User" label="Solicitante" value={getExpedienteApplicant(legalSummary)} />
+                <SummaryItem icon="Layers" label="Categoría" value={legalSummary?.categoria || legalSummary?.tipo || 'Sin categoría'} />
+                <SummaryItem icon="Calendar" label="Radicación" value={legalSummary?.fecha_radicacion || 'Sin fecha'} />
+                <SummaryItem icon="CalendarDays" label="Fecha límite" value={legalSummary?.fecha_limite || 'Sin fecha límite'} />
+              </div>
             </div>
           </div>
         )}
       </header>
 
-      {/* ── Navegación de submódulos ─────────────────────────────────── */}
-      <div className="shrink-0 border-b border-border bg-card/50 px-2 sm:px-4">
-        <div className="flex gap-2 overflow-x-auto py-2">
-          {visibleSectionGroups.map((group) => (
-            <div key={group.id} className="flex items-center gap-1 rounded-xl border border-border/70 bg-background/85 p-1 shadow-sm">
-              {group.items.map((item) => (
-                <SectionButton key={item.id} item={item} active={activeSection === item.id} onClick={handleSectionChange} />
+        {/* ── Navegación de submódulos ─────────────────────────────────── */}
+      <div className="shrink-0 border-b border-border bg-muted/50">
+        <div className="w-full px-2 sm:px-4">
+          <nav aria-label="Módulos del expediente" className="py-2">
+            <div className="flex min-w-0 flex-wrap items-center justify-center gap-2 overflow-x-hidden max-md:flex-nowrap max-md:justify-start max-md:overflow-x-auto">
+              {visibleSectionGroups.map((group) => (
+                <fieldset
+                  key={group.id}
+                  aria-label={`Grupo ${group.id} del expediente`}
+                  className={cn(
+                    'grid min-w-max grid-flow-col auto-cols-max items-center gap-1 rounded-xl border p-1 shadow-sm',
+                    group.tone === 'sky' && 'border-sky-300 bg-sky-100/85 shadow-sky-950/5',
+                    group.tone === 'violet' && 'border-violet-300 bg-violet-100/85 shadow-violet-950/5',
+                    group.tone === 'amber' && 'border-amber-300 bg-amber-100/85 shadow-amber-950/5'
+                  )}
+                >
+                  {group.items.map((item) => (
+                    <SectionButton
+                      key={item.id}
+                      item={item}
+                      active={activeSection === item.id}
+                      onClick={handleSectionChange}
+                      tone={group.tone}
+                    />
+                  ))}
+                </fieldset>
               ))}
             </div>
-          ))}
+          </nav>
         </div>
       </div>
 
@@ -1526,23 +1637,6 @@ export function FunExpedienteFullscreen({
         <div className={cn('flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden transition-[max-width] duration-200', rightPanelOpen ? 'max-w-[calc(100%_-_20rem)]' : 'max-w-full')}>
           <ScrollArea className="min-w-0 flex-1">
             <div className="w-full min-w-0 space-y-4 p-3 sm:p-5">
-              {activeSection === 'informes' ? (
-                <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card/80 p-2 shadow-sm">
-                  {visibleReportItems.map((item) => (
-                    <Button
-                      key={item.id}
-                      type="button"
-                      variant={effectiveActiveReport === item.id ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setActiveReport(item.id)}
-                    >
-                      <Icon name={item.icon} size={14} />
-                      {item.label}
-                    </Button>
-                  ))}
-                </div>
-              ) : null}
-
               <div
                 className={cn(
                   'w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm',
