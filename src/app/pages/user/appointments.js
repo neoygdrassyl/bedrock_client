@@ -154,7 +154,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
 
             if (profesional == 'LUIS PARRA') formData.set('profesional_id', 0);
             if (profesional == 'CARLOS ULLOA') formData.set('profesional_id', 1);
-            if (profesional == 'MARIA MARGARITA') formData.set('profesional_id', 2);
+            if (profesional == 'ANDREA RODRIGUEZ') formData.set('profesional_id', 2);
             if (profesional == 'MAYRA CEPEDA') formData.set('profesional_id', 3);
 
             const date = document.getElementById("app_date").value;
