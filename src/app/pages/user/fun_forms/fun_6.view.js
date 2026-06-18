@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import FunDocumentManagementModal from './components/FunDocumentManagementModal';
 import UnifiedDocumentTable from '../shared/UnifiedDocumentTable';
 import UnifiedDocumentCreateModal from '../shared/UnifiedDocumentCreateModal';
-import FunDocumentAuditTab from './components/FunDocumentAuditTab';
 import { buildDocumentEntriesFromLegacyData, normalizeVentanillaDocs } from '../shared/expediente-documental.utils';
 import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../shared/expediente-documental.constants';
 
@@ -55,7 +54,6 @@ function FUN_6_VIEW({
     const [missingDocumentsResult, setMissingDocumentsResult] = useState(null);
     const [missingDocumentsLoaded, setMissingDocumentsLoaded] = useState(false);
     const [missingDocumentsError, setMissingDocumentsError] = useState('');
-    const [activeTab, setActiveTab] = useState('documents'); // 'documents' | 'audit'
     const [rawSubmitList, setRawSubmitList] = useState([]);
 
     const isLoaded = documentsLoaded && ventanillaLoaded;
@@ -685,63 +683,29 @@ function FUN_6_VIEW({
 
         return (
             <div>
-                {/* Barra de tabs */}
-                <ul className="nav nav-tabs mb-3">
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link${activeTab === 'documents' ? ' active' : ''}`}
-                            onClick={() => setActiveTab('documents')}
-                            type="button"
-                        >
-                            Documentos
-                        </button>
-                    </li>
-                    {/* <li className="nav-item">
-                        <button
-                            className={`nav-link${activeTab === 'audit' ? ' active' : ''}`}
-                            onClick={() => setActiveTab('audit')}
-                            type="button"
-                        >
-                            🔍 Diagnóstico
-                        </button>
-                    </li> */}
-                </ul>
-
-                {/* Contenido del tab activo */}
-                {activeTab === 'documents' && (
-                    <>
-                        {mergeVentanilla ? <UnifiedDocumentTable
-                            entries={displayedDocumentEntries}
-                            loading={unifiedDocumentsLoading}
-                            canManage={canManageDocuments}
-                            onAddDocument={() => setCreateModalOpen(true)}
-                            onEditEntry={() => {}}
-                            onSaveDigitalEntry={saveDigitalEntryFromModal}
-                            onDeleteEntry={(digitalDoc) => delete_6(digitalDoc.id)}
-                            vrList={VRList}
-                            legalFormResult={missingDocumentsResult}
-                            legalFormLoading={!missingDocumentsLoaded}
-                            legalFormError={missingDocumentsError}
-                        /> : _CHILD_6_LIST()}
-                        {edit
-                            ? <>
-                                <form id="fun_6_d_edit" onSubmit={edit_6} className="py-3">
-                                    {_EDIT_COMPONENT()}
-                                    <div className="row text-center">
-                                        <div className="col-12">
-                                            <Button type="submit" variant="default" size="sm"><Icon name="archive" size={14} /> Guardar cambios</Button>
-                                        </div>
-                                    </div>
-                                </form></> : ""}
-                    </>
-                )}
-
-                {activeTab === 'audit' && (
-                    <FunDocumentAuditTab
-                        digitalDocs={currentItem6}
-                        VRList={rawSubmitList}
-                    />
-                )}
+                {mergeVentanilla ? <UnifiedDocumentTable
+                    entries={displayedDocumentEntries}
+                    loading={unifiedDocumentsLoading}
+                    canManage={canManageDocuments}
+                    onAddDocument={() => setCreateModalOpen(true)}
+                    onEditEntry={() => {}}
+                    onSaveDigitalEntry={saveDigitalEntryFromModal}
+                    onDeleteEntry={(digitalDoc) => delete_6(digitalDoc.id)}
+                    vrList={VRList}
+                    legalFormResult={missingDocumentsResult}
+                    legalFormLoading={!missingDocumentsLoaded}
+                    legalFormError={missingDocumentsError}
+                /> : _CHILD_6_LIST()}
+                {edit
+                    ? <>
+                        <form id="fun_6_d_edit" onSubmit={edit_6} className="py-3">
+                            {_EDIT_COMPONENT()}
+                            <div className="row text-center">
+                                <div className="col-12">
+                                    <Button type="submit" variant="default" size="sm"><Icon name="archive" size={14} /> Guardar cambios</Button>
+                                </div>
+                            </div>
+                        </form></> : ""}
 
                 <FunDocumentManagementModal
                     open={managementModalOpen}
