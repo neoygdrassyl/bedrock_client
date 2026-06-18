@@ -84,14 +84,12 @@
 }
 
 .btn-nav_module-pqr {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 10%;
-  margin: 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  width: auto;
+  margin: 0 0 0.75rem 0;
   padding: 0;
-  margin-right: 3px;
-  width: 15%;
 }
 
 .fun_nav {

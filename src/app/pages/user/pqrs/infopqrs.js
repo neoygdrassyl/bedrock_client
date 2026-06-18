@@ -67,7 +67,14 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
         return (
             <div>
                 {currentItem != null ? <>
-                    {load ? <><div>
+                    {load ? <>
+                        <PQRS_MODULE_NAV
+                            translation={translation}
+                            currentItem={currentItem}
+                            FROM={"general"}
+                            NAVIGATION={NAVIGATION}
+                        />
+                        <div>
 
                         <div className="row my-4 d-flex justify-content-center">
                             <fieldset className="p-3 border border-info mb-2">
@@ -187,13 +194,6 @@ function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, N
                 </> : <fieldset className="p-3 border border-info mb-2" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
                 </fieldset>}
-
-                <PQRS_MODULE_NAV
-                    translation={translation}
-                    currentItem={currentItem}
-                    FROM={"general"}
-                    NAVIGATION={NAVIGATION}
-                />
             </div>
         );
 }

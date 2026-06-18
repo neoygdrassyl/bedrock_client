@@ -326,12 +326,13 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
 
         let generateCVS = () => {
             let _data = data_macro;
+            if (!Array.isArray(_data) || !_data.length) return;
             const rows = [];
 
             const headRows = columns.filter(row => (row.excell != false)).map(row => row.excellHeader);
 
             rows.push(headRows);
-            _data.map(_d => {
+            _data.forEach(_d => {
                 let row = [];
                 let entry =  columns.filter(e => (e.excell != false)).map(e => e.excellValue(_d))
                 row.push(entry); 
@@ -352,7 +353,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
             link.click();
         }
         return (
-            <div className="py-3">
+            <div className="min-w-0 py-3">
                 <div className="row">
                     <div className="col-6">
                         <div className="alert alert-danger">
@@ -374,22 +375,24 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 </div>
 
                 {load ? (
-                    <DataTable
-                        conditionalRowStyles={rowSelectedStyle}
-                        noDataComponent={<h4 className="fw-bold">NO HAY INFORMACIÓN</h4>}
-                        striped="true"
-                        columns={columns}
-                        data={data_macro}
-                        highlightOnHover
-                        pagination
-                        paginationPerPage={50}
-                        paginationRowsPerPageOptions={[50, 100, 200]}
-                        paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                        className="data-table-component"
-                        noHeader
-                        onRowClicked={(e) => setSelectedRow(e.id)}
-                        dense={true}
-                    />
+                    <div className="max-w-full min-w-0 overflow-x-auto">
+                        <DataTable
+                            conditionalRowStyles={rowSelectedStyle}
+                            noDataComponent={<h4 className="fw-bold">NO HAY INFORMACIÓN</h4>}
+                            striped="true"
+                            columns={columns}
+                            data={Array.isArray(data_macro) ? data_macro : []}
+                            highlightOnHover
+                            pagination
+                            paginationPerPage={50}
+                            paginationRowsPerPageOptions={[50, 100, 200]}
+                            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                            className="data-table-component"
+                            noHeader
+                            onRowClicked={(e) => setSelectedRow(e.id)}
+                            dense={true}
+                        />
+                    </div>
                 ) : (
                     <div className="text-center">
                         <h4 className="fw-bold">CARGANDO INFORMACIÓN...</h4>

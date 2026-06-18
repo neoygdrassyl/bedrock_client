@@ -17,8 +17,8 @@ class ChatService {
     return http.get(`/${ROUTE}/users`);
   }
 
-  inbox() {
-    return http.get(`/${ROUTE}/inbox`);
+  inbox(config = {}) {
+    return http.get(`/${ROUTE}/inbox`, config);
   }
 
   messages(withUserId, params = {}) {

@@ -23,17 +23,17 @@ function SUBMIT_SINGLE_VIEW({ translation, swaMsg, globals, id_related, setVRLis
 
     function setCuratedList(List) {
         let newList = [];
-        if(!List) return;
-        List.map((value, i) => {
-            let subList = value.sub_lists;
-            subList.map(valuej => {
+        const sourceList = Array.isArray(List) ? List : Array.isArray(List?.data) ? List.data : [];
+        sourceList.forEach((value) => {
+            let subList = Array.isArray(value.sub_lists) ? value.sub_lists : [];
+            subList.forEach(valuej => {
                 let name = valuej.list_name ? valuej.list_name.split(";") : []
                 let category = valuej.list_category ? valuej.list_category.split(",") : []
                 let code = valuej.list_code ? valuej.list_code.split(",") : []
                 let page = valuej.list_pages ? valuej.list_pages.split(",") : []
                 let review = valuej.list_review ? valuej.list_review.split(",") : []
 
-                review.map((valuek, k) => {
+                review.forEach((valuek, k) => {
                     if (valuek == 'SI') newList.push({
                         id_public: value.id_public,
                         date: value.date,

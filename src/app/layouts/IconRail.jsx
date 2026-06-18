@@ -22,6 +22,16 @@ const UTILITY_START_INDEX = 7;
 export function IconRail({ items, activeId, onSelect, logo, collapsed = false }) {
   const location = useLocation();
 
+  if (collapsed) {
+    return (
+      <nav
+        aria-label="Navegación principal"
+        aria-hidden="true"
+        className="h-full w-0 shrink-0 overflow-hidden pointer-events-none"
+      />
+    );
+  }
+
   const mainItems = items.slice(0, UTILITY_START_INDEX);
   const utilityItems = items.slice(UTILITY_START_INDEX);
 
@@ -30,9 +40,8 @@ export function IconRail({ items, activeId, onSelect, logo, collapsed = false })
       aria-label="Navegación principal"
       className={cn(
         'flex flex-col items-center h-full bg-sidebar text-sidebar-foreground shrink-0 transition-all duration-200 overflow-hidden',
-        collapsed ? 'w-0 p-0' : 'w-12 py-2.5 gap-0.5'
+        'w-12 py-2.5 gap-0.5'
       )}
-      aria-hidden={collapsed}
     >
       {logo && (
         <div className="mb-3 mt-0.5 flex items-center justify-center">
@@ -74,6 +83,7 @@ function RailButton({ item, isActive, onSelect }) {
     <Tooltip>
       <TooltipTrigger asChild>
         <button
+          type="button"
           onClick={() => onSelect(item.id)}
           className={cn(
             'relative flex items-center justify-center w-9 h-9 rounded-md transition-all duration-200',

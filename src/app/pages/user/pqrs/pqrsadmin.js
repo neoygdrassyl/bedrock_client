@@ -33,6 +33,8 @@ import { cn } from '@/lib/utils';
 import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
 
 function PendingComponent({ pendingOpen, setPendingOpen, pending }) {
+    const visiblePending = pending.slice(0, 200);
+
     return (
         <div className="col-lg-11 col-md-12">
             <div className="alert alert-warning">
@@ -40,19 +42,23 @@ function PendingComponent({ pendingOpen, setPendingOpen, pending }) {
                 <div className="row">
                     <div className="col-10">
                         <span className="font-semibold text-sm">PQRS PENDIENTES POR VENTANILLA ÚNICA: </span>
+                        <span className="text-sm">{pending.length}</span>
                     </div>
                     <div className="col text-end">
-                        <Button variant="ghost" size="sm" title="Ver Listado" onClick={() => setPendingOpen(prev => !prev)}>
+                        <Button variant="ghost" size="sm" title="Ver Listado" aria-expanded={pendingOpen} onClick={() => setPendingOpen(prev => !prev)}>
                             <Icon name="info-circle" size={16} />
                         </Button>
                     </div>
                 </div>
                 {pendingOpen && (
-                    <div className="row">
-                        <div className="col-10">
-                            <ul>
-                                {pending.map((i) => <li key={i.id_pending}>{i.id_pending}</li>)}
+                    <div className="row mt-2">
+                        <div className="col-12">
+                            <ul className="mb-0 max-h-64 overflow-y-auto rounded-md border border-warning/30 bg-background/80 p-2 text-sm font-mono">
+                                {visiblePending.map((i) => <li key={i.id_pending}>{i.id_pending}</li>)}
                             </ul>
+                            {pending.length > visiblePending.length && (
+                                <p className="mb-0 mt-2 text-xs text-muted-foreground">Mostrando {visiblePending.length} de {pending.length} pendientes.</p>
+                            )}
                         </div>
                     </div>
                 )}
@@ -82,6 +88,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
     const [itemsGeneral, setItemsGeneral] = useState([]);
     const [itemsGeneral2, setItemsGeneral2] = useState([]);
     const [itemsSearch, setItemsSearch] = useState([]);
+    const [searchFeedback, setSearchFeedback] = useState('');
 
     const [modalNew, setModalNew] = useState(false);
     const [modalInfo, setModalInfo] = useState(false);
@@ -593,10 +600,10 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 center: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>
+                    <Button size="sm" className="m-0 h-11 min-w-11 px-2" title="Informacion General" aria-label="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ? <>
-                            <Button size="sm" className="m-0 px-2" title="Gestionar peticion" onClick={() => toggleManage(row)}><Icon name="cog" size={16} /></Button>
+                            <Button size="sm" className="m-0 h-11 min-w-11 px-2" title="Gestionar peticion" aria-label="Gestionar peticion" onClick={() => toggleManage(row)}><Icon name="cog" size={16} /></Button>
                         </> : ""}
                 </>,
             },
@@ -639,14 +646,14 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.pqrs_time.reply_formal)}</span>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.pqrs_time?.reply_formal ? dateParser(row.pqrs_time.reply_formal) : 'Sin respuesta'}</span>
             },
             {
                 name: 'TIEMPO REAL RESPUESTA',
-                selector: row => dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal),
+                selector: row => row.pqrs_time?.reply_formal ? dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal) : '',
                 sortable: true,
                 center: true,
-                cell: row => <span className="text-xs">{dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal)} | {row.pqrs_time.time} día(s) hábiles</span>
+                cell: row => <span className="text-xs">{row.pqrs_time?.reply_formal ? `${dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal)} | ${row.pqrs_time.time} día(s) hábiles` : 'Sin respuesta'}</span>
             },
 
             {
@@ -655,7 +662,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 minWidth: '150px',
                 center: true,
                 cell: row => <>
-                    <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>
+                    <Button size="sm" className="m-0 h-11 min-w-11 px-2" title="Informacion General" aria-label="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ?
                         <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
@@ -706,7 +713,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
-                cell: row => <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>,
+                cell: row => <Button size="sm" className="m-0 h-11 min-w-11 px-2" title="Informacion General" aria-label="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>,
 
             },
         ]
@@ -718,6 +725,9 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 return;
             }
             setFillActive(state);
+            setIsloadedSearch(false);
+            setItemsSearch([]);
+            setSearchFeedback('');
         };
         const handleFillClick2 = (state) => {
             if (state === fillActive) {
@@ -736,6 +746,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             let serach_str = document.getElementById("search_1").value;
             formData.set('serach_str', serach_str);
             if (serach_str) {
+                setSearchFeedback('');
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 PQRS_Main.search(formData)
                     .then(response => {
@@ -749,9 +760,9 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         console.log(e);
                     });
             } else {
-                refreshList();
                 setItemsSearch([]);
                 setIsloadedSearch(false);
+                setSearchFeedback('Ingrese un criterio de búsqueda para consultar PQRS.');
             }
         }
         let loadMacro = (event) => {
@@ -769,7 +780,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             setDate_end(date_end_val)
         }
         return (
-            <div className="Publish container">
+            <div className="Publish container-fluid max-w-none px-0">
                 <div>
                     <h1 className="text-xl font-bold text-foreground">PQRS</h1>
                     <p className="text-sm text-muted-foreground mt-1">Gestión de peticiones, quejas, reclamos y sugerencias</p>
@@ -812,6 +823,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                         </span>
                                         <input type="text" className="form-control" id="search_1" placeholder="Buscar..." />
                                     </div>
+                                    {searchFeedback ? <p className="mb-2 text-center text-xs text-destructive">{searchFeedback}</p> : null}
                                     <div className="text-center">
                                         <Button variant="secondary" size="sm" type="submit">
                                             <Icon name="SearchCheck" size={13} /> Consultar

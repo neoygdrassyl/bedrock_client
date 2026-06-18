@@ -16,7 +16,7 @@ export default function ChatLauncher() {
 
   const refreshInbox = useCallback(async () => {
     try {
-      const resp = await ChatService.inbox();
+      const resp = await ChatService.inbox({ skipDovelaErrorCapture: true });
       setConversations(normalizeList(resp.data));
     } catch (_error) {
       setConversations([]);
