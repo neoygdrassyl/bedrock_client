@@ -857,6 +857,12 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
             {currentItem != null ? <>
                 {load ? <>
+                    <PQRS_MODULE_NAV
+                        translation={translation}
+                        currentItem={currentItem}
+                        FROM={currentItem.status == 0 ? "manage" : "editable"}
+                        NAVIGATION={props.NAVIGATION}
+                    />
 
                     <fieldset className="p-3 border border-info mb-2">
                         <h2 className=" px-4 app-p lead fw-normal"><b>1.DOCUMENTOS SOPORTE INGRESO <Icon name="folder" size={16} /></b></h2>
@@ -1203,12 +1209,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
             </fieldset>
             }
-            <PQRS_MODULE_NAV
-                translation={translation}
-                currentItem={currentItem}
-                FROM={currentItem.status == 0 ? "manage" : "editable"}
-                NAVIGATION={props.NAVIGATION}
-            />
         </div >
     )
 }

@@ -147,7 +147,7 @@ export function LegacyModal({
       {/* Content */}
       <div
         className={cn(
-          'ReactModal__Content absolute z-10 bg-background border border-border rounded-[var(--radius)] shadow-lg overflow-auto animate-in fade-in-0 zoom-in-95 duration-200',
+          'ReactModal__Content absolute z-10 min-w-0 bg-background border border-border rounded-[var(--radius)] shadow-lg overflow-auto animate-in fade-in-0 zoom-in-95 duration-200',
           className,
         )}
         style={{
@@ -156,7 +156,10 @@ export function LegacyModal({
           right: '5%',
           bottom: '2%',
           padding: '1rem 1.25rem',
+          width: 'min(1400px, 90vw)',
           maxWidth: '1400px',
+          maxHeight: 'calc(100dvh - 4%)',
+          boxSizing: 'border-box',
           margin: '0 auto',
           ...contentStyle,
           zIndex: getSafeZIndex(contentStyle.zIndex, stackBase.content),

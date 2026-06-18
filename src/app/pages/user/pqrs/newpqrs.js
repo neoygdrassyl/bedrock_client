@@ -179,7 +179,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
         }
         // WORKING SELECTS
         const selectTypeChannel = translation_form.form_radication_chanel.map(function (item) {
-            return <option>{item}</option>
+            return <option key={item}>{item}</option>
         })
 
         // SUBMIT  NEW 1. ENTRY
@@ -323,7 +323,8 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
             let files = document.getElementsByName("files");
             formData.set('attachs_length', attachs);
             for (var i = 0; i < attachs; i++) {
-                formData.append('file', files[i].files[0], "pqrs_" + files[i].files[0].name)
+                const file = files[i]?.files?.[0];
+                if (file) formData.append('file', file, "pqrs_" + file.name)
             }
             array_html = document.getElementsByName("files_names");
             for (var i = 0; i < array_html.length; i++) {
@@ -417,7 +418,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
         }
         return (
             <div>
-                <form onSubmit={generatePQRS} id="app-formNew" enctype="multipart/form-data">
+                <form onSubmit={generatePQRS} id="app-formNew" encType="multipart/form-data">
                     <div className="row my-4 d-flex justify-content-center">
                         <label className="app-p lead text-start fw-bold">1.1 IDENTIFICACIÓN DEL PETICIONARIO</label>
                         <div className="text-end m-3">
