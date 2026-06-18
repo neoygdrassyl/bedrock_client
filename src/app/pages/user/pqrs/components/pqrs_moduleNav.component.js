@@ -53,11 +53,11 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
             {currentItem
                 ? <div className="btn-nav_module-pqr sticky top-0 z-20">
                     <div className="rounded-lg border border-border/70 bg-card/80 p-3">
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center justify-start gap-2">
 
                                     <div>
                                         <Button variant="outline" size="sm" className="h-9 justify-start" onClick={() => NAVIGATION(currentItem, "close", FROM)}>
-                                            <Icon name="times-circle" size={16} /> <span className="fs-6 align-top">CERRAR</span>
+                                            <Icon name="times-circle" size={14} /> <span className="fs-6 align-top">CERRAR</span>
                                         </Button>
                                     </div>
 
@@ -65,11 +65,11 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                         ?
                                         <div>
                                             <Button variant="ghost" size="sm" className="h-9">
-                                                <Icon name="eye" size={16} /> <span className="fs-6 align-top">DETALLES</span></Button>
+                                                <Icon name="eye" size={14} /> <span className="fs-6 align-top">DETALLES</span></Button>
                                         </div>
                                         : <div>
                                             <Button size="sm" className="h-9 justify-start" onClick={() => NAVIGATION(currentItem, "general", FROM)}>
-                                                <Icon name="eye" size={16} /> <span className="fs-6 align-top">DETALLES</span></Button>
+                                                <Icon name="eye" size={14} /> <span className="fs-6 align-top">DETALLES</span></Button>
                                         </div>}
 
                                     {currentItem.status === 1
@@ -78,11 +78,11 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                                 ?
                                                 <div>
                                                     <Button variant="ghost" size="sm" className="h-9">
-                                                        <Icon name="edit" size={16} /> <span className="fs-6 align-top">EDITAR</span></Button>
+                                                        <Icon name="edit" size={14} /> <span className="fs-6 align-top">EDITAR</span></Button>
                                                 </div>
                                                 : <div>
                                                     <Button variant="outline" size="sm" className="h-9" onClick={() => NAVIGATION(currentItem, "editable", FROM)}>
-                                                        <Icon name="edit" size={16} /> <span className="fs-6 align-top">EDITAR</span></Button>
+                                                        <Icon name="edit" size={14} /> <span className="fs-6 align-top">EDITAR</span></Button>
                                                 </div>} </> : ""
                                     }
                                     {currentItem.status === 0
@@ -92,11 +92,11 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                                     {FROM === "manage"
                                                         ? <div>
                                                             <Button variant="ghost" size="sm" className="h-9">
-                                                                <Icon name="cog" size={16} /> <span className="fs-6 align-top">GESTIONAR</span></Button>
+                                                                <Icon name="cog" size={14} /> <span className="fs-6 align-top">GESTIONAR</span></Button>
                                                         </div>
                                                         : <div>
                                                             <Button size="sm" className="h-9" onClick={() => NAVIGATION(currentItem, "manage", FROM)}>
-                                                                <Icon name="cog" size={16} /> <span className="fs-6 align-top">GESTIONAR</span></Button>
+                                                                <Icon name="cog" size={14} /> <span className="fs-6 align-top">GESTIONAR</span></Button>
                                                         </div>}
                                                 </> : ""}
                                         </>
