@@ -258,22 +258,12 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
         let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
         return (
             <div>
-                <legend className="my-2 px-3 Collapsible">
-                    <label className="app-p lead fw-normal" id="fund_1">1 GESTIÓN DOCUMENTAL</label>
-                </legend>
-
-                <legend className="my-2 px-3">
-                    <div className='row my-2 align-items-center'>
-                        <div className='col'>
-                            <label className="app-p lead fw-normal" id="fund_11">1.1 EXPEDIENTE DOCUMENTAL UNIFICADO</label>
-                        </div>
-                        <div className='col text-end'>
-                            <Button variant="outline" size="sm" disabled={!funVRList.length} onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
-                                <Icon name="file-csv" size={16} /> DESCARGAR CSV
-                            </Button>
-                        </div>
-                    </div>
-                </legend>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-1" id="fund_11">
+                    <label className="mb-0 text-sm font-semibold text-foreground" id="fund_1">1 GESTIÓN DOCUMENTAL</label>
+                    <Button variant="outline" size="sm" disabled={!funVRList.length} onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
+                        <Icon name="file-csv" size={16} /> DESCARGAR CSV
+                    </Button>
+                </div>
                 {currentItem != null ? <>
 
                     <FUN_6_VIEW

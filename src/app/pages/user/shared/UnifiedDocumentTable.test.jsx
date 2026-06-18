@@ -105,7 +105,7 @@ describe('UnifiedDocumentTable Legal y Debida Forma', () => {
       />,
     );
 
-    expect(screen.getByText('Legal y Debida Forma')).toBeInTheDocument();
+    expect(screen.getByText('Modo evaluación legal y debida forma')).toBeInTheDocument();
     expect(screen.getByText('Presentes')).toBeInTheDocument();
     expect(screen.getByText('Faltantes')).toBeInTheDocument();
     expect(screen.getByText('Pendientes escaneo')).toBeInTheDocument();
