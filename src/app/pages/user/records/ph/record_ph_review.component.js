@@ -662,7 +662,14 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             if (!notDataResult.ok) return;
 
             const vrResult = await createVRxCUB_relation_PH();
-            if (!vrResult.ok) return;
+            if (!vrResult.ok) {
+                await swalConfirm({
+                    title: 'Relación CUBxVR no actualizada',
+                    text: 'El informe se guardará de todos modos. Revise la relación del consecutivo si necesita trazabilidad CUBxVR exacta.',
+                    confirmButtonText: 'Continuar',
+                    showCancelButton: false,
+                });
+            }
 
             const result = await execute(RECORD_PH_SERVICE.update(currentRecord.id, formData), {
                 operationName: 'guardar acta de revisión',
@@ -1049,12 +1056,14 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     operationName: 'actualizar relación CUBxVR PH',
                     loading: false,
                     success: false,
+                    error: false,
                 });
             } else {
                 return await execute(CubXVrDataService.createCubXVr(formatData), {
                     operationName: 'crear relación CUBxVR PH',
                     loading: false,
                     success: false,
+                    error: false,
                 });
             }
         };
