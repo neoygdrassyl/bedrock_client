@@ -77,7 +77,7 @@ export function FunExpedienteDetail({
   useEffect(() => {
     let ignore = false;
 
-    if (!currentPhaseCode) {
+    if (!currentPhaseCode || !isLegalGuideOpen) {
       setLegalGuide(null);
       setLegalGuideError('');
       setLegalGuideLoading(false);
@@ -94,7 +94,7 @@ export function FunExpedienteDetail({
       })
       .catch((error) => {
         if (ignore) return;
-        if (error?.response?.status === 404) {
+        if ([401, 403, 404].includes(error?.response?.status)) {
           setLegalGuide(null);
           setLegalGuideError('');
           return;
@@ -109,7 +109,7 @@ export function FunExpedienteDetail({
     return () => {
       ignore = true;
     };
-  }, [currentPhaseCode]);
+  }, [currentPhaseCode, isLegalGuideOpen]);
 
   if (!expediente) return null;
 

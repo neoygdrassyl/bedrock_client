@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,21 +16,22 @@ import FUNService from '../../../../services/fun.service';
 import legalGuideService from '../../../../services/legalGuide.service';
 import { calcularDiasHabiles, sumarDiasHabiles, FUN_0_TYPE_TIME } from '../../clocks/hooks/useClocksManager';
 import { useAlarms } from '../hooks/useAlarms';
-import FUNG from '../fun_g';
-import FUNC from '../fun_c';
-import FUNN from '../fun_n';
-import FUND from './fun_docs';
-import FUN_ALERT from '../fun_alertn';
-import FUNCLOCK from '../fun_clock';
-import RECORD_ARC from '../../records/record_arc';
-import RECORD_LAW from '../../records/record_law';
-import RECORD_ENG from '../../records/record_eng';
-import RECORD_REVIEW from '../../records/record_review';
-import RECORD_PH from '../../records/record_ph';
-import EXPEDITION from '../../expeditions/expedition.page';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { formsParser1, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+
+const FUNG = React.lazy(() => import('../fun_g'));
+const FUNC = React.lazy(() => import('../fun_c'));
+const FUNN = React.lazy(() => import('../fun_n'));
+const FUND = React.lazy(() => import('./fun_docs'));
+const FUN_ALERT = React.lazy(() => import('../fun_alertn'));
+const FUNCLOCK = React.lazy(() => import('../fun_clock'));
+const RECORD_ARC = React.lazy(() => import('../../records/record_arc'));
+const RECORD_LAW = React.lazy(() => import('../../records/record_law'));
+const RECORD_ENG = React.lazy(() => import('../../records/record_eng'));
+const RECORD_REVIEW = React.lazy(() => import('../../records/record_review'));
+const RECORD_PH = React.lazy(() => import('../../records/record_ph'));
+const EXPEDITION = React.lazy(() => import('../../expeditions/expedition.page'));
 
 const SECTION_GROUPS = [
   {
@@ -100,6 +101,14 @@ const STATUS_META = {
 };
 
 const STATUS_FALLBACK = STATUS_META.EN_TERMINO;
+
+function ModuleLoadingFallback() {
+  return (
+    <div className="flex min-h-[18rem] items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 p-6 text-sm text-muted-foreground">
+      Cargando módulo del expediente...
+    </div>
+  );
+}
 
 const TERM_META = {
   overdue: {
@@ -186,6 +195,21 @@ function normalizeTypeKey(value) {
 
 function getExpedienteTypeKey(expediente) {
   return normalizeTypeKey(getFirstValue(expediente?.tipo, expediente?.type, expediente?.categoria, expediente?.m_lic));
+}
+
+function hasSeededLegalSummary(expediente, currentPublic) {
+  if (!expediente || !currentPublic || getExpedienteRadicado(expediente) !== currentPublic) {
+    return false;
+  }
+
+  return [
+    expediente?.fase_actual,
+    expediente?.status,
+    expediente?.dias_habiles_usados,
+    expediente?.dias_habiles_limite,
+    expediente?.porcentaje_avance,
+    expediente?.fecha_limite,
+  ].some((value) => value !== undefined && value !== null && value !== '');
 }
 
 function normalizePhaseCode(value) {
@@ -1127,13 +1151,21 @@ export function FunExpedienteFullscreen({
   const [liveLegalSummary, setLiveLegalSummary] = useState(null);
   const [legalGuide, setLegalGuide] = useState(null);
   const [legalGuideLoading, setLegalGuideLoading] = useState(false);
+  const seededLegalSummary = useMemo(
+    () => (hasSeededLegalSummary(summary, currentPublic) ? summary : null),
+    [currentPublic, summary]
+  );
 
-  const { alarms } = useAlarms({ includeAttended: true, includeHidden: true });
+  const { alarms } = useAlarms({
+    enabled: alertsDialogOpen || activeSection === 'tiempos',
+    includeAttended: true,
+    includeHidden: true,
+  });
   const {
     bookmarks,
     error: bookmarkError,
     setScope: setBookmarkScope,
-  } = useBookmarks();
+  } = useBookmarks({ enabled: false });
 
   useEffect(() => {
     setSummary(expediente);
@@ -1187,6 +1219,11 @@ export function FunExpedienteFullscreen({
       return undefined;
     }
 
+    if (seededLegalSummary) {
+      setLiveLegalSummary((prev) => prev ?? seededLegalSummary);
+      return undefined;
+    }
+
     FUNService.getSummaryByIdPublic(currentPublic)
       .then((response) => {
         if (ignore) return;
@@ -1202,7 +1239,7 @@ export function FunExpedienteFullscreen({
     return () => {
       ignore = true;
     };
-  }, [currentPublic]);
+  }, [currentPublic, seededLegalSummary]);
 
   const refreshSummary = useCallback(
     async (radicadoOverride) => {
@@ -1344,6 +1381,7 @@ export function FunExpedienteFullscreen({
   const bitacoraGroups = useMemo(() => getBitacoraGroups(bitacoraEntries), [bitacoraEntries]);
   const legalSummary = useMemo(() => mergeLegalSummary(summary, liveLegalSummary), [liveLegalSummary, summary]);
   const currentPhaseCode = normalizePhaseCode(legalSummary?.fase_actual);
+  const shouldLoadLegalGuide = Boolean(currentPhaseCode && rightPanelOpen && activeSection === 'detalles');
   const summaryStatus = getSummaryStatusMeta(legalSummary?.status);
   const usedDays = toSafeNumber(legalSummary?.dias_habiles_usados);
   const limitDays = toSafeNumber(legalSummary?.dias_habiles_limite);
@@ -1353,7 +1391,7 @@ export function FunExpedienteFullscreen({
   useEffect(() => {
     let ignore = false;
 
-    if (!currentPhaseCode) {
+    if (!shouldLoadLegalGuide) {
       setLegalGuide(null);
       setLegalGuideLoading(false);
       return undefined;
@@ -1365,7 +1403,7 @@ export function FunExpedienteFullscreen({
         if (!ignore) setLegalGuide(response?.data?.data ?? response?.data ?? null);
       })
       .catch((error) => {
-        if (!ignore && error?.response?.status !== 404) {
+        if (!ignore && ![401, 403, 404].includes(error?.response?.status)) {
           console.warn('No fue posible cargar la guía legal de esta fase.', error);
         }
         if (!ignore) setLegalGuide(null);
@@ -1377,7 +1415,7 @@ export function FunExpedienteFullscreen({
     return () => {
       ignore = true;
     };
-  }, [currentPhaseCode]);
+  }, [currentPhaseCode, shouldLoadLegalGuide]);
 
   const currentAlarms = useMemo(
     () => (alarms || []).filter((alarm) => {
@@ -1647,7 +1685,9 @@ export function FunExpedienteFullscreen({
                       : 'p-3 sm:p-5'
                 )}
               >
-                {moduleContent}
+                <Suspense fallback={<ModuleLoadingFallback />}>
+                  {moduleContent}
+                </Suspense>
               </div>
             </div>
           </ScrollArea>

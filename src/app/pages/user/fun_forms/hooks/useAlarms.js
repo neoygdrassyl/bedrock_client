@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AlarmService from '../../../../services/alarm.service';
 
-export function useAlarms({ pollMs = 60000, includeAttended = false, includeHidden = false } = {}) {
+export function useAlarms({ enabled = true, pollMs = 60000, includeAttended = false, includeHidden = false } = {}) {
   const [alarms, setAlarms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -38,13 +38,17 @@ export function useAlarms({ pollMs = 60000, includeAttended = false, includeHidd
   );
 
   useEffect(() => {
+    if (!enabled) {
+      return undefined;
+    }
+
     refetch();
     if (pollMs > 0) {
       timerRef.current = setInterval(refetch, pollMs);
       return () => clearInterval(timerRef.current);
     }
     return undefined;
-  }, [refetch, pollMs]);
+  }, [enabled, refetch, pollMs]);
 
   return { alarms, loading, error, refetch, attend, hide };
 }
