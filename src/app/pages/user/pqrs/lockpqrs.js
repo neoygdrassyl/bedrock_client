@@ -250,8 +250,10 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                         formData.set('time_id', currentItem.pqrs_time.id);
                     }
 
-                    let reply_formal = document.getElementById('pqrs_formal_time')?.value || '';
-                    formData.set('reply_formal', reply_formal);
+                    const reply_formal = document.getElementById('pqrs_formal_time')?.value?.trim() || '';
+                    if (reply_formal) {
+                        formData.set('reply_formal', reply_formal);
+                    }
                     appendCloseAttachments(formData, attachments);
 
                     PQRS_Service.close(formData)
