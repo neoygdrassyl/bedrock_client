@@ -43,6 +43,7 @@ const ICON_COLORS = {
 };
 
 const DEFAULT_ICON_COLOR = 'bg-muted text-muted-foreground';
+const TRACKED_SKELETON_ROWS = ['tracked-skeleton-1', 'tracked-skeleton-2', 'tracked-skeleton-3'];
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -123,6 +124,16 @@ function buildTrackedExpedientes(bookmarks, funData) {
     .slice(0, 6);
 }
 
+function deferDashboardWork(callback) {
+  if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+    const idleId = window.requestIdleCallback(callback, { timeout: 1200 });
+    return () => window.cancelIdleCallback?.(idleId);
+  }
+
+  const timeoutId = window.setTimeout(callback, 150);
+  return () => window.clearTimeout(timeoutId);
+}
+
 /**
  * Dashboard — card grid with real-time counts, role-based modules.
  * Visual reference: Vercel dashboard cards + Stripe data density.
@@ -137,6 +148,30 @@ function Dashboard() {
 
   useEffect(() => {
     let cancelled = false;
+    let cancelTrackedWork = () => {};
+
+    async function fetchTrackedExpedientes(funData) {
+      try {
+        const results = await Promise.allSettled([
+          BookmarkService.list({ scope: 'personal' }),
+          BookmarkService.list({ scope: 'team' }),
+        ]);
+        if (cancelled) return;
+
+        const personalBookmarks = results[0].status === 'fulfilled' ? normalizeList(results[0].value?.data) : [];
+        const teamBookmarks = results[1].status === 'fulfilled' ? normalizeList(results[1].value?.data) : [];
+        setTrackedExpedientes({
+          personal: buildTrackedExpedientes(personalBookmarks, funData || []),
+          team: buildTrackedExpedientes(teamBookmarks, funData || []),
+        });
+        setTrackedError(results[0].status === 'rejected' || results[1].status === 'rejected' ? 'No se pudieron cargar todos los marcados.' : null);
+      } catch {
+        if (!cancelled) setTrackedError('No se pudieron cargar todos los marcados.');
+      } finally {
+        if (!cancelled) setLoadingTracked(false);
+      }
+    }
+
     async function fetchCounts() {
       try {
         const results = await Promise.allSettled([
@@ -145,8 +180,6 @@ function Dashboard() {
           SubmitService.getAll(),
           MailboxService.getAll(),
           AppointmentsService.getAll(),
-          BookmarkService.list({ scope: 'personal' }),
-          BookmarkService.list({ scope: 'team' }),
         ]);
         if (cancelled) return;
         const len = (r) => r.status === 'fulfilled' && Array.isArray(r.value?.data) ? r.value.data.length : null;
@@ -154,7 +187,7 @@ function Dashboard() {
           ? results[0].value.data
           : null;
         const activeFun = Array.isArray(funData) ? funData.filter(f => f.state > 0 && f.state < 100).length : null;
-        const pendingFun = Array.isArray(funData) ? funData.filter(f => f.state == 1 || f.state == -1).length : null;
+        const pendingFun = Array.isArray(funData) ? funData.filter(f => Number(f.state) === 1 || Number(f.state) === -1).length : null;
 
         setCounts({
           '/licencias': pendingFun,
@@ -166,22 +199,19 @@ function Dashboard() {
           '/calendario': len(results[4]),
         });
 
-        const personalBookmarks = results[5].status === 'fulfilled' ? normalizeList(results[5].value?.data) : [];
-        const teamBookmarks = results[6].status === 'fulfilled' ? normalizeList(results[6].value?.data) : [];
-        setTrackedExpedientes({
-          personal: buildTrackedExpedientes(personalBookmarks, funData || []),
-          team: buildTrackedExpedientes(teamBookmarks, funData || []),
-        });
-        setTrackedError(results[5].status === 'rejected' || results[6].status === 'rejected' ? 'No se pudieron cargar todos los marcados.' : null);
+        cancelTrackedWork = deferDashboardWork(() => fetchTrackedExpedientes(funData || []));
       } catch {
         // Counts are optional enhancement
+        if (!cancelled) setLoadingTracked(false);
       } finally {
         if (!cancelled) setLoadingCounts(false);
-        if (!cancelled) setLoadingTracked(false);
       }
     }
     fetchCounts();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      cancelTrackedWork();
+    };
   }, []);
 
   useEffect(() => {
@@ -492,8 +522,8 @@ function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyT
 
         <div className="divide-y divide-border/50">
           {loading ? (
-            Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="px-3.5 py-3">
+            TRACKED_SKELETON_ROWS.map((key) => (
+              <div key={key} className="px-3.5 py-3">
                 <Skeleton className="mb-2 h-4 w-1/3" />
                 <Skeleton className="h-3 w-3/4" />
               </div>
