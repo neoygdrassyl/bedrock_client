@@ -1,4 +1,5 @@
 import http from "../../http-common";
+import { dedupeGet } from "./requestCache";
 
 const route = "cubXVr";
 
@@ -12,7 +13,7 @@ class CubXVrDataService {
     }
 
     getByFUN(id) {
-        return http.get(`/${route}/getByFUN/${id}`);
+        return dedupeGet(`${route}:getByFUN:${id}`, () => http.get(`/${route}/getByFUN/${id}`));
     }
 
     getByPQRS(id) {

@@ -1,4 +1,5 @@
 import http from "../../http-common";
+import { dedupeGet } from "./requestCache";
 
 const route = "fun"
 
@@ -52,10 +53,10 @@ class UserslDataService {
     return http.get(`/${route}/get/fun1/${id_public}`);
   }
   get_fun_IdPublic(id_public) {
-    return http.get(`/${route}/get/idpublic/${id_public}`);
+    return dedupeGet(`${route}:get_fun_IdPublic:${id_public}`, () => http.get(`/${route}/get/idpublic/${id_public}`));
   }
   getSummaryByIdPublic(id_public) {
-    return http.get(`/${route}/get/summary/${id_public}`);
+    return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}`, () => http.get(`/${route}/get/summary/${id_public}`));
   }
   loadMacro(date_start, date_end) {
     return http.get(`/${route}/loadMacro/${date_start}&${date_end}`);
@@ -88,7 +89,7 @@ class UserslDataService {
     return http.get(`/${route}/loadasign/${worker_id}&${type_record}`);
   }
   loadPQRSxFUN(fun0PublicId) {
-    return http.get(`/${route}/loadPQRSxFUN/${fun0PublicId}`);
+    return dedupeGet(`${route}:loadPQRSxFUN:${fun0PublicId}`, () => http.get(`/${route}/loadPQRSxFUN/${fun0PublicId}`));
   }
   getLastOA() {
     return http.get(`/${route}/getlast/oa`);

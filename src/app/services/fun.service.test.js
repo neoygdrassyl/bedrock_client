@@ -1,27 +1,46 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const { httpGetMock } = vi.hoisted(() => ({
-  httpGetMock: vi.fn(),
+const { getMock } = vi.hoisted(() => ({
+  getMock: vi.fn(),
 }));
 
 vi.mock('../../http-common', () => ({
-  __esModule: true,
   default: {
-    get: httpGetMock,
+    get: getMock,
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
   },
 }));
 
-import FUNService from './fun.service.js';
+import FUNService from './fun.service';
+import { clearPendingRequests } from './requestCache';
 
-describe('FUNService missing documents endpoint', () => {
-  beforeEach(() => {
-    httpGetMock.mockReset();
-    httpGetMock.mockResolvedValue({ data: {} });
+afterEach(() => {
+  clearPendingRequests();
+  vi.clearAllMocks();
+});
+
+describe('FUNService request dedupe', () => {
+  it('comparte la misma request en vuelo para get_fun_IdPublic', () => {
+    getMock.mockImplementation(() => new Promise(() => {}));
+
+    const first = FUNService.get_fun_IdPublic('68001-1-25-0233');
+    const second = FUNService.get_fun_IdPublic('68001-1-25-0233');
+
+    expect(second).toBe(first);
+    expect(getMock).toHaveBeenCalledTimes(1);
+    expect(getMock).toHaveBeenCalledWith('/fun/get/idpublic/68001-1-25-0233');
   });
 
-  it('consulta documentos faltantes con fun_id e id_related en la ruta esperada', () => {
-    FUNService.getMissingDocuments('FUN26-2330', 'VR26-2330');
+  it('comparte la misma request en vuelo para getSummaryByIdPublic', () => {
+    getMock.mockImplementation(() => new Promise(() => {}));
 
-    expect(httpGetMock).toHaveBeenCalledWith('/fun/documents/missing/FUN26-2330/VR26-2330');
+    const first = FUNService.getSummaryByIdPublic('68001-1-25-0233');
+    const second = FUNService.getSummaryByIdPublic('68001-1-25-0233');
+
+    expect(second).toBe(first);
+    expect(getMock).toHaveBeenCalledTimes(1);
+    expect(getMock).toHaveBeenCalledWith('/fun/get/summary/68001-1-25-0233');
   });
 });
