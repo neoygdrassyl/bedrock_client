@@ -713,7 +713,12 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
-                cell: row => <Button size="sm" className="m-0 h-8 min-w-8 px-2" title="Informacion General" aria-label="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={13} /></Button>,
+                cell: row => <>
+                    <Button size="sm" className="m-0 h-8 min-w-8 px-2" title="Informacion General" aria-label="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={13} /></Button>
+                    {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
+                        ? <Button size="sm" className="m-0 h-8 min-w-8 px-2" title="Gestionar peticion" aria-label="Gestionar peticion" onClick={() => toggleManage(row)}><Icon name="cog" size={13} /></Button>
+                        : ""}
+                </>,
 
             },
         ]
