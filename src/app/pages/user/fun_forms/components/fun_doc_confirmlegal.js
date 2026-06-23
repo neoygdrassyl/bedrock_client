@@ -10,6 +10,22 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
+export function extractConfirmLegalProcessData(items) {
+    const match = Array.isArray(items)
+        ? items.find((item) => item?.process === 'CARTA LEGAL Y DEBIDA FORMA')
+        : null;
+
+    return {
+        vr: match?.vr ?? '',
+        cub: match?.cub ?? '',
+        id: match?.id ?? null,
+    };
+}
+
+export function normalizeDateInputValue(value) {
+    return value ?? '';
+}
+
 function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate, swaMsg, alert }) {
         const [load, setLoad] = useState(false);
         const [curatedList, setCuratedList] = useState([]);
@@ -57,9 +73,9 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                 setVrsRelated(response.data)
             })
             const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
-            const data = responseCubXVr.data.find(item => item.process === 'CARTA LEGAL Y DEBIDA FORMA');
+            const data = extractConfirmLegalProcessData(responseCubXVr.data);
 
-            if (data) document.getElementById("vr_selected").value = data.vr
+            if (data.vr) document.getElementById("vr_selected").value = data.vr
             setVrSelected(data.vr);
             setCubSelected(data.cub);
             setIdCUBxVr(data.id)
@@ -298,7 +314,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                     <div className="col">
                         <label>5.2. Fecha LyDF</label>
                         <input type="date" className="form-control mb-3" max='2100-01-01' id="geng_date" required disabled
-                            value={_CHILD_C.item_c9} />
+                            value={normalizeDateInputValue(_CHILD_C.item_c9)} />
                     </div>
                     <div className="col">
                         <label>5.3 Número de Radicación</label>

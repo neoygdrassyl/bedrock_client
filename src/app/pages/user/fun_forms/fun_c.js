@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
 
@@ -27,6 +27,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
     const [load, setLoad] = useState(false);
     const [loadVR, setLoadVR] = useState(false);
     const [currentItem, setCurrentItem] = useState(undefined);
+    const initialLoadRef = useRef(null);
 
     function retrievePQRSxFUN(id_public) {
         FUN_SERVICE.loadPQRSxFUN(id_public)
@@ -92,8 +93,13 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
     }
 
     useEffect(() => {
+        if (initialLoadRef.current === currentId) {
+            return;
+        }
+
+        initialLoadRef.current = currentId;
         retrieveItem(currentId);
-    }, []);
+    }, [currentId]);
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
