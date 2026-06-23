@@ -5,7 +5,7 @@ function normalizeScope(scope) {
   return scope === 'user' ? 'personal' : scope;
 }
 
-export function useBookmarks() {
+export function useBookmarks({ enabled = true } = {}) {
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -52,8 +52,12 @@ export function useBookmarks() {
   );
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     refetch();
-  }, [refetch]);
+  }, [enabled, refetch]);
 
   return { bookmarks, loading, error, refetch, setScope, toggleScope };
 }
