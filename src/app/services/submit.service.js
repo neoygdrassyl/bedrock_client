@@ -1,4 +1,5 @@
 import http from "../../http-common";
+import { dedupeGet } from "./requestCache";
 
 const route = "submit"
 
@@ -20,7 +21,7 @@ class Submit_Service {
     return http.get(`/${route}/getid/verifyid/${id}`);
   }
   getIdRelated(id_related) {
-    return http.get(`/${route}/getlist/${id_related}`);
+    return dedupeGet(`${route}:getIdRelated:${id_related}`, () => http.get(`/${route}/getlist/${id_related}`));
   }
 
   create(data) {
