@@ -132,8 +132,6 @@ function FUN_MODULE_NAV({ currentItem, FROM, NAVIGATION, pqrsxfun }) {
             }
         }
 
-        console.log("=== NAV GROUPS GENERATED ===", "FROM:", FROM, "state:", currentItem.state, "items:", navGroups.map(g => g.items.map(i => i.label).join(',')).join(' | '));
-
         return (
             <>
                 {currentItem && (

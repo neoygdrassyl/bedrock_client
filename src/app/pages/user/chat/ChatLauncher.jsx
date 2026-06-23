@@ -24,10 +24,12 @@ export default function ChatLauncher() {
   }, []);
 
   useEffect(() => {
+    if (!open) return undefined;
+
     refreshInbox();
     const timer = setInterval(refreshInbox, 60000);
     return () => clearInterval(timer);
-  }, [refreshInbox]);
+  }, [open, refreshInbox]);
 
   useEffect(() => {
     if (!open) return undefined;
