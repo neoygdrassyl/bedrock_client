@@ -601,8 +601,12 @@ function FUN_6_VIEW({
             formData.set('id_public', id_public);
             let pages = document.getElementById('fun6_pages_edit').value;
             formData.set('pages', pages);
-            formData.set('id_public', id_public);
             let date = document.getElementById('fun6_dates_edit').value;
+
+            if (!description.trim() || !String(pages).trim() || !date) {
+                swalError({ title: 'Campos requeridos', text: 'Completa descripcion, folios y fecha antes de guardar.' });
+                return;
+            }
 
             if (!date) date = null;
             formData.set('date', date);
