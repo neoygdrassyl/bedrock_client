@@ -1340,7 +1340,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             let acta1 = [currentRecord.date, currentRecord.check];
             let acta2 = [currentRecord.date_2, currentRecord.check_2];
 
-            if (!(acta1[1] == 1 || (acta1[1] == 0 && acta2[1] == 1))) swalLoading({ title: "ADVERTENCIA", text: `No hay valores validos para el Acta, si realmente desea continuar, realicé la revision.` }).then(SweetAlertResult => {
+            if (!(acta1[1] == 1 || (acta1[1] == 0 && acta2[1] == 1))) swalConfirm({ title: "ADVERTENCIA", text: `No hay valores validos para el Acta, si realmente desea continuar, realicé la revision.`, icon: 'warning', confirmButtonText: 'CONTINUAR' }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     swalConfirm({ title: "¿PROSEGUIR A EXPEDICIÓN?", text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`, icon: 'question', confirmButtonText: "PROSEGUIR" }).then(SweetAlertResult => {
                         if (SweetAlertResult.isConfirmed) {
