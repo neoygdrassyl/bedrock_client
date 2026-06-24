@@ -190,7 +190,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
             Nomenclature_Service.getExcellData(date_start, date_end)
                 .then(response => {
                     if (response.data.length) {
-                        gen_cvs(response.data)
+                        gen_cvs(response.data, date_start, date_end)
                     } else {
                         swalError({ title: "NO SE ENCONTRÓ INFORMACIÓN", text: `Para las fechas ${date_start} y ${date_end} no se encontró información, verifique las fechas de búsqueda.`, icon: 'warning' });
                     }
@@ -201,7 +201,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 });
         }
 
-        let gen_cvs = (data) => {
+        let gen_cvs = (data, reportStart, reportEnd) => {
             let _data = data;
             const rows = [];
 
@@ -236,12 +236,12 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
             let csvContent = ""
                 + rows.map(e => e.join(";")).join("\n");
 
-            var csvData = new Blob([csvContent], { type: 'text/csv' }); //new way
+            var csvData = new Blob(['\uFEFF', csvContent], { type: 'text/csv;charset=utf-8;' });
             var csvUrl = URL.createObjectURL(csvData);
 
             var link = document.createElement("a");
             link.setAttribute("href", csvUrl);
-            link.setAttribute("download", `REPORTE DE NOMENCLATURAS ${date_start} - ${date_end}.csv`);
+            link.setAttribute("download", `REPORTE DE NOMENCLATURAS ${reportStart} - ${reportEnd}.csv`);
             document.body.appendChild(link); // Required for FF
             swalClose()
             link.click();
@@ -259,7 +259,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         <div className="row">
                             <div className="col-4">
                                 <div className="text-center py-4 mt-3">
-                                    <Button size="sm" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><Icon name="plus-circle" size={16} /> CREAR NOMENCLATURA </Button>
+                                    <Button size="sm" onClick={() => toggle_new()}><Icon name="plus-circle" size={16} /> CREAR NOMENCLATURA </Button>
                                 </div>
                             </div>
                             <div className="col-4">
