@@ -114,7 +114,11 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
     }, [currentId, setItem_RecordArc, retrieveItem]);
 
         var formData = new FormData();
-        let subc = currentRecord ? currentRecord.subcategory ? currentRecord.subcategory.split(',') : [0, 0, 0, 0] : [0, 0, 0, 0]
+        let subc = Array.isArray(currentRecord?.subcategory)
+            ? currentRecord.subcategory
+            : typeof currentRecord?.subcategory === 'string'
+                ? currentRecord.subcategory.split(',')
+                : [0, 0, 0, 0]
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
             var _CURRENT_VERSION = currentVersion - 1;
