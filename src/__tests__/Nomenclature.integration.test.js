@@ -103,13 +103,42 @@ const nomenclatureList = [
 ];
 
 describe('Nomenclature — Integración CRUD y búsqueda', () => {
+  let createObjectURLSpy;
+  let anchorClickSpy;
+
   beforeEach(() => {
     vi.clearAllMocks();
     setWindowUser({ roleId: 1, name: 'Admin Test' });
+    createObjectURLSpy = vi.fn(() => 'blob:test-nomenclature');
+    anchorClickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    URL.createObjectURL = createObjectURLSpy;
   });
 
   afterEach(() => {
+    anchorClickSpy.mockRestore();
     clearWindowUser();
+  });
+
+  it('no envía el atributo inválido `l` al botón de crear nomenclatura', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      render(
+        <MemoryRouter>
+          <NOMENCLATURE {...defaultProps} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(hoisted.nomenclatureService.getAll).toHaveBeenCalledOnce();
+      });
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
   });
 
   it('renderiza sin crash y muestra título', async () => {
@@ -272,5 +301,122 @@ describe('Nomenclature — Integración CRUD y búsqueda', () => {
     expect(screen.getByText('GENERAR EXCEL')).toBeInTheDocument();
     expect(document.getElementById('nomen_search_0')).toBeInTheDocument();
     expect(document.getElementById('nomen_search_1')).toBeInTheDocument();
+  });
+
+  it('descarga el reporte CSV de nomenclaturas cuando el servicio retorna datos', async () => {
+    hoisted.nomenclatureService.getExcellData.mockResolvedValueOnce({
+      data: [
+        {
+          predial: '12345',
+          id_public: 'NM26-0001',
+          address: 'Calle 36 # 12-45',
+          number: '2',
+          date_start: '2026-06-16',
+          date_end: '2026-06-24',
+          details: 'Acceso principal',
+          use: 'Residencial',
+        },
+      ],
+    });
+
+    render(
+      <MemoryRouter>
+        <NOMENCLATURE {...defaultProps} />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(hoisted.nomenclatureService.getAll).toHaveBeenCalled();
+    });
+
+    fireEvent.change(document.getElementById('nomenclature_cvs_gen_1'), {
+      target: { value: '2026-06-16' },
+    });
+    fireEvent.change(document.getElementById('nomenclature_cvs_gen_2'), {
+      target: { value: '2026-06-24' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /DESCARGAR/i }));
+
+    await waitFor(() => {
+      expect(hoisted.nomenclatureService.getExcellData).toHaveBeenCalledWith(
+        '2026-06-16',
+        '2026-06-24'
+      );
+    });
+
+    await waitFor(() => {
+      expect(createObjectURLSpy).toHaveBeenCalledOnce();
+      expect(anchorClickSpy).toHaveBeenCalledOnce();
+    });
+
+    expect(
+      document.querySelector('a[download="REPORTE DE NOMENCLATURAS 2026-06-16 - 2026-06-24.csv"]')
+    ).toBeInTheDocument();
+  });
+
+  it('genera el CSV con BOM UTF-8 para preservar caracteres acentuados en Excel', async () => {
+    const OriginalBlob = globalThis.Blob;
+    let blobPayload;
+
+    globalThis.Blob = class BlobMock {
+      constructor(parts, options = {}) {
+        this.parts = parts;
+        this.type = options.type || '';
+        blobPayload = { parts, type: this.type };
+      }
+    };
+
+    hoisted.nomenclatureService.getExcellData.mockResolvedValueOnce({
+      data: [
+        {
+          predial: '12345',
+          id_public: 'NM26-0001',
+          address: 'CARRERA 30A N° 70-53',
+          number: '2',
+          date_start: '2026-06-16',
+          date_end: '2026-06-24',
+          details: 'Acceso público',
+          use: 'Residencial',
+        },
+      ],
+    });
+
+    try {
+      render(
+        <MemoryRouter>
+          <NOMENCLATURE {...defaultProps} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(hoisted.nomenclatureService.getAll).toHaveBeenCalled();
+      });
+
+      fireEvent.change(document.getElementById('nomenclature_cvs_gen_1'), {
+        target: { value: '2026-06-16' },
+      });
+      fireEvent.change(document.getElementById('nomenclature_cvs_gen_2'), {
+        target: { value: '2026-06-24' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /DESCARGAR/i }));
+
+      await waitFor(() => {
+        expect(createObjectURLSpy).toHaveBeenCalledOnce();
+      });
+
+      const csvText = blobPayload.parts.join('');
+
+      expect(blobPayload.type).toBe('text/csv;charset=utf-8;');
+      expect(blobPayload.parts[0]).toBe('\uFEFF');
+      expect(csvText).toContain('Nr BOLETÍN');
+      expect(csvText).toContain('DIRECCIÓN');
+      expect(csvText).toContain('CARRERA 30A N° 70-53');
+      expect(csvText).toContain('Acceso público');
+      expect(csvText).toContain('Servicios Públicos y Notariales');
+    } finally {
+      globalThis.Blob = OriginalBlob;
+    }
   });
 });
