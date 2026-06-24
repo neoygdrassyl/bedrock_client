@@ -303,6 +303,32 @@ describe('RECORDS — Integración inicial LAW/ARC/ENG', () => {
     expect(container.querySelector('.record_arc')).toBeInTheDocument();
   });
 
+  it('ARC: tolera subcategory no string sin crashear', async () => {
+    hoisted.arcService.getRecord.mockResolvedValueOnce({
+      data: {
+        record_arc: { id: 10, version: 1, subcategory: ['0', '0', '0', '0'] },
+        record_arc_steps: [],
+        record_arc_33_areas: [],
+        record_arc_34_ks: [],
+        record_arc_34_gens: [],
+        record_arc_35_parkings: [],
+        record_arc_36_infos: [],
+        record_arc_37s: [],
+        record_arc_35_locations: [],
+        record_arc_38s: [],
+      },
+    });
+
+    const { container } = renderInRouter(RECORD_ARC);
+
+    await waitFor(() => {
+      expect(hoisted.arcService.getRecord).toHaveBeenCalledWith(1);
+      expect(hoisted.funService.get).toHaveBeenCalledWith(1);
+    });
+
+    expect(container.querySelector('.record_arc')).toBeInTheDocument();
+  });
+
   it('ARC: error de carga muestra feedback y no crashea', async () => {
     // Arrange
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
