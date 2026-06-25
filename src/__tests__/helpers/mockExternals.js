@@ -96,6 +96,8 @@ vi.mock('../../app/components/jsons/vars', () => ({
     email: 'test@test.com',
   },
   nomens: 'CUB1',
+  cities: [React.createElement('option', { key: 'bga', value: 'Bucaramanga' }, 'Bucaramanga')],
+  domains_number: [React.createElement('option', { key: 'cur1', value: 'Curaduria 1' }, 'Curaduria 1')],
 }));
 
 // ─── GlobalStyles ───────────────────────────────────────────────────────────
