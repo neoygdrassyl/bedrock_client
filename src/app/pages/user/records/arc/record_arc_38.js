@@ -19,6 +19,12 @@ import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
+const splitDelimited = (value, separator) => {
+    if (Array.isArray(value)) return value;
+    if (value === null || value === undefined || value === '') return [];
+    return String(value).split(separator).map(part => part.trim());
+};
+
 function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate }) {
     const [VRDocs, setVRDocs] = useState([]);
     const [load, setLoad] = useState(false);
@@ -29,15 +35,15 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
         if (currentItem && currentItem.id_public) {
             submitService.getIdRelated(currentItem.id_public).then(response => {
                 let newList = [];
-                let List = response.data;
+                let List = Array.isArray(response.data) ? response.data : [];
                 List.map((value, i) => {
-                    let subList = value.sub_lists;
+                    let subList = Array.isArray(value.sub_lists) ? value.sub_lists : [];
                     subList.map(valuej => {
-                        let name = valuej.list_name ? valuej.list_name.split(";") : []
-                        let category = valuej.list_category ? valuej.list_category.split(",") : []
-                        let code = valuej.list_code ? valuej.list_code.split(",") : []
-                        let page = valuej.list_pages ? valuej.list_pages.split(",") : []
-                        let review = valuej.list_review ? valuej.list_review.split(",") : []
+                        let name = splitDelimited(valuej.list_name, ';')
+                        let category = splitDelimited(valuej.list_category, ',')
+                        let code = splitDelimited(valuej.list_code, ',')
+                        let page = splitDelimited(valuej.list_pages, ',')
+                        let review = splitDelimited(valuej.list_review, ',')
 
                         review.map((valuek, k) => {
                             if (valuek === 'SI') newList.push({
@@ -56,7 +62,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                 setLoad(true);
             })
         }
-    }, []);
+    }, [currentItem?.id_public]);
 
     const CREATE_CHECK = async (_detail, chekcs, _currentItem, _headers, _date) => {
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
@@ -245,9 +251,9 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
             const _docsScope = VR_DOCUMENTS_OF_INTEREST['arc'];
             let FUN_R = _GET_FUN_R();
             if (!FUN_R) return false;
-            let CHECK = FUN_R.checked ? FUN_R.checked.split(',') : [];
-            let REVIEWS = FUN_R.review ? FUN_R.review.split(',') : [];
-            let R_CODES = FUN_R.code ? FUN_R.code.split(',') : [];
+            let CHECK = splitDelimited(FUN_R.checked, ',');
+            let REVIEWS = splitDelimited(FUN_R.review, ',');
+            let R_CODES = splitDelimited(FUN_R.code, ',');
             let CODES = BUILD_LIST(true);
             let _ALLOW = CODES.every((c, i) => {
                 let DOC = _docsScope.find(d => d.includes(c));
@@ -255,7 +261,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                 let R = REVIEWS.find((r) => { return r.includes(c); })
                 let r_i = R_CODES.findIndex(r => r.includes(c));
                 //if (!R) return true;
-                let eva = R ? R.split('&') : [];
+                let eva = splitDelimited(R, '&');
                 if (CHECK[r_i] == 2) return true;
                 let vr = _FIND_IN_VRDOCS(R);
                 let cond1 = eva[1] == 1 || eva[1] == 2;
@@ -292,7 +298,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
             if (!STEP.id) return [];
             var value = STEP[_type]
             if (!value) return [];
-            value = value.split(';');
+            value = splitDelimited(value, ';');
             return value
         }
         const value33_detail = _GET_STEP_TYPE('s33', 'value');
@@ -383,9 +389,9 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
             let _RR = _GET_RECORD_REVIEW();
 
             let _PRIMAL_ASIGN = { date_asign: currentRecord.date_asign, worker_name: currentRecord.worker_name }
-            let _ASIGNS = _GET_CLOCK_STATE_VERSION(13, 100).date_start ? _GET_CLOCK_STATE_VERSION(13, 100).date_start.split(';') : [];
-            let _REVIEWS = _GET_CLOCK_STATE_VERSION(13, 200).resolver_context ? _GET_CLOCK_STATE_VERSION(13, 200).resolver_context.split(';') : [];
-            let _REVIEWS_DATES = _GET_CLOCK_STATE_VERSION(13, 200).date_start ? _GET_CLOCK_STATE_VERSION(13, 200).date_start.split(';') : [];
+            let _ASIGNS = splitDelimited(_GET_CLOCK_STATE_VERSION(13, 100).date_start, ';');
+            let _REVIEWS = splitDelimited(_GET_CLOCK_STATE_VERSION(13, 200).resolver_context, ';');
+            let _REVIEWS_DATES = splitDelimited(_GET_CLOCK_STATE_VERSION(13, 200).date_start, ';');
 
             let CLOCKS_R;
             CLOCKS_R = _RR.check == 0 ? ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Acta Correcciones',] : ['Acta Observaciones',]
@@ -429,8 +435,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                     let isPrimal = i == 0;
                     let allowReview = iasing != null && iasing != undefined && iasing != '';
 
-                    return <>
-                        <div className="row border">
+                    return <div key={`review-row-${i}-${value}`} className="row border">
                             <div className="col">
                                 <label className='fw-bold'>{value}</label>
                             </div>
@@ -448,7 +453,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                                 {rewState['REW' + i]
                                     ? <select className="form-select form-control form-control-sm" defaultValue={ireview} id={"r_a_38_3_" + i}>
                                         <option value="0" className="text-danger">NO ES VIABLE</option>
-                                        {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
+                                        {ALLOW_REVIEW ? <option key="allow-review" value="1" className="text-success">SI ES VIABLE</option> : ''}
                                     </select>
                                     : <label>{REW_STR[ireview] ?? ''}</label>
                                 }
@@ -480,8 +485,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                                     : ''
                                 }
                             </div>
-                        </div>
-                    </>
+                    </div>
                 })}
             </>
         }
@@ -490,8 +494,8 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
             let _WORKER_NAME = currentRecord.worker_name;
             let _RR = _GET_RECORD_REVIEW();
 
-            let _REVIEWS = _GET_CLOCK_STATE_VERSION(13, 200).resolver_context ? _GET_CLOCK_STATE_VERSION(13, 200).resolver_context.split(';') : [];
-            let _REVIEWS_DATES = _GET_CLOCK_STATE_VERSION(13, 200).date_start ? _GET_CLOCK_STATE_VERSION(13, 200).date_start.split(';') : [];
+            let _REVIEWS = splitDelimited(_GET_CLOCK_STATE_VERSION(13, 200).resolver_context, ';');
+            let _REVIEWS_DATES = splitDelimited(_GET_CLOCK_STATE_VERSION(13, 200).date_start, ';');
 
             let CLOCKS_R;
             CLOCKS_R = _RR.check == 0 ? ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Acta Correcciones',] : ['Acta Observaciones',]
@@ -566,7 +570,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                             <label>Revision</label>
                             <div className="input-group my-1">
                                 <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
-                                    {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
+                                    {CLOCKS_R.map((op, i) => <option key={`pdf-review-${i}-${op}`} value={i}>{op}</option>)}
                                 </select>
                             </div>
                         </div>
@@ -829,10 +833,10 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
             let j = index ? '_' + index : '_0';
             let review = document.getElementById("r_a_38_3" + j).value;
             let date = document.getElementById("r_a_38_4" + j).value;
-            let asign_length = _CLOCK_ASIGN ? _CLOCK_ASIGN.date_start ? _CLOCK_ASIGN.date_start.split(';').length : 0 : 0;
+            let asign_length = _CLOCK_ASIGN ? splitDelimited(_CLOCK_ASIGN.date_start, ';').length : 0;
 
-            var date_start = _CLOCK ? _CLOCK.date_start ? _CLOCK.date_start.split(';') : [] : [];
-            var resolver_context = _CLOCK ? _CLOCK.resolver_context ? _CLOCK.resolver_context.split(';') : [] : [];
+            var date_start = _CLOCK ? splitDelimited(_CLOCK.date_start, ';') : [];
+            var resolver_context = _CLOCK ? splitDelimited(_CLOCK.resolver_context, ';') : [];
             for (let i = 0; i < asign_length; i++) {
                 date_start[i] = date_start[i] ?? '';
                 resolver_context[i] = resolver_context[i] ?? '';
@@ -970,7 +974,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
         let _VERSIONS_SELECT = () => {
             var _COMPONENT = [];
             for (let i = 0; i < currentItem.version; i++) {
-                _COMPONENT.push(<option value={i + 1}>Revision {i + 1}</option>)
+                _COMPONENT.push(<option key={`record-version-${i + 1}`} value={i + 1}>Revision {i + 1}</option>)
             }
             return <select className="form-select" id="record_version">{_COMPONENT}</select>
         }

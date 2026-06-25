@@ -243,21 +243,19 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                         </div>
                     </> : ''}
                 {subcategories.map((itemm, i) => {
-                    return <>
-                        <div className='row'>
-                            <div className='col-10 ms-5'>
-                                <label className='fw-bold'>3.{i + 4}. {itemm.desc}</label>
-                            </div>
-                            <div className='col text-end'>
-                                <div className="custom-control custom-switch">
-                                    <div className="form-check form-switch">
-                                        <input className="form-check-input" type="checkbox" defaultChecked={itemm.v == '1' ? true : false}
-                                            name={'sc_checbox'} onChange={() => update_subcategory(false)} />
-                                    </div>
+                    return <div key={`subcategory-${i}-${itemm.desc}`} className='row'>
+                        <div className='col-10 ms-5'>
+                            <label className='fw-bold'>3.{i + 4}. {itemm.desc}</label>
+                        </div>
+                        <div className='col text-end'>
+                            <div className="custom-control custom-switch">
+                                <div className="form-check form-switch">
+                                    <input className="form-check-input" type="checkbox" defaultChecked={itemm.v == '1' ? true : false}
+                                        name={'sc_checbox'} onChange={() => update_subcategory(false)} />
                                 </div>
                             </div>
                         </div>
-                    </>
+                    </div>
                 })}
                 <div className='row'>
                     <div className='col-10 ms-5'>
