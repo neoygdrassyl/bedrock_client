@@ -11,6 +11,7 @@ import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
+import { splitValue } from '../../shared/expediente-documental.utils';
 
 function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [editBlueprint, setEditBlueprint] = useState(false);
@@ -53,10 +54,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
         let _GET_STEP_TYPE = (_id_public, _type) => {
             var STEP = LOAD_STEP(_id_public);
             if (!STEP.id) return [];
-            var value = STEP[_type] ? STEP[_type] : []
-            if (!value) return [];
-            value = value.split(';');
-            return value
+            return splitValue(STEP[_type], ';');
         }
         // COMPONENTS JSX 
         let _SAVING_STATE = (state) => {

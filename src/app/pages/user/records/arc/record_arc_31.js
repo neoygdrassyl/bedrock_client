@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { splitValue } from '../../shared/expediente-documental.utils';
 
 function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
 
@@ -21,7 +22,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
             let _LIST = _GET_CHILD_FUN_52();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                if (_LIST[i].active == 1) _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].name + " " + _LIST[i].surname}</option>)
+                if (_LIST[i].active == 1) _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].name + " " + _LIST[i].surname}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -61,10 +62,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
         let _GET_STEP_TYPE = (_id_public, _type) => {
             var STEP = LOAD_STEP(_id_public);
             if (!STEP.id) return [];
-            var value = STEP[_type]
-            if (!value) return [];
-            value = value.split(';');
-            return value
+            return splitValue(STEP[_type], ';');
         }
         const value31 = _GET_STEP_TYPE('s31', 'value');
         // COMPONENT JSX
