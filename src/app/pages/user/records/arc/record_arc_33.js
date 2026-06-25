@@ -16,6 +16,7 @@ import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/sw
 import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
+import { splitValue } from '../../shared/expediente-documental.utils';
 
 function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [new_area, setNewArea] = useState(false);
@@ -52,7 +53,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             let _LIST = _GET_CHILD_6();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -122,10 +123,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
         let _GET_STEP_TYPE = (_id_public, _type) => {
             var STEP = LOAD_STEP(_id_public);
             if (!STEP.id) return [];
-            var value = STEP[_type] ? STEP[_type] : []
-            if (!value.length) return [];
-            value = value.split(';');
-            return value
+            return splitValue(STEP[_type], ';');
         }
         let _GET_STEP_TYPE_JSON = (_id_public) => {
             var STEP = LOAD_STEP(_id_public);
@@ -350,29 +348,27 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             ]
 
             return LIST.map((list, i) => {
-                return <div className="row border">
+                return <div key={`s33-main-${i}`} className="row border">
                     {list.title ? <div className='col-3 text-center '><label className='fw-bold'>{list.title}</label></div> : ''}
                     <div className='col'>
                         {list.items.map((item, j) => {
-                            return <>
-                                <div className='row border'>
-                                    <div className='col'><label>{item.desc}</label></div>
-                                    <div className='col-2'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item.i])}
-                                        name="s_33_checks" id={"s_33_checks_" + item.i}
-                                        defaultValue={_CHECK_ARRAY[item.i]} onChange={() => manage_ra_33(false)} >
-                                        <option value="0" className="text-danger">NO</option>
-                                        <option value="1" className="text-success">SI</option>
-                                        <option value="2" className="text-warning">NA</option>
-                                    </select></div>
-                                </div>
-                            </>
+                            return <div key={`s33-item-${i}-${j}`} className='row border'>
+                                <div className='col'><label>{item.desc}</label></div>
+                                <div className='col-2'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item.i])}
+                                    name="s_33_checks" id={"s_33_checks_" + item.i}
+                                    defaultValue={_CHECK_ARRAY[item.i]} onChange={() => manage_ra_33(false)} >
+                                    <option value="0" className="text-danger">NO</option>
+                                    <option value="1" className="text-success">SI</option>
+                                    <option value="2" className="text-warning">NA</option>
+                                </select></div>
+                            </div>
                         })}
                     </div>
                 </div>
             })
         }
         let _COMPONENT_4_EXTRA = () => {
-            let fun_r = _FUN_R ? _FUN_R.code ? _FUN_R.code.split(',') : [] : [];
+            let fun_r = splitValue(_FUN_R?.code, ',');
             let fun_rc = _FUN_R ? _FUN_R.review ?? "" : "";
 
             let print = fun_r.includes('6603');
@@ -406,22 +402,20 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             ]
 
             return LIST.map((list, i) => {
-                return <div className="row border">
+                return <div key={`s33-extra-${i}`} className="row border">
                     {list.title ? <div className='col-3 text-center '><label className='fw-bold'>{list.title}</label></div> : ''}
                     <div className='col'>
                         {list.items.map((item, j) => {
-                            return <>
-                                <div className='row border'>
-                                    <div className='col'><label>{item.desc}</label></div>
-                                    <div className='col-2'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item.i])}
-                                        name="s_33_2_checks" id={"s_33_2_checks_" + item.i}
-                                        defaultValue={_CHECK_ARRAY[item.i]} onChange={() => manage_ra_33(false)} >
-                                        <option value="0" className="text-danger">NO</option>
-                                        <option value="1" className="text-success">SI</option>
-                                        <option value="2" className="text-warning">NA</option>
-                                    </select></div>
-                                </div>
-                            </>
+                            return <div key={`s33-extra-item-${i}-${j}`} className='row border'>
+                                <div className='col'><label>{item.desc}</label></div>
+                                <div className='col-2'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item.i])}
+                                    name="s_33_2_checks" id={"s_33_2_checks_" + item.i}
+                                    defaultValue={_CHECK_ARRAY[item.i]} onChange={() => manage_ra_33(false)} >
+                                    <option value="0" className="text-danger">NO</option>
+                                    <option value="1" className="text-success">SI</option>
+                                    <option value="2" className="text-warning">NA</option>
+                                </select></div>
+                            </div>
                         })}
                     </div>
                 </div>
@@ -483,7 +477,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
 
                 {LIST.map(item => {
-                    return <div className="row border">
+                    return <div key={`blueprint-${item.v}`} className="row border">
                         {item.open ?
                             <div className='col-8'>
                                 <input type="text" onBlur={() => manage_ra_33(false)} className="form-control form-control-sm"
@@ -917,7 +911,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             var formData = new FormData();
             let _reivew = document.getElementById('fun_r_6003').value;
 
-            let fun_r = _FUN_R ? _FUN_R.code ? _FUN_R.code.split(',') : [] : [];
+            let fun_r = splitValue(_FUN_R?.code, ',');
             let fun_rc = _FUN_R ? _FUN_R.review ?? "" : "";
             let print = fun_r.includes('6603');
             if (print) {
