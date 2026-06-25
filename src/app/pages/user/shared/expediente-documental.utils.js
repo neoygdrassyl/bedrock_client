@@ -18,7 +18,7 @@ export {
 
 const YES_REVIEW_VALUES = new Set(['SI', 'S', '1', 'TRUE']);
 
-function splitValue(value, separator) {
+export function splitValue(value, separator) {
     if (Array.isArray(value)) {
         return value;
     }
