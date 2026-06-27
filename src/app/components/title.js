@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
 import { infoCud } from './jsons/vars';
 
-class Title extends Component {
-  render() {
-    return (
-      <>
-        <div className="Title">
+function Title() {
+  return (
+    <>
+      <div className="Title">
           <div>
             <div className="row align-items-center flex-nowrap g-2" style={{ overflowX: 'auto' }}>
               <div className="col-auto d-flex justify-content-center flex-shrink-0">
@@ -49,7 +47,6 @@ class Title extends Component {
         </div>
       </>
     );
-  }
 }
 
 export default Title;

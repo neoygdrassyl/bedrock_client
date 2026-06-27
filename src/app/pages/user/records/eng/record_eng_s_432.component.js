@@ -1,20 +1,8 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-
-class RECORD_ENG_STEP_432 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version } = this.props;
-        const { } = this.state;
+function RECORD_ENG_STEP_432(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version, requestUpdateRecord } = props;
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
         //  CONST
         const step_01_option = [
@@ -469,7 +457,7 @@ class RECORD_ENG_STEP_432 extends Component {
                 {step_01_option.map((value, i) => (
                     <div className="row py-0">
                         <div className="col-10">
-                            <div class="input-group">
+                            <div className="input-group">
                                 <label>{value}</label>
                             </div>
                         </div>
@@ -572,7 +560,7 @@ class RECORD_ENG_STEP_432 extends Component {
         }
         let COMPONENT_ELEMENTS = () => {
             return <>
-                <div className="row text-center bg-info text-white mt-3">
+                <div className="row text-center bg-primary text-primary-foreground mt-3">
                     <div className="col-4 border border-dark ">
                         <label className="fw-bold">ELEMENTOS</label>
                     </div>
@@ -666,7 +654,7 @@ class RECORD_ENG_STEP_432 extends Component {
         }
         let COMPONENT_LOADOUTS = () => {
             return <>
-                <div className="row border-dark border bg-info text-center text-white">
+                <div className="row border-dark border bg-primary text-primary-foreground text-center">
                     <label className="fw-bold my-2">ANÁLISIS DE CARGAS</label>
                 </div>
                 <div className="row">
@@ -1091,13 +1079,13 @@ class RECORD_ENG_STEP_432 extends Component {
                 </div>
 
                 <div className="row  my-2">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="inputGroupSelect01" hidden={version >= 2}>Es cubierta Ligera</label>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <label className="input-group-text" htmlFor="inputGroupSelect01" hidden={version >= 2}>Es cubierta Ligera</label>
                         </div>
                         {version >= 2
                             ? <input type="hidden" id='lcs' name="recprd_eng_s4322" defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 37) ?? 0} />
-                            : <select class="form-select" id="lcs" name="recprd_eng_s4322" onChange={() => update_values()} onBlur={() => manage_step_432()}
+                            : <select className="form-select" id="lcs" name="recprd_eng_s4322" onChange={() => update_values()} onBlur={() => manage_step_432()}
                                 defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 37) ?? 0} >
                                 <option value="0">NO</option>
                                 <option value="1">SI</option>
@@ -1118,11 +1106,11 @@ class RECORD_ENG_STEP_432 extends Component {
                     {CARGA_VIVA.map(i => <div className='col-4'>
 
                         <div className="row  my-2">
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <label class="input-group-text" for="inputGroupSelect01" >USO {i + 1}</label>
+                            <div className="input-group mb-3">
+                                <div className="input-group-prepend">
+                                    <label className="input-group-text" htmlFor="inputGroupSelect01" >USO {i + 1}</label>
                                 </div>
-                                <select class="form-select" id={"carga_vida_use_" + i} name="carga_vida_use" onChange={() => set_carga_vida_use()}
+                                <select className="form-select" id={"carga_vida_use_" + i} name="carga_vida_use" onChange={() => set_carga_vida_use()}
                                     defaultValue={_GET_STEP_TYPE_INDEX('carga_vida_use', 'value', i) ?? 0} >
                                     {CARGA_VIVA_USOS.map(carga => <option value={carga.i}>{carga.name}</option>)}
                                 </select>
@@ -1162,11 +1150,11 @@ class RECORD_ENG_STEP_432 extends Component {
             return <>
 
                 <div className="row  my-2">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="inputGroupSelect01" >Usar Steel Deck</label>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <label className="input-group-text" htmlFor="inputGroupSelect01" >Usar Steel Deck</label>
                         </div>
-                        <select class="form-select" id="steel_deck_use" name="steel_deck_use" onChange={() => set_steel_deck_use()}
+                        <select className="form-select" id="steel_deck_use" name="steel_deck_use" onChange={() => set_steel_deck_use()}
                             defaultValue={_GET_STEP_TYPE_INDEX('steel_deck', 'check', 0) ?? 0} >
                             <option value="0">NO</option>
                             <option value="1">SI</option>
@@ -1247,72 +1235,35 @@ class RECORD_ENG_STEP_432 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ENG_SERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ENG_SERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -1320,13 +1271,13 @@ class RECORD_ENG_STEP_432 extends Component {
         return (
             <div className="record_eng_desc container">
 
-                <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_432">
-                    <label className="app-p lead fw-normal text-uppercase">4.3.2 MEMORIAS DE CALCULO</label>
+                <legend className="my-2 px-3 bg-light" id="record_eng_432">
+                    <label className="app-p lead fw-normal">4.3.2 MEMORIAS DE CALCULO</label>
                 </legend>
                 {SUBCATEGORIES[2] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 1: Pre dimensionamiento y coordinación con otros profesionales.</label>
+                    <label className="app-p fw-bold my-2">Paso 1: Pre dimensionamiento y coordinación con otros profesionales.</label>
                     {COMPONENT_01()}
-                    <label className="app-p fw-bold text-uppercase my-2">PREDIMENSIONAMIENTO</label>
+                    <label className="app-p fw-bold my-2">PREDIMENSIONAMIENTO</label>
                     {COMPONENT_PREDIMENTIONAL()}
                     {COMPONENT_ELEMENTS()}
                 </> : ""}
@@ -1334,13 +1285,12 @@ class RECORD_ENG_STEP_432 extends Component {
                 <hr />
 
                 {SUBCATEGORIES[3] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 2: Evaluación de las solicitudes definitivas: Se revisan las cargas presentadas en la edificacion debido a los pesos propios de la estructura y los tipos de uso de la misma, con los requisitos del Título B del reglamento.</label>
+                    <label className="app-p fw-bold my-2">Paso 2: Evaluación de las solicitudes definitivas: Se revisan las cargas presentadas en la edificacion debido a los pesos propios de la estructura y los tipos de uso de la misma, con los requisitos del Título B del reglamento.</label>
                     {COMPONENT_LOADOUTS()}
                 </> : ""}
 
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_STEP_432;

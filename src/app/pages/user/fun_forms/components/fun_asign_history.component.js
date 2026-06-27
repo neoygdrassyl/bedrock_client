@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { formsParser1_exlucde2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 
-const MySwal = withReactContent(Swal);
-const moment = require('moment')
+import dayjs from 'dayjs';
+import { swalError } from '@/app/utils/swalAdapter';
 
 export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     const { swaMsg, translation, globals, name, id, type } = props;
@@ -103,10 +103,10 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     }
     let _GET_REVIEW = (_REVIEW) => {
         let res = {
-            '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-            '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+            '-1': <label className=" me-1"><Icon name="dot-circle" size={24} /></label>,
+            '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={24} /></label>,
+            '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={24} /></label>,
+            '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={24} /></label>,
         }
         return res[_REVIEW || 0]
     }
@@ -134,7 +134,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     let LIST_COMPONENT = () => {
         const columns = [
             {
-                name: <label className="text-center">No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
@@ -143,14 +143,14 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 cell: row => <h6 className='fw-normal'>{row.id_public}</h6>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.type}</label>
+                cell: row => <span className="text-sm">{row.type}</span>
             },
             {
-                name: <label className="text-center">ESTADO</label>,
+                name: 'ESTADO',
                 selector: row => row.state,
                 sortable: true,
                 filterable: true,
@@ -159,25 +159,25 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 cell: row => <>{_GET_STATE_STR(row.state)}</>
             },
             {
-                name: <label className="text-center">ASIG.</label>,
+                name: 'ASIG.',
                 selector: row => row.asign,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{row.asign}</label>
+                cell: row => <span className="text-sm">{row.asign}</span>
             },
             {
-                name: <label className="text-center">REV.</label>,
+                name: 'REV.',
                 selector: row => row.rew,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{row.rew}</label>
+                cell: row => <span className="text-sm">{row.rew}</span>
             },
             {
-                name: <label className="text-center">RES.</label>,
+                name: 'RES.',
                 selector: row => row.res,
                 sortable: true,
                 filterable: true,
@@ -209,14 +209,13 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
             <div className='row'>
                 <div className='col'></div>
                 <div className='col'>
-                    <div class="input-group">
+                    <div className="input-group">
                         <input className='form-control' id="search_bar" placeholder='Buscar...'
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyPress={(e) => { if (e.key === 'Enter') FILTER() }} />
-                        <div class="input-group-append">
-                            {search ? <button class="btn btn-danger" type="button"
-                                onClick={() => { setSearch(''); document.getElementById('search_bar').value = ''; FILTER() }}>X</button> : null}
-                            <button class="btn btn-primary" type="button" onClick={() => FILTER()}>BUSCAR</button>
+                        <div className="input-group-append">
+                            {search ? <Button variant="destructive" size="sm" onClick={() => { setSearch(''); document.getElementById('search_bar').value = ''; FILTER() }}>X</Button> : null}
+                            <Button size="sm" onClick={() => FILTER()}>BUSCAR</Button>
                         </div>
                     </div>
 
@@ -231,22 +230,12 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 if (response.data) {
                     PROCESS_DATA(response.data)
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             })
             .finally(() => setLoad(1));
 

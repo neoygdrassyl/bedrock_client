@@ -9,7 +9,7 @@ const SCHEDULING_T = {
     text_c_2_1: "Carlos Ulloa",
     text_c_2_2: "Engineer",
     text_c_2_3: "The Engineer reviews structural projects ",
-    text_c_3_1: "Maria Margarita",
+    text_c_3_1: "Andrea Rodriguez",
     text_c_3_2: "Lawyer",
     text_c_3_3: "Administrative and Urban Law Specialist",
     text_c_4_1: "Jose Triana",

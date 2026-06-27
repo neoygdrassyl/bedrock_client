@@ -1,12 +1,12 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
-import DataTable from 'react-data-table-component';
-import Modal from 'react-modal';
+import DataTable from '@/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import PROFESIONALS_MANAGE from './manage.component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const customStylesForModal = {
   overlay: {
@@ -34,8 +34,6 @@ const customStylesForModal = {
 
   }
 };
-const MySwal = withReactContent(Swal);
-
 export default function PROFESIONALS(props) {
   const { translation, swaMsg, globals, breadCrums } = props;
 
@@ -113,20 +111,16 @@ export default function PROFESIONALS(props) {
     {
       name: 'TRATO DE DATOS',
       center: true,
-      cell: row => row.concent ? <i class="fas fa-check text-success"></i>: <i class="fas fa-times text-danger"></i>,
+      cell: row => row.concent ? <Icon name="check" size={16} className="text-success" />: <Icon name="times" size={16} className="text-danger" />,
     },
     {
       name: 'ACCIÓN',
       center: true,
       omit: window.user.id != 1 && window.user.roleId != 3 || window.user.roleId != 2,
       cell: row => <>
-        <MDBTooltip title='Modificar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-          <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => { setId(row.id); setModal(true) }}><i class="fas fa-edit"></i></MDBBtn>
-        </MDBTooltip>
+        <Button variant="outline" size="sm" className="px-1 py-1" title="Modificar Profesional" onClick={() => { setId(row.id); setModal(true) }}><Icon name="edit" size={16} /></Button>
         {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
-          <MDBTooltip title='Eliminar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-            <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => { eliminate(row.id); }}><i class="far fa-trash-alt"></i></MDBBtn>
-          </MDBTooltip>
+          <Button variant="destructive" size="sm" className="px-1 py-1" title="Eliminar Profesional" onClick={() => { eliminate(row.id); }}><Icon name="trash-alt" size={16} /></Button>
           : null}
       </>,
     },
@@ -188,15 +182,15 @@ export default function PROFESIONALS(props) {
     return <>
       <div className='row'>
         <div className='col-3'>
-          { window.user.id == 1 || window.user.roleId == 3 ? <MDBBtn color='success' onClick={() => { setId(false); setModal(!modal) }}><i class="fas fa-plus-circle"></i> NUEVO PROFESIONAL</MDBBtn> : null }
+          { window.user.id == 1 || window.user.roleId == 3 ? <Button size="sm" onClick={() => { setId(false); setModal(!modal) }}><Icon name="plus-circle" size={16} /> Nuevo Profesional</Button> : null }
         </div>
         <div className='col'>
-          <div class="row">
+          <div className="row">
             <div className='col px-0'>
-              <div class="input-group row">
-                <MDBBtn color='primary' className='col-2' onClick={() => search()}><i class="fas fa-search"></i> BUSCAR</MDBBtn>
-                <input type="text" class="form-control col" id="search_text" placeholder="Buscar..." onKeyPress={(e) => e.key === 'Enter' ? search() : ''}></input>
-                {clearBtn ? <MDBBtn color='danger' className='col-1' onClick={() => clear()}><i class="fas fa-times"></i> </MDBBtn> : ''}
+              <div className="input-group row">
+                <Button size="sm" className="col-2" onClick={() => search()}><Icon name="search" size={16} /> Buscar</Button>
+                <input type="text" className="form-control col" id="search_text" placeholder="Buscar..." onKeyPress={(e) => e.key === 'Enter' ? search() : ''}></input>
+                {clearBtn ? <Button variant="destructive" size="sm" className="col-1" onClick={() => clear()}><Icon name="times" size={16} /></Button> : ''}
               </div>
             </div>
           </div>
@@ -220,67 +214,29 @@ export default function PROFESIONALS(props) {
       })
   }
   function eliminate(id) {
-    MySwal.fire({
-      title: "ELIMINAR ESTE ITEM",
-      text: "¿Esta seguro de eliminar de forma permanente este item?",
-      icon: 'question',
-      confirmButtonText: "ELIMINAR",
-      showCancelButton: true,
-      cancelButtonText: "CANCELAR"
-    }).then(SweetAlertResult => {
+    swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
       if (SweetAlertResult.isConfirmed) {
-        MySwal.fire({
-          title: swaMsg.title_wait,
-          text: swaMsg.text_wait,
-          icon: 'info',
-          showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         profesionalsService.delete(id)
           .then(response => {
             if (response.data === 'OK') {
-              MySwal.fire({
-                title: swaMsg.publish_success_title,
-                text: swaMsg.publish_success_text,
-                footer: swaMsg.text_footer,
-                icon: 'success',
-                confirmButtonText: swaMsg.text_btn,
-              });
+              swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
               setLoad(0);
             }
             else {
-              MySwal.fire({
-                title: swaMsg.generic_eror_title,
-                text: swaMsg.generic_error_text,
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-              });
+              swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             }
           })
           .catch(e => {
             console.log(e);
-            MySwal.fire({
-              title: swaMsg.generic_eror_title,
-              text: swaMsg.generic_error_text,
-              icon: 'warning',
-              confirmButtonText: swaMsg.text_btn,
-            });
+            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
           });
       }
     });
   }
   return (
     <div>
-      <div className="col-12 d-flex justify-content-start p-0">
-        <MDBBreadcrumb className="mb-0 p-0 ms-0">
-          <MDBBreadcrumbItem>
-            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-          </MDBBreadcrumbItem>
-          <MDBBreadcrumbItem>
-            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-          </MDBBreadcrumbItem>
-          <MDBBreadcrumbItem active><i class="fas fa-hard-hat"></i>  <label className="text-uppercase">{'Profesionals'}</label></MDBBreadcrumbItem>
-        </MDBBreadcrumb>
-      </div>
+      
       
       <div className='row my-3 d-flex justify-content-center'>
         <div className='col-10'>
@@ -300,7 +256,7 @@ export default function PROFESIONALS(props) {
         data={data}
         highlightOnHover
         dense
-        title={<>LISTADO DE PROFESIONALES <i class="fas fa-hard-hat"></i></>}
+        title={<>LISTADO DE PROFESIONALES <Icon name="hard-hat" size={16} /></>}
 
         progressPending={!load}
         progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
@@ -315,13 +271,15 @@ export default function PROFESIONALS(props) {
       >
         <div className="my-2 d-flex justify-content-between ">
           <div className='row'>
-            <div class="input-group">
-              <label className=''><i class="fas fa-hard-hat"></i> PROFESIONALES</label>
+            <div className="input-group">
+              <label className=''><Icon name="hard-hat" size={16} /> PROFESIONALES</label>
             </div>
           </div>
 
 
-          <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
+          <button type="button" onClick={() => setModal(!modal)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+            <Icon name="X" size={16} className="text-muted-foreground" />
+          </button>
         </div>
         <hr />
 
@@ -335,7 +293,7 @@ export default function PROFESIONALS(props) {
         />
         <hr />
         <div className="text-end py-2">
-          <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+          <Button variant="outline" size="sm" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> Cerrar</Button>
         </div>
       </Modal>
 

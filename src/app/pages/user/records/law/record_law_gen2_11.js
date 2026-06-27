@@ -1,27 +1,23 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service'
 
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
-const MySwal = withReactContent(Swal);
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+function RECORD_LAW_GEN2_11(props) {
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [newTax, setNewTax] = useState(false);
+    const [editTax, setEditTax] = useState(false);
 
-class RECORD_LAW_GEN2_11 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-            new_tax: false,
-            edit_tax: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
 
             document.getElementById("r_lg_liberty_1_edit").value = _ITEM.id_public;
             document.getElementById("r_lg_liberty_2_edit").value = _ITEM.date;
@@ -46,8 +42,11 @@ class RECORD_LAW_GEN2_11 extends Component {
             document.getElementById("r_lg_liberty_54_edit").value = array[3];
             document.getElementById("r_lg_liberty_55_edit").value = array[4];
         }
-        if (this.state.edit_tax !== prevState.edit_tax && this.state.edit_tax != false) {
-            var _ITEM = this.state.edit_tax;
+    }, [edit]);
+
+    useEffect(() => {
+        if (editTax !== false) {
+            var _ITEM = editTax;
 
             document.getElementById("r_lg_tax_1_edit").value = _ITEM.id_public;
             document.getElementById("r_lg_tax_2_edit").value = _ITEM.date;
@@ -59,10 +58,7 @@ class RECORD_LAW_GEN2_11 extends Component {
             document.getElementById("r_lg_tax_7_edit").value = _ITEM.id_6;
             document.getElementById("r_lg_tax_8_edit").value = _ITEM.type;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [editTax]);
 
         // DATA GETTERS
         let _GET_CHILD_2 = () => {
@@ -235,81 +231,81 @@ class RECORD_LAW_GEN2_11 extends Component {
             let _LIST = _GET_CHILD_11_LIBERTY();
             const columns = [
                 {
-                    name: <label>MATRICULAR</label>,
-                    selector: 'id_public',
+                    name: 'MATRICULAR',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
-                    name: <label>FECHA</label>,
-                    selector: 'date',
+                    name: 'FECHA',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{dateParser(row.date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
                 },
                 {
-                    name: <label>CODIGO CATASTRAL</label>,
-                    selector: 'predial',
+                    name: 'CODIGO CATASTRAL',
+                    selector: row => row.predial,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.predial}</label>
+                    cell: row => <span className="text-sm">{row.predial}</span>
                 },
                 {
-                    name: <label>DIRECCION</label>,
-                    selector: 'address',
+                    name: 'DIRECCION',
+                    selector: row => row.address,
                     sortable: true,
                     filterable: true,
                     center: true,
                     cell: row => <label >{row.address}</label>
                 },
                 {
-                    name: <label>CABIDA</label>,
+                    name: 'CABIDA',
                     center: true,
                     cell: row => <label >{_PARSE_M(row.boundary)}</label>
                 },
                 {
-                    name: <label>LINDEROS</label>,
+                    name: 'LINDEROS',
                     center: true,
                     cell: row => <label >{_PARSE_AREAS(row.boundary)}</label>
                 },
                 {
-                    name: <label>ULTIMA ANOTACION</label>,
+                    name: 'ULTIMA ANOTACION',
                     center: true,
                     cell: row => <label >{row.lastnotify}</label>
                 },
                 {
-                    name: <label>ESPECIFICACION</label>,
+                    name: 'ESPECIFICACION',
                     center: true,
                     cell: row => <label >{row.specify}</label>
                 },
                 {
-                    name: <label>TITULAR DERECHO REAL</label>,
-                    selector: 'subject',
+                    name: 'TITULAR DERECHO REAL',
+                    selector: row => row.subject,
                     sortable: true,
                     filterable: true,
                     center: true,
                     cell: row => <label >{row.subject}</label>
                 },
                 {
-                    name: <label>CEDULA TITULAR</label>,
-                    selector: 'subject_id',
+                    name: 'CEDULA TITULAR',
+                    selector: row => row.subject_id,
                     sortable: true,
                     filterable: true,
                     center: true,
                     cell: row => <label >{row.subject_id}</label>
                 },
                 {
-                    name: <label>ANOTACIONES</label>,
+                    name: 'ANOTACIONES',
                     center: true,
                     cell: row => <label >{row.desc}</label>
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     center: true,
                     cell: row => <>{row.id_6 > 0
                         ?
@@ -318,17 +314,13 @@ class RECORD_LAW_GEN2_11 extends Component {
                         : ""}</>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}>
-                                <i class="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_gen(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}>
+                                <Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_gen(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
 
                     </>
                 },
@@ -350,39 +342,39 @@ class RECORD_LAW_GEN2_11 extends Component {
 
                     <div className="col-4">
                         <label>Matrícula</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_1" onKeyPress={(e) => _REGEX_MATRICULA(e)}
+                            <input type="text" className="form-control" id="r_lg_liberty_1" onKeyPress={(e) => _REGEX_MATRICULA(e)}
                                 defaultValue={f2.matricula} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Fecha</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-times"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-times" size={16} />
 
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="r_lg_liberty_2" />
+                            <input type="date" max="2100-01-01" className="form-control" id="r_lg_liberty_2" />
 
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Código Predial/Catastral (Viejo)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_3" defaultValue={f2.catastral} />
+                            <input type="text" className="form-control" id="r_lg_liberty_3" defaultValue={f2.catastral} />
                         </div>
                         <label>Código Predial/Catastral (Nuevo 30 dígitos)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_32" defaultValue={f2.catastral_2} />
+                            <input type="text" className="form-control" id="r_lg_liberty_32" defaultValue={f2.catastral_2} />
                         </div>
                     </div>
                 </div>
@@ -390,11 +382,11 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4 mt-4">
                         <label>Dirección</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_4" defaultValue={f2.direccion} />
+                            <input type="text" className="form-control" id="r_lg_liberty_4" defaultValue={f2.direccion} />
                         </div>
                     </div>
                     <div className="col-8">
@@ -402,23 +394,23 @@ class RECORD_LAW_GEN2_11 extends Component {
                             <label>Cabida y linderos (m<sup>2</sup>)</label>
                             <div className="col-2 mx-0 px-0">
                                 <label>Metros</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_55" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_55" />
                             </div>
                             <div className="col-2 mx-0 px-0">
                                 <label>Norte</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0 " id="r_lg_liberty_51" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0 " id="r_lg_liberty_51" />
                             </div>
                             <div className="col-2 mx-0 px-0">
                                 <label>Sur</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_52" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_52" />
                             </div>
                             <div className="col-2 mx-0 px-0">
                                 <label>Oriente</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_53" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_53" />
                             </div>
                             <div className="col-2 mx-0 px-0">
                                 <label>Occidente</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_54" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_54" />
                             </div>
                         </div>
                     </div>
@@ -427,29 +419,29 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Última anotación</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_6" />
+                            <input type="text" className="form-control" id="r_lg_liberty_6" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Especificación</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_7" />
+                            <input type="text" className="form-control" id="r_lg_liberty_7" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Titular Derecho Real (Separar varios con coma (,))</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_8" />
+                            <input type="text" className="form-control" id="r_lg_liberty_8" />
                         </div>
                     </div>
                 </div>
@@ -457,27 +449,27 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Documento Titular (Separar varios con coma (,))</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_9" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
+                            <input type="text" className="form-control" id="r_lg_liberty_9" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Anotaciones Urbanas</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_10" />
+                            <input type="text" className="form-control" id="r_lg_liberty_10" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Relacionar Documento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-paperclip"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="paperclip" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_liberty_11">
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -494,38 +486,38 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Matricula</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_1_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_1_edit" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Fecha</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-times"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-times" size={16} />
 
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="r_lg_liberty_2_edit" />
+                            <input type="date" max="2100-01-01" className="form-control" id="r_lg_liberty_2_edit" />
 
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Codigo Catastral (Viejo)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_3_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_3_edit" />
                         </div>
                         <label>Código Predial/Catastral (Nuevo 30 dígitos)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_32_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_32_edit" />
                         </div>
                     </div>
                 </div>
@@ -533,11 +525,11 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4 mt-4">
                         <label>Direccion</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_4_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_4_edit" />
                         </div>
                     </div>
                     <div className="col-8">
@@ -545,23 +537,23 @@ class RECORD_LAW_GEN2_11 extends Component {
                             <label>Cabida y linderos (m<sup>2</sup>)</label>
                             <div className="col-2 mx-0 px-0">
                                 <label>Metros</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_55_edit" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_55_edit" />
                             </div>
                             <div className="col-2 mx-0 px-0">
                                 <label>Norte</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_51_edit" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_51_edit" />
                             </div>
                             <div className="col-2 mx-0 px-0">
                                 <label>Sur</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_52_edit" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_52_edit" />
                             </div>
                             <div className="col-2 mx-0 px-0">
                                 <label>Oriente</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_53_edit" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_53_edit" />
                             </div>
                             <div className="col-2 mx-0 px-0">
                                 <label>Occidente</label>
-                                <input type="number" min="0" step="0.01" class="form-control mx-0" id="r_lg_liberty_54_edit" />
+                                <input type="number" min="0" step="0.01" className="form-control mx-0" id="r_lg_liberty_54_edit" />
                             </div>
                         </div>
                     </div>
@@ -570,29 +562,29 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Ultima anoatacion</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_6_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_6_edit" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Especificacion</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_7_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_7_edit" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Titilar Derecho Real (Separar varios con coma (,))</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_8_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_8_edit" />
                         </div>
                     </div>
                 </div>
@@ -600,27 +592,27 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Documento Titular (Separar varios con coma (,))</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_9_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_9_edit" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Anotaciones Urbanas</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_liberty_10_edit" />
+                            <input type="text" className="form-control" id="r_lg_liberty_10_edit" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Relacionar Documento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-paperclip"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="paperclip" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_liberty_11_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -636,59 +628,59 @@ class RECORD_LAW_GEN2_11 extends Component {
             let _LIST = _GET_CHILD_11_TAX();
             const columns = [
                 {
-                    name: <label>TIPO DOCUMENTO</label>,
-                    selector: 'type',
+                    name: 'TIPO DOCUMENTO',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.type}</label>
+                    cell: row => <span className="text-sm">{row.type}</span>
                 },
                 {
-                    name: <label>No. RECIBO</label>,
-                    selector: 'id_public',
+                    name: 'No. RECIBO',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
-                    name: <label>FECHA</label>,
-                    selector: 'date',
+                    name: 'FECHA',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{dateParser(row.date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
                 },
                 {
-                    name: <label>CODIGO CATASTRAL</label>,
-                    selector: 'predial',
+                    name: 'CODIGO CATASTRAL',
+                    selector: row => row.predial,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.predial}</label>
+                    cell: row => <span className="text-sm">{row.predial}</span>
                 },
                 {
-                    name: <label>DIRECCION</label>,
-                    selector: 'address',
+                    name: 'DIRECCION',
+                    selector: row => row.address,
                     sortable: true,
                     filterable: true,
                     center: true,
                     cell: row => <label >{row.address}</label>
                 },
                 {
-                    name: <label>ESTRATO</label>,
+                    name: 'ESTRATO',
                     center: true,
                     cell: row => <label >{row.strata}</label>
                 },
                 {
-                    name: <label>DESTINO</label>,
+                    name: 'DESTINO',
                     center: true,
                     cell: row => <label >{row.destiny}</label>
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     center: true,
                     cell: row => <>{row.id_6 > 0
                         ?
@@ -697,16 +689,12 @@ class RECORD_LAW_GEN2_11 extends Component {
                         : ""}</>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.setState({ edit_tax: row })}><i class="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_tax(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEditTax(row)}><Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_tax(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -726,9 +714,9 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Tipo de Documento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-file-invoice"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-invoice" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_tax_8">
                                 <option>Declaración privada impuesto predial</option>
@@ -743,20 +731,20 @@ class RECORD_LAW_GEN2_11 extends Component {
                     </div>
                     <div className="col-4">
                         <label>No. de Recibo</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_1" />
+                            <input type="text" className="form-control" id="r_lg_tax_1" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Fecha</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-times"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-times" size={16} />
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="r_lg_tax_2" require />
+                            <input type="date" max="2100-01-01" className="form-control" id="r_lg_tax_2" require />
                         </div>
                     </div>
                 </div>
@@ -764,36 +752,36 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Código Predial/Catastral (Viejo)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_3" defaultValue={f2.catastral} />
+                            <input type="text" className="form-control" id="r_lg_tax_3" defaultValue={f2.catastral} />
                         </div>
                         <label>Código Predial/Catastral (Nuevo 30 dígitos)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_32" defaultValue={f2.catastral_2} />
+                            <input type="text" className="form-control" id="r_lg_tax_32" defaultValue={f2.catastral_2} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Dirección</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_4" defaultValue={f2.direccion} />
+                            <input type="text" className="form-control" id="r_lg_tax_4" defaultValue={f2.direccion} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Estrato</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="number" min="1" max="6" step="1" class="form-control" id="r_lg_tax_5" defaultValue={f2.estrato} />
+                            <input type="number" min="1" max="6" step="1" className="form-control" id="r_lg_tax_5" defaultValue={f2.estrato} />
                         </div>
                     </div>
 
@@ -802,18 +790,18 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>Destino</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_6" />
+                            <input type="text" className="form-control" id="r_lg_tax_6" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Relacionar Documento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-paperclip"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="paperclip" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_tax_7">
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -830,9 +818,9 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Tipo de Documento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-file-invoice"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-invoice" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_tax_8_edit">
                                 <option>Declaración privada impuesto predial</option>
@@ -847,20 +835,20 @@ class RECORD_LAW_GEN2_11 extends Component {
                     </div>
                     <div className="col-4">
                         <label>Nr. de Recibo</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_1_edit" />
+                            <input type="text" className="form-control" id="r_lg_tax_1_edit" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Fecha</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-times"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-times" size={16} />
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="r_lg_tax_2_edit" require />
+                            <input type="date" max="2100-01-01" className="form-control" id="r_lg_tax_2_edit" require />
                         </div>
                     </div>
                 </div>
@@ -868,54 +856,54 @@ class RECORD_LAW_GEN2_11 extends Component {
                 <div className="row mb-1">
                     <div className="col-4">
                         <label>Codigo Predial/Catastral (Viejo)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_3_edit" />
+                            <input type="text" className="form-control" id="r_lg_tax_3_edit" />
                         </div>
                         <label>Código Predial/Catastral (Nuevo 30 dígitos)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_32_edit" />
+                            <input type="text" className="form-control" id="r_lg_tax_32_edit" />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Direccion</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_4_edit" />
+                            <input type="text" className="form-control" id="r_lg_tax_4_edit" />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Estrato</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="number" min="1" max="6" step="1" class="form-control" id="r_lg_tax_5_edit" />
+                            <input type="number" min="1" max="6" step="1" className="form-control" id="r_lg_tax_5_edit" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>Destino</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="r_lg_tax_6_edit" />
+                            <input type="text" className="form-control" id="r_lg_tax_6_edit" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Relacionar Documento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-paperclip"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="paperclip" size={16} />
                             </span>
                             <select className='form-select' id="r_lg_tax_7_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -1087,88 +1075,39 @@ class RECORD_LAW_GEN2_11 extends Component {
             let id_6 = document.getElementById("r_lg_liberty_11").value;
             formData.set('id_6', id_6);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_LAW_SERVICE.create_law_11liberty(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        props.requestUpdateRecord(currentItem.id);
                         document.getElementById('form_rl_gen_11_new').reset();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let delete_gen = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     RECORD_LAW_SERVICE.delete_law_11liberty(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit: false });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                props.requestUpdateRecord(currentItem.id);
+                                setEdit(false);
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -1210,43 +1149,21 @@ class RECORD_LAW_GEN2_11 extends Component {
             let id_6 = document.getElementById("r_lg_liberty_11_edit").value;
             formData.set('id_6', id_6);
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            RECORD_LAW_SERVICE.update_law_11liberty(this.state.edit.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            RECORD_LAW_SERVICE.update_law_11liberty(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        props.requestUpdateRecord(currentItem.id);
                         document.getElementById('form_rl_gen_11_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -1274,88 +1191,39 @@ class RECORD_LAW_GEN2_11 extends Component {
             let type = document.getElementById("r_lg_tax_8").value;
             formData.set('type', type);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_LAW_SERVICE.create_law_11tax(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        props.requestUpdateRecord(currentItem.id);
                         document.getElementById('form_rl_gen_11_new_tax').reset();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let delete_tax = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     RECORD_LAW_SERVICE.delete_law_11tax(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit_tax: false });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                props.requestUpdateRecord(currentItem.id);
+                                setEditTax(false);
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -1383,42 +1251,21 @@ class RECORD_LAW_GEN2_11 extends Component {
             let type = document.getElementById("r_lg_tax_8_edit").value;
             formData.set('type', type);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            RECORD_LAW_SERVICE.update_law_11tax(this.state.edit_tax.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            RECORD_LAW_SERVICE.update_law_11tax(editTax.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        props.requestUpdateRecord(currentItem.id);
                         document.getElementById('form_rl_gen_11_edit_tax').reset();
-                        this.setState({ edit_tax: false });
+                        setEditTax(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -1460,110 +1307,73 @@ class RECORD_LAW_GEN2_11 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_LAW_SERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_LAW_SERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
         return (
             <div className="record_law_gen_11 container my-2">
-                <div className='row  border border-dark bg-info text-light text-center fwb-bold py-2'>
+                <div className='row  border border-dark bg-primary text-primary-foreground text-center fwb-bold py-2'>
                     <div className='col'>
                         <label>CERTIFICADOS</label>
                     </div>
                 </div>
                 <h3 className="py-3" >Certificado de tradición matrícula inmobiliaria</h3>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Nuevo certificado de tradición
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_rl_gen_11_new" onSubmit={new_liberty}>
                             {_COMPONENT_NEW_LIBERTY()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
                     </>
                     : ""}
                 {_CHILD_LIBERTY_LIST()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_rl_gen_11_edit" onSubmit={edit_liberty}>
                             <h3 className="my-3 text-center">Actualizar certificado de tradición</h3>
                             {_COMPONENT_EDIT_LIBERTY()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                             </div>
                         </form>
@@ -1573,33 +1383,33 @@ class RECORD_LAW_GEN2_11 extends Component {
                 {_COMPONENT_CHECK_1()}
 
                 <h3 className="py-3" >Documento Oficial de Nomenclatura</h3>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new_tax: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setNewTax(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Nuevo documento
                     </label>
                 </div>
-                {this.state.new_tax
+                {newTax
                     ? <>
                         <form id="form_rl_gen_11_new_tax" onSubmit={new_tax}>
                             {_COMPONENT_NEW_TAX()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
                     </>
                     : ""}
                 {_CHILD_TAX_LIST()}
-                {this.state.edit_tax
+                {editTax
                     ? <>
                         <form id="form_rl_gen_11_edit_tax" onSubmit={edit_tax}>
                             <h3 className="my-3 text-center">Actualizar documento</h3>
                             {_COMPONENT_EDIT_TAX()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                             </div>
                         </form>
@@ -1608,7 +1418,6 @@ class RECORD_LAW_GEN2_11 extends Component {
                 {_COMPONENT_CHECK_2()}
             </div >
         );
-    }
 }
 
 export default RECORD_LAW_GEN2_11;

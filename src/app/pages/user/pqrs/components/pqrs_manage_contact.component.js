@@ -1,42 +1,35 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import DataTable from 'react-data-table-component';
-import { MDBTooltip } from 'mdb-react-ui-kit';
-import { dateParser } from '../../../../components/customClasses/typeParse';
-import { ListGroup } from 'react-bootstrap';
+import DataTable from '@/components/data-table-bridge';
 
-const MySwal = withReactContent(Swal);
-class PQRS_EDIT_CONTACT extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
-            document.getElementById("pqrs_con_edit_1_edit").value = _ITEM.address;
-            document.getElementById("pqrs_con_edit_2_edit").value = _ITEM.neighbour;
-            document.getElementById("pqrs_con_edit_3_edit").value = _ITEM.phone;
-            document.getElementById("pqrs_con_edit_4_edit").value = _ITEM.state;
-            document.getElementById("pqrs_con_edit_5_edit").value = _ITEM.county;
-            document.getElementById("pqrs_con_edit_6_edit").value = _ITEM.email;
-            document.getElementById("pqrs_con_edit_7_edit").checked = _ITEM.notify;
-            if (this.props.currentItem.pqrs_law.extension) {
-                document.getElementById("pqrs_con_edit_8").value = _ITEM.notify_extension ? _ITEM.notify_extension : 0;
-                document.getElementById("pqrs_con_edit_9").value = _ITEM.notify_extension_date;
+import { dateParser } from '../../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+
+function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
+    const [edit, setEdit] = useState(false);
+    const [isNew, setIsNew] = useState(false);
+
+    useEffect(() => {
+        if (edit && edit !== false) {
+            document.getElementById("pqrs_con_edit_1_edit").value = edit.address;
+            document.getElementById("pqrs_con_edit_2_edit").value = edit.neighbour;
+            document.getElementById("pqrs_con_edit_3_edit").value = edit.phone;
+            document.getElementById("pqrs_con_edit_4_edit").value = edit.state;
+            document.getElementById("pqrs_con_edit_5_edit").value = edit.county;
+            document.getElementById("pqrs_con_edit_6_edit").value = edit.email;
+            document.getElementById("pqrs_con_edit_7_edit").checked = edit.notify;
+            if (currentItem.pqrs_law.extension) {
+                document.getElementById("pqrs_con_edit_8").value = edit.notify_extension ? edit.notify_extension : 0;
+                document.getElementById("pqrs_con_edit_9").value = edit.notify_extension_date;
             }
-            document.getElementById("pqrs_con_edit_101").value = _ITEM.notify_confirm ? _ITEM.notify_confirm : 0;
-            document.getElementById("pqrs_con_edit_102").value = _ITEM.notify_confirm_date;
-            document.getElementById("pqrs_con_edit_111").value = _ITEM.notify_reply ? _ITEM.notify_reply : 0;
-            document.getElementById("pqrs_con_edit_112").value = _ITEM.notify_date;
+            document.getElementById("pqrs_con_edit_101").value = edit.notify_confirm ? edit.notify_confirm : 0;
+            document.getElementById("pqrs_con_edit_102").value = edit.notify_confirm_date;
+            document.getElementById("pqrs_con_edit_111").value = edit.notify_reply ? edit.notify_reply : 0;
+            document.getElementById("pqrs_con_edit_112").value = edit.notify_date;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+    }, [edit]);
 
         //DATA GETTERS
         let _GET_CONTACTS = () => {
@@ -58,57 +51,55 @@ class PQRS_EDIT_CONTACT extends Component {
             var _LIST = _GET_CONTACTS();
             const columns = [
                 {
-                    name: <label>DIRECCION</label>,
-                    selector: 'name',
+                    name: 'DIRECCION',
+                    selector: row => row.name,
                     minWidth: '210px',
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.address}</label>,
+                    cell: row => <span className="text-sm">{row.address}</span>,
                 },
                 {
-                    name: <label>BARRIO</label>,
-                    selector: 'competence',
+                    name: 'BARRIO',
+                    selector: row => row.competence,
                     minWidth: '180px',
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.neighbour}</label>,
+                    cell: row => <span className="text-sm">{row.neighbour}</span>,
                 },
                 {
-                    name: <label>MUNICIPIO</label>,
+                    name: 'MUNICIPIO',
                     minWidth: '180px',
-                    cell: row => <label>{row.county}</label>,
+                    cell: row => <span className="text-sm">{row.county}</span>,
                 },
                 {
-                    name: <label>TÉLEFONO</label>,
-                    selector: 'asign',
+                    name: 'TÉLEFONO',
+                    selector: row => row.asign,
                     minWidth: '180px',
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.phone}</label>,
+                    cell: row => <span className="text-sm">{row.phone}</span>,
                 },
                 {
-                    name: <label>CONTACTO</label>,
+                    name: 'CONTACTO',
                     minWidth: '199px',
-                    cell: row => <label>{row.email}</label>,
+                    cell: row => <span className="text-sm">{row.email}</span>,
                 },
 
                 {
-                    name: <label>¿AUTORIZA NOTIFICACIÓN POR CORREO?</label>,
+                    name: '¿AUTORIZA NOTIFICACIÓN POR CORREO?',
                     center: true,
                     minWidth: '290px',
-                    cell: row => <label>{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</label>,
+                    cell: row => <span className="text-sm">{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</span>,
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => this.setState({ edit: row })} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i class="far fa-edit"></i></button></MDBTooltip>
-                        <MDBTooltip title='Eliminar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <i class="far fa-trash-alt"></i></button></MDBTooltip>
+ <Button variant="outline" size="sm" className="m-0 p-2" title="Modificar item" onClick={() => setEdit(row)} >
+                                <Icon name="edit" size={16} /></Button>
+ <Button variant="destructive" size="sm" className="m-0 p-2" title="Eliminar item" onClick={() => delete_item(row.id)} >
+                                <Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
@@ -127,51 +118,51 @@ class PQRS_EDIT_CONTACT extends Component {
 
         let _COMPONENT_MANAGE = (_edit) => {
             var _COMPONENT = [];
-            _COMPONENT.push(<div className="row">
+            _COMPONENT.push(<div key={`pqrs-manage-contact-${_edit || 'new'}`} className="row">
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-map-signs"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="map-signs" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Direccion Fisica" id={"pqrs_con_edit_1" + _edit} />
+                        <input type="text" className="form-control" placeholder="Direccion Fisica" id={"pqrs_con_edit_1" + _edit} />
                     </div>
 
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-map-marked-alt"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="map-marked-alt" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Barrio" id={"pqrs_con_edit_2" + _edit} />
+                        <input type="text" className="form-control" placeholder="Barrio" id={"pqrs_con_edit_2" + _edit} />
                     </div>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-phone-alt"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="phone-alt" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Numero de Contacto" id={"pqrs_con_edit_3" + _edit} />
+                        <input type="text" className="form-control" placeholder="Numero de Contacto" id={"pqrs_con_edit_3" + _edit} />
                     </div>
-                    <div class="form-check mx-5 my-3">
-                        <input class="form-check-input" type="checkbox" value="" id={"pqrs_con_edit_7" + _edit} />
-                        <p class="form-check-label text-justify" >¿Autoriza repuesta por Email?</p>
+                    <div className="form-check mx-5 my-3">
+                        <input className="form-check-input" type="checkbox" value="" id={"pqrs_con_edit_7" + _edit} />
+                        <p className="form-check-label text-justify" >¿Autoriza repuesta por Email?</p>
                     </div>
                 </div>
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-globe-americas"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="globe-americas" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Departamenteo" id={"pqrs_con_edit_4" + _edit} />
+                        <input type="text" className="form-control" placeholder="Departamenteo" id={"pqrs_con_edit_4" + _edit} />
                     </div>
 
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-globe-americas"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="globe-americas" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Municipio" id={"pqrs_con_edit_5" + _edit} />
+                        <input type="text" className="form-control" placeholder="Municipio" id={"pqrs_con_edit_5" + _edit} />
                     </div>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-envelope"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="envelope" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Correo Electronico" id={"pqrs_con_edit_6" + _edit} />
+                        <input type="text" className="form-control" placeholder="Correo Electronico" id={"pqrs_con_edit_6" + _edit} />
                     </div>
                 </div>
 
@@ -180,11 +171,11 @@ class PQRS_EDIT_CONTACT extends Component {
                         <div className="row border border-secondary p-2 mb-2 mx-auto">
                             <div className="col-6">
                                 <label>¿se confirmó recepción de la solicitud?</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-comment-dots"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="comment-dots" size={16} />
                                     </span>
-                                    <select class="form-select" id="pqrs_con_edit_101">
+                                    <select className="form-select" id="pqrs_con_edit_101">
                                         <option value="0">PENDIENTE</option>
                                         <option value="1">SI-CONSTANCIA FÍSICA DE RADICACIÓN</option>
                                         <option value="2">SI-CORREO ELECTRÓNICO DE RECIBIDO</option>
@@ -194,28 +185,27 @@ class PQRS_EDIT_CONTACT extends Component {
                             </div>
                             <div className="col-6">
                                 <label>Fecha de evento</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
-                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_con_edit_102" />
+                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_con_edit_102" />
                                 </div>
                             </div>
                         </div>
                     </>
                     : ""}
 
-
                 {validations_pqrs_law && _edit
                     ? <>
                         <div className="row border border-secondary p-2 mb-2 mx-auto">
                             <div className="col-6">
                                 <label>¿Fue posible notificar extesion?</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-comment-dots"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="comment-dots" size={16} />
                                     </span>
-                                    <select class="form-select" id="pqrs_con_edit_8">
+                                    <select className="form-select" id="pqrs_con_edit_8">
                                         <option value="0">PENDIENTE</option>
                                         <option value="1">SI-CONSTANCIA FÍSICA DE RADICACIÓN</option>
                                         <option value="2">SI-CORREO ELECTRÓNICO DE RECIBIDO</option>
@@ -225,11 +215,11 @@ class PQRS_EDIT_CONTACT extends Component {
                             </div>
                             <div className="col-6">
                                 <label>Fecha de evento</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
-                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_con_edit_9" />
+                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_con_edit_9" />
                                 </div>
                             </div>
                         </div>
@@ -240,11 +230,11 @@ class PQRS_EDIT_CONTACT extends Component {
                         <div className="row border border-secondary p-2 mb-2 mx-auto">
                             <div className="col-6">
                                 <label>Se confirmó el oficio de respuesta?</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-comment-dots"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="comment-dots" size={16} />
                                     </span>
-                                    <select class="form-select" id="pqrs_con_edit_111">
+                                    <select className="form-select" id="pqrs_con_edit_111">
                                         <option value="0">PENDIENTE</option>
                                         <option value="4">SI-CONSTANCIA FÍSICA DE OFICIO</option>
                                         <option value="5">SI-CORREO ELECTRÓNICO</option>
@@ -254,11 +244,11 @@ class PQRS_EDIT_CONTACT extends Component {
                             </div>
                             <div className="col-6">
                                 <label>Fecha de evento</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
-                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_con_edit_112" />
+                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_con_edit_112" />
                                 </div>
                             </div>
                         </div>
@@ -292,41 +282,20 @@ class PQRS_EDIT_CONTACT extends Component {
             let notify = document.getElementById("pqrs_con_edit_7").checked;
             formData.set('notify', notify == true ? 1 : 0);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.create_contact(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshCurrentItem(currentItem.id)
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        refreshCurrentItem(currentItem.id)
                         document.getElementById("form_pqrs_edit_contact_new").reset();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let edit_item = (e) => {
@@ -365,128 +334,77 @@ class PQRS_EDIT_CONTACT extends Component {
             let notify_date = document.getElementById("pqrs_con_edit_112").value;
             if (notify_date) formData.set('notify_date', notify_date);
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            PQRS_Service.update_contact(this.state.edit.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            PQRS_Service.update_contact(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshCurrentItem(currentItem.id)
-                        this.setState({ edit: false });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        refreshCurrentItem(currentItem.id)
+                        setEdit(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let delete_item = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     PQRS_Service.delete_contact(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.refreshCurrentItem(currentItem.id)
-                                this.setState({ edit: false });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                refreshCurrentItem(currentItem.id)
+                                setEdit(false);
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
         }
         return (
             <div>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Contacto
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <form id="form_pqrs_edit_contact_new" onSubmit={new_item}>
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
-                            <button className="btn btn-sm btn-success my-3">
-                                <i class="far fa-share-square"></i> AÑADIR ITEM
-                            </button>
+                            <Button size="sm" className="my-3">
+                                <Icon name="share-square" size={16} /> AÑADIR ITEM
+                            </Button>
                         </div>
                     </form>
                     : ""}
                 {_CONTACTS_COMPONENT()}
-                {this.state.edit
+                {edit
                     ? <form id="form_pqrs_edit_contact_edit" onSubmit={edit_item}>
                         <div className="text-center">
                             <label className="fw-bold py-2">Editar Item</label>
                         </div>
                         {_COMPONENT_MANAGE("_edit")}
                         <div className="text-center">
-                            <button className="btn btn-sm btn-success my-3">
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
-                            </button>
+                            <Button size="sm" className="my-3">
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                            </Button>
                         </div>
                     </form>
                     : ""}
             </div>
         );
-    }
 }
 
 export default PQRS_EDIT_CONTACT;

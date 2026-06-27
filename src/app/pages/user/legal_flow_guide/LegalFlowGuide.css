@@ -1,0 +1,559 @@
+/* ============================================================
+   Legal Flow Guide — Dovela
+   Design: Trust & Authority / Professional Legal Workflow
+   ============================================================ */
+
+/* --- Design Tokens --- */
+.legal-flow {
+  --lf-primary: #4361AC;
+  --lf-primary-light: #EEF2FA;
+  --lf-primary-muted: #7B92CC;
+  --lf-accent: #2D8B6F;
+  --lf-accent-light: #E8F5F0;
+  --lf-background: #F6F8FB;
+  --lf-surface: #FFFFFF;
+  --lf-foreground: #1A2138;
+  --lf-text-secondary: #5A6578;
+  --lf-text-muted: #8C95A6;
+  --lf-border: #E2E8F0;
+  --lf-border-light: #EDF1F7;
+  --lf-destructive: #C25A5A;
+  --lf-destructive-light: #FDF0F0;
+  --lf-warning: #C08B3E;
+  --lf-warning-light: #FDF6E8;
+  --lf-shadow-sm: 0 1px 3px rgba(26, 33, 56, 0.06);
+  --lf-shadow-md: 0 4px 12px rgba(26, 33, 56, 0.08);
+  --lf-shadow-lg: 0 8px 24px rgba(26, 33, 56, 0.10);
+  --lf-radius: 10px;
+  --lf-radius-sm: 6px;
+  --lf-radius-lg: 14px;
+  --lf-transition: 200ms ease;
+}
+
+/* --- Page container --- */
+.legal-flow {
+  background-color: var(--lf-background);
+  min-height: calc(100vh - 56px);
+  padding: 1.5rem;
+}
+
+/* --- Page header --- */
+.legal-flow__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legal-flow__title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--lf-foreground);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  letter-spacing: -0.02em;
+}
+
+.legal-flow__title-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lf-primary);
+  color: white;
+  border-radius: var(--lf-radius-sm);
+  font-size: 0.95rem;
+}
+
+.legal-flow__subtitle {
+  font-size: 0.82rem;
+  color: var(--lf-text-muted);
+  margin: 0;
+}
+
+/* --- Card base --- */
+.legal-flow .lf-card {
+  background: var(--lf-surface);
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius);
+  box-shadow: var(--lf-shadow-sm);
+  transition: box-shadow var(--lf-transition);
+}
+
+.legal-flow .lf-card:hover {
+  box-shadow: var(--lf-shadow-md);
+}
+
+.legal-flow .lf-card__body {
+  padding: 1.25rem;
+}
+
+/* --- Section headers within cards --- */
+.legal-flow .lf-section-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--lf-text-muted);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--lf-border-light);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legal-flow .lf-section-title i {
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+/* --- Filter panel --- */
+.legal-flow .lf-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.legal-flow .lf-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legal-flow .lf-filter-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--lf-foreground);
+  margin-bottom: 0.15rem;
+}
+
+/* Custom select */
+.legal-flow .lf-select {
+  font-size: 0.82rem;
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-sm);
+  padding: 0.45rem 0.75rem;
+  color: var(--lf-foreground);
+  background-color: var(--lf-surface);
+  transition: border-color var(--lf-transition), box-shadow var(--lf-transition);
+  appearance: auto;
+}
+
+.legal-flow .lf-select:focus {
+  border-color: var(--lf-primary-muted);
+  box-shadow: 0 0 0 3px rgba(67, 97, 172, 0.12);
+  outline: none;
+}
+
+/* Toggle button group */
+.legal-flow .lf-toggle-group {
+  display: flex;
+  gap: 0;
+  border-radius: var(--lf-radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--lf-border);
+}
+
+.legal-flow .lf-toggle-btn {
+  flex: 1;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: none;
+  background: var(--lf-surface);
+  color: var(--lf-text-secondary);
+  cursor: pointer;
+  transition: all var(--lf-transition);
+  text-align: center;
+}
+
+.legal-flow .lf-toggle-btn:not(:last-child) {
+  border-right: 1px solid var(--lf-border);
+}
+
+.legal-flow .lf-toggle-btn:hover:not(.active) {
+  background: var(--lf-primary-light);
+  color: var(--lf-primary);
+}
+
+.legal-flow .lf-toggle-btn.active {
+  background: var(--lf-primary);
+  color: white;
+}
+
+.legal-flow .lf-toggle-btn.active--success {
+  background: var(--lf-accent);
+  color: white;
+}
+
+.legal-flow .lf-toggle-btn.active--danger {
+  background: var(--lf-destructive);
+  color: white;
+}
+
+/* Custom checkboxes */
+.legal-flow .lf-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--lf-radius-sm);
+  transition: background-color var(--lf-transition);
+  cursor: pointer;
+  margin: 0;
+}
+
+.legal-flow .lf-check:hover {
+  background-color: var(--lf-primary-light);
+}
+
+.legal-flow .lf-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  accent-color: var(--lf-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.legal-flow .lf-check__label {
+  font-size: 0.8rem;
+  color: var(--lf-foreground);
+  user-select: none;
+  cursor: pointer;
+  line-height: 1.3;
+}
+
+.legal-flow .lf-check__tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--lf-text-muted);
+  background: var(--lf-background);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* --- Route Summary --- */
+.legal-flow .lf-summary__stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-flow .lf-summary__stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--lf-foreground);
+  line-height: 1;
+}
+
+.legal-flow .lf-summary__stat-label {
+  font-size: 0.78rem;
+  color: var(--lf-text-muted);
+}
+
+.legal-flow .lf-summary__actors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.legal-flow .lf-actor-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.legal-flow .lf-actor-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legal-flow .lf-actor-dot--curaduria { background-color: #5B7FD6; }
+.legal-flow .lf-actor-dot--solicitante { background-color: #3D9B7F; }
+.legal-flow .lf-actor-dot--paralelo { background-color: #8B95A8; }
+
+.legal-flow .lf-actor-name {
+  font-size: 0.8rem;
+  color: var(--lf-foreground);
+  flex: 1;
+}
+
+.legal-flow .lf-actor-days {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--lf-foreground);
+}
+
+.legal-flow .lf-actor-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--lf-border-light);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 40px;
+}
+
+.legal-flow .lf-actor-bar__fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 400ms ease;
+}
+
+.legal-flow .lf-actor-bar__fill--curaduria { background-color: #5B7FD6; }
+.legal-flow .lf-actor-bar__fill--solicitante { background-color: #3D9B7F; }
+.legal-flow .lf-actor-bar__fill--paralelo { background-color: #8B95A8; }
+
+.legal-flow .lf-pool-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--lf-primary);
+  background: var(--lf-primary-light);
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  margin-top: 0.5rem;
+}
+
+.legal-flow .lf-desist-info {
+  font-size: 0.75rem;
+  color: var(--lf-destructive);
+  background: var(--lf-destructive-light);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--lf-radius-sm);
+  margin-top: 0.75rem;
+  border-left: 3px solid var(--lf-destructive);
+  line-height: 1.4;
+}
+
+/* --- Diagram area --- */
+.legal-flow .lf-diagram {
+  background: var(--lf-surface);
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius);
+  box-shadow: var(--lf-shadow-sm);
+  overflow: hidden;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-flow .lf-diagram__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.15rem;
+  border-bottom: 1px solid var(--lf-border-light);
+  background: var(--lf-background);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.legal-flow .lf-diagram__title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--lf-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legal-flow .lf-diagram__legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.legal-flow .lf-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--lf-text-muted);
+}
+
+.legal-flow .lf-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legal-flow .lf-legend-swatch--curaduria { background-color: #5B7FD6; }
+.legal-flow .lf-legend-swatch--solicitante { background-color: #3D9B7F; }
+.legal-flow .lf-legend-swatch--paralelo { background-color: #8B95A8; }
+.legal-flow .lf-legend-swatch--desistimiento { background-color: #C97A7A; }
+.legal-flow .lf-legend-swatch--modifier { background-color: #9185BE; }
+
+.legal-flow .lf-diagram__body {
+  flex: 1;
+  padding: 1rem;
+  overflow: auto;
+}
+
+/* Override MermaidDiagram generic wrapper inside .lf-diagram */
+.legal-flow .lf-diagram__body > div {
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Hide the generic "Diagrama Mermaid" header from MermaidDiagram */
+.legal-flow .lf-diagram__body > div > div:first-child {
+  display: none !important;
+}
+
+/* Make diagram content flush */
+.legal-flow .lf-diagram__body > div > div:nth-child(2) {
+  max-height: none !important;
+  padding: 0.5rem !important;
+  background: transparent !important;
+}
+
+/* --- Project Flow Modal --- */
+.legal-flow-modal .modal-content {
+  border: none;
+  border-radius: var(--lf-radius-lg);
+  box-shadow: var(--lf-shadow-lg);
+  overflow: hidden;
+}
+
+.legal-flow-modal .modal-header {
+  background: var(--lf-background);
+  border-bottom: 1px solid var(--lf-border);
+  padding: 1rem 1.25rem;
+}
+
+.legal-flow-modal .modal-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--lf-foreground);
+}
+
+.legal-flow-modal .modal-body {
+  padding: 1.25rem;
+}
+
+.legal-flow-modal .modal-footer {
+  border-top: 1px solid var(--lf-border);
+  padding: 0.75rem 1.25rem;
+}
+
+.legal-flow-modal .lf-modal-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  background: var(--lf-background);
+  border-radius: var(--lf-radius-sm);
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+}
+
+.legal-flow-modal .lf-modal-meta__item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--lf-text-secondary);
+}
+
+.legal-flow-modal .lf-modal-meta__item strong {
+  color: var(--lf-foreground);
+}
+
+.legal-flow-modal .lf-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 20px;
+}
+
+.legal-flow-modal .lf-badge--primary {
+  background: var(--lf-primary-light);
+  color: var(--lf-primary);
+}
+
+.legal-flow-modal .lf-badge--danger {
+  background: var(--lf-destructive-light);
+  color: var(--lf-destructive);
+}
+
+.legal-flow-modal .lf-badge--success {
+  background: var(--lf-accent-light);
+  color: var(--lf-accent);
+}
+
+.legal-flow-modal .lf-badge--warning {
+  background: var(--lf-warning-light);
+  color: var(--lf-warning);
+}
+
+/* --- Responsive --- */
+@media (max-width: 991.98px) {
+  .legal-flow {
+    padding: 1rem;
+  }
+
+  .legal-flow__title {
+    font-size: 1.15rem;
+  }
+
+  .legal-flow .lf-diagram__legend {
+    display: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .legal-flow {
+    padding: 0.75rem;
+  }
+
+  .legal-flow .lf-card__body {
+    padding: 1rem;
+  }
+}
+
+/* --- Dark mode support --- */
+[data-bs-theme="dark"] .legal-flow {
+  --lf-primary: #7B9CE0;
+  --lf-primary-light: #1E2744;
+  --lf-primary-muted: #8FAAE0;
+  --lf-accent: #4DB88D;
+  --lf-accent-light: #1A2E28;
+  --lf-background: #14181F;
+  --lf-surface: #1C2028;
+  --lf-foreground: #E2E6ED;
+  --lf-text-secondary: #A0AAB8;
+  --lf-text-muted: #6B7585;
+  --lf-border: #2A2F3A;
+  --lf-border-light: #242830;
+  --lf-destructive: #D88585;
+  --lf-destructive-light: #2A1E1E;
+  --lf-warning: #D4A855;
+  --lf-warning-light: #2A2518;
+  --lf-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --lf-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --lf-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .legal-flow .lf-diagram__body {
+  background: var(--lf-surface);
+}

@@ -1,13 +1,12 @@
-import React, { Suspense, useEffect, useState, } from 'react';
+import { Suspense, useEffect, useState, } from 'react';
+import { Button } from '@/components/ui/button';
 import Norms_Service from "../../../services/norm.service"
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import VIEWER from '../../../components/viewer.component';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 export default function NORM_NEIGHBORS(props) {
     const { translation, swaMsg, globals, id, id_in, setrRfresh } = props;
 
@@ -34,16 +33,9 @@ export default function NORM_NEIGHBORS(props) {
             })
             .catch(e => {
                 console.error(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
-
-
 
     function create_item(event) {
         event.preventDefault();
@@ -58,7 +50,7 @@ export default function NORM_NEIGHBORS(props) {
         let material = document.getElementById("predio_material").value;
         formData.set('material', material);
 
-        let _creationYear = moment().format('YY');
+        let _creationYear = dayjs().format('YY');
         let _folder = id_in;
         let file = document.getElementById("predio_fun6id");
         if (file.files[0]) {
@@ -67,41 +59,20 @@ export default function NORM_NEIGHBORS(props) {
 
         formData.set('normId', id);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         Norms_Service.create_neighbor(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadData()
                 }
             })
             .catch(e => {
                 console.log(e);
                 if (e.response.data.message == "Validation error") {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             });
     };
@@ -120,7 +91,7 @@ export default function NORM_NEIGHBORS(props) {
         formData.set('material', material);
 
         
-        let _creationYear = moment(editItem.createdAt).format('YY');
+        let _creationYear = dayjs(editItem.createdAt).format('YY');
         let _folder = id_in;
         let file = document.getElementById("predio_fun6id_edit");
         if (file.files[0]) {
@@ -128,83 +99,38 @@ export default function NORM_NEIGHBORS(props) {
             formData.append('file', file.files[0], "norm_" + _creationYear + "_" + _folder + "_" + file.files[0].name)
         }
 
-
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         Norms_Service.update_neighbor(editItem.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadData()
                 }
             })
             .catch(e => {
                 console.log(e);
                 if (e.response.data.message == "Validation error") {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             });
     };
 
     function delete_item(id) {
-        MySwal.fire({
-            title: "ELIMINAR ESTE ITEM",
-            text: "¿Esta seguro de eliminar de forma permanente este item?",
-            icon: 'question',
-            confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 Norms_Service.delete_neighbor(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             loadData()
                         }
                     })
                     .catch(e => {
                         console.error(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         });
@@ -218,56 +144,46 @@ export default function NORM_NEIGHBORS(props) {
             })
             .catch(e => {
                 console.error(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     // ***************************  DATA GETTER *********************** //
 
-
     // ***************************  JXS *********************** //
     const columns = [
         {
-            name: <label className="text-center">CARDINALIDAD</label>,
+            name: 'CARDINALIDAD',
             center: true,
             cell: row => row.card
         },
         {
-            name: <label className="text-center">PISOS</label>,
+            name: 'PISOS',
             center: true,
             cell: row => row.floors
         },
         {
-            name: <label className="text-center">VOLADIZO</label>,
+            name: 'VOLADIZO',
             center: true,
             cell: row => row.voladizo
         },
         {
-            name: <label className="text-center">MATERIAL</label>,
+            name: 'MATERIAL',
             center: true,
             cell: row => row.material
         },
         {
-            name: <label className="text-center">IMAGE</label>,
+            name: 'IMAGE',
             center: true,
             cell: row => row.fun6id ? <VIEWER API={getImage} params={[row.fun6id]} /> : null
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '80px',
             cell: row => <>
-                <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                    <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i class="far fa-edit"></i></MDBBtn>
-                </MDBTooltip>
-                <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                    <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
-                </MDBTooltip>
+                <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => setEditItem(editItem ? false : row)}><Icon name="edit" size={16} /></Button></span>
+                <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
             </>,
         },
     ]
@@ -294,32 +210,32 @@ export default function NORM_NEIGHBORS(props) {
             <div className="row">
                 <div className="col">
                     <label>Cardinalidad</label>
-                    <div class="input-group my-1">
-                        <input type="text" class="form-control" defaultValue={editItem ? editItem.card : ""} id={"predio_card" + edit} />
+                    <div className="input-group my-1">
+                        <input type="text" className="form-control" defaultValue={editItem ? editItem.card : ""} id={"predio_card" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Pisos</label>
-                    <div class="input-group my-1">
-                        <input type="number" min="0" step="1" defaultValue={editItem ? editItem.floors : ""} class="form-control" id={"predio_floors" + edit} />
+                    <div className="input-group my-1">
+                        <input type="number" min="0" step="1" defaultValue={editItem ? editItem.floors : ""} className="form-control" id={"predio_floors" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Voladizo</label>
-                    <div class="input-group my-1">
-                        <input type="text" defaultValue={editItem ? editItem.voladizo : ""} class="form-control" id={"predio_voladizo" + edit} />
+                    <div className="input-group my-1">
+                        <input type="text" defaultValue={editItem ? editItem.voladizo : ""} className="form-control" id={"predio_voladizo" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Material</label>
-                    <div class="input-group my-1">
-                        <input type="text" defaultValue={editItem ? editItem.material : ""} class="form-control" id={"predio_material" + edit} />
+                    <div className="input-group my-1">
+                        <input type="text" defaultValue={editItem ? editItem.material : ""} className="form-control" id={"predio_material" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Imagen</label>
-                    <div class="input-group my-1">
-                        <input type="file" class="form-control" id={"predio_fun6id" + edit} accept="image/png, image/jpeg" />
+                    <div className="input-group my-1">
+                        <input type="file" className="form-control" id={"predio_fun6id" + edit} accept="image/png, image/jpeg" />
                     </div>
                 </div>
             </div>
@@ -328,9 +244,9 @@ export default function NORM_NEIGHBORS(props) {
     }
 
     const NEW_ITEM = <>
-        <div class="form-check ms-5">
-            <input class="form-check-input" type="checkbox" id="cb_new_neighbor" onChange={(e) => setNewItem(e.target.checked)} />
-            <label class="form-check-label" for="flexCheckDefault">
+        <div className="form-check ms-5">
+            <input className="form-check-input" type="checkbox" id="cb_new_neighbor" onChange={(e) => setNewItem(e.target.checked)} />
+            <label className="form-check-label" htmlFor="flexCheckDefault">
                 Nuevo Vecino
             </label>
         </div>
@@ -339,7 +255,7 @@ export default function NORM_NEIGHBORS(props) {
                 {_COMPONENT_MANAGE("")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i class="fas fa-plus-circle"></i> AÑADIR ITEM </button>
+                        <Button size="sm"><Icon name="plus-circle" size={16} /> AÑADIR ITEM </Button>
                     </div>
                 </div>
             </form>
@@ -353,7 +269,7 @@ export default function NORM_NEIGHBORS(props) {
                 {_COMPONENT_MANAGE("_edit")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i class="fas fa-edit"></i> ACTUALIZAR ITEM </button>
+                        <Button size="sm"><Icon name="edit" size={16} /> ACTUALIZAR ITEM </Button>
                     </div>
                 </div>
             </form>
@@ -363,7 +279,7 @@ export default function NORM_NEIGHBORS(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 class="text-uppercase pb-2">3. INFORMACIÓN VECINOS:</h3>
+                <h3 className="pb-2">3. INFORMACIÓN VECINOS:</h3>
                 {NEW_ITEM}
                 {TABLE}
                 {EDIT_ITEM}

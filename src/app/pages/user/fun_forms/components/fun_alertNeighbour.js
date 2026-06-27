@@ -1,37 +1,34 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import FUNService from '../../../../services/fun.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { formsParser1, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import SubmitService from '../../../../services/submit.service'
 import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+
+const normalizeNeighbourField = (value) => String(value ?? '');
 
 
-const MySwal = withReactContent(Swal);
-class FUN_ALERT_NEIGHBOUR extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: []
+function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, currentVersion, vr, cubSelected, setVr }) {
+        const [vrsRelated, setVrsRelated] = useState([]);
+
+        const retrieveItem = () => {
+            SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(Array.isArray(response.data) ? response.data : []);
+            });
         };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    componentDidUpdate() {
-        if (this.props.vr) document.getElementById("vr_selected").value = this.props.vr
-    }
-    retrieveItem() {
-        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            this.setState({ vrsRelated: response.data })
-        })
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+
+        useEffect(() => {
+            retrieveItem();
+        }, []);
+
+        useEffect(() => {
+            if (vr) document.getElementById("vr_selected").value = vr;
+        });
 
         // DATA GETTERS
         let _SET_CHILD_1 = () => {
@@ -175,37 +172,37 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 <div className="row mb-3">
                     <div className="col">
                         <label>2.1.1. Fecha de documento</label>
-                        <input type="date" class="form-control" max='2100-01-01' id="gen_alert_date" required
-                            defaultValue={moment().format('YYYY-MM-DD')} />
+                        <input type="date" className="form-control" max='2100-01-01' id="gen_alert_date" required
+                            defaultValue={dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>2.1.2 Fecha de Pago</label>
-                        <div class="input-group my-1">
-                            <input type="date" class="form-control" max='2100-01-01' id="gen_pay_date"
+                        <div className="input-group my-1">
+                            <input type="date" className="form-control" max='2100-01-01' id="gen_pay_date"
                                 defaultValue={_GET_CLOCK_STATE(3).date_start} />
                         </div>
                     </div>
                     <div className="col">
                         <label>2.1.3 Consecutivo de Salida</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id="gen_alert_id_cub"
-                                defaultValue={_GET_CHILD_3_IDCUB_DEFAULT() || this.props.cubSelected || ""} />
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id="gen_alert_id_cub"
+                                defaultValue={_GET_CHILD_3_IDCUB_DEFAULT() || cubSelected || ""} />
                         </div>
                     </div>
                     <div></div>
                     <div className="col">
                         <label>2.1.4 Consecutivo Radicado</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id="gen_alert_id_public" disabled
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id="gen_alert_id_public" disabled
                                 defaultValue={currentItem.id_public} />
                         </div>
                     </div>
                     <div className="col ms-auto" >
                         <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
-                        <div class="input-group ">
-                            <select class="form-select" id="vr_selected" defaultValue={this.props.vr || ""} onChange={(e) => { this.props.setVr(e.target.value) }}>
+                        <div className="input-group ">
+                            <select className="form-select" id="vr_selected" defaultValue={vr || ""} onChange={(e) => { setVr(e.target.value) }}>
                                 <option value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
+                                {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
@@ -217,15 +214,15 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.1.5 Dirección</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="gen_alert_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="gen_alert_address"
                                 defaultValue={_CHILD_2.item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("gen_alert_address", _CHILD_2)}>DIRECCIÓN COMPLETA</button>
+                            <button className='inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors' type='button' onClick={() => _ADDRESS_SET_FULL("gen_alert_address", _CHILD_2)}>DIRECCIÓN COMPLETA</button>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>2.1.6 Ciudad</label>
-                        <input type="text" class="form-control" id="gen_alert_city"
+                        <input type="text" className="form-control" id="gen_alert_city"
                             defaultValue={infoCud.city} />
                     </div>
                 </div>
@@ -233,17 +230,17 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 <div className="row mb-3">
                     <div className="col-4">
                         <label>2.1.7 Número Predial/Catastral</label>
-                        <input type="text" class="form-control" id="gen_alert_predial"
-                            defaultValue={(_CHILD_2.item_23).replaceAll('-', '')} />
+                        <input type="text" className="form-control" id="gen_alert_predial"
+                            defaultValue={normalizeNeighbourField(_CHILD_2.item_23).replaceAll('-', '')} />
                     </div>
                     <div className="col-4">
                         <label>2.1.8 Número de Matricula</label>
-                        <input type="text" class="form-control" id="gen_alert_matricula"
-                            defaultValue={(_CHILD_2.item_22).replaceAll('-', ' ')} />
+                        <input type="text" className="form-control" id="gen_alert_matricula"
+                            defaultValue={normalizeNeighbourField(_CHILD_2.item_22).replaceAll('-', ' ')} />
                     </div>
                     <div className="col-4">
                         <label>2.1.9 Propietario Predio</label>
-                        <input type="text" class="form-control" id="gen_alert_owner"
+                        <input type="text" className="form-control" id="gen_alert_owner"
                             defaultValue={_CHILD_51_OWNERS()} />
                     </div>
                 </div>
@@ -251,13 +248,13 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.1.10 Descripción del Proyecto</label>
-                        <textarea rows="3" class="form-control" id="gen_alert_description"
+                        <textarea rows="3" className="form-control" id="gen_alert_description"
                             defaultValue={_CHILD_1.description}
                         />
                     </div>
                     <div className="col-6">
                         <label>2.1.11 Tipo de Solicitud</label>
-                        <textarea rows="3" class="form-control" id="gen_alert_type"
+                        <textarea rows="3" className="form-control" id="gen_alert_type"
                             defaultValue={formsParser1(_CHILD_1)} />
                     </div>
                 </div>
@@ -265,16 +262,16 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.1.12 Vecino Colindante</label>
-                        <select class="form-select" required id="gen_alert_address_n"
+                        <select className="form-select" required id="gen_alert_address_n"
                             onChange={(e) => _GET_CHILD_3_IDCUB(e.target.value)}>
                             {_CHILD_3_SELECT()}
                         </select>
                     </div>
                     <div className="col-6">
                         <br />
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="digital_firm" />
-                            <label class="form-check-label" for="digital_firm">
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" value="" id="digital_firm" />
+                            <label className="form-check-label" htmlFor="digital_firm">
                                 Usar firma digital
                             </label>
                         </div>
@@ -282,13 +279,13 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 </div>
                 <div className="row text-center">
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(false)}><i class="fas fa-file-download"></i> GENERAR CARTA</button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_nconfirm(false)}><Icon name="file-download" size={16} /> GENERAR CARTA</Button>
                     </div>
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(true)}><i class="fas fa-file-download"></i> GENERAR CARTA Y LISTA</button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_nconfirm(true)}><Icon name="file-download" size={16} /> GENERAR CARTA Y LISTA</Button>
                     </div>
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_npublish()}><i class="fas fa-file-download"></i> GENERAR PUBLICACIÓN</button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_npublish()}><Icon name="file-download" size={16} /> GENERAR PUBLICACIÓN</Button>
                     </div>
                 </div>
             </>
@@ -297,12 +294,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
         // FUNCTIONS & APIS
         let gen_doc_nconfirm = (_AIM) => {
             let address_i = document.getElementById("gen_alert_address_n").value;
-            if (!address_i) return MySwal.fire({
-                title: 'NO HAY VECINO SELECCIONADO',
-                text: 'Para poder generar el documento de citación a vecinos se debe seleccionar un vecino de la lista 2.1.10',
-                icon: 'warning',
-                confirmButtonText: swaMsg.text_btn,
-            });
+            if (!address_i) return swalError({ title: 'NO HAY VECINO SELECCIONADO', text: 'Para poder generar el documento de citación a vecinos se debe seleccionar un vecino de la lista 2.1.10' });
             let formData = new FormData();
             let date = document.getElementById("gen_alert_date").value;
             formData.set('date', date);
@@ -342,34 +334,19 @@ class FUN_ALERT_NEIGHBOUR extends Component {
             formData.set('digital_firm', digital_firm);
 
             formData.set('list', _AIM);
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.gen_doc_nconfirm(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -402,34 +379,19 @@ class FUN_ALERT_NEIGHBOUR extends Component {
 
             formData.set('neighbour', _SET_CHILD_2().item_261);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.gen_doc_npublish(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
         return (
@@ -437,7 +399,6 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 {_GENDOC_COMPONENT()}
             </div>
         );
-    }
 }
 
 export default FUN_ALERT_NEIGHBOUR;

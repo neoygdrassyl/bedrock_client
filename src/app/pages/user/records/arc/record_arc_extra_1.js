@@ -1,21 +1,9 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
+import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-
-class RECORD_ARC_EXTRA_1 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_ARC_EXTRA_1({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
 
         // DATA GETERS
         let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
@@ -35,7 +23,7 @@ class RECORD_ARC_EXTRA_1 extends Component {
             }
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_arc_steps;
+            var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -102,72 +90,35 @@ class RECORD_ARC_EXTRA_1 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ARCSERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ARCSERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -178,13 +129,12 @@ class RECORD_ARC_EXTRA_1 extends Component {
                 <p className="text-justify">Los actos de reconocimiento de edificación existen además de lo reglamentado por el Decreto 1077 de 2015 y en particular por el artículo 2.2.6.4.1.2 que determina las situaciones en que este no procede; que para el caso de edificio objeto de esta actuación urbanística no se tipifican. En efecto consultado el POT y en particular la ficha normativa donde encuentra el inmueble se encuentra que:</p>
                 {_COMPONENT()}
                 <div className="text-center">
-                    <button className="btn btn-success my-3" onClick={() => save_ra_34u()}>
-                        <i class="far fa-share-square"></i> GUARDAR INFORMACIÓN
-                    </button>
+                    <Button size="sm" className="my-3" onClick={() => save_ra_34u()}>
+                        <Icon name="share-square" size={16} /> GUARDAR INFORMACIÓN
+                    </Button>
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_EXTRA_1;

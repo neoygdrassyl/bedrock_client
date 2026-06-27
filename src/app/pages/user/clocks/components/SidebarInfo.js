@@ -1,22 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import moment from 'moment';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { swalInfo, swalError } from '../../../../utils/swalAdapter';
+import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
 import { GanttModal } from './gantt/GanttModal';
+import { Icon } from '@/components/icon';
+import { getIconSvg } from '../../../../utils/iconSvgString';
 
-const MySwal = withReactContent(Swal);
 
 // --- COPIAR Y PEGAR TODOS LOS COMPONENTES AUXILIARES (STATUS_MAP, ResponsiblePill, etc.) ---
 // ... (Estos componentes no cambian)
 const STATUS_MAP = {
-  PENDIENTE: { text: 'Pendiente', color: 'secondary', icon: 'fa-hourglass-start' },
-  ACTIVO: { text: 'En curso', color: 'primary', icon: 'fa-running' },
-  PAUSADO: { text: 'Pausado', color: 'warning', icon: 'fa-pause-circle' },
-  COMPLETADO: { text: 'Completado', color: 'success', icon: 'fa-check-circle' },
-  ESPERANDO_NOTIFICACION: { text: 'Esperando notif.', color: 'info', icon: 'fa-envelope' },
-  VENCIDO: { text: 'Vencido', color: 'danger', icon: 'fa-exclamation-triangle' },
-  RETRASADO: { text: 'Retrasado', color: 'danger', icon: 'fa-exclamation-circle' }
+  PENDIENTE: { text: 'Pendiente', color: 'secondary', icon: 'HourglassIcon' },
+  ACTIVO: { text: 'En curso', color: 'primary', icon: 'Play' },
+  PAUSADO: { text: 'Pausado', color: 'warning', icon: 'PauseCircle' },
+  COMPLETADO: { text: 'Completado', color: 'success', icon: 'CheckCircle' },
+  ESPERANDO_NOTIFICACION: { text: 'Esperando notif.', color: 'info', icon: 'Mail' },
+  VENCIDO: { text: 'Vencido', color: 'danger', icon: 'AlertTriangle' },
+  RETRASADO: { text: 'Retrasado', color: 'danger', icon: 'AlertCircle' }
 };
 
 const escapeHtml = (s) => {
@@ -29,10 +30,10 @@ const escapeHtml = (s) => {
     .replaceAll("'", '&#039;');
 };
 
-const formatShortDate = (d) => (d ? moment(d).format('DD MMM YY') : '—');
+const formatShortDate = (d) => (d ? dayjs(d).format('DD MMM YY') : '—');
 
 const getResolvedStatus = (status, remainingDays, endDate, limitDate) => {
-  if (status === 'COMPLETADO' && limitDate && endDate && moment(endDate).isAfter(limitDate, 'day')) {
+  if (status === 'COMPLETADO' && limitDate && endDate && dayjs(endDate).isAfter(limitDate, 'day')) {
     return STATUS_MAP.VENCIDO;
   }
   if (status === 'ACTIVO' && remainingDays < 0) return STATUS_MAP.VENCIDO;
@@ -42,13 +43,13 @@ const getResolvedStatus = (status, remainingDays, endDate, limitDate) => {
 const getResponsibleCfg = (responsible) => {
   switch (responsible) {
     case 'Curaduria':
-      return { icon: 'fa-building', color: 'primary', text: 'Curaduría' };
+      return { icon: 'Building', color: 'primary', text: 'Curaduría' };
     case 'Solicitante':
-      return { icon: 'fa-user', color: 'info', text: 'Solicitante' };
+      return { icon: 'User', color: 'info', text: 'Solicitante' };
     case 'Mixto':
-      return { icon: 'fa-users', color: 'purple', text: 'Mixto' };
+      return { icon: 'Users', color: 'purple', text: 'Mixto' };
     default:
-      return { icon: 'fa-user-tie', color: 'secondary', text: responsible || 'Responsable' };
+      return { icon: 'UserCheck', color: 'secondary', text: responsible || 'Responsable' };
   }
 };
 
@@ -56,7 +57,7 @@ const ResponsiblePill = ({ responsible }) => {
   const cfg = getResponsibleCfg(responsible);
   return (
     <span className={`phase-pill phase-pill-${cfg.color}`} title={cfg.text}>
-      <i className={`fas ${cfg.icon}`} />
+      <Icon name={cfg.icon} size={16} />
       <span className="text-truncate">{cfg.text}</span>
     </span>
   );
@@ -65,7 +66,7 @@ const ResponsiblePill = ({ responsible }) => {
 const ActorCompactRow = ({ actor, onActorClick, dense = false }) => {
   const {
     name,
-    icon = 'fa-user',
+    icon = 'User',
     color = 'secondary',
     totalDays = 0,
     usedDays = 0,
@@ -97,19 +98,19 @@ const ActorCompactRow = ({ actor, onActorClick, dense = false }) => {
     >
       <div className="actor-compact-top">
         <div className="actor-compact-name">
-          <i className={`fas ${icon}`} />
+          <Icon name={icon} size={16} />
           <span className="text-truncate">{name}</span>
         </div>
 
         <span className={`actor-compact-status status-${st.color}`}>
-          <i className={`fas ${st.icon}`} />
+          <Icon name={st.icon} size={16} />
           {st.text}
         </span>
       </div>
 
       {!!taskDescription && !dense && (
         <div className="actor-compact-task text-truncate">
-          <i className="fas fa-tasks" />
+          <Icon name="tasks" size={16} />
           <span>{taskDescription}</span>
         </div>
       )}
@@ -184,12 +185,12 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
               : responsible || 'Responsable',
         icon:
           responsible === 'Curaduria'
-            ? 'fa-building'
+            ? 'Building'
             : responsible === 'Solicitante'
-              ? 'fa-user'
+              ? 'User'
               : responsible === 'Mixto'
-                ? 'fa-users'
-                : 'fa-user-tie',
+                ? 'Users'
+                : 'UserCheck',
         color: responsible === 'Solicitante' ? 'info' : responsible === 'Mixto' ? 'purple' : 'primary',
         totalDays,
         usedDays,
@@ -224,7 +225,7 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
             {title}
           </h5>
           <span className={`phase-status-pill status-${st.color}`}>
-            <i className={`fas ${st.icon}`} />
+            <Icon name={st.icon} size={16} />
             {st.text}
           </span>
         </div>
@@ -232,14 +233,14 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
         <div className="phase-sub-row">
           <ResponsiblePill responsible={responsible} />
           <span className="phase-date-pill" title="Rango de fechas">
-            <i className="fas fa-calendar-alt" />
+            <Icon name="calendar-alt" size={16} />
             {formatShortDate(startDate)} <span className="sep">→</span> {endDate ? formatShortDate(endDate) : 'En progreso'}
           </span>
         </div>
 
         {!!daysContext && (
           <div className="phase-context-compact" title="Contexto de distribución de días">
-            <i className="fas fa-calculator" />
+            <Icon name="calculator" size={16} />
             <span className="text-truncate">
               {daysContext.totalCuraduria}d total · {daysContext.usedInPhase1}d F1 ·{' '}
               <strong>{daysContext.availableForPhase4}d</strong> para F4
@@ -318,7 +319,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
   
   const showDebug = () => {
       const info = processPhases?.debugInfo;
-      if (!info || !manager) return Swal.fire('No info', 'No hay información de debug disponible.', 'warning');
+      if (!info || !manager) return swalError({ title: 'No info', text: 'No hay información de debug disponible.', icon: 'warning' });
 
       const system = info.system || {};
       const { getClock, calcularDiasHabiles, currentItem } = manager;
@@ -334,9 +335,9 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
       const diasLDFActa1 = ldfDate && acta1Date ? calcularDiasHabiles(ldfDate, acta1Date, true) : 'N/A';
       const diasActa1Corr = acta1Date && corrDate ? calcularDiasHabiles(acta1Date, corrDate, true) : 'N/A';
       
-      const fmt = (d) => (d ? moment(d).format('YYYY-MM-DD') : '—');
+      const fmt = (d) => (d ? dayjs(d).format('YYYY-MM-DD') : '—');
 
-      MySwal.fire({
+      swalInfo({
           title: 'Diagnóstico de Fases y Tiempos',
           width: 720,
           html: `
@@ -376,9 +377,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
               </div>
           `,
           showCloseButton: true,
-          confirmButtonText: 'Cerrar',
-          confirmButtonColor: '#5bc0de',
-      });
+          });
   };
 
 
@@ -400,12 +399,10 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
     const totalUsed = phase1Used + phase4Used;
     const totalRemaining = Math.max(0, totalDays - totalUsed);
 
-    MySwal.fire({
+    swalInfo({
       title: 'Control de Tiempos - Curaduría',
       width: 560,
       showCloseButton: true,
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#5bc0de',
       customClass: {
         popup: 'days-modal-popup',
         title: 'days-modal-title',
@@ -431,17 +428,17 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
 
           <div class="days-info-grid">
             <div class="info-card">
-              <div class="info-card-title"><i class="fas fa-layer-group"></i> Composición</div>
+              <div class="info-card-title">${getIconSvg('fa-layer-group')} Composición</div>
               <div class="info-card-body">
-                <div class="info-row"><span><i class="fas fa-calendar-day"></i> Base</span><strong>${escapeHtml(baseDays)}</strong></div>
-                <div class="info-row ${suspDays ? '' : 'muted'}"><span><i class="fas fa-pause"></i> Suspensiones</span><strong class="${suspDays ? 'text-warning' : ''}">${escapeHtml(suspDays || 0)}</strong></div>
-                <div class="info-row ${extDays ? '' : 'muted'}"><span><i class="fas fa-clock"></i> Prórroga</span><strong class="${extDays ? 'text-info' : ''}">${escapeHtml(extDays || 0)}</strong></div>
+                <div class="info-row"><span>${getIconSvg('fa-calendar-day')} Base</span><strong>${escapeHtml(baseDays)}</strong></div>
+                <div class="info-row ${suspDays ? '' : 'muted'}"><span>${getIconSvg('fa-pause')} Suspensiones</span><strong class="${suspDays ? 'text-warning' : ''}">${escapeHtml(suspDays || 0)}</strong></div>
+                <div class="info-row ${extDays ? '' : 'muted'}"><span>${getIconSvg('fa-clock')} Prórroga</span><strong class="${extDays ? 'text-info' : ''}">${escapeHtml(extDays || 0)}</strong></div>
                 <div class="info-row total"><span>Total</span><strong>${escapeHtml(totalDays)}</strong></div>
               </div>
             </div>
 
             <div class="info-card">
-              <div class="info-card-title"><i class="fas fa-tasks"></i> Distribución</div>
+              <div class="info-card-title">${getIconSvg('fa-tasks')} Distribución</div>
               <div class="info-card-body">
                 <div class="phase-detail">
                   <div class="phase-header">
@@ -454,7 +451,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                 </div>
 
                 <div class="phase-transfer">
-                  <i class="fas fa-arrow-down"></i>
+                  ${getIconSvg('fa-arrow-down')}
                   <span>${escapeHtml(phase4Available)} días pasan a Fase 4</span>
                 </div>
 
@@ -485,12 +482,10 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
 
     const phaseTitle = phase?.title ? escapeHtml(phase.title) : '—';
 
-    return MySwal.fire({
+    return swalInfo({
       title: 'Detalle del Actor',
       width: 560,
       showCloseButton: true,
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#5bc0de',
       customClass: {
         popup: 'phase-detail-modal-popup',
         title: 'phase-detail-modal-title',
@@ -501,22 +496,22 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           <div class="pdm-header">
             <div class="pdm-title">
               <div class="pdm-name">
-                <i class="fas ${escapeHtml(actor.icon || 'fa-user')}"></i>
+                ${getIconSvg(actor.icon || 'fa-user')}
                 <span>${escapeHtml(actor.name || 'Actor')}</span>
               </div>
               <div class="pdm-sub">Fase: <b>${phaseTitle}</b></div>
             </div>
             <div class="pdm-badges">
               <span class="pdm-pill status-${escapeHtml(st.color)}">
-                <i class="fas ${escapeHtml(st.icon)}"></i> ${escapeHtml(st.text)}
+                ${getIconSvg(st.icon)} ${escapeHtml(st.text)}
               </span>
             </div>
           </div>
 
           ${actor.taskDescription ? `
-            <div class="pdm-block">
-              <div class="pdm-block-title"><i class="fas fa-tasks"></i> Actividad</div>
-              <div class="pdm-block-body">${escapeHtml(actor.taskDescription)}</div>
+            <div className="pdm-block">
+              <div className="pdm-block-title"><Icon name="tasks" size={16} /> Actividad</div>
+              <div className="pdm-block-body">${escapeHtml(actor.taskDescription)}</div>
             </div>
           ` : ''}
 
@@ -555,12 +550,10 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
         ]
       : [];
 
-    return MySwal.fire({
+    return swalInfo({
       title: 'Detalle de la Fase',
       width: 720,
       showCloseButton: true,
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#5bc0de',
       customClass: {
         popup: 'phase-detail-modal-popup',
         title: 'phase-detail-modal-title',
@@ -571,19 +564,19 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           <div class="pdm-header">
             <div class="pdm-title">
               <div class="pdm-name">
-                <i class="fas fa-layer-group"></i>
+                ${getIconSvg('fa-layer-group')}
                 <span>${escapeHtml(phase.title || 'Fase')}</span>
               </div>
               <div class="pdm-sub">
                 Responsable:
                 <span class="pdm-pill phase-pill-${escapeHtml(respCfg.color)}">
-                  <i class="fas ${escapeHtml(respCfg.icon)}"></i> ${escapeHtml(respCfg.text)}
+                  ${getIconSvg(respCfg.icon)} ${escapeHtml(respCfg.text)}
                 </span>
               </div>
             </div>
             <div class="pdm-badges">
               <span class="pdm-pill status-${escapeHtml(st.color)}">
-                <i class="fas ${escapeHtml(st.icon)}"></i> ${escapeHtml(st.text)}
+                ${getIconSvg(st.icon)} ${escapeHtml(st.text)}
               </span>
             </div>
           </div>
@@ -616,16 +609,16 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           </div>
 
           ${phase.daysContext ? `
-            <div class="pdm-block">
-              <div class="pdm-block-title"><i class="fas fa-calculator"></i> Contexto (F4)</div>
-              <div class="pdm-block-body">
-                <div class="pdm-inline">
+            <div className="pdm-block">
+              <div className="pdm-block-title"><Icon name="calculator" size={16} /> Contexto (F4)</div>
+              <div className="pdm-block-body">
+                <div className="pdm-inline">
                   <span>Total Curaduría:</span> <b>${escapeHtml(phase.daysContext.totalCuraduria)} días</b>
                 </div>
-                <div class="pdm-inline">
+                <div className="pdm-inline">
                   <span>Usados en Fase 1:</span> <b>${escapeHtml(phase.daysContext.usedInPhase1)} días</b>
                 </div>
-                <div class="pdm-inline">
+                <div className="pdm-inline">
                   <span>Disponibles para Fase 4:</span> <b>${escapeHtml(phase.daysContext.availableForPhase4)} días</b>
                 </div>
               </div>
@@ -633,9 +626,9 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           ` : ''}
 
           ${actorsForModal.length ? `
-            <div class="pdm-block">
-              <div class="pdm-block-title"><i class="fas fa-users"></i> Actores</div>
-              <div class="pdm-actors">
+            <div className="pdm-block">
+              <div className="pdm-block-title"><Icon name="users" size={16} /> Actores</div>
+              <div className="pdm-actors">
                 ${actorsForModal
                   .map((a) => {
                     const t = (Number(a.totalDays) || 0) + (Number(a.extraDays) || 0);
@@ -646,11 +639,11 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                       <div class="pdm-actor">
                         <div class="pdm-actor-top">
                           <div class="pdm-actor-name">
-                            <i class="fas ${escapeHtml(a.icon || 'fa-user')}"></i>
+                            ${getIconSvg(a.icon || 'fa-user')}
                             <span>${escapeHtml(a.name || 'Actor')}</span>
                           </div>
                           <span class="pdm-pill status-${escapeHtml(ast.color)}">
-                            <i class="fas ${escapeHtml(ast.icon)}"></i> ${escapeHtml(ast.text)}
+                            ${getIconSvg(ast.icon)} ${escapeHtml(ast.text)}
                           </span>
                         </div>
                         <div class="pdm-actor-grid">
@@ -663,7 +656,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                   })
                   .join('')}
               </div>
-              <div class="pdm-note">Tip: para ver el actor desde la tarjeta, haz click directamente en el actor.</div>
+              <div className="pdm-note">Tip: para ver el actor desde la tarjeta, haz click directamente en el actor.</div>
             </div>
           ` : ''}
         </div>
@@ -691,45 +684,35 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
       <div className="sidebar-card phases-card">
         <div className="sidebar-card-header d-flex justify-content-between align-items-center">
           <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
-            <i className="fas fa-tasks me-2" />
+            <Icon name="tasks" size={16} className="me-2" />
             Fases del Proceso
           </h6>
 
           <div className="d-flex align-items-center">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary border-0 text-muted"
-              onClick={showDebug}
+            <Button variant="outline" size="sm" className="border-0 text-muted" onClick={showDebug}
               title="Ver diagnóstico"
-              style={{ padding: '0 6px' }}
-            >
-              <i className="fas fa-bug" />
-            </button>
+              style={{ padding: '0 6px' }}>
+              <Icon name="bug" size={16} />
+            </Button>
 
             <div className="phase-nav ms-1">
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => handlePhaseChange(-1)}
+              <Button variant="outline" size="sm" onClick={() => handlePhaseChange(-1)}
                 disabled={currentPhaseIndex === 0}
                 title="Fase anterior"
               >
-                <i className="fas fa-chevron-left" />
-              </button>
+                <Icon name="chevron-left" size={16} />
+              </Button>
 
               <span className="phase-indicator">
                 {currentPhaseIndex + 1}/{processPhases.length}
               </span>
 
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => handlePhaseChange(1)}
+              <Button variant="outline" size="sm" onClick={() => handlePhaseChange(1)}
                 disabled={currentPhaseIndex === processPhases.length - 1}
                 title="Fase siguiente"
               >
-                <i className="fas fa-chevron-right" />
-              </button>
+                <Icon name="chevron-right" size={16} />
+              </Button>
             </div>
           </div>
         </div>
@@ -750,12 +733,12 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
       <div className="sidebar-card mt-3">
         <div className="sidebar-card-header d-flex justify-content-between align-items-center">
           <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
-            <i className="fas fa-chart-gantt me-2" />
+            <Icon name="chart-gantt" size={16} className="me-2" />
             Diagrama de Gantt
           </h6>
           {/* ELIMINADO: El botón de expandir ahora está en el ToolsMenu */}
           <button className="gantt-expand-btn" onClick={onExpandGantt} title="Ver diagrama completo">
-            <i className="fas fa-expand-alt" />
+            <Icon name="expand-alt" size={16} />
             Expandir
           </button>
         </div>

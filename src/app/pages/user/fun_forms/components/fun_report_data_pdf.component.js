@@ -1,24 +1,14 @@
-import React, { Component } from 'react';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service'
 import { cities, infoCud } from '../../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
-const MySwal = withReactContent(Swal);
-const moment = require('moment');
-class FUN_REPORT_DATA_PDF extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
-
+import dayjs from 'dayjs';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
         // DATA GETERS
         let _GET_CHILD_1 = () => {
@@ -156,21 +146,21 @@ class FUN_REPORT_DATA_PDF extends Component {
                 <div className="row">
                     <div className="col-3">
                         <label>Fecha del documento</label>
-                        <input type="date" max="2100-01-01" class="form-control" id="fun_report_pdf_1" defaultValue={moment().format('YYYY-MM-DD')} />
+                        <input type="date" max="2100-01-01" className="form-control" id="fun_report_pdf_1" defaultValue={dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col-3">
                         <label>N° CUB</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_2"
+                        <input type="text" className="form-control" id="fun_report_pdf_2"
                             defaultValue={_GET_CHILD_LAW().report_cub} disabled />
                     </div>
                     <div className="col-3">
                         <label>N° de Radicado</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_3"
+                        <input type="text" className="form-control" id="fun_report_pdf_3"
                             defaultValue={currentItem.id_public} disabled />
                     </div>
                     <div className="col-3">
                         <label>Ciudad</label>
-                        <select class="form-select me-1" id={"fun_report_pdf_4"}>
+                        <select className="form-select me-1" id={"fun_report_pdf_4"}>
                             {cities}
                         </select>
                     </div>
@@ -184,7 +174,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                 <div className="row">
                     <div className="col-12">
                         <label>Propietario(s) / Solicitante(s)</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a1"
+                        <input type="text" className="form-control" id="fun_report_pdf_a1"
                             defaultValue={_GET_OWNERS()} />
                     </div>
                 </div>
@@ -192,36 +182,36 @@ class FUN_REPORT_DATA_PDF extends Component {
                 <div className="row">
                     <div className="col-4">
                         <label>Dirección</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a2"
+                        <input type="text" className="form-control" id="fun_report_pdf_a2"
                             defaultValue={_CHILD_2.item_211} />
                     </div>
                     <div className="col-4">
                         <label>Barrio</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a3"
+                        <input type="text" className="form-control" id="fun_report_pdf_a3"
                             defaultValue={_CHILD_2.item_261} />
                     </div>
                     <div className="col-4">
                         <label>Número Predial / Catastral</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a4"
+                        <input type="text" className="form-control" id="fun_report_pdf_a4"
                             defaultValue={_CHILD_2.item_23} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>Responsable</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a5"
+                        <input type="text" className="form-control" id="fun_report_pdf_a5"
                             defaultValue={_CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col-6">
                         <label>Contacto</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a6"
+                        <input type="text" className="form-control" id="fun_report_pdf_a6"
                             defaultValue={_CHILD_53.item_534} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-12">
                         <label>Actuación</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a7"
+                        <input type="text" className="form-control" id="fun_report_pdf_a7"
                             defaultValue={formsParser1(_GET_CHILD_1())} />
                     </div>
                 </div>
@@ -236,11 +226,11 @@ class FUN_REPORT_DATA_PDF extends Component {
                     </div>
                     <div className="col-5">
                         <label>Contenido Planos</label>
-                        <textarea class="form-control" id="fun_report_pdf_b1" defaultValue={json.b1} />
+                        <textarea className="form-control" id="fun_report_pdf_b1" defaultValue={json.b1} />
                     </div>
                     <div className="col-5">
                         <label>Cantidad</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_b2" defaultValue={json.b2} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b2" defaultValue={json.b2} />
                     </div>
                 </div>
                 <div className="row">
@@ -249,11 +239,11 @@ class FUN_REPORT_DATA_PDF extends Component {
                     </div>
                     <div className="col-5">
                         <label>Contenido Planos</label>
-                        <textarea class="form-control" id="fun_report_pdf_b3" defaultValue={json.b3} />
+                        <textarea className="form-control" id="fun_report_pdf_b3" defaultValue={json.b3} />
                     </div>
                     <div className="col-5">
                         <label>Cantidad</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_b4" defaultValue={json.b4} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b4" defaultValue={json.b4} />
                     </div>
                 </div>
                 <div className="row">
@@ -264,7 +254,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                     </div>
                     <div className="col-5">
                         <label>Número de Folios</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_b5" defaultValue={json.b5} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b5" defaultValue={json.b5} />
                     </div>
                 </div>
                 <div className="row">
@@ -275,7 +265,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                     </div>
                     <div className="col-5">
                         <label>Número de Folios</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_b6" defaultValue={json.b6} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b6" defaultValue={json.b6} />
                     </div>
                 </div>
                 <div className="row">
@@ -286,7 +276,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                     </div>
                     <div className="col-5">
                         <label>Cantidad</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_b7" defaultValue={json.b7} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b7" defaultValue={json.b7} />
                     </div>
                 </div>
                 <div className="row">
@@ -297,7 +287,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                     </div>
                     <div className="col-5">
                         <label>Cantidad</label>
-                        <textarea class="form-control" id="fun_report_pdf_b8" defaultValue={json.b8} />
+                        <textarea className="form-control" id="fun_report_pdf_b8" defaultValue={json.b8} />
                     </div>
                 </div>
                 <div className="row">
@@ -308,7 +298,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                     </div>
                     <div className="col-5">
                         <label>Número de Folios</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_b9" defaultValue={json.b9} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b9" defaultValue={json.b9} />
                     </div>
                 </div>
                 <div className="row">
@@ -319,7 +309,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                     </div>
                     <div className="col-5">
                         <label>Cantidad</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_b10" defaultValue={json.b10} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b10" defaultValue={json.b10} />
                     </div>
                 </div>
             </>
@@ -330,7 +320,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                 <div className="row">
                     <div className="col-12">
                         <label>Maximo 2000 Caracteres</label>
-                        <textarea type="text" class="form-control" id="fun_report_pdf_c" maxLength={2048} rows="3" defaultValue={json.notations} />
+                        <textarea type="text" className="form-control" id="fun_report_pdf_c" maxLength={2048} rows="3" defaultValue={json.notations} />
                     </div>
                 </div>
             </>
@@ -344,21 +334,21 @@ class FUN_REPORT_DATA_PDF extends Component {
                 <div className="row">
                     <div className="col-3">
                         <label>Fecha del documento</label>
-                        <input type="date" max="2100-01-01" class="form-control" id="fun_report_pdf_1" defaultValue={moment().format('YYYY-MM-DD')} />
+                        <input type="date" max="2100-01-01" className="form-control" id="fun_report_pdf_1" defaultValue={dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col-3">
                         <label>N° {infoCud.serials.end}</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_2"
+                        <input type="text" className="form-control" id="fun_report_pdf_2"
                             defaultValue={_GET_CHILD_LAW().report_cub} disabled />
                     </div>
                     <div className="col-3">
                         <label>N° de Radicado</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_3"
+                        <input type="text" className="form-control" id="fun_report_pdf_3"
                             defaultValue={currentItem.id_public} disabled />
                     </div>
                     <div className="col-3">
                         <label>Ciudad</label>
-                        <select class="form-select me-1" id={"fun_report_pdf_4"}>
+                        <select className="form-select me-1" id={"fun_report_pdf_4"}>
                             {cities}
                         </select>
                     </div>
@@ -366,7 +356,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                 <div className="row">
                     <div className="col-12">
                         <label>Propietario(s) / Solicitante(s)</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a1"
+                        <input type="text" className="form-control" id="fun_report_pdf_a1"
                             defaultValue={_GET_OWNERS()} />
                     </div>
                 </div>
@@ -374,36 +364,36 @@ class FUN_REPORT_DATA_PDF extends Component {
                 <div className="row">
                     <div className="col-4">
                         <label>Dirección</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a2"
+                        <input type="text" className="form-control" id="fun_report_pdf_a2"
                             defaultValue={_CHILD_2.item_211} />
                     </div>
                     <div className="col-4">
                         <label>Barrio</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a3"
+                        <input type="text" className="form-control" id="fun_report_pdf_a3"
                             defaultValue={_CHILD_2.item_261} />
                     </div>
                     <div className="col-4">
                         <label>Número Predial / Catastral</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a4"
+                        <input type="text" className="form-control" id="fun_report_pdf_a4"
                             defaultValue={_CHILD_2.item_23} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>Responsable</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a5"
+                        <input type="text" className="form-control" id="fun_report_pdf_a5"
                             defaultValue={_CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col-6">
                         <label>Contacto</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a6"
+                        <input type="text" className="form-control" id="fun_report_pdf_a6"
                             defaultValue={_CHILD_53.item_534} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-12">
                         <label>Actuación</label>
-                        <input type="text" class="form-control" id="fun_report_pdf_a7"
+                        <input type="text" className="form-control" id="fun_report_pdf_a7"
                             defaultValue={formsParser1(_GET_CHILD_1())} />
                     </div>
                 </div>
@@ -412,19 +402,19 @@ class FUN_REPORT_DATA_PDF extends Component {
                 </div>
                 <div className="row">
                     <div className="col-2 me-0">
-                        <input type="text" class="form-control " id="fun_report_pdf_b1" defaultValue={json.b1 ?? 'Doctor'} />
+                        <input type="text" className="form-control " id="fun_report_pdf_b1" defaultValue={json.b1 ?? 'Doctor'} />
                     </div>
                     <div className="col me-0">
-                        <input type="text" class="form-control" id="fun_report_pdf_b2" defaultValue={json.b2 ?? 'Gustavo Adolfo González Acevedo'} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b2" defaultValue={json.b2 ?? 'Gustavo Adolfo González Acevedo'} />
                     </div>
                     <div className="col me-0">
-                        <input type="text" class="form-control" id="fun_report_pdf_b3" defaultValue={json.b3 ?? 'Inspector de Policía Urbana No. III'} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b3" defaultValue={json.b3 ?? 'Inspector de Policía Urbana No. III'} />
                     </div>
                     <div className="col me-0">
-                        <input type="text" class="form-control" id="fun_report_pdf_b4" defaultValue={json.b4 ?? 'Piedecuesta'} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b4" defaultValue={json.b4 ?? 'Piedecuesta'} />
                     </div>
                     <div className="col me-0">
-                        <input type="text" class="form-control" id="fun_report_pdf_b5" defaultValue={json.b5 ?? 'E.S.M'} />
+                        <input type="text" className="form-control" id="fun_report_pdf_b5" defaultValue={json.b5 ?? 'E.S.M'} />
                     </div>
                 </div>
             </>
@@ -435,12 +425,7 @@ class FUN_REPORT_DATA_PDF extends Component {
         let pdf_gen = (e) => {
             if (e) e.preventDefault();
             if (!_GET_CHILD_LAW().report_cub) {
-                MySwal.fire({
-                    title: "NO SE ENCUENTRA NÚMERO DE SALIDA",
-                    text: `Para poder generar este documento, se debe de asociar un número ${infoCud.serials.end} al reporte de la entidad interesada.`,
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "NO SE ENCUENTRA NÚMERO DE SALIDA" });
                 return 1
             }
 
@@ -506,34 +491,19 @@ class FUN_REPORT_DATA_PDF extends Component {
             if (document.getElementById('fun_report_pdf_c')) notations = document.getElementById('fun_report_pdf_c').value;
             if (document.getElementById('fun_report_pdf_c')) formData.set('notations', notations);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUN_SERVICE.gen_doc_planing(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/planing/" + "Informe Planeacion " + _GET_CHILD_LAW().report_cub + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/planing/" + "Informe Planeacion " + _GET_CHILD_LAW().report_cub + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
 
         }
@@ -579,89 +549,42 @@ class FUN_REPORT_DATA_PDF extends Component {
             let _CHILD = _GET_CHILD_LAW();
             formData.set('fun0Id', currentItem.id);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
 
                 FUN_SERVICE.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id)
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
             else {
                 FUN_SERVICE.create_law(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id)
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
         }
@@ -669,7 +592,7 @@ class FUN_REPORT_DATA_PDF extends Component {
             <div className="fun_report_pdf container py-3 border border-danger p-2">
                 <form id="form_report_data_edit" onSubmit={save_reportData}>
 
-                    {process.env.REACT_APP_GLOBAL_ID == 'cb1' ?
+                    {import.meta.env.VITE_GLOBAL_ID == 'cb1' ?
                         <>
                             {_PAGE_1_COMPONENT()}
                             <label className="fw-bold py-3">INVENTARIO</label>
@@ -681,29 +604,27 @@ class FUN_REPORT_DATA_PDF extends Component {
                         </>
                         : ''}
 
-                    {process.env.REACT_APP_GLOBAL_ID == 'cp1' ?
+                    {import.meta.env.VITE_GLOBAL_ID == 'cp1' ?
                         <>
                             {_PAGE_CUP1_COMPONENT()}
                         </>
                         : ''}
 
-
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
-                            </button>
+                            <Button size="sm" className="my-3">
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                            </Button>
                         </div>
                         <div className="col">
-                            <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()}>
-                                <i class="far fa-file-pdf"></i> GENERAR PDF
-                            </MDBBtn>
+                            <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()}>
+                                <Icon name="file-pdf" size={16} /> GENERAR PDF
+                            </Button>
                         </div>
                     </div>
                 </form>
             </div >
         );
-    }
 }
 
 export default FUN_REPORT_DATA_PDF;

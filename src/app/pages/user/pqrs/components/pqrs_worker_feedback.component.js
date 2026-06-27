@@ -1,33 +1,23 @@
-import { MDBTooltip } from 'mdb-react-ui-kit';
-import moment from 'moment';
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
-import PQRS_Service from '../../../../services/pqrs_main.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import PQRS_WORKERS_EMAILS from './pqrs_workersEmails.component'
 
-const MySwal = withReactContent(Swal);
-class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.state = {
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.feedback !== prevState.feedback && this.state.feedback != false) {
-            var _ITEM = this.state.feedback;
-            if (_ITEM.feedback) document.getElementById("pqrs_worker_feeback_1").value = _ITEM.feedback;
-            document.getElementById("pqrs_worker_feeback_3").value = _ITEM.feedback_argument
+import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
+import { useState, useEffect } from 'react';
+import DataTable from '@/components/data-table-bridge';
+import PQRS_Service from '../../../../services/pqrs_main.service';
+import PQRS_WORKERS_EMAILS from './pqrs_workersEmails.component'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+
+function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentItem, retrieveItem, refreshList }) {
+    const [feedback, setFeedback] = useState(false);
+    const [worker, setWorker] = useState(false);
+
+    useEffect(() => {
+        if (feedback && feedback !== false) {
+            if (feedback.feedback) document.getElementById("pqrs_worker_feeback_1").value = feedback.feedback;
+            document.getElementById("pqrs_worker_feeback_3").value = feedback.feedback_argument;
         }
-    }
-    retrieveItem(id) {
-        this.props.retrieveItem(id)
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+    }, [feedback]);
 
         // DATA GETTER
         let _GET_WORKERS = () => {
@@ -46,47 +36,45 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
             var _LIST = _GET_WORKERS();
             const columns = [
                 {
-                    name: <label>PROFESIONAL</label>,
-                    selector: 'name',
+                    name: 'PROFESIONAL',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.name}</label>,
+                    cell: row => <span className="text-sm">{row.name}</span>,
                 },
                 {
-                    name: <label>VISTO</label>,
-                    selector: 'competence',
+                    name: 'VISTO',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{_GET_FEEBACK(row.feedback)}</label>,
+                    cell: row => <span className="text-sm">{_GET_FEEBACK(row.feedback)}</span>,
                 },
                 {
-                    name: <label>ARGUMENTO</label>,
-                    selector: 'asign',
+                    name: 'ARGUMENTO',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.feedback_argument}</label>,
+                    cell: row => <span className="text-sm">{row.feedback_argument}</span>,
                 },
                 {
-                    name: <label>FECHA</label>,
-                    selector: 'asign',
+                    name: 'FECHA',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.feedback_date}</label>,
+                    cell: row => <span className="text-sm">{row.feedback_date}</span>,
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
                         {row.worker_id == window.user.id || window.user.roleId == 1
-                            ? <MDBTooltip title='Dar visto' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                                <button onClick={() => this.setState({ feedback: row })} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                    <i class="far fa-check-square fa-2x"></i></button></MDBTooltip>
+ ? <Button variant="outline" size="sm" className="m-0 p-2" title="Dar visto" onClick={() => setFeedback(row)} >
+                                    <Icon name="check-square" size={24} /></Button>
                             : ""}
                         {window.user.roleId == 5 || window.user.roleId == 1 || window.user.roleId == 2
-                            ? <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                                <button onClick={() => this.setState({ worker: row })} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
-                                    <i class="far fa-paper-plane fa-2x"></i></button></MDBTooltip>
+ ? <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 m-0 p-2" title="Enviar Correo" onClick={() => setWorker(row)} >
+                                    <Icon name="paper-plane" size={24} /></Button>
                             : ""}
                     </>,
                 },
@@ -108,11 +96,11 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
                     <h3 className="text-center py-2">DAR VISTO FINAL</h3>
                     <div className="col-6">
                         <label>Visto Final</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group mb-3">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
-                            <select class="form-select" id="pqrs_worker_feeback_1" required>
+                            <select className="form-select" id="pqrs_worker_feeback_1" required>
                                 <option value="0">NO APRUEBO</option>
                                 <option value="1" selected>SI APRUEBO</option>
                             </select>
@@ -121,12 +109,12 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
                     </div>
                     <div className="col-6">
                         <label>Fecha de Visto</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group mb-3">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="pqrs_worker_feeback_2"
-                                disabled required defaultValue={moment().format('YYYY-MM-DD')} />
+                            <input type="date" max="2100-01-01" className="form-control" id="pqrs_worker_feeback_2"
+                                disabled required defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                 </div>
@@ -134,7 +122,7 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
                 <div className="row">
                     <div className="col">
                         <label>Argumentación (Máximo 1000 Caracteres)</label>
-                        <textarea class="form-control mb-3" rows="3" maxlength="2000" id="pqrs_worker_feeback_3"></textarea>
+                        <textarea className="form-control mb-3" rows="3" maxLength="2000" id="pqrs_worker_feeback_3"></textarea>
                     </div>
                 </div>
             </>
@@ -153,42 +141,21 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
             let feedback_argument = document.getElementById("pqrs_worker_feeback_3").value;
             if (feedback_argument) formData.set('feedback_argument', feedback_argument);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            PQRS_Service.updateWorker(this.state.feedback.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            PQRS_Service.updateWorker(feedback.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.retrieveItem(currentItem.id);
-                        this.props.refreshList();
-                        this.setState({ feedback: false });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        retrieveItem(currentItem.id);
+                        refreshList();
+                        setFeedback(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -196,34 +163,33 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
             <div>
 
                 {FEEDBACK_COMPONENT()}
-                {this.state.feedback
+                {feedback
                     ? <>
                         <form id="form_worker_feeback" onSubmit={update_worker}>
                             {WOERKER_FEEBACK_COMPONENT()}
                             <div className="row d-flex justify-content-center">
                                 <div className="col-4 text-center">
-                                    <button className="btn btn-lg btn-success"><i class="far fa-check-square"></i> DAR VISTO </button>
+                                    <Button size="sm"><Icon name="check-square" size={14} /> Dar visto</Button>
                                 </div>
                             </div>
                         </form>
 
                     </>
                     : ""}
-                {this.state.worker
+                {worker
                     ? <>
-                        <label class="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
+                        <label className="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
                         <PQRS_WORKERS_EMAILS
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            worker={this.state.worker}
+                            worker={worker}
                             email_types={[2]}
-                            retrieveItem={this.retrieveItem}
-                            closeComponent={() => this.setState({ worker: false })}
+                            retrieveItem={retrieveItem}
+                            closeComponent={() => setWorker(false)}
                         />
                     </> : ""}
             </div>
         );
-    }
 }
 
 export default PQRS_COMPONENT_WORKER_FEEDBACK;

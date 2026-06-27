@@ -1,8 +1,8 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Markdown from 'markdown-to-jsx';
 import { useLocation } from "react-router-dom"
+import { Button } from '@/components/ui/button';
 
 import DevIndexList from './guide/dev_index'
 import guide_dev_01 from './guide/guide_dev_01.md'
@@ -15,6 +15,7 @@ import guide_dev_07 from './guide/guide_dev_07.md'
 import guide_dev_08 from './guide/guide_dev_08.md'
 import guide_dev_09 from './guide/guide_dev_09.md'
 import { PreBlock, CodeBlock } from '../../../components/MermaidDiagram.component'
+import { Icon } from '@/components/icon';
 
 export default function DEV_GUIDE(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
@@ -54,21 +55,11 @@ export default function DEV_GUIDE(props) {
     // ***************************  JXS *********************** //
     let _HEADER_COMPONENT = () => {
         return <>
-            <div className="col-12 d-flex justify-content-start p-0">
-                <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                    <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">INICIO</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">DASHBOARD</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i className="fas fa-code"></i> <label className="text-uppercase">GUÍA DE DESARROLLO</label></MDBBreadcrumbItem>
-                </MDBBreadcrumb>
-            </div>
+            
             <div className="row mb-4 d-flex justify-content-center">
                 <div className="col-lg-11 col-md-12">
                     <h1 className="text-center my-4">
-                        <i className="fas fa-code me-2"></i>
+                        <Icon name="code" size={16} className="me-2" />
                         GUÍA DE DESARROLLO - DOVELA
                     </h1>
                     <p className="text-center text-muted lead">
@@ -82,28 +73,29 @@ export default function DEV_GUIDE(props) {
 
     let _NAVIGATION_BUTTONS = () => {
         const sections = [
-            { num: 1, label: 'Visión General', md: guide_dev_01, icon: 'fa-eye' },
-            { num: 2, label: 'Arquitectura', md: guide_dev_02, icon: 'fa-sitemap' },
-            { num: 3, label: 'Frontend', md: guide_dev_03, icon: 'fa-laptop-code' },
-            { num: 4, label: 'Backend', md: guide_dev_04, icon: 'fa-server' },
-            { num: 5, label: 'APIs', md: guide_dev_05, icon: 'fa-plug' },
-            { num: 6, label: 'Configuración', md: guide_dev_06, icon: 'fa-cogs' },
-            { num: 7, label: 'Extensibilidad', md: guide_dev_07, icon: 'fa-puzzle-piece' },
-            { num: 8, label: 'Licencias', md: guide_dev_08, icon: 'fa-id-card' },
-            { num: 9, label: 'Revisiones', md: guide_dev_09, icon: 'fa-clipboard-check' },
+            { num: 1, label: 'Visión General', md: guide_dev_01, icon: 'Eye' },
+            { num: 2, label: 'Arquitectura', md: guide_dev_02, icon: 'Network' },
+            { num: 3, label: 'Frontend', md: guide_dev_03, icon: 'Monitor' },
+            { num: 4, label: 'Backend', md: guide_dev_04, icon: 'Server' },
+            { num: 5, label: 'APIs', md: guide_dev_05, icon: 'Plug' },
+            { num: 6, label: 'Configuración', md: guide_dev_06, icon: 'Settings' },
+            { num: 7, label: 'Extensibilidad', md: guide_dev_07, icon: 'Puzzle' },
+            { num: 8, label: 'Licencias', md: guide_dev_08, icon: 'IdCard' },
+            { num: 9, label: 'Revisiones', md: guide_dev_09, icon: 'ClipboardCheck' },
         ];
 
         return (
             <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
                 {sections.map(section => (
-                    <button
+                    <Button
                         key={section.num}
-                        className={`btn ${activeSection === section.num ? 'btn-primary' : 'btn-outline-primary'} btn-sm`}
+                        variant={activeSection === section.num ? "default" : "outline"}
+                        size="sm"
                         onClick={() => CHANGE_CONTENT(section.md, '', section.num)}
                     >
-                        <i className={`fas ${section.icon} me-1`}></i>
+                        <Icon name={section.icon} size={16} className="me-1" />
                         {section.label}
-                    </button>
+                    </Button>
                 ))}
             </div>
         );
@@ -112,7 +104,7 @@ export default function DEV_GUIDE(props) {
     let _INDEX_COMPONENT = () => {
         return (
             <div className='mx-3 p-3 bg-light rounded' style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                <h5 className="mb-3"><i className="fas fa-list me-2"></i>Índice de Contenidos</h5>
+                <h5 className="mb-3"><Icon name="list" size={16} className="me-2" />Índice de Contenidos</h5>
                 {indexArray.map((item, idx) => {
                     if (item.br) return <hr key={idx} className="my-2" />;
                     const isMainSection = !item.pre.includes('.');
@@ -140,7 +132,7 @@ export default function DEV_GUIDE(props) {
                 <div className="col-md-3 col-6 mb-2">
                     <div className="card bg-primary text-white">
                         <div className="card-body text-center py-3">
-                            <i className="fas fa-file-code fa-2x mb-2"></i>
+                            <Icon name="file-code" size={16} className="mb-2" />
                             <h5 className="mb-0">9</h5>
                             <small>Secciones</small>
                         </div>
@@ -149,7 +141,7 @@ export default function DEV_GUIDE(props) {
                 <div className="col-md-3 col-6 mb-2">
                     <div className="card bg-success text-white">
                         <div className="card-body text-center py-3">
-                            <i className="fas fa-laptop-code fa-2x mb-2"></i>
+                            <Icon name="laptop-code" size={16} className="mb-2" />
                             <h5 className="mb-0">React</h5>
                             <small>Frontend</small>
                         </div>
@@ -158,16 +150,16 @@ export default function DEV_GUIDE(props) {
                 <div className="col-md-3 col-6 mb-2">
                     <div className="card bg-warning text-dark">
                         <div className="card-body text-center py-3">
-                            <i className="fas fa-server fa-2x mb-2"></i>
+                            <Icon name="server" size={16} className="mb-2" />
                             <h5 className="mb-0">Express</h5>
                             <small>Backend</small>
                         </div>
                     </div>
                 </div>
                 <div className="col-md-3 col-6 mb-2">
-                    <div className="card bg-info text-white">
+                    <div className="card bg-primary text-primary-foreground">
                         <div className="card-body text-center py-3">
-                            <i className="fas fa-database fa-2x mb-2"></i>
+                            <Icon name="database" size={16} className="mb-2" />
                             <h5 className="mb-0">MySQL</h5>
                             <small>Database</small>
                         </div>

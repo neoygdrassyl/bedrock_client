@@ -1,11 +1,8 @@
-import React from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_ENG_STEP_430(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
-    const MySwal = withReactContent(Swal);
     const LIST = [
         { title: 'Memorias elementos estructurales', page: true, index: 0, },
         { title: 'Memorias elementos NO estructurales', page: true, index: 1, },
@@ -179,72 +176,35 @@ export default function RECORD_ENG_STEP_430(props) {
     let save_step = (_id_public, useSwal, formData) => {
         var STEP = LOAD_STEP(_id_public);
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (STEP.id) {
             RECORD_ENG_SERVICE.update_step(STEP.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         else {
             RECORD_ENG_SERVICE.create_step(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
     }

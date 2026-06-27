@@ -1,23 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
-
-const MySwal = withReactContent(Swal);
-
+import { useCallback, useEffect, useState } from 'react';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
+import { uploadRecordArcRichTextImage } from './arc/recordArcRichTextUpload';
 export default function RECORDS_BINNACLE(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, SERVICE, AIM, PATH, readOnly } = props;
 
     var [BINNACLE, setBinn] = useState('');
     var [load, setLoad] = useState(0);
     var [tacl, setTacl] = useState(4000 - Number(BINNACLE ? BINNACLE.length : 0));
+    const useRichTextEditor = AIM === 'Arquitectura';
+    const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
 
-    let cal_tacl = (_id) => {
-        let html_obj = document.getElementById(_id);
-        let max = html_obj ? Number(html_obj.maxLength) : 0;
-        let value = html_obj ? String(html_obj.value).length : 0;
-        setTacl(max - Number(value));
+    let cal_tacl = (value) => {
+        if (typeof value === 'string') {
+            let html_obj = document.getElementById(value);
+            let max = html_obj ? Number(html_obj.maxLength) : 4000;
+            let length = html_obj ? String(html_obj.value).length : 0;
+            setTacl(max - Number(length));
+            return;
+        }
+
+        setTacl(4000 - Number(value || 0));
     }
 
     useEffect(() => {
@@ -30,13 +35,25 @@ export default function RECORDS_BINNACLE(props) {
     let _COMPONENT = () => {
 
         return <>
-            <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+            <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                 <div className='col'>
                     <label>Bitácora - {AIM ?? ''}</label>
                 </div>
             </div>
-            <textarea className="input-group" defaultValue={BINNACLE} rows="3" style={{ backgroundColor: readOnly ? 'gainsboro' : 'lightblue' }}
-                id={"binnable_ta_" + AIM} onChange={() => cal_tacl('binnable_ta_'+ AIM)} maxLength="4000" onBlur={() => setBinnacle(false)} readOnly={readOnly}></textarea>
+            {useRichTextEditor ? <RichTextEditor
+                    value={BINNACLE}
+                    hiddenId={"binnable_ta_" + AIM}
+                    maxLength={4000}
+                    minHeight={readOnly ? 130 : 170}
+                    readOnly={readOnly}
+                    placeholder={`Bitácora de ${AIM ?? 'evaluación'}`}
+                    uploadFile={uploadRichTextImage}
+                    onPlainTextChange={cal_tacl}
+                    onBlur={() => setBinnacle(false)}
+                    onSave={() => setBinnacle(true)}
+                />
+                : <textarea className="input-group" defaultValue={BINNACLE} rows="3" style={{ backgroundColor: readOnly ? 'gainsboro' : 'lightblue' }}
+                    id={"binnable_ta_" + AIM} onChange={() => cal_tacl('binnable_ta_'+ AIM)} maxLength="4000" onBlur={() => setBinnacle(false)} readOnly={readOnly}></textarea>}
             {!readOnly ? <h5 className='text-muted'> ({tacl} caracteres restantes)</h5> : ''}
         </>
     }
@@ -50,32 +67,16 @@ export default function RECORDS_BINNACLE(props) {
         SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                   
                 } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -94,7 +95,7 @@ export default function RECORDS_BINNACLE(props) {
 
                 binn = binn ?? '';
                 setBinn(binn);
-                cal_tacl('binnable_ta_'+ AIM);
+                cal_tacl(richTextToPlainText(binn).length);
                 setLoad(1);
 
             })

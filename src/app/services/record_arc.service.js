@@ -73,6 +73,9 @@ class RecordArcService {
   create_step(data) {
     return http.post(`/${route}/create_step`, data);
   }
+  uploadRichTextImage(data) {
+    return http.post(`/${route}/richtext/upload-image`, data);
+  }
 
 
   update(id, data) {

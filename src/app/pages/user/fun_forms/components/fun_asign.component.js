@@ -1,51 +1,52 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBPopover, MDBPopoverBody, MDBTooltip } from 'mdb-react-ui-kit';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import TABLE_COMPONENT_EXPANDED from './table_components/table.component_expanded';
 import HeatMap from '@uiw/react-heat-map';
 import { infoCud, nomens } from '../../../../components/jsons/vars';
-import { Badge, Calendar, Popover, Tag, TagGroup, Whisper } from 'rsuite';
-import Modal from 'react-modal';
+import ReactCalendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { Icon } from '@/components/icon';
+// rsuite Badge/Tag/TagGroup/Whisper/Popover replaced with inline components (Phase 9.1)
+const Tag = ({ color, children }) => (
+  <span className="badge me-1" style={{ backgroundColor: color === 'blue' ? 'var(--dvl-info)' : color === 'green' ? 'var(--dvl-success)' : 'var(--dvl-gray-400)', fontSize: 'var(--dvl-text-xs)' }}>{children}</span>
+);
+const TagGroup = ({ children }) => <span>{children}</span>;
+const Badge = ({ color, className, style }) => (
+  <span className={`rounded-circle me-1 ${className || ''}`} style={{ display: 'inline-block', width: 8, height: 8, backgroundColor: color === 'green' ? 'var(--dvl-success)' : style?.backgroundColor || 'var(--dvl-gray-400)', ...style }} />
+);
+const Whisper = ({ children, speaker }) => {
+  const [show, setShow] = React.useState(false);
+  return (
+    <span style={{ position: 'relative', display: 'inline-block' }}>
+      {React.cloneElement(children, { onClick: (e) => { e.stopPropagation(); setShow(s => !s); } })}
+      {show && (
+        <span
+          style={{ position: 'absolute', bottom: '100%', left: 0, zIndex: 1080, background: 'var(--bs-body-bg)', border: '1px solid var(--bs-border-color)', borderRadius: 4, padding: '4px 8px', minWidth: 120, whiteSpace: 'nowrap', boxShadow: 'var(--dvl-shadow-md)', fontSize: 'var(--dvl-text-xs)' }}
+          onClick={(e) => { e.stopPropagation(); setShow(false); }}
+        >
+          {speaker.props.children}
+        </span>
+      )}
+    </span>
+  );
+};
+const Popover = ({ children }) => <>{children}</>;
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import FUN_ASIGNS_HISTORY_COMPONENT from './fun_asign_history.component';
 import './fun_modal_shared.css';
+import { swalError } from '@/app/utils/swalAdapter';
 
-const customStylesForModal = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
-        zIndex: 1050,
-    },
-    content: {
-        position: 'absolute',
-        top: '10px',
-        left: 'var(--fun-sidebar-width)',
-        right: '15%',
-        bottom: '10px',
-        border: '1px solid #ccc',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        borderRadius: '4px',
-        outline: 'none',
-        padding: '20px',
-        marginRight: 'auto',
-
-    }
-};
+const customStylesForModal = {};
 
 export default function FUN_ASIGNS_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
 
-    const MySwal = withReactContent(Swal);
-    const moment = require('moment');
-    const Colors = ['#ffc38f', '#ff8f93', '#c38fff', '#8f93ff', '#8ffffb', '#8fffc3', '#cbf071', '#fffb8f']
+        const Colors = ['#ffc38f', '#ff8f93', '#c38fff', '#8f93ff', '#8ffffb', '#8fffc3', '#cbf071', '#fffb8f']
     const matrixLoad = {
         'i': { law: 1, arc: 2, eng: 2 },
         'ii': { law: 1, arc: 3, eng: 3 },
@@ -58,9 +59,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     const LoadTitleShort = { 'law': 'J', 'arc': 'A', 'eng': 'E' }
     const LoadTypeShort = { 'i': 'I', 'ii': 'II', 'iii': 'III', 'iv': 'IV', 'oa': 'OA', '0': 'III' }
 
-
-    var [id1, setId1] = useState(`${nomens}${moment().subtract(1, 'year').format('YY')}-0000`);
-    var [id2, setId2] = useState(`${nomens}${moment().format('YY')}-9999`);
+    var [id1, setId1] = useState(`${nomens}${dayjs().subtract(1, 'year').format('YY')}-0000`);
+    var [id2, setId2] = useState(`${nomens}${dayjs().format('YY')}-9999`);
     var [data, setData] = useState([])
     var [dataW, setDataW] = useState([])
     var [dataHM, setDataHM] = useState([])
@@ -81,12 +81,36 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     var [currentProf, setCurrentProf] = useState('');
 
     useEffect(() => {
-        if (!load) { retrieveMacro(); retrieveWorker() }
-        if (data.length > 0 && !load2) curateDataW();
-        if (!load3 || filterEng || !filterEng || !filterArc || filterArc || filterLaw || !filterLaw) updateCurateW();
-        if (data.length == 0 && load) setLoad2(true)
-    }, [data, load, load2, load3, filterEng, filterArc, filterLaw]);
+        if (!load) {
+            let cancelled = false;
+            // Fetch data
+            FUN_SERVICE.loadMacroAsigns(id1, id2)
+                .then(response => {
+                    if (cancelled) return;
+                    setData(response.data);
+                    setLoad(true);
+                })
+                .catch(e => {
+                    if (cancelled) return;
+                    console.log(e);
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
+                });
+            // Fetch workers
+            retrieveWorker();
+            return () => { cancelled = true; };
+        }
+    }, [load]);
 
+    // Separate effect for data curation (runs when data arrives)
+    useEffect(() => {
+        if (data.length > 0 && !load2) curateDataW();
+        if (data.length == 0 && load) setLoad2(true);
+    }, [data, load, load2]);
+
+    // Separate effect for filter changes (only when data is already curated)
+    useEffect(() => {
+        if (load2) updateCurateW();
+    }, [filterEng, filterArc, filterLaw]);
 
     // ***************************  DATA GETTERS *********************** //
     function retrieveMacro() {
@@ -97,12 +121,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
             });
     }
     function retrieveWorker() {
@@ -112,12 +131,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
     function loppJump(array, Iterator) {
@@ -281,11 +295,11 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             let id_eng = value.asign_eng_worker_id;
 
             let conChecks = [
-                { name: con_law, type: 'law', icon: <i class="fas fa-balance-scale"></i>, id: id_law},
-                { name: con_law_ph, type: 'law', icon: <i class="fas fa-balance-scale"></i>, id:  id_law_ph},
-                { name: con_arc, type: 'arc', icon: <i class="far fa-building "></i>, id: id_arc },
-                { name: con_arc_ph, type: 'arc', icon: <i class="far fa-building"></i>, id: id_arc_ph },
-                { name: con_eng, type: 'eng', icon: <i class="fas fa-cogs"></i>, id: id_eng },
+                { name: con_law, type: 'law', icon: <Icon name="balance-scale" size={16} />, id: id_law},
+                { name: con_law_ph, type: 'law', icon: <Icon name="balance-scale" size={16} />, id:  id_law_ph},
+                { name: con_arc, type: 'arc', icon: <Icon name="building" size={16} />, id: id_arc },
+                { name: con_arc_ph, type: 'arc', icon: <Icon name="building" size={16} />, id: id_arc_ph },
+                { name: con_eng, type: 'eng', icon: <Icon name="cogs" size={16} />, id: id_eng },
             ]
 
             conChecks.map(names => {
@@ -319,7 +333,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     if (names.type == 'law' && filterLaw) rowCon = _con_law(value)
                     if (names.type == 'arc' && filterArc && !isOA) rowCon = _con_arc(value)
                     if (names.type == 'eng' && filterEng && !isOA) rowCon = _con_eng(value)
-
 
                     if (rowCon == 1 || rowCon == 2 || rowCon == 3 || rowCon == 5) {
                         let _color = value.state == 5 ? _colorI[rowCon] : 'dark';
@@ -370,7 +383,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     function updateCurateW() {
 
         let cb = document.getElementsByName('cb_worker') ? [...document.getElementsByName('cb_worker')] : [];
-        let newDataW = dataW;
+        let newDataW = dataW.map(item => ({ ...item })); // Shallow copy to avoid state mutation
         cb.map(value => {
 
             let idx = index[value.id];
@@ -415,7 +428,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         newDoc = vrDocs.some(vr => {
             let codes = vr.codes ? vr.codes : [];
 
-            let con_1 = dateReview[wType] ? moment(vr.date).isSameOrAfter(dateReview[wType]) : false;
+            let con_1 = dateReview[wType] ? dayjs(vr.date).isSameOrAfter(dateReview[wType]) : false;
             let con_2 = codes.some(doc => requiredDocs.includes(doc))
 
             return con_1 && con_2;
@@ -427,9 +440,9 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     // ******************************* JSX ***************************** // 
     const subHeaderComponentMemo = () => {
         return (
-            <div class="input-group mb-2">
-                <span class="input-group-text bg-light">
-                    <i class="fas fa-search"></i>
+            <div className="input-group mb-2">
+                <span className="input-group-text bg-light">
+                    <Icon name="search" size={16} />
                 </span>
                 <input type='text' className='form-control' placeholder='Busqueda...'
                     onChange={(e) => setFilter(e.target.value)} defaultValue={filter} />
@@ -438,31 +451,31 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     }
     const idHeaderComponent = () => {
         return (
-            <div class="input-group mb-2">
-                <span class="input-group-text bg-light">
-                    <i class="fas fa-hashtag"></i>
+            <div className="input-group mb-2">
+                <span className="input-group-text bg-light">
+                    <Icon name="hashtag" size={16} />
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
-                <MDBBtn onClick={() => {
+                <Button size="sm" onClick={() => {
                     setData([]);
                     setLoad(false);
 
                     setLoad2(false);
                     setDataW([]);
-                }}>CARGAR</MDBBtn>
+                }}>CARGAR</Button>
             </div>
         );
     }
     const iconsComponent = () => {
         return (
-            <div class="input-group mt-1">
-                <MDBBtn link className='m-0 px-2' outline={!filterState} color="dark" size="sm" onClick={() => { setFilterState(!filterState); }}><i class="fas fa-check-square"></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterLaw} size="sm" onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><i class="fas fa-balance-scale"></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterArc} size="sm" onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <i class="far fa-building "></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterEng} size="sm" onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><i class="fas fa-cogs"></i> </MDBBtn>
+            <div className="input-group mt-1">
+                <Button variant={!filterState ? "outline" : "default"} size="sm" onClick={() => { setFilterState(!filterState); }}><Icon name="check-square" size={16} /></Button>
+                <Button variant={!filterLaw ? "outline" : "default"} size="sm" onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><Icon name="balance-scale" size={16} /></Button>
+                <Button variant={!filterArc ? "outline" : "default"} size="sm" onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <Icon name="building" size={16} /></Button>
+                <Button variant={!filterEng ? "outline" : "default"} size="sm" onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><Icon name="cogs" size={16} /> </Button>
                 {currenItem != null ?
-                    <MDBBtn link className='m-0 px-2' color="danger" size="sm" onClick={() => { setCurrentItem(null); setSbtn(null) }}><i class="fas fa-times"></i> </MDBBtn>
+                    <Button variant="destructive" size="sm" className="m-0 px-2" onClick={() => { setCurrentItem(null); setSbtn(null) }}><Icon name="times" size={16} /> </Button>
                     : ''}
             </div>
         );
@@ -489,20 +502,20 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 }
                 let isSelected = worker.checked && (wCheck[wType] ?? true);
                 return <>
-                    <di className="row mb-1">
+                    <div className="row mb-1">
                         <div className='col'>
-                            <MDBBtn outline={!isSelected} rounded block size='sm' style={{ backgroundColor: isSelected ? worker.color : 'whitesmoke', color: 'black', borderColor: "white" }}
-                                onClick={() => setWorkerChecked(worker.name)} >{worker.icon} {worker.name} ({worker.datas.length})</MDBBtn>
+                            <Button variant="outline" size="sm" className={`rounded-full w-100 ${isSelected ? "" : "border-muted"}`} style={{ backgroundColor: isSelected ? worker.color : 'whitesmoke', color: 'black', borderColor: "white" }}
+                                onClick={() => setWorkerChecked(worker.name)} >{worker.icon} {worker.name} ({worker.datas.length})</Button>
                         </div>
-                    </di>
+                    </div>
                 </>
             })}
             {/**
-             *  <ul class="list-group">
-                <li class='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
+             *  <ul className="list-group">
+                <li className='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
                     <label>MATRIZ DE CARGA PROFESIONAL</label>
                 </li>
-                <li class='list-group-item my-0 py-1'>
+                <li className='list-group-item my-0 py-1'>
                     <table className='table table-sm'>
                         <thead>
                             <tr>
@@ -546,7 +559,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         </tbody>
                     </table>
                 </li>
-                <li class='list-group-item my-0 py-1' >
+                <li className='list-group-item my-0 py-1' >
                     <h5 className='fw-normal'>CARGA DIARIA POR PROFESIONAL = {dailyLoad}</h5>
                 </li>
             </ul>
@@ -556,40 +569,36 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     let _MODULE_BTN_POP = (row) => {
         const isOA = regexChecker_isOA_2(row);
         let rules = row.rules ? row.rules.split(';') : [];
-        return <MDBPopoverBody>
-            <div class="list-group list-group-flush">
-                {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ?
-                    <>
-                        <button type="button" onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-user-clock"></i> ASIGNAR</button>
-                    </> : null}
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
+        return <>
+                {window.user.id == 1 || window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 6 ?
+                    <DropdownMenuItem onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }}><Icon name="UserClock" size={14} className="mr-2" /> Asignar</DropdownMenuItem>
+                    : null}
+                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'general', '')}><Icon name="FolderOpen" size={14} className="mr-2 text-primary" /> Detalles</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'clock', '')}><Icon name="Clock" size={14} className="mr-2 text-muted-foreground" /> Tiempos</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'archive', '')}><Icon name="Archive" size={14} className="mr-2 text-muted-foreground" /> Documentos</DropdownMenuItem>
                 {row.state < 101 ?
                     <>
-                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'edit', '')}><Icon name="FolderOpen" size={14} className="mr-2 text-muted-foreground" /> Actualizar</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'check', '')}><Icon name="CheckSquare" size={14} className="mr-2 text-warning" /> Checkeo</DropdownMenuItem>
                         {regexChecker_isPh(row, true) ?
                             <>
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')}><Icon name="PencilRuler" size={14} className="mr-2 text-warning" /> Inf. P.H.</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')}><Icon name="FileText" size={14} className="mr-2 text-warning" /> Expedición</DropdownMenuItem>
                             </>
                             :
                             <>
-                                {!isOA && rules[0] != 1 ? <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
-                                </> : ''}
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
+                                {!isOA && rules[0] != 1 ? <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'alert', '')}><Icon name="Megaphone" size={14} className="mr-2 text-warning" /> Publicidad</DropdownMenuItem> : ''}
+                                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')}><Icon name="Scale" size={14} className="mr-2 text-warning" /> Inf. Jurídico</DropdownMenuItem>
                                 {!isOA ? <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                    {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
+                                    <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')}><Icon name="Building2" size={14} className="mr-2 text-warning" /> Inf. Arquitectónico</DropdownMenuItem>
+                                    {rules[1] != 1 ? <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')}><Icon name="Cog" size={14} className="mr-2 text-warning" /> Inf. Estructural</DropdownMenuItem> : ''}
+                                    <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')}><Icon name="FileCheck" size={14} className="mr-2 text-warning" /> Acta</DropdownMenuItem>
                                 </> : ''}
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')}><Icon name="FileText" size={14} className="mr-2 text-warning" /> Expedición</DropdownMenuItem>
                             </>}
-                    </> : <></>}
-            </div>
-        </MDBPopoverBody>
+                    </> : null}
+            </>;
     }
     let _COLORS_COMPONENT = () => {
         let colorsLegends = [
@@ -602,8 +611,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
         ]
         return <>
-            <ul class="list-group">
-                <li class='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
+            <ul className="list-group">
+                <li className='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
                     <div className='row'>
                         <div className='col'>
                             COLORES
@@ -611,10 +620,10 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     </div>
                 </li>
             </ul>
-            <ul class="list-group">
-                {colorsLegends.map(value => {
-                    return <>
-                        <li class='list-group-item my-0 py-0'>
+            <ul className="list-group">
+                {colorsLegends.map((value, i) => {
+                    return <React.Fragment key={i}>
+                        <li className='list-group-item my-0 py-0'>
                             <div className='row'>
                                 <div className='col'>
                                     <h5 className='fw-normal'>
@@ -623,7 +632,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                 </div>
                             </div>
                         </li>
-                    </>
+                    </React.Fragment>
                 })}
             </ul>
         </>
@@ -631,7 +640,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     let LISTS_COMPONENT = () => {
 
         return <>
-            <ul class="list-group">
+            <ul className="list-group">
                 {dataW.map((cb, i) => {
                     let worker = cb;
                     let wType = worker.type;
@@ -643,66 +652,72 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     let isSelected = worker.checked && (wCheck[wType] ?? true);
                     if (!isSelected) return;
                     let classList = 'list-group-item my-0 py-1';
-                    return <>
-                        <li class={classList} style={{ backgroundColor: worker.color, }}>
+                    return <React.Fragment key={i}>
+                        <li className={classList} style={{ backgroundColor: worker.color, }}>
                             <div className='row'>
                                 <div className='col'>
-                                    {worker.icon} {worker.name} ({worker.datas.filter(item => _filter(item)).length}) {worker.icon ? <MDBBtn rounded size='sm' onClick={() => {setModalF(true); setCurrentProf({name: worker.name, type: wType, id: worker.id})}} >Ver historial</MDBBtn>: null}
+                                    {worker.icon} {worker.name} ({worker.datas.filter(item => _filter(item)).length}) {worker.icon ? <Button size="sm" className="rounded-pill" onClick={() => {setModalF(true); setCurrentProf({name: worker.name, type: wType, id: worker.id})}} >Ver historial</Button>: null}
                                 </div>
                             </div>
                         </li>
-                        <li class='list-group-item my-0 py-1'>
+                        <li className='list-group-item my-0 py-1'>
                             <b>Revisando:</b>
-                            <div class="d-flex flex-wrap">
-                                {worker.datas.filter(item => _filter(item)).filter(item => item.color == 'success' || item.color == 'secondary').map(btn => {
-                                    return <>
-                                        <div className='me-1 mb-1'>
-                                            <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
-                                                outline={selectedBtn != btn.id_public}
-                                                btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
-                                                onClick={() => setSbtn(btn.id_public)}>
-                                                {_MODULE_BTN_POP(btn)}
-                                            </MDBPopover>
+                            <div className="d-flex flex-wrap">
+                                {worker.datas.filter(item => _filter(item)).filter(item => item.color == 'success' || item.color == 'secondary').map((btn, idx) => {
+                                    return <div key={`rev-${btn.id_public}-${idx}-${Math.random().toString(36).slice(2,8)}`} className='me-1 mb-1'>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>
+                                                        {(btn.id_public).slice(-7)}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-52">
+                                                    {_MODULE_BTN_POP(btn)}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
-                                    </>
                                 })}
                             </div>
                             <b>No Viable (<label className="text-success">Nuevos Documentos</label>)</b>
-                            <div class="d-flex flex-wrap">
-                                {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map(btn => {
+                            <div className="d-flex flex-wrap">
+                                {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map((btn, idx) => {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(!newDocs) return '';
-                                    return <>
-                                        <div className='me-1 mb-1'>
-                                            <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
-                                                outline={selectedBtn != btn.id_public}
-                                                btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
-                                                onClick={() => setSbtn(btn.id_public)}>
-                                                {_MODULE_BTN_POP(btn)}
-                                            </MDBPopover>
+                                    return <div key={`new-${btn.id_public}-${idx}-${Math.random().toString(36).slice(2,8)}`} className='me-1 mb-1'>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>
+                                                        {(btn.id_public).slice(-7)}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-52">
+                                                    {_MODULE_BTN_POP(btn)}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
-                                    </>
                                 })}
                             </div>
                             <b>No Viable (Sin documentos nuevos)</b>
-                            <div class="d-flex flex-wrap">
-                                {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map(btn => {
+                            <div className="d-flex flex-wrap">
+                                {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map((btn, idx) => {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(newDocs) return '';
-                                    return <>
-                                        <div className='me-1 mb-1'>
-                                            <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
-                                                outline={selectedBtn != btn.id_public}
-                                                btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
-                                                onClick={() => setSbtn(btn.id_public)}>
-                                                {_MODULE_BTN_POP(btn)}
-                                            </MDBPopover>
+                                    return <div key={`nodoc-${btn.id_public}-${idx}-${Math.random().toString(36).slice(2,8)}`} className='me-1 mb-1'>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant={selectedBtn != btn.id_public ? "outline" : "default"} size="sm" className="rounded-full px-2 text-xs" onClick={() => setSbtn(btn.id_public)}>
+                                                        {(btn.id_public).slice(-7)}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-52">
+                                                    {_MODULE_BTN_POP(btn)}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
-                                    </>
                                 })}
                             </div>
                         </li>
-                    </>
+                    </React.Fragment>
                 })}
             </ul>
         </>
@@ -710,7 +725,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
     let CALENDAR = () => {
         function getTodoList(_date) {
-            const date = moment(_date).format('YYYY-MM-DD');
+            const date = dayjs(_date).format('YYYY-MM-DD');
 
             let dates = [];
 
@@ -745,8 +760,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
         function renderCell(date) {
             const list = getTodoList(date);
-            const dateFormat = moment(date).format('YYYY-MM-DD');
-            const dayOff = moment(date).weekday();
+            const dateFormat = dayjs(date).format('YYYY-MM-DD');
+            const dayOff = dayjs(date).day();
             const dayOffTag = <Tag color="blue">FESTIVO</Tag>;
             const holyDays = require('../../../../components/jsons/holydaysmoment.json');
             const isDayOff = dayOff === 0 || dayOff === 6 || holyDays.holidays.includes(dateFormat);
@@ -840,7 +855,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             formattedDayPattern: 'dd',
         };
 
-        return <Calendar bordered renderCell={renderCell} locale={locale} />
+        return <ReactCalendar tileContent={({ date }) => renderCell(date)} locale="es-ES" className="w-100" />
     }
 
     let COMPONEN_WORKERS = () => {
@@ -883,7 +898,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     }
     // ******************************* APIS **************************** // 
 
-
     return <>
         {TOP_PAGE()}
         {CALENDAR()}
@@ -895,18 +909,26 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     isOpen={modal}
                     style={customStylesForModal}
                     ariaHideApp={false}
+                    className="fun-modal-content"
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {currenItem ? currenItem.id_public : ''} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-alt" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Asignación de profesionales: {currenItem ? currenItem.id_public : ''}</h2>
+                        </div>
+                        <button type="button" onClick={() => setModal(false)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
 
                     {BOT_PAGE()}
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={() => setModal(false)}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => setModal(false)}>
+                            <Icon name="X" size={14} /> Cerrar
+                        </Button>
                     </div>
                 </Modal>
 
@@ -914,10 +936,18 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     isOpen={modalF}
                     style={customStylesForModal}
                     ariaHideApp={false}
+                    className="fun-modal-content"
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> HISTORIAL DE ASIGNACIONES:  {currentProf ? currentProf.name : ''} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setModalF(false)}></MDBBtn>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-alt" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Historial de asignaciones: {currentProf ? currentProf.name : ''}</h2>
+                        </div>
+                        <button type="button" onClick={() => setModalF(false)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
 
                     <FUN_ASIGNS_HISTORY_COMPONENT 
@@ -927,10 +957,10 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         swaMsg={swaMsg}
                     />
 
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={() => setModalF(false)}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => setModalF(false)}>
+                            <Icon name="X" size={14} /> Cerrar
+                        </Button>
                     </div>
                 </Modal>
             </>
@@ -938,5 +968,4 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             : <div className='row text-center' > <label className='fw-normal lead text-muted'>CARGANDO...</label></div>}
     </>;
 }
-
 

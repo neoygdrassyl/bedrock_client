@@ -1,11 +1,10 @@
-import React from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
-import FUN_SERVICE from '../../../../services/fun.service';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
 
-const MySwal = withReactContent(Swal);
+import FUN_SERVICE from '../../../../services/fun.service';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
+import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+
 export default function FUN_D_CONTROL_2(props) {
     const { currentItem, swaMsg, requestUpdate } = props
 
@@ -210,7 +209,6 @@ export default function FUN_D_CONTROL_2(props) {
             }))
         }
 
-
         formData.set('check_control_inventory', JSON.stringify(inventory));
         manage_fun_r(formData);
 
@@ -240,37 +238,21 @@ export default function FUN_D_CONTROL_2(props) {
             }))
         }
 
-
         formData.set('data', JSON.stringify(inventory));
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FUN_SERVICE.gen_doc_checkcontrol_2(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/controlcheck_2/" + "Hoja de control inventario - " + currentItem.id_public + ".pdf");
+                    swalClose();
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/controlcheck_2/" + "Hoja de control inventario - " + currentItem.id_public + ".pdf");
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             });
 
     }
@@ -278,41 +260,20 @@ export default function FUN_D_CONTROL_2(props) {
     let manage_fun_r = (formData) => {
         var _CHILD = GET_CHILD_REVIEW();
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (_CHILD.id) {
             FUN_SERVICE.update_r(_CHILD.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
         else {
@@ -320,31 +281,15 @@ export default function FUN_D_CONTROL_2(props) {
             FUN_SERVICE.create_funr(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -433,10 +378,10 @@ export default function FUN_D_CONTROL_2(props) {
             <div className="row my-2">
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => save_fun_r()} ><i class="far fa-edit"></i> GUARDAR CAMBIOS </MDBBtn>
+                        <Button size="sm" className="my-3" onClick={() => save_fun_r()} ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                     </div>
                 </div>
             </div>

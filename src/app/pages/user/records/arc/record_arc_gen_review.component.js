@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useEffect, useState } from 'react';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function RECORD_ARC_GEN_REVIEW(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
@@ -21,7 +19,7 @@ export default function RECORD_ARC_GEN_REVIEW(props) {
     const REVIEW = REVIEW_DOCS;
     // ******************* DATA GETERS ********************* //
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_arc_steps;
+        var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }
@@ -92,7 +90,7 @@ export default function RECORD_ARC_GEN_REVIEW(props) {
                                             <label className={it.className ?? ''}>{it.name}</label>
                                             {_check[it.c] == 0
                                                 ? <input type="text" defaultValue={_context[it.v]} name={'rar_context_' + re.pid} id={'rar_context_' + re.pid + '_' + it.v}
-                                                    class="form-control form-control-sm" onBlur={() => manage_rar_context()} style={{ backgroundColor: 'LightPink' }} />
+                                                    className="form-control form-control-sm" onBlur={() => manage_rar_context()} style={{ backgroundColor: 'LightPink' }} />
                                                 : <input type='hidden' value={''} name={'rar_context_' + re.pid} id={'rar_context_' + re.pid + '_' + it.v} />
                                             }
                                         </div>
@@ -252,78 +250,41 @@ export default function RECORD_ARC_GEN_REVIEW(props) {
     let save_step = (_id_public, useSwal, formData, start, end) => {
         var STEP = LOAD_STEP(_id_public);
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (STEP.id) {
             RECORD_ARCSERVICE.update_step(STEP.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         if (start != undefined) {
                             if (start == end) props.requestUpdateRecord(currentItem.id);
                         }
                         else props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         else {
             RECORD_ARCSERVICE.create_step(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         if (start != undefined) {
                             if (start == end) props.requestUpdateRecord(currentItem.id);
                         }
                         else props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
     }

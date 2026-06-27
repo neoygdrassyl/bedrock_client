@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { GanttChart } from './GanttChart';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { sumarDiasHabiles } from '../../hooks/useClocksManager';
+import { Icon } from '@/components/icon';
 
 // Panel de detalle (Muestra información específica al hacer click en una fase)
 const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostActa, extension }) => {
@@ -47,7 +48,7 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
       <div className="gantt-phase-detail-header">
         <h4>{title}</h4>
         <button className="gantt-close-btn-small" onClick={onClose} title="Cerrar detalles">
-          <i className="fas fa-times" />
+          <Icon name="times" size={16} />
         </button>
       </div>
 
@@ -69,12 +70,12 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
 
         <div className="gantt-detail-row">
           <span className="gantt-detail-label">Inicio</span>
-          <span>{startDate ? moment(startDate).format('DD MMM YYYY') : '—'}</span>
+          <span>{startDate ? dayjs(startDate).format('DD MMM YYYY') : '—'}</span>
         </div>
 
         <div className="gantt-detail-row">
           <span className="gantt-detail-label">Fin</span>
-          <span>{endDate ? moment(endDate).format('DD MMM YYYY') : '—'}</span>
+          <span>{endDate ? dayjs(endDate).format('DD MMM YYYY') : '—'}</span>
         </div>
 
         <div className="gantt-detail-row">
@@ -109,7 +110,7 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
                 return (
                     <div className="gantt-actor-card">
                         <div className="gantt-actor-header">
-                            <i className={`fas ${parallelActors.primary.icon}`} />
+                            <Icon name={parallelActors.primary.icon} size={16} />
                             <span>{parallelActors.primary.name}</span>
                         </div>
                         <div className="gantt-actor-info">
@@ -120,7 +121,7 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
                         </div>
                         {pDelay > 0 && (
                             <div style={{ marginTop: '8px', fontSize: '12px', color: '#dc3545', fontWeight: '600' }}>
-                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                <Icon name="exclamation-triangle" size={16} className="me-1" />
                                 {pDelay} días de retraso
                             </div>
                         )}
@@ -134,7 +135,7 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
                 return (
                     <div className="gantt-actor-card">
                         <div className="gantt-actor-header">
-                            <i className={`fas ${parallelActors.secondary.icon}`} />
+                            <Icon name={parallelActors.secondary.icon} size={16} />
                             <span>{parallelActors.secondary.name}</span>
                         </div>
                         <div className="gantt-actor-info">
@@ -145,7 +146,7 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
                         </div>
                         {sDelay > 0 && (
                             <div style={{ marginTop: '8px', fontSize: '12px', color: '#dc3545', fontWeight: '600' }}>
-                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                <Icon name="exclamation-triangle" size={16} className="me-1" />
                                 {sDelay} días de retraso
                             </div>
                         )}
@@ -263,12 +264,12 @@ export const GanttModal = ({
         {/* HEADER */}
         <div className="gantt-modal-header">
           <div className="gantt-modal-title-group">
-             <h3><i className="fas fa-chart-gantt" /> Diagrama de Gantt</h3>
+             <h3><Icon name="chart-gantt" size={16} /> Diagrama de Gantt</h3>
              {projectedFinishData && (
                  <div className="gantt-header-stats">
                      <div className="gantt-stat-item">
                          <span className="gantt-stat-label">Entrega Estimada:</span>
-                         <span className="gantt-stat-value">{moment(projectedFinishData.date).format('DD MMM YYYY')}</span>
+                         <span className="gantt-stat-value">{dayjs(projectedFinishData.date).format('DD MMM YYYY')}</span>
                      </div>
                      <div className="gantt-stat-item">
                          <span className="gantt-stat-label">Duración Proyectada:</span>
@@ -293,7 +294,7 @@ export const GanttModal = ({
             </label> */}
 
             <button className="gantt-close-btn" onClick={onClose}>
-              <i className="fas fa-times" />
+              <Icon name="times" size={16} />
             </button>
           </div>
         </div>

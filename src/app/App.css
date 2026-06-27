@@ -1,482 +1,381 @@
-html{
-  scroll-behavior: smooth;
-}
-.bg-image {
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: 0% 50%; 
-  background-image: url('img/map.png');
-}
+/* ── App.css — Legacy styles still used by page components ──
+   New layout is handled by AppShell (Tailwind + shadcn/ui).
+   These will be removed as pages migrate to the new design system. */
 
+/* ── Text utilities ── */
 .text-justify {
   text-align: justify;
 }
 
-.Collapsible {
-  margin-bottom: 2px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  background-color: #b8b8b8;
-  background: #b8b8b8;
+/* ── Collapsible spacing (react-collapsible, used in submit, appointments, etc.) ── */
+.Collapsible__trigger {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  transition: background-color 0.15s ease;
 }
 
-.Collapsible__trigger  {
-  padding: 15px 15px 15px 15px;
-  font-size: 20px;
+.Collapsible__contentInner {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0 0 0.375rem 0.375rem;
+  padding: 0.75rem;
 }
 
-
-.Collapsible__contentInner{
-  border: 2px solid;
-  padding: 14px 10px 10px 10px;
+.Collapsible__contentInner > li {
+  padding: 1rem 1.25rem 0.5rem 1.25rem;
 }
 
-.Collapsible__contentInner > li{
-  padding: 30px 30px 10px 30px;
+.bgs_collapsible {
+  background: hsl(var(--muted) / 0.3);
 }
 
-.bgs_collapsible{
-  background: #b8b8b8;
-  background-color: rgb(187, 187, 187);
-  background-position-x: 0%;
-  background-position-y: 0%;
-  background-repeat: repeat;
-  background-attachment: scroll;
-  background-image: none;
-  background-size: auto;
-  background-origin: padding-box;
-  background-clip: border-box;
-}
-
+/* ── Floating buttons (btnAccesibility, btnChat, etc.) ── */
 .btn-accesibility {
   position: fixed;
   bottom: 50%;
-  right: 0px; 
+  right: 0;
   margin: 20px;
   margin-right: 5px;
   z-index: 1;
 }
+
 .btn-start {
   position: fixed;
-  bottom: 0px;
-  left: 0px; 
+  bottom: 0;
+  left: 0;
   margin: 20px;
   margin-bottom: 30px;
   z-index: 1;
 }
+
 .btn-chat {
   position: fixed;
-  bottom: 0px;
-  right: 0px; 
+  bottom: 0;
+  right: 0;
   margin: 20px;
   z-index: 1;
 }
 
+/* ── Fixed nav panels (FUN forms, records, expeditions) ── */
 .btn-navpqrs {
   position: fixed;
   top: 15%;
-  left: 0px; 
-  margin: 20px;
-  padding: 0px;
+  left: 0;
+  margin: 1rem;
+  padding: 0;
   margin-left: 5px;
   z-index: 1;
   width: 19%;
 }
+
 .btn-nav_version {
   position: fixed;
   top: 10%;
-  left: 0px; 
-  margin: 0px;
-  padding: 0px;
+  left: 0;
+  margin: 0;
+  padding: 0;
   margin-left: 5px;
   z-index: 1;
 }
+
 .btn-nav_module {
-  /* Legacy styles - overridden by new enhanced sidebar */
   display: none;
 }
+
 .btn-nav_module-pqr {
-  position: fixed;
-  left: 0px; 
-  right: 0px;
-  top: 10%;
-  margin: 0px;
-  padding: 0px;
-  margin-right: 3px;
-  width: 15%;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  width: auto;
+  margin: 0 0 0.75rem 0;
+  padding: 0;
 }
 
 .fun_nav {
-  width:300px;
+  width: 280px;
 }
 
 .pqrs_nav {
-  width:230px;
+  width: 220px;
 }
 
+.fung_nav {
+  height: 380px;
+  width: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* ── Scroll & overflow utilities ── */
 .clock-calendar {
-  width:100%;
+  width: 100%;
 }
-
-fieldset 
-{
-  border: 3px solid #ddd !important;
-}	
-
-  legend
-  {
-    border: 3px solid #ddd;
-    border-radius: 4px; 
-		padding: 5px 5px 5px 10px; 
-  }
-
-  .fung_nav {
-    height:420px;
-    width:300px;
-    overflow-y: scroll;
-  }
 
 .chart-clock {
-  overflow-x: scroll;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .container-sh {
-  overflow-x: scroll;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .filter-list {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 400px;
+  scrollbar-width: thin;
 }
 
 .ovy {
-  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .ovx {
-  overflow-x: scroll;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
-.app-pointer { cursor: pointer; }
+.app-pointer {
+  cursor: pointer;
+}
 
 #overlayer {
   max-width: 100%;
   margin: 0 auto;
 }
 
-/* ============ RESET BÁSICO Y TOKENS ============ */
-*,
-*::before,
-*::after { box-sizing: border-box; }
-
-html, body { height: 100%; margin: 0; }
-html, body, #root, .App { width: 100%; max-width: 100%; }
-
-:root{
-  --navbar-height: 3.75rem;            /* 60px */
-  --sidebar-width-collapsed: 3.4rem;  /* 60px */
-  --sidebar-width-expanded: 13rem;     /* ancho expandido que quieres */
-  --footer-height: 4.5rem;
-  --sidebar-transition: 0.3s ease;
-  
-  /* FUN Forms sidebar width - unified via CSS variable for dynamic modal alignment */
-  --fun-sidebar-width: 240px;
+/* ── Form elements ── */
+fieldset {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 
-/* Evita barra horizontal global */
-html, body, #root, .App { overflow-x: clip; }
-
-/* ============ SHELL ============ */
-.App{
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ============ NAVBAR FIJO ============ */
-.app-navbar-fixed{
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--navbar-height);
-  z-index: 1;               /* arriba de todo */
-}
-.app-navbar{
-  background:#fff;
-  border-bottom:1px solid #dee2e6;
-  box-shadow:0 2px 4px rgba(0,0,0,.1);
-  height:100%;
-  padding-inline:0 !important;
-  padding-left: 0 !important;
-}
-.app-navbar .rs-navbar-brand{ margin-left:.60rem; }
-
-/* ============ SIDEBAR ============ */
-.work-sidebar{
-  position: fixed;
-  left: 0;
-
-  /* centro del área disponible = navbar + (alto_disponible/2)
-     alto_disponible = 100svh - var(--navbar-height) */
-  top: calc((100svh + var(--navbar-height)) / 2);
-  transform: translateY(-50%);           /* sube medio alto del propio sidebar */
-
-  /* Puedes mantener tu “aire” vertical si lo quieres más corto que el hueco total */
-  height: calc(100svh - var(--navbar-height) - 1.3rem);
-  width: var(--sidebar-width-collapsed);
-  background:#f8f9fa;
-  border-right:1px solid #dee2e6;
-  box-shadow:2px 0 5px rgba(0,0,0,.1);
-  transition: width var(--sidebar-transition);
-  z-index: 10;                           /* menor/mayor que la navbar según necesites */
-  overflow-y: auto; 
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color:#dee2e6 transparent;
-  border-radius: 5px;
-}
-
-/* Fallback por si algún navegador no soporta 100svh */
-@supports not (height: 100svh) {
-  .work-sidebar{
-    top: calc((100vh + var(--navbar-height)) / 2);
-    height: calc(100vh - var(--navbar-height) - 8rem);
-  }
-}
-
-.work-sidebar.expanded{ width: var(--sidebar-width-expanded); }
-
-/* ============ MAIN (LLENA EL ESPACIO, SIN CENTRADOS FORZADOS) ============ */
-.app-main{
-  flex: 1;
-  margin-top: var(--navbar-height);
-  margin-left: var(--sidebar-width-collapsed);
-  transition: margin-left var(--sidebar-transition);
-  min-height: calc(100svh - var(--navbar-height) - var(--footer-height));
-  padding: 12px;                /* padding pequeño y consistente */
-  display: block;               /* IMPORTANTE: sin grid/flex de centrado */
-  overflow-x: hidden;           /* por si algo intenta desbordar */
-}
-/* cuando se expande el sidebar, el main se desplaza */
-body.sidebar-expanded .app-main{ margin-left: var(--sidebar-width-expanded); }
-
-/* Contenedores internos: ocupan 100% siempre */
-.app-main .container,
-.app-main .container-fluid,
-.app-main .overlay-container,
-.app-main #overlayer,
-.app-main .bg-image,
-.app-main .bg-image-gr{
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 auto !important;
-  box-sizing: border-box;
-}
-
-/* Bloques muy anchos: scroll interno (no de la página) */
-.app-main .table-responsive,
-.app-main .overflow-x-auto,
-.app-main .scroll-x{
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* ============ OVERLAY MÓVIL ============ */
-.sidebar-overlay{
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.5);
-  z-index: 1;
-  opacity: 0; visibility: hidden;
-  transition: opacity var(--sidebar-transition), visibility var(--sidebar-transition);
-}
-.sidebar-overlay.active{ opacity:1; visibility:visible; }
-
-/* ============ RESPONSIVE ============ */
-@media (max-width: 48rem){ /* 768px */
-  :root{
-    --sidebar-width-collapsed: 0;
-    --sidebar-width-expanded: 17.5rem; /* 280px en móvil */
-  }
-  .work-sidebar{
-    width: var(--sidebar-width-expanded) !important;
-    transform: translateX(-100%);
-    transition: transform var(--sidebar-transition) !important;
-  }
-  .work-sidebar.expanded{ transform: translateX(0); }
-  .work-sidebar.collapsed{ transform: translateX(-100%); }
-
-  .app-main,
-  body.sidebar-expanded .app-main{ margin-left: 0 !important; }
-}
-
-@media (max-width: 30rem){ /* 480px */
-  :root{ --sidebar-width-expanded: 100vw; }
-  .work-sidebar{ width: 100vw !important; }
-  .app-main .overlay-container{ padding-inline: .5rem !important; }
-}
-
-/* ============ UTILIDADES QUE USAS ============ */
-.sidebar-toggle-btn{ position: relative; z-index: 1; }
-.btn-start, .btn-chat, .btn-accessibility{ z-index: 1 !important; }
-
-.no-auth .app-main { margin-left: 0 !important; }
-.no-auth .work-sidebar, .no-auth .sidebar-overlay { display: none !important; }
-
-
-
-
-/* Botón flotante: scroll al inicio */
-.btn-scroll-top{
-  position: fixed;
-  /* alineado al main cuando el sidebar está colapsado */
-  left: calc(12px + var(--sidebar-width-collapsed, 0px));
-  bottom: clamp(12px, env(safe-area-inset-bottom) + 12px, 24px);
-
-  width: 40px;
-  height: 40px;
-  border-radius: 9999px;
+legend {
   border: none;
-  background: #2651A8;              /* tu primario */
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(0,0,0,.15);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(6px);
-  transition: opacity .2s ease, visibility .2s ease, transform .2s ease;
-
-  z-index: 1300; /* por encima de overlay (1020) y sidebar (1030) */
+  border-radius: 0;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  width: auto;
+  color: hsl(var(--muted-foreground));
 }
 
-.btn-scroll-top i{
-  font-size: 1rem; /* icono más pequeño y legible */
+/* ── FUN Action menu popover ── */
+.fun-action-toggle {
+  padding: 0.2rem 0.4rem;
+  line-height: 1;
+  border-radius: 0.375rem;
+}
+
+.fun-action-menu {
+  min-width: 200px;
+  font-size: 0.8125rem;
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--popover));
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.fun-action-menu .dropdown-header {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(var(--muted-foreground));
+  padding: 0.35rem 0.75rem 0.2rem;
+}
+
+.fun-action-menu .dropdown-item {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.25rem;
+  margin: 0 0.25rem;
+}
+
+.fun-action-menu .dropdown-item:hover {
+  background-color: hsl(var(--muted));
+}
+
+.fun-action-menu .dropdown-divider {
+  margin: 0.25rem 0;
+  border-color: hsl(var(--border));
+}
+
+.popover:has(.fun-action-menu) {
+  max-width: none;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ── FUN daily grid & popovers ── */
+.daily-board-scroll .table-popover-btn {
+  width: 100%;
+  min-height: 1.35rem;
+  height: auto !important;
+  padding: 0.08rem 0.12rem !important;
+  border-radius: 0.12rem !important;
+  border-width: 1px !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   line-height: 1;
 }
 
-.btn-scroll-top:hover { filter: brightness(1.05); }
-.btn-scroll-top:active { transform: translateY(7px) scale(0.98); }
-.btn-scroll-top:focus-visible{
-  outline: 2px solid #9ec1ff;
-  outline-offset: 2px;
-}
-
-/* visible cuando hay scroll */
-.btn-scroll-top.show{
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-/* Si el sidebar está expandido, corre el botón a la derecha para alinearlo con el main */
-body.sidebar-expanded .btn-scroll-top{
-  left: calc(12px + var(--sidebar-width-expanded, 280px));
-}
-
-/* En móvil, ignora el ancho del sidebar (off-canvas) */
-@media (max-width: 48rem){ /* 768px */
-  .btn-scroll-top{
-    left: 12px !important;
-  }
-}
-
-
-
-
-
-
-
-/* Botón hamburguesa con caja fija (no mueve el logo) */
-.sidebar-toggle-btn{
-  width: 36px;
-  height: var(--navbar-height);
-  display: flex;
+.daily-board-scroll .daily-status-btn {
+  display: inline-flex !important;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 0 0 36px;
-  cursor: pointer;
-  border-bottom: 1px solid #dee2e6;
-  margin-right: .5rem;
+  gap: 0.1rem !important;
+  border-style: solid !important;
+  background-color: transparent !important;
+  box-shadow: none;
+  transition: background-color 100ms ease, border-color 100ms ease, color 100ms ease;
 }
-.sidebar-toggle-btn i{
-  font-size: 1.125rem;  /* mismo tamaño para bars/x */
-  width: 1.125rem;      /* reserva ancho del glyph */
+
+.daily-board-scroll .daily-status-btn:hover,
+.daily-board-scroll .daily-status-btn:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+
+.daily-board-scroll .daily-status-btn .daily-popover-context,
+.daily-board-scroll .daily-status-btn .daily-popover-id {
+  display: block;
+  width: 100%;
+  margin: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.1;
   text-align: center;
 }
 
-/* Sidebar items: altura y rejilla estables */
-.work-sidebar .module-item{
-  display: grid;
-  grid-template-columns: 24px 1fr; /* icono fijo + texto flexible */
-  align-items: center;
-  column-gap: 12px;
-  height: 44px;
-  padding: 0 16px;
-  position: relative;
-  cursor: pointer;
-  transition: background-color .2s ease;
-}
-.work-sidebar .module-item .module-icon{
-  width: 1.3rem; display: grid; place-items: center;
-}
-.work-sidebar .module-item .module-icon i{ font-size: 16px; line-height: 1; }
-.work-sidebar .module-item .module-name{
-  font-size: .875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.daily-board-scroll .daily-status-btn .daily-popover-context {
+  font-size: 0.48rem;
+  font-weight: 500;
 }
 
-/* Colapsado: oculta texto sin “empujar” iconos */
-.work-sidebar.collapsed .module-item{ grid-template-columns: 24px 0; }
-.work-sidebar.collapsed .module-item .module-name{ opacity: 0; pointer-events: none; }
+.daily-board-scroll .daily-status-btn .daily-popover-id {
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
 
-/* Hover/activo y línea azul lateral */
-.work-sidebar .module-item:hover{ background-color: #e9ecef; }
-.work-sidebar .module-item.active{ background-color: #e3f2fd; border-right: 3px solid #2651A8; }
-.work-sidebar .module-item::before{
-  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
-  width:3px; height:0; background:#2651A8; transition:height .2s ease;
-}
-.work-sidebar .module-item:hover::before{ height:60%; }
-.work-sidebar .module-item.active::before{ height:100%; }
+/* ── Outlined style: border + text colored, transparent bg by default ── */
 
-/* Cajón de usabilidad (derecha del navbar) */
-.nav-right{
-  display: flex;
-  align-items: center;
+.daily-board-scroll .daily-status-primary {
+  border-color: #0d6efd !important;
+  color: #0d6efd !important;
 }
-.nav-ux-group{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 6px;
-  border: 1px solid #e5e7eb;
-  border-radius: 9999px;           /* pill */
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0,0,0,.05);
-  margin-right: 8px;               /* separa del perfil */
+.daily-board-scroll .daily-status-primary:hover,
+.daily-board-scroll .daily-status-primary:focus-visible,
+.daily-board-scroll .daily-status-primary.is-selected {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  color: #fff !important;
 }
-.nav-icon-btn{
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  border-radius: 9999px;
-  display: grid; place-items: center;
-  cursor: pointer;
-}
-.nav-icon-btn i{ font-size: 16px; line-height: 1; }
-.nav-icon-btn:hover{ background: rgba(0,0,0,.06); }
-.nav-icon-btn.whats i{ color: #25D366; }  /* color WhatsApp */
 
-/* Solo el botón del popover */
-.table-popover-btn{
-  width: 100%;            /* ocupa todo el ancho de su col */
-  padding: .2rem !important;
-  border-radius: 7px !important; /* menos curvo */
-  /* margin-bottom: .3rem; */
-  border-width: 1.7px !important;
+.daily-board-scroll .daily-status-warning {
+  border-color: #d39e00 !important;
+  color: #856404 !important;
+}
+.daily-board-scroll .daily-status-warning:hover,
+.daily-board-scroll .daily-status-warning:focus-visible,
+.daily-board-scroll .daily-status-warning.is-selected {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #212529 !important;
+}
+
+.daily-board-scroll .daily-status-danger {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+}
+.daily-board-scroll .daily-status-danger:hover,
+.daily-board-scroll .daily-status-danger:focus-visible,
+.daily-board-scroll .daily-status-danger.is-selected {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.daily-board-scroll .daily-status-success {
+  border-color: #198754 !important;
+  color: #198754 !important;
+}
+.daily-board-scroll .daily-status-success:hover,
+.daily-board-scroll .daily-status-success:focus-visible,
+.daily-board-scroll .daily-status-success.is-selected {
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+  color: #fff !important;
+}
+
+.daily-board-scroll .daily-status-dark {
+  border-color: #495057 !important;
+  color: #212529 !important;
+}
+.daily-board-scroll .daily-status-dark:hover,
+.daily-board-scroll .daily-status-dark:focus-visible,
+.daily-board-scroll .daily-status-dark.is-selected {
+  background-color: #212529 !important;
+  border-color: #212529 !important;
+  color: #fff !important;
+}
+
+.daily-board-scroll .daily-status-secondary {
+  border-color: #6f42c1 !important;
+  color: #6f42c1 !important;
+}
+.daily-board-scroll .daily-status-secondary:hover,
+.daily-board-scroll .daily-status-secondary:focus-visible,
+.daily-board-scroll .daily-status-secondary.is-selected {
+  background-color: #6f42c1 !important;
+  border-color: #6f42c1 !important;
+  color: #fff !important;
+}
+
+.daily-board-scroll .daily-status-info {
+  border-color: #0dcaf0 !important;
+  color: #0dcaf0 !important;
+}
+.daily-board-scroll .daily-status-info:hover,
+.daily-board-scroll .daily-status-info:focus-visible,
+.daily-board-scroll .daily-status-info.is-selected {
+  background-color: #0dcaf0 !important;
+  border-color: #0dcaf0 !important;
+  color: #052c33 !important;
+}
+
+/* ── Dark mode: adjust text colors for better readability ── */
+.dark .daily-board-scroll .daily-status-warning {
+  color: #ffc107 !important;
+  border-color: #ffc107 !important;
+}
+.dark .daily-board-scroll .daily-status-dark {
+  border-color: #adb5bd !important;
+  color: #dee2e6 !important;
+}
+.dark .daily-board-scroll .daily-status-dark:hover,
+.dark .daily-board-scroll .daily-status-dark:focus-visible,
+.dark .daily-board-scroll .daily-status-dark.is-selected {
+  background-color: #adb5bd !important;
+  border-color: #adb5bd !important;
+  color: #212529 !important;
+}
+
+/* ── Selected state ring ── */
+.daily-board-scroll .daily-status-btn.is-selected {
+  outline: 1px solid currentColor;
+  outline-offset: 1px;
+  box-shadow: none;
 }
 
 .inline-text-strong,
@@ -485,17 +384,183 @@ body.sidebar-expanded .btn-scroll-top{
   margin: 0;
 }
 
-.btn-grid{
+.daily-board-scroll .btn-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 por fila */
-  gap: .5rem;                                      /* separación uniforme */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.12rem;
+  align-items: stretch;
+  width: 100%;
 }
 
-.header-bg-primary{
-  background-color: #6B7280 !important;
+.daily-board-scroll .header-bg-primary {
+  background-color: #b8c9d4 !important;
+  border-color: #17a2c0 !important;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  padding-top: 0.12rem !important;
+  padding-bottom: 0.12rem !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  z-index: 2;
 }
 
+.daily-board-scroll .header-bg-primary > .col {
+  flex: 0 0 220px !important;
+  max-width: 220px;
+  min-width: 220px;
+  min-height: 1.85rem;
+  padding-right: 0.1rem !important;
+  padding-left: 0.1rem !important;
+  border-right: 1px solid #17a2c0;
+  border-left: 1px solid #17a2c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.daily-board-scroll .header-bg-primary .btn {
+  color: #14313a !important;
+  text-decoration: none !important;
+  width: 100%;
+}
+
+.daily-board-scroll .header-bg-primary h6,
+.daily-board-scroll .header-bg-primary .text-white {
+  color: #14313a !important;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.daily-board-scroll .daily-board-table-shell {
+  overflow: visible;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  background: #fff;
+}
+
+.daily-board-scroll {
+  width: 100%;
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid #17a2c0;
+  border-top: 0;
+  background: #fff;
+}
+
+.daily-board-scroll .daily-board-table-shell > .row:first-child {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.daily-board-scroll .daily-board-table-shell > .row:first-child > div,
+#main-content .daily-board-scroll .daily-board-table-shell > .row:first-child > div.bg-info {
+  height: 1.55rem;
+  background-color: #5bc0de !important;
+  border-color: #17a2c0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.daily-board-scroll .daily-board-table-shell > .row:first-child h5 {
+  color: #14313a !important;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.daily-board-scroll .daily-board-row {
+  flex-wrap: nowrap !important;
+  align-items: flex-start;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+.daily-board-scroll .daily-board-column {
+  flex: 0 0 220px !important;
+  max-width: 220px;
+  min-width: 220px;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+.daily-board-scroll .daily-board-section-row + .daily-board-section-row {
+  margin-top: 0;
+}
+
+.daily-board-scroll .daily-board-section-row {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
+.daily-board-scroll .daily-board-bucket {
+  min-height: 3.15rem;
+  overflow: hidden;
+  border-radius: 0;
+  border-color: #17a2c0 !important;
+  background: #fff;
+  box-shadow: none;
+  padding: 0.16rem 0.18rem !important;
+}
+
+.daily-board-scroll .daily-board-bucket-title {
+  margin: 0 0 0.12rem;
+  min-height: 1.28rem;
+  color: #152f38;
+  font-size: 0.72rem;
+  line-height: 1.05;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.daily-board-scroll .daily-board-deferred {
+  padding: 0.2rem;
+  color: #495057;
+  font-size: 0.68rem;
+  line-height: 1.1;
+}
+
+.daily-board-scroll .daily-board-deferred .small {
+  font-size: 0.66rem;
+  line-height: 1.1;
+}
+
+.daily-board-scroll .daily-board-deferred-btn {
+  min-height: 1.55rem !important;
+  padding: 0.1rem 0.4rem !important;
+  border-radius: 0.15rem !important;
+  font-size: 0.68rem !important;
+}
+
+.daily-board-scroll .daily-bucket-primary { --daily-bucket-accent: #0d6efd; }
+.daily-board-scroll .daily-bucket-warning { --daily-bucket-accent: #ffc107; }
+.daily-board-scroll .daily-bucket-danger { --daily-bucket-accent: #dc3545; }
+.daily-board-scroll .daily-bucket-success { --daily-bucket-accent: #198754; }
+.daily-board-scroll .daily-bucket-dark { --daily-bucket-accent: #212529; }
+.daily-board-scroll .daily-bucket-secondary { --daily-bucket-accent: #6f42c1; }
+.daily-board-scroll .daily-bucket-info { --daily-bucket-accent: #0dcaf0; }
+
+@media (max-width: 991.98px) {
+  .daily-board-scroll .daily-board-column {
+    flex-basis: 200px !important;
+    max-width: 200px;
+    min-width: 200px;
+  }
+
+  .daily-board-scroll .btn-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ── Popover z-index fix ── */
 .popover {
-    z-index: 10500 !important;
+  z-index: 10500 !important;
 }

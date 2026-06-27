@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBBtn, MDBCollapse } from 'mdb-react-ui-kit';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../components/TagInput';
 import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import FUNService from '../../../../services/fun.service'
-import { ReactGrid } from "@silevis/reactgrid";
-import "@silevis/reactgrid/styles.css";
 import RECORD_ARC_AREAS_RESUME from './record_arc_areas_resumen.component';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
-
-var tagHRef = React.createRef();
-var tagERef = React.createRef();
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_ARC_AREAS_2(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const tagHRef = useRef(null);
+    const tagERef = useRef(null);
     const _Header = [
         "#",
         "Sótano/Piso",
@@ -149,25 +146,68 @@ export default function RECORD_ARC_AREAS_2(props) {
         'Reconstruida',
     ];
 
-
-    const MySwal = withReactContent(Swal);
     var [data, setData] = useState([]);
     var [saving, setSaving] = useState(-1);
     var [Header, setHeader] = useState(_Header)
     var [openConfig, setOc] = useState(false);
     var [tagsH, setTagH] = useState([]);
     var [tagsE, setTagE] = useState([]);
-    var saveCounter = 0;
+    const gridRef = useRef(null);
+    const didDragSelectRef = useRef(false);
+    const [selectedRange, setSelectedRange] = useState(null);
+    const [dragAnchor, setDragAnchor] = useState(null);
+    const [editingCell, setEditingCell] = useState(null);
+    const [colWidths, setColWidths] = useState([]);
+    const [saveError, setSaveError] = useState('');
+    const areaSaveBatchRef = useRef(0);
+    const hasLocalAreaChangesRef = useRef(false);
+    const loadedRecordIdRef = useRef(null);
+
+    let _MEASURE_TEXT = (text, fontSize = 12.8) => {
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+            return ctx.measureText(String(text ?? '')).width;
+        } catch {
+            return String(text ?? '').length * 7;
+        }
+    };
+
+    useEffect(() => {
+        if (!Array.isArray(Header) || Header.length === 0) return;
+        const PADDING = 16;
+        const MIN_COL_0 = 40;
+        const MIN_COL_REST = 70;
+        const widths = Header.map((h, colIdx) => {
+            if (colIdx === 0) return MIN_COL_0;
+            let max = _MEASURE_TEXT(h) + PADDING * 2;
+            if (Array.isArray(data)) {
+                data.forEach((row) => {
+                    if (!Array.isArray(row)) return;
+                    const cell = row[colIdx];
+                    if (!cell) return;
+                    const w = _MEASURE_TEXT(cell.value) + PADDING * 2;
+                    if (w > max) max = w;
+                });
+            }
+            return Math.max(max, MIN_COL_REST);
+        });
+        setColWidths(widths);
+    }, [Header, data]);
 
     useEffect(() => {
         if (currentRecord.record_arc_33_areas != null) {
-            _SET_DATA()
+            const recordId = currentRecord?.id ?? null;
+            const changedRecord = loadedRecordIdRef.current !== recordId;
+            if (changedRecord) {
+                hasLocalAreaChangesRef.current = false;
+                loadedRecordIdRef.current = recordId;
+                setSaveError('');
+            }
+            if (!hasLocalAreaChangesRef.current) _SET_DATA()
         }
-    }, [currentRecord.record_arc_33_areas, currentItem.fun_1s]);
-
-    useEffect(() => {
-        if (data.length != 0) manage_areas(false);
-    }, [data.length]);
+    }, [currentRecord.id, currentRecord.record_arc_33_areas, currentItem.fun_1s]);
     // ***************************  DATA GETTERS *********************** //
     let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -217,7 +257,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         return _AREAS;
     }
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_arc_steps;
+        var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }
@@ -279,7 +319,6 @@ export default function RECORD_ARC_AREAS_2(props) {
         return sum;
     }
 
-
     let _GET_TOTAL_AREA = (_build, _historic) => {
         if (!_build) return 0;
         var build = _build.split(",");
@@ -301,7 +340,6 @@ export default function RECORD_ARC_AREAS_2(props) {
         let sum = destroy.reduce((p, n) => Number(p) + Number(n))
         return (sum).toFixed(2);
     }
-
 
     let _GET_NET_INDEX = (_build, _destroy, _historic) => {
         if (!_build) return 0;
@@ -330,7 +368,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         let currentfloorNumber = (_floor || '').replace(/^\D+/g, '');
 
         let areas = _GET_CHILD_33_AREAS();
-        areas.sort((a, b) => array_sort(a, b));
+        areas = [...areas].sort((a, b) => array_sort(a, b));
 
         let new_areas = areas.filter(item => {
             let floor = item.floor ? item.floor : ' ';
@@ -352,7 +390,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         });
         let floor_index = -1;
         let sum = 0;
-        if (con) new_areas.reverse();
+        if (con) new_areas = [...new_areas].reverse();
 
         new_areas.map((item, i) => { if (_floor === item.floor) floor_index = i; })
         if (floor_index != -1) {
@@ -518,7 +556,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 0), name: 'build_0', color: 'green', id: (v) => v.id, },)
         }
 
-
         if (child.m_lic.includes('g') && !_header.includes('Demolida parcial')) {
             _header.splice(spliceOffset, 0, 'Demolida parcial')
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 7), name: 'build_7', color: 'green', id: (v) => v.id, },)
@@ -527,7 +564,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             _header.splice(spliceOffset, 0, 'Demolida total')
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 6), name: 'build_6', color: 'green', id: (v) => v.id, },)
         }
-
 
         tagsH.map((tag, i) => {
             if (!_header.includes(tag)) {
@@ -542,8 +578,6 @@ export default function RECORD_ARC_AREAS_2(props) {
                 _cells.splice(spliceOffset + i, 0, { value: (v) => _CHECK_AREA_STR(v, 'empate_h', i, ';'), name: 'empate_' + i, color: 'green', id: (v) => v.id, },)
             }
         })
-
-
 
         destory_check.map((label, i) => {
             if (destroy_cb[i] === 'true' && !_header.some(h => h === label)) {
@@ -568,7 +602,7 @@ export default function RECORD_ARC_AREAS_2(props) {
 
         // SORTS THE ARRAYS AND PROCESS TO FILL THE VALUES OF THE SPREADSHEET
         setHeader(_header);
-        var newData = _AREAS.sort((a, b) => array_sort(a, b));
+        var newData = [..._AREAS].sort((a, b) => array_sort(a, b));
         let cells = (v, i) => {
             return _cells.map((c, j) => {
                 return {
@@ -864,7 +898,6 @@ export default function RECORD_ARC_AREAS_2(props) {
                             })
                         }
 
-
                         if (_h.includes('Empate: ')) {
                             tagsE.map((tag, i) => {
                                 if (_h === 'Empate: ' + tag) {
@@ -874,8 +907,6 @@ export default function RECORD_ARC_AREAS_2(props) {
                                 }
                             })
                         }
-
-
 
                         cell.push(cellObj)
                     }
@@ -915,7 +946,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             newData.splice(newData.length - 1, 0, newRow)
         }
 
-
         for (let i = 0; i < ss; i++) {
             let newRow = Array.from(data[0]).map(v => { return { name: v.name, value: '' } })
             let rowAdd = { value: "Semisótano", name: 'floor', }
@@ -931,6 +961,9 @@ export default function RECORD_ARC_AREAS_2(props) {
         }
 
         setData(newData);
+        hasLocalAreaChangesRef.current = true;
+        setSaveError('');
+        manage_areas(newData);
 
     }
     function _REMOVE_TO_TABLE() {
@@ -941,7 +974,6 @@ export default function RECORD_ARC_AREAS_2(props) {
 
         if (!en && st) en = st
         else if (!st && en) st = en
-
 
         if (st > en) {
             let saven = st;
@@ -961,44 +993,321 @@ export default function RECORD_ARC_AREAS_2(props) {
         newData.splice(st, del)
 
         setData(newData)
+        hasLocalAreaChangesRef.current = true;
+        setSaveError('');
+        manage_areas(newData);
     }
     // ******************************* JSX ***************************** // 
-    let _COMPONENT_TABLE_2 = () => {
-        const getColumns = () => Header.map((v, i) => { return { columnId: v || 'column_' + i, width: i === 0 ? 50 : 150 } });
-        const headerRow = {
-            rowId: "header",
-            cells: Header.map(v => { return { type: "header", text: v } }),
+    let _handleCellEdit = (rowIdx, cellName, cellId, newValue) => {
+        let changes = [{
+            previousCell: { name: cellName, ref: cellId },
+            newCell: { text: newValue },
+        }];
+        change_areas(changes);
+    };
+
+    let _GET_ROW_REF = (row, rowIdx) => {
+        if (!Array.isArray(row)) return 'cell_' + rowIdx;
+        return row[0]?.id || 'cell_' + rowIdx;
+    }
+
+    let _NORMALIZE_RANGE = (range) => {
+        if (!range) return null;
+        return {
+            startRow: Math.min(range.startRow, range.endRow),
+            endRow: Math.max(range.startRow, range.endRow),
+            startCol: Math.min(range.startCol, range.endCol),
+            endCol: Math.max(range.startCol, range.endCol),
         };
+    }
 
-        const getRows = (_data) => [
-            headerRow,
-            ..._data.map((d, idx) => ({
-                rowId: idx,
-                cells: d.map(c => ({ type: "text", text: String(c.value) || ' ', ref: d[0].id || 'cell_' + idx, name: c.name, style: { background: c.readOnly ? 'gainsboro' : '', color: c.color }, nonEditable: c.readOnly })),
-            }))
-        ];
+    let _IS_CELL_SELECTED = (rowIdx, colIdx) => {
+        let range = _NORMALIZE_RANGE(selectedRange);
+        if (!range) return false;
+        return rowIdx >= range.startRow && rowIdx <= range.endRow && colIdx >= range.startCol && colIdx <= range.endCol;
+    }
 
-        const rows = getRows(data);
-        const columns = getColumns();
+    let _IS_ACTIVE_CELL = (rowIdx, colIdx) => {
+        return selectedRange?.startRow === rowIdx && selectedRange?.startCol === colIdx;
+    }
 
-        return <div className='ovx'><ReactGrid rows={rows} columns={columns} stickyLeftColumns={2}
-            onCellsChanged={(dataChange) => change_areas(dataChange)}
-            enableFillHandle
-            enableRangeSelection
-            enableGroupIdRender
-        /></div>
+    let _BUILD_CHANGES = (entries) => {
+        return entries.filter((entry) => {
+            if (!Number.isInteger(entry.rowIdx) || !Number.isInteger(entry.colIdx)) return false;
+            let row = data[entry.rowIdx];
+            let cell = row?.[entry.colIdx];
+            if (!cell || cell.readOnly || !cell.name) return false;
+            return true;
+        }).map((entry) => {
+            let row = data[entry.rowIdx];
+            let cell = row[entry.colIdx];
+            return {
+                previousCell: { name: cell.name, ref: _GET_ROW_REF(row, entry.rowIdx) },
+                newCell: { text: entry.value },
+            };
+        });
+    }
+
+    let _GET_SELECTED_TEXT = () => {
+        let range = _NORMALIZE_RANGE(selectedRange);
+        if (!range) return '';
+
+        return data.slice(range.startRow, range.endRow + 1).map((row) => {
+            let safeRow = Array.isArray(row) ? row : [];
+            return safeRow.slice(range.startCol, range.endCol + 1).map((cell) => cell?.value ?? '').join('\t');
+        }).join('\n');
+    }
+
+    let _PASTE_SELECTED_TEXT = (text) => {
+        let range = _NORMALIZE_RANGE(selectedRange);
+        if (!range || !text) return;
+
+        let values = text.replace(/\r/g, '').split('\n').filter((row, index, source) => row || index < source.length - 1).map((row) => row.split('\t'));
+        if (!values.length) return;
+
+        let changes = _BUILD_CHANGES(values.flatMap((rowValues, rowOffset) => rowValues.map((value, colOffset) => ({
+            rowIdx: range.startRow + rowOffset,
+            colIdx: range.startCol + colOffset,
+            value,
+        }))));
+
+        if (!changes.length) return;
+        change_areas(changes);
+    }
+
+    let _CLEAR_SELECTED_CELLS = () => {
+        let range = _NORMALIZE_RANGE(selectedRange);
+        if (!range) return;
+
+        let changes = _BUILD_CHANGES(Array.from({ length: range.endRow - range.startRow + 1 }, (_, rowOffset) => {
+            return Array.from({ length: range.endCol - range.startCol + 1 }, (_, colOffset) => ({
+                rowIdx: range.startRow + rowOffset,
+                colIdx: range.startCol + colOffset,
+                value: '',
+            }));
+        }).flat());
+
+        if (!changes.length) return;
+        change_areas(changes);
+    }
+
+    let _ACTIVATE_CELL = (rowIdx, colIdx) => {
+        gridRef.current?.focus();
+        setSelectedRange({ startRow: rowIdx, endRow: rowIdx, startCol: colIdx, endCol: colIdx });
+    }
+
+    let _HANDLE_GRID_KEY_DOWN = (event) => {
+        if (editingCell) return;
+        if ((event.ctrlKey || event.metaKey) && ['c', 'v'].includes(event.key.toLowerCase())) return;
+
+        if ((event.key === 'Delete' || event.key === 'Backspace') && selectedRange) {
+            event.preventDefault();
+            _CLEAR_SELECTED_CELLS();
+            return;
+        }
+
+        if (event.key === 'Enter' && selectedRange) {
+            let cell = data[selectedRange.startRow]?.[selectedRange.startCol];
+            if (!cell || cell.readOnly) return;
+            event.preventDefault();
+            setEditingCell({ row: selectedRange.startRow, col: selectedRange.startCol });
+        }
+    }
+
+    let _HANDLE_CELL_MOUSE_DOWN = (event, rowIdx, colIdx) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        didDragSelectRef.current = false;
+        setEditingCell(null);
+        _ACTIVATE_CELL(rowIdx, colIdx);
+        setDragAnchor({ row: rowIdx, col: colIdx });
+    }
+
+    let _HANDLE_CELL_MOUSE_ENTER = (rowIdx, colIdx) => {
+        if (!dragAnchor) return;
+        didDragSelectRef.current = true;
+        setSelectedRange({ startRow: dragAnchor.row, startCol: dragAnchor.col, endRow: rowIdx, endCol: colIdx });
+    }
+
+    let _HANDLE_CELL_CLICK = (event, rowIdx, colIdx) => {
+        if (didDragSelectRef.current) {
+            didDragSelectRef.current = false;
+            return;
+        }
+
+        gridRef.current?.focus();
+        if (event.shiftKey && selectedRange) {
+            setSelectedRange({
+                startRow: selectedRange.startRow,
+                startCol: selectedRange.startCol,
+                endRow: rowIdx,
+                endCol: colIdx,
+            });
+            return;
+        }
+
+        _ACTIVATE_CELL(rowIdx, colIdx);
+
+        const cell = data[rowIdx]?.[colIdx];
+        if (cell && !cell.readOnly) {
+            setEditingCell({ row: rowIdx, col: colIdx });
+        }
+    }
+
+    let _HANDLE_CELL_DOUBLE_CLICK = (rowIdx, colIdx, isReadOnly) => {
+        if (isReadOnly) return;
+        _ACTIVATE_CELL(rowIdx, colIdx);
+        setEditingCell({ row: rowIdx, col: colIdx });
+    }
+
+    let _COMPONENT_TABLE_2 = () => {
+        const safeData = Array.isArray(data) ? data : [];
+        const safeHeader = Array.isArray(Header) ? Header : [];
+
+        return (
+            <div
+                ref={gridRef}
+                className='ovx'
+                style={{ overflowX: 'auto', userSelect: editingCell ? 'text' : 'none' }}
+                tabIndex={0}
+                onMouseUp={() => setDragAnchor(null)}
+                onMouseLeave={() => setDragAnchor(null)}
+                onKeyDown={_HANDLE_GRID_KEY_DOWN}
+                onCopy={(event) => {
+                    let text = _GET_SELECTED_TEXT();
+                    if (!text) return;
+                    event.preventDefault();
+                    event.clipboardData.setData('text/plain', text);
+                }}
+                onPaste={(event) => {
+                    if (editingCell) return;
+                    let text = event.clipboardData.getData('text/plain');
+                    if (!text) return;
+                    event.preventDefault();
+                    _PASTE_SELECTED_TEXT(text);
+                }}
+            >
+                <table className='table table-bordered table-sm' style={{ minWidth: colWidths.length ? colWidths.reduce((a, b) => a + b, 0) : safeHeader.length * 100, tableLayout: 'fixed' }}>
+                    <thead>
+                        <tr>
+                            {safeHeader.map((h, i) => (
+                                <th key={'th_' + i}
+                                    style={{
+                                        width: colWidths[i] ?? (i === 0 ? 40 : 100),
+                                        position: i < 2 ? 'sticky' : undefined,
+                                        left: i === 0 ? 0 : i === 1 ? (colWidths[0] ?? 40) : undefined,
+                                        zIndex: i < 2 ? 2 : undefined,
+                                        background: '#f8f9fa',
+                                        whiteSpace: 'nowrap',
+                                        fontSize: '0.8rem',
+                                    }}
+                                    className='text-center'
+                                >
+                                    {h}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {safeData.map((row, rowIdx) => {
+                            const safeRow = Array.isArray(row) ? row : [];
+                            return (
+                                <tr key={'row_' + rowIdx}>
+                                    {safeRow.map((cell, colIdx) => {
+                                        const isReadOnly = cell.readOnly || false;
+                                        const cellValue = cell.value != null ? String(cell.value) : '';
+                                        const cellId = _GET_ROW_REF(safeRow, rowIdx);
+                                        const cellName = cell.name || '';
+                                        const isSelected = _IS_CELL_SELECTED(rowIdx, colIdx);
+                                        const isActive = _IS_ACTIVE_CELL(rowIdx, colIdx);
+                                        const isEditing = editingCell?.row === rowIdx && editingCell?.col === colIdx && !isReadOnly;
+
+                                        return (
+                                            <td key={'cell_' + rowIdx + '_' + colIdx}
+                                                data-arc-row={rowIdx}
+                                                data-arc-col={colIdx}
+                                                style={{
+                                                    width: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
+                                                    position: colIdx < 2 ? 'sticky' : undefined,
+                                                    left: colIdx === 0 ? 0 : colIdx === 1 ? (colWidths[0] ?? 40) : undefined,
+                                                    zIndex: colIdx < 2 ? 1 : undefined,
+                                                    background: isSelected ? 'rgba(37, 99, 235, 0.14)' : isReadOnly ? 'gainsboro' : '#fff',
+                                                    color: cell.color || undefined,
+                                                    fontSize: '0.8rem',
+                                                    padding: '2px 4px',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    minWidth: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
+                                                    maxWidth: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
+                                                    outline: isActive ? '2px solid #2563eb' : undefined,
+                                                    outlineOffset: isActive ? '-2px' : undefined,
+                                                    cursor: isReadOnly ? 'default' : 'cell',
+                                                }}
+                                                className={`${cell.className || ''} ${isSelected ? 'arc-areas-selection-cell' : ''} ${isActive ? 'arc-areas-selection-active' : ''}`.trim()}
+                                                onMouseDown={(event) => _HANDLE_CELL_MOUSE_DOWN(event, rowIdx, colIdx)}
+                                                onMouseEnter={() => _HANDLE_CELL_MOUSE_ENTER(rowIdx, colIdx)}
+                                                onClick={(event) => _HANDLE_CELL_CLICK(event, rowIdx, colIdx)}
+                                                onDoubleClick={() => _HANDLE_CELL_DOUBLE_CLICK(rowIdx, colIdx, isReadOnly)}
+                                            >
+                                                {isEditing ? (
+                                                    <input
+                                                        type='text'
+                                                        autoFocus
+                                                        defaultValue={cellValue}
+                                                        style={{
+                                                            width: '100%',
+                                                            border: 'none',
+                                                            outline: 'none',
+                                                            background: 'transparent',
+                                                            color: 'inherit',
+                                                            fontSize: 'inherit',
+                                                            padding: 0,
+                                                        }}
+                                                        onFocus={(e) => e.target.select()}
+                                                        onBlur={(e) => {
+                                                            if (e.target.value !== cellValue) {
+                                                                _handleCellEdit(rowIdx, cellName, cellId, e.target.value);
+                                                            }
+                                                            setEditingCell(null);
+                                                        }}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault();
+                                                                e.target.blur();
+                                                            }
+                                                            if (e.key === 'Escape') {
+                                                                e.preventDefault();
+                                                                setEditingCell(null);
+                                                                gridRef.current?.focus();
+                                                            }
+                                                        }}
+                                                    />
+                                                ) : isReadOnly ? (
+                                                    <span>{cellValue}</span>
+                                                ) : (
+                                                    <span>{cellValue}</span>
+                                                )}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        );
     }
     let _COMPONENT_BTNS = () => {
         return <>
             <div className='row'>
                 <div className='col-8'>
-                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
-                        <MDBBtn color='primary' outline={!openConfig} size='sm'
-                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</MDBBtn>
-                        <MDBBtn color='primary' outline size='sm'
-                            onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</MDBBtn>
-                        <MDBBtn color='success' outline size='sm'
-                            onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</MDBBtn>
+                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
+                        <Button variant={!openConfig ? "outline" : "default"} size="sm"
+                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</Button>
+                        <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</Button>
+                        <Button variant="outline" size="sm" onClick={() => manage_areas(undefined, true)}>GUARDAR CAMBIOS</Button>
                     </div>
                     <div>
                         {saving === 0 ?
@@ -1007,15 +1316,17 @@ export default function RECORD_ARC_AREAS_2(props) {
                         {saving === 1 ?
                             <label className='fw-bold text-success'>DATOS GUARDADOS</label>
                             : ''}
+                        {saving === 2 ?
+                            <label className='fw-bold text-danger'>{saveError || 'NO SE PUDO GUARDAR. REVISA LA CONEXIÓN Y VUELVE A INTENTAR.'}</label>
+                            : ''}
                     </div>
 
                 </div>
                 <div className='col text-end'>
-                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area" />
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area_end" />
-                        <MDBBtn color='danger' outline size='sm'
-                            onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</MDBBtn>
+                        <Button variant="outline" size="sm" className="text-destructive border-destructive" onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</Button>
                     </div>
                 </div>
             </div>
@@ -1049,12 +1360,12 @@ export default function RECORD_ARC_AREAS_2(props) {
         ]
         const json34 = _GET_STEP_TYPE_JSON('s34');
         return <>
-            <MDBCollapse show={openConfig}>
+            <UiCollapsible open={openConfig}><CollapsibleContent>
                 <div className='row border p-2'>
                     <div className='row mb-1'>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Otros (Históricos, Etapas, etc...):</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsH}
                                 placeholder="Histórico..."
                                 onChange={(newTags) => { setTagH(newTags); manage_step(newTags, 'h') }}
@@ -1064,7 +1375,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                         </div>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Empate:</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsE}
                                 placeholder="Empate..."
                                 onChange={(newTags) => { setTagE(newTags); manage_step(newTags, 'e') }}
@@ -1078,10 +1389,10 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <label className='mx-2 fw-bold'>Usar Áreas Modalidad:</label>
                             {type_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="type_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="type_cb"
                                             defaultChecked={child_1_cb[i]} onChange={() => manage_step(false, 'f1')} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -1090,10 +1401,10 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <label className='mx-2 fw-bold'>Usar Áreas descontadas:</label>
                             {destory_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="destroy_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="destroy_cb"
                                             defaultChecked={destroy_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -1102,10 +1413,10 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <label className='mx-2  fw-bold'>Usar Unidades nuevas:</label>
                             {units_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="units_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="units_cb"
                                             defaultChecked={units_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -1114,10 +1425,10 @@ export default function RECORD_ARC_AREAS_2(props) {
                             <label className='mx-2  fw-bold'>Usar Áreas nuevas:</label>
                             {units_a_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="units_a_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="units_a_cb"
                                             defaultChecked={units_a_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -1126,55 +1437,55 @@ export default function RECORD_ARC_AREAS_2(props) {
                     <div className='row'>
                         <label className='mx-2 mt-2 fw-bold'>Crear edificio:</label>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Pis.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Pis.</div>
                                 </div>
                                 <input type='number' step={1} min={0} defaultValue={1} className="text-end form-control" id="create_b_fl" />
                             </div>
                         </div>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Smt.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Smt.</div>
                                 </div>
                                 <input type='number' step={1} min={0} max={1} defaultValue={0} className="text-end form-control" id="create_b_ss" />
                             </div>
                         </div>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Sót.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Sót.</div>
                                 </div>
                                 <input type='number' step={1} min={0} defaultValue={0} className="text-end form-control" id="create_b_st" />
                             </div>
                         </div>
                         <div className='col-2'>
-                            <MDBBtn color='primary' outline size='sm' onClick={() => _NEW_BD()}>CREAR</MDBBtn>
+                            <Button variant="outline" size="sm" onClick={() => _NEW_BD()}>CREAR</Button>
                         </div>
                         <div className='col'>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="cb_level_rule" onChange={() => manage_step()} defaultChecked={LEVEL_RULE[0] === '1'} />
-                                <label class="form-check-label fw-bold" for="cb_level_rule">Usar entre pisos</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="cb_level_rule" onChange={() => manage_step()} defaultChecked={LEVEL_RULE[0] === '1'} />
+                                <label className="form-check-label fw-bold" htmlFor="cb_level_rule">Usar entre pisos</label>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div className="form-group row">
                         <label className="col-sm-2 col-form-label">Tipo</label>
-                        <div class="col-sm-4">
+                        <div className="col-sm-4">
                             <input type="text" className="form-control" id="r_a_34_a-1" defaultValue={json34.tipo}  onBlur={() => manage_ra_34()} />
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col pt-3'>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="cb_level_complete" onChange={() => update_category(false)} defaultChecked={tb_ok === '1'} />
-                                <label class="form-check-label fw-bold" for="cb_level_complete">Marcar tabla de áreas como completa</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="cb_level_complete" onChange={() => update_category(false)} defaultChecked={tb_ok === '1'} />
+                                <label className="form-check-label fw-bold" htmlFor="cb_level_complete">Marcar tabla de áreas como completa</label>
                             </div>
                         </div>
                     </div>
                 </div>
-            </MDBCollapse>
+            </CollapsibleContent></UiCollapsible>
 
         </>
     }
@@ -1182,29 +1493,42 @@ export default function RECORD_ARC_AREAS_2(props) {
 
     // ************
     let change_areas = (changes) => {
+        if (!Array.isArray(changes) || changes.length === 0) return;
         setSaving(0);
-        let old_data = data;
+        setSaveError('');
+        hasLocalAreaChangesRef.current = true;
+        let old_data = Array.isArray(data) ? data : [];
         let new_data = [];
 
-        new_data = old_data.map(od => {
+        new_data = old_data.map((od, rowIdx) => {
+            if (!Array.isArray(od)) return od;
+            let rowRef = _GET_ROW_REF(od, rowIdx);
             return od.map(cell => {
                 let newCell = {};
-                let findCell = changes.find(f => cell.name === f.previousCell.name && cell.id === f.previousCell.ref)
+                let findCell = changes.find(f => cell.name === f.previousCell.name && rowRef === f.previousCell.ref)
                 if (findCell) newCell = { ...cell, value: findCell.newCell.text, }
                 else newCell = cell
                 return newCell;
             })
         });
 
-
-
         setData(new_data);
         manage_areas(new_data);
     }
-    let manage_areas = (new_data) => {
+    let manage_areas = (new_data, useSwal = false) => {
+        if (typeof new_data === 'boolean') {
+            useSwal = new_data;
+            new_data = undefined;
+        }
+
+        let usedData = Array.isArray(new_data) ? new_data : (Array.isArray(data) ? data : []);
+        if (!Array.isArray(usedData) || usedData.length === 0) return Promise.resolve();
+
         setSaving(0);
-        saveCounter = 0;
-        let newItems = [];
+        setSaveError('');
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+        const batchId = areaSaveBatchRef.current + 1;
+        areaSaveBatchRef.current = batchId;
         let originalAreas = _GET_CHILD_33_AREAS();
         let getCellByName = (_cells, _name) => {
             let find = _cells.find(c => {
@@ -1231,7 +1555,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             for (let i = 0; i < units_a.length; i++) {
                 units_a[i] = getCellByName(cells, 'units_a_' + i) || 0;
             }
-
 
             let historic = [];
             let empate = [];
@@ -1282,11 +1605,10 @@ export default function RECORD_ARC_AREAS_2(props) {
         let newCells = [];
         let delCells = [];
 
-        let usedData = new_data || data;
-
         let finish_flag = usedData.length - 2;
 
-        usedData.map((d, i) => {
+        usedData.forEach((d, i) => {
+            if (!Array.isArray(d)) return;
             if (i < finish_flag + 1) {
                 let _id = d[0].id;
                 if (_id) {
@@ -1296,146 +1618,77 @@ export default function RECORD_ARC_AREAS_2(props) {
             }
         })
 
-        originalAreas.map(a => {
-            if (!usedData.find(d => d[0].id === a.id)) delCells.push([{ id: a.id }])
+        originalAreas.forEach(a => {
+            if (!usedData.find(d => Array.isArray(d) && d[0] && d[0].id === a.id)) delCells.push([{ id: a.id }])
 
         })
 
         let end_counter = updateCells.length + delCells.length + newCells.length;
-        updateCells.map((cells, i) => {
+        let requests = [];
+        updateCells.forEach((cells) => {
             if (cells[0].ignore) return;
             let formData = setItem(cells);
-            update_area(cells[0].id, formData, false, i, end_counter);
+            requests.push(update_area(cells[0].id, formData));
         });
-        newCells.map((newItem) => {
+        newCells.forEach((newItem) => {
             let formData = setItem(newItem);
             formData.set('recordArcId', currentRecord.id);
             formData.set('active', 1);
             formData.set('type', "area");
-            create_area(formData, false, newItem.i, end_counter)
+            requests.push(create_area(formData))
         });
-        delCells.map(cell => {
-            delete_areas(cell[0].id, false, end_counter)
+        delCells.forEach(cell => {
+            requests.push(delete_areas(cell[0].id))
         });
-    }
-    let create_area = (formData, useSwal, i, fg) => {
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
-        RECORD_ARCSERVICE.create_arc_33_area(formData)
-            .then(response => {
-                if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                    saveCounter++;
-                    if (saveCounter === fg) {
-                        props.requestUpdateRecord(currentItem.id);
-                        setSaving(1);
-                    }
-                } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                }
-            })
-            .catch(e => {
-                console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
-            });
-    }
-    let update_area = (_id, _form, useSwal, i, fg) => {
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
-        RECORD_ARCSERVICE.update_arc_33_area(_id, _form)
-            .then(response => {
-                if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                    saveCounter++;
-                    if (saveCounter === fg) {
-                        props.requestUpdateRecord(currentItem.id);
-                        setSaving(1);
-                    }
-                } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                }
-            })
-            .catch(e => {
-                console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
-            });
-    }
-    let delete_areas = (id, useSwal, fg) => {
-        RECORD_ARCSERVICE.delete_33_area_byId(id)
-            .then(response => {
-                if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                    saveCounter++;
-                    if (saveCounter === fg) {
-                        props.requestUpdateRecord(currentItem.id);
-                        setSaving(1);
-                    }
 
-                } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                }
+        if (end_counter === 0 || requests.length === 0) {
+            if (batchId === areaSaveBatchRef.current) {
+                hasLocalAreaChangesRef.current = false;
+                setSaving(1);
+                setSaveError('');
+            }
+            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+            return Promise.resolve();
+        }
+
+        return Promise.all(requests)
+            .then(() => {
+                if (batchId !== areaSaveBatchRef.current) return;
+                hasLocalAreaChangesRef.current = false;
+                setSaveError('');
+                props.requestUpdateRecord(currentItem.id);
+                setSaving(1);
+                if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (batchId !== areaSaveBatchRef.current) return;
+                hasLocalAreaChangesRef.current = true;
+                setSaving(2);
+                setSaveError('No se pudo guardar la tabla de áreas. Los datos quedan visibles en pantalla; vuelve a intentar guardar.');
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
-
+    }
+    let create_area = (formData) => {
+        return RECORD_ARCSERVICE.create_arc_33_area(formData)
+            .then(response => {
+                if (response.data === 'OK') return response.data;
+                throw new Error(`create33area: ${response.data}`);
+            });
+    }
+    let update_area = (_id, _form) => {
+        return RECORD_ARCSERVICE.update_arc_33_area(_id, _form)
+            .then(response => {
+                if (response.data === 'OK') return response.data;
+                throw new Error(`update33area ${_id}: ${response.data}`);
+            });
+    }
+    let delete_areas = (id) => {
+        return RECORD_ARCSERVICE.delete_33_area_byId(id)
+            .then(response => {
+                if (response.data === 'OK') return response.data;
+                throw new Error(`delete33areabyId ${id}: ${response.data}`);
+            });
 
     }
     // ************
@@ -1454,7 +1707,6 @@ export default function RECORD_ARC_AREAS_2(props) {
         save_step('s34', false, formData);
     }
 
-
     let update_category = (useSwal) => {
         let formData = new FormData();
         let json = getJSONFull(currentRecord.category)
@@ -1465,31 +1717,15 @@ export default function RECORD_ARC_AREAS_2(props) {
         RECORD_ARCSERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                 } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
@@ -1527,7 +1763,7 @@ export default function RECORD_ARC_AREAS_2(props) {
             if (index === -1) {
                 value.push('F');
             }
-            value.sort()
+            value = [...value].sort()
         }
         formData.set('tipo', value.join(','));
         save_fun_1(formData, false)
@@ -1535,54 +1771,27 @@ export default function RECORD_ARC_AREAS_2(props) {
     let save_fun_1 = (formData, useSwal) => {
         let _CHILD_1 = _GET_CHILD_1();
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         if (!_CHILD_1.id) {
             FUNService.create_fun1(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdate(currentItem.id)
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         } else {
             FUNService.update_1(_CHILD_1.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdate(currentItem.id)
                     }
                 })
@@ -1647,73 +1856,36 @@ export default function RECORD_ARC_AREAS_2(props) {
     }
     let save_step = (_id_public, useSwal, formData) => {
         var STEP = LOAD_STEP(_id_public);
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (STEP.id) {
             RECORD_ARCSERVICE.update_step(STEP.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
 
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         else {
             RECORD_ARCSERVICE.create_step(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
     }

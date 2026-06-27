@@ -1,47 +1,26 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useState, useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
+import DataTable from '@/components/data-table-bridge';
 import { cities, infoCud, rules_opt } from '../../../components/jsons/vars';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import record_arcService from '../../../services/record_arc.service';
 import RECORD_ARC_AREAS_RESUME from '../records/arc/record_arc_areas_resumen.component';
 import EXP_CALC from './exp_calc.component';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class EXP_AREAS extends Component {
-    constructor(props) {
-        super(props);
-        this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
-        this.state = {
-            new: false,
-            edit: false,
-            currentRecordArc: null,
-            currentVersionRArc: null,
-        };
-    }
-    componentDidMount() {
-        this.setItem_RecordArc(this.props.currentItem.id)
-    }
+function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [currentRecordArc, setCurrentRecordArc] = useState(null);
+    const [currentVersionRArc, setCurrentVersionRArc] = useState(null);
+    const prevEditRef = useRef(false);
 
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
-
-            document.getElementById("expedition_area_1_edit").value = _ITEM.area;
-            document.getElementById("expedition_area_2_edit").value = _ITEM.charge;
-            document.getElementById("expedition_area_3_edit").value = _ITEM.use;
-            document.getElementById("expedition_area_4_edit").value = _ITEM.desc;
-            document.getElementById("expedition_area_5_edit").value = _ITEM.payment;
-            document.getElementById("expedition_area_6_edit").value = _ITEM.units;
-        }
-    }
-
-    setItem_RecordArc(id) {
-        record_arcService.getRecord(id || this.props.currentItem.id)
+    const setItem_RecordArc = (id) => {
+        record_arcService.getRecord(id || currentItem.id)
             .then(response => {
                 let record_arc = response.data.record_arc
                 if (record_arc){
@@ -55,26 +34,32 @@ class EXP_AREAS extends Component {
                     record_arc.record_arc_35_locations = response.data.record_arc_35_locations;
                     record_arc.record_arc_38s = response.data.record_arc_38s;
     
-                    this.setState({
-                        currentRecordArc: record_arc,
-                        currentVersionRArc: record_arc.version,
-                        loaded: true,
-                    });
+                    setCurrentRecordArc(record_arc);
+                    setCurrentVersionRArc(record_arc.version);
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { currentRecordArc, currentVersionRArc } = this.state;
+    };
+
+    useEffect(() => {
+        setItem_RecordArc(currentItem.id);
+    }, []);
+
+    useEffect(() => {
+        if (edit !== prevEditRef.current && edit !== false) {
+            var _ITEM = edit;
+            document.getElementById("expedition_area_1_edit").value = _ITEM.area;
+            document.getElementById("expedition_area_2_edit").value = _ITEM.charge;
+            document.getElementById("expedition_area_3_edit").value = _ITEM.use;
+            document.getElementById("expedition_area_4_edit").value = _ITEM.desc;
+            document.getElementById("expedition_area_5_edit").value = _ITEM.payment;
+            document.getElementById("expedition_area_6_edit").value = _ITEM.units;
+        }
+        prevEditRef.current = edit;
+    }, [edit]);
 
         // DATA GETTERS
         let _GET_CHILD_AREAS = () => {
@@ -90,62 +75,62 @@ class EXP_AREAS extends Component {
             let _LIST = _GET_CHILD_AREAS();
             const columns = [
                 {
-                    name: <label className="text-center">AREA</label>,
+                    name: 'Área',
                     selector: row => row.area,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
-                    cell: row => <label>{row.area}</label>
+                    cell: row => <span className="text-sm font-mono">{row.area}</span>
                 },
                 {
-                    name: <label className="text-center">UNIDADES</label>,
+                    name: 'Unidades',
                     selector: row => row.units,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
-                    cell: row => <label>{row.units}</label>
+                    cell: row => <span className="text-sm font-mono">{row.units}</span>
                 },
                 {
-                    name: <label className="text-center">COBRO  * m2/U</label>,
+                    name: 'Cobro × m²/U',
                     selector: row => row.charge,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
                     omit: _GLOBAL_ID != 'cp1',
-                    cell: row => <label>{row.charge}</label>
+                    cell: row => <span className="text-sm font-mono">{row.charge}</span>
                 },
                 {
-                    name: <label className="text-center">COBRO TOTAL</label>,
+                    name: 'Cobro Total',
                     selector: row => row.charge * row.area,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
-                    cell: row => <label>{_GLOBAL_ID == 'cp1' ? Math.round(row.charge * row.area) : row.charge}</label>
+                    cell: row => <span className="text-sm">{_GLOBAL_ID == 'cp1' ? Math.round(row.charge * row.area) : row.charge}</span>
                 },
                 {
-                    name: <label className="text-center">USO</label>,
+                    name: 'Uso',
                     selector: row => row.use,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '60px',
-                    cell: row => <label>{row.use}</label>
+                    cell: row => <span className="text-sm">{row.use}</span>
                 },
                 {
-                    name: <label className="text-center">TIPO DE ACTUACIÓN</label>,
+                    name: 'Tipo de Actuación',
                     selector: row => row.desc,
                     sortable: true,
                     filterable: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label>{row.desc}</label>
+                    cell: row => <span className="text-sm">{row.desc}</span>
                 },
                 {
-                    name: <label className="text-center">REGLAS</label>,
+                    name: 'Reglas',
                     selector: row => row.payment,
                     sortable: true,
                     filterable: true,
@@ -155,16 +140,12 @@ class EXP_AREAS extends Component {
                     cell: row => <label >{infoCud.exp_rules[row.payment] ?? ''}</label>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'Acción',
                     button: true,
                     maxWidth: '50px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => this.setState({ edit: row })}><i class="far fa-edit"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                            <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><Button type="button" variant="outline" size="sm" className="m-0 p-1" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button type="button" variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -183,14 +164,14 @@ class EXP_AREAS extends Component {
                 <div className="row mb-1">
                     <div className="col">
                         <label>Área</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" step="0.01" class="form-control" id={"expedition_area_1" + edit} required />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" step="0.01" className="form-control" id={"expedition_area_1" + edit} required />
                         </div>
                     </div>
                     <div className="col">
                         <label>Unidades</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" step="1" class="form-control" id={"expedition_area_6" + edit} required />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" step="1" className="form-control" id={"expedition_area_6" + edit} required />
                         </div>
                     </div>
                     <div className="col-2">
@@ -199,13 +180,13 @@ class EXP_AREAS extends Component {
                             : <label>Cobro (COP) Total</label>
                         }
 
-                        <div class="input-group my-1">
-                            <input type="number" min="0" step="0.0001" class="form-control" id={"expedition_area_2" + edit} required />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" step="0.0001" className="form-control" id={"expedition_area_2" + edit} required />
                         </div>
                     </div>
                     <div className="col">
                         <label>Uso</label>
-                        <div class="input-group my-1">
+                        <div className="input-group my-1">
                             <input list="exp_uses_datalist" className="form-select" id={"expedition_area_3" + edit} required />
 
                             <datalist id="exp_uses_datalist">
@@ -222,13 +203,13 @@ class EXP_AREAS extends Component {
                     </div>
                     <div className="col">
                         <label>Tipo de Actuación</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id={"expedition_area_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id={"expedition_area_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Destino</label>
-                        <div class="input-group my-1">
+                        <div className="input-group my-1">
                             <select className="form-select" id={"expedition_area_5" + edit} required >
                                 {rules_opt}
                             </select>
@@ -261,89 +242,39 @@ class EXP_AREAS extends Component {
             if (units) formData.set('units', units);
             else formData.set('units', 1);
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.create_exp_area(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_expedition_area').reset();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let delete_item = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     EXPEDITION_SERVICE.delete_exp_area(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit: false });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdateRecord(currentItem.id);
+                                setEdit(false);
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -366,49 +297,27 @@ class EXP_AREAS extends Component {
             if (units) formData.set('units', units);
             else formData.set('units', 1);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            EXPEDITION_SERVICE.update_exp_area(this.state.edit.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            EXPEDITION_SERVICE.update_exp_area(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_expedition_area_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
-
         return (
             <div className="expedition_areas my-2">
-                <legend className="my-2 px-3 text-uppercase bg-light" id="nav_expedition_10">
+                <legend className="my-2 px-3 bg-light" id="nav_expedition_10">
                     <label className="app-p lead fw-normal">Áreas Y Unidades</label>
                 </legend>
                 {currentRecordArc ?
@@ -424,21 +333,20 @@ class EXP_AREAS extends Component {
 
                     : null}
 
-
                 <hr />
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Nueva Área
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_expedition_area" onSubmit={new_item}>
                             {_COMPONENT_MANAGE()}
                             <div className="row my-3 text-center">
                                 <div className="col">
-                                    <button className="btn btn-success btn-sm" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <Button type="submit" size="sm"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                                 <div className='col'>
                                     <EXP_CALC
@@ -454,14 +362,14 @@ class EXP_AREAS extends Component {
                     </>
                     : ""}
                 {_CHILD_AREA_LIST()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_expedition_area_edit" onSubmit={edit_item}>
                             <h3 className="my-3 text-center">Actualizar Área</h3>
                             {_COMPONENT_MANAGE('_edit')}
                             <div className="row my-2 text-center">
                                 <div className="col">
-                                    <button className="btn btn-success btn-sm" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <Button type="submit" size="sm"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                                 <div className='col'>
                                     <EXP_CALC
@@ -478,7 +386,6 @@ class EXP_AREAS extends Component {
                     : ""}
             </div >
         );
-    }
 }
 
 export default EXP_AREAS;

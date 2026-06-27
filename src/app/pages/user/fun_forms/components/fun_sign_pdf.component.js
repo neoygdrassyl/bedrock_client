@@ -1,37 +1,14 @@
-import moment from 'moment';
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import writtenNumber from 'written-number';
 import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { formsParser1, getJSON, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
 import FunService from '../../../../services/fun.service';
+import { Icon } from '@/components/icon';
+import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUN_SIGN_PDF extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    componentDidMount() {
-
-    }
-    entDidUpdate(prevState) {
-        if (this.state.currentSeal !== prevState.currentSeal && this.state.currentSeal != null) {
-            var _ITEM = this.state.currentSeal;
-            document.getElementById("seal_3").value = _ITEM.id_public;
-            document.getElementById("seal_4").value = _ITEM.area;
-            document.getElementById("seal_5").value = this.props.currentItem.date;
-            document.getElementById("seal_6").value = _ITEM.blueprints;
-            document.getElementById("seal_7").value = _ITEM.drives;
-            document.getElementById("seal_8").value = _ITEM.folders;
-        }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersion }) {
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -173,29 +150,29 @@ class FUN_SIGN_PDF extends Component {
                     <div className="row">
                         <div className=" col">
                             <label>No. Radicación</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="hashtag" size={16} />
                                 </span>
-                                <input type="text" class="form-control" defaultValue={currentItem.id_public} id="sign_pdf_1" />
+                                <input type="text" className="form-control" defaultValue={currentItem.id_public} id="sign_pdf_1" />
                             </div>
                         </div>
                         <div className=" col">
                             <label>No. Resolución</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="hashtag" size={16} />
                                 </span>
-                                <input type="text" class="form-control" defaultValue={res_id} id="sign_pdf_12" />
+                                <input type="text" className="form-control" defaultValue={res_id} id="sign_pdf_12" />
                             </div>
                         </div>
                         <div className=" col-6">
                             <label>Tipo de Solicitud</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-check-square"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="check-square" size={16} />
                                 </span>
-                                <input type="text" class="form-control" defaultValue={formsParser1(_GET_CHILD_1())} id="sign_pdf_2" />
+                                <input type="text" className="form-control" defaultValue={formsParser1(_GET_CHILD_1())} id="sign_pdf_2" />
                             </div>
                         </div>
                     </div>
@@ -203,22 +180,22 @@ class FUN_SIGN_PDF extends Component {
                     <div className="row">
                         <div className=" col">
                             <label>Solicitante</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-user"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="user" size={16} />
                                 </span>
-                                <input type="text" class="form-control" defaultValue={_GET_CHILD_51_BYROLE('PROPIETARIO')} id="sign_pdf_3" />
+                                <input type="text" className="form-control" defaultValue={_GET_CHILD_51_BYROLE('PROPIETARIO')} id="sign_pdf_3" />
                             </div>
                         </div>
 
                         <div className=" col">
                             <label>Dirección</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-home"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="home" size={16} />
                                 </span>
-                                <input type="text" class="form-control" defaultValue={_GET_CHILD_2().item_211} id="sign_pdf_4" />
-                                <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("sign_pdf_4", _GET_CHILD_2())}>DIRECCIÓN COMPLETA</button>
+                                <input type="text" className="form-control" defaultValue={_GET_CHILD_2().item_211} id="sign_pdf_4" />
+                                <button className='inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors' type='button' onClick={() => _ADDRESS_SET_FULL("sign_pdf_4", _GET_CHILD_2())}>DIRECCIÓN COMPLETA</button>
                             </div>
                         </div>
 
@@ -228,40 +205,40 @@ class FUN_SIGN_PDF extends Component {
                     <div className="row">
                         <div className=" col">
                             <label>Uso</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-list-ul"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="list-ul" size={16} />
                                 </span>
-                                <input type="text" class="form-control" defaultValue={_FUN_6_PARSER(_GET_CHILD_1().usos, true)} id="sign_pdf_8" />
+                                <input type="text" className="form-control" defaultValue={_FUN_6_PARSER(_GET_CHILD_1().usos, true)} id="sign_pdf_8" />
                             </div>
                         </div>
                         <div className=" col">
                             <label>Fecha de Radicación</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" class="form-control" defaultValue={_GET_SIGN()[1]} id="sign_pdf_6" />
+                                <input type="date" className="form-control" defaultValue={_GET_SIGN()[1]} id="sign_pdf_6" />
                             </div>
                         </div>
                         <div className=" col">
                             <label>Fecha de Licencia</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" class="form-control" defaultValue={res_expiration_date} id="sign_pdf_lic" />
+                                <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_lic" />
                             </div>
                         </div>
 
                         <div className=" col">
                             <label>Vigencia</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" class="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-1" />
-                                <input type="date" class="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-2" />
+                                <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-1" />
+                                <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-2" />
                             </div>
                         </div>
 
@@ -270,38 +247,38 @@ class FUN_SIGN_PDF extends Component {
                     <div className='row'>
                         <div className=" col-2">
                             <label>Altura</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-ruler-vertical"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="ruler-vertical" size={16} />
                                 </span>
-                                <input type="text" class="form-control" id="sign_pdf_5" />
+                                <input type="text" className="form-control" id="sign_pdf_5" />
                             </div>
                         </div>
                         <div className=" col-2">
                             <label>Área</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-cube"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="cube" size={16} />
                                 </span>
-                                <input type="number" step={0.01} min="0" class="form-control" id="sign_pdf_14" />
+                                <input type="number" step={0.01} min="0" className="form-control" id="sign_pdf_14" />
                             </div>
                         </div>
                         <div className=" col-2">
                             <label># Estacionamientos</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-car-side"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="car-side" size={16} />
                                 </span>
-                                <input type="number" step={1} min="0" class="form-control" id="sign_pdf_parking" />
+                                <input type="number" step={1} min="0" className="form-control" id="sign_pdf_parking" />
                             </div>
                         </div>
                         <div className=" col-2">
                             <label># Unidades otro uso</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-home"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="home" size={16} />
                                 </span>
-                                <input type="number" step={1} min="0" class="form-control" id="sign_pdf_otheruse" />
+                                <input type="number" step={1} min="0" className="form-control" id="sign_pdf_otheruse" />
                             </div>
                         </div>
                     </div>
@@ -311,9 +288,9 @@ class FUN_SIGN_PDF extends Component {
                     <div className="row">
                         <div className=" col-3">
                             <label>Tamaño</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-ruler-combined"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="ruler-combined" size={16} />
                                 </span>
                                 <select className='form-select' id="sign_pdf_7" >
                                     <option value="1">1m x 70cm</option>
@@ -324,11 +301,11 @@ class FUN_SIGN_PDF extends Component {
 
                         <div className=" col-3">
                             <label>Color de Fondo</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-palette"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="palette" size={16} />
                                 </span>
-                                <select class="form-control form-select" id="sign_pdf_9">
+                                <select className="form-control form-select" id="sign_pdf_9">
                                     <option value={'white'}>Fondo Blanco</option>
                                     <option value={'gold'}>Fondo Amarillo</option>
                                 </select>
@@ -337,35 +314,35 @@ class FUN_SIGN_PDF extends Component {
 
                         <div className=" col-3">
                             <label>Tipo de valla</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-palette"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="palette" size={16} />
                                 </span>
-                                <select class="form-control form-select" id="sign_pdf_type">
+                                <select className="form-control form-select" id="sign_pdf_type">
                                     <option value={'1'}>Valla de radicación</option>
                                     <option value={'2'}>Valla de resolución</option>
                                 </select>
                             </div>
                         </div>
                         <div className=" col-3">
-                            <div class="form-check">
+                            <div className="form-check">
                                 <br />
-                                <input type="checkbox" class="form-check-input" id="sign_pdf_11" />
-                                <label class="form-check-label" for="exampleCheck1">Usar fecha de instalación</label>
+                                <input type="checkbox" className="form-check-input" id="sign_pdf_11" />
+                                <label className="form-check-label" htmlFor="exampleCheck1">Usar fecha de instalación</label>
                             </div>
                         </div>
                     </div>
                      <div className="row">
                         <div className=" col">
                             <label>Texto de Valla</label>
-                            <textarea id="sign_pdf_10" defaultValue={infoCud.sign.text} class="form-control" rows={4}></textarea>
+                            <textarea id="sign_pdf_10" defaultValue={infoCud.sign.text} className="form-control" rows={4}></textarea>
                         </div>
                     </div>
 
                     <div className="row">
                         <div className="Col-12">
                             <div className="text-center py-4 mt-3">
-                                <button className="btn btn-danger"><i class="far fa-file-pdf"></i> GENERAR PDF </button>
+                                <Button variant="destructive" size="sm"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                             </div>
                         </div>
                     </div>
@@ -379,12 +356,7 @@ class FUN_SIGN_PDF extends Component {
         // GENERATES AND GETS PDF SEAL
         let generate_pdf = (e) => {
             e.preventDefault()
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             formData = new FormData();
             let id_public = document.getElementById("sign_pdf_1").value
             formData.set('id_public', id_public);
@@ -425,7 +397,7 @@ class FUN_SIGN_PDF extends Component {
 
             size == '1' ? size = "1m x 70cm" : size = "50cm x 30cm";
 
-            let between_months = moment(res_exp_date_1).diff(moment(res_exp_date_2), 'months', false);
+            let between_months = dayjs(res_exp_date_1).diff(dayjs(res_exp_date_2), 'months', false);
             between_months = Math.abs(between_months);
             
             writtenNumber.defaults.lang = 'es';
@@ -440,9 +412,9 @@ class FUN_SIGN_PDF extends Component {
             FunService.gen_doc_sign(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/sign/" + "Valla " + id_public + " tamaño " + size + ".pdf");
-                        MySwal.close();
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/sign/" + "Valla " + id_public + " tamaño " + size + ".pdf");
+                        swalClose();
                     } else {
 
                     }
@@ -456,7 +428,6 @@ class FUN_SIGN_PDF extends Component {
                 {_SIGN_FORM()}
             </div>
         );
-    }
 }
 
 

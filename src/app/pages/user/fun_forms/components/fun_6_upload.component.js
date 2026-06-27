@@ -1,14 +1,13 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 import FunService from '../../../../services/fun.service';
 import DOCS_LIST from './docs_list.component';
 import FUN6DATALIST from './fun_6_datalist';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-
-const MySwal = withReactContent(Swal);
 
 export default function FUN_6_UPLOAD(props) {
     const { translation, swaMsg, globals, currentItem } = props;
@@ -28,36 +27,36 @@ export default function FUN_6_UPLOAD(props) {
             _COMPONENT.push(<>
                 <div className="row">
                     <div className="col-12">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf" required />
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
+                            <input type="file" className="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf" required />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                            <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} class="form-control" placeholder="Descripcion del documento" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
+                            <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} className="form-control" placeholder="Descripcion del documento" />
                             <DOCS_LIST idRef={i} setValues={setValues} text={'VER LISTA'} />
                         </div>
                     </div>
                 </div>
                 <div className="row d-flex justify-content-start">
                     <div className="col">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-hashtag"></i></span>
-                            <input type="text" class="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={16} /></span>
+                            <input type="text" className="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="far fa-sticky-note"></i></span>
-                            <input type="number" class="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="sticky-note" size={16} /></span>
+                            <input type="number" className="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages" />
                         </div>
                     </div>
 
                     <div className="col-4">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
-                            <input type="date" class="form-control" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} name="fun6_dates" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Radicación</span>
+                            <input type="date" className="form-control" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} name="fun6_dates" />
                         </div>
                     </div>
                 </div>
@@ -69,14 +68,13 @@ export default function FUN_6_UPLOAD(props) {
 
     // ***************************  DATATABLES *********************** //
 
-
     // ***************************  APIS *********************** //
     let addDocument = (e) => {
         e.preventDefault();
         let formData = new FormData();
         formData.set('fun0Id', currentItem.id);
 
-        let _creationYear = moment(currentItem.createdAt).format('YY');
+        let _creationYear = dayjs(currentItem.createdAt).format('YY');
         let _folder = currentItem.id_public;
 
         // GET DATA OF ATTACHS
@@ -119,40 +117,20 @@ export default function FUN_6_UPLOAD(props) {
         formData.set('dates', array_form.join());
         array_form = [];
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FunService.create_fun6(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.generic_success_title,
-                        text: swaMsg.generic_success_text,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                     setAttachs(0)
                     props.requestUpdate(currentItem.id);
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             });
 
     }
@@ -162,9 +140,9 @@ export default function FUN_6_UPLOAD(props) {
                 <div className="col text-end m-2">
 
                     {attachs > 0
-                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => setAttachs(attachs - 1)}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                        ? <Button variant="outline" size="sm" className="mx-3" onClick={() => setAttachs(attachs - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                         : ""}
-                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => setAttachs(attachs + 1)}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                    <Button variant="outline" size="sm" onClick={() => setAttachs(attachs + 1)}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                 </div>
             </div>
 
@@ -174,7 +152,7 @@ export default function FUN_6_UPLOAD(props) {
                 {attachs > 0
                     ? <div className="row text-center my-2">
                         <div className="col-12">
-                            <button className="btn btn-success btn-sm"><i class="far fa-file-alt"></i> AÑADIR {attachs} DOCUMENTO(S)</button>
+                            <Button size="sm"><Icon name="file-alt" size={16} /> AÑADIR {attachs} DOCUMENTO(S)</Button>
                         </div>
                     </div> : ""}
             </form>

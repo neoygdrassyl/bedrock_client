@@ -1,37 +1,32 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service'
 import FUN_SERVICE from '../../../../services/fun.service'
 
-import moment from 'moment';
+import dayjs from 'dayjs';
 import RECORD_LAW_PDF from './record_law_pdf';
-import { MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
+
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
-const MySwal = withReactContent(Swal);
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+function RECORD_LAW_EVALUATION(props) {
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord } = props;
 
-class RECORD_LAW_EVALUATION extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            VRDocs: [],
-            load: false
-        };
-    }
-    componentDidMount() {
-        this.setVRList(this.props.currentItem ? this.props.currentItem.id_public : false);
-    }
-    setVRList(id_public) {
+    const [VRDocs, setVRDocs] = useState([]);
+    const [load, setLoad] = useState(false);
+    const [dynState, setDynState] = useState({});
+    const [showHistoricCorrections, setShowHistoricCorrections] = useState(false);
+
+    const setVRList = (id_public) => {
         if (!id_public) return;
-        if (this.state.load) return;
-        submitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+        if (load) return;
+        submitService.getIdRelated(currentItem.id_public).then(response => {
             let newList = [];
-            let List = response.data;
+            let List = Array.isArray(response.data) ? response.data : [];
             List.map((value, i) => {
-                let subList = value.sub_lists;
+                let subList = Array.isArray(value.sub_lists) ? value.sub_lists : [];
                 subList.map(valuej => {
                     let name = valuej.list_name ? valuej.list_name.split(";") : []
                     let category = valuej.list_category ? valuej.list_category.split(",") : []
@@ -52,13 +47,15 @@ class RECORD_LAW_EVALUATION extends Component {
                     })
                 })
             })
-            this.setState({ VRDocs: newList, load: true })
+            setVRDocs(newList);
+            setLoad(true);
         })
 
     };
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { VRDocs } = this.state;
+
+    useEffect(() => {
+        setVRList(currentItem ? currentItem.id_public : false);
+    }, []);
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -180,10 +177,9 @@ class RECORD_LAW_EVALUATION extends Component {
         }
         let _GET_PROFESIONAL_NAME = () => {
             var _ROLEID = window.user.roleId;
-            return window.user.name + " " + window.user.surname
             //THIS ROLES ARE PROGRAMER MASTER, CURATOR AND ARCHITEC
             if (_ROLEID == 1 || _ROLEID == 2 || _ROLEID == 6) {
-
+                return window.user.name + " " + window.user.surname
             } else {
                 return "NO ESTA AUTORIZADO A REALIZAR ESTA ACCION"
             }
@@ -225,7 +221,7 @@ class RECORD_LAW_EVALUATION extends Component {
             let _CHILD = _GET_CHILD_REVIEW();
 
             return <>
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>OBSERVACIONES FINALES ADICIONALES</label>
                     </div>
@@ -254,15 +250,41 @@ class RECORD_LAW_EVALUATION extends Component {
 
             if (_RESUME) _RESUME = _RESUME.join('\n\n')
             return <>
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>OBSERVACIONES TOTALES</label>
+                <div className='row mx-0 mt-3'>
+                    <div className='col-12 px-0'>
+                        <button
+                            type="button"
+                            className="w-100 d-flex align-items-center justify-content-between bg-white text-dark px-3 py-2"
+                            onClick={() => setShowHistoricCorrections(!showHistoricCorrections)}
+                            aria-expanded={showHistoricCorrections}
+                            aria-controls="law-total-observations-panel"
+                            style={{
+                                border: '1px solid #d5d9e2',
+                                borderRadius: '0.5rem',
+                                boxShadow: 'none',
+                                transition: 'border-color 200ms ease, box-shadow 200ms ease'
+                            }}
+                        >
+                            <span className='fw-bold'>OBSERVACIONES TOTALES</span>
+                            <Icon name={showHistoricCorrections ? 'ChevronUp' : 'ChevronDown'} size={16} />
+                        </button>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-12">
-                        <textarea className="input-group" maxLength="10100" name="s_flaw_values" rows="8" readOnly disabled style={{ 'backgroundColor': 'gainsboro' }}
-                            value={`${_RESUME}`}></textarea>
+                <div
+                    id="law-total-observations-panel"
+                    className="row mx-0"
+                    aria-hidden={!showHistoricCorrections}
+                    style={{
+                        maxHeight: showHistoricCorrections ? '260px' : '0px',
+                        opacity: showHistoricCorrections ? 1 : 0,
+                        overflow: 'hidden',
+                        transition: 'max-height 260ms ease, opacity 220ms ease, margin-top 220ms ease',
+                        marginTop: showHistoricCorrections ? '0.5rem' : '0rem'
+                    }}
+                >
+                    <div className="col-12 px-0">
+                        {showHistoricCorrections ? <textarea className="input-group" maxLength="10100" name="s_flaw_values" rows="8" readOnly style={{ backgroundColor: '#2f2d38', color: '#f5f7fb' }}
+                            value={`${_RESUME}`}></textarea> : null}
                     </div>
                 </div>
             </>
@@ -286,11 +308,11 @@ class RECORD_LAW_EVALUATION extends Component {
             const ALLOW_REVIEW = _ALLOW_REVIEW();
             return <>
 
-                {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                {!ALLOW_REVIEW ? <div className="alert alert-danger">
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 2.2 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
-                </MDBTypography> : ''}
-                <div className="row border bg-info py-1 text-white fw-bold">
+                </div> : ''}
+                <div className="row border bg-primary text-primary-foreground py-1 fw-bold">
                     <div className="col">
                         <label>REVISION</label>
                     </div>
@@ -324,8 +346,8 @@ class RECORD_LAW_EVALUATION extends Component {
                                 <label className='fw-bold'>{value}</label>
                             </div>
                             <div className="col-3 text-center">
-                                {this.state['REW' + i]
-                                    ? <input type="text" class="form-control me-1" id={"r_l_review_1_" + i}
+                                {dynState['REW' + i]
+                                    ? <input type="text" className="form-control me-1" id={"r_l_review_1_" + i}
                                         defaultValue={iworker} disabled />
                                     : <label>{iworker}</label>
                                 }
@@ -334,7 +356,7 @@ class RECORD_LAW_EVALUATION extends Component {
                                 <label>{iasing}</label>
                             </div>
                             <div className="col text-center">
-                                {this.state['REW' + i]
+                                {dynState['REW' + i]
                                     ? <select className="form-select form-control form-control-sm" defaultValue={ireview} id={"r_l_review_2_" + i}>
                                         <option value="0" className="text-danger">NO ES VIABLE</option>
                                         {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -343,19 +365,18 @@ class RECORD_LAW_EVALUATION extends Component {
                                 }
                             </div>
                             <div className="col text-center">
-                                {this.state['REW' + i]
-                                    ? <input type="date" class="form-control form-control-sm" id={"r_l_review_3_" + i} max="2100-01-01"
+                                {dynState['REW' + i]
+                                    ? <input type="date" className="form-control form-control-sm" id={"r_l_review_3_" + i} max="2100-01-01"
                                         defaultValue={idate} />
                                     : <label>{idate ?? ''}</label>
                                 }
                             </div>
                             <div className="col-1">
-                                {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={this.state['REW' + i]}
-                                    onClick={() => this.setState({ ['REW' + i]: !this.state['REW' + i] })}><i class="far fa-edit"></i></MDBBtn>
+                                {allowReview ? <Button variant={!dynState['REW' + i] ? "outline" : "default"} size="sm"
+                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></Button>
                                     : ''}
-                                {this.state['REW' + i]
-                                    ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                        onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
+                                {dynState['REW' + i]
+                                    ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
                                     : ""
                                 }
                                 {true ?
@@ -364,7 +385,7 @@ class RECORD_LAW_EVALUATION extends Component {
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
-                                        requestUpdate={this.props.requestUpdate}
+                                        requestUpdate={requestUpdate}
                                         swaMsg={swaMsg}
                                         id6={"law" + i} />
                                     : ''
@@ -380,14 +401,7 @@ class RECORD_LAW_EVALUATION extends Component {
         var formData = new FormData();
 
         let review_r = (isPrimal, i, iasing) => {
-            MySwal.fire({
-                title: "REALIZAR REVISION",
-                text: `¿Esta seguro de realizar la revision ${currentVersionR} de este Informe?`,
-                icon: 'question',
-                confirmButtonText: "REVISAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "REALIZAR REVISION", text: `¿Esta seguro de realizar la revision ${currentVersionR} de este Informe?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     save_review(isPrimal);
                     save_clock(i, iasing);
@@ -421,48 +435,27 @@ class RECORD_LAW_EVALUATION extends Component {
             formData.set('recordLawId', currentRecord.id);
             formData.set('version', currentVersionR);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
                 RECORD_LAW_SERVICE.update_law_review(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            requestUpdateRecord(currentItem.id);
+                            setDynState(prev => ({ ...prev, ['REW0']: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -471,36 +464,20 @@ class RECORD_LAW_EVALUATION extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            requestUpdateRecord(currentItem.id);
+                            setDynState(prev => ({ ...prev, ['REW0']: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -554,12 +531,7 @@ class RECORD_LAW_EVALUATION extends Component {
 
             formDataClock.set('fun0Id', currentItem.id);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
 
             if (_CHILD.id) {
@@ -567,36 +539,20 @@ class RECORD_LAW_EVALUATION extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setDynState(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -605,62 +561,45 @@ class RECORD_LAW_EVALUATION extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setDynState(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
 
         }
-        return (
-            <div className="record_lar_evaluation container">
-                <h3 className="py-3" >3.1. Observaciones</h3>
-                {_COMPOENTN_CORRECTIONS_HISTORIC()}
-                {_COMPONENT_CORRECTIONS()}
-                <div className="row text-center">
-                    <label className='fw-bold my-2'>GENERAR PDFS</label>
-                    <div className="col">
-                        <RECORD_LAW_PDF
-                            currentItem={currentItem}
-                            currentVersion={currentVersion}
-                            currentRecord={currentRecord}
-                            currentVersionR={currentVersionR}
-                            swaMsg={swaMsg} />
-                    </div>
+    return (
+        <div className="record_lar_evaluation container">
+            <h3 className="py-3" >3.1. Observaciones</h3>
+            {_COMPOENTN_CORRECTIONS_HISTORIC()}
+            {_COMPONENT_CORRECTIONS()}
+            <div className="row text-center">
+                <label className='fw-bold my-2'>GENERAR PDFS</label>
+                <div className="col">
+                    <RECORD_LAW_PDF
+                        currentItem={currentItem}
+                        currentVersion={currentVersion}
+                        currentRecord={currentRecord}
+                        currentVersionR={currentVersionR}
+                        swaMsg={swaMsg} />
                 </div>
-                <h3 className="py-3" >3.2. Evaluar Viabilidad</h3>
-                {_COMPONENT_REVIEW()}
-            </div >
-        );
-    }
+            </div>
+            <h3 className="py-3" >3.2. Evaluar Viabilidad</h3>
+            {_COMPONENT_REVIEW()}
+        </div >
+    );
 }
 
 export default RECORD_LAW_EVALUATION;

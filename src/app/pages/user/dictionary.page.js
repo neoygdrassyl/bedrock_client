@@ -1,19 +1,30 @@
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBPopover, MDBPopoverHeader, MDBPopoverBody, MDBCol, MDBPagination, MDBRow, MDBBtnGroup } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { TabPane } from '@/components/ui/tab-pane';
+import { Card, CardContent } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
 
 import SERVICE_CUSTOM from '../../services/custom.service';
+import {
+    filterCubDictionary,
+    normalizeCubDictionaryPayload,
+} from './dictionary-cub.utils';
 
 import { formsParser1, getJSONFull } from '../../components/customClasses/typeParse';
 import TIPOLOGIA from '../../components/jsons/fun6DocsList.json'
 import SERIES from '../../components/jsons/funCodes.json'
 import SERIES_CB1 from '../../components/jsons/funcCodes.cb1.json'
-import { MDBPageItem, MDBPageNav } from 'mdbreact';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../components/vizualizer.component';
 import { infoCud } from '../../components/jsons/vars';
+import { Icon } from '@/components/icon';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+
+function asDictionaryList(list) {
+    return Array.isArray(list) ? list : [];
+}
+
 export default function DICTIONARY(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
 
@@ -64,7 +75,6 @@ export default function DICTIONARY(props) {
         if (load == 0) loadLists();
     }, [load]);
 
-
     // ***************************  DATA CONVERTER *********************** //
     function _GET_STATE_STR(state) {
         if (state < '-1') return <label className='text-danger'>DESISTIDO (Ejecución)</label>
@@ -105,41 +115,34 @@ export default function DICTIONARY(props) {
         _COMPONENT.push(<>{_array[0] > 0
             ?
             <VIZUALIZER id={_array[0]} apipath={'/files/'}
-                icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} />
+                icon={'IdCard'} color={'DeepSkyBlue'} />
             : ""}</>)
 
         _COMPONENT.push(<>{_array[1] > 0
             ?
             <VIZUALIZER id={_array[1]} apipath={'/files/'}
-                icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
+                icon={'BadgeCheck'} color={'DarkOrchid'} />
             : ""}</>)
 
         _COMPONENT.push(<>{_array[2] > 0
             ?
             <VIZUALIZER id={_array[2]} apipath={'/files/'}
-                icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} />
+                icon={'BookOpen'} color={'GoldenRod'} />
             : ""}</>)
 
         _COMPONENT.push(<>{_array[3] > 0
             ?
             <VIZUALIZER id={_array[3]} apipath={'/files/'}
-                icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} />
+                icon={'FileText'} color={'LimeGreen'} />
             : ""}</>)
 
         return <>{_COMPONENT}</>
     }
     let _HEADER_COMPONENET = () => {
         return <>
-            <div className="col-12 d-flex justify-content-start p-0">
-                <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                    <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i class="fas fa-book"></i>  <label className="text-uppercase">{breadCrums.bc_u13}</label></MDBBreadcrumbItem>
-                </MDBBreadcrumb>
+            <div>
+                <h1 className="text-xl font-bold text-foreground">Nomenclatura</h1>
+                <p className="text-sm text-muted-foreground mt-1">Diccionario de series, tipología y consecutivos</p>
             </div>
             <div className="row my-4 d-flex justify-content-center">
                 <div className="col-lg-11 col-md-12">
@@ -152,11 +155,16 @@ export default function DICTIONARY(props) {
 
     let _COMPONENT_PAGINATION = (_list, _page, _limit, _func, _filter, process, _key) => {
         var LIST = [];
-        if (process !== '') {
-            LIST = _list.filter(item => item[process] == _filter)
+        const sourceList = asDictionaryList(_list);
+        if (_key === 'cub') {
+            LIST = filterCubDictionary(sourceList, _filter, process)
+        }
+        else if (process !== '') {
+            LIST = sourceList.filter(item => item[process] == _filter)
         }
         else {
-            LIST = _list.filter((arr, i) => {
+            LIST = sourceList.filter((arr, i) => {
+                if (!arr[_key]) return false;
                 let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 return curated_element.includes(curated_filter)
@@ -169,39 +177,39 @@ export default function DICTIONARY(props) {
 
         let PageNacITems = [];
         for (let i = 0; i < limit; i++) {
-            PageNacITems.push(<>
-                <MDBPageItem active={i + 1 == _page} onClick={() => _func(i + 1)}>
-                    <MDBPageNav>
+            PageNacITems.push(
+                <li key={i} className={`page-item${i + 1 == _page ? ' active' : ''}`} onClick={() => _func(i + 1)}>
+                    <a className="page-link" role="button">
                         {i + 1} {i + 1 == _page ? <span className="sr-only">(current)</span> : ''}
-                    </MDBPageNav>
-                </MDBPageItem>
-            </>)
+                    </a>
+                </li>
+            )
         }
 
         return <>
-            <MDBRow>
-                <MDBCol>
-                    <MDBPagination className="m-3">
-                        <MDBPageItem disabled={_page == 1} onClick={() => { if (_page != 1) _func(_page - 1) }}>
-                            <MDBPageNav aria-label="Anterior">
-                                <i class="fas fa-chevron-left"></i>
+            <div className="row">
+                <div className="col">
+                    <nav className="m-3"><ul className="pagination">
+                        <li className={`page-item${_page == 1 ? ' disabled' : ''}`} onClick={() => { if (_page != 1) _func(_page - 1) }}>
+                            <a className="page-link" role="button" aria-label="Anterior">
+                                <Icon name="chevron-left" size={16} />
                                 <span className="sr-only">Anterior</span>
-                            </MDBPageNav>
-                        </MDBPageItem>
+                            </a>
+                        </li>
                         {PageNacITems}
-                        <MDBPageItem disabled={_page == limit || limit < 2} onClick={() => _func(_page + 1)}>
-                            <MDBPageNav aria-label="Siguiente">
-                                <i class="fas fa-chevron-right"></i>
+                        <li className={`page-item${_page == limit || limit < 2 ? ' disabled' : ''}`} onClick={() => _func(_page + 1)}>
+                            <a className="page-link" role="button" aria-label="Siguiente">
+                                <Icon name="chevron-right" size={16} />
                                 <span className="sr-only">Siguiente</span>
-                            </MDBPageNav>
-                        </MDBPageItem>
-                        <MDBPageItem> <label className='lead'>{(_limit) * (_page - 1) == 0 ? 1 : (_limit) * (_page - 1)} - {LIST.length < _limit * _page ? LIST.length : _limit * _page}</label> </MDBPageItem>
-                    </MDBPagination>
-                </MDBCol>
-                <MDBCol className="m-3 text-end">
+                            </a>
+                        </li>
+                        <li className="page-item"> <label className='lead'>{(_limit) * (_page - 1) == 0 ? 1 : (_limit) * (_page - 1)} - {LIST.length < _limit * _page ? LIST.length : _limit * _page}</label> </li>
+                    </ul></nav>
+                </div>
+                <div className="col m-3 text-end">
                     <label className='lead'>{currentItemsLenght} DE {LIST.length}</label>
-                </MDBCol>
-            </MDBRow>
+                </div>
+            </div>
         </>
     }
 
@@ -214,20 +222,21 @@ export default function DICTIONARY(props) {
             document.getElementById(_id).value = ''
         }
         return <>
-            <div class="input-group m-3 px-3 mx-0">
-                <span class="input-group-text bg-linght">
-                    <i class="fas fa-search"></i>
+            <div className="input-group m-3 px-3 mx-0">
+                <span className="input-group-text bg-linght">
+                    <Icon name="search" size={16} />
                 </span>
                 <input type='text' className='form-control' placeholder='Busqueda...' id={_id} defaultValue={_filter}
                     onKeyPress={(e) => { if (e.key === 'Enter') setFilter() }} />
-                <MDBBtn link color="primary" size="sm" onClick={() => setFilter()}><i class="fas fa-angle-double-right"></i> Buscar</MDBBtn>
-                {_filter ? <MDBBtn link color="danger" size="sm" onClick={() => clearFilter()}><i class="fas fa-times"></i> </MDBBtn>
+                <Button variant="secondary" size="sm" onClick={() => setFilter()}><Icon name="angle-double-right" size={16} /> Buscar</Button>
+                {_filter ? <Button variant="ghost" size="sm" onClick={() => clearFilter()}><Icon name="times" size={16} /> </Button>
                     : ''}
             </div>
         </>
     }
     let _COMPONENT_SEARCH_BAR_CUB = (_id, _filter, _func, setProccess, process) => {
         const [proccessSelected, setProccessSelected] = useState('')
+        const selectedProcess = proccessSelected || process || '';
 
         function setFilter() {
             _func(document.getElementById(_id).value);
@@ -264,7 +273,7 @@ export default function DICTIONARY(props) {
                             id="dropdownMenuButton"
                             data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            <i className="fas fa-search"></i>
+                            <Icon name="search" size={16} />
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             {filterOptions.map((filter) => (
@@ -288,41 +297,36 @@ export default function DICTIONARY(props) {
                         placeholder="Busqueda..."
                         id={_id}
                         defaultValue={_filter}
-                        onKeyPress={(e) => {
+                        onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 setFilter()
-                                proccessSelected && setProccess(proccessSelected);
+                                setProccess(selectedProcess);
                             };
                         }} />
 
                     {/* Botón Buscar */}
-                    <MDBBtn link color="primary" size="sm" onClick={() => {
+                    <Button variant="secondary" size="sm" onClick={() => {
                         setFilter()
-                        setProccess(proccessSelected);
-                    }}>
-                        <i className="fas fa-angle-double-right"></i> Buscar
-                    </MDBBtn>
+                        setProccess(selectedProcess);
+                    }}><Icon name="angle-double-right" size={16} /> Buscar</Button>
 
                     {/* Botón Limpiar */}
                     {_filter || process ? (
-                        <MDBBtn link color="danger" size="sm" onClick={() => clearFilter()}>
-                            <i className="fas fa-times"></i>
-                        </MDBBtn>
+                        <Button variant="ghost" size="sm" onClick={() => clearFilter()}><Icon name="times" size={16} /></Button>
                     ) : (
                         ''
                     )}
                 </div>
 
                 {/* Filtro seleccionado*/}
-                {proccessSelected && (
+                {selectedProcess && (
                     <div className="text-muted mx-3">
-                        <small>Filtro seleccionado: {proccessSelected.toUpperCase()}</small>
+                        <small>Filtro seleccionado: {selectedProcess.toUpperCase()}</small>
                     </div>
                 )}
             </>
         );
     };
-
 
     let _COMPONENT_LIST_A = () => {
         let _SERIES = SERIES
@@ -391,7 +395,7 @@ export default function DICTIONARY(props) {
         const headers = ['NOMBRE', 'DOCUMENTO', 'CORREO', 'NUMERO', 'MATRICULA', 'FECHA MAT.', 'SANCIÓN']
         const columns = [
             {
-                name: <label className="text-center">Nombre</label>,
+                name: 'Nombre',
                 selector: row => row.name + ' ' + row.surname,
                 sortable: true,
                 filterable: true,
@@ -400,7 +404,7 @@ export default function DICTIONARY(props) {
 
             },
             {
-                name: <label className="text-center">Documento</label>,
+                name: 'Documento',
                 selector: row => row.id_number,
                 sortable: true,
                 filterable: true,
@@ -408,7 +412,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.id_number}</h6>
             },
             {
-                name: <label className="text-center">Coreo</label>,
+                name: 'Correo',
                 selector: row => row.email,
                 sortable: true,
                 filterable: true,
@@ -416,7 +420,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.email}</h6>
             },
             {
-                name: <label className="text-center">Número</label>,
+                name: 'Número',
                 selector: row => row.number,
                 sortable: true,
                 filterable: true,
@@ -424,7 +428,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.number}</h6>
             },
             {
-                name: <label className="text-center">Matricula</label>,
+                name: 'Matrícula',
                 selector: row => row.registration,
                 sortable: true,
                 filterable: true,
@@ -432,7 +436,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.registration}</h6>
             },
             {
-                name: <label className="text-center">Fecha Mat.</label>,
+                name: 'Fecha Mat.',
                 selector: row => row.registration_date,
                 sortable: true,
                 filterable: true,
@@ -440,7 +444,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.registration_date}</h6>
             },
             {
-                name: <label className="text-center">Docs</label>,
+                name: 'Docs',
                 center: true,
                 cell: row => <h6 className='fw-normal'>{_GET_DOCS_BTNS(row.docs)}</h6>
             },
@@ -451,12 +455,12 @@ export default function DICTIONARY(props) {
                 title={<>
                     <div className='row'>
                         <div className='col'>
-                            LISTADO DE PROFESIONALES  <i class="fas fa-user-circle"></i>
+                            LISTADO DE PROFESIONALES  <Icon name="user-circle" size={16} />
                         </div>
                         <div className='col-3 text-end'>
-                            <MDBBtn onClick={() => generateCVS(headers, LIST.map(row => [(row.name + ' ' + row.surname).toUpperCase(),
+                            <Button variant="outline" size="sm" onClick={() => generateCVS(headers, LIST.map(row => [(row.name + ' ' + row.surname).toUpperCase(),
                             row.id_number, row.email, row.number, row.registration, row.registration_date, row.sanction ? 'SI' : 'NO']), 'LISTADO PROFESIONALES')}
-                                color='success' size='sm' outline><i class="fas fa-table"></i> DESCARGAR CSV</MDBBtn>
+                                ><Icon name="table" size={16} /> Descargar CSV</Button>
                         </div>
                     </div>
                 </>}
@@ -473,43 +477,44 @@ export default function DICTIONARY(props) {
                 highlightOnHover
                 dense
 
-
                 progressPending={LIST_H.length == 0}
                 progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
-
 
                 defaultSortFieldId={1}
             />
 
             <div className="border p-2 m-2">
                 <label className="me-2">LEYENDA:</label>
-                <label className="me-2"><a><i class="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
-                <label className="me-2"><a><i class="far fa-id-badge fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
-                <label className="me-2"><a><i class="fas fa-book fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Vigencia Matricular,</label>
-                <label className="me-2"><a><i class="fas fa-file-invoice fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
+                <label className="me-2"><a><Icon name="id-card" size={16} style={{ "color": "DeepSkyBlue" }} /></a> : C.C.,</label>
+                <label className="me-2"><a><Icon name="id-badge" size={16} style={{ "color": "DarkOrchid" }} /></a> : Matrícula,</label>
+                <label className="me-2"><a><Icon name="book" size={16} style={{ "color": "GoldenRod" }} /></a> : Vigencia Matricular,</label>
+                <label className="me-2"><a><Icon name="file-invoice" size={16} style={{ "color": "LimeGreen" }} /></a> : Hoja de vida y Certificados</label>
             </div></>
     }
 
     let _COMPONENT_MAIN_LIST = (_list, _filter, process, _key, _limit, _page, _COMPONENT_POP) => {
         var LIST = [];
-        if (process !== '') {
-            console.log(process.toLowerCase())
-            console.log(_filter)
-            LIST = _list.filter(item => item[process] == _filter)
+        const sourceList = asDictionaryList(_list);
+        if (_key === 'cub') {
+            LIST = filterCubDictionary(sourceList, _filter, process)
+        }
+        else if (process !== '') {
+            LIST = sourceList.filter(item => item[process] == _filter)
         }
         else {
-            LIST = _list.filter((arr, i) => {
+            LIST = sourceList.filter((arr, i) => {
+                if (!arr[_key]) return false;
                 let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 return curated_element.includes(curated_filter)
             })
         }
         return <>
-            <div class="d-flex flex-wrap m-3">
+            <div className="d-flex flex-wrap m-3">
                 {LIST.filter((arr, i) => Math.ceil((i + 1) / _limit) == _page).map(it => {
                     return <>
                         <div className={it.id_related ? '' : ''}>
-                            <div class="input-group-text">
+                            <div className="input-group-text">
                                 {_COMPONENT_POP(it)}
                             </div>
                         </div>
@@ -521,156 +526,170 @@ export default function DICTIONARY(props) {
     }
 
     let _COMPONENT_POPC_C = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.id_public} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.id_public}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><label>Modalidad: {formsParser1(it)}</label></li>
-                    <li class="list-group-item"><label>Estado: {_GET_STATE_STR(it.state)}</label></li>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.id_public}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.id_public}</p>
+                <ul className="list-group list-group-flush">
+                    <li className="list-group-item"><label>Modalidad: {formsParser1(it)}</label></li>
+                    <li className="list-group-item"><label>Estado: {_GET_STATE_STR(it.state)}</label></li>
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENT_POPC_D = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.cub} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.cub}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><label>Relación: <label className='fw-bold'>{it.id === '1' ? it.vr : it.id}</label></label></li>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.cub}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.cub}</p>
+                <ul className="list-group list-group-flush">
+                    <li className="list-group-item"><label>Relación: <label className='fw-bold'>{it.relationValue || it.id || it.vr}</label></label></li>
                     {
-                        it.id !== '1' && <li class="list-group-item"><label>VR: <label className='fw-bold'>{it.vr}</label></label></li>
+                        !it.isPqrsLike && <li className="list-group-item"><label>VR: <label className='fw-bold'>{it.vr}</label></label></li>
                     }
-                    <li class="list-group-item"><label>Proceso: <label className='fw-bold'>{it.res}</label></label></li>
+                    <li className="list-group-item"><label>Proceso: <label className='fw-bold'>{it.processLabel || it.res || '—'}</label></label></li>
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENT_POPC_E = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.vr} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.vr}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><label>Relación: <label className='fw-bold'>{it.desc}</label></label></li>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.vr}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.vr}</p>
+                <ul className="list-group list-group-flush">
+                    <li className="list-group-item"><label>Relación: <label className='fw-bold'>{it.desc}</label></label></li>
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENT_POPC_F = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.id_child} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.id_child}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><label>Proceso: <label className='fw-bold'>{it.id_public}</label></label></li>
-                    <li class="list-group-item"><label>Modalidad: {formsParser1(it)}</label></li>
-                    <li class="list-group-item"><label>Estado: {_GET_STATE_STR(it.state)}</label></li>
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.id_child}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.id_child}</p>
+                <ul className="list-group list-group-flush">
+                    <li className="list-group-item"><label>Proceso: <label className='fw-bold'>{it.id_public}</label></label></li>
+                    <li className="list-group-item"><label>Modalidad: {formsParser1(it)}</label></li>
+                    <li className="list-group-item"><label>Estado: {_GET_STATE_STR(it.state)}</label></li>
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENT_POPC_G = (it) => {
-        return <MDBPopover tag="section" popperTag='span' btnChildren={it.id_public} placement='top' dismiss>
-            <MDBPopoverHeader> <label>{it.id_public}</label></MDBPopoverHeader>
-            <MDBPopoverBody>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><label>Descripción: <label className='fw-bold'>{it.description}</label></label></li>
-                    {it.id_related ? <li class="list-group-item"><label>Proceso: {it.id_related}</label></li> : ''}
+        return <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="link" size="sm" className="p-0 h-auto text-inherit">{it.id_public}</Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-64 text-sm">
+                <p className="font-semibold mb-2">{it.id_public}</p>
+                <ul className="list-group list-group-flush">
+                    <li className="list-group-item"><label>Descripción: <label className='fw-bold'>{it.description}</label></label></li>
+                    {it.id_related ? <li className="list-group-item"><label>Proceso: {it.id_related}</label></li> : ''}
                 </ul>
-            </MDBPopoverBody>
-        </MDBPopover>
+            </PopoverContent>
+        </Popover>
     }
 
     let _COMPONENTN_TABS = () => {
         return <>
             <div className='row'>
                 <div className='col text-center'>
-                    <MDBBtnGroup size="sm">
-                        <MDBBtn color="primary" onClick={() => setTab('C')} outline={tab != 'C'}>ACTUACIONES ({LIST_C.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('E')} outline={tab != 'E'}>CONSECUTIVOS ENTRADA ({LIST_E.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('D')} outline={tab != 'D'}>CONSECUTIVOS SALIDA ({LIST_D.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('F')} outline={tab != 'F'}>CONSECUTIVO FINAL  ({LIST_F.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('G')} outline={tab != 'G'}>CERTIFICACIONES  ({LIST_G.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('H')} outline={tab != 'H'}>PROFESIONALES  ({LIST_H.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('A')} outline={tab != 'A'}>SERIES Y SUBSERIES</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('B')} outline={tab != 'B'}>TIPOLOGÍA DOCUMENTAL</MDBBtn>
-                    </MDBBtnGroup>
+                    <div className="flex flex-wrap gap-1">
+                        <Button variant={tab != 'C' ? "outline" : "default"} size="sm" onClick={() => setTab('C')}>ACTUACIONES ({LIST_C.length})</Button>
+                        <Button variant={tab != 'E' ? "outline" : "default"} size="sm" onClick={() => setTab('E')}>CONSECUTIVOS ENTRADA ({LIST_E.length})</Button>
+                        <Button variant={tab != 'D' ? "outline" : "default"} size="sm" onClick={() => setTab('D')}>CONSECUTIVOS SALIDA ({LIST_D.length})</Button>
+                        <Button variant={tab != 'F' ? "outline" : "default"} size="sm" onClick={() => setTab('F')}>CONSECUTIVO FINAL  ({LIST_F.length})</Button>
+                        <Button variant={tab != 'G' ? "outline" : "default"} size="sm" onClick={() => setTab('G')}>CERTIFICACIONES  ({LIST_G.length})</Button>
+                        <Button variant={tab != 'H' ? "outline" : "default"} size="sm" onClick={() => setTab('H')}>PROFESIONALES  ({LIST_H.length})</Button>
+                        <Button variant={tab != 'A' ? "outline" : "default"} size="sm" onClick={() => setTab('A')}>SERIES Y SUBSERIES</Button>
+                        <Button variant={tab != 'B' ? "outline" : "default"} size="sm" onClick={() => setTab('B')}>TIPOLOGÍA DOCUMENTAL</Button>
+                    </div>
                 </div>
             </div>
 
-
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'A'}>
+            <div>
+                <TabPane show={tab == 'A'}>
                     {_COMPONENT_SEARCH_BAR('search_a', filter_A, setFil_A)}
                     {_COMPONENT_LIST_A()}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'B'}>
+            <div>
+                <TabPane show={tab == 'B'}>
                     {_COMPONENT_SEARCH_BAR('search_b', filter_B, setFil_B)}
                     {_COMPONENT_LIST_B()}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'C'}>
+            <div>
+                <TabPane show={tab == 'C'}>
                     {_COMPONENT_SEARCH_BAR('search_c', filter_C, setFil_C)}
                     {_COMPONENT_PAGINATION(LIST_C, pag_C, limit_c, setPag_C, filter_C, '', 'id_public')}
                     {_COMPONENT_MAIN_LIST(LIST_C, filter_C,'', 'id_public', limit_c, pag_C, _COMPONENT_POPC_C)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'D'}>
+            <div>
+                <TabPane show={tab == 'D'}>
                     {_COMPONENT_SEARCH_BAR_CUB('search_d', filter_D, setFil_D, setProccessToFilter, proccessToFilter)}
                     {_COMPONENT_PAGINATION(LIST_D, pag_D, limit_D, setPag_D, filter_D, proccessToFilter, 'cub')}
                     <div className='row mx-3'>
                         <div className='col text-end'>
-                            <MDBBtn onClick={() => generateCVS(
+                            <Button variant="outline" size="sm" onClick={() => generateCVS(
                                 ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN', "FECHA"],
-                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`, 
-                                    i.res === 'Citacion Notificación Resolución' ? getJSONFull(i.date).date_doc :i.date])),
+                                LIST_D.map((i) => ([`${i.cub}`, `${i.relationValue || i.id || i.vr || ''}`, `${i.processLabel || i.res || ''}`, 
+                                    (i.processLabel || i.res) === 'Citacion Notificación Resolución' ? (getJSONFull(i.date) || {}).date_doc || i.date : i.date])),
                                 'LISTADO CONSECUTIVOS DE SALIDA')}
-                                color='success' size='sm' outline><i class="fas fa-table"></i> DESCARGAR CSV</MDBBtn>
+                                ><Icon name="table" size={16} /> Descargar CSV</Button>
                         </div>
                     </div>
                     {_COMPONENT_MAIN_LIST(LIST_D, filter_D, proccessToFilter, 'cub', limit_D, pag_D, _COMPONENT_POPC_D)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'E'}>
+            <div>
+                <TabPane show={tab == 'E'}>
                     {_COMPONENT_SEARCH_BAR('search_e', filter_E, setFil_E)}
                     {_COMPONENT_PAGINATION(LIST_E, pag_E, limit_E, setPag_E, filter_E, '', 'vr')}
                     {_COMPONENT_MAIN_LIST(LIST_E, filter_E,'', 'vr', limit_E, pag_E, _COMPONENT_POPC_E)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'F'}>
+            <div>
+                <TabPane show={tab == 'F'}>
                     {_COMPONENT_SEARCH_BAR('search_f', filter_F, setFil_F)}
                     {_COMPONENT_PAGINATION(LIST_F, pag_F, limit_F, setPag_F, filter_F, '', 'id_child')}
                     {_COMPONENT_MAIN_LIST(LIST_F, filter_F,'', 'id_child', limit_F, pag_F, _COMPONENT_POPC_F)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'G'}>
+            <div>
+                <TabPane show={tab == 'G'}>
                     {_COMPONENT_SEARCH_BAR('search_g', filter_G, setFil_G)}
                     {_COMPONENT_PAGINATION(LIST_G, pag_G, limit_G, setPag_G, filter_G, '', 'id_public')}
                     {_COMPONENT_MAIN_LIST(LIST_G, filter_G,'', 'id_public', limit_G, pag_G, _COMPONENT_POPC_G)}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
 
-            <MDBTabsContent>
-                <MDBTabsPane show={tab == 'H'}>
+            <div>
+                <TabPane show={tab == 'H'}>
                     {_COMPONENT_SEARCH_BAR('search_h', filter_H, setFil_H)}
                     {_COMPONENT_LIST_H()}
-                </MDBTabsPane>
-            </MDBTabsContent>
+                </TabPane>
+            </div>
         </>
     }
     // ***************************  DATATABLES *********************** //
@@ -679,42 +698,43 @@ export default function DICTIONARY(props) {
     function loadLists() {
         SERVICE_CUSTOM.loadDictionary_fun()
             .then(response => {
-                setListC(response.data)
+                setListC(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_cub()
             .then(response => {
-                setListD(response.data)
+                setListD(normalizeCubDictionaryPayload(response.data))
+                setPag_D(1)
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_vr()
             .then(response => {
-                setListE(response.data)
+                setListE(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_out()
             .then(response => {
-                setListF(response.data)
+                setListF(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_oc()
             .then(response => {
-                setListG(response.data)
+                setListG(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
             });
         SERVICE_CUSTOM.loadDictionary_prof()
             .then(response => {
-                setListH(response.data)
+                setListH(asDictionaryList(response.data))
             })
             .catch(e => {
                 console.log(e);
@@ -729,7 +749,6 @@ export default function DICTIONARY(props) {
         let csvContent = "data:text/csv;charset=utf-8,"
             + rows.map(e => e.join(";")).join("\n");
 
-
         var encodedUri = encodeURI(csvContent);
         const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
 
@@ -740,7 +759,6 @@ export default function DICTIONARY(props) {
 
         link.click();
     }
-
 
     return (
         <>

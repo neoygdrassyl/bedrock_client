@@ -1,40 +1,30 @@
-import React, { Component } from 'react';
-import {
-  MDBTypography, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem
-} from 'mdb-react-ui-kit';
-import DataTable from 'react-data-table-component';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
 import { Link } from "react-router-dom";
-import Collapsible from 'react-collapsible';
-import moment from 'moment';
+import Collapsible from '../../components/Collapsible';
+import dayjs from 'dayjs';
 import { infoCud } from '../../components/jsons/vars';
 import { Button_navigation } from '../../components/button.component';
+import { Icon } from '@/components/icon';
 
-class Liquidator extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      subtotal_cf: 0,
-      subtotal_cv: 0,
-      ledged_rows: 0,
-      table: [],
-      version: 2026,
-      iva: 0.19,
-    };
-  }
-
-
-  render() {
-    const { translation, breadCrums, hideInfo, useSelector } = this.props;
-    const { version } = this.state;
+function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
+    const [subtotal_cf, setSubtotalCf] = useState(0);
+    const [subtotal_cv, setSubtotalCv] = useState(0);
+    const [ledged_rows, setLedgedRows] = useState(0);
+    const [table, setTable] = useState([]);
+    const [version, setVersion] = useState(2026);
+    const [iva, setIva] = useState(0.19);
+    const [type, setType] = useState('');
 
     const query = new URLSearchParams(window.location.search);
     const id = query.get('newsId');
 
-    this.componentDidMount = () => {
+    useEffect(() => {
       if (id != null) {
-        document.getElementById(id).scrollIntoView()
+        document.getElementById(id)?.scrollIntoView()
       }
-    }
+    }, [id]);
 
 
     /* WORKING VARIABLES FOR THE LIQUIDATOR
@@ -64,7 +54,6 @@ class Liquidator extends Component {
 
     var smmv = values[version].value; // Mininum wage
     const m = infoCud.m; // Factor m
-    const iva = this.state.iva;
     var i;
     var j;
     var strata = [0.5, 1, 1.5, 2, 2.5]; // base on strata
@@ -222,12 +211,12 @@ class Liquidator extends Component {
         info: "",
         id: 0
       }
-      var list = this.state.table;
+      var list = [...table];
 
       if (list.length == 0) {
         _CHARGE.sub = Math.trunc(_subtotal_cf);
-        _CHARGE.iva = Math.trunc(_subtotal_cf * this.state.iva);
-        _CHARGE.total = Math.trunc(_subtotal_cf * this.state.iva + _subtotal_cf);
+        _CHARGE.iva = Math.trunc(_subtotal_cf * iva);
+        _CHARGE.total = Math.trunc(_subtotal_cf * iva + _subtotal_cf);
         _CHARGE.info = "Cargo Fijo";
         list.push(_CHARGE);
       }
@@ -239,8 +228,8 @@ class Liquidator extends Component {
         id: 0
       }
       _CHARGE.sub = Math.trunc(_subtotal_cv);
-      _CHARGE.iva = Math.trunc(_subtotal_cv * this.state.iva);
-      _CHARGE.total = Math.trunc(_subtotal_cv * this.state.iva + _subtotal_cv);
+      _CHARGE.iva = Math.trunc(_subtotal_cv * iva);
+      _CHARGE.total = Math.trunc(_subtotal_cv * iva + _subtotal_cv);
       _CHARGE.info = "Cargo Variable - " + document.getElementById("select_type").value + " (" + document.getElementById("area-liquidator").value + "m)";
 
       list.push(_CHARGE);
@@ -272,7 +261,7 @@ class Liquidator extends Component {
         list[i].id = i;
       }
 
-      this.setState({ table: list })
+      setTable([...list])
     }
 
     let handleSubmit = (event) => {
@@ -292,8 +281,8 @@ class Liquidator extends Component {
       let _subtotal_cf = (cf * rule_1 * rule_2) * i * m;
       let _subtotal_cv = ((cv * rule_1 * rule_21) / h * i * j * m);
 
-      this.setState({ subtotal_cf: _subtotal_cf });
-      this.setState({ subtotal_cv: _subtotal_cv });
+      setSubtotalCf(_subtotal_cf);
+      setSubtotalCv(_subtotal_cv);
       _ADD_VALUE_TABLE(_subtotal_cf, _subtotal_cv)
     }
     let getExpenses_m = (number) => {
@@ -312,7 +301,7 @@ class Liquidator extends Component {
 
     let _TABLE_INFO = () => {
       var _COMPONENT = [];
-      var _LIST = this.state.table;
+      var _LIST = table;
       const columns = [
         {
           name: <h3>Modalidad</h3>,
@@ -337,7 +326,7 @@ class Liquidator extends Component {
           id: "",
           cell: row => <> {row.id == 0 || row.id == _LIST.length - 1 || _LIST.length < 4
             ? ""
-            : <button className="btn btn-sm btn-danger mx-1 p-1" onClick={() => _DELETE_ROW(row.id)}><i class="far fa-times-circle fa-2x"></i></button>}
+            : <Button variant="destructive" size="sm" className="mx-1 p-1" onClick={() => _DELETE_ROW(row.id)}><Icon name="XCircle" size={20} /></Button>}
           </>,
         },
       ]
@@ -356,13 +345,13 @@ class Liquidator extends Component {
 
     }
     let _DELETE_ROW = (_ID) => {
-      var list = this.state.table;
+      var list = [...table];
       list.splice(_ID, 1);
       for (var i = 0; i < list.length; i++) {
         list[i].id = i;
       }
 
-      this.setState({ table: list })
+      setTable([...list])
     }
 
     let _note_1 = <>
@@ -380,36 +369,36 @@ class Liquidator extends Component {
       <table className="table table-bordered table-sm table-hover text-start">
         <tbody>
           <tr className="bg-light text-center">
-            <td><h4 className="text-justify fw-normal text-uppercase"></h4></td>
-            <td><h4 className="text-justify fw-normal text-uppercase">$</h4></td>
-            <td><h4 className="text-justify fw-normal text-uppercase">{values[version].units}</h4></td>
-            <td><h4 className="text-justify fw-normal text-uppercase">Excepción</h4></td>
+            <td><h4 className="text-justify fw-normal"></h4></td>
+            <td><h4 className="text-justify fw-normal">$</h4></td>
+            <td><h4 className="text-justify fw-normal">{values[version].units}</h4></td>
+            <td><h4 className="text-justify fw-normal">Excepción</h4></td>
           </tr>
           <tr>
             <td><h4 className="text-justify fw-bold">
               {version == '2021' ? 'SMMLV' :
                 version >= '2022' ? 'UVT' : ''}</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">{getExpenses_m(1)}</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">{getExpenses_m(1)}</h4></td>
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">
               {version == '2021' ? '%100' :
                 version >= '2022' ? '1' : ''}</h4></td>
-            <td className="bg-light text-center" ><h4 className="text-justify fw-normal text-uppercase"></h4></td>
+            <td className="bg-light text-center" ><h4 className="text-justify fw-normal"></h4></td>
           </tr>
           <tr>
             <td><h4 className="text-justify fw-bold">Cargo fijo “Cf”</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">{getExpenses_m(version == '2021' ? 0.4 : version >= '2022' ? 10.01 : 0)}</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">{getExpenses_m(version == '2021' ? 0.4 : version >= '2022' ? 10.01 : 0)}</h4></td>
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">
               {version == '2021' ? '%40' :
                 version >= '2022' ? '10.01' : ''}</h4></td>
-            <td className="bg-light text-center" ><h4 className="text-justify fw-normal text-uppercase">50% Sólo Adecuación</h4></td>
+            <td className="bg-light text-center" ><h4 className="text-justify fw-normal">50% Sólo Adecuación</h4></td>
           </tr>
           <tr>
             <td><h4 className="text-justify fw-bold">Cargo variable “Cv”</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">{getExpenses_m(version == '2021' ? 0.8 : version >= '2022' ? 20.02 : 0)}</h4></td>
-            <td className="bg-light text-center"><h4 className="text-justify fw-normal text-uppercase">
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">{getExpenses_m(version == '2021' ? 0.8 : version >= '2022' ? 20.02 : 0)}</h4></td>
+            <td className="bg-light text-center"><h4 className="text-justify fw-normal">
               {version == '2021' ? '%80' :
                 version >= '2022' ? '20.02' : ''}</h4></td>
-            <td className="bg-light text-center" ><h4 className="text-justify fw-normal text-uppercase"></h4></td>
+            <td className="bg-light text-center" ><h4 className="text-justify fw-normal"></h4></td>
           </tr>
         </tbody>
       </table>
@@ -564,25 +553,27 @@ class Liquidator extends Component {
     return (
       <div className="Liquidator">
         <div className="col-12 d-flex justify-content-start p-0">
-          <MDBBreadcrumb className="mb-0 p-0 ms-0">
-            <MDBBreadcrumbItem>
-              <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-            </MDBBreadcrumbItem>
-            <MDBBreadcrumbItem>
-              <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-            </MDBBreadcrumbItem>
-            <MDBBreadcrumbItem active><i class="fas fa-calculator"></i>  <label className="text-uppercase">{breadCrums.bc_u11}</label></MDBBreadcrumbItem>
-          </MDBBreadcrumb>
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb mb-0 p-0 ms-0">
+              <li className="breadcrumb-item">
+                <Link to={'/home'}><Icon name="home" size={16} /> <label className="">{breadCrums.bc_01}</label></Link>
+              </li>
+              <li className="breadcrumb-item">
+                <Link to={'/dashboard'}><Icon name="bookmark" size={16} /> <label className="">{breadCrums.bc_u1}</label></Link>
+              </li>
+              <li className="breadcrumb-item active"><Icon name="calculator" size={16} />  <label className="">{breadCrums.bc_u11}</label></li>
+            </ol>
+          </nav>
         </div>
 
         <div className="row py-4 d-flex justify-content-center">
           <div className="col-lg-10">
-            <h2 class="text-uppercase text-center pb-2" id='title'>{translation.title} {<Button_navigation Iddown={'title2'} Idup={null} />}</h2>
+            <h2 class="text-center pb-2" id='title'>{translation.title} {<Button_navigation Iddown={'title2'} Idup={null} />}</h2>
             <hr />
             {useSelector
               ? <div class="form-group my-2 col-4">
                 <h4 for="exampleFormControlSelect1">VERSION DE LA CALCULADORA</h4>
-                <select class="form-select" onChange={(e) => this.setState({ version: e.target.value })}
+                <select class="form-select" onChange={(e) => setVersion(e.target.value)}
                   defaultValue={version}>
                   <option>2021</option>
                   <option>2022</option>
@@ -595,28 +586,28 @@ class Liquidator extends Component {
               : ''}
 
 
-            {hideInfo ? '' : <MDBTypography note style={{ backgroundColor: '#EDEDED' }}>
+            {hideInfo ? '' : <div className="alert alert-light" style={{ backgroundColor: '#EDEDED' }}>
               <h3 className="text-justify text-dark" id='title2'>NOTA: Apreciado usuario, tenga en cuenta antes de usar esta herramienta: {<Button_navigation Iddown={'title3'} Idup={'title'} />}</h3>
               {_note_1}
-            </MDBTypography>}
+            </div>}
 
-            <div className='row border border-dark bg-info py-2 text-center text-light app-p'>
+            <div className='row border border-dark bg-primary text-primary-foreground py-2 text-center app-p'>
               <div className='col' id='title3'> MODELO N°1: LICENCIAS QUE AUTORIZAN OBRAS {<Button_navigation Iddown={'title4'} Idup={'title2'} />}</div>
             </div>
-            <MDBCard className="bg-card my-3">
-              <MDBCardBody>
-                <MDBRow>
-                  <MDBCol md="6">
+            <div className="card bg-card my-3">
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6">
                     <h3 className="text-center">{translation.subTitle_1}</h3>
                     <hr />
                     <form onSubmit={handleSubmit} id="app-form">
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white">
-                          <i class="fas fa-home"></i>
+                        <span class="input-group-text bg-primary text-primary-foreground">
+                          <Icon name="Home" size={14} />
                         </span>
-                        <select class="form-select" id="project-liquidator" required onChange={e => this.setState({ type: e.target.value })}>
-                          <option selected value="" disabled>{translation.form_project_0}</option>
+                        <select class="form-select" id="project-liquidator" required onChange={e => setType(e.target.value)}>
+                          <option value="" disabled>{translation.form_project_0}</option>
                           <option value="0">{translation.form_project_1}</option>
                           <option value="1">{translation.form_project_2}</option>
                           <option value="2">{translation.form_project_3}</option>
@@ -627,44 +618,44 @@ class Liquidator extends Component {
                       </div>
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white" >
-                          <i class="fas fa-tasks"></i>
+                        <span class="input-group-text bg-primary text-primary-foreground" >
+                          <Icon name="ListTodo" size={14} />
                         </span>
                         <select class="form-select" id="select_type" required >
-                          <option selected value="" disabled>{translation.form_module_0}</option>
-                          <option value="Obra Nueva" disabled={this.state.type == 2 ? true : false}>{translation.form_module_1}</option>
-                          <option value="Ampliacion" disabled={this.state.type == 2 ? true : false}>{translation.form_module_2}</option>
-                          <option value="Modificacion" disabled={this.state.type == 2 ? true : false}>{translation.form_module_3}</option>
-                          <option value="Reforzamiento" disabled={this.state.type == 2 ? true : false}>{translation.form_module_4}</option>
-                          <option value="Adecuacion (Con Obras)" disabled={this.state.type == 2 ? true : false}>{translation.form_module_5}</option>
-                          <option value="Adecuacion (Sin Obras)" disabled={this.state.type == 2 ? true : false}>{translation.form_module_51}</option>
-                          <option value="Demolicion total" disabled={this.state.type == 2 ? true : false}>{translation.form_module_6}</option>
-                          <option value="Demolicion Parcial" disabled={this.state.type == 2 ? true : false}>{translation.form_module_7}</option>
-                          <option value="Cerramiento" disabled={this.state.type == 2 ? true : false}>{translation.form_module_8}</option>
-                          <option value="Restauracion" disabled={this.state.type == 2 ? true : false}>{translation.form_module_9}</option>
-                          <option value="Reconstruccion" disabled={this.state.type == 2 ? true : false}>{translation.form_module_10}</option>
+                          <option value="" disabled>{translation.form_module_0}</option>
+                          <option value="Obra Nueva" disabled={type == 2 ? true : false}>{translation.form_module_1}</option>
+                          <option value="Ampliacion" disabled={type == 2 ? true : false}>{translation.form_module_2}</option>
+                          <option value="Modificacion" disabled={type == 2 ? true : false}>{translation.form_module_3}</option>
+                          <option value="Reforzamiento" disabled={type == 2 ? true : false}>{translation.form_module_4}</option>
+                          <option value="Adecuacion (Con Obras)" disabled={type == 2 ? true : false}>{translation.form_module_5}</option>
+                          <option value="Adecuacion (Sin Obras)" disabled={type == 2 ? true : false}>{translation.form_module_51}</option>
+                          <option value="Demolicion total" disabled={type == 2 ? true : false}>{translation.form_module_6}</option>
+                          <option value="Demolicion Parcial" disabled={type == 2 ? true : false}>{translation.form_module_7}</option>
+                          <option value="Cerramiento" disabled={type == 2 ? true : false}>{translation.form_module_8}</option>
+                          <option value="Restauracion" disabled={type == 2 ? true : false}>{translation.form_module_9}</option>
+                          <option value="Reconstruccion" disabled={type == 2 ? true : false}>{translation.form_module_10}</option>
                           <option value="Reconocimiento">{translation.form_module_11}</option>
                         </select>
                       </div>
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white" >
-                          <i class="fas fa-home"></i>
+                        <span class="input-group-text bg-primary text-primary-foreground" >
+                          <Icon name="Home" size={14} />
                         </span>
                         <select class="form-select" id="use-liquidator" required
                           onChange={handleUse}>
-                          <option selected value="" disabled>{translation.form_use_0}</option>
+                          <option value="" disabled>{translation.form_use_0}</option>
                           <option value="0">{translation.form_use_1}</option>
                           <option value="1">{translation.form_use_2}</option>
                         </select>
                       </div>
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white">
-                          <i class="fas fa-home"></i>
+                        <span class="input-group-text bg-primary text-primary-foreground">
+                          <Icon name="Home" size={14} />
                         </span>
                         <select class="form-select" id="social-liquidator" required>
-                          <option selected value="" disabled>{translation.form_social_0}</option>
+                          <option value="" disabled>{translation.form_social_0}</option>
                           <option value="0">{translation.form_social_1}</option>
                           <option value="1">{translation.form_social_2}</option>
                           <option value="2">{translation.form_social_3}</option>
@@ -672,11 +663,11 @@ class Liquidator extends Component {
                       </div>
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white" >
-                          <i class="fas fa-dollar-sign"></i>
+                        <span class="input-group-text bg-primary text-primary-foreground" >
+                          <Icon name="DollarSign" size={14} />
                         </span>
                         <select class="form-select" id="strata-liquidator" required>
-                          <option selected value="" disabled>{translation.form_strata_0}</option>
+                          <option value="" disabled>{translation.form_strata_0}</option>
                           <option value="0">{translation.form_strata_1}</option>
                           <option value="1">{translation.form_strata_2}</option>
                           <option value="2">{translation.form_strata_3}</option>
@@ -688,19 +679,19 @@ class Liquidator extends Component {
 
 
                       <div class="input-group mb-3">
-                        <span class="input-group-text bg-info text-white">
-                          <i class="fas fa-cube"></i>
+                        <span class="input-group-text bg-primary text-primary-foreground">
+                          <Icon name="Box" size={14} />
                         </span>
                         <input type="number" class="form-control" placeholder={translation.form_area} id="area-liquidator" min="0.01" step="0.01" />
                       </div>
 
                       <div className="text-center py-4 mt-3">
-                        <button className="btn btn-lg btn-info">{translation.form_btn}</button>
+                        <Button size="sm">{translation.form_btn}</Button>
                       </div>
 
                     </form>
-                  </MDBCol>
-                  <MDBCol md="6">
+                  </div>
+                  <div className="col-md-6">
                     <h3 className="text-center" >{translation.subTitle_2}</h3>
                     <hr />
                     <table class="table">
@@ -714,56 +705,56 @@ class Liquidator extends Component {
                       <tbody>
                         <tr>
                           <th>{translation.text_23}</th>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cf))}</h4></td>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cv))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cf))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cv))}</h4></td>
                         </tr>
                         <tr>
                           <th>{translation.text_24}</th>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cf * iva))}</h4></td>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cv * iva))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cf * iva))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cv * iva))}</h4></td>
                         </tr>
                         <tr>
                           <th>{translation.text_25}</th>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cf * iva + this.state.subtotal_cf))}</h4></td>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cv * iva + this.state.subtotal_cv))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cf * iva + subtotal_cf))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cv * iva + subtotal_cv))}</h4></td>
                         </tr>
                         <tr>
                           <th>{translation.text_26}</th>
-                          <td colSpan="2" className="text-center"><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cv * iva + this.state.subtotal_cv + Math.trunc(this.state.subtotal_cf * iva + this.state.subtotal_cf)))}</h4></td>
+                          <td colSpan="2" className="text-center"><h4 className="lead">${formatNumber(Math.trunc(subtotal_cv * iva + subtotal_cv + Math.trunc(subtotal_cf * iva + subtotal_cf)))}</h4></td>
                         </tr>
                       </tbody>
                     </table>
-                  </MDBCol>
-                </MDBRow>
-              </MDBCardBody>
-            </MDBCard>
-            <h2 class="text-uppercase text-center my-3" id='title4'>Tabla de Liquidacion  {<Button_navigation Iddown={'title5'} Idup={'title3'} />}</h2>
-            {this.state.table.length > 0
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h2 class="text-center my-3" id='title4'>Tabla de Liquidacion  {<Button_navigation Iddown={'title5'} Idup={'title3'} />}</h2>
+            {table.length > 0
               ? <>
                 {_TABLE_INFO()}
                 <div className="text-center py-4 mt-3">
-                  <button className="btn btn-lg btn-secondary" onClick={() => this.setState({ table: [] })}>REINICIAR TABLA</button>
+                  <Button variant="outline" size="sm" onClick={() => setTable([])}>Reiniciar tabla</Button>
                 </div>
               </>
               : <div className="text-center">No hay datos en la tabla</div>}
-            {hideInfo ? '' : <MDBTypography notestyle={{ backgroundColor: '#EDEDED' }}>
+            {hideInfo ? '' : <div className="alert alert-light" style={{ backgroundColor: '#EDEDED' }}>
               <h4 className="text-justify text-dark">NOTA: Para conocer el costo de las licencias de Urbanización , Subdivisión y Parcelación por favor acérquese a la Curaduría Urbana Uno de Bucaramanga o envié una
                 solicitud a través de los siguientes canales:</h4>
-              <Collapsible trigger={<><button className="btn btn-light btn-sm my-2">VER NOTAS</button></>}>
+              <Collapsible trigger={<><Button variant="ghost" size="sm" className="my-2">VER NOTAS</Button></>}>
                 {_note_3}
               </Collapsible>
               <h4 className="text-justify text-dark">NOTAS SOBRE EL VALOR DE LAS EXPENSAS</h4>
-              <Collapsible trigger={<><button className="btn btn-light btn-sm my-2">VER NOTAS</button></>}>
+              <Collapsible trigger={<><Button variant="ghost" size="sm" className="my-2">VER NOTAS</Button></>}>
                 {_note_4}
               </Collapsible>
               <h4 className="text-justify text-dark">NOTAS SOBRE EXPENSAS Y FORMAS DE LIQUIDAR</h4>
-              <Collapsible trigger={<><button className="btn btn-light btn-sm my-2">VER NOTAS</button></>}>
+              <Collapsible trigger={<><Button variant="ghost" size="sm" className="my-2">VER NOTAS</Button></>}>
                 {_note_2}
               </Collapsible>
 
-            </MDBTypography>}
+            </div>}
 
-            <div className='row border border-dark bg-info py-2 text-center text-light app-p my-3'>
+            <div className='row border border-dark bg-primary text-primary-foreground py-2 text-center app-p my-3'>
               <div className='col' id='title5'>MODELO N° 2 LICENCIAS QUE NO AUTORIZA OBRAS  {<Button_navigation Iddown={null} Idup={'title4'} />}</div>
             </div>
 
@@ -774,27 +765,27 @@ class Liquidator extends Component {
               <tbody>
                 {model2Table.map(value => {
                   if (value.list) return <><tr className="bg-warning">
-                    <td colSpan="2"><h4 className="text-justify fw-normal text-uppercase" >{value.title}</h4></td>
+                    <td colSpan="2"><h4 className="text-justify fw-normal" >{value.title}</h4></td>
                     {console.log(value.Ids == undefined ? 'Id_1' : value.Ids)}
-                    <td><h4 className="text-justify fw-normal text-uppercase">Expensas</h4></td>
-                    <td><h4 className="text-justify fw-normal text-uppercase">IVA</h4></td>
-                    <td><h4 className="text-justify fw-normal text-uppercase">Total</h4></td>
+                    <td><h4 className="text-justify fw-normal">Expensas</h4></td>
+                    <td><h4 className="text-justify fw-normal">IVA</h4></td>
+                    <td><h4 className="text-justify fw-normal">Total</h4></td>
                   </tr>
                     {value.list.map(valuel => {
                       if (valuel.const[version]) return <tr>
                         <td><h4 className="text-justify fw-normal">{valuel.name}</h4></td>
-                        <td><h4 className="text-justify fw-normal text-uppercase">
+                        <td><h4 className="text-justify fw-normal">
                           {valuel.const[version][1]
                             ? `(${valuel.const[version][2]}) ${valuel.const[version][1]}`
                             : `(${valuel.const[version][0]}) ${values[version].units} `
                           }</h4></td>
-                        <td className='bg-info text-light'><h4 className="text-justify fw-normal text-uppercase">$ {getExpenses_m(valuel.const[version][0])}</h4></td>
-                        <td className='bg-info text-light'><h4 className="text-justify fw-normal text-uppercase">$ {getIva_m(valuel.const[version][0])}</h4></td>
-                        <td className='bg-info text-light'><h4 className="text-justify fw-normal text-uppercase">$ {getTotal_m(valuel.const[version][0])}</h4></td>
+                        <td className='bg-primary text-primary-foreground'><h4 className="text-justify fw-normal">$ {getExpenses_m(valuel.const[version][0])}</h4></td>
+                        <td className='bg-primary text-primary-foreground'><h4 className="text-justify fw-normal">$ {getIva_m(valuel.const[version][0])}</h4></td>
+                        <td className='bg-primary text-primary-foreground'><h4 className="text-justify fw-normal">$ {getTotal_m(valuel.const[version][0])}</h4></td>
                       </tr>
                     })} </>
                   else return <tr className="bg-light">
-                    <td colSpan="5"><h4 className="text-justify fw-normal text-uppercase">{value.title}</h4></td>
+                    <td colSpan="5"><h4 className="text-justify fw-normal">{value.title}</h4></td>
                   </tr>
                 })}
 
@@ -915,7 +906,6 @@ class Liquidator extends Component {
         </div >
       </div >
     );
-  }
 }
 
 export default Liquidator;

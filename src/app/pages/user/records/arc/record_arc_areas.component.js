@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import React, { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { Spreadsheet } from "react-spreadsheet";
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBBtn, MDBCollapse } from 'mdb-react-ui-kit';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../components/TagInput';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import FUNService from '../../../../services/fun.service';
-
-var tagHRef = React.createRef();
-var tagERef = React.createRef();
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_ARC_AREAS(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const tagHRef = useRef(null);
+    const tagERef = useRef(null);
     const _Header = [
         "Refe",
         "ID Plano",
@@ -137,7 +136,6 @@ export default function RECORD_ARC_AREAS(props) {
         "A Depositos",
         "A Lotes",]
 
-    const MySwal = withReactContent(Swal);
     var [data, setData] = useState([]);
     var [saving, setSaving] = useState(-1);
     var [Header, setHeader] = useState(_Header)
@@ -200,7 +198,7 @@ export default function RECORD_ARC_AREAS(props) {
         return _AREAS;
     }
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_arc_steps;
+        var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }
@@ -239,7 +237,6 @@ export default function RECORD_ARC_AREAS(props) {
         return sum;
     }
 
-
     let _GET_TOTAL_AREA = (_build, _historic) => {
         if (!_build) return 0;
         var build = _build.split(",");
@@ -260,7 +257,6 @@ export default function RECORD_ARC_AREAS(props) {
         let sum = destroy.reduce((p, n) => Number(p) + Number(n))
         return (sum).toFixed(2);
     }
-
 
     let _GET_NET_INDEX = (_build, _destroy, _historic) => {
         if (!_build) return 0;
@@ -289,7 +285,7 @@ export default function RECORD_ARC_AREAS(props) {
         let currentfloorNumber = (_floor || '').replace(/^\D+/g, '');
 
         let areas = _GET_CHILD_33_AREAS();
-        areas.sort((a, b) => array_sort(a, b));
+        areas = [...areas].sort((a, b) => array_sort(a, b));
 
         let new_areas = areas.filter(item => {
             let floor = item.floor ? item.floor : ' ';
@@ -312,7 +308,7 @@ export default function RECORD_ARC_AREAS(props) {
         });
         let floor_index = -1;
         let sum = 0;
-        if (con) new_areas.reverse();
+        if (con) new_areas = [...new_areas].reverse();
 
         new_areas.map((item, i) => { if (_floor === item.floor) floor_index = i; })
         if (floor_index != -1) {
@@ -474,7 +470,6 @@ export default function RECORD_ARC_AREAS(props) {
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 0), name: 'build_0', },)
         }
 
-
         if (child.m_lic.includes('g') && !_header.includes('Demolida parcial')) {
             _header.splice(spliceOffset, 0, 'Demolida parcial')
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 7), name: 'build_7', },)
@@ -483,7 +478,6 @@ export default function RECORD_ARC_AREAS(props) {
             _header.splice(spliceOffset, 0, 'Demolida total')
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 6), name: 'build_6', },)
         }
-
 
         tagsH.map((tag, i) => {
             if (!_header.includes(tag)) {
@@ -498,8 +492,6 @@ export default function RECORD_ARC_AREAS(props) {
                 _cells.splice(spliceOffset + i, 0, { value: (v) => _CHECK_AREA_STR(v, 'empate_h', i, ';'), name: 'empate_' + i, },)
             }
         })
-
-
 
         destory_check.map((label, i) => {
             if (destroy_cb[i] === 'true' && !_header.includes(label)) {
@@ -524,7 +516,7 @@ export default function RECORD_ARC_AREAS(props) {
 
         // SORTS THE ARRAYS AND PROCESS TO FILL THE VALUES OF THE SPREADSHEET
         setHeader(_header);
-        var newData = _AREAS.sort((a, b) => array_sort(a, b));
+        var newData = [..._AREAS].sort((a, b) => array_sort(a, b));
         let cells = (v, i) => {
             return _cells.map(c => {
                 return {
@@ -744,7 +736,6 @@ export default function RECORD_ARC_AREAS(props) {
                             })
                         }
 
-
                         if (_h.includes('Empate: ')) {
                             tagsE.map((tag, i) => {
                                 if (_h === 'Empate: ' + tag) {
@@ -753,8 +744,6 @@ export default function RECORD_ARC_AREAS(props) {
                                 }
                             })
                         }
-
-
 
                         cell.push(cellObj)
                     }
@@ -793,7 +782,6 @@ export default function RECORD_ARC_AREAS(props) {
             newData.splice(newData.length - 1, 0, newRow)
         }
 
-
         for (let i = 0; i < ss; i++) {
             let newRow = Array.from(data[0]).map(v => { return { name: v.name } })
             let rowAdd = { value: "Semisótano", name: 'floor', }
@@ -807,9 +795,6 @@ export default function RECORD_ARC_AREAS(props) {
             newRow.splice(3, 1, rowAdd)
             newData.splice(newData.length - 1, 0, newRow)
         }
-
-
-
 
         setData(newData)
     }
@@ -850,13 +835,11 @@ export default function RECORD_ARC_AREAS(props) {
         return <>
             <div className='row'>
                 <div className='col-8'>
-                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
-                        <MDBBtn color='primary' outline={!openConfig} size='sm'
-                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</MDBBtn>
-                        <MDBBtn color='primary' outline size='sm'
-                            onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</MDBBtn>
-                        <MDBBtn color='success' outline size='sm'
-                            onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</MDBBtn>
+                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
+                        <Button variant={!openConfig ? "outline" : "default"} size="sm"
+                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</Button>
+                        <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</Button>
+                        <Button variant="outline" size="sm" onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</Button>
                     </div>
                     <div>
                         {saving === 0 ?
@@ -869,11 +852,10 @@ export default function RECORD_ARC_AREAS(props) {
 
                 </div>
                 <div className='col text-end'>
-                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area" />
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area_end" />
-                        <MDBBtn color='danger' outline size='sm'
-                            onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</MDBBtn>
+                        <Button variant="outline" size="sm" className="text-destructive border-destructive" onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</Button>
                     </div>
                 </div>
             </div>
@@ -905,12 +887,12 @@ export default function RECORD_ARC_AREAS(props) {
 
         ]
         return <>
-            <MDBCollapse show={openConfig}>
+            <UiCollapsible open={openConfig}><CollapsibleContent>
                 <div className='row border p-2'>
                     <div className='row mb-1'>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Otros (Históricos, Etapas, etc...):</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsH}
                                 placeholder="Histórico..."
                                 onChange={(newTags) => { setTagH(newTags); manage_step(newTags, 'h') }}
@@ -920,7 +902,7 @@ export default function RECORD_ARC_AREAS(props) {
                         </div>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Empate:</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsE}
                                 placeholder="Empate..."
                                 onChange={(newTags) => { setTagE(newTags); manage_step(newTags, 'e') }}
@@ -934,10 +916,10 @@ export default function RECORD_ARC_AREAS(props) {
                             <label className='mx-2 fw-bold'>Usar Áreas Modalidad:</label>
                             {type_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="type_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="type_cb"
                                             defaultChecked={child_1_cb[i]} onChange={() => manage_step(false, 'f1')} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -946,10 +928,10 @@ export default function RECORD_ARC_AREAS(props) {
                             <label className='mx-2 fw-bold'>Usar Áreas descontadas:</label>
                             {destory_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="destroy_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="destroy_cb"
                                             defaultChecked={destroy_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -958,10 +940,10 @@ export default function RECORD_ARC_AREAS(props) {
                             <label className='mx-2  fw-bold'>Usar Unidades Privadas:</label>
                             {units_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="units_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="units_cb"
                                             defaultChecked={units_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -970,10 +952,10 @@ export default function RECORD_ARC_AREAS(props) {
                             <label className='mx-2  fw-bold'>Usar Áreas Privadas:</label>
                             {units_a_check.map((val, i) => {
                                 return <>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input my-0" type="checkbox" name="units_a_cb"
+                                    <div className="form-check form-check-inline">
+                                        <input className="form-check-input my-0" type="checkbox" name="units_a_cb"
                                             defaultChecked={units_a_cb[i] === 'true'} onChange={() => manage_step()} />
-                                        <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
+                                        <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
                             })}
@@ -982,41 +964,41 @@ export default function RECORD_ARC_AREAS(props) {
                     <div className='row'>
                         <label className='mx-2 mt-2 fw-bold'>Crear edificio:</label>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Pis.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Pis.</div>
                                 </div>
                                 <input type='number' step={1} min={0} defaultValue={1} className="text-end form-control" id="create_b_fl" />
                             </div>
                         </div>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Smt.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Smt.</div>
                                 </div>
                                 <input type='number' step={1} min={0} max={1} defaultValue={0} className="text-end form-control" id="create_b_ss" />
                             </div>
                         </div>
                         <div className='col-2'>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">Sót.</div>
+                            <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                    <div className="input-group-text">Sót.</div>
                                 </div>
                                 <input type='number' step={1} min={0} defaultValue={0} className="text-end form-control" id="create_b_st" />
                             </div>
                         </div>
                         <div className='col-3'>
-                            <MDBBtn color='primary' outline size='sm' onClick={() => _NEW_BD()}>CREAR</MDBBtn>
+                            <Button variant="outline" size="sm" onClick={() => _NEW_BD()}>CREAR</Button>
                         </div>
                         <div className='col'>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="cb_level_rule" onChange={() => manage_step()} defaultChecked={LEVEL_RULE[0] === '1'} />
-                                <label class="form-check-label fw-bold" for="cb_level_rule">Usar nivel m aditivo</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="cb_level_rule" onChange={() => manage_step()} defaultChecked={LEVEL_RULE[0] === '1'} />
+                                <label className="form-check-label fw-bold" htmlFor="cb_level_rule">Usar nivel m aditivo</label>
                             </div>
                         </div>
                     </div>
                 </div>
-            </MDBCollapse>
+            </CollapsibleContent></UiCollapsible>
 
         </>
     }
@@ -1054,7 +1036,6 @@ export default function RECORD_ARC_AREAS(props) {
                 units_a[i] = getCellByName(cells, 'units_a_' + i) || 0;
             }
 
-
             let historic = [];
             let empate = [];
             let STEP = LOAD_STEP('a_config');
@@ -1068,7 +1049,6 @@ export default function RECORD_ARC_AREAS(props) {
             for (let i = 0; i < tagsEL; i++) {
                 empate.push(getCellByName(cells, 'empate_' + i) || 0)
             }
-
 
             let newArea = {
                 id_public: getCellByName(cells, 'id_public') ?? '',
@@ -1141,98 +1121,50 @@ export default function RECORD_ARC_AREAS(props) {
         });
     }
     let create_area = (formData, useSwal, i, fg) => {
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         RECORD_ARCSERVICE.create_arc_33_area(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     saveCounter++;
                     if (saveCounter === fg) {
                         props.requestUpdateRecord(currentItem.id);
                         setSaving(1);
                     }
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let update_area = (_id, _form, useSwal, i, fg) => {
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         RECORD_ARCSERVICE.update_arc_33_area(_id, _form)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     saveCounter++;
                     if (saveCounter === fg) {
                         props.requestUpdateRecord(currentItem.id);
                         setSaving(1);
                     }
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let delete_areas = (id, useSwal, fg) => {
         RECORD_ARCSERVICE.delete_33_area_byId(id)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     saveCounter++;
                     if (saveCounter === fg) {
                         props.requestUpdateRecord(currentItem.id);
@@ -1240,28 +1172,16 @@ export default function RECORD_ARC_AREAS(props) {
                     }
 
                 } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
-
 
     }
     // ************
-
 
     let manage_fun_1 = () => {
         let formData = new FormData();
@@ -1297,7 +1217,7 @@ export default function RECORD_ARC_AREAS(props) {
             if (index === -1) {
                 value.push('F');
             }
-            value.sort()
+            value = [...value].sort()
         }
         formData.set('tipo', value.join(','));
         save_fun_1(formData, false)
@@ -1305,54 +1225,27 @@ export default function RECORD_ARC_AREAS(props) {
     let save_fun_1 = (formData, useSwal) => {
         let _CHILD_1 = _GET_CHILD_1();
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         if (!_CHILD_1.id) {
             FUNService.create_fun1(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdate(currentItem.id)
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         } else {
             FUNService.update_1(_CHILD_1.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdate(currentItem.id)
                     }
                 })
@@ -1400,7 +1293,6 @@ export default function RECORD_ARC_AREAS(props) {
         }
         json.units_a_cb = check.join(';');
 
-
         var checks_html = document.getElementById('cb_level_rule').checked ? 1 : 0;
         formData.set('check', checks_html);
 
@@ -1416,72 +1308,35 @@ export default function RECORD_ARC_AREAS(props) {
     let save_step = (_id_public, useSwal, formData) => {
         var STEP = LOAD_STEP(_id_public);
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (STEP.id) {
             RECORD_ARCSERVICE.update_step(STEP.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         else {
             RECORD_ARCSERVICE.create_step(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
     }

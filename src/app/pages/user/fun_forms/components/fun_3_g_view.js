@@ -1,22 +1,10 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 
 
 import { dateParser } from '../../../../components/customClasses/typeParse'
 import VIZUALIZER from '../../../../components/vizualizer.component';
 
-const MySwal = withReactContent(Swal);
-class FUN_3_G_VIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { _FUN_3, _FUN_6 } = this.props;
-        const { } = this.state;
+function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
 
         // DATA GETTERS
         let _SET_CHILD_3 = () => {
@@ -80,28 +68,28 @@ class FUN_3_G_VIEW extends Component {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico: 
                             
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'fas fa-cloud-download-alt'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
 
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_2")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio: 
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'fas fa-cloud-download-alt'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
                                 <br/>
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_3")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web: 
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'fas fa-cloud-download-alt'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
                                 <br/>
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_4")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico: 
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'fas fa-cloud-download-alt'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
                     </>);
                 }
             }
@@ -112,69 +100,69 @@ class FUN_3_G_VIEW extends Component {
             let _LIST = _SET_CHILD_3();
             const columns_3 = [
                 {
-                    name: <label>DIRECCIÓN DEL PREDIO</label>,
-                    selector: 'direccion_1',
+                    name: 'DIRECCIÓN DEL PREDIO',
+                    selector: row => row.direccion_1,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.direccion_1}</label>
+                    cell: row => <span className="text-sm">{row.direccion_1}</span>
                 },
                 {
-                    name: <label>DIRECCIÓN DE CORRESPONDENCIA</label>,
-                    selector: 'direccion_2',
+                    name: 'DIRECCIÓN DE CORRESPONDENCIA',
+                    selector: row => row.direccion_2,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.direccion_2}</label>
+                    cell: row => <span className="text-sm">{row.direccion_2}</span>
                 },
                 {
-                    name: <label>ORIGEN DATO</label>,
-                    cell: row => <label>{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</label>
+                    name: 'ORIGEN DATO',
+                    cell: row => <span className="text-sm">{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</span>
                 },
                 {
-                    name: <label>¿SE DECLARÓ PARTE?</label>,
+                    name: '¿SE DECLARÓ PARTE?',
                     cell: row => <label>{row.part} - {row.part_id}</label>
                 },
                 {
-                    name: <label>ESTADO CITACIÓN</label>,
-                    selector: 'row.state',
+                    name: 'ESTADO CITACIÓN',
+                    selector: row => row.state,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_STATE(row.state)}</span>
                 },
                 {
-                    name: <label>CONSECUTIVO RELACIONADO</label>,
-                    selector: 'id_cub',
+                    name: 'CONSECUTIVO RELACIONADO',
+                    selector: row => row.id_cub,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.id_cub}</label>
+                    cell: row => <span className="text-sm">{row.id_cub}</span>
                 },
                 {
-                    name: <label>GUIÁ DE CONFIRMACIÓN</label>,
-                    selector: 'id_alerted',
+                    name: 'GUIÁ DE CONFIRMACIÓN',
+                    selector: row => row.id_alerted,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.id_alerted == "-1"
+                    cell: row => <span className="text-sm">{row.id_alerted == "-1"
                         ? ""
-                        : row.id_alerted}</label>
+                        : row.id_alerted}</span>
                 },
                 {
-                    name: <label>FECHA RECIBIDO</label>,
-                    selector: 'alerted',
+                    name: 'FECHA RECIBIDO',
+                    selector: row => row.alerted,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>
+                    cell: row => <span className="text-sm">{row.state == 1 ? dateParser(row.alerted) : ""}</span>
                 },
                 {
-                    name: <label>MÉTODOS DE PUBLICACIÓN</label>,
+                    name: 'MÉTODOS DE PUBLICACIÓN',
                     minWidth: '250px',
-                    cell: row => <label>{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</span>
                 },
                 {
-                    name: <label>SOPORTES DE PUBLICACIÓN</label>,
+                    name: 'SOPORTES DE PUBLICACIÓN',
                     minWidth: '200px',
-                    cell: row => <label>{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</span>
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
@@ -206,7 +194,6 @@ class FUN_3_G_VIEW extends Component {
                 {_CHILD_3_LIST()}
             </div>
         );
-    }
 }
 
 export default FUN_3_G_VIEW;

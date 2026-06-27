@@ -1,14 +1,14 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import Modal from 'react-modal';
-import moment from 'moment';
+
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
+import dayjs from 'dayjs';
 import FUNService from '../../../services/fun.service';
 import { PDFDocument } from 'pdf-lib';
 import VIEWER from '../../../components/viewer.component';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 const customStylesForModal = {
     overlay: {
         position: 'fixed',
@@ -103,40 +103,40 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         return <form id="form_fun6" onSubmit={addDocument} enctype="multipart/form-data">
             <div className="row">
                 <div className="col-12">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                        <input type="file" class="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
+                    <div className="input-group">
+                        <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
+                        <input type="file" className="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
                     </div>
-                    <div class="input-group">
-                        <input id={'fun6_description'} class="form-control" value={VERSION_DESC[id6] || 'Documento de Evaluación'} hidden />
+                    <div className="input-group">
+                        <input id={'fun6_description'} className="form-control" value={VERSION_DESC[id6] || 'Documento de Evaluación'} hidden />
                     </div>
                 </div>
             </div>
             <div className="row d-flex justify-content-start">
                 <div className="col-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control" id={'fun6_code'} value={id6} hidden />
+                    <div className="input-group">
+                        <input type="text" className="form-control" id={'fun6_code'} value={id6} hidden />
                     </div>
                 </div>
                 <div className="col-3">
-                    <div class="input-group">
-                        <input type="number" class="form-control" step="1" min="0" id={'fun6_page'} hidden />
+                    <div className="input-group">
+                        <input type="number" className="form-control" step="1" min="0" id={'fun6_page'} hidden />
                     </div>
                 </div>
                 <div className="col">
-                    <div class="input-group">
-                        <input type="date" class="form-control" id={'fun6_date'} defaultValue={moment().format('YYYY-MM-DD')} hidden />
+                    <div className="input-group">
+                        <input type="date" className="form-control" id={'fun6_date'} defaultValue={dayjs().format('YYYY-MM-DD')} hidden />
                     </div>
                 </div>
             </div>
 
             <div className="text-end py-2">
-                <button className="btn btn-sm btn-primary" type='submit'><i class="fas fa-times-circle"></i> SUBIR</button>
+                <Button size="sm" type='submit'><Icon name="times-circle" size={16} /> SUBIR</Button>
             </div>
         </form>
     }
 
-    let BTN_DOWN = <MDBBtn floating tag='a' size='sm' color='primary' className='ms-1'><i class="fas fa-download"></i></MDBBtn>
+    let BTN_DOWN = <Button size="sm" className="ms-1"><Icon name="download" size={16} /></Button>
     let BTN_VIEW = (API, params) => <VIEWER API={API} params={params} ></VIEWER>
     // ******************* APIS ******************* //
     let addDocument = (e) => {
@@ -144,7 +144,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         let formData = new FormData();
         formData.set('fun0Id', currentItem.id);
 
-        let _creationYear = moment(currentItem.createdAt).format('YY');
+        let _creationYear = dayjs(currentItem.createdAt).format('YY');
         let _folder = currentItem.id_public;
 
         // GET DATA OF ATTACHS
@@ -166,41 +166,20 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         formData.set('pages', page);
         formData.set('dates', date);
 
-
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FUNService.create_fun6(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.generic_success_title,
-                        text: swaMsg.generic_success_text,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                     props.requestUpdate(currentItem.id);
                     setModal(false)
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }
@@ -215,7 +194,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
     }
     return (
         <>
-            {!_FIND_6_ID_REPLACE(id6) ? <MDBBtn floating tag='a' size='sm' color='danger' className='ms-1' onClick={() => setModal(true)}><i class="fas fa-upload"></i></MDBBtn> : null}
+            {!_FIND_6_ID_REPLACE(id6) ? <Button variant="destructive" size="sm" className="ms-1" onClick={() => setModal(true)}><Icon name="upload" size={16} /></Button> : null}
             {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(getF6Document, [_FIND_6_ID_REPLACE(id6)]) : null}
 
             <Modal contentLabel="UPLOAD RECORD DOC"
@@ -223,9 +202,16 @@ export default function RECORD_DOCUMENT_VERSION(props) {
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label><i class="fas fa-file-upload"></i> SUBIR DOCUMENTO DE EVALUACIÓN: {VERSION_DESC[id6] || 'Documento de Evaluación'}</label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="file-upload" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Subir documento de evaluación — {VERSION_DESC[id6] || 'Documento de Evaluación'}</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal(false)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
                 <hr />
 
@@ -233,7 +219,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(false)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <Button size="sm" onClick={() => setModal(false)}><Icon name="times-circle" size={16} /> CERRAR</Button>
                 </div>
             </Modal>
         </>

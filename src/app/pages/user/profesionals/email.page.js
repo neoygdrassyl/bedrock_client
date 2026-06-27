@@ -1,16 +1,13 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from 'mdb-react-ui-kit';
 import profesionalsService from '../../../services/profesionals.service';
+import { Button } from '@/components/ui/button';
 import { Link } from "react-router-dom";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import ReCAPTCHA from "react-google-recaptcha";
-import React from 'react';
-
-const MySwal = withReactContent(Swal);
-const recaptchaRef = React.createRef();
+import React, { useRef } from 'react';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function PROFESIONALS_EMAIL(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
+    const recaptchaRef = useRef(null);
 
     // ***************************  DATA GETTERS *********************** //
     // *************************  DATA CONVERTERS ********************** //
@@ -21,75 +18,47 @@ export default function PROFESIONALS_EMAIL(props) {
         const recaptchaValue = recaptchaRef.current.getValue();
         // if (false) { 
         if (!recaptchaValue) {
-            return MySwal.fire({
-                toast: true,
-                position: 'center-center',
-                timer: 4000,
-                timerProgressBar: true,
-                title: "Información Incompleta",
-                text: "Asegurese que de usted no sea un robot <[O.O]>",
-                icon: 'warning',
-                showConfirmButton: false,
-            });
+            return swalLoading({ title: "Información Incompleta", text: "Asegurese que de usted no sea un robot <[O.O]>" });
         }
         let email = document.getElementById('email').value;
-        MySwal.fire({
-            title: 'ENVIANDO SOLICITUD',
-            text: 'Se esta procesando el formulario, esto puede tardar unos segundos',
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: 'ENVIANDO SOLICITUD', text: 'Se esta procesando el formulario, esto puede tardar unos segundos' });
         profesionalsService.sentEmail(email)
             .then(response => {
-                MySwal.fire({
-                    title: 'EMAIL ENVIADO',
-                    text: 'El formulario se proceso correctamente y un email ha sido enviado al correo proveído, este correo puede tardar unos minutos en llegar y puede llegar a su bandeja de SPAM. A partir de ahora tiene 15 minutos para actualizar la hoja de vida.',
-                    icon: 'success',
-                    confirmButtonText: 'CONTINUAR',
-                });
+                swalSuccess({ title: 'EMAIL ENVIADO', text: 'El formulario se proceso correctamente y un email ha sido enviado al correo proveído, este correo puede tardar unos minutos en llegar y puede llegar a su bandeja de SPAM. A partir de ahora tiene 15 minutos para actualizar la hoja de vida.' });
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: 'ERROR',
-                    text: 'Se han presentado errores en la acción, por favor inténtelo mas tarde.',
-                    icon: 'warning',
-                    confirmButtonText: 'CONTINUAR',
-                });
+                swalError({ title: 'ERROR', text: 'Se han presentado errores en la acción, por favor inténtelo mas tarde.', icon: 'warning' });
             })
     }
 
     return (
-        <div className='my-3'>
-            <MDBBreadcrumb className="mx-5 my-2">
-                <MDBBreadcrumbItem>
-                    <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">Inicio</label></Link>
-                </MDBBreadcrumbItem>
-                <MDBBreadcrumbItem active><i class="fas fa-hard-hat"></i>  <label className="text-uppercase">HOJA DE VIDA PROFESIONALES</label></MDBBreadcrumbItem>
-            </MDBBreadcrumb>
-
-            <h2 className="text-center my-4">ACTUALIZACIÓN DE HOJA DE VIDA DE PROFESIONALES</h2>
+        <div className='space-y-6'>
+            <div>
+                <h1 className="text-xl font-bold text-foreground">Correo Profesionales</h1>
+                <p className="text-sm text-muted-foreground mt-1">Actualización de hoja de vida de profesionales</p>
+            </div>
 
             <h5 className="text-center my-4">Digite su correo electrónico para enviar un Link con el cual poder actualizar su hoja de vida</h5>
 
             <div className="d-flex justify-content-center">
                 <div className="bg-card w-25">
-                    <div class="card-body">
+                    <div className="card-body">
                         <form onSubmit={sendEmail}>
                             <div className='row'>
                                 <div className='col'>
-                                    <label for="name" class="form-label">Email</label>
-                                    <input type="text" class="form-control" id="email" required />
+                                    <label htmlFor="name" className="form-label">Email</label>
+                                    <input type="text" className="form-control" id="email" required />
                                 </div>
                             </div>
                             <div className="row d-flex justify-content-center my-2">
                                 <ReCAPTCHA
                                     ref={recaptchaRef}
-                                    sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_HTML}
+                                    sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
                                 />
                             </div>
                             <div className="text-center my-2">
-                                <button type="submit" class="btn btn-info ">ENVIAR</button>
+                                <Button type="submit" size="sm">ENVIAR</Button>
                             </div>
                         </form>
                     </div>

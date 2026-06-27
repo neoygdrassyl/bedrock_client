@@ -1,37 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState } from 'react';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import RECORD_PH from '../../../../services/record_ph.service';
+import usePHSave from './hooks/usePHSave';
+import { savePHStep } from './utils/phSaveStep';
 
-const MySwal = withReactContent(Swal);
+const getPHReviewDetails = (sectionId) => {
+    const section = REVIEW_DOCS.find((reviewSection) => reviewSection.pid === sectionId);
+    if (!section) return [];
+
+    return section.items
+        .filter((item) => Array.isArray(item.rtype) && item.rtype.includes('ph'))
+        .map((item) => item.name);
+};
+
+const PH_AREA_DETAILS = getPHReviewDetails('rar_3');
+const PH_PLANT_DETAILS = getPHReviewDetails('rar_4');
 
 export default function RECORD_PH_CHECK_LIST(props) {
-    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
-    var _SAVE_STEPS = 0;
-    const REVIEWS_TYPES = [
-        { name: 'CONSTRUCCIÓN', id: 'con' },
-        { name: 'LOTEO, PARCELACIÓN, SUBDIVISIÓN Y URBANISMO', id: 'sub' },
-        { name: 'CERRAMIENTO', id: 'cer' },
-    ]
-    const REVIEW = REVIEW_DOCS;
-    // ******************* DATA GETERS ********************* //
+    const { swaMsg, currentItem, currentRecord, currentVersionR, requestUpdateRecord } = props;
+    const { execute } = usePHSave(swaMsg);
+
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_ph_steps;
-        for (var i = 0; i < _CHILD.length; i++) {
-            if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
+        const _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
+        for (let i = 0; i < _CHILD.length; i++) {
+            if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }
         return []
     }
-    // *******************  DATA CONVERTERS ******************* //
+
     let _GET_STEP_TYPE = (_id_public, _type) => {
-        var STEP = LOAD_STEP(_id_public);
+        const STEP = LOAD_STEP(_id_public);
         if (!STEP.id) return [];
-        var value = STEP[_type]
+        let value = STEP[_type]
         if (!value) return [];
         value = value.split(';');
         return value
     }
+
     let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
         if (_VALUE === '0' || _VALUE === 'NO CUMPLE') {
             return 'form-select text-danger form-select-sm';
@@ -44,9 +49,15 @@ export default function RECORD_PH_CHECK_LIST(props) {
         }
         return 'form-select form-select-sm';
     }
-    // ******************* COMPONENTS JSX ******************* //
+
+    const initialChecks = _GET_STEP_TYPE('phcl', 'check');
+    const [checks, setChecks] = useState(() => {
+        const arr = [...initialChecks];
+        while (arr.length < 28) arr.push('');
+        return arr;
+    });
+
     let _COMPONENT = () => {
-        const _CHECK_ARRAY = _GET_STEP_TYPE('phcl', 'check');
         const LIST = [
             { title: 'Planos arquitectónicos', items: [] },
             {
@@ -73,12 +84,12 @@ export default function RECORD_PH_CHECK_LIST(props) {
             },
             {
                 title: 'Cuadro de áreas', items: [
-                    { desc: 'Cuadro general de las áreas del proyecto arquitectónico', i: 9 },
+                    { desc: 'Cuadro general de las áreas del proyecto arquitectónico', i: 9, details: PH_AREA_DETAILS },
                 ]
             },
             {
                 title: 'Plantas arquitectónicas por piso, sótano o semisótano  cubiertas', items: [
-                    { desc: 'Primera planta relacionada con el espacio público', i: 10 },
+                    { desc: 'Primera planta relacionada con el espacio público', i: 10, details: PH_PLANT_DETAILS },
                     { desc: 'Cotas totales y parciales del proyecto', i: 11 },
                     { desc: 'Ejes y elementos estructurales proyectados (Sistema estructural)', i: 12 },
                     { desc: 'Niveles', i: 13 },
@@ -115,133 +126,69 @@ export default function RECORD_PH_CHECK_LIST(props) {
             },
         ]
 
-        return LIST.map((list, i) => {
-            return <div className="row border">
-                {list.title ? <div className='col-3 text-center '><label className='fw-bold'>{list.title}</label></div> : ''}
+        return LIST.map((list) => {
+            const sectionKey = list.title || `phcl-section-${list.items.map((item) => item.i).join('-')}`;
+            return <div className="row border" key={sectionKey}>
+                {list.title ? <div className='col-3 text-center '><span className='fw-bold'>{list.title}</span></div> : ''}
                 <div className='col'>
-                    {list.items.map((item, j) => {
-                        return <>
-                            <div className='row border'>
-                                <div className='col'><label>{item.desc}</label></div>
-                                <div className='col-2'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item.i])}
-                                    name="phcl_checks" id={"phcl_checks_" + item.i}
-                                    defaultValue={_CHECK_ARRAY[item.i]} onChange={() => manage_rar(false)} >
-                                    <option value="0" className="text-danger">NO</option>
-                                    <option value="1" className="text-success">SI</option>
-                                    <option value="2" className="text-warning">NA</option>
-                                </select></div>
+                    {list.items.map((item) => {
+                        return <div className='row border' key={`phcl-item-${item.i}`}>
+                                <div className='col'>
+                                    <span>
+                                        {item.desc}
+                                        {item.details?.length ? (
+                                            <ul className="mb-0 ps-3 small text-muted">
+                                                {item.details.map((detail) => <li key={detail}>{detail}</li>)}
+                                            </ul>
+                                        ) : null}
+                                    </span>
+                                </div>
+                                <div className='col-2'>
+                                    <select
+                                        aria-label={item.desc}
+                                        className={_GET_SELECT_COLOR_VALUE(checks[item.i])}
+                                        value={checks[item.i]}
+                                        onChange={(e) => handleCheckChange(item.i, e.target.value)}
+                                    >
+                                        <option value="0" className="text-danger">NO</option>
+                                        <option value="1" className="text-success">SI</option>
+                                        <option value="2" className="text-warning">NA</option>
+                                    </select>
+                                </div>
                             </div>
-                        </>
                     })}
                 </div>
             </div>
         })
     }
 
+    const handleCheckChange = async (index, value) => {
+        const newChecks = [...checks];
+        newChecks[index] = value;
+        setChecks(newChecks);
 
-    // ******************* APIS ******************* //
-    let manage_rar = (e) => {
-        if (e) e.preventDefault();
-        let formData = new FormData();
-        let checks = [];
-        let checks_html;
-        let values = [];
-
-        checks_html = document.getElementsByName('phcl_checks');
-        for (var i = 0; i < checks_html.length; i++) {
-            checks.push(document.getElementById('phcl_checks_' + i).value)
-        }
-
-        formData.set('check', checks.join(';'));
-
+        const formData = new FormData();
+        formData.set('check', newChecks.join(';'));
         formData.set('version', currentVersionR);
         formData.set('recordPhId', currentRecord.id);
         formData.set('id_public', 'phcl');
 
-        save_step('phcl', false, formData);
-    }
-
-    let save_step = (_id_public, useSwal, formData, start, end) => {
-        var STEP = LOAD_STEP(_id_public);
-
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
+        const step = LOAD_STEP('phcl');
+        const result = await execute(savePHStep(RECORD_PH, step, formData), {
+            operationName: 'guardar checklist',
+            loading: false,
+            success: false,
+            error: true,
         });
-        if (STEP.id) {
-            RECORD_PH.update_step(STEP.id, formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        if (start != undefined) {
-                            if (start == end) props.requestUpdateRecord(currentItem.id);
-                        }
-                        else props.requestUpdateRecord(currentItem.id);
-                    } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                });
-        }
-        else {
-            RECORD_PH.create_step(formData)
-                .then(response => {
-                    if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        if (start != undefined) {
-                            if (start == end) props.requestUpdateRecord(currentItem.id);
-                        }
-                        else props.requestUpdateRecord(currentItem.id);
-                    } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                });
+
+        if (result.ok) {
+            requestUpdateRecord(currentItem.id);
         }
     }
+
     return (
         <div>
             {_COMPONENT()}
-        </div >
+        </div>
     );
 }

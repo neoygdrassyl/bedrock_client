@@ -1,220 +1,204 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import MailboxService from '../../services/mailbox.service'
-import {
-    MDBRow, MDBCol, MDBCard, MDBCardBody,
-    MDBBtn,
-    MDBModal,
-    MDBModalDialog,
-    MDBModalContent,
-    MDBModalHeader,
-    MDBModalTitle,
-    MDBModalBody,
-    MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem
-} from 'mdb-react-ui-kit';
-import { Link } from "react-router-dom";
-import DataTable from 'react-data-table-component';
-import Collapsible from 'react-collapsible';
-const moment = require('moment');
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Icon } from '@/components/icon';
+import DataTable from '@/components/data-table-bridge';
+import dayjs from 'dayjs';
+import InternalChatPanel from './chat/InternalChatPanel';
 
-class Mail extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            error: null,
-            isLoaded: false,
-            currentItem: null,
-            currentIndex: -1,
-            modal: false,
-            items: [],
-        };
-    }
-    componentDidMount() {
-        this.retrievePublish();
-    }
-    retrievePublish() {
+function Mail({ translation, globals, breadCrums }) {
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(-1);
+    const [modal, setModal] = useState(false);
+    const [items, setItems] = useState([]);
+    const [activeTab, setActiveTab] = useState('chat');
+
+    const retrievePublish = useCallback(() => {
         MailboxService.getAll()
             .then(response => {
-                this.setState({
-                    items: response.data,
-                    isLoaded: true,
-                });
+                setItems(response.data);
+                setIsLoaded(true);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    refreshList() {
-        this.retrievePublish();
-        this.setState({
-            currentItem: null,
-            currentIndex: -1,
-        });
-    }
-    toggle = () => {
-        this.setState({
-            modal: !this.state.modal
-        });
-    }
-    getToggle = () => {
-        return this.state.modal;
-    }
-    setItem(item) {
-        this.setState({
-            currentItem: item,
-            modal: !this.state.modal,
-        });
-    }
-    render() {
-        const { translation, globals, breadCrums } = this.props;
-        const { currentItem, isLoaded, items } = this.state;
+    }, []);
+
+    useEffect(() => {
+        retrievePublish();
+    }, [retrievePublish]);
+
+    const refreshList = () => {
+        retrievePublish();
+        setCurrentItem(null);
+        setCurrentIndex(-1);
+    };
+
+    const toggle = () => {
+        setModal(prev => !prev);
+    };
+
+    const getToggle = () => {
+        return modal;
+    };
+
+    const setItem = (item) => {
+        setCurrentItem(item);
+        setModal(prev => !prev);
+    };
         const columns = [
             {
                 name: <h3># CONSECUTIVO</h3>,
-                selector: 'id',
+                selector: row => row.id,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3">{row.id}</p>
             },
             {
                 name: <h3>NOMBRE</h3>,
-                selector: 'name',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3">{row.name}</p>
             },
             {
                 name: <h3>FECHA</h3>,
-                selector: 'createdAt',
+                selector: row => row.createdAt,
                 sortable: true,
                 filterable: true,
-                cell: row => <p className="pt-3">{moment(row.createdAt).format("DD-MM-YYYY")}</p>
+                cell: row => <p className="pt-3">{dayjs(row.createdAt).format("DD-MM-YYYY")}</p>
             },
             {
                 name: <h3>ASUNTO</h3>,
-                selector: 'subject',
+                selector: row => row.subject,
                 cell: row => <p className="pt-3 text-center">{row.subject}</p>
             },
             {
                 name: <h3>ACCIÓN</h3>,
                 button: true,
                 cell: row =>
-                    <button className="btn btn-danger btn-sm" onClick={() => this.setItem(row)}><i class="fas fa-file-alt"></i> Ver</button>
+                    <Button variant="destructive" size="sm" onClick={() => setItem(row)}><Icon name="file-alt" size={16} /> Ver</Button>
                 ,
             },
         ]
 
         return (
 
-            <div className="Publish container">
-                <div className="col-12 d-flex justify-content-start p-0">
-                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u6}</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-xl font-bold text-foreground">Mensajes</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Chat interno de usuarios y buzón recibido del formulario de contacto</p>
                 </div>
-                <div className="row mb-4 d-flex justify-content-center">
-                    <div className="col-lg-8 col-md-10">
-                        <h1 className="text-center my-4">BUZÓN DE MENSAJES</h1>
-                        <hr />
 
-                        <div className="text-center">
-                            {isLoaded ? (
-                                <DataTable
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    noDataComponent="No hay mensajes"
-                                    striped="true"
-                                    columns={columns}
-                                    data={items}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={20}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    className="data-table-component"
-                                    noHeader
-                                />
-                            ) : (
-                                <div>
-                                    <h4>No Data Retrieved</h4>
-                                </div>)}
-                        </div>
-                        
-                        
-                    </div>
+                <div className="flex flex-wrap gap-2">
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant={activeTab === 'chat' ? 'default' : 'outline'}
+                        onClick={() => setActiveTab('chat')}
+                    >
+                        <Icon name="MessageCircle" size={14} className="mr-1" />
+                        Chat interno
+                    </Button>
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant={activeTab === 'mailbox' ? 'default' : 'outline'}
+                        onClick={() => setActiveTab('mailbox')}
+                    >
+                        <Icon name="Inbox" size={14} className="mr-1" />
+                        Buzón externo
+                    </Button>
                 </div>
-                <MDBModal show={this.getToggle()} tabIndex='-2' staticBackdrop >
-                    <MDBModalDialog size="lg">
-                        <MDBModalContent className="container-primary">
-                            <MDBModalHeader>
-                                <MDBModalTitle><h2 className="text-center"><i class="far fa-file-alt"></i> DETALLES DEL MENSAJE {currentItem ? currentItem.id : ''} </h2></MDBModalTitle>
-                                <MDBBtn className='btn-close' color='none' onClick={this.toggle}></MDBBtn>
-                            </MDBModalHeader>
-                            <MDBModalBody>
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <MDBRow>
-                                            <MDBCol md="12">
-                                            <table className="table table-bordered table-sm table-hover  text-start table-light">
-                                                    <tbody>
-                                                        {currentItem ? <>
-                                                            <tr className="Collapsible text-center">
-                                                                <th colSpan="2" ><label>Información del mensaje</label></th>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label># Consecutivo</label></td>
-                                                                <td><label className="fw-bold">{currentItem.id}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Nombre</label></td>
-                                                                <td><label className="fw-bold">{currentItem.name}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Fecha de Expedicion</label></td>
-                                                                <td><label className="fw-bold">{moment(currentItem.createdAt).format("DD-MM-YYYY HH:mm")}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Email de Contacto</label></td>
-                                                                <td><label className="fw-bold">{currentItem.email}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Numero de Contacto</label></td>
-                                                                <td><label className="fw-bold">{currentItem.number}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Asunto</label></td>
-                                                                <td><label className="fw-bold">{currentItem.subject}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colSpan="2"><label>Mensaje</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colSpan="2"><label className="fw-bold">{currentItem.message}</label></td>
-                                                            </tr>
-                                                       </> : ""}
-                                                    </tbody>
-                                                </table>
-                                            </MDBCol>
-                                        </MDBRow>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBModalBody>
-                            <MDBModalFooter>
-                                <MDBBtn color='info' onClick={this.toggle}>
-                                    <h4 className="pt-2"><i class="fas fa-times-circle"></i> Cerrar</h4>
-                                </MDBBtn>
-                            </MDBModalFooter>
-                        </MDBModalContent>
-                    </MDBModalDialog>
-                </MDBModal>
-            </div >
+
+                {activeTab === 'chat' && <InternalChatPanel />}
+
+                {activeTab === 'mailbox' && <Card>
+                    <CardContent className="p-0">
+                        {isLoaded ? (
+                            <DataTable
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="No hay mensajes"
+                                striped="true"
+                                columns={columns}
+                                data={items}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={20}
+                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                            />
+                        ) : (
+                            <div className="p-8 text-center text-muted-foreground">
+                                <span className="text-sm">Cargando...</span>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>}
+
+                {/* Detail Modal */}
+                {getToggle() && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={toggle}>
+                        <Card className="w-full max-w-2xl max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center justify-between p-4 border-b border-border">
+                                <h2 className="text-lg font-semibold"><Icon name="FileText" size={18} className="inline mr-2" />Detalles del Mensaje {currentItem ? currentItem.id : ''}</h2>
+                                <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                    <Icon name="X" size={16} className="text-muted-foreground" />
+                                </button>
+                            </div>
+                            <CardContent className="p-4">
+                                {currentItem ? (
+                                    <table className="table table-bordered table-sm table-hover text-start table-light">
+                                        <tbody>
+                                            <tr className="Collapsible text-center">
+                                                <th colSpan="2"><label>Información del mensaje</label></th>
+                                            </tr>
+                                            <tr>
+                                                <td><label># Consecutivo</label></td>
+                                                <td><label className="fw-bold">{currentItem.id}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Nombre</label></td>
+                                                <td><label className="fw-bold">{currentItem.name}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Fecha de Expedicion</label></td>
+                                                <td><label className="fw-bold">{dayjs(currentItem.createdAt).format("DD-MM-YYYY HH:mm")}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Email de Contacto</label></td>
+                                                <td><label className="fw-bold">{currentItem.email}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Numero de Contacto</label></td>
+                                                <td><label className="fw-bold">{currentItem.number}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Asunto</label></td>
+                                                <td><label className="fw-bold">{currentItem.subject}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2"><label>Mensaje</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2"><label className="fw-bold">{currentItem.message}</label></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                ) : ""}
+                            </CardContent>
+                            <div className="flex justify-end p-4 border-t border-border">
+                                <Button variant="secondary" onClick={toggle}><Icon name="XCircle" size={16} /> Cerrar</Button>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+            </div>
         );
-    }
 }
 
 export default Mail;

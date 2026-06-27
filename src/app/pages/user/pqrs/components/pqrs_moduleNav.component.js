@@ -1,18 +1,13 @@
-import React, { Component } from 'react';
-import { MDBCard, MDBCardBody, MDBTooltip } from 'mdb-react-ui-kit';
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 
-class PQRS_MODULE_NAV extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, currentItem, FROM } = this.props;
-        const isAdmin = window.user.name_short === "Luis Parra"
+function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
+    const isAdmin = window.user.name_short === "Luis Parra"
 
         let _GET_WORKER_VAR = (worker_id) => {
             let _WORKERS = currentItem.pqrs_workers;
-            for (var i = 0; i < _WORKERS.length; i++) {
-                if ((_WORKERS[i].worker_id == worker_id) || window.user.roleId == 1) {
+            for (let i = 0; i < _WORKERS.length; i++) {
+                if ((_WORKERS[i].worker_id === worker_id) || window.user.roleId === 1) {
                     return {
                         id: _WORKERS[i].id,
                         id_master: currentItem.id,
@@ -24,29 +19,29 @@ class PQRS_MODULE_NAV extends Component {
         }
 
         let _GET_LOCK_FOR_WORKER = () => {
-            if (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2) return true;
-            for (var i = 0; i < currentItem.pqrs_workers.length; i++) {
-                if (currentItem.pqrs_workers[i].worker_id == window.user.id) return true
+            if (window.user.roleId === 1 || window.user.roleId === 5 || window.user.roleId === 3 || window.user.roleId === 2) return true;
+            for (let i = 0; i < currentItem.pqrs_workers.length; i++) {
+                if (currentItem.pqrs_workers[i].worker_id === window.user.id) return true
             }
             return false
         }
 
         let _GET_WORKERS_REPLY = () => {
-            var _COMPONENT = [];
+            const _COMPONENT = [];
             let _WORKERS = currentItem.pqrs_workers;
-            for (var i = 0; i < _WORKERS.length; i++) {
-                if ((_WORKERS[i].worker_id == window.user.id && !_WORKERS[i].date_reply) || window.user.roleId == 1) {
-                    _COMPONENT.push(<>
-                        {FROM == "informal"
-                            ? <div className="row mx-2 mb-1">
-                                <button className="btn btn-sm btn-light m-0 p-2 shadow-none">
-                                    <i class="far fa-comment-dots fa-2x" ></i> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></button>
+            for (let i = 0; i < _WORKERS.length; i++) {
+                if ((_WORKERS[i].worker_id === window.user.id && !_WORKERS[i].date_reply) || window.user.roleId === 1) {
+                    _COMPONENT.push(<div key={_WORKERS[i].id ?? _WORKERS[i].worker_id ?? `nav-worker-${i}`}>
+                        {FROM === "informal"
+                            ? <div>
+                                <Button variant="ghost" size="sm" className="h-9">
+                                    <Icon name="comment-dots" size={16} /> <span className="fs-6 align-top">RTA. {_WORKERS[i].name}</span></Button>
                             </div>
-                            : <div className="row mx-2 mb-1">
-                                <button className="btn btn-sm btn-secondary m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(_GET_WORKER_VAR(window.user.id), "informal", FROM)}>
-                                    <i class="far fa-comment-dots fa-2x" ></i> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></button>
+                            : <div>
+                                <Button variant="outline" size="sm" className="h-9" onClick={() => NAVIGATION(_GET_WORKER_VAR(window.user.id), "informal", FROM)}>
+                                    <Icon name="comment-dots" size={16} /> <span className="fs-6 align-top">RTA. {_WORKERS[i].name}</span></Button>
                             </div>}
-                    </>)
+                    </div>)
                 }
             }
 
@@ -56,70 +51,62 @@ class PQRS_MODULE_NAV extends Component {
 
         return (<>
             {currentItem
-                ? <div className="btn-nav_module-pqr">
-                    <div className="">
-                        <MDBCard className="container-primary m-1" border='dark' >
-                            <MDBCardBody className="p-1">
-                                <div className="m-1 text-center">
+                ? <div className="btn-nav_module-pqr sticky top-0 z-20">
+                    <div className="rounded-lg border border-border/70 bg-card/80 p-3">
+                        <div className="flex flex-wrap items-center justify-start gap-2">
 
-                                    <div className="row mx-2 mb-1">
-                                        <a onClick={() => this.props.NAVIGATION(currentItem, "close", FROM)} className="btn btn-info m-0 p-2 shadow-none">
-                                            <i class="fas fa-times-circle fa-2x" ></i> <label className="fs-6 align-top">CERRAR</label>
-                                        </a>
+                                    <div>
+                                        <Button variant="outline" size="sm" className="h-9 justify-start" onClick={() => NAVIGATION(currentItem, "close", FROM)}>
+                                            <Icon name="times-circle" size={14} /> <span className="fs-6 align-top">CERRAR</span>
+                                        </Button>
                                     </div>
 
-                                    {FROM == "general"
+                                    {FROM === "general"
                                         ?
-                                        <div className="row mx-2 mb-1">
-                                            <button className="btn btn-light m-0 p-2 shadow-none">
-                                                <i class="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
+                                        <div>
+                                            <Button variant="ghost" size="sm" className="h-9">
+                                                <Icon name="eye" size={14} /> <span className="fs-6 align-top">DETALLES</span></Button>
                                         </div>
-                                        : <div className="row mx-2 mb-1">
-                                            <button className="btn btn-info m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(currentItem, "general", FROM)}>
-                                                <i class="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
+                                        : <div>
+                                            <Button size="sm" className="h-9 justify-start" onClick={() => NAVIGATION(currentItem, "general", FROM)}>
+                                                <Icon name="eye" size={14} /> <span className="fs-6 align-top">DETALLES</span></Button>
                                         </div>}
 
-
-
-                                    {currentItem.status == 1
+                                    {currentItem.status === 1
                                         ? <>
-                                            {FROM == "editable"
+                                            {FROM === "editable"
                                                 ?
-                                                <div className="row mx-2 mb-1">
-                                                    <button className="btn btn-light m-0 p-2 shadow-none">
-                                                        <i class="fas fa-edit fa-2x fa-2x"></i> <label className="fs-6 align-top">EDITAR</label></button>
+                                                <div>
+                                                    <Button variant="ghost" size="sm" className="h-9">
+                                                        <Icon name="edit" size={14} /> <span className="fs-6 align-top">EDITAR</span></Button>
                                                 </div>
-                                                : <div className="row mx-2 mb-1">
-                                                    <button className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(currentItem, "editable", FROM)}>
-                                                        <i class="fas fa-edit fa-2x fa-2x"></i> <label className="fs-6 align-top">EDITAR</label></button>
+                                                : <div>
+                                                    <Button variant="outline" size="sm" className="h-9" onClick={() => NAVIGATION(currentItem, "editable", FROM)}>
+                                                        <Icon name="edit" size={14} /> <span className="fs-6 align-top">EDITAR</span></Button>
                                                 </div>} </> : ""
                                     }
-                                    {currentItem.status == 0
+                                    {currentItem.status === 0
                                         ? <>
-                                            {window.user.roleId == 5 || window.user.roleId == 1  || isAdmin || window.user.roleId == 2
+                                            {window.user.roleId === 5 || window.user.roleId === 1  || isAdmin || window.user.roleId === 2
                                                 ? <>
-                                                    {FROM == "manage"
-                                                        ? <div className="row mx-2 mb-1">
-                                                            <button className="btn btn-sm btn-light m-0 p-2 shadow-none">
-                                                                <i class="fas fa-cog fa-2x" ></i> <label className="fs-6 align-top">GESTIONAR</label></button>
+                                                    {FROM === "manage"
+                                                        ? <div>
+                                                            <Button variant="ghost" size="sm" className="h-9">
+                                                                <Icon name="cog" size={14} /> <span className="fs-6 align-top">GESTIONAR</span></Button>
                                                         </div>
-                                                        : <div className="row mx-2 mb-1">
-                                                            <button className="btn btn-sm btn-success m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(currentItem, "manage", FROM)}>
-                                                                <i class="fas fa-cog fa-2x" ></i> <label className="fs-6 align-top">GESTIONAR</label></button>
+                                                        : <div>
+                                                            <Button size="sm" className="h-9" onClick={() => NAVIGATION(currentItem, "manage", FROM)}>
+                                                                <Icon name="cog" size={14} /> <span className="fs-6 align-top">GESTIONAR</span></Button>
                                                         </div>}
                                                 </> : ""}
                                         </>
                                         : ""}
 
-
-                                </div>
-                            </MDBCardBody>
-                        </MDBCard>
                     </div>
                 </div>
+                </div>
                 : ""} </>
-        );
-    }
+    );
 }
 
 export default PQRS_MODULE_NAV;

@@ -1,5 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import moment from 'moment';
+import { useState, useMemo, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 import { 
   getReferenceDate, 
   calculateScheduledDateFromDays, 
@@ -141,7 +143,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
     if (legalLimits && legalLimits[clockValue.state]) {
       const limitData = legalLimits[clockValue.state];
       if (limitData.limitDate) {
-        return moment(limitData.limitDate).format('DD/MM/YYYY');
+        return dayjs(limitData.limitDate).format('DD/MM/YYYY');
       }
     }
     return '';
@@ -191,7 +193,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
           <div className="d-flex flex-column align-items-start text-start ps-2">
             <span className="fw-semibold text-truncate" title={clockValue.name} style={{maxWidth: '350px'}}>
                 {clockValue.name} 
-                {isExecuted && <i className="fas fa-check-circle text-success ms-2 small" title="Evento ya ejecutado"></i>}
+                {isExecuted && <Icon name="check-circle" size={14} className="text-success ms-2" title="Evento ya ejecutado" />}
             </span>
             {clockValue.desc && (
               <small className="text-muted text-truncate text-start" style={{maxWidth: '350px'}} title={clockValue.desc}>
@@ -212,11 +214,11 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
                     onChange={(e) => handleInputChange(clockState, 'days', e.target.value)}
                     disabled={dateValue ? true : false}
                 />
-                <span className="input-group-text bg-light"><i className="fas fa-hashtag"></i></span>
+                <span className="input-group-text bg-light"><Icon name="hashtag" size={16} /></span>
             </div>
             {refDate && displayDate && daysValue && (
                 <div className="conversion-hint mt-1 text-start">
-                 <i className="fas fa-arrow-right me-1"></i> {moment(displayDate).format('DD/MM/YYYY')}
+                 <Icon name="arrow-right" size={16} className="me-1" /> {dayjs(displayDate).format('DD/MM/YYYY')}
                 </div>
             )}
         </td>
@@ -233,7 +235,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
             </div>
              {refDate && displayDays && dateValue && (
                 <div className="conversion-hint mt-1 text-start">
-                 <i className="fas fa-arrow-right me-1"></i> {displayDays} días hábiles
+                 <Icon name="arrow-right" size={16} className="me-1" /> {displayDays} días hábiles
                 </div>
             )}
         </td>
@@ -248,16 +250,13 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
         
         <td className="align-middle text-center">
           {hasSchedule ? (
-            <button
-              type="button"
-              className="btn btn-sm btn-icon btn-outline-danger border-0"
-              onClick={() => handleDelete(clockState)}
+            <Button variant="outline" size="sm" className="text-destructive border-destructive btn-icon border-0" onClick={() => handleDelete(clockState)}
               title="Eliminar programación"
             >
-              <i className="fas fa-trash-alt"></i>
-            </button>
+              <Icon name="trash-alt" size={16} />
+            </Button>
           ) : (
-             <span className="text-muted small"><i className="fas fa-circle" style={{fontSize: '5px'}}></i></span> 
+             <span className="text-muted small"><Icon name="circle" size={16} style={{fontSize: '5px'}} /></span> 
           )}
         </td>
       </tr>
@@ -274,7 +273,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
               <div className="col-md-8 text-start">
                   <div className="alert alert-info mb-0 py-2 px-3 small">
                       <div className="d-flex align-items-center">
-                          <i className="fas fa-info-circle fs-4 me-3 text-info"></i>
+                          <Icon name="info-circle" size={16} className="fs-4 me-3 text-info" />
                           <div>
                               <strong>Instrucciones:</strong> Define los tiempos usando <strong>días hábiles</strong> O una <strong>fecha específica</strong>.<br/>
                               Los tiempos sin fecha de referencia esperarán a que exista para calcular la conversión.
@@ -285,7 +284,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
               <div className="col-md-4">
                  <div className={`card text-center py-2 ${scheduledCount > 0 ? 'border-success bg-success-subtle' : 'bg-light'}`}>
                     <h3 className="m-0 fw-bold">{scheduledCount}</h3>
-                    <small className="text-muted text-uppercase">Tiempos Programados</small>
+                    <small className="text-muted">Tiempos Programados</small>
                  </div>
               </div>
           </div>
@@ -307,7 +306,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
             {schedulableClocks.length === 0 ? (
               <tr>
                 <td colSpan="5" className="text-center text-muted py-5">
-                  <i className="fas fa-calendar-times fa-2x mb-2"></i><br/>
+                  <Icon name="calendar-times" size={16} className="mb-2" /><br/>
                   No hay tiempos programables disponibles en este momento.
                 </td>
               </tr>

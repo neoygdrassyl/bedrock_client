@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn, MDBInput, MDBRow, MDBCol, MDBTypography, MDBBadge, MDBInputGroup, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBDropdownLink, MDBInputGroupElement } from 'mdb-react-ui-kit';
+import { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 import { Link } from "react-router-dom";
 // Carousel IMGS
 import NEW_ING from '../img/news1.jpg'
@@ -15,37 +15,26 @@ import COLOMBIA from '../img/img6.jpg'
 
 
 
-// Logos Carousel
-import CarouselLogos from '../components/carousel.component'
-
 // FRONT PAGE MODAL
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import './home.css'
 import { infoCud } from '../components/jsons/vars';
-import Map from '../components/map';
+import HomeMap from '../components/map';
 import { _news } from '../components/jsons/_news';
+import customService from '../services/custom.service';
 
-import { IconButton, ButtonToolbar, ButtonGroup } from 'rsuite';
-import ArrowDownIcon from '@rsuite/icons/ArrowDown';
 import { Button_navigation } from '../components/button.component';
+import { Icon } from '@/components/icon';
 //import { useLocation } from 'react-router-dom';
 //const location = useLocation();
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modal: true
-    };
-  }
-
-
-  render() {
-
-    const { translation, } = this.props;
-    const { modal } = this.state
-    //const { location: { pathname }}= this.props
+function Home({ translation, history }) {
+    const [modal, setModal] = useState(true);
+    const inputSearchRef = useRef(null);
+    const [statusResult, setStatusResult] = useState(null);
+    const [statusError, setStatusError] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
     {/*const modalMessage = {
       title: <h2>¡AVISO IMPORTANTE!</h2>,
       body: <dic>
@@ -92,17 +81,65 @@ class Home extends Component {
 
       }
     };
-    let _CHECK_STATUS = () => {
-      let searchValue = this.inputSearch.value;
-      this.props.history.push('/status/' + searchValue);
-    }
+    const getStatusLookup = (searchValue) => {
+      const normalizedValue = searchValue.trim().toUpperCase();
+
+      if (!normalizedValue) {
+        return null;
+      }
+
+      if (normalizedValue.startsWith('68001-') || /^\d{5}-/.test(normalizedValue)) {
+        return customService.checkStatus_Lc;
+      }
+
+      if (normalizedValue.startsWith('VR')) {
+        return customService.checkStatus_vr;
+      }
+
+      if (normalizedValue.startsWith('N')) {
+        return customService.checkStatus_Nr;
+      }
+
+      return customService.checkStatus_In;
+    };
+
+    const _CHECK_STATUS = async () => {
+      const searchValue = inputSearchRef.current?.value?.trim() || '';
+      const lookup = getStatusLookup(searchValue);
+
+      if (!lookup) {
+        setStatusResult(null);
+        setStatusError('Ingrese un identificador o número de cédula para consultar el proceso.');
+        return;
+      }
+
+      setIsSearching(true);
+      setStatusError('');
+      setStatusResult(null);
+
+      try {
+        const response = await lookup(searchValue);
+        const firstResult = Array.isArray(response?.data) ? response.data[0] : null;
+
+        if (!firstResult) {
+          setStatusError('No encontramos resultados para el criterio ingresado.');
+          return;
+        }
+
+        setStatusResult(firstResult);
+      } catch (error) {
+        setStatusError('No fue posible consultar el estado del proceso en este momento.');
+      } finally {
+        setIsSearching(false);
+      }
+    };
 
 
 
     const Redirect = (id) => {
       var element = document.getElementById(id);
       //console.log(element)
-      element.scrollIntoView();
+      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     //console.log(Redirect())
 
@@ -168,104 +205,104 @@ class Home extends Component {
          * 
         */}
 
-          <div class="container pt-2" id="hanging-icons">
+          <div className="container pt-2" id="hanging-icons">
             <div className='' style={{ backgroundColor: '#1b83c4', borderRadius: '2px' }}>
-              <div class="row justify-content-center px-1 mx-2">
-                <div class="col-5 text-start py-1" style={{ color: ' white ' }}>
-                  <h5 className='px-4 py-0 fw-normal'><i class="fas fa-calendar-alt text-light"></i> Horario: {infoCud.schedule}</h5>
-                  <h5 className='px-4 py-0 fw-normal'><i class="fas fa-calendar-alt text-light"></i> Consulta horarios especiales y atencion especializada, click <Link className='text-light' to={'/mailbox'}>Aqui <i class="far fa-hand-point-left"></i></Link></h5>
+              <div className="row justify-content-center px-1 mx-2">
+                <div className="col-5 text-start py-1" style={{ color: ' white ' }}>
+                  <h5 className='px-4 py-0 fw-normal'><Icon name="Calendar" size={16} className="text-light" /> Horario: {infoCud.schedule}</h5>
+                  <h5 className='px-4 py-0 fw-normal'><Icon name="Calendar" size={16} className="text-light" /> Consulta horarios especiales y atencion especializada, click <Link className='text-light' to={'/publicaciones'}>Aqui <Icon name="ArrowLeft" size={16} /></Link></h5>
                 </div>
-                <div class="col-7 py-1">
-                  <div class="px-0">
-                    <span className='col-lg-12 bg-white'>
-                      <h5 className='fw-normal'> <a style={{ color: 'white' }} href='https://www.google.es/maps/place/Curaduria+Urbana+No.+1+de+Bucaramanga/@7.1236512,-73.1155874,17z/data=!3m1!4b1!4m5!3m4!1s0x8e683f0ec6e6ea35:0xd99c4a977df44614!8m2!3d7.1236459!4d-73.1133987?hl=es' target="_blank" > <i class="fas fa-map-marker-alt text-light"></i> {infoCud.address}</a> </h5>
+                <div className="col-7 py-1">
+                  <div className="px-0">
+                    <span className='col-lg-12'>
+                      <h5 className='fw-normal'> <a style={{ color: 'white' }} href='https://www.google.es/maps/place/Curaduria+Urbana+No.+1+de+Bucaramanga/@7.1236512,-73.1155874,17z/data=!3m1!4b1!4m5!3m4!1s0x8e683f0ec6e6ea35:0xd99c4a977df44614!8m2!3d7.1236459!4d-73.1133987?hl=es' target="_blank" rel="noopener noreferrer" > <Icon name="MapPin" size={16} className="text-light" /> {infoCud.address}</a> </h5>
                     </span>
                   </div>
-                  <h5 className='fw-normal' style={{ color: 'white' }}><a href="https://web.whatsapp.com/send?phone=+573162795010" style={{ color: 'white' }} target="_blank" > <i class="fas fa-mobile-alt text-light"></i> Whatsapp: {infoCud.number1}</a> <i class="fas fa-envelope text-light"></i> Correo: curaduriaurbana1@gmail.com</h5>
+                  <h5 className='fw-normal' style={{ color: 'white' }}><a href="https://web.whatsapp.com/send?phone=+573162795010" style={{ color: 'white' }} target="_blank" rel="noopener noreferrer" > <Icon name="Smartphone" size={16} className="text-light" /> Whatsapp: {infoCud.number1}</a> <Icon name="Mail" size={16} className="text-light" /> Correo: curaduriaurbana1@gmail.com</h5>
                 </div>
               </div>
             </div>
 
-            <div class="container py-2">
-              <div class="row align-items-start">
+            <div className="container py-2">
+              <div className="row align-items-start">
                 <div className='col-lg-9 px-0 ' style={{ height: '280px' }}>
-                  <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel" style={{ height: '280px' }}>
-                    <div class="carousel-indicators">
-                      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                  <div id="carouselExampleDark" className="carousel carousel-dark slide" data-bs-ride="carousel" style={{ height: '280px' }}>
+                    <div className="carousel-indicators">
+                      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
                       <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
                       <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
                       <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="3" aria-label="Slide 4"></button>
                     </div>
-                    <div class="carousel-inner ">
-                      <div class="carousel-item active" data-bs-interval="11000">
-                        <img src={COLOMBIA} class="d-block w-100" alt="Bucaramanga santander y sus hermosos paisajes." style={{ height: '275px' }} />
-                        <div class="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
+                    <div className="carousel-inner ">
+                      <div className="carousel-item active" data-bs-interval="11000">
+                        <img src={COLOMBIA} className="d-block w-100" alt="Bucaramanga santander y sus hermosos paisajes." style={{ height: '275px' }} />
+                        <div className="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
                           <p className='text-light  text-end' style={{ width: '800px' }}>Creditos: Daniel Beltran.</p>
                         </div>
                       </div>
-                      <div class="carousel-item" data-bs-interval="9000">
-                        <img src={IMG1} class="d-block w-100" alt="Bucaramanga santander y sus hermosos paisajes." style={{ height: '275px' }} />
-                        <div class="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
+                      <div className="carousel-item" data-bs-interval="9000">
+                        <img src={IMG1} className="d-block w-100" alt="Bucaramanga santander y sus hermosos paisajes." style={{ height: '275px' }} />
+                        <div className="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
                           <p className='text-light text-end ' style={{ width: '800px' }}>Creditos: David Alberto Arias</p>
                         </div>
                       </div>
-                      <div class="carousel-item" data-bs-interval="9000">
-                        <img src={IMG2} class="d-block w-100" alt="Bucaramanga santander la ciudad de los parques." style={{ height: '275px' }} />
-                        <div class="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
+                      <div className="carousel-item" data-bs-interval="9000">
+                        <img src={IMG2} className="d-block w-100" alt="Bucaramanga santander la ciudad de los parques." style={{ height: '275px' }} />
+                        <div className="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
                           <p className='text-light text-end' style={{ width: '800px' }}>Creditos: David Alberto Arias</p>
                         </div>
                       </div>
-                      <div class="carousel-item" data-bs-interval="9000">
-                        <img src={IMG3} class="d-block w-100" alt="Bucaramanga santander la ciudad bonita." style={{ height: '275px' }} />
-                        <div class="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
+                      <div className="carousel-item" data-bs-interval="9000">
+                        <img src={IMG3} className="d-block w-100" alt="Bucaramanga santander la ciudad bonita." style={{ height: '275px' }} />
+                        <div className="carousel-caption d-none d-md-block" style={{ height: '240px' }}>
                           <p className='text-light text-end' style={{ width: '800px' }}>Creditos: David Alberto Arias</p>
                         </div>
                       </div>
 
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Previous</span>
+                    <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                      <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span className="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Next</span>
+                    <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                      <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span className="visually-hidden">Next</span>
                     </button>
                   </div>
                 </div>
                 <div className='col-lg-3 py-1' >
                   <div className='py-1'>
-                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/normogram">
+                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/normas">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
-                          <h4 className='fw-normal'><i class="fas fa-file-invoice fa-2x"></i>   Consulta Normatividad</h4>
+                          <h4 className='fw-normal'><Icon name="FileText" size={24} />   Consulta Normatividad</h4>
                         </div>
                       </div>
                     </Link>
                   </div>
                   <div className='py-1'>
-                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/status">
+                    <a style={{ color: 'white', backgroundImage: 'white', textDecoration: 'none' }} href="#process">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
-                          <h4 className='fw-normal'><i class="fas fa-search fa-2x"></i>    Consulta Procesos</h4>
+                          <h4 className='fw-normal'><Icon name="Search" size={24} />    Consulta Procesos</h4>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                  <div className='py-1'>
+                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/publicaciones">
+                      <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
+                        <div className='mx-0 px-0 py-2'>
+                          <h4 className='fw-normal'><Icon name="List" size={24} />    Consulta publicaciones</h4>
                         </div>
                       </div>
                     </Link>
                   </div>
                   <div className='py-1'>
-                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/administrative">
+                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/archivo">
                       <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
                         <div className='mx-0 px-0 py-2'>
-                          <h4 className='fw-normal'><i class="fas fa-list-alt fa-2x"></i>    Consulta publicaciones</h4>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                  <div className='py-1'>
-                    <Link style={{ color: 'white', backgroundImage: 'white' }} to="/old">
-                      <div className='text-start px-4 border border-dark' style={{ backgroundColor: '#1B83C4 ', borderRadius: '20px' }}>
-                        <div className='mx-0 px-0 py-2'>
-                          <h4 className='fw-normal'><i class="fas fa-folder-minus fa-2x"></i> Consulta repositorio</h4>
+                          <h4 className='fw-normal'><Icon name="FolderMinus" size={24} /> Consulta repositorio</h4>
                         </div>
                       </div>
                     </Link>
@@ -273,211 +310,220 @@ class Home extends Component {
                 </div>
               </div>
             </div>
-            <hr className='bg-info py-0'></hr>
+            <hr className='bg-primary py-0'></hr>
             <h2 className='text-center' id='services'>Servicios <Button_navigation Iddown={'process'} Idup={null} /> </h2>
             <div className='col-lg col-mb-10 justify-content-center d-flex mx-0 px-0 ' style={{ borderRadius: '8px' }}>
-              <div class="row align-items-center py-0 my-0" style={{ borderRadius: '20px', }}>
-                <div class="col-2  text-center  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/payments'}>
-                  <img src={LGOG13} class="d-block w-100" alt="pse." style={{ width: '8px', height: '70px'}} />
+              <div className="row align-items-center py-0 my-0" style={{ borderRadius: '20px', }}>
+                <div className="col-2  text-center  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/ventanilla'}>
+                  <img src={LGOG13} className="d-block w-100" alt="pse." style={{ width: '8px', height: '70px'}} />
                   <h5 className='py-1 text-white fw-normal'>Pagos pse</h5>
                   </Link>
                 </div>
-                <div class="col-2  text-center border border-dark px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/inclusivity'}>
-                    <i class="fas fa-sign-language fa-3x fa-lg-4"></i>
+                <div className="col-2  text-center border border-dark px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/documentos'}>
+                    <Icon name="HandMetal" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Curaduria inclusiva</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/file'}>
-                    <i class="fas fa-file-alt fa-3x fa-lg-4"></i>
+                <div className="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/documentos'}>
+                    <Icon name="FileText" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Instrumentos de apoyo</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/liquidator'}>
-                    <i class="fas fa-calculator fa-3x fa-lg-4"></i>
+                <div className="col-2 text-center border border-dark  px-2 mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/calculadora'}>
+                    <Icon name="Calculator" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Calculadora liquidación expensa</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/pqrs'}>
-                    <i class="fas fa-envelope-square fa-3x fa-lg-4"></i>
+                <div className="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/peticiones'}>
+                    <Icon name="Mail" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Radicacion (pqrs)</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/scheduling'}>
-                    <i class="fas fa-calendar-check fa-3x fa-lg-4"></i>
+                <div className="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '20px', paddingBottom: '20px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/calendario'}>
+                    <Icon name="CalendarCheck" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Agendamiento de citas</h5>
                   </Link>
                 </div>
-                <div class="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '27px', paddingBottom: '15px', borderRadius: '120px', width: '130px', height: '130px' }}>
-                  <Link className='text-light' to={'/certificacion'}>
-                    <i class="fas fa-file-pdf fa-3x fa-lg-4"></i>
+                <div className="col-2 text-center  border border-dark  mx-2" style={{ backgroundColor: '#1B83C4', paddingTop: '27px', paddingBottom: '15px', borderRadius: '120px', width: '130px', height: '130px' }}>
+                  <Link className='text-light' to={'/certificados'}>
+                    <Icon name="FileText" size={36} />
                     <h5 className='py-1 text-white fw-normal'>Certificacion en linea </h5>
                   </Link>
                 </div>
               </div>
             </div>
-            <hr className='bg-info'></hr>
-            <div class="px-0 py-0 my-0 text-center">
-              <i class="fas fa-search-location fa-4x"></i>
-              <h3 class="" id='process'>Consulta de Procesos {<Button_navigation Iddown={'news'} Idup={'services'} />}  </h3>
-              <div class="col-lg-8 mx-auto">
-                <h5 class=" fw-normal">Ingrese el ID del proceso o el número de cédula para conocer el estado del proceso</h5>
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <hr className='bg-primary'></hr>
+            <div className="px-0 py-0 my-0 text-center">
+              <Icon name="MapPin" size={48} />
+              <h3 className="" id='process'>Consulta de Procesos {<Button_navigation Iddown={'news'} Idup={'services'} />}  </h3>
+              <div className="col-lg-8 mx-auto">
+                <h5 className=" fw-normal">Ingrese el ID del proceso o el número de cédula para conocer el estado del proceso</h5>
+                <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
                   <div style={{ width: '33rem' }}>
-                    <MDBInputGroup className='mb-3'>
-                      <MDBDropdown>
-                        <MDBDropdownToggle style={{ backgroundColor: '#107ABC' }}>TIPO DE PROCESO</MDBDropdownToggle>
-                        <MDBDropdownMenu>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = '68001-1-aa-0000'}>LICENCIA</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = 'OAaa-0000'}>OTRA ACTUACIÓN</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = 'VRaa-0000'}>PETICIÓN PQRS</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = 'VRaa-0000'}>NUMERO DE VENTANILLA ÚNICA (VR)</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = 'Naa-0000'}>NOMENCLATURA</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = ''}>BUSCAR POR CEDULA</MDBDropdownLink>
-                          </MDBDropdownItem>
-                        </MDBDropdownMenu>
-                      </MDBDropdown>
-                      <MDBInputGroupElement type='text' label='ID del proceso' inputRef={ref => this.inputSearch = ref} />
-                      <MDBBtn style={{ backgroundColor: '#107ABC' }} onClick={() => _CHECK_STATUS()}>BUSCAR</MDBBtn>
-                    </MDBInputGroup>
+                    <div className="input-group mb-3">
+                      <div className="dropdown">
+                        <button type="button" className="btn dropdown-toggle" style={{ backgroundColor: '#107ABC', color: 'white' }} data-bs-toggle="dropdown">TIPO DE PROCESO</button>
+                        <ul className="dropdown-menu">
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = '68001-1-aa-0000'}>LICENCIA</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = 'OAaa-0000'}>OTRA ACTUACIÓN</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = 'VRaa-0000'}>PETICIÓN PQRS</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = 'VRaa-0000'}>NUMERO DE VENTANILLA ÚNICA (VR)</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = 'Naa-0000'}>NOMENCLATURA</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = ''}>BUSCAR POR CEDULA</button></li>
+                        </ul>
+                      </div>
+                      <input type="text" className="form-control" placeholder="ID del proceso" ref={inputSearchRef} />
+                      <Button onClick={_CHECK_STATUS} disabled={isSearching}>{isSearching ? 'BUSCANDO...' : 'BUSCAR'}</Button>
+                    </div>
                   </div>
                 </div>
-                <p class=""><h5>aa = los dos últimos dígitos del año del proceso, 0000 = consecutivo del proceso</h5></p>
+                <p className="mb-0">
+                  <span className="h5 d-block fw-normal">aa = los dos últimos dígitos del año del proceso, 0000 = consecutivo del proceso</span>
+                </p>
+                {statusError ? (
+                  <div className="alert alert-warning mt-3 mb-0" role="alert">
+                    {statusError}
+                  </div>
+                ) : null}
+                {statusResult ? (
+                  <div className="card mt-3 text-start shadow-sm">
+                    <div className="card-body">
+                      <h4 className="card-title mb-3">Resultado de la consulta</h4>
+                      <p className="card-text mb-1"><strong>ID:</strong> {statusResult.id_public || inputSearchRef.current?.value}</p>
+                      <p className="card-text mb-1"><strong>Trámite:</strong> {statusResult.tramite || statusResult.type || 'Sin información disponible'}</p>
+                      <p className="card-text mb-1"><strong>Tipo:</strong> {statusResult.tipo || statusResult.legal || 'Sin información disponible'}</p>
+                      <p className="card-text mb-0"><strong>Estado:</strong> {statusResult.state ?? statusResult.status ?? 'Sin información disponible'}</p>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
-              <hr className='bg-info'></hr>
+              <hr className='bg-primary'></hr>
               <h2 className='text-center' id='news'>Noticias importantes {<Button_navigation Iddown={'ubicacion'} Idup={'process'} />}</h2>
               <div className='col-lg col-mb-10 justify-content-center d-flex mx-0 px-0 ' style={{ backgroundColor: ' ' }}>
-                <div class="row align-items-center px-4 py-4 mx-">
-                  {_news.filter((data, index) => index <= 3).map(function (value) {
-                    return <>
-                      <div class="col-3 align-items-center">
-                        <div class="card align-items-center">
-                          <img src={value.image} class="card-img-top" alt="Noticias y avisos importantes de la curaduria." style={{ height: '160px' }} />
-                          <div class="card-body">
-                            <label className="text-start fw-normal" style={{ color: 'gray' }}>{value.icon_folder} {value.category}</label>
-                            <h5 class="card-title fw-normal "><b>{value.title}</b></h5>
-                            <Link to={value.url} class="text-dark"><p class="card-text fw-normal">{value.summary} <p className='text-info'> {value.link}</p></p></Link>
-                            <label className="px-1" style={{ color: 'gray' }}>{value.icon_date} {value.date}</label>
+                <div className="row align-items-center px-4 py-4 mx-">
+                  {_news.filter((data, index) => index <= 3).map(function (value, index) {
+                    return <div className="col-3 align-items-center" key={value.id || value.title || index}>
+                        <div className="card align-items-center">
+                          <img src={value.image} className="card-img-top" alt="Noticias y avisos importantes de la curaduria." style={{ height: '160px' }} />
+                          <div className="card-body">
+                            <span className="text-start fw-normal" style={{ color: 'gray' }}>{value.icon_folder} {value.category}</span>
+                            <h5 className="card-title fw-normal "><b>{value.title}</b></h5>
+                            <Link to={value.url} className="text-dark text-decoration-none">
+                              <div className="card-text fw-normal">
+                                <p className="mb-1">{value.summary}</p>
+                                <span className='text-info'>{value.link}</span>
+                              </div>
+                            </Link>
+                            <span className="px-1" style={{ color: 'gray' }}>{value.icon_date} {value.date}</span>
                           </div>
                         </div>
                       </div>
-                    </>
                   })}
                 </div>
               </div>
               {/*
-              <MDBRow className="mt-5">
-                <MDBCol md="4">
-                  <i class="far fa-list-alt fa-4x"></i>
+              <div className="row mt-5">
+                <div className="col-md-4">
+                  <Icon name="List" size={48} />
                   <h3 className="display-6 fw-bold">Listado de Publicaciones</h3>
                   <p className="lead">Encuentre todas las publicaciones expedidas por la Curaduría</p>
-                  <Link to={'/administrative'}><MDBBtn color='secondary'>
-                    <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Ver Listado</h4>
-                  </MDBBtn></Link>
-                </MDBCol>
-                <MDBCol md="4">
-                  <i className="fas fa-file-invoice fa-4x"></i>
+                  <Link to={'/administrative'}><Button variant="outline" size="sm">
+                    <h4 className="pt-2"><Icon name="ChevronRight" size={16} /> Ver Listado</h4>
+                  </Button></Link>
+                </div>
+                <div className="col-md-4">
+                  <Icon name="file-invoice" size={16} />
                   <h3 className="display-6 fw-bold">Radicación de Licencias</h3>
                   <p className="lead">Inicie aquí su proceso para radicar una Licencia</p>
-                  <Link to={'/file'}><MDBBtn color='info'>
-                    <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Radicar</h4>
-                  </MDBBtn></Link>
-                </MDBCol>
-                <MDBCol md="4">
-                  <i class="fas fa-calculator fa-4x"></i>
+                  <Link to={'/file'}><Button size="sm">
+                    <h4 className="pt-2"><Icon name="ChevronRight" size={16} /> Radicar</h4>
+                  </Button></Link>
+                </div>
+                <div className="col-md-4">
+                  <Icon name="Calculator" size={48} />
                   <h3 className="display-6 fw-bold">Calculadora de liquidación</h3>
                   <p className="lead">Determine un valor posible de su liquidación aquí</p>
-                  <Link to={'/liquidator'}><MDBBtn color='success'>
-                    <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Calculadora</h4>
-                  </MDBBtn>
+                  <Link to={'/liquidator'}><Button size="sm">
+                    <h4 className="pt-2"><Icon name="ChevronRight" size={16} /> Calculadora</h4>
+                  </Button>
                   </Link>
-                </MDBCol>
-              </MDBRow> */}
+                </div>
+              </div> */}
             </div>
 
             {/*  <h2 className="mt-5">Ultimas Noticias</h2>
             <hr />
-            <MDBRow className="d-flex justify-content-center">
-              <MDBCol md="10">
+            <div className="row d-flex justify-content-center">
+              <div className="col-md-10">
 
                 <div id="news_4">
                   <p className="display-6 lead fw-bold">¡AVISO IMPORTANTE PRÓRROGA DE LAS LICENCIAS Y REVALIDACIONES!</p>
-                  <MDBRow>
-                    <MDBCol md="12">
+                  <div className="row">
+                    <div className="col-md-12">
                       <p className="app-p lead text-justify">El Decreto 1783 De 2021 que modificó el Decreto 1077 de 2015 en el artículo 2.2.6.1.2.4.1. contempla (…) La solicitud de prórroga de una licencia urbanística deberá radicarse con la documentación completa a más tardar treinta (30) días hábiles antes del vencimiento de la respectiva licencia. La solicitud deberá acompañarse de la manifestación bajo la gravedad del juramento de la iniciación de obra por parte del urbanizador o constructor responsable.</p>
                       <p className="app-p lead text-justify">La prórroga de la revalidación se debe solicitar a más tardar treinta (30) días hábiles antes de su vencimiento y su expedición procede con la sola presentación de la solicitud por parte del interesado. Las solicitudes de prórroga de licencias urbanísticas y de prórroga de sus revalidaciones cuyo término de vigencia inicial se venza dentro de los tres meses (3) meses siguientes a la modificación del presente artículo, podrán presentarse cumpliendo con los términos establecidos en las normas vigentes antes de esta modificación (...)</p>
                       <p className="app-p lead text-justify">POR LO ANTERIOR Y EN VIRTUD DE QUE EL DECRETO ESTÁ VIGENTE DESDE EL 20 DE DICIEMBRE DE 2022: <b>SI SU LICENCIA O REVALIDACIÓN VENCE EL 21 DE MARZO DE 2022 O FECHA SIGUIENTE Y VA A RADICAR SOLICITUD DE PRÓRROGA, ESTA DEBE HACERSE DE FORMA COMPLETA 30 DÍAS HÁBILES ANTES DEL VENCIMIENTO, ES DECIR POR CITAR UN EJEMPLO, SI VENCE EL 21 DE MARZO DE 2022 DEBE RADICAR A MÁS TARDAR EL 07 DE FEBRERO DE 2022.LO ANTERIOR SÓLO APLICA PARA AQUELLAS LICENCIAS QUE PUEDEN SER PRORROGABLES</b>.</p>
-                    </MDBCol>
-                  </MDBRow>
+                    </div>
+                  </div>
                 </div>
 
                 <div id="news_3">
                   <p className="display-6 lead fw-bold">Ya disponible, certificación para profesionales que actúan ante la Curaduría</p>
-                  <MDBRow>
-                    <MDBCol md="4">
+                  <div className="row">
+                    <div className="col-md-4">
                       <img src={NEW_3_ING} class="d-block w-100 mt-2" alt="..." />
-                    </MDBCol>
-                    <MDBCol md="8">
+                    </div>
+                    <div className="col-md-8">
                       <p className="app-p lead text-justify">La Curaduria Urbana N°1 de Bucaramanga ofrece a los profesionales que figuran en las actuaciones
                         urbanísticas, la certificación de participación y responsabilidad en la calidad profesional en la que haya actuado
                         en los proyectos de licenciamiento. Para generar el certificado, asi como para verificar el expedidor dar <Link to={'/certificacion'}>click aqui</Link>.</p>
-                    </MDBCol>
-                  </MDBRow>
+                    </div>
+                  </div>
                 </div>
                 <div id="news_1">
                   <p className="display-6 lead fw-bold ">Curaduría Inclusiva - Ley 982 de 2005</p>
-                  <MDBRow>
-                    <MDBCol md="8">
+                  <div className="row">
+                    <div className="col-md-8">
                       <p className="app-p lead text-justify">La Curaduria N° 1 de Bucaramanga usa la ayuda de las TIC para ofrecer un mejor servicio a quienes lo necesiten. Gracias al Ministerio de Tecnologías de la Información y las Comunicaciones- MINTIC en alianza con la Federación Nacional de Sordos de Colombia- FENASCOL, apoyándose en la tecnología ofrece servicios de forma gratuita mediante una aplicación de dispositivos móviles, de igual modo el ConVerTIC es el proyecto de inclusión del Ministerio TIC con el fin de promover la inclusión social, educativa, laboral y cultural a través de uso de las tecnologías para las personas ciegas o con baja visión. Conoce mas sobre estas alternativas
                         <Link to={'/inclusivity'}> dando click aqui</Link>. </p>
-                    </MDBCol>
-                    <MDBCol md="4">
+                    </div>
+                    <div className="col-md-4">
                       <img src={NEW_2_ING} class="d-block w-100 mt-2" alt="..." />
-                    </MDBCol>
-                  </MDBRow>
+                    </div>
+                  </div>
                 </div>
 
                 <div id="news_2">
                   <p className="display-6 lead fw-bold">Nuestro Nuevo Punto de Atención</p>
-                  <MDBRow>
-                    <MDBCol md="4">
+                  <div className="row">
+                    <div className="col-md-4">
                       <img src={NEW_ING} class="d-block w-100 mt-2" alt="..." />
-                    </MDBCol>
-                    <MDBCol md="8">
+                    </div>
+                    <div className="col-md-8">
                       <p className="app-p lead text-justify">Ya se encuentra en funcionamiento nuestro nuevo punto de atención. Nuestra nueva ubicación se encuentra en la Calle 36 # 31-39 Centro Empresarial Chicamocha - Local 101, con parqueadero público en el Centro Empresarial Chicamocha. Nuestro horario de atención permanece sin cambios, de Lunes a Viernes de 07:00 am a 12:30 pm y 1:00 pm  a 5:00 pm.</p>
-                    </MDBCol>
-                  </MDBRow>
+                    </div>
+                  </div>
                 </div>
 
 
 
-              </MDBCol>
-            </MDBRow>
+              </div>
+            </div>
             */}
           </div>
         </div>
-        <hr className='bg-info'></hr>
+        <hr className='bg-primary'></hr>
         <h2 className='text-center' id='ubicacion'> Ubicación {<Button_navigation Iddown={null} Idup={'news'} />}</h2>
-        <div class="row justify-content-center px-4 mx-4 px-4 mb-5">
-          <div class="col-lg-12 justify-content-center">
-            <Map></Map>
+        <div className="row justify-content-center px-4 mx-4 px-4 mb-5">
+          <div className="col-lg-12 justify-content-center">
+                    <HomeMap></HomeMap>
           </div>
         </div>
 
@@ -489,7 +535,7 @@ class Home extends Component {
         >
           <div className="my-4 d-flex justify-content-between">
             {modalMessage.title}
-            <MDBBtn className='btn-close' color='none' onClick={() => this.setState({ modal: false })}></MDBBtn>
+            <button type="button" className="btn-close" onClick={() => setModal(false)} />
           </div>
 
           <div className='border p-2'>
@@ -497,16 +543,15 @@ class Home extends Component {
           </div>
 
           <div className="text-end py-4 mt-3">
-            <MDBBtn color='info' size='sm' onClick={() => this.setState({ modal: false })}>
-              <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-            </MDBBtn>
+            <Button variant="outline" size="sm" onClick={() => setModal(false)}>
+              <h4 className="pt-2"><Icon name="XCircle" size={16} /> CERRAR</h4>
+            </Button>
           </div>
 
         </Modal> */}
 
       </div >
     );
-  }
 }
 
 export default Home;

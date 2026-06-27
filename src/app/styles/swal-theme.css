@@ -1,0 +1,256 @@
+/* ── SweetAlert2 Theme — Dovela Design Tokens ───────────────────────
+   Aligns all existing Swal dialogs with the redesign palette.
+   No JavaScript changes needed — pure CSS override of swal2 defaults.
+   Remove this file when SweetAlert2 is fully migrated (Phase 6). ─── */
+
+/* Popup container */
+.swal2-popup {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  border-radius: 0.75rem;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  box-shadow:
+    0 0 0 1px hsl(var(--border) / 0.05),
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  font-size: 0.8125rem;
+  padding: 1.5rem;
+  max-width: 380px;
+}
+
+/* Backdrop */
+.swal2-container {
+  backdrop-filter: blur(4px);
+  background: rgb(0 0 0 / 0.4) !important;
+}
+
+/* Title */
+.swal2-title {
+  color: hsl(var(--foreground));
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0 0 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+/* Content text */
+.swal2-html-container {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  margin: 0.5rem 0 0;
+}
+
+/* Footer */
+.swal2-footer {
+  border-top-color: hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  font-size: 0.6875rem;
+  padding-top: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Confirm button */
+.swal2-confirm-themed {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.swal2-confirm-themed:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+.swal2-confirm-themed:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.25);
+}
+
+/* Cancel button */
+.swal2-cancel-themed {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.swal2-cancel-themed:hover {
+  background-color: hsl(var(--muted) / 0.8);
+}
+.swal2-cancel-themed:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.18);
+}
+
+/* Deny button */
+.swal2-deny-themed {
+  background-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  box-shadow: none;
+  cursor: pointer;
+}
+.swal2-deny-themed:hover {
+  background-color: hsl(var(--destructive) / 0.9);
+}
+.swal2-deny-themed:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px hsl(var(--destructive) / 0.25);
+}
+
+/* Actions container — tighter spacing */
+.swal2-actions {
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 0;
+}
+
+/* Icon sizing — smaller, more refined */
+.swal2-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0.5rem auto 0.75rem;
+  border-width: 2px;
+}
+.swal2-icon .swal2-icon-content {
+  font-size: 2rem;
+}
+
+/* Icon colors */
+.swal2-icon.swal2-success {
+  border-color: hsl(var(--accent));
+  color: hsl(var(--accent));
+}
+.swal2-icon.swal2-success .swal2-success-line-tip,
+.swal2-icon.swal2-success .swal2-success-line-long {
+  background-color: hsl(var(--accent));
+}
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: hsl(var(--accent) / 0.3);
+}
+
+.swal2-icon.swal2-error {
+  border-color: hsl(var(--destructive));
+  color: hsl(var(--destructive));
+}
+.swal2-icon.swal2-error .swal2-x-mark-line-left,
+.swal2-icon.swal2-error .swal2-x-mark-line-right {
+  background-color: hsl(var(--destructive));
+}
+
+.swal2-icon.swal2-warning {
+  border-color: hsl(var(--warning));
+  color: hsl(var(--warning));
+}
+
+.swal2-icon.swal2-info {
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+}
+
+.swal2-icon.swal2-question {
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+}
+
+/* Input fields inside Swal */
+.swal2-input,
+.swal2-textarea,
+.swal2-select {
+  border-color: hsl(var(--input));
+  border-radius: 0.375rem;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-size: 0.8125rem;
+  height: 2.25rem;
+}
+.swal2-input:focus,
+.swal2-textarea:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+/* Close button */
+.swal2-close {
+  color: hsl(var(--muted-foreground));
+  font-size: 1.25rem;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+.swal2-close:hover {
+  color: hsl(var(--foreground));
+}
+
+/* Timer progress bar */
+.swal2-timer-progress-bar {
+  background: hsl(var(--primary) / 0.3);
+}
+
+/* Loading spinner */
+.swal2-loading .swal2-confirm-themed {
+  border-color: hsl(var(--primary));
+  background-color: transparent;
+  color: hsl(var(--primary));
+}
+
+/* Validation message */
+.swal2-validation-message {
+  background: hsl(var(--destructive) / 0.08);
+  color: hsl(var(--destructive));
+  font-size: 0.75rem;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Dark mode adjustments */
+.dark .swal2-popup {
+  background: hsl(var(--background));
+  border-color: hsl(var(--border));
+  box-shadow:
+    0 0 0 1px hsl(var(--border) / 0.1),
+    0 10px 15px -3px rgb(0 0 0 / 0.3),
+    0 4px 6px -4px rgb(0 0 0 / 0.2);
+}
+.dark .swal2-title {
+  color: hsl(var(--foreground));
+}
+.dark .swal2-html-container {
+  color: hsl(var(--muted-foreground));
+}
+.dark .swal2-input,
+.dark .swal2-textarea,
+.dark .swal2-select {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--input));
+}
+.dark .swal2-input:focus,
+.dark .swal2-textarea:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+.dark .swal2-container {
+  background: rgb(0 0 0 / 0.6) !important;
+}
+
+/* Swal2 animated icon size fix for compact popup */
+.swal2-icon.swal2-success .swal2-success-fix {
+  height: 3rem;
+}

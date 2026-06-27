@@ -1,15 +1,4 @@
-import React, { Component } from 'react';
-
-class PQRS_COMPONENT_INFO extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, translation_form, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_INFO({ translation, swaMsg, globals, translation_form, currentItem }) {
 
         // COMPONENTS JSX
         let _INFO_COMPONENT = () => {
@@ -19,15 +8,15 @@ class PQRS_COMPONENT_INFO extends Component {
                     <div className="col-6">
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Consecutivo de Entrada</lavel>
+                                <label>Consecutivo de Entrada</label>
                             </div>
                             <div className="col-6">
-                                <lavel className="fw-bold">{currentItem.id_publico}</lavel>
+                                <label className="fw-bold">{currentItem.id_publico}</label>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Estado</lavel>
+                                <label>Estado</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{_STATUS_COMPONENT()}</label>
@@ -35,7 +24,7 @@ class PQRS_COMPONENT_INFO extends Component {
                         </div>
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Tipo de solicitud</lavel>
+                                <label>Tipo de solicitud</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.type}</label>
@@ -43,7 +32,7 @@ class PQRS_COMPONENT_INFO extends Component {
                         </div>
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Radicación Original</lavel>
+                                <label>Radicación Original</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.pqrs_info ? currentItem.pqrs_info.radication_channel : ''}</label>
@@ -52,7 +41,7 @@ class PQRS_COMPONENT_INFO extends Component {
 
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Consecutivo de Salida</lavel>
+                                <label>Consecutivo de Salida</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.id_reply}</label>
@@ -61,7 +50,7 @@ class PQRS_COMPONENT_INFO extends Component {
 
                         <div className="row">
                             <div className="col-6">
-                                <lavel>Guiá de Correspondencia</lavel>
+                                <label>Guiá de Correspondencia</label>
                             </div>
                             <div className="col-6">
                                 <label className="fw-bold">{currentItem.id_correspondency}</label>
@@ -98,12 +87,11 @@ class PQRS_COMPONENT_INFO extends Component {
             }
         }
 
-        return (
-            <div>
-                {_INFO_COMPONENT()}
-            </div>
-        );
-    }
+    return (
+        <div>
+            {_INFO_COMPONENT()}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_INFO;

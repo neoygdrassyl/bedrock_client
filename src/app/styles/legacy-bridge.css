@@ -1,0 +1,1584 @@
+/*
+ * Legacy Bridge — Bootstrap-to-token overrides
+ *
+ * Maps Bootstrap component colors/borders to Dovela design tokens
+ * so legacy pages inside AppShell don't visually clash with the new shell.
+ *
+ * Scoped to #main-content to avoid leaking into the shell itself.
+ * Uses :where() for zero specificity where possible.
+ *
+ * Remove individual sections as modules get fully migrated (Phases 3-5).
+ */
+
+/* ── Bootstrap color variables → Dovela tokens ──────────────────── */
+#main-content {
+  --bs-primary: hsl(var(--primary));
+  --bs-primary-rgb: 37, 99, 235;
+  --bs-success: hsl(var(--accent));
+  --bs-success-rgb: 5, 150, 105;
+  --bs-danger: hsl(var(--destructive));
+  --bs-danger-rgb: 239, 68, 68;
+  --bs-warning: hsl(var(--warning));
+  --bs-warning-rgb: 245, 158, 11;
+  --bs-body-color: hsl(var(--foreground));
+  --bs-body-bg: hsl(var(--background));
+  --bs-border-color: hsl(var(--border));
+  --bs-link-color: hsl(var(--primary));
+  --bs-link-hover-color: hsl(var(--primary));
+}
+
+.dark #main-content {
+  --bs-body-color: hsl(var(--foreground));
+  --bs-body-bg: hsl(var(--background));
+  --bs-border-color: hsl(var(--border));
+}
+
+/* ── Contextual background utilities (Bootstrap → tokens) ────────── */
+#main-content :where(.bg-primary)   { background-color: hsl(var(--primary)) !important; }
+#main-content :where(.bg-success)   { background-color: hsl(var(--accent)) !important; }
+#main-content :where(.bg-danger)    { background-color: hsl(var(--destructive)) !important; }
+#main-content :where(.bg-warning)   { background-color: hsl(var(--warning)) !important; }
+#main-content :where(.bg-info)      { background-color: hsl(var(--primary)) !important; }
+#main-content :where(.bg-secondary) { background-color: hsl(var(--muted)) !important; }
+#main-content :where(.bg-light)     { background-color: hsl(var(--muted)) !important; }
+#main-content :where(.bg-dark)      { background-color: hsl(var(--sidebar)) !important; }
+#main-content :where(.bg-white)     { background-color: hsl(var(--card)) !important; }
+#main-content :where(.bg-transparent) { background-color: transparent !important; }
+
+/* ── Border color utilities (v15) ─────────────────────────────────── */
+#main-content :where(.border-primary)   { border-color: hsl(var(--primary)) !important; }
+#main-content :where(.border-secondary) { border-color: hsl(var(--border)) !important; }
+#main-content :where(.border-info)      { border-color: hsl(var(--primary) / 0.3) !important; }
+#main-content :where(.border-success)   { border-color: hsl(var(--accent) / 0.3) !important; }
+#main-content :where(.border-warning)   { border-color: hsl(var(--warning) / 0.3) !important; }
+#main-content :where(.border-danger)    { border-color: hsl(var(--destructive) / 0.3) !important; }
+
+/* ── Collapsible triggers (v15) ───────────────────────────────────── */
+#main-content :where(.Collapsible) {
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+#main-content :where(.Collapsible__trigger) {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+/* ── Buttons (Enhanced v6) ────────────────────────────────────────── */
+#main-content :where(.btn) {
+  border-radius: var(--radius);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+#main-content :where(.btn:focus-visible) {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+#main-content :where(.btn:disabled, .btn.disabled) {
+  opacity: 0.65;
+  pointer-events: none;
+}
+#main-content :where(.btn-sm) {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: calc(var(--radius) - 2px);
+}
+#main-content :where(.btn-lg) {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+#main-content :where(.btn-primary) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+#main-content :where(.btn-primary:hover),
+#main-content :where(.btn-primary:focus) {
+  background-color: hsl(var(--primary) / 0.9);
+  border-color: hsl(var(--primary) / 0.9);
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+}
+
+#main-content :where(.btn-secondary) {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+#main-content :where(.btn-secondary:hover) {
+  background-color: hsl(var(--muted) / 0.8);
+}
+
+#main-content :where(.btn-success) {
+  background-color: hsl(var(--accent));
+  border-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+#main-content :where(.btn-success:hover) {
+  background-color: hsl(var(--accent) / 0.9);
+  box-shadow: 0 0 0 2px hsl(var(--accent) / 0.2);
+}
+
+#main-content :where(.btn-danger) {
+  background-color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+#main-content :where(.btn-danger:hover) {
+  background-color: hsl(var(--destructive) / 0.9);
+  box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.2);
+}
+
+#main-content :where(.btn-warning) {
+  background-color: hsl(var(--warning));
+  border-color: hsl(var(--warning));
+  color: hsl(var(--warning-foreground));
+}
+#main-content :where(.btn-warning:hover) {
+  background-color: hsl(var(--warning) / 0.9);
+}
+
+#main-content :where(.btn-info) {
+  background-color: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary));
+}
+#main-content :where(.btn-info:hover) {
+  background-color: hsl(var(--primary) / 0.15);
+}
+
+#main-content :where(.btn-light) {
+  background-color: hsl(var(--muted) / 0.5);
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.btn-outline-primary) {
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  background: transparent;
+}
+#main-content :where(.btn-outline-primary:hover) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+#main-content :where(.btn-outline-secondary) {
+  color: hsl(var(--muted-foreground));
+  border-color: hsl(var(--border));
+  background: transparent;
+}
+#main-content :where(.btn-outline-secondary:hover) {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.btn-outline-success) {
+  color: hsl(var(--accent));
+  border-color: hsl(var(--accent));
+  background: transparent;
+}
+#main-content :where(.btn-outline-success:hover) {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+#main-content :where(.btn-outline-danger) {
+  color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive));
+  background: transparent;
+}
+#main-content :where(.btn-outline-danger:hover) {
+  background-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+
+#main-content :where(.btn-outline-warning) {
+  color: hsl(var(--warning));
+  border-color: hsl(var(--warning));
+  background: transparent;
+}
+
+#main-content :where(.btn-close) {
+  filter: none;
+  opacity: 0.5;
+  background-size: 0.75rem;
+}
+.dark #main-content :where(.btn-close) {
+  filter: invert(1);
+}
+
+/* ── Cards (Enhanced v6) ─────────────────────────────────────────── */
+#main-content :where(.card) {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+}
+#main-content :where(.card-header) {
+  background-color: hsl(var(--muted) / 0.25);
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: hsl(var(--foreground));
+}
+#main-content :where(.card-body) {
+  color: hsl(var(--card-foreground));
+  padding: 0.75rem;
+}
+#main-content :where(.card-footer) {
+  background-color: hsl(var(--muted) / 0.15);
+  border-top: 1px solid hsl(var(--border));
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* ── Tables (Enhanced v6) ────────────────────────────────────────── */
+#main-content :where(.table) {
+  --bs-table-bg: transparent;
+  --bs-table-border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+}
+
+#main-content :where(.table > thead) {
+  background-color: hsl(var(--muted) / 0.6);
+}
+
+#main-content :where(.table > thead th) {
+  font-weight: 600;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(var(--muted-foreground));
+  border-bottom-width: 1px;
+  padding: 0.5rem 0.625rem;
+  white-space: nowrap;
+}
+
+#main-content :where(.table > tbody > tr > td) {
+  padding: 0.4rem 0.625rem;
+  vertical-align: middle;
+}
+
+#main-content :where(.table-striped > tbody > tr:nth-of-type(odd)) {
+  --bs-table-striped-bg: hsl(var(--muted) / 0.3);
+}
+
+#main-content :where(.table-hover > tbody > tr:hover) {
+  --bs-table-hover-bg: hsl(var(--muted) / 0.6);
+  transition: background-color 0.1s ease;
+}
+
+#main-content :where(.table-bordered) {
+  border-color: hsl(var(--border));
+}
+#main-content :where(.table-bordered > :not(caption) > * > *) {
+  border-color: hsl(var(--border));
+}
+
+/* table-light: ensure dark mode compat */
+#main-content :where(.table-light) {
+  --bs-table-bg: hsl(var(--muted) / 0.15);
+  --bs-table-border-color: hsl(var(--border));
+}
+
+/* table-sm: tighter padding for compact views */
+#main-content :where(.table-sm > :not(caption) > * > *) {
+  padding: 0.25rem 0.5rem;
+}
+
+/* ── Forms (Enhanced v6) ──────────────────────────────────────────── */
+#main-content :where(.form-control) {
+  border-color: hsl(var(--input));
+  border-radius: var(--radius);
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.625rem;
+  height: auto;
+  min-height: 2rem;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#main-content :where(.form-control::placeholder) {
+  color: hsl(var(--muted-foreground) / 0.5);
+  font-size: 0.8125rem;
+}
+
+#main-content :where(.form-control:focus) {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.15), 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  outline: none;
+}
+
+#main-content :where(.form-control:disabled, .form-control[readonly]) {
+  background-color: hsl(var(--muted) / 0.5);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+#main-content :where(.form-select) {
+  border-color: hsl(var(--input));
+  border-radius: var(--radius);
+  font-size: 0.8125rem;
+  padding: 0.4rem 2rem 0.4rem 0.625rem;
+  min-height: 2rem;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#main-content :where(.form-select:focus) {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.15), 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  outline: none;
+}
+
+#main-content :where(textarea.form-control) {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+#main-content :where(.form-label) {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+  margin-bottom: 0.25rem;
+}
+
+/* ── Badges (Enhanced v6) ────────────────────────────────────────── */
+#main-content :where(.badge) {
+  font-weight: 500;
+  font-size: 0.6875rem;
+  border-radius: 9999px;
+  padding: 0.1rem 0.5rem;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+#main-content :where(.badge.bg-primary) {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+#main-content :where(.badge.bg-success) {
+  background-color: hsl(var(--accent)) !important;
+}
+
+#main-content :where(.badge.bg-danger) {
+  background-color: hsl(var(--destructive)) !important;
+  color: hsl(var(--destructive-foreground)) !important;
+}
+
+#main-content :where(.badge.bg-warning) {
+  background-color: hsl(var(--warning)) !important;
+  color: hsl(var(--warning-foreground)) !important;
+}
+
+#main-content :where(.badge.bg-secondary) {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+#main-content :where(.badge.bg-info) {
+  background-color: hsl(var(--primary) / 0.15) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+/* ── Alerts (Enhanced v6 → v14 polish) ─────────────────────────────── */
+#main-content :where(.alert) {
+  border-radius: var(--radius);
+  font-size: 0.8125rem;
+  border-width: 0;
+  border-left: 3px solid;
+  padding: 0.625rem 0.875rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.5;
+}
+
+#main-content :where(.alert-info) {
+  background-color: hsl(var(--primary) / 0.06);
+  border-left-color: hsl(var(--primary));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.alert-success) {
+  background-color: hsl(var(--accent) / 0.06);
+  border-left-color: hsl(var(--accent));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.alert-warning) {
+  background-color: hsl(var(--warning) / 0.06);
+  border-left-color: hsl(var(--warning));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.alert-danger) {
+  background-color: hsl(var(--destructive) / 0.06);
+  border-left-color: hsl(var(--destructive));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.alert-light) {
+  background-color: hsl(var(--muted) / 0.3);
+  border-left-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+/* ── Fieldsets (Enhanced v14) ────────────────────────────────────── */
+/* ── Fieldset hierarchy (v20) ─────────────────── */
+#main-content :where(fieldset) {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  background-color: hsl(var(--card) / 0.5);
+}
+/* Nested fieldset — subtler border, no extra bg */
+#main-content :where(fieldset fieldset) {
+  border-color: hsl(var(--border) / 0.5);
+  background-color: transparent;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+/* 3rd level — minimal, only left-border accent */
+#main-content :where(fieldset fieldset fieldset) {
+  border: none;
+  border-left: 2px solid hsl(var(--primary) / 0.15);
+  border-radius: 0;
+  padding: 0.375rem 0.375rem 0.375rem 0.75rem;
+}
+
+#main-content :where(legend) {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  padding: 0.125rem 0.5rem;
+  margin-bottom: 0;
+  float: none;
+  width: auto;
+  border-radius: calc(var(--radius) - 2px);
+  line-height: 1.5;
+}
+/* Nested legend — smaller, muted */
+#main-content :where(fieldset fieldset legend) {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+/* 3rd level legend — inline label style */
+#main-content :where(fieldset fieldset fieldset legend) {
+  font-size: 0.625rem;
+  color: hsl(var(--muted-foreground) / 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Modals (react-modal still in use) ───────────────────────────── */
+:where(.ReactModal__Overlay) {
+  background-color: hsl(var(--foreground) / 0.5) !important;
+  backdrop-filter: blur(2px);
+}
+
+:where(.ReactModal__Content) {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.5rem !important;
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* ── Pagination ──────────────────────────────────────────────────── */
+#main-content :where(.page-link) {
+  color: hsl(var(--primary));
+  border-color: hsl(var(--border));
+  font-size: 0.875rem;
+}
+
+#main-content :where(.page-item.active .page-link) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+/* ── Navs & Tabs ─────────────────────────────────────────────────── */
+#main-content :where(.nav-tabs) {
+  border-bottom: 1px solid hsl(var(--border));
+  gap: 0;
+}
+#main-content :where(.nav-tabs .nav-link) {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: -1px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+#main-content :where(.nav-tabs .nav-link.active) {
+  color: hsl(var(--primary));
+  border-bottom-color: hsl(var(--primary));
+  background-color: transparent;
+  font-weight: 600;
+}
+#main-content :where(.nav-tabs .nav-link:hover:not(.active)) {
+  border-bottom-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+  background-color: transparent;
+}
+
+#main-content :where(.nav-pills .nav-link) {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  border-radius: 0.375rem;
+  padding: 0.35rem 0.75rem;
+}
+#main-content :where(.nav-pills .nav-link.active) {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+#main-content :where(.nav-pills .nav-link:hover:not(.active)) {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+/* ── react-data-table-component (consolidated v17) ───────────────── */
+#main-content :where(.rdt_Table) {
+  font-size: 0.8125rem;
+}
+#main-content :where(.rdt_TableHeadRow) {
+  background-color: hsl(var(--muted));
+  border-bottom-color: hsl(var(--border));
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: hsl(var(--muted-foreground));
+  min-height: 36px;
+}
+#main-content :where(.rdt_TableRow) {
+  border-bottom-color: hsl(var(--border) / 0.5);
+  min-height: 38px;
+  transition: background-color 0.1s ease;
+}
+#main-content :where(.rdt_TableRow:hover) {
+  background-color: hsl(var(--muted) / 0.4);
+}
+#main-content :where(.rdt_Pagination) {
+  border-top-color: hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  min-height: 40px;
+}
+#main-content :where(.rdt_TableCell) {
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.rdt_Table) {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.rdt_TableHeadRow) {
+  background-color: hsl(var(--muted) / 0.2);
+  color: hsl(var(--muted-foreground));
+}
+.dark #main-content :where(.rdt_TableRow) {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+  border-bottom-color: hsl(var(--border) / 0.3);
+}
+.dark #main-content :where(.rdt_TableRow:hover) {
+  background-color: hsl(var(--muted) / 0.15);
+}
+.dark #main-content :where(.rdt_Pagination) {
+  background-color: transparent;
+  color: hsl(var(--muted-foreground));
+  border-top-color: hsl(var(--border));
+}
+
+/* ── Input groups (Enhanced v6) ───────────────────────────────────── */
+#main-content :where(.input-group .input-group-text) {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--input));
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.625rem;
+  border-radius: var(--radius);
+}
+
+/* ── input-group-text with bg-*: ensure text/icon contrast ──── */
+#main-content :where(.input-group .input-group-text.bg-primary) { color: hsl(var(--primary-foreground)); }
+#main-content :where(.input-group .input-group-text.bg-success) { color: hsl(var(--accent-foreground)); }
+#main-content :where(.input-group .input-group-text.bg-danger)  { color: hsl(var(--destructive-foreground)); }
+#main-content :where(.input-group .input-group-text.bg-warning) { color: hsl(var(--warning-foreground)); }
+#main-content :where(.input-group .input-group-text.bg-info)    { color: hsl(var(--primary-foreground)); }
+
+#main-content :where(.input-group .form-control,
+                       .input-group .form-select) {
+  border-color: hsl(var(--input));
+}
+
+#main-content :where(.input-group:focus-within .input-group-text) {
+  border-color: hsl(var(--ring));
+  color: hsl(var(--foreground));
+}
+
+/* ── Form checks (checkboxes, radios, switches) — Enhanced v6 ──── */
+#main-content :where(.form-check-input) {
+  border-color: hsl(var(--input));
+  background-color: hsl(var(--background));
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+#main-content :where(.form-check-input:checked) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+#main-content :where(.form-check-input:focus) {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.15);
+}
+
+#main-content :where(.form-check-label) {
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+#main-content :where(.form-switch .form-check-input) {
+  border-radius: 999px;
+  width: 2rem;
+}
+
+/* ── Bootstrap pagination ────────────────────────────────────────── */
+#main-content :where(.pagination .page-link) {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+  font-size: 0.8125rem;
+  transition: background-color 0.15s ease;
+}
+
+#main-content :where(.pagination .page-link:hover) {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.pagination .page-item.active .page-link) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+#main-content :where(.pagination .page-item.disabled .page-link) {
+  color: hsl(var(--muted-foreground));
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+}
+
+/* ── List groups (Enhanced v14) ───────────────────────────────────── */
+#main-content :where(.list-group) {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+#main-content :where(.list-group-item) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+  font-size: 0.8125rem;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.1s ease;
+}
+
+#main-content :where(.list-group-flush .list-group-item) {
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+}
+
+#main-content :where(.list-group-item label) {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+
+#main-content :where(.list-group-item label .fw-bold,
+                       .list-group-item label label.fw-bold) {
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.list-group-item.active) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+#main-content :where(.list-group-item-action:hover) {
+  background-color: hsl(var(--muted) / 0.5);
+  color: hsl(var(--foreground));
+}
+
+/* ── Modals (Bootstrap modals) ───────────────────────────────────── */
+#main-content :where(.modal-content) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+  border-radius: 0.75rem;
+}
+
+#main-content :where(.modal-header) {
+  border-bottom-color: hsl(var(--border));
+}
+
+#main-content :where(.modal-footer) {
+  border-top-color: hsl(var(--border));
+}
+
+#main-content :where(.modal-title) {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* ── Progress bars ───────────────────────────────────────────────── */
+#main-content :where(.progress) {
+  background-color: hsl(var(--muted));
+  border-radius: 0.375rem;
+  height: 0.5rem;
+}
+
+#main-content :where(.progress-bar) {
+  background-color: hsl(var(--primary));
+}
+
+#main-content :where(.progress-bar.bg-success) {
+  background-color: hsl(var(--accent));
+}
+
+#main-content :where(.progress-bar.bg-danger) {
+  background-color: hsl(var(--destructive));
+}
+
+#main-content :where(.progress-bar.bg-warning) {
+  background-color: hsl(var(--warning));
+}
+
+#main-content :where(.progress-bar.bg-info) {
+  background-color: hsl(var(--primary));
+}
+
+#main-content :where(.progress-bar-striped) {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1rem 1rem;
+}
+
+/* ── Dropdowns ───────────────────────────────────────────────────── */
+#main-content :where(.dropdown-menu) {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  font-size: 0.875rem;
+}
+
+#main-content :where(.dropdown-item) {
+  color: hsl(var(--popover-foreground));
+}
+
+#main-content :where(.dropdown-item:hover,
+                       .dropdown-item:focus) {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.dropdown-divider) {
+  border-color: hsl(var(--border));
+}
+
+/* ── Breadcrumbs (legacy) ────────────────────────────────────────── */
+#main-content :where(.breadcrumb-item a) {
+  color: hsl(var(--primary));
+}
+
+#main-content :where(.breadcrumb-item.active) {
+  color: hsl(var(--muted-foreground));
+}
+
+/* ── Form labels ─────────────────────────────────────────────────── */
+#main-content :where(label) {
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ── Tooltip text ────────────────────────────────────────────────── */
+#main-content :where(.tooltip-inner) {
+  background-color: hsl(var(--sidebar));
+  color: hsl(var(--sidebar-foreground));
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+}
+
+/* ── Dark mode specifics ─────────────────────────────────────────── */
+.dark #main-content :where(.form-control),
+.dark #main-content :where(.form-select) {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--input));
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+}
+
+.dark #main-content :where(.form-control:focus),
+.dark #main-content :where(.form-select:focus) {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2), 0 1px 2px 0 rgb(0 0 0 / 0.1);
+}
+
+.dark #main-content :where(.form-control:disabled, .form-control[readonly]) {
+  background-color: hsl(var(--muted) / 0.3);
+}
+
+.dark #main-content :where(.card) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.dark #main-content :where(.table) {
+  color: hsl(var(--foreground));
+}
+
+.dark #main-content :where(.modal-content) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+}
+
+.dark #main-content :where(.input-group-text) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--border));
+  color: hsl(var(--primary-foreground));
+}
+
+.dark #main-content :where(.input-group .form-control,
+                             .input-group .form-select) {
+  border-color: hsl(var(--border));
+}
+
+.dark #main-content :where(.form-check-input) {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--input));
+}
+
+.dark #main-content :where(.list-group-item) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+}
+
+.dark #main-content :where(.list-group-item label) {
+  color: hsl(var(--muted-foreground));
+}
+
+.dark #main-content :where(.list-group-item.active) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.dark #main-content :where(.list-group-item-action:hover) {
+  background-color: hsl(var(--muted) / 0.3);
+  color: hsl(var(--foreground));
+}
+
+.dark #main-content :where(fieldset) {
+  background-color: hsl(var(--card) / 0.3);
+  border-color: hsl(var(--border));
+}
+.dark #main-content :where(fieldset fieldset) {
+  border-color: hsl(var(--border) / 0.3);
+  background-color: transparent;
+}
+.dark #main-content :where(fieldset fieldset fieldset) {
+  border-left-color: hsl(var(--primary) / 0.1);
+}
+
+.dark #main-content :where(.pagination .page-link) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.dark #main-content :where(.dropdown-menu) {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
+}
+
+/* ─── Text utility overrides (Enhanced v15) ───────────────────────── */
+#main-content :where(.text-primary) { color: hsl(var(--primary)) !important; }
+#main-content :where(.text-success) { color: hsl(var(--accent)) !important; }
+#main-content :where(.text-danger)  { color: hsl(var(--destructive)) !important; }
+#main-content :where(.text-warning) { color: hsl(var(--warning)) !important; }
+#main-content :where(.text-info)    { color: hsl(var(--primary)) !important; }
+#main-content :where(.text-muted)   { color: hsl(var(--muted-foreground)) !important; }
+/* text-dark/text-light/text-white: map to foreground tokens for dark mode compat */
+#main-content :where(.text-dark)    { color: hsl(var(--foreground)) !important; }
+#main-content :where(.text-light)   { color: hsl(var(--primary-foreground)) !important; }
+#main-content :where(.text-white)   { color: hsl(var(--primary-foreground)) !important; }
+/* text-justify: soften to normal for modern reading flow */
+#main-content :where(.text-justify) { text-align: start; }
+/* lead: tone down to match app density */
+#main-content :where(.lead)         { font-size: 0.9375rem; font-weight: 400; line-height: 1.5; }
+/* fw-bold: slightly reduce weight for modern feel */
+#main-content :where(.fw-bold)      { font-weight: 600; }
+
+/* ─── Headings (Enhanced v15) ──────────────────────────────────────── */
+#main-content :where(h1, h2, h3, h4, h5, h6) {
+  color: hsl(var(--foreground));
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+#main-content :where(h1) { font-size: 1.5rem; font-weight: 700; }
+#main-content :where(h2) { font-size: 1.25rem; font-weight: 600; }
+#main-content :where(h3) { font-size: 1.125rem; font-weight: 600; }
+#main-content :where(h4) { font-size: 1rem; font-weight: 600; }
+#main-content :where(h5) { font-size: 0.875rem; font-weight: 600; }
+#main-content :where(h6) { font-size: 0.8125rem; font-weight: 600; }
+
+/* ─── Accordion / Collapsible ──────────────────────────────────────── */
+#main-content :where(.accordion-button) {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--card));
+}
+#main-content :where(.accordion-button:not(.collapsed)) {
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.05);
+}
+.dark #main-content :where(.accordion-button) {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--card));
+}
+.dark #main-content :where(.accordion-button:not(.collapsed)) {
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+/* ─── Dark mode: Bootstrap table bg variable reset ─────────────────── */
+.dark #main-content :where(.table) {
+  --bs-table-bg: transparent;
+}
+.dark #main-content :where(.table th) {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+/* ── Typography density & polish (merged into v15 headings) ───────── */
+#main-content :where(p, label, span) {
+  font-size: 0.8125rem;
+}
+
+/* ── Link polish ──────────────────────────────────────────────────── */
+#main-content :where(a:not(.btn):not(.no-underline):not(.nav-link):not(.page-link):not(.dropdown-item)) {
+  color: hsl(var(--primary));
+  text-decoration: none;
+}
+#main-content :where(a:not(.btn):not(.no-underline):not(.nav-link):not(.page-link):not(.dropdown-item):hover) {
+  color: hsl(var(--primary) / 0.8);
+}
+
+/* ── container-primary alignment ──────────────────────────────────── */
+#main-content :where(.container-primary) {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-radius: 0.5rem;
+}
+
+/* ── Badge density ────────────────────────────────────────────────── */
+#main-content :where(.badge) {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 0.2em 0.55em;
+  border-radius: 9999px;
+}
+
+/* ── Form-select & form-floating polish ────────────────────────────── */
+#main-content :where(.form-select) {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 14px 10px;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+#main-content :where(.form-select:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+#main-content :where(.form-floating > .form-control,
+                       .form-floating > .form-select) {
+  height: calc(3rem + 2px);
+  padding: 1rem 0.75rem;
+}
+#main-content :where(.form-floating > label) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.75rem;
+  pointer-events: none;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* ── Spinners (loading indicators) ─────────────────────────────────── */
+#main-content :where(.spinner-border) {
+  color: hsl(var(--primary));
+}
+#main-content :where(.spinner-border-sm) {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ── Offcanvas/Collapse ────────────────────────────────────────────── */
+#main-content :where(.offcanvas) {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-color: hsl(var(--border));
+}
+#main-content :where(.offcanvas-header) {
+  border-bottom: 1px solid hsl(var(--border));
+}
+#main-content :where(.offcanvas-backdrop) {
+  background-color: hsl(var(--foreground) / 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* ── Placeholder text ──────────────────────────────────────────────── */
+#main-content :where(.form-control::placeholder,
+                       .form-select::placeholder) {
+  color: hsl(var(--muted-foreground) / 0.5);
+  font-size: 0.8125rem;
+}
+
+/* ── Form validation states ────────────────────────────────────────── */
+#main-content :where(.is-invalid) {
+  border-color: hsl(var(--destructive)) !important;
+}
+#main-content :where(.is-valid) {
+  border-color: hsl(var(--accent)) !important;
+}
+#main-content :where(.invalid-feedback) {
+  color: hsl(var(--destructive));
+  font-size: 0.75rem;
+}
+#main-content :where(.valid-feedback) {
+  color: hsl(var(--accent));
+  font-size: 0.75rem;
+}
+
+/* ── Disabled form controls ────────────────────────────────────────── */
+#main-content :where(.form-control:disabled,
+                       .form-select:disabled,
+                       .form-check-input:disabled) {
+  background-color: hsl(var(--muted) / 0.5);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Close button refinement ───────────────────────────────────────── */
+#main-content :where(.btn-close) {
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+#main-content :where(.btn-close:hover) {
+  opacity: 0.8;
+}
+
+/* ── Global polish ─────────────────────────────────────────────────── */
+
+/* Smooth scroll for main content area */
+#main-content {
+  scroll-behavior: smooth;
+}
+
+/* Text selection color */
+#main-content ::selection {
+  background: hsl(var(--primary) / 0.15);
+  color: hsl(var(--foreground));
+}
+
+/* Focus ring consistency for all interactive elements */
+#main-content :where(:focus-visible) {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling for content area */
+#main-content :where(*) {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+/* Tooltip override for Bootstrap tooltips */
+.tooltip {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.6875rem;
+}
+.tooltip-inner {
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+.tooltip .tooltip-arrow::before {
+  border-top-color: hsl(var(--border));
+}
+
+/* Dark mode: stronger active states for buttons */
+.dark #main-content :where(.btn-primary:hover) {
+  background-color: hsl(var(--primary) / 0.85);
+}
+.dark #main-content :where(.btn-outline-primary) {
+  border-color: hsl(var(--primary) / 0.5);
+}
+.dark #main-content :where(.nav-tabs) {
+  border-bottom-color: hsl(var(--border));
+}
+.dark #main-content :where(.card) {
+  box-shadow: none;
+}
+.dark #main-content :where(.card-header) {
+  background-color: hsl(var(--muted) / 0.2);
+}
+
+.dark #main-content :where(.table) {
+  --bs-table-bg: transparent;
+}
+.dark #main-content :where(.table > thead) {
+  background-color: hsl(var(--muted) / 0.15);
+}
+.dark #main-content :where(.alert) {
+  background-color: hsl(var(--muted) / 0.1);
+}
+.dark #main-content :where(.alert-info) {
+  background-color: hsl(var(--primary) / 0.08);
+  border-left-color: hsl(var(--primary) / 0.7);
+}
+.dark #main-content :where(.alert-success) {
+  background-color: hsl(var(--accent) / 0.08);
+  border-left-color: hsl(var(--accent) / 0.7);
+}
+.dark #main-content :where(.alert-warning) {
+  background-color: hsl(var(--warning) / 0.08);
+  border-left-color: hsl(var(--warning) / 0.7);
+}
+.dark #main-content :where(.alert-danger) {
+  background-color: hsl(var(--destructive) / 0.08);
+  border-left-color: hsl(var(--destructive) / 0.7);
+}
+
+/* ── Dark mode: comprehensive element coverage (v16) ────────────────── */
+
+/* Collapsible triggers */
+.dark #main-content :where(.Collapsible) {
+  border-color: hsl(var(--border));
+}
+.dark #main-content :where(.Collapsible__trigger) {
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.Collapsible__contentOuter) {
+  background-color: hsl(var(--card));
+}
+
+/* Pagination */
+.dark #main-content :where(.page-link) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.page-item.active .page-link) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.dark #main-content :where(.page-item.disabled .page-link) {
+  background-color: hsl(var(--muted) / 0.1);
+  color: hsl(var(--muted-foreground));
+}
+
+/* Dropdowns (Bootstrap) */
+.dark #main-content :where(.dropdown-menu) {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
+  color: hsl(var(--popover-foreground));
+}
+.dark #main-content :where(.dropdown-item) {
+  color: hsl(var(--popover-foreground));
+}
+.dark #main-content :where(.dropdown-item:hover,
+                             .dropdown-item:focus) {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.dropdown-divider) {
+  border-color: hsl(var(--border));
+}
+
+/* Nav tabs */
+.dark #main-content :where(.nav-link) {
+  color: hsl(var(--muted-foreground));
+}
+.dark #main-content :where(.nav-link.active,
+                             .nav-tabs .nav-link.active) {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+.dark #main-content :where(.nav-link:hover) {
+  color: hsl(var(--foreground));
+}
+
+/* Container-primary */
+.dark #main-content :where(.container-primary) {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Badges */
+.dark #main-content :where(.badge) {
+  opacity: 0.9;
+}
+
+/* Breadcrumb */
+.dark #main-content :where(.breadcrumb-item) {
+  color: hsl(var(--muted-foreground));
+}
+.dark #main-content :where(.breadcrumb-item.active) {
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(.breadcrumb-item + .breadcrumb-item::before) {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Progress bars */
+.dark #main-content :where(.progress) {
+  background-color: hsl(var(--muted) / 0.2);
+}
+
+/* Contextual backgrounds in dark mode — soften brightness */
+.dark #main-content :where(.bg-warning) {
+  background-color: hsl(var(--warning) / 0.15) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-success) {
+  background-color: hsl(var(--accent) / 0.15) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-info) {
+  background-color: hsl(var(--primary) / 0.15) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-danger) {
+  background-color: hsl(var(--destructive) / 0.15) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-secondary) {
+  background-color: hsl(var(--muted) / 0.3) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.dark #main-content :where(.bg-light) {
+  background-color: hsl(var(--muted) / 0.1) !important;
+}
+.dark #main-content :where(.bg-white) {
+  background-color: hsl(var(--card)) !important;
+}
+
+/* text-white on colored bg in dark mode */
+.dark #main-content :where(.bg-primary .text-white,
+                             .bg-info .text-white,
+                             .bg-success .text-white,
+                             .bg-warning .text-white,
+                             .bg-danger .text-white) {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Borders in dark mode */
+.dark #main-content :where(.border) {
+  border-color: hsl(var(--border)) !important;
+}
+.dark #main-content :where(.border-info) {
+  border-color: hsl(var(--primary) / 0.2) !important;
+}
+.dark #main-content :where(.border-secondary) {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Modals - ensure content area is dark */
+.dark #main-content :where(.modal-header) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+}
+.dark #main-content :where(.modal-footer) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+/* Form floating labels in dark mode */
+.dark #main-content :where(.form-floating > label) {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Spinners in dark mode */
+.dark #main-content :where(.spinner-border,
+                             .spinner-grow) {
+  color: hsl(var(--primary));
+}
+
+/* ======================================================================
+   v19 — Micro-interactions & Loading Polish
+   ====================================================================== */
+
+/* Page content fade-in */
+@keyframes bridgeFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#main-content > .legacy-bridge {
+  animation: bridgeFadeIn 0.2s ease-out;
+}
+
+/* Modernized spinner */
+#main-content :where(.spinner-border) {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-width: 2px;
+  border-color: hsl(var(--primary) / 0.2);
+  border-right-color: hsl(var(--primary));
+  animation: spinner-border 0.6s linear infinite;
+}
+#main-content :where(.spinner-border-sm) {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-width: 1.5px;
+}
+
+/* Loading text polish (CARGANDO patterns) */
+#main-content :where(.lead.text-muted) {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground)) !important;
+  animation: bridgePulse 1.5s ease-in-out infinite;
+}
+@keyframes bridgePulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* Card entrance — subtle slide-up on first paint */
+@keyframes bridgeCardIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#main-content :where(.card) {
+  animation: bridgeCardIn 0.25s ease-out both;
+}
+
+/* Fieldset / section entrance */
+#main-content :where(fieldset) {
+  animation: bridgeCardIn 0.25s ease-out both;
+}
+
+/* Row hover highlight for tables */
+#main-content :where(.table tbody tr) {
+  transition: background-color 0.1s ease;
+}
+#main-content :where(.table-hover tbody tr:hover) {
+  background-color: hsl(var(--muted) / 0.4) !important;
+}
+.dark #main-content :where(.table-hover tbody tr:hover) {
+  background-color: hsl(var(--muted) / 0.2) !important;
+}
+
+/* List-group item transitions */
+#main-content :where(.list-group-item) {
+  transition: background-color 0.1s ease, border-color 0.1s ease;
+}
+
+/* Alert entrance */
+#main-content :where(.alert) {
+  animation: bridgeCardIn 0.2s ease-out both;
+}
+
+/* Smooth focus transitions */
+#main-content :where(.form-control,
+                       .form-select,
+                       .form-check-input) {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+/* Badge subtle scale on hover in interactive contexts */
+#main-content :where(a .badge,
+                       button .badge,
+                       .list-group-item .badge) {
+  transition: transform 0.1s ease;
+}
+#main-content :where(a:hover .badge,
+                       button:hover .badge,
+                       .list-group-item:hover .badge) {
+  transform: scale(1.05);
+}
+
+/* Progress bar smooth fill */
+#main-content :where(.progress-bar) {
+  transition: width 0.4s ease;
+}
+
+/* Pagination hover lift */
+#main-content :where(.page-link) {
+  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease, transform 0.1s ease;
+}
+#main-content :where(.page-link:hover) {
+  transform: translateY(-1px);
+}
+
+/* Dropdown fade */
+#main-content :where(.dropdown-menu.show) {
+  animation: bridgeFadeIn 0.15s ease-out;
+}
+
+/* ======================================================================
+   v20 — Section spacing & row density normalization
+   ====================================================================== */
+
+/* Tighter row gutters for Bootstrap grid rows */
+#main-content :where(.row) {
+  --bs-gutter-x: 0.75rem;
+  --bs-gutter-y: 0.5rem;
+}
+
+/* mb-3 normalization — reduce to 0.5rem for density */
+#main-content :where(.mb-3) {
+  margin-bottom: 0.5rem !important;
+}
+#main-content :where(.mb-4) {
+  margin-bottom: 0.75rem !important;
+}
+#main-content :where(.mb-5) {
+  margin-bottom: 1rem !important;
+}
+#main-content :where(.mt-3) {
+  margin-top: 0.5rem !important;
+}
+#main-content :where(.mt-4) {
+  margin-top: 0.75rem !important;
+}
+#main-content :where(.my-2) {
+  margin-top: 0.375rem !important;
+  margin-bottom: 0.375rem !important;
+}
+#main-content :where(.my-3) {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* p-3 normalization — tighter */
+#main-content :where(.p-3) {
+  padding: 0.5rem !important;
+}
+#main-content :where(.p-4) {
+  padding: 0.75rem !important;
+}
+
+/* Horizontal rules — subtle */
+#main-content :where(hr) {
+  border-color: hsl(var(--border));
+  opacity: 0.5;
+  margin: 0.5rem 0;
+}
+.dark #main-content :where(hr) {
+  border-color: hsl(var(--border));
+  opacity: 0.3;
+}
+
+/* Row highlight for even/odd density on non-striped tables */
+#main-content :where(.table:not(.table-striped) tbody tr:nth-child(even)) {
+  background-color: hsl(var(--muted) / 0.15);
+}
+.dark #main-content :where(.table:not(.table-striped) tbody tr:nth-child(even)) {
+  background-color: hsl(var(--muted) / 0.08);
+}
+
+/* Container-primary section cards */
+#main-content :where(.container-primary) {
+  background-color: hsl(var(--primary) / 0.04);
+  border: 1px solid hsl(var(--primary) / 0.1);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+.dark #main-content :where(.container-primary) {
+  background-color: hsl(var(--primary) / 0.06);
+  border-color: hsl(var(--primary) / 0.08);
+}
+
+/* Input-group density tightening */
+#main-content :where(.input-group) {
+  margin-bottom: 0.25rem;
+}
+#main-content :where(.input-group-text) {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Form labels density */
+#main-content :where(label:not(.form-check-label):not(.btn)) {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.125rem;
+  color: hsl(var(--foreground));
+}
+.dark #main-content :where(label:not(.form-check-label):not(.btn)) {
+  color: hsl(var(--foreground) / 0.9);
+}
+
+/* Small text + muted helper text */
+#main-content :where(small, .form-text) {
+  font-size: 0.6875rem;
+  color: hsl(var(--muted-foreground));
+}

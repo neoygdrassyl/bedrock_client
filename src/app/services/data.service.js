@@ -13,20 +13,36 @@ class DataService {
         return window.user.roleDesc
     }
     getUserData(){
-        return {
-            id: window.user.id,
-            name: window.user.name,
-            surname: window.user.surname,
-            role: window.user.role,
-            active: window.user.active,
-            roleId: window.user.roleId,
-        }
+        if (!window.user) return null;
+        return { ...window.user };
     }
     setUser(userData){
         window.user = userData;
+        localStorage.setItem("dovela_user", JSON.stringify(userData));
     }
     setUserNull(){
         window.user = null;
+        localStorage.removeItem("dovela_user");
+        localStorage.removeItem("dovela_token");
+    }
+    saveToken(token) {
+        localStorage.setItem("dovela_token", token);
+    }
+    getToken() {
+        return localStorage.getItem("dovela_token");
+    }
+    restoreSession() {
+        const token = localStorage.getItem("dovela_token");
+        const userJson = localStorage.getItem("dovela_user");
+        if (token && userJson) {
+            try {
+                window.user = JSON.parse(userJson);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        return false;
     }
 }
 

@@ -1,18 +1,17 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
-import ReactHTMLDatalist from 'react-html-datalist';
-import ReactModal from 'react-modal';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import HTMLDatalist from '../../../components/HTMLDatalist';
+import { LegacyModal as ReactModal } from '@/components/legacy-modal';
 import { formsParser1, getJSON, getJSONFull, _GET_SERIE_COD, _GET_SUBSERIE_COD } from '../../../components/customClasses/typeParse';
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 import FUN_6_UPLOAD from '../fun_forms/components/fun_6_upload.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {
     overlay: {
         position: 'fixed',
@@ -59,7 +58,6 @@ export default function ARCHIVE_X_FUN(props) {
         if (load == 0) loadLists();
     }, [load]);
 
-
     // ***************************  DATA CONVERTER *********************** //
     function process_dataList(inputText, dataList, _scope) {
         loadXList(inputText);
@@ -78,11 +76,11 @@ export default function ARCHIVE_X_FUN(props) {
             <div className="row">
                 <div className="col">
                     <label>Añadir licencia {searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-primary text-white">
-                            <i class="fas fa-search"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-white">
+                            <Icon name="search" size={16} />
                         </span>
-                        <ReactHTMLDatalist
+                        <HTMLDatalist
                             name={"lic"}
                             onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
                             classNames={"form-control"}
@@ -122,52 +120,52 @@ export default function ARCHIVE_X_FUN(props) {
                     <hr />
                     <div className='row'>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Serie: <label className='fw-bold'>{_SERIE}</label></label>
+                            <label htmlFor="exampleFormControlInput1">Serie: <label className='fw-bold'>{_SERIE}</label></label>
                         </div>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Subserie: <label className='fw-bold'>{_SUBSERIE}</label></label>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='col'>
-                            <label for="exampleFormControlInput1">Modalidad:</label> <label className='fw-bold'>{formsParser1(_CHILD)}</label>
+                            <label htmlFor="exampleFormControlInput1">Subserie: <label className='fw-bold'>{_SUBSERIE}</label></label>
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Dirección: <label className='fw-bold'>{_CHILD.direccion}</label></label>
-                        </div>
-                        <div className='col'>
-                            <label for="exampleFormControlInput1">Predial: <label className='fw-bold'>{_CHILD.catastral}</label></label>
+                            <label htmlFor="exampleFormControlInput1">Modalidad:</label> <label className='fw-bold'>{formsParser1(_CHILD)}</label>
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Carpeta</label>
-                            <input type="number" step={1} defaultValue={currentLic ? currentLic.box : ''} class="form-control" id="achr_4" />
+                            <label htmlFor="exampleFormControlInput1">Dirección: <label className='fw-bold'>{_CHILD.direccion}</label></label>
                         </div>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Folios</label>
-                            <input type="number" step={1} defaultValue={currentLic ? currentLic.row : ''} class="form-control" id="achr_5" />
+                            <label htmlFor="exampleFormControlInput1">Predial: <label className='fw-bold'>{_CHILD.catastral}</label></label>
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Fecha Inicio</label>
-                            <input type="date" defaultValue={currentLic ? currentLic.clocks_start : ''} class="form-control" id="achr_6" />
+                            <label htmlFor="exampleFormControlInput1">Carpeta</label>
+                            <input type="number" step={1} defaultValue={currentLic ? currentLic.box : ''} className="form-control" id="achr_4" />
                         </div>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">Fecha Final</label>
-                            <input type="date" defaultValue={currentLic ? currentLic.clocks_end : ''} class="form-control" id="achr_7" />
+                            <label htmlFor="exampleFormControlInput1">Folios</label>
+                            <input type="number" step={1} defaultValue={currentLic ? currentLic.row : ''} className="form-control" id="achr_5" />
+                        </div>
+                    </div>
+                    <div className='row'>
+                        <div className='col'>
+                            <label htmlFor="exampleFormControlInput1">Fecha Inicio</label>
+                            <input type="date" defaultValue={currentLic ? currentLic.clocks_start : ''} className="form-control" id="achr_6" />
                         </div>
                         <div className='col'>
-                            <label for="exampleFormControlInput1">N° Resolución</label>
-                            <input type="text" defaultValue={currentLic ? currentLic.exp_id : ''} class="form-control" id="achr_8" />
+                            <label htmlFor="exampleFormControlInput1">Fecha Final</label>
+                            <input type="date" defaultValue={currentLic ? currentLic.clocks_end : ''} className="form-control" id="achr_7" />
+                        </div>
+                        <div className='col'>
+                            <label htmlFor="exampleFormControlInput1">N° Resolución</label>
+                            <input type="text" defaultValue={currentLic ? currentLic.exp_id : ''} className="form-control" id="achr_8" />
                         </div>
                     </div>
                     <div className='row my-2'>
                         <div className='col text-end'>
-                            <MDBBtn size='sm' color='primary' onClick={() => addxList()}><i class="fas fa-plus-circle"></i> AÑADIR ITEM</MDBBtn>
+                            <Button size="sm" onClick={() => addxList()}><Icon name="plus-circle" size={16} /> AÑADIR ITEM</Button>
                         </div>
                     </div>
                 </>
@@ -183,31 +181,31 @@ export default function ARCHIVE_X_FUN(props) {
         let exp_id = getJSON(row.json, 'exp_id');
         return <><div className='row'>
             <div className='col'>
-                <label for="exampleFormControlInput1">Carpeta</label>
-                <input type="number" step={1} defaultValue={row.folder} class="form-control" id="achr_4_edit" />
+                <label htmlFor="exampleFormControlInput1">Carpeta</label>
+                <input type="number" step={1} defaultValue={row.folder} className="form-control" id="achr_4_edit" />
             </div>
             <div className='col'>
-                <label for="exampleFormControlInput1">Carpeta</label>
-                <input type="number" step={1} defaultValue={row.pages} class="form-control" id="achr_5_edit" />
+                <label htmlFor="exampleFormControlInput1">Carpeta</label>
+                <input type="number" step={1} defaultValue={row.pages} className="form-control" id="achr_5_edit" />
             </div>
         </div>
             <div className='row'>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Fecha Inicio</label>
-                    <input type="date" defaultValue={clocks_start} class="form-control" id="achr_6_edit" />
+                    <label htmlFor="exampleFormControlInput1">Fecha Inicio</label>
+                    <input type="date" defaultValue={clocks_start} className="form-control" id="achr_6_edit" />
                 </div>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">Fecha Final</label>
-                    <input type="date" defaultValue={clocks_end} class="form-control" id="achr_7_edit" />
+                    <label htmlFor="exampleFormControlInput1">Fecha Final</label>
+                    <input type="date" defaultValue={clocks_end} className="form-control" id="achr_7_edit" />
                 </div>
                 <div className='col'>
-                    <label for="exampleFormControlInput1">N° Resolución</label>
-                    <input type="text" defaultValue={exp_id != false ? exp_id : ''} class="form-control" id="achr_8_edit" />
+                    <label htmlFor="exampleFormControlInput1">N° Resolución</label>
+                    <input type="text" defaultValue={exp_id != false ? exp_id : ''} className="form-control" id="achr_8_edit" />
                 </div>
             </div>
             <div className='row my-2'>
                 <div className='col text-end'>
-                    <MDBBtn size='sm' color='primary' onClick={() => UpdateXList(row)}><i class="far fa-edit"></i> ACTUALIZAR ITEM</MDBBtn>
+                    <Button size="sm" onClick={() => UpdateXList(row)}><Icon name="edit" size={16} /> ACTUALIZAR ITEM</Button>
                 </div>
             </div>
         </>
@@ -240,16 +238,9 @@ export default function ARCHIVE_X_FUN(props) {
                         <label>Folios: <label className='fw-bold'>{it.pages}</label></label>
                     </div>
                     <div className='col-2 border text-center'>
-                        <MDBTooltip title='Administrar documentos item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='primary' size='sm' className='px-1 py-1' onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><i class="fas fa-cloud-upload-alt"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Actualizar item de esta caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><i class="far fa-edit"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar item de esta caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><i class="far fa-trash-alt"></i></MDBBtn>
-                        </MDBTooltip>
-
+                        <span title="Administrar documentos item"><Button size="sm" className="px-1 py-1" onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><Icon name="cloud-upload-alt" size={16} /></Button></span>
+                        <span title="Actualizar item de esta caja"><Button variant="outline" size="sm" className="px-1 py-1" onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar item de esta caja"><Button variant="destructive" size="sm" className="px-1 py-1" onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><Icon name="trash-alt" size={16} /></Button></span>
 
                     </div>
                 </div>
@@ -264,7 +255,6 @@ export default function ARCHIVE_X_FUN(props) {
         </>
     }
     // ***************************  DATATABLES *********************** //
-
 
     // ***************************  APIS *********************** //
     function loadLists() {
@@ -319,33 +309,17 @@ export default function ARCHIVE_X_FUN(props) {
         SERVICE_ARCHIVE.create_x(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadLists();
                     props.UPDATE();
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }
@@ -374,77 +348,39 @@ export default function ARCHIVE_X_FUN(props) {
 
         formData.set('json', json);
 
-
         SERVICE_ARCHIVE.update_x(FunId, currentItem.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadLists();
                     props.UPDATE();
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }
 
     function delete_x(idFun, idArch, folder) {
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         SERVICE_ARCHIVE.delete_x(idFun, idArch, folder)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadLists();
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     return (
@@ -476,9 +412,16 @@ export default function ARCHIVE_X_FUN(props) {
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal_d(!modal_d)}></MDBBtn>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="archive" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Gestión documental — Rad. {anex.id_public}</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal_d(!modal_d)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
                 <hr />
 
@@ -495,7 +438,7 @@ export default function ARCHIVE_X_FUN(props) {
                     requestUpdate={() => loadLists()}
                 />
                 <hr />
-                <label className="app-p lead fw-normal text-uppercase">ANEXAR DOCUMENTOS</label>
+                <label className="app-p lead fw-normal">ANEXAR DOCUMENTOS</label>
 
                 <FUN_6_UPLOAD
                     translation={translation}
@@ -509,9 +452,9 @@ export default function ARCHIVE_X_FUN(props) {
 
                 <hr />
                 <div className="text-end">
-                    <MDBBtn color='info' size='sm' onClick={() => setModal_d(!modal_d)}>
-                        <label ><i class="fas fa-times-circle"></i> CERRAR</label>
-                    </MDBBtn>
+                    <Button variant="outline" size="sm" onClick={() => setModal_d(!modal_d)}>
+                        <Icon name="times-circle" size={16} /> CERRAR
+                    </Button>
                 </div>
             </ReactModal>
         </>

@@ -1,18 +1,12 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
+function RECORD_ENG_STEP_4323(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;
+        const [list_159, setList_159] = useState(['-', '-', '-', '-', '-']);
 
-class RECORD_ENG_STEP_4323 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            list_159: ['-', '-', '-', '-', '-']
-        };
-    }
-    componentDidMount() {
+        useEffect(() => {
         let value = document.getElementById('f159') ? document.getElementById('f159').value : 0;
         const analSismic = {
             'Fuerza horizontal equivalente': [
@@ -52,7 +46,7 @@ class RECORD_ENG_STEP_4323 extends Component {
             ]
         }
         const newValue = analSismic[value];
-        this.setState({ list_159: newValue })
+        setList_159(newValue);
 
         let j183 = document.getElementById('j183') ? document.getElementById('j183').value : 0;
         let j186 = document.getElementById('j186') ? document.getElementById('j186').value : 0;
@@ -66,11 +60,7 @@ class RECORD_ENG_STEP_4323 extends Component {
         else op = "1,2*Av*Fv*TL*I/T^2"
 
         if (document.getElementById('h196')) document.getElementById('h196').value = op
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+        }, []);
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
         //  CONST
         const coelfmpor = {
@@ -266,14 +256,14 @@ class RECORD_ENG_STEP_4323 extends Component {
         }
         let _set_analSismic = (value) => {
             const newValue = analSismic[value];
-            this.setState({ list_159: newValue })
+            setList_159(newValue);
         }
 
         let _LIST_F159 = () => {
-            let list = this.state.list_159 ?? [];
+            let list = list_159 ?? [];
             return <>
                 {list.map((value, i) => (
-                    <li class="list-group-item">{value}</li>
+                    <li className="list-group-item">{value}</li>
                 ))}
             </>
         }
@@ -990,7 +980,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                 </div>
                 <div className="row mb-1">
                     <div className="col-10">
-                        <ul class="list-group" id="f159_list">
+                        <ul className="list-group" id="f159_list">
                             {_LIST_F159()}
                         </ul>
                     </div>
@@ -1318,7 +1308,7 @@ class RECORD_ENG_STEP_4323 extends Component {
         }
         let COMPONENT_STEP_MATERIALS = () => {
             return <>
-                <div className="row border border-dark bg-info mx-2 p-2 mt-5">
+                <div className="row border border-dark bg-primary text-primary-foreground mx-2 p-2 mt-5">
                     <div className="col text-center text-white">
                         <label className="fw-bold">ESPECIFICACIONES DE MATERIALES</label>
                     </div>
@@ -1592,72 +1582,35 @@ class RECORD_ENG_STEP_4323 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ENG_SERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ENG_SERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -1666,34 +1619,33 @@ class RECORD_ENG_STEP_4323 extends Component {
             <div className="record_eng_desc container">
                 <hr />
                 {SUBCATEGORIES[4] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av.  Consiste en ubicar el lugar de la edificación dentro de los mapas de zonificación sísmica, (Cap. A-2), y determinar los valores de Aa y Av para determinar la amenaza sísmica, según sea (Alta, intermedia y baja). </label>
+                    <label className="app-p fw-bold my-2">Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av.  Consiste en ubicar el lugar de la edificación dentro de los mapas de zonificación sísmica, (Cap. A-2), y determinar los valores de Aa y Av para determinar la amenaza sísmica, según sea (Alta, intermedia y baja). </label>
                     <label className="app-p fw-bold my-2">Características sísmicas</label>
                     {COMPONENT_STEP_03()}
                     <hr />
                 </> : ""}
                 {SUBCATEGORIES[5] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 4: Movimiento sísmicos de diseño. Debe tomarse en cuenta, la amenaza sísmica para el lugar determinado, parámetros Aa y Av, las características de la estratificación del suelo coeficientes Fa y Fv., la importancia del edificio para la recuperación por la comunidad con posterioridad a la ocurrencia de un sismo, Coeficiente de importancia.</label>
+                    <label className="app-p fw-bold my-2">Paso 4: Movimiento sísmicos de diseño. Debe tomarse en cuenta, la amenaza sísmica para el lugar determinado, parámetros Aa y Av, las características de la estratificación del suelo coeficientes Fa y Fv., la importancia del edificio para la recuperación por la comunidad con posterioridad a la ocurrencia de un sismo, Coeficiente de importancia.</label>
                     {COMPONENT_STEP_04()}
                     <hr />
                 </> : ""}
                 {SUBCATEGORIES[6] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 5: Características de la estructuración y del material estructural empleado. </label>
+                    <label className="app-p fw-bold my-2">Paso 5: Características de la estructuración y del material estructural empleado. </label>
                     {COMPONENT_STEP_05()}
                     <hr />
                 </> : ""}
                 {SUBCATEGORIES[7] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 6, Grado de irregularidad de la estructura y procedimiento de análisis. Se realiza la revisión de los factores de irregularidad para determinar el método de análisis sísmico.</label>
+                    <label className="app-p fw-bold my-2">Paso 6, Grado de irregularidad de la estructura y procedimiento de análisis. Se realiza la revisión de los factores de irregularidad para determinar el método de análisis sísmico.</label>
                     {COMPONENT_STEP_06()}
                     <hr />
                 </> : ""}
                 {SUBCATEGORIES[8] == 1 ? <>
-                    <label className="app-p fw-bold text-uppercase my-2">Paso 7, Determinación de las fuerzas sísmicas. El valor de las fuerzas sísmicas, en base a los parámetros sísmicos del paso 4.</label>
+                    <label className="app-p fw-bold my-2">Paso 7, Determinación de las fuerzas sísmicas. El valor de las fuerzas sísmicas, en base a los parámetros sísmicos del paso 4.</label>
                     {COMPONENT_STEP_07()}
                     {COMPONENT_STEP_MATERIALS()}
                 </> : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_STEP_4323;

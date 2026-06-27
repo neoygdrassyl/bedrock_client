@@ -1,15 +1,15 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useState } from 'react';
-import DataTable from 'react-data-table-component';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import perfilData from '../../../../components/jsons/perfilesData.json';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_ARC_36_TABLE(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
-    const MySwal = withReactContent(Swal);
     var importCounter = 0;
 
     const ELEMENTS = ['Sep. Central', 'Carril SITM', 'Calzada', 'Sep. Lateral', 'Paralela', 'Bahia', 'Cicloruta', 'F.A', 'F.C', 'F.R']
@@ -26,7 +26,6 @@ export default function RECORD_ARC_36_TABLE(props) {
     var [edit36, setEdit] = useState(false);
     var [newRow, setRow] = useState({});
     var [editRow, setRowE] = useState({});
-
 
     // ***************************  DATA GETTERS *********************** //
     let _GET_CHILD_36_INFO = () => {
@@ -74,18 +73,18 @@ export default function RECORD_ARC_36_TABLE(props) {
     // ******************************* JSX ***************************** 
     const columns = [
         {
-            name: <label>Dirección</label>,
-            selector: 'parent',
+            name: 'Dirección',
+            selector: row => row.parent,
             sortable: true,
             filterable: true,
             center: true,
             compact: true,
             minWidth: '150px',
-            cell: row => <label>{row.address}</label>
+            cell: row => <span className="text-sm">{row.address}</span>
         },
         {
-            name: <label>Perfil</label>,
-            selector: 'parent',
+            name: 'Perfil',
+            selector: row => row.parent,
             sortable: true,
             filterable: true,
             center: true,
@@ -99,8 +98,8 @@ export default function RECORD_ARC_36_TABLE(props) {
             }
         },
         {
-            name: <label>Relación</label>,
-            selector: 'name',
+            name: 'Relación',
+            selector: row => row.name,
             sortable: true,
             filterable: true,
             center: true,
@@ -116,51 +115,51 @@ export default function RECORD_ARC_36_TABLE(props) {
 
         /**
          * {
-            name: <label>Lado</label>,
-            selector: 'side',
+            name: 'Lado',
+            selector: row => row.side,
             sortable: true,
             filterable: true,
             center: true,
             compact: true,
             minWidth: '100px',
-            cell: row => <label>{row.side}</label>
+            cell: row => <span className="text-sm">{row.side}</span>
         },
          {
-            name: <label>Norma</label>,
-            selector: 'norm',
+            name: 'Norma',
+            selector: row => row.norm,
             sortable: true,
             filterable: true,
             center: true,
             compact: true,
             minWidth: '40px',
-            cell: row => <label>{row.norm}</label>
+            cell: row => <span className="text-sm">{row.norm}</span>
         },
         {
-            name: <label>Proyecto</label>,
-            selector: 'project',
+            name: 'Proyecto',
+            selector: row => row.project,
             sortable: true,
             filterable: true,
             center: true,
             compact: true,
             minWidth: '40px',
-            cell: row => <label>{row.project}</label>
+            cell: row => <span className="text-sm">{row.project}</span>
         },
         {
-            name: <label>Dif.</label>,
+            name: 'Dif.',
             center: true,
             compact: true,
             minWidth: '40px',
-            cell: row => <label>{(row.project - row.norm).toFixed(2)}</label>
+            cell: row => <span className="text-sm">{(row.project - row.norm).toFixed(2)}</span>
         },
         {
-            name: <label>Observación</label>,
+            name: 'Observación',
             center: true,
             compact: true,
             minWidth: '50px',
-            cell: row => <label>{_GET_EVALUATION(row.norm, row.project)}</label>
+            cell: row => <span className="text-sm">{_GET_EVALUATION(row.norm, row.project)}</span>
         },
         {
-            name: <label>Evaluación</label>,
+            name: 'Evaluación',
             button: true,
             center: true,
             minWidth: '140px',
@@ -173,24 +172,24 @@ export default function RECORD_ARC_36_TABLE(props) {
             </select>
         },
          *  {
-            name: <label>ESTADO</label>,
+            name: 'ESTADO',
             button: true,
             center: true,
             cell: row =>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_36_info(row)} />
+                <div className="form-check form-switch">
+                    <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_36_info(row)} />
                 </div>
         },
          */
 
         {
-            name: <label>ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '110px',
             cell: row => <>
-                <MDBBtn className="btn btn-secondary btn-sm px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><i class="far fa-edit"></i></MDBBtn>
-                <MDBBtn className="btn btn-danger btn-sm px-2" onClick={() => delete_36_info(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                <Button variant="outline" size="sm" className="px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><Icon name="edit" size={16} /></Button>
+                <Button variant="destructive" size="sm" className="px-2" onClick={() => delete_36_info(row.id)}><Icon name="trash-alt" size={16} /></Button>
             </>,
         },
     ]
@@ -200,34 +199,34 @@ export default function RECORD_ARC_36_TABLE(props) {
         return <>
             <div className='row border'>
                 <div className='col my-1'>
-                    <MDBBtn rounded outline size='sm' className='me-1' onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO PERFIL</MDBBtn>
+                    <Button variant="outline" size="sm" className="rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO PERFIL</Button>
                 </div>
             </div>
 
             <div className='row border'>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i class="fas fa-road"></i> PERFIL</h5>
+                    <h5 className='fw-bold'><Icon name="road" size={16} /> PERFIL</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-cube"></i> LADO</h5>
+                    <h5 className='fw-bold'><Icon name="cube" size={16} /> LADO</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-vector-square"></i> RELACION</h5>
+                    <h5 className='fw-bold'><Icon name="vector-square" size={16} /> RELACION</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-hashtag"></i> NORMA</h5>
+                    <h5 className='fw-bold'><Icon name="hashtag" size={16} /> NORMA</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-hashtag"></i> PROY.</h5>
+                    <h5 className='fw-bold'><Icon name="hashtag" size={16} /> PROY.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-greater-than-equal"></i> DIF.</h5>
+                    <h5 className='fw-bold'><Icon name="greater-than-equal" size={16} /> DIF.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-greater-than-equal"></i> OBS.</h5>
+                    <h5 className='fw-bold'><Icon name="greater-than-equal" size={16} /> OBS.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="far fa-check-square"></i> EVA.</h5>
+                    <h5 className='fw-bold'><Icon name="check-square" size={16} /> EVA.</h5>
                 </div>
                 <div className='col-1'></div>
 
@@ -310,7 +309,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <MDBBtn color="danger" rounded outline size='sm' className='px-2' onClick={() => del_grp_37(data.id)}> <i class="fas fa-minus text-danger"></i></MDBBtn>
+                                <Button variant="outline" size="sm" className="text-destructive border-destructive rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <Icon name="minus" size={16} className="text-danger" /></Button>
                             }
                         </div>
                     </div>
@@ -351,7 +350,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <MDBBtn color="success" rounded outline size='sm' className='px-2' onClick={() => add_perfil(data.id)}> <i class="fas fa-plus text-success"></i></MDBBtn> : ''}
+                            <Button variant="outline" size="sm" className="rounded-pill px-2" onClick={() => add_perfil(data.id)}> <Icon name="plus" size={16} className="text-success" /></Button> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -363,7 +362,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                 <input type="hidden" id="r_a_34_" />
                 <div className="col-3 p-1">
                     <label>Dirección</label>
-                    <input type="text" class="form-control form-control-sm" id={"r_a_36_info_5" + edit} defaultValue={edit36.address}/>
+                    <input type="text" className="form-control form-control-sm" id={"r_a_36_info_5" + edit} defaultValue={edit36.address}/>
                 </div>
                 {edit ? '' :
                     <>
@@ -375,8 +374,8 @@ export default function RECORD_ARC_36_TABLE(props) {
                             </select>
                         </div>
                         <div className="col-1 p-1">
-                            <div class="input-group">
-                                <a className="btn btn-info btn-sm p-2 ms-2 mt-3" target="_blank" href="http://www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/perfil_10.00_m_tipo_a.png" id={"r_a_36_imglink" + edit}><i class="far fa-image fa-2x"></i></a>
+                            <div className="input-group">
+                                <a className="inline-flex items-center justify-center rounded-md text-sm font-medium h-8 w-8 bg-primary text-primary-foreground hover:bg-primary/90 ms-2 mt-3" target="_blank" href="http://www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/perfil_10.00_m_tipo_a.png" id={"r_a_36_imglink" + edit}><Icon name="image" size={16} /></a>
                             </div>
                         </div>
                         <div className="col p-1">
@@ -393,12 +392,12 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className="col-1 p-1">
                             <label>Norma</label>
-                            <input type="number" min="0" step="0.01" class="form-control form-control-sm" id={"r_a_36_info_3" + edit} />
+                            <input type="number" min="0" step="0.01" className="form-control form-control-sm" id={"r_a_36_info_3" + edit} />
                         </div>
 
                         <div className="col-1 p-1">
                             <label>Proyecto</label>
-                            <input type="number" min="0" step="0.01" class="form-control form-control-sm" id={"r_a_36_info_4" + edit} />
+                            <input type="number" min="0" step="0.01" className="form-control form-control-sm" id={"r_a_36_info_4" + edit} />
                         </div>
                     </>}
 
@@ -407,7 +406,6 @@ export default function RECORD_ARC_36_TABLE(props) {
     }
     let _LIST_COMPONENT = () => {
         let _LIST = _GET_CHILD_36_INFO();
-
 
         return <DataTable
             noDataComponent="No hay Items"
@@ -445,31 +443,15 @@ export default function RECORD_ARC_36_TABLE(props) {
         RECORD_ARCSERVICE.create_arc_36_info(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let edit_ra_36_info = (e) => {
@@ -498,79 +480,35 @@ export default function RECORD_ARC_36_TABLE(props) {
         RECORD_ARCSERVICE.update_arc_36_info(edit36.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                     setEdit(false);
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let delete_36_info = (id) => {
-        MySwal.fire({
-            title: "ELIMINAR ESTE ITEM",
-            text: "¿Esta seguro de eliminar de forma permanente este item?",
-            icon: 'question',
-            confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 RECORD_ARCSERVICE.delete_36_info(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             props.requestUpdateRecord(currentItem.id);
                             setEdit(false);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         });
@@ -646,33 +584,17 @@ export default function RECORD_ARC_36_TABLE(props) {
         RECORD_ARCSERVICE.update_arc_36_info(id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                     setRow({});
                     setRowE({});
                 } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     let del_grp_37 = (id, ind, useSwal) => {
@@ -752,41 +674,25 @@ export default function RECORD_ARC_36_TABLE(props) {
         RECORD_ARCSERVICE.update_arc_36_info(id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord(currentItem.id);
                     setRow({});
                     setEdit({});
                 } else {
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                if (useSwal) MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     return (
         <div className='row my-2'>
 
-            <div class="form-check ms-5 my-2">
-                <input class="form-check-input" type="checkbox" onChange={(e) => setNew(!new36)} />
-                <label class="form-check-label" for="flexCheckDefault">
+            <div className="form-check ms-5 my-2">
+                <input className="form-check-input" type="checkbox" onChange={(e) => setNew(!new36)} />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
                     Añadir nuevo elemento de perfil
                 </label>
             </div>
@@ -795,9 +701,9 @@ export default function RECORD_ARC_36_TABLE(props) {
                 ? <form id="form_ra_36_info" onSubmit={new_ra_36_info}>
                     {_COMPONENT_1('')}
                     <div className="text-center">
-                        <button className="btn btn-success btn-sm my-2">
-                            <i class="far fa-share-square"></i> AÑADIR ELEMENTOS
-                        </button>
+                        <Button size="sm" className="my-2">
+                            <Icon name="share-square" size={16} /> AÑADIR ELEMENTOS
+                        </Button>
                     </div>
                 </form>
                 : ""}
@@ -807,9 +713,9 @@ export default function RECORD_ARC_36_TABLE(props) {
                     <h4 className="fw-bold text-center py-2">Actualizar Elemento</h4>
                     {_COMPONENT_1('_edit')}
                     <div className="text-center">
-                        <button className="btn btn-success btn-sm  my-2">
-                            <i class="far fa-share-square"></i> GUARDAR CAMBIOS
-                        </button>
+                        <Button size="sm" className="my-2">
+                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                        </Button>
                     </div>
                 </form>
                 : ""}

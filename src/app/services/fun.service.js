@@ -1,4 +1,5 @@
 import http from "../../http-common";
+import { dedupeGet } from "./requestCache";
 
 const route = "fun"
 
@@ -33,6 +34,18 @@ class UserslDataService {
   getFun6(id) {
     return http.get(`/${route}/fun6/${id}`);
   }
+  getUnifiedDocumentEntries(fun_id, id_related) {
+    return http.get(`/${route}/documents/unified/${fun_id}/${id_related}?consolidated=1`);
+  }
+  getUnifiedDocumentPreviewEntries(fun_id, id_related) {
+    return http.get(`/${route}/documents/unified/${fun_id}/${id_related}?consolidated=1&preview=1`);
+  }
+  getPendingPhysicalDocuments(fun_id, id_related) {
+    return http.get(`/${route}/documents/pending-physical/${fun_id}/${id_related}`);
+  }
+  getMissingDocuments(fun_id, id_related) {
+    return http.get(`/${route}/documents/missing/${fun_id}/${id_related}`);
+  }
   getFun6Doc(path, name) {
     return http.get(`/files/${path}/${name}`);
   }
@@ -40,7 +53,10 @@ class UserslDataService {
     return http.get(`/${route}/get/fun1/${id_public}`);
   }
   get_fun_IdPublic(id_public) {
-    return http.get(`/${route}/get/idpublic/${id_public}`);
+    return dedupeGet(`${route}:get_fun_IdPublic:${id_public}`, () => http.get(`/${route}/get/idpublic/${id_public}`));
+  }
+  getSummaryByIdPublic(id_public) {
+    return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}`, () => http.get(`/${route}/get/summary/${id_public}`));
   }
   loadMacro(date_start, date_end) {
     return http.get(`/${route}/loadMacro/${date_start}&${date_end}`);
@@ -73,7 +89,7 @@ class UserslDataService {
     return http.get(`/${route}/loadasign/${worker_id}&${type_record}`);
   }
   loadPQRSxFUN(fun0PublicId) {
-    return http.get(`/${route}/loadPQRSxFUN/${fun0PublicId}`);
+    return dedupeGet(`${route}:loadPQRSxFUN:${fun0PublicId}`, () => http.get(`/${route}/loadPQRSxFUN/${fun0PublicId}`));
   }
   getLastOA() {
     return http.get(`/${route}/getlast/oa`);
@@ -106,7 +122,10 @@ class UserslDataService {
     return http.get(`/${route}/getall/incdocs`);
   }
   getAll_VrFun(fun_id, vr_id) {
-    return http.get(`/${route}/vrxfun6/${fun_id}&${vr_id}`);
+    return http.get(`/${route}/documents/vr-digital/${fun_id}&${vr_id}`);
+  }
+  getVrDigitalDocuments(fun_id, vr_id) {
+    return http.get(`/${route}/documents/vr-digital/${fun_id}&${vr_id}`);
   }
 
   create(data) {
@@ -169,6 +188,9 @@ class UserslDataService {
   }
   create_fun6(data) {
     return http.post(`/${route}/fun6`, data);
+  }
+  createDocumentEntriesBatch(data) {
+    return http.post(`/${route}/documents/batch`, data);
   }
   create_fun6_h(data) {
     return http.post(`/${route}/fun6h`, data);
@@ -294,6 +316,13 @@ class UserslDataService {
   // EMAILS FOR NEGATIVE PROCESS 
   sendEmailNegative_6(data) {
     return http.post(`/${route}/process/email_6/`, data);
+  }
+
+  // DUPLICATE PROJECT
+  duplicate(data) {
+    return http.post(`/${route}/duplicate`, data, {
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 

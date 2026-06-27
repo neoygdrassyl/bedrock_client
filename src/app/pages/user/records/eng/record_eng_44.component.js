@@ -1,20 +1,8 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-
-class RECORD_ENG_STEP_44 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_ENG_STEP_44(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;
 
         // FUNCTIONS & VARIABLES
         // DATA GETTERS
@@ -57,8 +45,8 @@ class RECORD_ENG_STEP_44 extends Component {
         // COMPONENT JSX
         let COMPONENT = () => {
             return <>
-                <ul class="list-group my-0 py-0">
-                    <li class="list-group-item py-0">
+                <ul className="list-group my-0 py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Los documentos aportados están firmados por los profesionales responsables de su elaboración</label>
@@ -73,7 +61,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Los profesionales cumplen con la experiencia mínima establecida en la ley 400 de 1997</label>
@@ -88,7 +76,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">El proyecto estructural coincide con el diseño arquitectónico</label>
@@ -103,7 +91,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿La cimentación y propuesta estructural recogen las recomendaciones del estudio de suelos?</label>
@@ -118,7 +106,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">El sistema estructural propuesto se enmarca dentro de los tipos admitidos por la NSR-10</label>
@@ -133,7 +121,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿Los sótanos o estructuras de cimentación invaden el antejardín y/o predios vecinos?</label>
@@ -148,7 +136,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿La información estructural es suficiente para entender y construir el proyecto?</label>
@@ -163,7 +151,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿De acuerdo con las áreas de construcción y/o altura de la edificación se requiere instrumentación sísmica?</label>
@@ -178,7 +166,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿De requerirse instrumentación sísmica, el proyecto ha dispuesto los espacios arquitectónicos requeridos?</label>
@@ -193,7 +181,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿El proyecto tiene sótanos o requiere realizar excavaciones y/o movimientos de tierra que generen taludes?</label>
@@ -208,7 +196,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿El proyecto cumple con la separación sísmica mínima requerida?</label>
@@ -223,7 +211,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿El proyecto requiere supervisión técnica estructural?</label>
@@ -238,7 +226,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿El proyecto requiere supervisión Geotécnico?</label>
@@ -253,7 +241,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿Durante el proceso de revisión hubo cambios frente al proyecto inicial en materia de geometría, uso, alturas, etc?</label>
@@ -268,7 +256,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿Estos cambios fueron notificados al asesor arquitectónico y jurídico?</label>
@@ -283,7 +271,7 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Visualización de planos y detalles claros (no borrosos) para verificar su cumplimiento</label>
@@ -417,72 +405,35 @@ class RECORD_ENG_STEP_44 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ENG_SERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ENG_SERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -495,7 +446,6 @@ class RECORD_ENG_STEP_44 extends Component {
                 {_COMPONENT_CHECK()}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_STEP_44;
