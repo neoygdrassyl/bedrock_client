@@ -7,7 +7,8 @@
  */
 import React from 'react';
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 import './helpers/mockExternals';
@@ -204,5 +205,42 @@ describe('RecordsLaw — Render', () => {
     const { container } = renderInRouter(RECORD_LAW_EVALUATION);
     expect(container).toBeTruthy();
     expect(container.firstChild).toBeTruthy();
+  });
+
+  test('record_law_review toggles total observations panel from a collapsed trigger', async () => {
+    const user = userEvent.setup();
+    const recordWithHistoricObservations = {
+      ...baseRecord,
+      record_law_steps: [
+        { id: 1, version: 1, id_public: 's1', value: 'Observacion documental' },
+        { id: 2, version: 1, id_public: 'f53', value: 'Observacion del formulario' },
+        { id: 3, version: 1, id_public: 'flaw', value: 'Observacion de publicidad' },
+      ],
+      record_law_reviews: [{ id: 1, detail: 'Correccion adicional' }],
+    };
+
+    const { container } = renderInRouter(RECORD_LAW_EVALUATION, {
+      currentRecord: recordWithHistoricObservations,
+    });
+
+    const trigger = screen.getByRole('button', { name: /observaciones totales/i });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(container.querySelector('textarea[name="s_flaw_values"][readonly]')).toBeNull();
+
+    await user.click(trigger);
+
+    const resumeTextarea = container.querySelector('textarea[name="s_flaw_values"][readonly]');
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(resumeTextarea).toBeTruthy();
+    expect(resumeTextarea).not.toBeDisabled();
+    expect(resumeTextarea).toHaveStyle({ backgroundColor: '#2f2d38', color: '#f5f7fb' });
+    expect(resumeTextarea.value).toContain('Observacion documental');
+    expect(resumeTextarea.value).toContain('Observacion del formulario');
+    expect(resumeTextarea.value).toContain('Observacion de publicidad');
+
+    await user.click(trigger);
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(container.querySelector('textarea[name="s_flaw_values"][readonly]')).toBeNull();
   });
 });

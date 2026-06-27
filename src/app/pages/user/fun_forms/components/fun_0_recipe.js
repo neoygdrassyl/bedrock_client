@@ -430,7 +430,7 @@ function FUN_0_RECIPE(props) {
                     {_COMPONENT_PAYMENT()}
                     {_COMPONENT_DESC()}
                     <div className="col-12 text-center">
-                        <Button size="sm" className="my-3" id="btn-review"><Icon name="share-square" size={14} /> Guardar cambios</Button>
+                        <Button type="submit" size="sm" className="my-3" id="btn-review"><Icon name="share-square" size={14} /> Guardar cambios</Button>
                     </div>
                 </form>
 
