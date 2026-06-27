@@ -405,7 +405,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <div className="input-group">
                             <input type="text" className="form-control" id="phnot_cub"
                                 value={notif.phnot_cub} onChange={(e) => setNotif(prev => ({ ...prev, phnot_cub: e.target.value }))} />
-                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
+                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
                 </div>
@@ -507,7 +507,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             </span>
                             <input type="text" className="form-control" id="f_02_ph"
                                 value={acta.id_public} onChange={(e) => setActa(prev => ({ ...prev, id_public: e.target.value }))} />
-                            <Button size="sm" onClick={() => _GET_LAST_OA()}>GENERAR</Button>
+                            <Button type="button" size="sm" onClick={() => _GET_LAST_OA()}>GENERAR</Button>
                         </div>
                     </div>
                 </div>
@@ -609,10 +609,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                        <Button type="submit" size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                     <div className="col">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                     </div>
                     <div className="col">
                         <label>NUMERO DE DOMINIO</label>
@@ -639,7 +639,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         </select>
                     </div>
                     <div className="col">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => CREATE_PDF_CHECK()} disabled={isSaving}><Icon name="file-pdf" size={16} /> GENERAR CHECKEO </Button>
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => CREATE_PDF_CHECK()} disabled={isSaving}><Icon name="file-pdf" size={16} /> GENERAR CHECKEO </Button>
                     </div>
                 </div>
             </>
@@ -1205,17 +1205,17 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             {currentItem.state > -5
                                 ? <>
                                     <div className="col">
-                                        <Button variant="destructive" size="sm" className="my-3" onClick={() => review()} disabled={isSaving}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
+                                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => review()} disabled={isSaving}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
                                     </div>
 
                                     {!_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <Button size="sm" className="my-3" onClick={() => close()} disabled={isSaving}><Icon name="file-archive" size={16} /> CERRAR</Button>
+                                            <Button type="button" size="sm" className="my-3" onClick={() => close()} disabled={isSaving}><Icon name="file-archive" size={16} /> CERRAR</Button>
                                         </div>
                                         : ""}
                                     {_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <Button size="sm" className="my-3" onClick={() => archive()} disabled={isSaving}><Icon name="file-archive" size={16} /> ARCHIVAR</Button>
+                                            <Button type="button" size="sm" className="my-3" onClick={() => archive()} disabled={isSaving}><Icon name="file-archive" size={16} /> ARCHIVAR</Button>
                                         </div>
                                         : ""}
                                 </>
@@ -1232,10 +1232,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         {_COMPONENTN_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                                <Button type="submit" size="sm" className="my-3" disabled={isSaving}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                             <div className="col">
-                                <Button variant="destructive" size="sm" className="my-3" onClick={() => pdfnot_gen()} disabled={isSaving}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                                <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdfnot_gen()} disabled={isSaving}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                             </div>
                         </div>
                     </form>

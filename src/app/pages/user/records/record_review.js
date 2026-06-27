@@ -1041,10 +1041,10 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <Button variant="destructive" size="sm" className="me-1" onClick={() => creae_pdf()}> <Icon name="file-pdf" size={16} /> DESCARGAR ACTA</Button>
+                        <Button type="button" variant="destructive" size="sm" className="me-1" onClick={() => creae_pdf()}> <Icon name="file-pdf" size={16} /> DESCARGAR ACTA</Button>
                     </div>
                     <div className="col text-center">
-                        <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="file-pdf" size={16} /> DESCARGAR CHEKEO</Button>
+                        <Button type="button" variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="file-pdf" size={16} /> DESCARGAR CHEKEO</Button>
                     </div>
                 </div>
             </>
@@ -1059,7 +1059,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         <div className="input-group">
                             <input type="text" className="form-control" id="rev_cub"
                                 defaultValue={cubSelected || currentRecord.id_public || ""} />
-                            <Button size="sm" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</Button>
+                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col-4" >
@@ -1732,7 +1732,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentItem.state > -5
                                             ? <>
                                                 <div className="col">
-                                                    <Button variant="destructive" size="sm" className="my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
+                                                    <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
                                                 </div>
                                             </>
                                             : <label className="app-p lead fw-normal text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
@@ -1792,7 +1792,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                                     <div className="row">
                                                         <div className="col text-center">
 
-                                                            <Button variant="destructive" size="sm" className="my-3"><Icon name="check-square" size={16} /> PROSEGUIR A EXPEDICIÓN </Button>
+                                                            <Button type="submit" variant="destructive" size="sm" className="my-3"><Icon name="check-square" size={16} /> PROSEGUIR A EXPEDICIÓN </Button>
                                                         </div>
                                                     </div>
                                                 </form>
@@ -1812,7 +1812,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <Button size="sm" onClick={() => new_record_review()}><Icon name="FilePlus" size={14} /> Generar acta en blanco</Button>
+                                        <Button type="button" size="sm" onClick={() => new_record_review()}><Icon name="FilePlus" size={14} /> Generar acta en blanco</Button>
                                     </div>
                                 </fieldset>
 

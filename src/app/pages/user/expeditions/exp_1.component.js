@@ -339,7 +339,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                                     <div className="input-group">
                                         <input type="text" className="form-control" id="expedition_2"
                                             defaultValue={currentRecord.cub1 || cubSelected1 || ""} />
-                                        <Button size="sm" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</Button>
+                                        <Button type="button" size="sm" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</Button>
                                     </div>
                                 </div>
                                 <div className="col-3" >
@@ -488,7 +488,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                                         <div className="input-group">
                                             <input type="text" className="form-control" id="expedition_11"
                                                 defaultValue={currentRecord.cub2 || cubSelected2 || ""} />
-                                            <Button size="sm" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</Button>
+                                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</Button>
                                         </div>
                                     </div>
                                     <div className="col" >
@@ -749,7 +749,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     {_COMPONENT_GENERAL()}
                     <div className="row text-center">
                         <div className="col">
-                            <Button size="sm" className="my-3"><Icon name="check-square" size={16} /> GUARDAR CAMBIOS </Button>
+                            <Button type="submit" size="sm" className="my-3"><Icon name="check-square" size={16} /> GUARDAR CAMBIOS </Button>
                         </div>
                     </div>
                 </form>

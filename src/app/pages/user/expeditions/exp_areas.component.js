@@ -144,8 +144,8 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     button: true,
                     maxWidth: '50px',
                     cell: row => <>
-                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
-                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                        <span title="Modificar Item"><Button type="button" variant="outline" size="sm" className="m-0 p-1" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button type="button" variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -346,7 +346,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                             {_COMPONENT_MANAGE()}
                             <div className="row my-3 text-center">
                                 <div className="col">
-                                    <Button size="sm"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                    <Button type="submit" size="sm"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                                 <div className='col'>
                                     <EXP_CALC
@@ -369,7 +369,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                             {_COMPONENT_MANAGE('_edit')}
                             <div className="row my-2 text-center">
                                 <div className="col">
-                                    <Button size="sm"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                                    <Button type="submit" size="sm"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                                 <div className='col'>
                                     <EXP_CALC
