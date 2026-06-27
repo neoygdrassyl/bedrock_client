@@ -1,23 +1,12 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { dateParser } from '../../../../components/customClasses/typeParse'
 import { cities } from '../../../../components/jsons/vars';
 
-
-const moment = require('moment');
-const MySwal = withReactContent(Swal);
-class PQRS_PDFGEN_CONFIRM extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
         var formData = new FormData();
 
         // DATA GETTERS 
@@ -33,8 +22,8 @@ class PQRS_PDFGEN_CONFIRM extends Component {
         // DATA CONVERTERS
         let _GET_DOC_BODY = () => {
             let pTime = get_PQRS_TIME();
-            return `Me permite Comunicarle que el ${moment(pTime.creation, 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD')} 
-            a las ${moment(pTime.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
+            return `Me permite Comunicarle que el ${dayjs(pTime.creation, 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD')} 
+            a las ${dayjs(pTime.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
             Solicitud con el número ${currentItem.id_publico}. A partir de este momento la Curaduría Urbana Estudiará
             su petición y en el término de ${pTime.time} días hábiles le dará respuesta de manera clara, precisa y
             de fondo. No obstante de requerir un mayor término para lograr este cometido la Curaduría
@@ -64,7 +53,6 @@ class PQRS_PDFGEN_CONFIRM extends Component {
             return array_list.join();
         }
 
-
         // COMPONENT JSX
         let _GEN_CONFIRM_PDF_COMPONENT = () => {
             return <>
@@ -72,28 +60,28 @@ class PQRS_PDFGEN_CONFIRM extends Component {
                     <div className="row">
                         <div className="col-4">
                             <label>Fecha Documento</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" max="2100-01-01" class="form-control" id="pqrs_confirmation_date"
-                                    defaultValue={moment().format('YYYY-MM-DD')} required />
+                                <input type="date" max="2100-01-01" className="form-control" id="pqrs_confirmation_date"
+                                    defaultValue={dayjs().format('YYYY-MM-DD')} required />
                             </div>
                         </div>
                         <div className="col-4">
                             <label>Consecutivo</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="hashtag" size={16} />
                                 </span>
-                                <input type="text" class="form-control" id="pqrs_confirmation_id_public"
+                                <input type="text" className="form-control" id="pqrs_confirmation_id_public"
                                     defaultValue={currentItem.id_publico} disabled />
                             </div>
                         </div>
                         <div className="col">
                             <label className="mt-1">Ciudad</label>
-                            <div class="input-group">
-                                <select class="form-select me-1" id={"pqrs_confirmation_city"}>
+                            <div className="input-group">
+                                <select className="form-select me-1" id={"pqrs_confirmation_city"}>
                                     {cities}
                                 </select>
                             </div>
@@ -103,11 +91,11 @@ class PQRS_PDFGEN_CONFIRM extends Component {
                     <div className="row">
                         <div className="col-4">
                             <label>Titulo referido</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-user"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="user" size={16} />
                                 </span>
-                                <input list="titles" class="form-select" id="pqrs_confirmation_titles" />
+                                <input list="titles" className="form-select" id="pqrs_confirmation_titles" />
                                 <datalist id="titles">
                                     <option value="Señor" />
                                     <option value="Señora" />
@@ -127,11 +115,11 @@ class PQRS_PDFGEN_CONFIRM extends Component {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Solicitantes</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-user"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="user" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Solicitantes"
+                                <input type="text" className="form-control" placeholder="Lista de Solicitantes"
                                     defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
                             </div>
                         </div>
@@ -140,11 +128,11 @@ class PQRS_PDFGEN_CONFIRM extends Component {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Correos</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-envelope"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="envelope" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Correos"
+                                <input type="text" className="form-control" placeholder="Lista de Correos"
                                     defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
                             </div>
                         </div>
@@ -153,25 +141,25 @@ class PQRS_PDFGEN_CONFIRM extends Component {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Direcciones</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-home"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="home" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Correos"
+                                <input type="text" className="form-control" placeholder="Lista de Correos"
                                     defaultValue={_getAdresslList()} id="pqrs_confirmation_address_list" />
                             </div>
                         </div>
                     </div>
 
                     <label>Cuerpo del Documento</label>
-                    <textarea class="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
+                    <textarea className="form-control mb-3" rows="3" maxLength="1024" id="pqrs_confirmation_doc_body"
                         defaultValue={_GET_DOC_BODY()}></textarea>
                     <table className="table table-sm table-hover table-bordered">
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
                                 <td>
-                                    <i class="fas fa-cloud-download-alt fa-2x" onClick={() => request_dpfConfirmation()} style={{ color: "Crimson" }}></i>
+                                    <Icon name="cloud-download-alt" size={24} className="cursor-pointer" onClick={() => request_dpfConfirmation()} style={{ color: "Crimson" }} />
                                 </td>
                             </tr>
                         </tbody>
@@ -202,34 +190,19 @@ class PQRS_PDFGEN_CONFIRM extends Component {
             let city = document.getElementById("pqrs_confirmation_city").value;
             formData.set('city', city);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.request_pdfConfirmation(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/reply/" + "Oficio_Confirmacion_" + currentItem.id_publico + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_Confirmacion_" + currentItem.id_publico + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
@@ -237,7 +210,6 @@ class PQRS_PDFGEN_CONFIRM extends Component {
                 {_GEN_CONFIRM_PDF_COMPONENT()}
             </div>
         );
-    }
 }
 
 export default PQRS_PDFGEN_CONFIRM;

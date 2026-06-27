@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import 'dayjs/plugin/isBetween';
+import dayjs from 'dayjs';
 import Spreadsheet from "react-spreadsheet";
 import FUNService from '../../../../services/fun.service';
 import { _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_8_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { _CALCULATE_EXPENSES, formsParser1, getJSON, getJSONFull, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
-import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
+import { Icon } from '@/components/icon';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function FUN_REPORT_GEN(props) {
     const { translation, swaMsg, globals, data, date_i, date_f } = props;
@@ -33,7 +33,6 @@ export default function FUN_REPORT_GEN(props) {
         C: "Cálido seco",
         D: "Cálido húmedo",
     };
-    const moment = require('moment');
 
     var [localData, setDataLocal] = useState([]);
 
@@ -157,7 +156,6 @@ export default function FUN_REPORT_GEN(props) {
         uv = _FIELDS_ADD(v.r33a_units, ';', 0, 0);
         floors = _FIELDS_GET_GREATER(v.r33a_floor);
 
-
         return [
             { value: isPH ? v.clock_license_ph : v.clock_license }, //  Fecha de Expedición
             { value: isPH ? v.id_public_ph : v.id_public },  //  No. Solicitud
@@ -273,7 +271,7 @@ export default function FUN_REPORT_GEN(props) {
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
         p_desc = p_desc.replaceAll(';', ",");
         return [
-            { value: isPH ? moment(v.clock_license_ph).format('MM-YYYY') : moment(v.clock_license).format('MM-YYYY') }, //  Mes y Año De Aprobacion
+            { value: isPH ? dayjs(v.clock_license_ph).format('MM-YYYY') : dayjs(v.clock_license).format('MM-YYYY') }, //  Mes y Año De Aprobacion
             { value: isPH ? v.id_public_ph : v.id_public },  //  Numero De Licencia de Cnstruccion
             { value: formsParser1(v, true) },  //  Tipo De Licencia
             { value: _FUN_2_PARSER(v.tramite, true) },  //  Objeto De Tramite
@@ -674,7 +672,6 @@ export default function FUN_REPORT_GEN(props) {
         ]
     }
 
-
     // EXPENSAS
     const header_6 = [
         "Número de Solicitud",
@@ -719,7 +716,7 @@ export default function FUN_REPORT_GEN(props) {
         var use = _FUN_6_PARSER(_CHILD_1.usos, true);
         var st = v.estrato - 1
         var Q = taxes.id_payment_0_area || false;
-        var year = moment(v.pay_date).format('YYYY')
+        var year = dayjs(v.pay_date).format('YYYY')
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
 
@@ -1036,7 +1033,7 @@ export default function FUN_REPORT_GEN(props) {
         var use = _FUN_6_PARSER(_CHILD_1.usos, true);
         var st = v.estrato - 1
         var Q = taxes.id_payment_0_area || false;
-        var year = moment(v.pay_date).format('YYYY')
+        var year = dayjs(v.pay_date).format('YYYY')
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
 
@@ -1227,7 +1224,7 @@ export default function FUN_REPORT_GEN(props) {
         var use = _FUN_6_PARSER(_CHILD_1.usos, true);
         var st = v.estrato - 1
         var Q = taxes.id_payment_0_area || false;
-        var year = moment(v.pay_date).format('YYYY')
+        var year = dayjs(v.pay_date).format('YYYY')
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
         var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
@@ -1464,34 +1461,34 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.matricula }, // MATRICULA INMOBILIARIA
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // PROPIETARIO Y/O TITULAR DE LA LICENCIA
             { value: infoCud.pot }, // RESOLUCIONES Y/O ACUERDOS DEL POT
-            { value: v.clock_payment ? moment(v.clock_payment).format('YYYYMMDD') : '' }, // FECHA DE RADICADO SOLICITUD LICENCIA // yyyymmdd
+            { value: v.clock_payment ? dayjs(v.clock_payment).format('YYYYMMDD') : '' }, // FECHA DE RADICADO SOLICITUD LICENCIA // yyyymmdd
             {
                 value: isPH ?
-                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
-                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+                    (v.clock_license_ph ? dayjs(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? dayjs(v.clock_res_date).format('YYYYMMDD') : '')
             }, // FECHA DEE EXPEDICIÓN DE LA LICENCIA // YYYYMMDD
             { value: vig != 0 && vig != 1 ? vig : "" }, // FECHA DE VIGENCIA DE LA LICENCIA // YYYYMMDD
             { value: '' }, // No FOLIOS LICENCIA
             { value: isPH ? v.id_public_ph : v.exp_id }, // ACTO ADMINISTRATIVO DE LA LICENCIA - No
             {
                 value: isPH ?
-                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
-                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+                    (v.clock_license_ph ? dayjs(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? dayjs(v.clock_res_date).format('YYYYMMDD') : '')
             }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FECHA // YYYYMMDD
             { value: '' }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FOLIOS
             {
                 value: isPH ?
-                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
-                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+                    (v.clock_license_ph ? dayjs(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? dayjs(v.clock_res_date).format('YYYYMMDD') : '')
             }, // LICENCIA EJECUTORIADA - No
             {
                 value: isPH ?
-                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
-                    (v.clock_license ? moment(v.clock_license).format('YYYYMMDD') : '')
+                    (v.clock_license_ph ? dayjs(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_license ? dayjs(v.clock_license).format('YYYYMMDD') : '')
             }, // LICENCIA EJECUTORIADA - FECHA // YYYYMMDD
             { value: '' }, // LICENCIA EJECUTORIADA - FOLIOS
             { value: exp_steps.norm }, // NORMA URBANA - No
-            { value: exp_steps.date_norm ? moment(exp_steps.date_norm).format('YYYYMMDD') : '' }, // NORMA URBANA - FECHA EXPEDICIÓN // YYYYMMDD
+            { value: exp_steps.date_norm ? dayjs(exp_steps.date_norm).format('YYYYMMDD') : '' }, // NORMA URBANA - FECHA EXPEDICIÓN // YYYYMMDD
             { value: exp_steps.n_norm }, // NORMA URBANA - FOLIOS
             { value: worker_arc }, // RESPONSABLES - ARQUITECTO
             { value: worker_eng }, // RESPONSABLES - INGENIERO
@@ -1539,6 +1536,9 @@ export default function FUN_REPORT_GEN(props) {
         "FECHA DE RESOLUCIÓN",
         "FECHA NOTIFICACIÓN RESOLUCIÓN",
         "FECHA DE EJECUTORIA",
+        "N° PARQUEADEROS",
+        "N° PARQUEADEROS PRIVADOS",
+        "N° PARQUEADEROS VISITANTES",
     ];
     let report_data_15 = (v) => {
         // var regex = /[.,\s]/g;
@@ -1546,6 +1546,8 @@ export default function FUN_REPORT_GEN(props) {
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let taxes = getJSONFull(v.taxes);
         let reso = getJSONFull(v.reso);
+        const arc_control = getJSONFull(v.arc_control);
+        console.log(arc_control)
         // let tmp = getJSONFull(v.tmp);
         return [
             { value: v.id_public }, // NÚMERO DE RADICADO
@@ -1554,13 +1556,16 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.clock_payment }, // FECHA DE RADICACIÓN
             { value: v.clock_ldf }, // LEGAL Y DEBIDA FORMA
             { value: v.clocl_acta_1 }, // FECHA ACTA
-            { value: v.clock_viabilidad || v.clock_viabilidad_2}, // FECHA VIABILIDAD
+            { value: v.clock_viabilidad || v.clock_viabilidad_2 }, // FECHA VIABILIDAD
             { value: taxes.id_payment_1_date }, // FECHA PAGOS
             { value: v.clock_payment_2 }, // FECHA RADUCACION PAGOS
             { value: isPH ? v.id_public_ph : v.exp_id }, // NÚMERO DE RESOLUCIÓN
             { value: isPH ? v.clock_license_ph : v.clock_res_date }, // FECHA DE RESOLUCIÓN
             { value: v.clock_res_not_1 || v.clock_res_not_2 }, // FECHA NOTIFICACIÓN RESOLUCIÓN
             { value: isPH ? v.clock_license_ph : v.clock_license }, // FECHA DE EJECUTORIA
+            { value: v.parking || arc_control.n_parking }, //  N° PARQUEADEROS
+            { value: v.parking_private || arc_control.n_parking_private }, //  N° PARQUEADEROS
+            { value: v.parking_visit || arc_control.n_parking_visit }, //  N° PARQUEADEROS
         ]
     };
 
@@ -1625,7 +1630,7 @@ export default function FUN_REPORT_GEN(props) {
                 console.log(e);
             });
     }
-      let _GET_DATA_RESUME_NEG = () => {
+    let _GET_DATA_RESUME_NEG = () => {
         FUNService.reportsData_2(date_1, date_2)
             .then(response => {
                 _SET_DATA_FINISHED_NEG(response.data)
@@ -1672,7 +1677,6 @@ export default function FUN_REPORT_GEN(props) {
         var auditoria = [];
         var superint = [];
 
-
         _data.map(v => {
             dataCon.push(report_data_1(v));
             dataCam.push(report_data_2(v));
@@ -1710,7 +1714,7 @@ export default function FUN_REPORT_GEN(props) {
     let _SET_DATA_FINISHED_NEG = (_data) => {
         var superint = [];
         _data.map(v => {
-           superint.push(report_data_15(v));
+            superint.push(report_data_15(v));
         })
         setDataSuperInt(superint);
 
@@ -1847,19 +1851,19 @@ export default function FUN_REPORT_GEN(props) {
     // ******************************* JSX ***************************** // 
     let _LIST_NEW = () => {
         var list = [];
-        data.sort((a, b) => new Date(b.clock_payment) - new Date(a.clock_payment));
+        const sortedData = [...data].sort((a, b) => new Date(b.clock_payment) - new Date(a.clock_payment));
 
-        data.map(value => {
-            var condition = moment(value.clock_payment).isBetween(date_i, date_f);
+        sortedData.map(value => {
+            var condition = dayjs(value.clock_payment).isBetween(date_i, date_f);
             if (condition) list.push(value);
         })
 
         return <>
             <h4 className='fw-bold'>NUEVAS SOLICITUDES: {list.length}</h4>
-            <div class="d-flex flex-wrap">
-                {list.map(value => <div class="input-group-prepend border border-primary">
-                    <div class="input-group-text">
-                        <label>{(value.id_public).slice(-7)} - {moment(value.clock_payment).format('MM-DD')}</label></div>
+            <div className="d-flex flex-wrap">
+                {list.map(value => <div className="input-group-prepend border border-primary">
+                    <div className="input-group-text">
+                        <label>{(value.id_public).slice(-7)} - {dayjs(value.clock_payment).format('MM-DD')}</label></div>
                 </div>)}
             </div>
         </>
@@ -1870,21 +1874,21 @@ export default function FUN_REPORT_GEN(props) {
         _data.sort((a, b) => new Date(b.clock_license || b.clock_archive) - new Date(a.clock_license || a.clock_archive));
 
         _data.map(value => {
-            var condition = moment(value.clock_license).isBetween(date_i, date_f);
-            var condition2 = moment(value.clock_archive).isBetween(date_i, date_f);
-            var condition3 = moment(value.clock_license_2).isBetween(date_i, date_f);
+            var condition = dayjs(value.clock_license).isBetween(date_i, date_f);
+            var condition2 = dayjs(value.clock_archive).isBetween(date_i, date_f);
+            var condition3 = dayjs(value.clock_license_2).isBetween(date_i, date_f);
             if (condition || condition3) list.push(value);
         })
 
         return <>
             <h4 className='fw-bold'>SOLICITUDES EXPEDIDAS : {list.length}</h4>
-            <div class="d-flex flex-wrap">
+            <div className="d-flex flex-wrap">
                 {list.map(value => {
                     let _CHILD_1 = { tipo: value.tipo, tramite: value.tramite, m_urb: value.m_urb, m_sub: value.m_sub, m_lic: value.m_lic };
                     let isPH = regexChecker_isPh(_CHILD_1, true);
 
-                    return <div class="input-group-prepend border border-success">
-                        <div class="input-group-text">
+                    return <div className="input-group-prepend border border-success">
+                        <div className="input-group-text">
                             <label>{isPH ? value.id_public_ph : (value.id_public ?? '').slice(-7)}</label></div>
                     </div>
                 }
@@ -1899,7 +1903,6 @@ export default function FUN_REPORT_GEN(props) {
 
         let csvContent = "data:text/csv;charset=utf-8,"
             + rows.map(e => e.join(";")).join("\n");
-
 
         var encodedUri = encodeURI(csvContent);
         const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
@@ -1921,9 +1924,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS CONTRALORIA - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_1, dataContraloria, 'CONTRALORIA')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_0']} onClick={() => setPre({ ['pre_0']: !preview['pre_0'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>DATOS CONTRALORIA - <Button variant="outline" size="sm" onClick={() => generateCVS(header_1, dataContraloria, 'CONTRALORIA')}>
+                        <Icon name="download" size={16} /></Button> <Button variant={!!preview['pre_0'] ? "outline" : "default"} size="sm" onClick={() => setPre({ ['pre_0']: !preview['pre_0'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_0'] ? <div className='row container-sh'>
@@ -1932,9 +1935,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS CONTRAELORIA DEPARTAMENTAL - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_9, dataContraloria2, 'CONTRALORIA DEPARTAMENTAL')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_8']} onClick={() => setPre({ ['pre_8']: !preview['pre_8'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>DATOS CONTRAELORIA DEPARTAMENTAL - <Button size="sm" onClick={() => generateCVS(header_9, dataContraloria2, 'CONTRALORIA DEPARTAMENTAL')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_8']} onClick={() => setPre({ ['pre_8']: !preview['pre_8'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_8'] ? <div className='row container-sh'>
@@ -1943,9 +1946,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS CAMACOL - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_2, dataCamacol, 'CAMACOL')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_1']} onClick={() => setPre({ ['pre_1']: !preview['pre_1'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>DATOS CAMACOL - <Button size="sm" onClick={() => generateCVS(header_2, dataCamacol, 'CAMACOL')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_1']} onClick={() => setPre({ ['pre_1']: !preview['pre_1'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_1'] ? <div className='row container-sh'>
@@ -1954,9 +1957,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS DANE - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_3, dataDane, 'DANE')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_2']} onClick={() => setPre({ ['pre_2']: !preview['pre_2'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>DATOS DANE - <Button size="sm" onClick={() => generateCVS(header_3, dataDane, 'DANE')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_2']} onClick={() => setPre({ ['pre_2']: !preview['pre_2'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_2'] ? <div className='row container-sh'>
@@ -1965,9 +1968,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS PLANEACION - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_4, dataPlaneacion, 'PLANEACION')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_3']} onClick={() => setPre({ ['pre_3']: !preview['pre_3'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>DATOS PLANEACION - <Button size="sm" onClick={() => generateCVS(header_4, dataPlaneacion, 'PLANEACION')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_3']} onClick={() => setPre({ ['pre_3']: !preview['pre_3'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_3'] ? <div className='row container-sh'>
@@ -1976,9 +1979,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS MINISTERIO DE VIVIENDA - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_5, dataMinisterio, 'MINISTERIO DE VIVIENDA')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_4']} onClick={() => setPre({ ['pre_4']: !preview['pre_4'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>DATOS MINISTERIO DE VIVIENDA - <Button size="sm" onClick={() => generateCVS(header_5, dataMinisterio, 'MINISTERIO DE VIVIENDA')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_4']} onClick={() => setPre({ ['pre_4']: !preview['pre_4'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_4'] ? <div className='row container-sh'>
@@ -1987,34 +1990,33 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS EXPENSAS - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_6, dataMoney, 'EXPENSAS')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_5']} onClick={() => setPre({ ['pre_5']: !preview['pre_5'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>DATOS EXPENSAS - <Button size="sm" onClick={() => generateCVS(header_6, dataMoney, 'EXPENSAS')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_5']} onClick={() => setPre({ ['pre_5']: !preview['pre_5'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_5'] ? <div className='row container-sh'>
                 <Spreadsheet data={dataMoney} columnLabels={header_6} />
             </div> : ''}
 
-
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS CDMB - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_7, dataCMDB, 'CDMB')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_6']} onClick={() => setPre({ ['pre_6']: !preview['pre_6'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>DATOS CDMB - <Button size="sm" onClick={() => generateCVS(header_7, dataCMDB, 'CDMB')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_6']} onClick={() => setPre({ ['pre_6']: !preview['pre_6'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_6'] ? <div className='row container-sh'>
                 <Spreadsheet data={dataCMDB} columnLabels={header_7} />
             </div> : ''}
 
-            {process.env.REACT_APP_GLOBAL_ID == 'cb1'
+            {import.meta.env.VITE_GLOBAL_ID == 'cb1'
                 ? <>
                     <div className='row my-2'>
                         <div className='col'>
-                            <label className='fw-bold'>DATOS PLANEACION 2 - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_8, dataPlaneacion2, 'PLEANEACION 2')}>
-                                <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_7']} onClick={() => setPre({ ['pre_7']: !preview['pre_7'] })} >
-                                    <MDBIcon fas icon='eye' /></MDBBtn></label>
+                            <label className='fw-bold'>DATOS PLANEACION 2 - <Button size="sm" onClick={() => generateCVS(header_8, dataPlaneacion2, 'PLEANEACION 2')}>
+                                <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_7']} onClick={() => setPre({ ['pre_7']: !preview['pre_7'] })} >
+                                    <Icon name="eye" size={16} /></Button></label>
                         </div>
                     </div>
                     {preview['pre_7'] ? <div className='row container-sh'>
@@ -2025,9 +2027,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>OBSERVATORIO IGAC - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_11, dataIgac, 'Observatorio IGAC')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_11']} onClick={() => setPre({ ['pre_11']: !preview['pre_11'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>OBSERVATORIO IGAC - <Button size="sm" onClick={() => generateCVS(header_11, dataIgac, 'Observatorio IGAC')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_11']} onClick={() => setPre({ ['pre_11']: !preview['pre_11'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_11'] ? <div className='row container-sh'>
@@ -2036,9 +2038,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>SUPERINTENDENCIA DE NOTARIADO Y REGISTRO - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_12, dataNotaria, 'Superintendencia de Notariado y Registro')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_12']} onClick={() => setPre({ ['pre_12']: !preview['pre_12'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>SUPERINTENDENCIA DE NOTARIADO Y REGISTRO - <Button size="sm" onClick={() => generateCVS(header_12, dataNotaria, 'Superintendencia de Notariado y Registro')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_12']} onClick={() => setPre({ ['pre_12']: !preview['pre_12'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_12'] ? <div className='row container-sh'>
@@ -2047,9 +2049,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>AUDITORES CONTRA DEPARTAMENTAL - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_13, dataAuditoria, 'Auditores Contra departamental')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_13']} onClick={() => setPre({ ['pre_13']: !preview['pre_13'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>AUDITORES CONTRA DEPARTAMENTAL - <Button size="sm" onClick={() => generateCVS(header_13, dataAuditoria, 'Auditores Contra departamental')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_13']} onClick={() => setPre({ ['pre_13']: !preview['pre_13'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_13'] ? <div className='row container-sh'>
@@ -2058,9 +2060,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018) - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_14, dataFDPM, 'INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018)')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_14']} onClick={() => setPre({ ['pre_14']: !preview['pre_14'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018) - <Button size="sm" onClick={() => generateCVS(header_14, dataFDPM, 'INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018)')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_14']} onClick={() => setPre({ ['pre_14']: !preview['pre_14'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_14'] ? <div className='row container-sh'>
@@ -2069,30 +2071,25 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>INFORME SUPERINTENDENCIA - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_15, dataSuperInt, 'INFORME SUPERINTENDENCIA')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_15']} onClick={() => setPre({ ['pre_15']: !preview['pre_15'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>INFORME SUPERINTENDENCIA - <Button size="sm" onClick={() => generateCVS(header_15, dataSuperInt, 'INFORME SUPERINTENDENCIA')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_15']} onClick={() => setPre({ ['pre_15']: !preview['pre_15'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_15'] ? <div className='row container-sh'>
                 <Spreadsheet data={dataSuperInt} columnLabels={header_15} />
             </div> : ''}
 
-
-
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>RESUMEN - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_10, dataResume, 'Resumen')}>
-                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_9']} onClick={() => setPre({ ['pre_9']: !preview['pre_9'] })} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                    <label className='fw-bold'>RESUMEN - <Button size="sm" onClick={() => generateCVS(header_10, dataResume, 'Resumen')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_9']} onClick={() => setPre({ ['pre_9']: !preview['pre_9'] })}>
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_9'] ? <div className='row container-sh'>
                 <Spreadsheet data={dataResume} columnLabels={header_10} />
             </div> : ''}
-
-
-
 
         </div >
     );

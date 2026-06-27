@@ -1,126 +1,128 @@
-import React, { Component } from 'react';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import { MDBDataTable } from 'mdbreact';
-import Modal from 'react-modal';
+import { useMemo, useState } from 'react';
+
+import DataTable from '@/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import ListJson from '../../../../components/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-
-
-class DOCS_LIST extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            modal_searchList: false,
-        };
-    }
-
-    render() {
-        const { idRef, text } = this.props;
-        const customStylesForModal = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                zIndex: 1050,
-            },
-            content: {
-                position: 'absolute',
-                top: '15%',
-                left: 'var(--fun-sidebar-width)',
-                right: '30%',
-                bottom: '15%',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                marginRight: 'auto',
-
-            }
-        };
-        let _GET_DOCS_DATA = () => {
+function DOCS_LIST({ idRef, text, setValues }) {
+        const [modalSearchList, setModalSearchList] = useState(false);
+        const [filter, setFilter] = useState('');
+        const customStylesForModal = {};
+        const docsData = useMemo(() => {
             let data = [];
             for (var item in ListJson) {
                 data.push({
                     cod: item,
                     desc: ListJson[item],
-                    btn: <MDBTooltip title='Copiar informacion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                        <button className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <i class="far fa-copy fa-2x"></i></button></MDBTooltip>,
-                    clickEvent: ((row) => _COPY_INFO(row))
                 })
             }
             return data;
-        }
-        const data = {
-            columns: [
-                {
-                    label: 'CODIGO',
-                    field: 'cod',
-                    sort: 'asc',
-                    width: 50
-                },
-                {
-                    label: 'NOMBRE',
-                    field: 'desc',
-                    sort: 'asc',
-                    width: 270
-                },
-                {
-                    label: 'ACCION',
-                    field: 'btn',
-                }
-            ],
-            rows: _GET_DOCS_DATA()
-        }
+        }, []);
+        const filteredDocsData = useMemo(() => {
+            const normalizedFilter = filter.trim().toLowerCase();
+
+            if (!normalizedFilter) return docsData;
+
+            return docsData.filter((item) => {
+                return item.cod.toLowerCase().includes(normalizedFilter)
+                    || item.desc.toLowerCase().includes(normalizedFilter);
+            });
+        }, [docsData, filter]);
+        const docsColumns = [
+            {
+                name: 'CODIGO',
+                selector: row => row.cod,
+                sortable: true,
+                width: '100px',
+            },
+            {
+                name: 'NOMBRE',
+                selector: row => row.desc,
+                sortable: true,
+                wrap: true,
+            },
+            {
+                name: 'ACCION',
+                button: true,
+                cell: row => <Button size="sm" className="m-0 p-2" title="Copiar informacion" onClick={() => _COPY_INFO(row)}>
+                        <Icon name="copy" size={16} /></Button>,
+            }
+        ]
+
+        const searchHeader = (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="relative w-full sm:max-w-sm">
+                    <Icon name="search" size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        type="text"
+                        value={filter}
+                        onChange={(event) => setFilter(event.target.value)}
+                        placeholder="Buscar por código o nombre"
+                        className="pl-9"
+                    />
+                </div>
+                <span className="text-xs text-muted-foreground">
+                    {filteredDocsData.length} resultado{filteredDocsData.length === 1 ? '' : 's'}
+                </span>
+            </div>
+        );
 
         let toggle = (id) => {
-            this.setState({
-                modal_searchList: !this.state.modal_searchList,
-                modal_id: id
-            });
+            setModalSearchList(prev => !prev);
         }
         let _COPY_INFO = (_data) => {
-            this.props.setValues(idRef, [_data.cod, _data.desc])
-            this.setState({ modal_searchList: false })
+            setValues(idRef, [_data.cod, _data.desc])
+            setFilter('')
+            setModalSearchList(false)
         }
         return (
             <div>
-                <MDBBtn className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i class="fas fa-th-list"></i> {text}</MDBBtn>
+                <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" id={idRef} onClick={(e) => toggle(e.target.id)}><Icon name="th-list" size={16} /> {text}</button>
                 <Modal contentLabel="GENERAL VIEW FUN"
-                    isOpen={this.state.modal_searchList}
+                    isOpen={modalSearchList}
                     style={customStylesForModal}
                     ariaHideApp={false}
+                    className="fun-modal-content"
                 >
 
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-th-list"></i> CODIGOS TIPOLOGIA DOCUMENTAL</label>
-                        <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="th-list" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Códigos tipología documental</h2>
+                        </div>
+                        <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <MDBDataTable
+                    <DataTable
                         striped
-                        bordered
-                        small
-                        data={data}
-                        searchLabel={"Buscar..."}
-                        paginationLabel={['Anterior', 'Siguiente']}
-                        infoLabel={['Mostrando', 'a', 'de', 'Entradas']}
-                        entriesLabel={'Mostrar entradas'}
-                        btn
+                        columns={docsColumns}
+                        data={filteredDocsData}
+                        pagination
+                        paginationPerPage={10}
+                        paginationComponentOptions={{ rowsPerPageText: 'Mostrar entradas', rangeSeparatorText: 'de' }}
+                        dense
+                        highlightOnHover
+                        noDataComponent="No hay datos"
+                        subHeader
+                        subHeaderComponent={searchHeader}
                     />
-                    <div className="text-end py-4 mt-3">
-                        <MDBBtn className="btn btn-lg btn-info" onClick={() => this.setState({ modal_searchList: false })}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => {
+                            setFilter('')
+                            setModalSearchList(false)
+                        }}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
             </div>
         );
-    }
 }
 
 export default DOCS_LIST;

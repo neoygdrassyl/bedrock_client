@@ -1,11 +1,13 @@
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../services/fun.service';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { getLicenseCompletionClock } from '../shared/processClosure.helpers';
 
 export default function EXP_LIC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
-    const MySwal = withReactContent(Swal);
     var formData = new FormData();
+    const completionClock = getLicenseCompletionClock(currentItem);
     // ***************************  DATA GETTERS *********************** //
     let _GET_CLOCK = () => {
         var _CHILD = currentItem.fun_clocks;
@@ -37,14 +39,14 @@ export default function EXP_LIC(props) {
                 <>
                     <div className="row mx-2 my-0">
                         <div className="col-3 border">
-                            <label className="fw-bold mt-2 text-end ">FECHA DE LICENCIA:</label>
+                            <label className="fw-bold mt-2 text-end ">{completionClock.label?.toUpperCase() || 'FECHA DE LICENCIA'}:</label>
                         </div>
                         <div className="col border py-1">
-                            <label className="fw-bold mt-2 text-end ">{_GET_CLOCK_STATE(99).date_start}</label>
+                            <label className="fw-bold mt-2 text-end ">{completionClock.dateStart}</label>
                         </div>
                         <div className="col border py-1 text-center">
                             {currentItem.state < 100 ?
-                                <button className='btn btn-danger' onClick={() => close()}><i class="fas fa-unlock-alt"></i> FINALIZAR PROCESO</button>
+                                <Button variant="destructive" size="sm" onClick={() => close()}><Icon name="unlock-alt" size={16} /> FINALIZAR PROCESO</Button>
                                 : ''}
                         </div>
                     </div>
@@ -55,13 +57,13 @@ export default function EXP_LIC(props) {
                             </div>
                             <div className="col border py-1">
                                 {currentItem.state == 100 ?
-                                    <input type="date" class="form-control" id={'clock_arch_date'} max="2100-01-01" required
-                                        defaultValue={_GET_CLOCK_STATE(101).date_start ?? ''} />
+                                    <input type="date" className="form-control" id={'clock_arch_date'} max="2100-01-01" required
+                                        defaultValue={_GET_CLOCK_STATE(101)?.date_start ?? ''} />
                                     : ''}
                             </div>
                             <div className="col border py-1 text-center">
                                 {currentItem.state == 100 ?
-                                    <button className='btn btn-primary' ><i class="far fa-file-archive"></i> ARCHIVAR SOLICITUD</button>
+                                    <Button size="sm"><Icon name="file-archive" size={16} /> ARCHIVAR SOLICITUD</Button>
                                     : ''}
 
                             </div>
@@ -74,53 +76,25 @@ export default function EXP_LIC(props) {
     }
     // ******************************* APIS **************************** // 
     let close = () => {
-        MySwal.fire({
-            title: "CERRAR SOLICITUD",
-            text: "¿Esta seguro de cerrar esta Solicitud?",
-            icon: 'question',
-            confirmButtonText: "CERRAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "CERRAR SOLICITUD", text: "¿Esta seguro de cerrar esta Solicitud?", icon: 'question', confirmButtonText: "CERRAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
                 formData = new FormData();
 
                 formData.set('state', 100);
 
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 FUN_SERVICE.update(currentItem.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             props.requestUpdate(currentItem.id);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
 
 
@@ -131,55 +105,27 @@ export default function EXP_LIC(props) {
     let archive = (e) => {
 
         e.preventDefault();
-        MySwal.fire({
-            title: "ARCHIVAR SOLICITUD",
-            text: "¿Esta seguro de archivar esta Solicitud? \nno se podrá modificar de ninguna forma.",
-            icon: 'question',
-            confirmButtonText: "ARCHIAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ARCHIVAR SOLICITUD", text: "¿Esta seguro de archivar esta Solicitud? \nno se podrá modificar de ninguna forma.", icon: 'question', confirmButtonText: "ARCHIAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
                 formData = new FormData();
 
                 formData.set('state', 101);
 
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 FUN_SERVICE.update(currentItem.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             save_archive();
                             props.requestUpdate(currentItem.id);
                             props.closeModal()
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
 
 
@@ -192,7 +138,7 @@ export default function EXP_LIC(props) {
 
         let state = 101 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
 
-        let worker = window.user.name + " " + window.user.surname;
+        let worker = window?.user?.name + " " + window?.user?.surname;
         let date_start = document.getElementById("clock_arch_date").value;;
 
         formDataClock.set('date_start', date_start);
@@ -207,12 +153,7 @@ export default function EXP_LIC(props) {
 
         formDataClock.set('fun0Id', currentItem.id);
         if (useMySwal) {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         }
 
         if (_CHILD.id) {
@@ -220,35 +161,19 @@ export default function EXP_LIC(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         props.requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 });
         }
@@ -257,35 +182,19 @@ export default function EXP_LIC(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         props.requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 });
         }
@@ -293,12 +202,12 @@ export default function EXP_LIC(props) {
     }
     return (
         <div>
-            <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="nav_expedition_4">
+            <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_4">
                 <label className="app-p lead fw-normal">CERRAR SOLICITUD</label>
             </legend>
-            {_GET_CLOCK_STATE(99).date_start
+            {completionClock.dateStart
                 ? _COMPONENT_LIC()
-                : <div className='row text-center'><label className="app-p lead fw-normal text-danger">Para cerrar y archivar la solicitud es necesario determinar la Fecha de expedición Licencia</label></div>}
+                : <div className='row text-center'><label className="app-p lead fw-normal text-danger">Para cerrar y archivar la solicitud es necesario determinar la Fecha de expedición o Entrega de Licencia en Tiempos</label></div>}
 
         </div >
     );

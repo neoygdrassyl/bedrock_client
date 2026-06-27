@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import { useCallback, useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+
+import DataTable from '@/components/data-table-bridge';
 
 import { zones } from '../../../../components/jsons/vars'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
@@ -10,31 +9,29 @@ import { dateParser, getJSONFull, getJSON_Simple } from '../../../../components/
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 import parkingData from '../../../../components/jsons/parkingData.json'
 import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../components/vars.global';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import RichTextEditor from '@/components/rich-text-editor';
+import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
+import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 
-const MySwal = withReactContent(Swal);
-class RECORD_ARC_34 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new_gen: false,
-            new_k: false,
-            edit_k: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit_k !== prevState.edit_k && this.state.edit_k != false) {
-            var _ITEM = this.state.edit_k;
+function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [newGen, setNewGen] = useState(false);
+    const [newK, setNewK] = useState(false);
+    const [editK, setEditK] = useState(false);
+    const [saveStates, setSaveStates] = useState({});
+    const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
+
+    useEffect(() => {
+        if (editK !== false) {
+            var _ITEM = editK;
             document.getElementById("r_a_34_k_1_edit").value = _ITEM.name;
             document.getElementById("r_a_34_k_2_edit").value = _ITEM.index;
             document.getElementById("r_a_34_k_4_edit").value = _ITEM.proyect;
-            document.getElementById("r_a_34_k_5_edit").value = _ITEM.type
-            document.getElementById("r_a_34_k_6_edit").value = _ITEM.exception
+            document.getElementById("r_a_34_k_5_edit").value = _ITEM.type;
+            document.getElementById("r_a_34_k_6_edit").value = _ITEM.exception;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
-
+    }, [editK]);
 
         // DATA GETERS
 
@@ -128,7 +125,7 @@ class RECORD_ARC_34 extends Component {
             return (_ITEM.proyect - _PARSER_NORM(_ITEM, _AREA)).toFixed(2);
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_arc_steps;
+            var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -182,7 +179,6 @@ class RECORD_ARC_34 extends Component {
         }
         let _GET_SESION_P = () => {
             let EQUIP = _GET_STEP_TYPE('equip', 'value');
-
 
             let sl = document.getElementById('sesion_l') ? document.getElementById('sesion_l').value : (EQUIP[0] ?? 0);
             let sc = document.getElementById('sesion_c') ? document.getElementById('sesion_c').value : (EQUIP[1] ?? 0);
@@ -284,7 +280,6 @@ class RECORD_ARC_34 extends Component {
             let nunPartA = Number(A[1]) ?? Infinity;
             let nunPartB = Number(B[1]) ?? Infinity;
 
-
             if (strPartA < strPartB) { return -1; }
             if (strPartA > strPartB) { return 1; }
 
@@ -304,7 +299,7 @@ class RECORD_ARC_34 extends Component {
             let con = floor_c[0].toLowerCase() == 's';
 
             let areas = _GET_CHILD_33_AREAS();
-            areas.sort((a, b) => array_sort(a, b));
+            areas = [...areas].sort((a, b) => array_sort(a, b));
 
             let new_areas = areas.filter(item => {
                 if (con) {
@@ -324,7 +319,7 @@ class RECORD_ARC_34 extends Component {
             });
             let floor_index = -1;
             let sum = 0;
-            if (con) new_areas.reverse();
+            if (con) new_areas = [...new_areas].reverse();
 
             new_areas.map((item, i) => { if (_floor == item.floor) floor_index = i; })
             if (floor_index != -1) {
@@ -355,9 +350,9 @@ class RECORD_ARC_34 extends Component {
         }
         let _SAVING_STATE = (state) => {
             if (!state) return '';
-            if (state == 1) return <label className='text-warning fw-bold'><i class="fas fa-save"></i></label>;
-            if (state == 2) return <label className='text-success fw-bold'><i class="fas fa-save"></i></label>;
-            if (state == 3) return <label className='text-danger fw-bold'><i class="fas fa-save"></i></label>;
+            if (state == 1) return <label className='text-warning fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 2) return <label className='text-success fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 3) return <label className='text-danger fw-bold'><Icon name="save" size={16} /></label>;
         }
 
         const value34 = _GET_STEP_TYPE('s34', 'value');
@@ -371,26 +366,26 @@ class RECORD_ARC_34 extends Component {
                     <input type="hidden" id="r_a_34_" />
                     <div className="col-3 p-1">
                         <label>Norma Urbana CUB</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id="r_a_34_gen_1" />
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id="r_a_34_gen_1" />
                         </div>
                     </div>
                     <div className="col-4 p-1">
                         <label>Descripción</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id="r_a_34_gen_2" />
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id="r_a_34_gen_2" />
                         </div>
                     </div>
                     <div className="col-3 p-1">
                         <label>Fecha</label>
-                        <div class="input-group">
-                            <input type="date" class="form-control me-1" max="2100-01-01" id="r_a_34_gen_3" />
+                        <div className="input-group">
+                            <input type="date" className="form-control me-1" max="2100-01-01" id="r_a_34_gen_3" />
                         </div>
                     </div>
                     <div className="col-2 p-1">
                         <label>Folios</label>
-                        <div class="input-group">
-                            <input type="number" min="0" step="1" class="form-control me-1" id="r_a_34_gen_4" />
+                        <div className="input-group">
+                            <input type="number" min="0" step="1" className="form-control me-1" id="r_a_34_gen_4" />
                         </div>
                     </div>
                 </div>
@@ -400,53 +395,53 @@ class RECORD_ARC_34 extends Component {
             let _LIST = _GET_CHILD_34_GEN();
             const columns = [
                 {
-                    name: <label>Norma Urbana CUB</label>,
-                    selector: 'norm',
+                    name: 'Norma Urbana CUB',
+                    selector: row => row.norm,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.norm}</label>
+                    cell: row => <span className="text-sm">{row.norm}</span>
                 },
                 {
-                    name: <label>Descripción</label>,
-                    selector: 'desc',
+                    name: 'Descripción',
+                    selector: row => row.desc,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.desc}</label>
+                    cell: row => <span className="text-sm">{row.desc}</span>
                 },
                 {
-                    name: <label>Fecha</label>,
-                    selector: 'date',
+                    name: 'Fecha',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{dateParser(row.date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
                 },
                 {
-                    name: <label>Folios</label>,
-                    selector: 'pages',
+                    name: 'Folios',
+                    selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.pages}</label>
+                    cell: row => <span className="text-sm">{row.pages}</span>
                 },
                 {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     center: true,
                     cell: row =>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_34_gen(row)} />
+                        <div className="form-check form-switch">
+                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_34_gen(row)} />
                         </div>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     center: true,
                     minWidth: '100px',
                     cell: row => <>
-                        <MDBBtn className="btn btn-danger btn-sm" onClick={() => delete_34_gen(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                        <Button variant="destructive" size="sm" onClick={() => delete_34_gen(row.id)}><Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
@@ -476,53 +471,53 @@ class RECORD_ARC_34 extends Component {
 
                     <div className="col-3 p-1">
                         <label>Ficha Normativa</label>
-                        <div class="input-group">
-                            <input type="number" min='1' max='14' class="form-control me-1" name="r_a_34_a-1"
+                        <div className="input-group">
+                            <input type="number" min='1' max='14' className="form-control me-1" name="r_a_34_a-1"
                                 defaultValue={json34.ficha ?? 1} onBlur={() => manage_ra_34('a41')} />
                         </div>
                         <label>Sector</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" name="r_a_34_a"
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" name="r_a_34_a"
                                 defaultValue={json34.sector} onBlur={() => manage_ra_34('a41')} />
                         </div>
                         <label>Subsector</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" name="r_a_34_a"
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" name="r_a_34_a"
                                 defaultValue={json34.subsector} onBlur={() => manage_ra_34('a41')} />
                         </div>
                     </div>
 
                     <div className="col-3 p-1">
                         <label>Estrato</label>
-                        <div class="input-group">
-                            <input type="number" class="form-control me-1" min="1" step="1" name="r_a_34_a"
+                        <div className="input-group">
+                            <input type="number" className="form-control me-1" min="1" step="1" name="r_a_34_a"
                                 defaultValue={_CHILD_2.item_267} disabled />
                         </div>
                         <label>ZGU N°</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" name="r_a_34_a"
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" name="r_a_34_a"
                                 defaultValue={json34.zgu} onBlur={() => manage_ra_34('a41')} />
                         </div>
                         <label>$m<sup>2</sup> ZGU</label>
-                        <div class="input-group">
-                            <input type="number" step="0.01" class="form-control me-1" name="r_a_34_a"
+                        <div className="input-group">
+                            <input type="number" step="0.01" className="form-control me-1" name="r_a_34_a"
                                 defaultValue={json34.zugm} onBlur={() => manage_ra_34('a41')} />
                         </div>
                     </div>
                     <div className="col-3 p-1">
                         <label>Área predio (m<sup>2</sup>)</label>
-                        <div class="input-group">
-                            <input type="number" min="0" step="0.01" class="form-control me-1" name="r_a_34_a"
+                        <div className="input-group">
+                            <input type="number" min="0" step="0.01" className="form-control me-1" name="r_a_34_a"
                                 defaultValue={json34.m2} onBlur={() => manage_ra_34('a41')} />
                         </div>
                         <label>Frente del predio (m)</label>
-                        <div class="input-group">
-                            <input type="number" min="0" step="0.01" class="form-control me-1" name="r_a_34_a"
+                        <div className="input-group">
+                            <input type="number" min="0" step="0.01" className="form-control me-1" name="r_a_34_a"
                                 defaultValue={json34.m1} onBlur={() => manage_ra_34('a41')} />
                         </div>
                         <label>Localización</label>
 
-                        <div class="input-group">
+                        <div className="input-group">
                             <select
                                 className="form-select" defaultValue={loc || json34.local} name="r_a_34_a" onChange={() => manage_ra_34('a41')}>
                                 {zones}
@@ -551,11 +546,11 @@ class RECORD_ARC_34 extends Component {
             return <>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>b. Clase de Suelo</h3></span>
+                        <span className="align-middle"><h3>b. Clase de Suelo</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[2]} onChange={() => manage_ra_34('a41')}>
                                 <option>Urbano</option>
                                 <option>Rural</option>
@@ -586,11 +581,11 @@ class RECORD_ARC_34 extends Component {
                     {/**
                      * 
                      *  <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>c. Tratamiento 1</h3></span>
+                        <span className="align-middle"><h3>c. Tratamiento 1</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[1]} onChange={() => manage_ra_34()}>
                                 <option>Desarrollo</option>
                                 <option>Consolidación</option>
@@ -614,11 +609,11 @@ class RECORD_ARC_34 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>c. Tratamiento</h3></span>
+                        <span className="align-middle"><h3>c. Tratamiento</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[2]} onChange={() => manage_ra_34('a41')}>
                                 <option>SIN INFORMACION</option>
                                 {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map(op => <option>{op}</option>)}
@@ -641,17 +636,17 @@ class RECORD_ARC_34 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>d. Unidad de Uso</h3></span>
+                        <span className="align-middle"><h3>d. Unidad de Uso</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <input className="form-select" list="u_uses" name="s_34_values" defaultValue={value34[3]} onBlur={() => manage_ra_34('a41')} />
                             <datalist id="u_uses">
                                 {uu.map(u => <option>{u}</option>)}
                             </datalist>
                             {/**
-                            *  <input type="text" class="form-control me-1" name="s_34_values"
+                            *  <input type="text" className="form-control me-1" name="s_34_values"
                                 defaultValue={value34[3]} onBlur={() => manage_ra_34('a41')} />
                             */}
                         </div>
@@ -671,11 +666,11 @@ class RECORD_ARC_34 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>e. Área de actividad </h3></span>
+                        <span className="align-middle"><h3>e. Área de actividad </h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[4]} onChange={() => manage_ra_34('a41')}>
                                 <option>SIN INFORMACION</option>
                                 {SUBMIT_ARC_AREA_ACTIVIDAD.map(op => <option>{op}</option>)}
@@ -696,11 +691,11 @@ class RECORD_ARC_34 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3> Escala Urbana</h3></span>
+                        <span className="align-middle"><h3> Escala Urbana</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <input className="form-select" list="escala" name="s_34_values" defaultValue={value34[5]} onBlur={() => manage_ra_34('a41')} />
                             <datalist id="escala">
                                 <option>Local (A)</option>
@@ -721,11 +716,11 @@ class RECORD_ARC_34 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>f. Zona de restricción</h3></span>
+                        <span className="align-middle"><h3>f. Zona de restricción</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[6]} onChange={() => manage_ra_34('a41')}>
                                 {SUBMIT_ARC_ZONS_RESTRICCION.map(op => <option>{op}</option>)}
                             </select>
@@ -741,11 +736,11 @@ class RECORD_ARC_34 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>g. Utilidad Pública</h3></span>
+                        <span className="align-middle"><h3>g. Utilidad Pública</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[7] || g_dv} onChange={() => manage_ra_34('a41')}>
                                 <option>SI</option>
                                 <option>NO</option>
@@ -762,11 +757,11 @@ class RECORD_ARC_34 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>h. Amenaza y Riesgo</h3></span>
+                        <span className="align-middle"><h3>h. Amenaza y Riesgo</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[8]} onChange={() => manage_ra_34('a41')}>
                                 {SUBMIT_ARC_AMENAZA.map(op => <option>{op}</option>)}
                             </select>
@@ -782,11 +777,11 @@ class RECORD_ARC_34 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-3 mt-2 text-start">
-                        <span class="align-middle"><h3>i. BIC</h3></span>
+                        <span className="align-middle"><h3>i. BIC</h3></span>
                     </div>
 
                     <div className="col-6 p-1">
-                        <div class="input-group">
+                        <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[9]} onChange={() => manage_ra_34('a41')}>
                                 <option>No BIC</option>
                                 <option>BIC</option>
@@ -1284,7 +1279,7 @@ class RECORD_ARC_34 extends Component {
                 {typologies.map(tip => {
                     return <div className="row">
                         <div className="col-3 px-0 pe-1">
-                            <input type={tip.hide ? 'hidden' : "text"} class="form-control form-control-sm mx-0" disabled={!tip.titlev}
+                            <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm mx-0" disabled={!tip.titlev}
                                 defaultValue={vt[tip.titlev] || tip.title} onBlur={() => manage_ra_34_te('edi')} name={tip.titlev ? 's_34_t_v' : 'NO'} id={tip.titlev ? 's_34_t_v_' + tip.titlev : 'NO'}
                             />
                         </div>
@@ -1296,7 +1291,7 @@ class RECORD_ARC_34 extends Component {
                                             onBlur={() => manage_ra_34_te('edi')} name={'s_34_t_v'} id={'s_34_t_v_' + tip.vind}>
                                             {tip.index.map(v => <option>{v}</option>)}
                                         </select>
-                                        : <input type={tip.hide ? 'hidden' : "text"} class="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vind}
+                                        : <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vind}
                                             defaultValue={vt[tip.vind] || tip.index} onBlur={() => manage_ra_34_te('edi')} />}
                                 </>
                                 : ''}
@@ -1307,7 +1302,7 @@ class RECORD_ARC_34 extends Component {
                                     onBlur={() => manage_ra_34_te('edi')} name={'s_34_t_v'} id={'s_34_t_v_' + tip.vnorm}>
                                     {tip.norm.map(v => <option>{v}</option>)}
                                 </select>
-                                : <input type={tip.hide ? 'hidden' : "text"} class="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vnorm}
+                                : <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vnorm}
                                     defaultValue={vt[tip.vnorm] || tip.norm} onBlur={() => manage_ra_34_te('edi')} />}
 
                         </div>
@@ -1317,7 +1312,7 @@ class RECORD_ARC_34 extends Component {
                                     onBlur={() => manage_ra_34_te('edi')} name={'s_34_t_v'} id={'s_34_t_v_' + tip.vpjct}>
                                     {tip.proyect.map(v => <option>{v}</option>)}
                                 </select>
-                                : <input type={tip.hide ? 'hidden' : "text"} class="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vpjct}
+                                : <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vpjct}
                                     defaultValue={vt[tip.vpjct] || tip.proyect} onBlur={() => manage_ra_34_te('edi')} />}
 
                         </div>
@@ -1342,10 +1337,10 @@ class RECORD_ARC_34 extends Component {
                                             onBlur={() => manage_ra_34_te('edi')} name={'s_34_t_v'} id={'s_34_t_v_' + tip.vexc}>
                                             {tip.exc.map(v => <option>{v}</option>)}
                                         </select>
-                                        : <input type={tip.hide ? 'hidden' : "text"} class="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vexc}
+                                        : <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vexc}
                                             defaultValue={vt[tip.vexc]} onBlur={() => manage_ra_34_te('edi')} />}
                                 </>
-                                : <input type={'hidden'} class="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vexc}
+                                : <input type={'hidden'} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vexc}
                                     defaultValue={vt[tip.vexc]} />}
                         </div>
                         <div className="col-1 px-0 pe-1">
@@ -1400,7 +1395,7 @@ class RECORD_ARC_34 extends Component {
                 {voladizos.map((vol, i) => {
                     return <div className="row pb-1">
                         <div className="col px-0 pe-1">
-                            <input type={"text"} class="form-control form-control-sm mx-0"
+                            <input type={"text"} className="form-control form-control-sm mx-0"
                                 defaultValue={vt[vol.vTitle] || `Voladizo (${i + 1})`}
                                 onBlur={() => manage_ra_34_vol('vol')}
                                 name={'s_34_vol_v'} id={'s_34_vol_v_' + vol.vTitle}
@@ -1475,7 +1470,7 @@ class RECORD_ARC_34 extends Component {
                                     <div className='col'><label>{item.desc}</label></div>
                                     <div className='col-3'>
                                         {item.open ?
-                                            <input type="text" class="form-control form-control-sm" name="s_34_ev_values"
+                                            <input type="text" className="form-control form-control-sm" name="s_34_ev_values"
                                                 defaultValue={_VALUE_ARRAY[item.v]} onBlur={() => manage_ra_34(false)} />
                                             : <select className={_GET_SELECT_COLOR_VALUE(_VALUE_ARRAY[item.v])} name="s_34_ev_values"
                                                 defaultValue={_VALUE_ARRAY[item.v]} onChange={() => manage_ra_34(false)} >
@@ -1499,17 +1494,23 @@ class RECORD_ARC_34 extends Component {
         }
         let _COMPONENT_CORRECTIONS = () => {
             return <div className="row">
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>Observaciones análisis de determinantes de predio</label>
                     </div>
                 </div>
-                <textarea className="input-group" maxLength="2000" name="s_34_values" rows="4"
-                    defaultValue={value34[10]} onBlur={() => manage_ra_34()}></textarea>
-                <label> (maximo 2000 caracteres)</label>
+                <RichTextEditor
+                    value={value34[10]}
+                    hiddenName="s_34_values"
+                    maxLength={2000}
+                    minHeight={170}
+                    placeholder="Registre observaciones, evidencias e imágenes sobre determinantes urbanísticas"
+                    uploadFile={uploadRichTextImage}
+                    onBlur={() => manage_ra_34('a41')}
+                    onSave={() => manage_ra_34('a41')}
+                />
             </div>
         }
-
 
         let _COMPONENT_HABITABILITY = () => {
             const _CHECK_ARRAY = _GET_STEP_TYPE('s34_hs', 'check');
@@ -1572,7 +1573,7 @@ class RECORD_ARC_34 extends Component {
                                     <div className='col'><label>{item.desc}</label></div>
                                     <div className='col-3'>
                                         {item.open ?
-                                            <input type="text" class="form-control form-control-sm" name="s_34_hs_values"
+                                            <input type="text" className="form-control form-control-sm" name="s_34_hs_values"
                                                 defaultValue={_VALUE_ARRAY[item.v]} onBlur={() => manage_ra_34_hs(false)} />
                                             : <select className={_GET_SELECT_COLOR_VALUE(_VALUE_ARRAY[item.v])} name="s_34_hs_values"
                                                 defaultValue={_VALUE_ARRAY[item.v]} onChange={() => manage_ra_34_hs(false)} >
@@ -1800,82 +1801,37 @@ class RECORD_ARC_34 extends Component {
             let pages = document.getElementById("r_a_34_gen_4").value;
             formData.set('pages', pages);
 
-
             RECORD_ARCSERVICE.create_arc_34_gen(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById("form_ra_34_gen").reset();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let delete_34_gen = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     RECORD_ARCSERVICE.delete_34_gen(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdateRecord(currentItem.id)
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdateRecord(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -1889,29 +1845,19 @@ class RECORD_ARC_34 extends Component {
             RECORD_ARCSERVICE.update_arc_34_gen(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
         let manage_ra_34 = (state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setSaveStates(prev => ({...prev, [state]: 1}))
 
             let checks = [];
             let values = [];
@@ -1926,11 +1872,11 @@ class RECORD_ARC_34 extends Component {
 
             var values_html = document.getElementsByName('s_34_values');
             for (var i = 0; i < values_html.length; i++) {
-                values.push(values_html[i].value.replaceAll(';', ','))
+                values.push(sanitizeRichTextForLegacyJoin(values_html[i].value))
             }
             var values_html = document.getElementsByName('s_34_values_2');
             for (var i = 0; i < values_html.length; i++) {
-                values.push(values_html[i].value.replaceAll(';', ','))
+                values.push(sanitizeRichTextForLegacyJoin(values_html[i].value))
             }
             formData.set('value', values.join(';'));
 
@@ -1994,7 +1940,6 @@ class RECORD_ARC_34 extends Component {
 
             save_step('s_34_te', false, formData);
 
-
             formData = new FormData();
             checks = [];
             checks_html = document.getElementsByName('s_34_ev_checks');
@@ -2053,7 +1998,6 @@ class RECORD_ARC_34 extends Component {
 
             formData = new FormData();
 
-
             checks = [];
             checks_html = document.getElementsByName('s_34__hs_checks');
             for (var i = 0; i < checks_html.length; i++) {
@@ -2076,7 +2020,7 @@ class RECORD_ARC_34 extends Component {
             save_step('s34_hs', false, formData);
         }
         let manage_ra_34_te = (state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setSaveStates(prev => ({...prev, [state]: 1}))
 
             let checks = [];
             let values = [];
@@ -2084,7 +2028,6 @@ class RECORD_ARC_34 extends Component {
             var values_html;
 
             formData = new FormData();
-
 
             formData = new FormData();
             checks = [];
@@ -2112,7 +2055,7 @@ class RECORD_ARC_34 extends Component {
         }
 
         let manage_ra_34_vol = (state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setSaveStates(prev => ({...prev, [state]: 1}))
 
             let checks = [];
             let values = [];
@@ -2147,78 +2090,41 @@ class RECORD_ARC_34 extends Component {
         let save_step = (_id_public, useSwal, formData, state) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ARCSERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setSaveStates(prev => ({...prev, [state]: 2}))
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            if (state) this.setState({ [state]: 3 })
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                            if (state) setSaveStates(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        if (state) this.setState({ [state]: 3 })
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                        if (state) setSaveStates(prev => ({...prev, [state]: 3}))
                     });
             }
             else {
                 RECORD_ARCSERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setSaveStates(prev => ({...prev, [state]: 2}))
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            if (state) this.setState({ [state]: 3 })
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                            if (state) setSaveStates(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        if (state) this.setState({ [state]: 3 })
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                        if (state) setSaveStates(prev => ({...prev, [state]: 3}))
                     });
             }
         }
@@ -2226,21 +2132,21 @@ class RECORD_ARC_34 extends Component {
         return (
             <div className="record_arc_32 container">
 
-                <h3 className="py-3" >3.4.1 Información General  {_SAVING_STATE(this.state.a41)}</h3>
+                <h3 className="py-3" >3.4.1 Información General  {_SAVING_STATE(saveStates.a41)}</h3>
 
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new_gen: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setNewGen(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Nueva Norma Urbana
                     </label>
                 </div>
-                {this.state.new_gen
+                {newGen
                     ? <form id="form_ra_34_gen" onSubmit={new_ra_34_gen}>
                         {_COMPONENT_1()}
                         <div className="text-center">
-                            <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> AÑADIR NORMA
-                            </button>
+                            <Button size="sm" className="my-3">
+                                <Icon name="share-square" size={16} /> AÑADIR NORMA
+                            </Button>
                         </div>
                     </form>
                     : ""}
@@ -2251,12 +2157,12 @@ class RECORD_ARC_34 extends Component {
                 {_COMPONENT_A()}
                 {_COMPONENT_BJ()}
 
-                <h3 className="py-3" >Edificabilidad  {_SAVING_STATE(this.state.edi)}</h3>
+                <h3 className="py-3" >Edificabilidad  {_SAVING_STATE(saveStates.edi)}</h3>
                 {_COMPONENT_INDEX_CALC()}
                 {_COMPONENT_INDEX_CALC_2()}
                 {_COMPONENT_K_TIPOLOGY()}
 
-                <h3 className="py-3" >Voladizos  {_SAVING_STATE(this.state.vol)}</h3>
+                <h3 className="py-3" >Voladizos  {_SAVING_STATE(saveStates.vol)}</h3>
                 {_COMPONENT_VOLADISOS()}
 
                 <h3 className="my-3">3.4.2 Estudio de habitabilidad</h3>
@@ -2265,7 +2171,6 @@ class RECORD_ARC_34 extends Component {
                 <h3 className="py-3" >3.4.3 Empate volumétrico</h3>
                 {_COMPONENENT_EMPATE()}
 
-
                 <h3 className="py-3" >3.4.4 Cesion tipo B</h3>
                 {_COMPONENT_SESSION_B()}
 
@@ -2273,7 +2178,6 @@ class RECORD_ARC_34 extends Component {
                 {_COMPONENT_CORRECTIONS()}
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_34;

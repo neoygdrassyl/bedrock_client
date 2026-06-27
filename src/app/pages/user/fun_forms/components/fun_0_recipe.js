@@ -1,29 +1,23 @@
-import React, { Component } from 'react';
+import React, { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
 import FUNService from '../../../../services/fun.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import VIZUALIZER from '../../../../components/vizualizer.component';
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../components/TagInput';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class FUN_0_RECIPE extends Component {
-    constructor(props) {
-        super(props);
-        this.tagInput = React.createRef();
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.state = {
-            tags: null,
-        };
+function FUN_0_RECIPE(props) {
+    const [tags, setTags] = useState(null);
+    const tagInput = useRef(null);
+    const { translation, swaMsg, globals, currentItem, currentVersion } = props;
+
+    const requestUpdate = (id) => {
+        props.requestUpdate(id);
     }
-    requestUpdate(id) {
-        this.props.requestUpdate(id);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
-        const MySwal = withReactContent(Swal);
 
+        
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
             var _CURRENT_VERSION = currentVersion - 1;
@@ -120,15 +114,15 @@ class FUN_0_RECIPE extends Component {
                     </div>
                     <div className="col-3">
                         <label>consecutivo de Recibo</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id="fun_c_payment_2"
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id="fun_c_payment_2"
                                 defaultValue={currentItem.id_payment} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Fecha de Recibo</label>
-                        <div class="input-group">
-                            <input type="date" max="2100-01-01" class="form-control me-1" id="fun_c_payment_1"
+                        <div className="input-group">
+                            <input type="date" max="2100-01-01" className="form-control me-1" id="fun_c_payment_1"
                                 defaultValue={_CHILD_CLOCK.date_start} />
                         </div>
                     </div>
@@ -153,7 +147,7 @@ class FUN_0_RECIPE extends Component {
                         : <>
                             <div className="col-6">
                                 <label>Categorización de la Solicitud {currentItem.type ? "" : <label className="text-danger fw-bold">NO ESTA CATEGORIZADO</label>}</label>
-                                <select class="form-select" id="fun_0_cats" defaultValue={currentItem.type}>
+                                <select className="form-select" id="fun_0_cats" defaultValue={currentItem.type}>
                                     <option value="0">Sin Categorizar</option>
                                     <option value="i">Categoria I</option>
                                     <option value="ii">Categoria II</option>
@@ -167,11 +161,12 @@ class FUN_0_RECIPE extends Component {
 
                     <div className="col-6">
                         <label>Modelo de Solicitud</label>
-                        <select class="form-select" id="fun_0_model" defaultValue={currentItem.model ?? 2023}>
+                        <select className="form-select" id="fun_0_model" defaultValue={currentItem.model ?? 2023}>
                             <option value="0">Sin modelo</option>
                             <option value={2021}>Res. 463 / 17</option>
                             <option value={2022}>Res. 1026 / 21 (2022)</option>
-                            <option value={2023} selected>Res. 1026 / 21 (2023+)</option>
+                            <option value={2023} selected>Res. 1026 / 21 (2023-2025)</option>
+                            <option value={2026} selected>Res. 1051 / 25 (2026)</option>
                         </select>
                     </div>
                 </div>
@@ -183,26 +178,26 @@ class FUN_0_RECIPE extends Component {
                     </div>
                 </div>
                 <div>
-                    <ReactTagInput
-                        tags={this.state.tags ?? (currentItem.tags ? currentItem.tags.split(',') : [])}
+                    <TagInput
+                        tags={tags ?? (currentItem.tags ? currentItem.tags.split(',') : [])}
                         placeholder="Etiquetas de la solicitud"
-                        onChange={(newTags) => this.setState({ tags: newTags })}
+                        onChange={(newTags) => setTags(newTags)}
                         removeOnBackspace={true}
-                        ref={this.tagInput}
+                        ref={tagInput}
                     />
                 </div>
                 <div className="row my-2">
                     <label className='fw-bold'>Reglas adicionales</label>
                     <div className="col">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[0] == 1} />
-                            <label class="form-check-label">No usar Publicidad</label>
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[0] == 1} />
+                            <label className="form-check-label">No usar Publicidad</label>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[1] == 1} />
-                            <label class="form-check-label" >No usar informe Estructural</label>
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[1] == 1} />
+                            <label className="form-check-label" >No usar informe Estructural</label>
                         </div>
                         <h6><b>Valido para:</b></h6>
                         <ul>
@@ -228,12 +223,7 @@ class FUN_0_RECIPE extends Component {
             var _CHILD = _GET_CLOCK(findOne);
             formDataclock.set('fun0Id', currentItem.id);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
 
             if (_CHILD.id) {
@@ -241,35 +231,19 @@ class FUN_0_RECIPE extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.requestUpdate(currentItem.id);
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                props.requestUpdate(currentItem.id);
                             }
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -278,35 +252,19 @@ class FUN_0_RECIPE extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id);
+                            props.requestUpdate(currentItem.id);
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -330,46 +288,25 @@ class FUN_0_RECIPE extends Component {
             var _CHILD = _GET_CHILD_LAW();
             formData.set('fun0Id', currentItem.id);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
                 FUNService.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -378,34 +315,18 @@ class FUN_0_RECIPE extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -433,12 +354,7 @@ class FUN_0_RECIPE extends Component {
             var _CHILD = _GET_CHILD_1();
 
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
 
 
@@ -447,18 +363,12 @@ class FUN_0_RECIPE extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id)
+                            props.requestUpdate(currentItem.id)
                         } else {
                             if (response.status == 500) {
-                                MySwal.close();
+                                swalClose();
                             }
                         }
                     })
@@ -470,35 +380,19 @@ class FUN_0_RECIPE extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id)
+                            props.requestUpdate(currentItem.id)
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     });
             }
@@ -513,8 +407,8 @@ class FUN_0_RECIPE extends Component {
             let model = document.getElementById("fun_0_model").value;
             formData0.set('model', model);
 
-            let tags = this.tagInput.current.props.tags ?? []
-            formData0.set('tags', tags.join(','));
+            let tagsArray = Array.isArray(tags) ? tags : (currentItem.tags ? currentItem.tags.split(',') : []);
+            formData0.set('tags', tagsArray.join(','));
 
             let rules_html = document.getElementsByName('fun_0_rules');
             let rules = [];
@@ -526,7 +420,7 @@ class FUN_0_RECIPE extends Component {
             formData0.set('rules', rules.join(';'));
 
             FUNService.update(currentItem.id, formData0).then(response => {
-                if (response.data === 'OK') this.props.requestUpdate(currentItem.id)
+                if (response.data === 'OK') props.requestUpdate(currentItem.id)
             });
         }
 
@@ -536,13 +430,12 @@ class FUN_0_RECIPE extends Component {
                     {_COMPONENT_PAYMENT()}
                     {_COMPONENT_DESC()}
                     <div className="col-12 text-center">
-                        <button className="btn btn-success btn-lg my-3" id="btn-review"><i class="far fa-share-square"></i> GUARDAR CAMBIOS</button>
+                        <Button type="submit" size="sm" className="my-3" id="btn-review"><Icon name="share-square" size={14} /> Guardar cambios</Button>
                     </div>
                 </form>
 
             </>
         );
-    }
 }
 
 export default FUN_0_RECIPE;

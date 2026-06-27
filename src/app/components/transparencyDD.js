@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     MDBDropdownHeader,
     MDBDropdown,
@@ -6,8 +5,8 @@ import {
     MDBDropdownToggle,
     MDBTypography,
     MDBDropdownItem
-} from 'mdb-react-ui-kit';
-import Collapsible from 'react-collapsible';
+} from './ui';
+import Collapsible from './Collapsible';
 
 import {
     Link,
@@ -81,7 +80,7 @@ function TDD_2() {
                 <Link to={'/liquidator'}><li><MDBDropdownItem><h6 className="text-wrap">Liquidador</h6></MDBDropdownItem></li></Link>
                 </ul>
                 <Link to={'/faq'}><li><MDBDropdownItem><h6 className="text-wrap">Preguntas y respuestas frecuentes</h6></MDBDropdownItem></li></Link>
-                <a href={process.env.REACT_APP_API_URL + '/files/docs/glosario.docx'} target="_blank" download="Glosario"><li><h6 className="text-wrap">Glosario</h6></li></a>
+                <a href={import.meta.env.VITE_API_URL + '/files/docs/glosario.docx'} target="_blank" download="Glosario"><li><h6 className="text-wrap">Glosario</h6></li></a>
                 <Link to={'/kids'}><li><MDBDropdownItem><h6 className="text-wrap">Información para niños, niñas y adolescentes</h6></MDBDropdownItem></li></Link>
             </ul>
         </Collapsible>

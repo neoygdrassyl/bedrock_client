@@ -1,24 +1,24 @@
-import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { Crosshair, CustomSVGSeries, Hint, HorizontalGridLines, MarkSeries, VerticalGridLines, XAxis, XYPlot, YAxis } from 'react-vis';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import 'dayjs/plugin/isBetween';
+import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
+import { useEffect, useState, memo } from 'react';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 import { dateParser_dateDiff, formsParser1, formsParser1_exlucde2, regexChecker_isOA } from '../../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../../components/jsons/vars';
 import SERVICE_FUN from '../../../../../services/fun.service'
+import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
 const _tickValues = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200];
 const YtickValues = [0, 1, 2, 3, 4, 5];
 const BUILD_AREAS = ['OBRA NUEVA', 'AMPLIADA', 'ADECUADA', 'MODIFICADA', 'RESTAURADA', 'REFORZADA', 'DEMOLIDA TOTAL', 'DEMOLIDA PARCIAL', 'RECONSTRUIDA', 'REFORZADA', 'RECONOCIDA']
-export default function FUN_CHART_TIME(props) {
+function FUN_CHART_TIME(props) {
     var [hovered, setHovered] = useState(false);
 
-    var [filterId, SetFilterId] = useState([`${infoCud.nomen}${moment().subtract(1, 'year').format('YY')}-0000`, `${infoCud.nomen}${moment().format('YY')}-9999`]);
+    var [filterId, SetFilterId] = useState([`${infoCud.nomen}${dayjs().subtract(1, 'year').format('YY')}-0000`, `${infoCud.nomen}${dayjs().format('YY')}-9999`]);
     var [filterD, SetFilterD] = useState([0, 200]);
-    var [date_1, SetDate_1] = useState(moment().subtract(1, 'y').startOf('year').format('YYYY-MM-DD'));
-    var [date_2, SetDate_2] = useState(moment().format('YYYY-MM-DD'));
+    var [date_1, SetDate_1] = useState(dayjs().subtract(1, 'y').startOf('year').format('YYYY-MM-DD'));
+    var [date_2, SetDate_2] = useState(dayjs().format('YYYY-MM-DD'));
 
     var [items, setItems] = useState([]);
 
@@ -57,7 +57,6 @@ export default function FUN_CHART_TIME(props) {
     var [varIndexC, setVaiC] = useState(Array(5).fill(0)); // Coefficient of variation 
     var [rangeC, setRangeC] = useState(Array(5).fill(0)); // Range 
 
-
     // ------------------ STUDY TIME --------------------- // 
     //var [build2, setBuild2] = useState(Array(11).fill(0));
     var [data2, setData2] = useState([]);
@@ -87,7 +86,6 @@ export default function FUN_CHART_TIME(props) {
     var [varIndexC2, setVaiC2] = useState(Array(5).fill(0)); // Coefficient of variation 
     var [rangeC2, setRangeC2] = useState(Array(5).fill(0)); // Range 
 
-
     useEffect(() => {
         if (load == 0) loadData();
         if (load == 1 && data.length == 0) { curateData(); curateData2(); }
@@ -95,7 +93,6 @@ export default function FUN_CHART_TIME(props) {
     }, [load, filterD, filterId, date_1, date_2]);
 
     // ***************************  DATA GETTERS *********************** //
-
 
     // *************************  DATA CONVERTERS ********************** //
     let _ADD_MARK = (_new_mark, _newData) => {
@@ -110,7 +107,6 @@ export default function FUN_CHART_TIME(props) {
         marks.push(_new_mark);
         return marks;
     }
-
 
     function curateData() {
         let newData = [];
@@ -140,7 +136,7 @@ export default function FUN_CHART_TIME(props) {
                     newDatano.push(row.id_public);
                     return;
                 };
-                if (!moment(row.clock_license).isBetween(date_1, date_2, undefined, '[]')) return;
+                if (!dayjs(row.clock_license).isBetween(date_1, date_2, undefined, '[]')) return;
 
                 let time_process = dateParser_dateDiff(row.clock_license, row.clock_date);
                 let _x = time_process > 200 ? 200 : time_process;
@@ -193,7 +189,7 @@ export default function FUN_CHART_TIME(props) {
                 }, newData);
             }
         })
-        newTypes.sort((a, b) => {
+        newTypes = [...newTypes].sort((a, b) => {
             if (a.type < b.type) { return -1; }
             if (a.type > b.type) { return 1; }
             return 0;
@@ -207,7 +203,7 @@ export default function FUN_CHART_TIME(props) {
         setDatan(newTotalC);
         setDatano(newDatano);
 
-        values.sort((prev, next) => prev - next);
+        values = [...values].sort((prev, next) => prev - next);
         // ---------------- MEAN -----------------
         newAvg = Number(newAvg / values.length).toFixed(2)
         newAvgC = newAvgC.map((avg, i) => Number(avg / newTotalC[i]).toFixed(2))
@@ -226,10 +222,9 @@ export default function FUN_CHART_TIME(props) {
         valuesC = valuesC.map(_values => {
             let _valuesA = _values.trim().split(' ');
             let newValuesA = _valuesA.slice(0, _valuesA.length);
-            newValuesA.sort((a, b) => a - b);
+            newValuesA = [...newValuesA].sort((a, b) => a - b);
             return newValuesA;
         })
-
 
         newMedC = valuesC.map(_values => {
             let newMed;
@@ -313,8 +308,6 @@ export default function FUN_CHART_TIME(props) {
         let newMedC = Array(5).fill(0);
         let newVarianceC = Array(5).fill(0);
 
-
-
         items.map(row => {
             if (!regexChecker_isOA(row)) {
                 newTotal++;
@@ -324,13 +317,12 @@ export default function FUN_CHART_TIME(props) {
                     newDatano.push(row.id_public);
                     return;
                 };
-                if (!moment(row.clock_acto).isBetween(date_1, date_2, undefined, '[]')) return;
+                if (!dayjs(row.clock_acto).isBetween(date_1, date_2, undefined, '[]')) return;
 
                 let time_process = dateParser_dateDiff(row.clock_acto, row.clock_date);
                 let _x = time_process > 200 ? 200 : time_process;
                 if (_x < filterD[0]) return;
                 if (_x > filterD[1]) return;
-
 
                 // ----------------------- TIMES ------------------
 
@@ -356,7 +348,6 @@ export default function FUN_CHART_TIME(props) {
             }
         })
 
-
         //setBuild2(newBuild)
         //setDataTy2(newTypes);
         setTotal2(newTotal);
@@ -365,7 +356,7 @@ export default function FUN_CHART_TIME(props) {
         setDatan2(newTotalC);
         setDatano2(newDatano);
 
-        values.sort((prev, next) => prev - next);
+        values = [...values].sort((prev, next) => prev - next);
         // ---------------- MEAN -----------------
         newAvg = Number(newAvg / values.length).toFixed(2)
         newAvgC = newAvgC.map((avg, i) => Number(avg / newTotalC[i]).toFixed(2))
@@ -384,10 +375,9 @@ export default function FUN_CHART_TIME(props) {
         valuesC = valuesC.map(_values => {
             let _valuesA = _values.trim().split(' ');
             let newValuesA = _valuesA.slice(0, _valuesA.length);
-            newValuesA.sort((a, b) => a - b);
+            newValuesA = [...newValuesA].sort((a, b) => a - b);
             return newValuesA;
         })
-
 
         newMedC = valuesC.map(_values => {
             let newMed;
@@ -464,41 +454,41 @@ export default function FUN_CHART_TIME(props) {
         return <>
             <div className='row text-center my-1'>
             <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">FECHAS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">FECHAS</span>
                         </div>
-                        <input type="date" class="form-control text-end" id="date_1" defaultValue={date_1} />
-                        <input type="date" class="form-control text-end" id="date_2" defaultValue={date_2} />
+                        <input type="date" className="form-control text-end" id="date_1" defaultValue={date_1} />
+                        <input type="date" className="form-control text-end" id="date_2" defaultValue={date_2} />
                     </div>
                 </div>
                 <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">RADICADOS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">RADICADOS</span>
                         </div>
-                        <input type="text" class="form-control text-end" id="ids_1" defaultValue={filterId[0]} />
-                        <input type="text" class="form-control text-end" id="ids_2" defaultValue={filterId[1]} />
+                        <input type="text" className="form-control text-end" id="ids_1" defaultValue={filterId[0]} />
+                        <input type="text" className="form-control text-end" id="ids_2" defaultValue={filterId[1]} />
                     </div>
                 </div>
 
                 <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">RANGO DE DÍAS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">RANGO DE DÍAS</span>
                         </div>
-                        <input type="text" class="form-control text-end" id="d_1" defaultValue={filterD[0]} />
-                        <input type="text" class="form-control text-end" id="d_2" defaultValue={filterD[1]} />
+                        <input type="text" className="form-control text-end" id="d_1" defaultValue={filterD[0]} />
+                        <input type="text" className="form-control text-end" id="d_2" defaultValue={filterD[1]} />
                     </div>
                 </div>
 
                 <div className='col-2 text-center'>
-                    <MDBBtn rounded outline onClick={() => {
+                    <Button variant="outline" size="sm" className="rounded-pill" onClick={() => {
                         SetFilterId([document.getElementById("ids_1").value, document.getElementById("ids_2").value]);
                         SetFilterD([document.getElementById("d_1").value, document.getElementById("d_2").value]);
                         SetDate_1(document.getElementById("date_1").value);
                         SetDate_2(document.getElementById("date_2").value);
-                    }}>FILTRAR</MDBBtn>
+                    }}>FILTRAR</Button>
                 </div>
 
             </div>
@@ -513,57 +503,50 @@ export default function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className="chart-clock mx-2" style={{ width: '2500px' }}>
-                <XYPlot width={2000} height={300} margin={{ bottom: 45, left: 50, right: 50 }}
-                    yPadding={20} xDomain={[filterD[0], filterD[1]]} yDomain={[0, 5]}>
-
-                    <VerticalGridLines
-                        tickValues={_tickValues}
-                        tickTotal={_tickValues.length}
-                    />
-                    <HorizontalGridLines
-                        tickValues={YtickValues}
-                        tickTotal={YtickValues.length}
-                    />
-
-                    <XAxis tickFormat={function tickFormat(value) {
-                        return value + ' d';
-                    }}
-                        tickValues={_tickValues}
+                <ScatterChart width={2000} height={300} margin={{ bottom: 45, left: 50, right: 50, top: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                        type="number"
+                        dataKey="x"
+                        domain={[Number(filterD[0]), Number(filterD[1])]}
+                        ticks={_tickValues}
+                        tickFormatter={(value) => value + ' d'}
                         style={{ fontSize: 12 }}
                     />
-
-
-                    <YAxis tickValues={[1, 2, 3, 4, 5]} tickFormat={tick => {
-                        if (tick == 5) return ' IV '
-                        if (tick == 4) return ' III '
-                        if (tick == 3) return ' II '
-                        if (tick == 2) return ' I '
-                        if (tick == 1) return ' NC '
-                    }}
+                    <YAxis
+                        type="number"
+                        dataKey="y"
+                        domain={[0, 5]}
+                        ticks={[1, 2, 3, 4, 5]}
+                        tickFormatter={(tick) => {
+                            if (tick == 5) return ' IV ';
+                            if (tick == 4) return ' III ';
+                            if (tick == 3) return ' II ';
+                            if (tick == 2) return ' I ';
+                            if (tick == 1) return ' NC ';
+                            return '';
+                        }}
                     />
-
-                    <MarkSeries
-                        sizeRange={[1, 5]}
-                        data={data}
-                        color={'DodgerBlue'}
-                        onValueMouseOver={e => setHovered(e)}
-                        onValueMouseOut={e => setHovered(false)}
-                        onValueClick={(e) => props._UPDATE_FILTERS_IDPUBIC(e.group)} />
-
-                    <Crosshair values={[{ x: mean }]} >
-                        <div style={{ background: 'black', background: 'rgba(0,0,0,0.65)', marginTop: '0%', width: '120px', fontSize: 'small' }}>
-                            <p className='ms-1'>Media: {mean}</p>
-                        </div>
-                    </Crosshair>
-
-                    {hovered ?
-                        <Hint value={hovered}>
-                            <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', marginTop: '0%', width: '200px', fontSize: 'small' }}>
-                                {_GET_HOOVER_BOX_CONTENT(hovered)}
-                            </div>
-                        </Hint>
-                        : null}
-                </XYPlot>
+                    <Tooltip
+                        content={({ active, payload }) => {
+                            if (active && payload && payload.length > 0) {
+                                const point = payload[0].payload;
+                                return (
+                                    <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', fontSize: 'small' }}>
+                                        {_GET_HOOVER_BOX_CONTENT(point)}
+                                    </div>
+                                );
+                            }
+                            return null;
+                        }}
+                    />
+                    <ReferenceLine x={Number(mean)} stroke="rgba(0,0,0,0.65)" strokeDasharray="3 3" label={{ value: `Media: ${mean}`, position: 'top', fill: 'black', fontSize: 12 }} />
+                    <Scatter
+                        data={Array.isArray(data) ? data : []}
+                        fill="DodgerBlue"
+                        onClick={(point) => { if (point && point.group) props._UPDATE_FILTERS_IDPUBIC(point.group); }}
+                    />
+                </ScatterChart>
             </div >
             <div className='row text-center my-1 mx-1'>
                 <div className='col'>
@@ -664,15 +647,15 @@ export default function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className='row text-center my-1'>
-                <div className='col fw-bold'> VALIDOS: {valid}  <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeValid1} onClick={() => setSeeValid1(!seeValid1)} >
-                    <MDBIcon fas icon='eye' /></MDBBtn></div>
+                <div className='col fw-bold'> VALIDOS: {valid}  <Button variant={!!seeValid1 ? "outline" : "default"} size="sm" onClick={() => setSeeValid1(!seeValid1)} >
+                    <Icon name="eye" size={16} /></Button></div>
             </div>
             {seeValid1 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div class="d-flex flex-wrap">
-                            {data.map(value => <div class="input-group-prepend border border-success">
-                                <div class="input-group-text">
+                        <div className="d-flex flex-wrap">
+                            {(Array.isArray(data) ? data : []).map(value => <div className="input-group-prepend border border-success">
+                                <div className="input-group-text">
                                     <label>{(value.name.slice(-7))}</label></div>
                             </div>)}
                         </div>
@@ -683,12 +666,12 @@ export default function FUN_CHART_TIME(props) {
             {datano.length > 0 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div className='fw-bold'> NO VALIDOS: {datano.length} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></div>
+                        <div className='fw-bold'> NO VALIDOS: {datano.length} <Button size="sm" outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
+                            <Icon name="eye" size={16} /></Button></div>
                         {seeNotValid1 ?
-                            <div class="d-flex flex-wrap">
-                                {datano.map(value => <div class="input-group-prepend border border-primary">
-                                    <div class="input-group-text">
+                            <div className="d-flex flex-wrap">
+                                {(Array.isArray(datano) ? datano : []).map(value => <div className="input-group-prepend border border-primary">
+                                    <div className="input-group-text">
                                         <label>{(value.slice(-7))}</label></div>
                                 </div>)}
                             </div>
@@ -708,74 +691,73 @@ export default function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className="chart-clock mx-2" style={{ width: '2500px' }}>
-                <XYPlot width={2000} height={300} margin={{ bottom: 45, left: 50, right: 50 }}
-                    yPadding={20} xDomain={[filterD[0], filterD[1]]} yDomain={[0, 5]}>
-
-                    <VerticalGridLines
-                        tickValues={_tickValues}
-                        tickTotal={_tickValues.length}
-                    />
-                    <HorizontalGridLines
-                        tickValues={YtickValues}
-                        tickTotal={YtickValues.length}
-                    />
-
-                    <XAxis tickFormat={function tickFormat(value) {
-                        return value + ' d';
-                    }}
-                        tickValues={_tickValues}
+                <ScatterChart width={2000} height={300} margin={{ bottom: 45, left: 50, right: 50, top: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                        type="number"
+                        dataKey="x"
+                        domain={[Number(filterD[0]), Number(filterD[1])]}
+                        ticks={_tickValues}
+                        tickFormatter={(value) => value + ' d'}
                         style={{ fontSize: 12 }}
                     />
-
-                    <CustomSVGSeries
-                        className="custom-marking"
-                        customComponent="square"
+                    <YAxis
+                        type="number"
+                        dataKey="y"
+                        domain={[0, 5]}
+                        ticks={[1, 2, 3, 4, 5]}
+                        tickFormatter={(tick) => {
+                            if (tick == 5) return ' IV ';
+                            if (tick == 4) return ' III ';
+                            if (tick == 3) return ' II ';
+                            if (tick == 2) return ' I ';
+                            if (tick == 1) return ' NC ';
+                            return '';
+                        }}
+                    />
+                    <Tooltip
+                        content={({ active, payload }) => {
+                            if (active && payload && payload.length > 0) {
+                                const point = payload[0].payload;
+                                return (
+                                    <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', fontSize: 'small' }}>
+                                        {_GET_HOOVER_BOX_CONTENT(point)}
+                                    </div>
+                                );
+                            }
+                            return null;
+                        }}
+                    />
+                    <ReferenceLine x={Number(mean2)} stroke="rgba(0,0,0,0.65)" strokeDasharray="3 3" label={{ value: `Media: ${mean2}`, position: 'top', fill: 'black', fontSize: 12 }} />
+                    {/* Star markers for norm days */}
+                    <Scatter
                         data={[
-                            { x: 90, y: 1, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 45, y: 1, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 65, y: 2, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 20, y: 2, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 70, y: 3, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 25, y: 3, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 80, y: 4, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 35, y: 4, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 90, y: 5, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 45, y: 5, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
+                            { x: 90, y: 1, _starColor: 'SlateGrey' },
+                            { x: 45, y: 1, _starColor: 'Orange' },
+                            { x: 65, y: 2, _starColor: 'SlateGrey' },
+                            { x: 20, y: 2, _starColor: 'Orange' },
+                            { x: 70, y: 3, _starColor: 'SlateGrey' },
+                            { x: 25, y: 3, _starColor: 'Orange' },
+                            { x: 80, y: 4, _starColor: 'SlateGrey' },
+                            { x: 35, y: 4, _starColor: 'Orange' },
+                            { x: 90, y: 5, _starColor: 'SlateGrey' },
+                            { x: 45, y: 5, _starColor: 'Orange' },
                         ]}
+                        shape={(shapeProps) => {
+                            const { cx, cy, payload } = shapeProps;
+                            return (
+                                <text x={cx} y={cy} style={{ fontSize: '30px', fill: payload._starColor }} textAnchor="middle" dominantBaseline="central">
+                                    {'\u2605'}
+                                </text>
+                            );
+                        }}
                     />
-
-
-                    <YAxis tickValues={[1, 2, 3, 4, 5]} tickFormat={tick => {
-                        if (tick == 5) return ' IV '
-                        if (tick == 4) return ' III '
-                        if (tick == 3) return ' II '
-                        if (tick == 2) return ' I '
-                        if (tick == 1) return ' NC '
-                    }}
+                    <Scatter
+                        data={Array.isArray(data2) ? data2 : []}
+                        fill="ForestGreen"
+                        onClick={(point) => { if (point && point.group) props._UPDATE_FILTERS_IDPUBIC(point.group); }}
                     />
-
-                    <MarkSeries
-                        sizeRange={[1, 5]}
-                        data={data2}
-                        color={'ForestGreen'}
-                        onValueMouseOver={e => setHovered(e)}
-                        onValueMouseOut={e => setHovered(false)}
-                        onValueClick={(e) => props._UPDATE_FILTERS_IDPUBIC(e.group)} />
-
-                    <Crosshair values={[{ x: mean2 }]} >
-                        <div style={{ background: 'black', background: 'rgba(0,0,0,0.65)', marginTop: '0%', width: '120px', fontSize: 'small' }}>
-                            <p className='ms-1'>Media: {mean2}</p>
-                        </div>
-                    </Crosshair>
-
-                    {hovered ?
-                        <Hint value={hovered}>
-                            <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', marginTop: '0%', width: '200px', fontSize: 'small' }}>
-                                {_GET_HOOVER_BOX_CONTENT(hovered)}
-                            </div>
-                        </Hint>
-                        : null}
-                </XYPlot>
+                </ScatterChart>
             </div >
             <div className='row text-center my-1 mx-1'>
                 <div className='col'>
@@ -885,15 +867,15 @@ export default function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className='row text-center my-1'>
-                <div className='col fw-bold'> VALIDOS: {valid2} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeValid2} onClick={() => setSeeValid2(!seeValid2)} >
-                    <MDBIcon fas icon='eye' /></MDBBtn></div>
+                <div className='col fw-bold'> VALIDOS: {valid2} <Button size="sm" outline={!seeValid2} onClick={() => setSeeValid2(!seeValid2)} >
+                    <Icon name="eye" size={16} /></Button></div>
             </div>
             {seeValid2 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div class="d-flex flex-wrap">
-                            {data2.map(value => <div class="input-group-prepend border border-success">
-                                <div class="input-group-text">
+                        <div className="d-flex flex-wrap">
+                            {(Array.isArray(data2) ? data2 : []).map(value => <div className="input-group-prepend border border-success">
+                                <div className="input-group-text">
                                     <label>{(value.name.slice(-7))}</label></div>
                             </div>)}
                         </div>
@@ -904,12 +886,12 @@ export default function FUN_CHART_TIME(props) {
             {datano2.length > 0 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div className='fw-bold'> NO VALIDOS: {datano2.length} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></div>
+                        <div className='fw-bold'> NO VALIDOS: {datano2.length} <Button size="sm" outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
+                            <Icon name="eye" size={16} /></Button></div>
                         {seeNotValid2 ?
-                            <div class="d-flex flex-wrap">
-                                {datano2.map(value => <div class="input-group-prepend border border-primary">
-                                    <div class="input-group-text">
+                            <div className="d-flex flex-wrap">
+                                {(Array.isArray(datano2) ? datano2 : []).map(value => <div className="input-group-prepend border border-primary">
+                                    <div className="input-group-text">
                                         <label>{(value.slice(-7))}</label></div>
                                 </div>)}
                             </div>
@@ -923,11 +905,11 @@ export default function FUN_CHART_TIME(props) {
     let _TYPE_COMPONENT = () => {
         return <>
             <div className='row text-center mx-1 pt-3'>
-                <div className='col border bg-info'>
+                <div className='col border bg-primary text-primary-foreground'>
                     <h3><label className='fw-bold my-1 text-light'> TABLA DE LICENCIAS</label></h3>
                 </div>
             </div>
-            {dataType.map(data => {
+            {(Array.isArray(dataType) ? dataType : []).map(data => {
                 return <div className='row mx-1'>
                     <div className='col border'>{data.type}</div>
                     <div className='col-4 border'>{data.ids.join(' | ')}</div>
@@ -936,7 +918,7 @@ export default function FUN_CHART_TIME(props) {
             })}
             <div className='row mx-1'>
                 <div className='col border fw-bold text-end'>TOTAL</div>
-                <div className='col-1 border'>{dataType.reduce((total, num) => Number(total) + Number(num.n), 0)}</div>
+                <div className='col-1 border'>{(Array.isArray(dataType) ? dataType : []).reduce((total, num) => Number(total) + Number(num.n), 0)}</div>
             </div>
         </>
     }
@@ -946,11 +928,11 @@ export default function FUN_CHART_TIME(props) {
             <div className="d-flex justify-content-center" >
                 <div style={{ width: '40%' }}>
                     <div className='row text-center mx-1 pt-3'>
-                        <div className='col border bg-info'>
+                        <div className='col border bg-primary text-primary-foreground'>
                             <h3><label className='fw-bold my-1 text-light'> TABLA DE AREAS</label></h3>
                         </div>
                     </div>
-                    {build.map((b, i) => {
+                    {(Array.isArray(build) ? build : []).map((b, i) => {
                         return <div className='row mx-1'>
                             <div className='col border'>{BUILD_AREAS[i]}</div>
                             <div className='col-2 border'>{b.toFixed(2)}</div>
@@ -998,3 +980,5 @@ export default function FUN_CHART_TIME(props) {
         </>
     );
 }
+
+export default memo(FUN_CHART_TIME);

@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
-import { MDBBtn, MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+
+import dayjs from 'dayjs';
 
 import FUN6DATALIST from './components/fun_6_datalist';
 import FUN_VERSION_NAV from './components/fun_versionNav';
@@ -18,194 +16,147 @@ import FUN_SIGN_PDF from './components/fun_sign_pdf.component';
 import { _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 
 import CubXVrDataService from '../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class FUN_ALERT extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.state = {
-            new_neighbour: false,
-            confirm: false,
-            edit_type: false,
-            currentItem: null,
-            cb: false,
-            pqrsxfun: false,
-            vr: null,
-            cubSelected: null,
-            idCUBxVr: null
-        };
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
 
-    retrieveItem(id) {
+function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION_VERSION, NAVIGATION, requestUpdate: requestUpdateProp }) {
+    const [new_neighbour, setNewNeighbour] = useState(false);
+    const [confirm, setConfirm] = useState(false);
+    const [edit_type, setEditType] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [cb, setCb] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [vr, setVr] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [cb0, setCb0] = useState(false);
+    const [cb_1, setCb1] = useState(false);
+    const [cb_2, setCb2] = useState(false);
+    const [cb_3, setCb3] = useState(false);
+    const [cb_4, setCb4] = useState(false);
+    const [sign_pdf, setSignPdf] = useState(false);
+
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+    };
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                })
-                this.SET_DEFAULT_OBJECT();
-                this.retrievePQRSxFUN(response.data.id_public);
-                this.retrieveCubXvrs(response.data.id_public);
+                setCurrentItem(response.data);
+                SET_DEFAULT_OBJECT(response.data);
+                retrievePQRSxFUN(response.data.id_public);
+                retrieveCubXvrs(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
-    }
-    retrievePQRSxFUN(id_public) {
+    };
+
+    const retrievePQRSxFUN = (id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    async retrieveCubXvrs(id_public) {
+    };
+
+    const retrieveCubXvrs = async (id_public) => {
         const response = await CubXVrDataService.getByFUN(id_public)
         const data = response.data.find(item => item.process === 'PUBLICIDAD COMUNICACION A VECINOS')
-        
-        if (data) this.setState({ vr: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
-    }
-    SET_DEFAULT_OBJECT() {
-        let _CHILD = this.state.currentItem.fun_3s[0];
+        if (data) {
+            setVr(data.vr);
+            setCubSelected(data.cub);
+            setIdCUBxVr(data.id);
+        }
+    };
+
+    const SET_DEFAULT_OBJECT = (item) => {
+        let _CHILD = item.fun_3s[0];
         if (_CHILD) {
             if (_CHILD.alters_info) {
                 document.getElementById('confirm_cb').checked = true;
-                this.setState({ cb0: true })
+                setCb0(true);
                 if (_CHILD.alters_info) {
                     document.getElementById('confirm_cb_2').checked = true;
-                    this.setState({ cb: true })
+                    setCb(true);
                     if (_CHILD.alters_info.includes('ALERT_1')) {
                         document.getElementById('cb1').checked = true;
-                        this.setState({ cb_1: true })
+                        setCb1(true);
                     }
                     if (_CHILD.alters_info.includes('ALERT_2')) {
                         document.getElementById('cb2').checked = true;
-                        this.setState({ cb_2: true })
+                        setCb2(true);
                     }
                     if (_CHILD.alters_info.includes('ALERT_3')) {
                         document.getElementById('cb3').checked = true;
-                        this.setState({ cb_3: true })
+                        setCb3(true);
                     }
                     if (_CHILD.alters_info.includes('ALERT_4')) {
                         document.getElementById('cb4').checked = true;
-                        this.setState({ cb_4: true })
+                        setCb4(true);
                     }
                 }
             }
         }
-
-    }
-    componentDidUpdate(prevState) {
-        // SET THE INITIAL STATE OF THE PLETHORA OF CHECKBOXES, I DON'T KNOW WHY I DID THIS, I HATE MYSELF NOW...
-
-        if (this.state.cb0 !== prevState.cb0 && this.state.cb0) {
-            document.getElementById('confirm_cb').checked = true;
-            if (this.state.cb !== prevState.cb && this.state.cb) {
-                document.getElementById('confirm_cb_2').checked = true;
-            } else {
-                document.getElementById('confirm_cb_2').checked = false;
+    };
+    // Sync checkboxes when cb0/cb change
+    useEffect(() => {
+        const confirmCb = document.getElementById('confirm_cb');
+        const confirmCb2 = document.getElementById('confirm_cb_2');
+        if (!confirmCb) return;
+        if (cb0) {
+            confirmCb.checked = true;
+            if (confirmCb2) {
+                confirmCb2.checked = cb ? true : false;
             }
-
         } else {
-            document.getElementById('confirm_cb').checked = false;
+            confirmCb.checked = false;
         }
+    }, [cb0, cb]);
 
-
-
-        if (this.state.cb && this.state.cb0) {
-            if (this.state.cb_1 !== prevState.cb_1 && this.state.cb_1) {
-                let _ID = document.getElementById('alert_id_3').value;
-                let _CHILD = this.state.currentItem.fun_3s[_ID];
-                if (_CHILD) {
-                    let ALERTS = _CHILD.alters_info;
-                    if (ALERTS) {
-                        ALERTS = ALERTS.split(',');
-                        for (var i = 0; i < ALERTS.length; i++) {
-                            if (ALERTS[i].includes('ALERT_1')) {
-                                document.getElementById('cb1').checked = true;
-                                let _DATA = ALERTS[i].split('&');
-                                document.getElementById('cb1_ni').value = _DATA[2]
-                                document.getElementById('cb1_nd').value = _DATA[1]
-                            }
-                        }
-                    }
-                }
-            }
-            if (this.state.cb_2 !== prevState.cb_2 && this.state.cb_2) {
-                let _ID = document.getElementById('alert_id_3').value;
-                let _CHILD = this.state.currentItem.fun_3s[_ID];
-                if (_CHILD) {
-                    let ALERTS = _CHILD.alters_info;
-                    if (ALERTS) {
-                        ALERTS = ALERTS.split(',');
-                        for (var i = 0; i < ALERTS.length; i++) {
-                            if (ALERTS[i].includes('ALERT_2')) {
-                                document.getElementById('cb2').checked = true;
-                                let _DATA = ALERTS[i].split('&');
-                                document.getElementById('cb2_ni').value = _DATA[2]
-                                document.getElementById('cb2_nd').value = _DATA[1]
-                            }
-                        }
-                    }
-                }
-            }
-            if (this.state.cb_3 !== prevState.cb_3 && this.state.cb_3) {
-                let _ID = document.getElementById('alert_id_3').value;
-                let _CHILD = this.state.currentItem.fun_3s[_ID];
-                if (_CHILD) {
-                    let ALERTS = _CHILD.alters_info;
-                    if (ALERTS) {
-                        ALERTS = ALERTS.split(',');
-                        for (var i = 0; i < ALERTS.length; i++) {
-                            if (ALERTS[i].includes('ALERT_3')) {
-                                document.getElementById('cb3').checked = true;
-                                let _DATA = ALERTS[i].split('&');
-                                document.getElementById('cb3_ni').value = _DATA[2]
-                                document.getElementById('cb3_nd').value = _DATA[1]
-                            }
-                        }
-                    }
-                }
-            }
-            if (this.state.cb_4 !== prevState.cb_4 && this.state.cb_4) {
-                let _ID = document.getElementById('alert_id_3').value;
-                let _CHILD = this.state.currentItem.fun_3s[_ID];
-                if (_CHILD) {
-                    let ALERTS = _CHILD.alters_info;
-                    if (ALERTS) {
-                        ALERTS = ALERTS.split(',');
-                        for (var i = 0; i < ALERTS.length; i++) {
-                            if (ALERTS[i].includes('ALERT_4')) {
-                                document.getElementById('cb4').checked = true;
-                                let _DATA = ALERTS[i].split('&');
-                                document.getElementById('cb4_ni').value = _DATA[2]
-                                document.getElementById('cb4_nd').value = _DATA[1]
-                            }
-                        }
+    // Populate alert form fields when cb_N flags change
+    useEffect(() => {
+        if (!cb || !cb0 || !currentItem) return;
+        const alertId3El = document.getElementById('alert_id_3');
+        if (!alertId3El) return;
+        const _ID = alertId3El.value;
+        const _CHILD = currentItem.fun_3s[_ID];
+        if (!_CHILD) return;
+        let ALERTS = _CHILD.alters_info;
+        if (!ALERTS) return;
+        const alertsArr = ALERTS.split(',');
+        const checkboxMap = [
+            { flag: cb_1, prefix: 'ALERT_1', cbId: 'cb1' },
+            { flag: cb_2, prefix: 'ALERT_2', cbId: 'cb2' },
+            { flag: cb_3, prefix: 'ALERT_3', cbId: 'cb3' },
+            { flag: cb_4, prefix: 'ALERT_4', cbId: 'cb4' },
+        ];
+        for (const { flag, prefix, cbId } of checkboxMap) {
+            if (flag) {
+                for (let i = 0; i < alertsArr.length; i++) {
+                    if (alertsArr[i].includes(prefix)) {
+                        const el = document.getElementById(cbId);
+                        if (el) el.checked = true;
+                        let _DATA = alertsArr[i].split('&');
+                        const niEl = document.getElementById(cbId + '_ni');
+                        const ndEl = document.getElementById(cbId + '_nd');
+                        if (niEl) niEl.value = _DATA[2];
+                        if (ndEl) ndEl.value = _DATA[1];
                     }
                 }
             }
         }
-
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { currentItem } = this.state;
+    }, [cb, cb0, cb_1, cb_2, cb_3, cb_4, currentItem]);
 
         // DATA GETTERS
         let _SET_CHILD_3 = () => {
@@ -314,12 +265,7 @@ class FUN_ALERT extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente." });
                 });
 
         }
@@ -333,34 +279,34 @@ class FUN_ALERT extends Component {
             document.getElementById('alert_date_confirm').value = _CHILD.alerted;
 
             if (_CHILD.alters_info) {
-                this.setState({ cb0: true })
+                setCb0(true);
                 if (_CHILD.alters_info) {
-                    this.setState({ cb: true })
+                    setCb(true);
                     if (_CHILD.alters_info.includes('ALERT_1')) {
-                        this.setState({ cb_1: true })
+                        setCb1(true);
                     } else {
-                        this.setState({ cb_1: false })
+                        setCb1(false);
                     }
                     if (_CHILD.alters_info.includes('ALERT_2')) {
-                        this.setState({ cb_2: true })
+                        setCb2(true);
                     } else {
-                        this.setState({ cb_2: false })
+                        setCb2(false);
                     }
                     if (_CHILD.alters_info.includes('ALERT_3')) {
-                        this.setState({ cb_3: true })
+                        setCb3(true);
                     } else {
-                        this.setState({ cb_3: false })
+                        setCb3(false);
                     }
                     if (_CHILD.alters_info.includes('ALERT_4')) {
-                        this.setState({ cb_4: true })
+                        setCb4(true);
                     } else {
-                        this.setState({ cb_4: false })
+                        setCb4(false);
                     }
                 } else {
-                    this.setState({ cb: false })
+                    setCb(false);
                 }
             } else {
-                this.setState({ cb0: false })
+                setCb0(false);
             }
 
         }
@@ -387,7 +333,7 @@ class FUN_ALERT extends Component {
                     <div className="row mb-3">
                         <div className="col-4">
                             <label>2.2.1 Vecino Colindante</label>
-                            <select class="form-select" required id="alert_id_3"
+                            <select className="form-select" required id="alert_id_3"
                                 onChange={(e) => _SET_OBJECT(e.target.value)} >
                                 {_CHILD_3_SELECT_ID()}
                             </select>
@@ -395,11 +341,10 @@ class FUN_ALERT extends Component {
 
                     </div>
 
-
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>2.2.2 Relacionar documento: Carta</label>
-                            <select class="form-select" required id="alert_id6_cub"
+                            <select className="form-select" required id="alert_id6_cub"
                                 defaultValue={_CHILD.id6_cub} >
                                 <option value="0">SIN DOCUMENTO</option>
                                 <option value="-1">APORTADO FÍSICAMENTE</option>
@@ -408,10 +353,10 @@ class FUN_ALERT extends Component {
                         </div>
                         <div className="col-4">
                             <label>2.2.3 Consecutivo de Salida</label>
-                            <div class="input-group my-1">
-                                <input type="text" class="form-control" id="alert_id_cub"
-                                    defaultValue={_CHILD.id_cub || this.state.cubSelected || ""} />
-                                   <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <div className="input-group my-1">
+                                <input type="text" className="form-control" id="alert_id_cub"
+                                    defaultValue={_CHILD.id_cub || cubSelected || ""} />
+                                   <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                             </div>
                         </div>
                     </div>
@@ -419,7 +364,7 @@ class FUN_ALERT extends Component {
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>2.2.4 Relacionar documento: Guía de confirmación</label>
-                            <select class="form-select" required id="alert_address_id"
+                            <select className="form-select" required id="alert_address_id"
                                 defaultValue={_CHILD.id6}>
                                 <option value="0">SIN DOCUMENTO</option>
                                 <option value="-1">APORTADO FÍSICAMENTE</option>
@@ -428,65 +373,65 @@ class FUN_ALERT extends Component {
                         </div>
                         <div className="col-3">
                             <label>2.2.5 Guía de Confirmación</label>
-                            <input type="text" class="form-control mb-3" id="alert_id_alert"
+                            <input type="text" className="form-control mb-3" id="alert_id_alert"
                                 defaultValue={_CHILD.id_alerted != -1 ? _CHILD.id_alerted : ""} />
                         </div>
                         <div className="col-3">
                             <label>2.2.6 Fecha de Confirmación</label>
-                            <input type="date" class="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
-                                defaultValue={_CHILD.alerted ?? moment().format('YYYY-MM-DD')} />
+                            <input type="date" className="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
+                                defaultValue={_CHILD.alerted ?? dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 
-                    <div class="form-check my-3 px-5">
-                        <input class="form-check-input" type="checkbox" id="confirm_cb" onChange={(e) => this.setState({ cb0: e.target.checked })}
+                    <div className="form-check my-3 px-5">
+                        <input className="form-check-input" type="checkbox" id="confirm_cb" onChange={(e) => setCb0(e.target.checked)}
                         />
-                        <p class="form-check-label text-start" > NO FUE POSIBLE CITAR (Se negó a recibir - no reside - no se encontró dirección - otra)</p>
+                        <p className="form-check-label text-start" > NO FUE POSIBLE CITAR (Se negó a recibir - no reside - no se encontró dirección - otra)</p>
                     </div>
-                    {this.state.cb0
+                    {cb0
                         ? <>
-                            <div class="form-check my-3 px-5">
-                                <input class="form-check-input" type="checkbox" id="confirm_cb_2" onChange={(e) => this.setState({ cb: e.target.checked })} />
-                                <p class="form-check-label text-start" > Se realizó publicación en:</p>
+                            <div className="form-check my-3 px-5">
+                                <input className="form-check-input" type="checkbox" id="confirm_cb_2" onChange={(e) => setCb(e.target.checked)} />
+                                <p className="form-check-label text-start" > Se realizó publicación en:</p>
                             </div>
-                            {this.state.cb
+                            {cb
                                 ? <>
                                     <div className="row">
                                         <div className="col-3">
-                                            <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb1'} onChange={(e) => this.setState({ cb_1: e.target.checked })} />
-                                                <label class="form-check-label text-start" > Periódico</label>
+                                            <div className="form-check ms-3 px-5">
+                                                <input className="form-check-input" type="checkbox" id={'cb1'} onChange={(e) => setCb1(e.target.checked)} />
+                                                <label className="form-check-label text-start" > Periódico</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
-                                            <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb2'} onChange={(e) => this.setState({ cb_2: e.target.checked })} />
-                                                <label class="form-check-label text-start" > Radio</label>
+                                            <div className="form-check ms-3 px-5">
+                                                <input className="form-check-input" type="checkbox" id={'cb2'} onChange={(e) => setCb2(e.target.checked)} />
+                                                <label className="form-check-label text-start" > Radio</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
-                                            <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb3'} onChange={(e) => this.setState({ cb_3: e.target.checked })} />
-                                                <label class="form-check-label text-start" >Pagina Web</label>
+                                            <div className="form-check ms-3 px-5">
+                                                <input className="form-check-input" type="checkbox" id={'cb3'} onChange={(e) => setCb3(e.target.checked)} />
+                                                <label className="form-check-label text-start" >Pagina Web</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
-                                            <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb4'} onChange={(e) => this.setState({ cb_4: e.target.checked })} />
-                                                <label class="form-check-label text-start" > Físico</label>
+                                            <div className="form-check ms-3 px-5">
+                                                <input className="form-check-input" type="checkbox" id={'cb4'} onChange={(e) => setCb4(e.target.checked)} />
+                                                <label className="form-check-label text-start" > Físico</label>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="row">
                                         <div className="col-3">
-                                            {this.state.cb_1
+                                            {cb_1
                                                 ? <>
                                                     <label>Fecha Periódico</label>
                                                     <input type="hidden" readOnly value="ALERT_1" name="neighbbour_inforalert_name" />
-                                                    <input type="date" class="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb1_nd" />
+                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb1_nd" />
                                                     <label>Soporte Periódico</label>
-                                                    <select class="form-select" name="neighbbour_inforalert_id6" id="cb1_ni"  >
+                                                    <select className="form-select" name="neighbbour_inforalert_id6" id="cb1_ni"  >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
                                                         <option value="0">SIN DOCUMENTO</option>
                                                         {_CHILD_6_SELECT()}
@@ -494,13 +439,13 @@ class FUN_ALERT extends Component {
                                                 </> : ""}
                                         </div>
                                         <div className="col-3">
-                                            {this.state.cb_2
+                                            {cb_2
                                                 ? <>
                                                     <label>Fecha Radio</label>
                                                     <input type="hidden" readOnly value="ALERT_2" name="neighbbour_inforalert_name" />
-                                                    <input type="date" class="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb2_nd" />
+                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb2_nd" />
                                                     <label>Soporte Radio</label>
-                                                    <select class="form-select" name="neighbbour_inforalert_id6" id="cb2_ni" >
+                                                    <select className="form-select" name="neighbbour_inforalert_id6" id="cb2_ni" >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
                                                         <option value="0">SIN DOCUMENTO</option>
                                                         {_CHILD_6_SELECT()}
@@ -508,13 +453,13 @@ class FUN_ALERT extends Component {
                                                 </> : ""}
                                         </div>
                                         <div className="col-3">
-                                            {this.state.cb_3
+                                            {cb_3
                                                 ? <>
                                                     <label>Fecha Pagina Web</label>
                                                     <input type="hidden" readOnly value="ALERT_3" name="neighbbour_inforalert_name" />
-                                                    <input type="date" class="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb3_nd" />
+                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb3_nd" />
                                                     <label>Soporte Pagina Web</label>
-                                                    <select class="form-select" name="neighbbour_inforalert_id6" id="cb3_ni"  >
+                                                    <select className="form-select" name="neighbbour_inforalert_id6" id="cb3_ni"  >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
                                                         <option value="0">SIN DOCUMENTO</option>
                                                         {_CHILD_6_SELECT()}
@@ -522,13 +467,13 @@ class FUN_ALERT extends Component {
                                                 </> : ""}
                                         </div>
                                         <div className="col-3">
-                                            {this.state.cb_4
+                                            {cb_4
                                                 ? <>
                                                     <label>Fecha Físico</label>
                                                     <input type="hidden" readOnly value="ALERT_4" name="neighbbour_inforalert_name" />
-                                                    <input type="date" class="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb4_nd" />
+                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb4_nd" />
                                                     <label>Soporte Físico</label>
-                                                    <select class="form-select" name="neighbbour_inforalert_id6" id="cb4_ni" >
+                                                    <select className="form-select" name="neighbbour_inforalert_id6" id="cb4_ni" >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
                                                         <option value="0">SIN DOCUMENTO</option>
                                                         {_CHILD_6_SELECT()}
@@ -542,14 +487,15 @@ class FUN_ALERT extends Component {
 
                     <div className="row text-center">
                         <div className="col-12">
-                            <MDBBtn className="btn btn-warning btn-lg my-3" onClick={() => alertAddress()}><i class="far fa-check-square"></i> CONFIRMAR</MDBBtn>
+                            <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => alertAddress()}><Icon name="check-square" size={14} /> Confirmar</Button>
                         </div>
                     </div>
                 </form>
             </>
         }
         let _COMPONENT_FUNXPQRS = () => {
-            var objectsPQRS = this.state.pqrsxfun;
+            var objectsPQRS = Array.isArray(pqrsxfun) ? pqrsxfun : [];
+            if (objectsPQRS.length === 0) return <label className="fw-bold">No hay solicitudes PQRS asociadas a este trámite.</label>;
             var map = objectsPQRS.map((value, index) => { // FIX: Added index parameter for key
                 var solicitors = {
                     names: value.solicitors_names ? value.solicitors_names.split(';') : [],
@@ -565,7 +511,7 @@ class FUN_ALERT extends Component {
                 }
 
                 return <React.Fragment key={value.id || value.id_publico || index}> {/* FIX: Added key prop */}
-                    <div className="row border mx-2 py-1 bg-info mt-2">
+                    <div className="row border mx-2 py-1 bg-primary text-primary-foreground mt-2">
                         <div className="col text-center text-white">
                             <label className="fw-bold">{value.id_publico}</label>
                         </div>
@@ -642,12 +588,11 @@ class FUN_ALERT extends Component {
                                 <label>{contacts.phones[index]}</label>
                             </div>
                             <div className="col-2 text-center">
-                                <label>{contacts.notfies[index] ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger"></i>}</label>
+                                <label>{contacts.notfies[index] ? <Icon name="check" size={16} className="text-success" /> : <Icon name="times" size={16} className="text-danger" />}</label>
                             </div>
                         </div>
                     })}
                 </React.Fragment>
-                {/* FIX: Changed from fragment to React.Fragment to support key */}
             })
             return <>
                 {map}
@@ -668,69 +613,34 @@ class FUN_ALERT extends Component {
             formData.set('sign', sign.join());
             if (currentItem.fun_law) {
                 let law_id = currentItem.fun_law.id;
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 FUNService.update_sign(law_id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                             document.getElementById("form_alter_address").reset();
-                            this.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             } else {
                 FUNService.create_sign(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.requestUpdate(currentItem.id);
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                            requestUpdate(currentItem.id);
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             }
 
@@ -748,41 +658,20 @@ class FUN_ALERT extends Component {
             formData.set('direccion_2', direccion_2);
             formData.set('extra', 1);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.create_fun3(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         document.getElementById("app-form_neighbour").reset();
-                        this.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
@@ -790,17 +679,17 @@ class FUN_ALERT extends Component {
             let cub = cub_selected;
             let formatData = new FormData();
 
-            formatData.set('vr', this.state.vr);
+            formatData.set('vr', vr);
             formatData.set('cub', cub);
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'PUBLICIDAD COMUNICACION A VECINOS');
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdateProp(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -813,7 +702,7 @@ class FUN_ALERT extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdateProp(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -830,17 +719,11 @@ class FUN_ALERT extends Component {
             formData.set('fun0Id', currentItem.id);
             let child_i = document.getElementById("alert_id_3").value;
             if (!_SET_CHILD_3()[child_i]) {
-                MySwal.fire({
-                    title: "NO SE ENCUENTRA VECINO",
-                    text: "Asegurese de que el vecino seleccionado sea valido",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "NO SE ENCUENTRA VECINO", text: "Asegurese de que el vecino seleccionado sea valido" });
                 return 1;
             }
 
             let id = _SET_CHILD_3()[child_i].id;
-
 
             let id6_cub = document.getElementById("alert_id6_cub").value;
             formData.set('id6_cub', id6_cub);
@@ -851,7 +734,6 @@ class FUN_ALERT extends Component {
             formData.set('prev_id', prev_id);
 
             createVRxCUB_relation(new_id)
-
 
             let alerted = document.getElementById("alert_date_confirm").value;
             if (alerted) formData.set('alerted', alerted);
@@ -884,66 +766,40 @@ class FUN_ALERT extends Component {
                 }
             }
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.update_3(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.requestUpdate(currentItem.id)
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdate(currentItem.id)
                     } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
-            this.retrieveItem(this.props.currentId);
-        }
+            retrieveItem(currentId);
+        };
 
         return (
             <div>
                 {currentItem != null ? <>
                     <FUN6DATALIST />
-                    <h2 class="text-uppercase text-center py-2" id="fund_1">PUBLICIDAD</h2>
+                    <h2 className="text-center py-2" id="fund_1">PUBLICIDAD</h2>
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_alert_1">
-                            <label className="app-p lead fw-normal text-uppercase">1. VALLA O AVISO</label>
+                        <legend className="my-2 px-3 Collapsible" id="fun_alert_1">
+                            <label className="app-p lead fw-normal">1. VALLA O AVISO</label>
                         </legend>
                         <form onSubmit={uploadSign} id="app-form_sign">
                             <div className="row mb-3">
                                 <div className="col-7">
                                     <label>1.1 Foto de Valla o aviso</label>
-                                    <select class="form-select" required id="alert_sign_select" defaultValue={_GET_SIGN()[0]} >
+                                    <select className="form-select" required id="alert_sign_select" defaultValue={_GET_SIGN()[0]} >
                                         <option value="-1">APORTADO FISICAMENTE</option>
                                         <option value="0">SIN DOCUMENTO</option>
                                         {_CHILD_6_SELECT()}
@@ -951,7 +807,7 @@ class FUN_ALERT extends Component {
                                 </div>
                                 <div className="col-4">
                                     <label>1.2. Fecha de Radicación</label>
-                                    <input type="date" class="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
+                                    <input type="date" className="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
                                         required />
                                 </div>
                                 <div className="col-1">
@@ -971,17 +827,17 @@ class FUN_ALERT extends Component {
 
                             <div className="row text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-warning btn-lg my-3" id="btn-review" ><i class="far fa-file-alt"></i> ANEXAR AVISO</button>
+                                    <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" id="btn-review"><Icon name="file-alt" size={14} /> Anexar aviso</Button>
                                 </div>
                             </div>
                         </form>
 
-                        <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={(e) => this.setState({ sign_pdf: e.target.checked })} />
-                            <p class="form-check-label text-start" >Generar PDF de la Valla.</p>
+                        <div className="form-check my-3 px-5">
+                            <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={(e) => setSignPdf(e.target.checked)} />
+                            <p className="form-check-label text-start" >Generar PDF de la Valla.</p>
                         </div>
 
-                        {this.state.sign_pdf
+                        {sign_pdf
                             ? <FUN_SIGN_PDF
                                 translation={translation}
                                 swaMsg={swaMsg}
@@ -992,71 +848,69 @@ class FUN_ALERT extends Component {
                             : ""}
                     </fieldset>
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_alert_2">
-                            <label className="app-p lead fw-normal text-uppercase">2. COMUNICACIÓN A VECINOS</label>
+                        <legend className="my-2 px-3 Collapsible" id="fun_alert_2">
+                            <label className="app-p lead fw-normal">2. COMUNICACIÓN A VECINOS</label>
                         </legend>
                         <FUN_3_G_VIEW
                             _FUN_3={_SET_CHILD_3()}
                             _FUN_6={_SET_CHILD_6()}
                         />
 
-
-                        <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => this.setState({ new_neighbour: !this.state.new_neighbour })} />
-                            <p class="form-check-label text-start" >Añadir nuevos vecinos a esta solicitud.</p>
+                        <div className="form-check my-3 px-5">
+                            <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => setNewNeighbour(!new_neighbour)} />
+                            <p className="form-check-label text-start" >Añadir nuevos vecinos a esta solicitud.</p>
                         </div>
-                        {this.state.new_neighbour
+                        {new_neighbour
                             ? <> <form onSubmit={new_3} id="app-form_neighbour">
                                 <div className="row mb-3">
                                     <div className="col-6">
                                         <label >Dirección del Predio</label>
-                                        <div class="input-group my-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-map-marked-alt"></i>
+                                        <div className="input-group my-1">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="map-marked-alt" size={16} />
                                             </span>
-                                            <input type="text" class="form-control" id="alert_3_1" />
+                                            <input type="text" className="form-control" id="alert_3_1" />
                                         </div>
                                     </div>
                                     <div className="col-6">
                                         <label>Dirección de correspondencia</label>
-                                        <div class="input-group my-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-map-marked-alt"></i>
+                                        <div className="input-group my-1">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="map-marked-alt" size={16} />
                                             </span>
-                                            <input type="text" class="form-control" id="alert_3_2" />
+                                            <input type="text" className="form-control" id="alert_3_2" />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-warning my-3"><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                     </div>
                                 </div>
                             </form>
                             </> : ""}
 
-                        <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_21">2.1 GENERAR DOCUMENTOS DE CITACIÓN</label>
+                        <label className="app-p lead fw-normal my-3" id="fun_alert_21">2.1 GENERAR DOCUMENTOS DE CITACIÓN</label>
                         <FUN_ALERT_NEIGHBOUR
                             translation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            vr={this.state.vr}
-                            setVr={(item) => this.setState({ vr: item })}
+                            vr={vr}
+                            setVr={(item) => setVr(item)}
                         />
 
-                        <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>
+                        <label className="app-p lead fw-normal my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>
                         {_CONFIRM_COMPONENT()}
-
 
                     </fieldset>
 
-                    {this.state.pqrsxfun.length
+                    {pqrsxfun.length
                         ? <>
                             <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_alert_2">
-                                    <label className="app-p lead fw-normal text-uppercase">3. PETICIONES RELACIONADAS</label>
+                                <legend className="my-2 px-3 Collapsible" id="fun_alert_2">
+                                    <label className="app-p lead fw-normal">3. PETICIONES RELACIONADAS</label>
                                 </legend>
                                 {_COMPONENT_FUNXPQRS()}
                             </fieldset>
@@ -1068,7 +922,7 @@ class FUN_ALERT extends Component {
                         translation={translation}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
+                        NAVIGATION_VERSION={NAVIGATION_VERSION}
 
                     />
                     <FUN_MODULE_NAV
@@ -1076,52 +930,51 @@ class FUN_ALERT extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"alert"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
                 </fieldset>}
             </div>
         );
-    }
 }
 /*
 const NAV_FUNA = () => {
     return (
         <div className="btn-navpqrs">
-            <MDBCard className="container-primary" border='dark'>
-                <MDBCardBody className="p-1">
-                    <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+            <div className="rounded-lg border bg-card p-4 container-primary">
+                <div>
+                    <legend className="px-3 pt-2 bg-light text-center">
                         <h6>Menu de Navegacion</h6>
                     </legend>
                     <br />
                     <a href="#fun_alert_1">
-                        <legend className="px-3 text-uppercase btn-info">
+                        <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                             <h6>1. VALLA O AVISO</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_2">
-                        <legend className="px-3 text-uppercase btn-info">
+                        <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                             <h6>2. COMUNICACION A VECINOS</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_21">
-                        <legend className="px-3 text-uppercase btn-info">
+                        <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                             <h6>2.1 GENERAR DOCUMENTOS DE CITACION</h6>
                         </legend>
                     </a>
                     <br />
                     <a href="#fun_alert_22">
-                        <legend className="px-3 text-uppercase btn-info">
+                        <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                             <h6>2.2 CONFIRMACIÓN DE AVISOS</h6>
                         </legend>
                     </a>
 
-                </MDBCardBody>
-            </MDBCard>
+                </div>
+            </div>
         </div>
     );
 }

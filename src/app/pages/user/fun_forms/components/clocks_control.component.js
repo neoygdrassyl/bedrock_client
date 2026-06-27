@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import EXP_CLOCKS from '../../clocks/centralClocks.component';
 import FUN_CLOCK_CHART from './func_clock_chart';
 import FUN_CLOCK_EVENTS from './fun_clocks_events.component';
 import FUN_CLOCKS_NEGATIVE from './fun_clocks_negative.component';
+import { Icon } from '@/components/icon';
 
 // Estilos ajustados para la nueva interfaz de pestañas.
 const styles = {
@@ -12,8 +13,11 @@ const styles = {
         marginBottom: '0', // Se quita el margen para unir con el contenido
         paddingLeft: '0',
         display: 'flex',
+        maxWidth: '100%',
+        overflowX: 'auto',
+        overflowY: 'hidden',
         listStyle: 'none',
-        borderBottom: '1px solid #dee2e6',
+        borderBottom: '1px solid var(--bs-border-color)',
     },
     tabItem: {
         marginRight: '0.25rem',
@@ -21,71 +25,67 @@ const styles = {
     tabLink: {
         cursor: 'pointer',
         padding: '0.75rem 1.25rem',
-        color: '#495057',
+        color: 'var(--bs-secondary-color)',
         textDecoration: 'none',
         display: 'block',
-        backgroundColor: '#f8f9fa',
-        border: '1px solid #dee2e6',
+        backgroundColor: 'var(--bs-tertiary-bg)',
+        border: '1px solid var(--bs-border-color)',
         borderBottom: 'none',
         borderTopLeftRadius: '.35rem',
         borderTopRightRadius: '.35rem',
         transition: 'background-color 0.2s ease-in-out',
     },
     tabLinkActive: {
-        color: '#0056b3',
-        backgroundColor: '#fff',
-        borderTop: '3px solid #007bff',
-        borderLeft: '1px solid #dee2e6',
-        borderRight: '1px solid #dee2e6',
-        borderBottom: '1px solid #fff', // Esto hace que se funda con el panel
+        color: 'var(--bs-primary)',
+        backgroundColor: 'var(--bs-body-bg)',
+        borderTop: '3px solid var(--bs-primary)',
+        borderLeft: '1px solid var(--bs-border-color)',
+        borderRight: '1px solid var(--bs-border-color)',
+        borderBottom: '1px solid var(--bs-body-bg)', // Esto hace que se funda con el panel
         fontWeight: 'bold',
         marginBottom: '-1px', // Compensa el borde inferior del contenedor
     },
     tabPane: {
+        width: '100%',
+        maxWidth: '100%',
+        overflow: 'hidden',
         padding: '1.5rem',
-        border: '1px solid #dee2e6',
+        border: '1px solid var(--bs-border-color)',
         borderTop: 'none',
         borderRadius: '0 0 .35rem .35rem',
-        backgroundColor: '#fff',
+        backgroundColor: 'var(--bs-body-bg)',
         marginTop: '-1px', // solapa con el borde del nav
     }
 };
 
-class CLOCKS_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            activeTab: 'tiempos'
-        };
-    }
+function CLOCKS_CONTROL(props) {
+    const [activeTab, setActiveTab] = useState('tiempos');
+    const { translation, swaMsg, globals, currentItem, currentVersion, secondary } = props;
 
-    requestUpdate = (id) => {
-        if (this.props.requestUpdate) {
-            this.props.requestUpdate(id);
+    const requestUpdate = (id) => {
+        if (props.requestUpdate) {
+            props.requestUpdate(id);
         }
     }
     
-    requestRefresh = () => {
-        if (this.props.requestRefresh) {
-            this.props.requestRefresh();
+    const requestRefresh = () => {
+        if (props.requestRefresh) {
+            props.requestRefresh();
         }
     }
 
-    handleTabChange = (tabName) => {
-        this.setState({ activeTab: tabName });
+    const handleTabChange = (tabName) => {
+        setActiveTab(tabName);
     }
     
-    getTabLinkStyle = (tabName) => {
+    const getTabLinkStyle = (tabName) => {
         const baseStyle = styles.tabLink;
-        if (this.state.activeTab === tabName) {
+        if (activeTab === tabName) {
             return { ...baseStyle, ...styles.tabLinkActive };
         }
         return baseStyle;
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, secondary } = this.props;
-        const { activeTab } = this.state;
         const stepsToCheck = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
         
@@ -200,49 +200,49 @@ class CLOCKS_CONTROL extends Component {
         let extraClocks = () => {
             if(regexChecker_isOA_2(_GET_CHILD_1())) return []
             else return [
-                { state: 30, name: 'Acta Parte 1: Observaciones', limit: [5, false, _fun_0_type_time[currentItem.type] ?? 45], icon: <i class="fas fa-file-alt text-success"></i>, },
-                { state: 31, name: 'Citación (Observaciones)', icon: <i class="far fa-envelope text-secondary"></i>, },
-                { state: 32, name: 'Notificación (Observaciones)', limit: [31, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
-                { state: 33, name: 'Notificación por aviso (Observaciones)', limit: [31, false, 10], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
+                { state: 30, name: 'Acta Parte 1: Observaciones', limit: [5, false, _fun_0_type_time[currentItem.type] ?? 45], icon: <Icon name="file-alt" size={16} className="text-success" />, },
+                { state: 31, name: 'Citación (Observaciones)', icon: <Icon name="envelope" size={16} className="text-secondary" />, },
+                { state: 32, name: 'Notificación (Observaciones)', limit: [31, false, 5], icon: <Icon name="envelope" size={16} className="text-secondary" />, },
+                { state: 33, name: 'Notificación por aviso (Observaciones)', limit: [31, false, 10], icon: <Icon name="envelope" size={16} className="text-secondary" />, optional: true, },
     
-                { state: 34, name: 'Prórroga correcciones', optional: true, limit: [[33, 32], false, [30, 30]], icon: <i class="far fa-dot-circle"></i>, },
-                { state: 35, name: 'Correcciones', optional: !requereCorr(), limit: [[33, 32], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <i class="fas fa-file-alt"></i>, },
+                { state: 34, name: 'Prórroga correcciones', optional: true, limit: [[33, 32], false, [30, 30]], icon: <Icon name="dot-circle" size={16} />, },
+                { state: 35, name: 'Correcciones', optional: !requereCorr(), limit: [[33, 32], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <Icon name="file-alt" size={16} />, },
     
-                { state: stepsToCheck, version: -3, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
+                { state: stepsToCheck, version: -3, optional: true, icon: <Icon name="dot-circle" size={16} className="text-danger" /> },
     
-                { state: 49, name: 'Acta Parte 2: Correcciones', optional: !requereCorr(), limit: [35, false, 50], limitValues: viaTime(), icon: <i class="fas fa-file-alt text-success"></i>, },
+                { state: 49, name: 'Acta Parte 2: Correcciones', optional: !requereCorr(), limit: [35, false, 50], limitValues: viaTime(), icon: <Icon name="file-alt" size={16} className="text-success" />, },
     
-                { state: stepsToCheck, version: -4, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
+                { state: stepsToCheck, version: -4, optional: true, icon: <Icon name="dot-circle" size={16} className="text-danger" /> },
     
-                { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', limit: false, icon: <i class="fas fa-file-alt text-success"></i>, },
-                { state: 55, name: 'Citación (Viabilidad)', limit: [61, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
-                { state: 56, name: 'Notificación (Viabilidad)', limit: [55, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
-                { state: 57, name: 'Notificación por aviso (Viabilidad)', limit: [55, false, 10], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
+                { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', limit: false, icon: <Icon name="file-alt" size={16} className="text-success" />, },
+                { state: 55, name: 'Citación (Viabilidad)', limit: [61, false, 5], icon: <Icon name="envelope" size={16} className="text-secondary" />, },
+                { state: 56, name: 'Notificación (Viabilidad)', limit: [55, false, 5], icon: <Icon name="envelope" size={16} className="text-secondary" />, },
+                { state: 57, name: 'Notificación por aviso (Viabilidad)', limit: [55, false, 10], icon: <Icon name="envelope" size={16} className="text-secondary" />, optional: true, },
     
-                { state: 69, name: 'Radicaciones de pagos', limit: false, icon: <i class="fas fa-comment-dollar text-warning"></i>, },
+                { state: 69, name: 'Radicaciones de pagos', limit: false, icon: <Icon name="comment-dollar" size={16} className="text-warning" />, },
             ]
         } 
         const clocks = [
-            { state: false, version: false, desc: "Tiempo de Creacion en el sistema", name: 'RADICACIÓN', date: currentItem.date, icon: <i class="far fa-dot-circle"></i>, },
-            { state: 3, version: false, desc: "Las fechas se calculan a partir de este momento", name: 'PAGO EXPENSAS FIJAS', icon: <i class="fas fa-comment-dollar text-warning"></i>, },
-            { state: -1, version: false, desc: false, name: 'INCOMPLETO', limit: [3, false, 30], icon: <i class="far fa-dot-circle"></i>, optional: true, },
-            { state: stepsToCheck, version: -1, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
-            { state: 4, version: false, desc: "Vencimiento Licencia Inicial", name: 'VENCIMIENTO LICENCIA INICIAL', icon: <i class="fas fa-file-alt text-success"></i>,  optional: regexChecker_isOA_2(_GET_CHILD_1()) ? false: true,},
-            { state: 5, version: false, desc: false, name: 'LEGAL Y DEBIDA FORMA', limit: regexChecker_isOA_2(_GET_CHILD_1()) ?  [4, false, -30]:  [3, false, 30], icon: <i class="far fa-check-circle text-success"></i>, },
+            { state: false, version: false, desc: "Tiempo de Creacion en el sistema", name: 'RADICACIÓN', date: currentItem.date, icon: <Icon name="dot-circle" size={16} />, },
+            { state: 3, version: false, desc: "Las fechas se calculan a partir de este momento", name: 'PAGO EXPENSAS FIJAS', icon: <Icon name="comment-dollar" size={16} className="text-warning" />, },
+            { state: -1, version: false, desc: false, name: 'INCOMPLETO', limit: [3, false, 30], icon: <Icon name="dot-circle" size={16} />, optional: true, },
+            { state: stepsToCheck, version: -1, optional: true, icon: <Icon name="dot-circle" size={16} className="text-danger" /> },
+            { state: 4, version: false, desc: "Vencimiento Licencia Inicial", name: 'VENCIMIENTO LICENCIA INICIAL', icon: <Icon name="file-alt" size={16} className="text-success" />,  optional: regexChecker_isOA_2(_GET_CHILD_1()) ? false: true,},
+            { state: 5, version: false, desc: false, name: 'LEGAL Y DEBIDA FORMA', limit: regexChecker_isOA_2(_GET_CHILD_1()) ?  [4, false, -30]:  [3, false, 30], icon: <Icon name="check-circle" size={16} className="text-success" />, },
 
             ...extraClocks(),
 
-            { state: 70, name: 'Acto Administrativo / Resolución', limit: [69, false, 10], icon: <i class="fas fa-file-alt text-success"></i>, },
+            { state: 70, name: 'Acto Administrativo / Resolución', limit: [69, false, 10], icon: <Icon name="file-alt" size={16} className="text-success" />, },
 
-            { state: 71, name: 'Citación (Resolución)', limit: [69, false, 0], icon: <i class="far fa-envelope text-secondary"></i>, },
-            { state: 72, name: 'Notificación (Resolución)', limit: [71, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
-            { state: 73, name: 'Notificación por aviso (Resolución)', limit: [71, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
+            { state: 71, name: 'Citación (Resolución)', limit: [69, false, 0], icon: <Icon name="envelope" size={16} className="text-secondary" />, },
+            { state: 72, name: 'Notificación (Resolución)', limit: [71, false, 5], icon: <Icon name="envelope" size={16} className="text-secondary" />, },
+            { state: 73, name: 'Notificación por aviso (Resolución)', limit: [71, false, 5], icon: <Icon name="envelope" size={16} className="text-secondary" />, optional: true, },
 
-            { state: 74, name: 'Recurso Resolución', limit: [71, false, 15], optional: true, icon: <i class="far fa-dot-circle"></i>, },
-            { state: 75, name: 'Respuesta Recurso Resolución', limit: [74, false, 30], optional: true, icon: <i class="far fa-dot-circle"></i>, },
-            //{ state: 80, name: 'Certificación de Ejecutoria', icon: <i class="fas fa-file-alt text-success"></i>, },
-            { state: 99, name: 'Licencia', icon: <i class="fas fa-file-alt text-success"></i>, },
-            { state: 101, name: 'Archivo', icon: <i class="fas fa-lock text-info"></i>, },
+            { state: 74, name: 'Recurso Resolución', limit: [71, false, 15], optional: true, icon: <Icon name="dot-circle" size={16} />, },
+            { state: 75, name: 'Respuesta Recurso Resolución', limit: [74, false, 30], optional: true, icon: <Icon name="dot-circle" size={16} />, },
+            //{ state: 80, name: 'Certificación de Ejecutoria', icon: <Icon name="file-alt" size={16} className="text-success" />, },
+            { state: 99, name: 'Licencia', icon: <Icon name="file-alt" size={16} className="text-success" />, },
+            { state: 101, name: 'Archivo', icon: <Icon name="lock" size={16} className="text-info" />, },
         ]
         
         const _ROW_COMPONENT = (value, hideLimit, key) => {
@@ -270,7 +270,7 @@ class CLOCKS_CONTROL extends Component {
 
             return (
                 <div className="row" key={key}>
-                    <div className="col border"><label className="fw-bold text-uppercase">{value.icon} {value.name ?? clock.name ?? ''}</label></div>
+                    <div className="col border"><label className="fw-bold">{value.icon} {value.name ?? clock.name ?? ''}</label></div>
                     {!hideLimit && 
                     <div className="col-2 border py-1 text-center">
                         {limit_clock 
@@ -291,7 +291,7 @@ class CLOCKS_CONTROL extends Component {
             if (currentItem.fun_law) {
                 if (currentItem.fun_law.sign) {
                     let _sign = currentItem.fun_law.sign.split(',')
-                    if (_sign[1]) secondaryClocks.push({ state: false, version: false, desc: "", name: 'Radicación de Valla', date: _sign[1], icon: <i class="fas fa-sign text-secondary"></i>, })
+                    if (_sign[1]) secondaryClocks.push({ state: false, version: false, desc: "", name: 'Radicación de Valla', date: _sign[1], icon: <Icon name="sign" size={16} className="text-secondary" />, })
                 }
             }
             let _neighbours = currentItem.fun_3s;
@@ -301,7 +301,7 @@ class CLOCKS_CONTROL extends Component {
                     desc: value.direccion_1 + ' Guia:' + value.id_alerted,
                     name: 'Vecino Notificado',
                     date: value.alerted,
-                    icon: <i class="far fa-envelope"></i>,
+                    icon: <Icon name="envelope" size={16} />,
                 })
             })
 
@@ -349,7 +349,7 @@ class CLOCKS_CONTROL extends Component {
                                     desc: desc(value),
                                     name: `REVISION ${reviewType[state]}, revision ${index + 1}`,
                                     date: reviews_date[index],
-                                    icon: <i class="fas fa-check text-success"></i>,
+                                    icon: <Icon name="check" size={16} className="text-success" />,
                                 })
                             })
                         }
@@ -359,7 +359,7 @@ class CLOCKS_CONTROL extends Component {
                         desc: value.desc,
                         name: value.name,
                         date: value.date_start,
-                        icon: <i class="fas fa-check text-success"></i>,
+                        icon: <Icon name="check" size={16} className="text-success" />,
                     })
 
                 }
@@ -371,7 +371,7 @@ class CLOCKS_CONTROL extends Component {
                     desc: value.desc,
                     name: value.name,
                     date: value.date_start,
-                    icon: <i class="far fa-dot-circle text-info"></i>,
+                    icon: <Icon name="dot-circle" size={16} className="text-info" />,
                 })
             })
 
@@ -381,7 +381,7 @@ class CLOCKS_CONTROL extends Component {
                     desc: value.desc,
                     name: value.name,
                     date: value.date_start,
-                    icon: <i class="fas fa-comment-dollar text-warning"></i>,
+                    icon: <Icon name="comment-dollar" size={16} className="text-warning" />,
                 })
             })
 
@@ -391,31 +391,31 @@ class CLOCKS_CONTROL extends Component {
         
         const HEAD = (
             <div className="row text-light">
-                <div className="col border bg-info text-center"><label className="fw-bold text-uppercase">Control Proceso</label></div>
-                <div className="col-2 border bg-info py-1 text-center"><label className="fw-bold text-uppercase">Fecha límite términos y plazos</label></div>
-                <div className="col-2 border bg-info py-1 text-center"><label className="fw-bold text-uppercase">Fecha ejecución proceso</label></div>
-                <div className="col border bg-info text-center"><label className="fw-bold text-uppercase">Observaciones</label></div>
+                <div className="col border bg-primary text-primary-foreground text-center"><label className="fw-bold">Control Proceso</label></div>
+                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center"><label className="fw-bold">Fecha límite términos y plazos</label></div>
+                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center"><label className="fw-bold">Fecha ejecución proceso</label></div>
+                <div className="col border bg-primary text-primary-foreground text-center"><label className="fw-bold">Observaciones</label></div>
             </div>
         );
 
         const HEAD_SECONDARY_TITLE = (
             <div className="row text-light mt-3">
-                <div className="col border bg-info text-center">
-                    <label className="fw-bold text-uppercase">EVENTOS SECUNDARIOS</label>
+                <div className="col border bg-primary text-primary-foreground text-center">
+                    <label className="fw-bold">EVENTOS SECUNDARIOS</label>
                 </div>
             </div>
         );
 
         const HEAD_SECONDARY_HEADER = (
             <div className="row text-light">
-                <div className="col border bg-info text-center">
-                    <label className="fw-bold text-uppercase">Control Proceso términos y plazos</label>
+                <div className="col border bg-primary text-primary-foreground text-center">
+                    <label className="fw-bold">Control Proceso términos y plazos</label>
                 </div>
-                <div className="col-2 border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">Fecha ejecución proceso</label>
+                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">Fecha ejecución proceso</label>
                 </div>
-                <div className="col border bg-info text-center">
-                    <label className="fw-bold text-uppercase">Observaciones</label>
+                <div className="col border bg-primary text-primary-foreground text-center">
+                    <label className="fw-bold">Observaciones</label>
                 </div>
             </div>
         );
@@ -435,13 +435,13 @@ class CLOCKS_CONTROL extends Component {
         ];
 
         return (
-            <div className="mb-5">
+            <div className="mb-5 w-full min-w-0 overflow-hidden">
                 <ul style={styles.tabsContainer}>
                     {tabs.map(tab => (
                         <li key={tab.id} style={styles.tabItem}>
                             <a
-                                style={this.getTabLinkStyle(tab.id)}
-                                onClick={() => this.handleTabChange(tab.id)}
+                                style={getTabLinkStyle(tab.id)}
+                                onClick={() => handleTabChange(tab.id)}
                                 className={tab.className || ''}
                             >
                                 {tab.label}
@@ -450,12 +450,12 @@ class CLOCKS_CONTROL extends Component {
                     ))}
                 </ul>
 
-                <div className="tab-content">
+                <div className="tab-content w-full min-w-0 overflow-hidden">
                     <div style={styles.tabPane}>
                         {activeTab === 'tiempos' && (
                             <EXP_CLOCKS 
-                                {...this.props}
-                                requestUpdate={this.requestUpdate}
+                                {...props}
+                                requestUpdate={requestUpdate}
                             />
                         )}
                         {activeTab === 'principal' && (
@@ -471,24 +471,24 @@ class CLOCKS_CONTROL extends Component {
                         )}
                         {activeTab === 'eventos' && (
                             <FUN_CLOCK_EVENTS
-                                {...this.props}
-                                requestUpdate={this.requestUpdate}
+                                {...props}
+                                requestUpdate={requestUpdate}
                             />
                         )}
                         {activeTab === 'grafico' && (
                             <FUN_CLOCK_CHART
-                                {...this.props}
+                                {...props}
                             />
                         )}
                         {activeTab === 'desistimientos' && (
                             <>
-                                <legend className="my-3 px-3 text-uppercase bg-danger">
-                                    <label className="app-p lead text-center fw-normal text-uppercase text-light">CONTROL DE PROCESOS DE DESISTIMIENTOS</label>
+                                <legend className="my-3 px-3 bg-danger">
+                                    <label className="app-p lead text-center fw-normal text-light">CONTROL DE PROCESOS DE DESISTIMIENTOS</label>
                                 </legend>
                                 <FUN_CLOCKS_NEGATIVE
-                                    {...this.props}
-                                    requestUpdate={this.requestUpdate}
-                                    requestRefresh={this.requestRefresh}
+                                    {...props}
+                                    requestUpdate={requestUpdate}
+                                    requestRefresh={requestRefresh}
                                 />
                             </>
                         )}
@@ -496,7 +496,6 @@ class CLOCKS_CONTROL extends Component {
                 </div>
             </div>
         );
-    }
 }
 
 export default CLOCKS_CONTROL;

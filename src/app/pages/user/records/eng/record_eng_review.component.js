@@ -1,39 +1,37 @@
-import { MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import FUN_SERVICE from '../../../../services/fun.service'
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleEnghCheck } from '../../../../components/customClasses/pdfCheckHandler';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
+import { Icon } from '@/components/icon';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class RECORD_ENG_REVIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            VRDocs: [],
-            load: false
-        };
-    }
-    componentDidMount() {
-        this.setVRList(this.props.currentItem ? this.props.currentItem.id_public : false);
-    }
-    setVRList(id_public) {
+function RECORD_ENG_REVIEW(props) {
+    const [VRDocs, setVRDocs] = useState([]);
+    const [load, setLoad] = useState(false);
+    const [rewStates, setRewStates] = useState({});
+
+    useEffect(() => {
+        setVRList(props.currentItem ? props.currentItem.id_public : false);
+    }, []);
+
+    function setVRList(id_public) {
         if (!id_public) return;
-        if (this.state.load) return;
-        submitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+        if (load) return;
+        submitService.getIdRelated(props.currentItem.id_public).then(response => {
             let newList = [];
-            let List = response.data;
+            let List = Array.isArray(response.data) ? response.data : [];
             List.map((value, i) => {
-                let subList = value.sub_lists;
+                let subList = Array.isArray(value.sub_lists) ? value.sub_lists : [];
                 subList.map(valuej => {
                     let name = valuej.list_name ? valuej.list_name.split(";") : []
                     let category = valuej.list_category ? valuej.list_category.split(",") : []
@@ -54,12 +52,12 @@ class RECORD_ENG_REVIEW extends Component {
                     })
                 })
             })
-            this.setState({ VRDocs: newList, load: true })
+            setVRDocs(newList); setLoad(true);
         })
 
-    };
-    _GET_CHILD_RECORD_REVIEW = () => {
-        var _CHILD = this.props.currentRecord.record_eng_reviews;
+    }
+    const _GET_CHILD_RECORD_REVIEW = () => {
+        var _CHILD = props.currentRecord.record_eng_reviews;
         var _CURRENT_VERSION = document.getElementById('record_version').value;
         var _CHILD_VARS = {
             id: false,
@@ -97,46 +95,39 @@ class RECORD_ENG_REVIEW extends Component {
         return _CHILD_VARS;
     }
 
-    LOAD_STEP(_id_public) {
-        var _CHILD = this.props.currentRecord.record_law_steps;
+    const LOAD_STEP_class = (_id_public) => {
+        var _CHILD = Array.isArray(props.currentRecord.record_law_steps) ? props.currentRecord.record_law_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == document.getElementById('record_version').value && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }
         return []
     }
-    _GET_STEP_TYPE(_id_public, _type) {
-        var STEP = this.LOAD_STEP(_id_public);
+    const _GET_STEP_TYPE_class = (_id_public, _type) => {
+        var STEP = LOAD_STEP_class(_id_public);
         if (!STEP.id) return [];
         var value = STEP[_type] ?? []
         if (!value.length) return [];
         value = value.split(';');
         return value
     }
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers, _date) {
-        let swaMsg = this.props.swaMsg;
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+    const CREATE_CHECK = async (_detail, chekcs, _currentItem, _headers, _date) => {
+        let swaMsg = props.swaMsg;
 
         const currentItem = _currentItem;
         const id_public = currentItem.id_public;
 
-
         let model = currentItem.model
-        if (!model) return MySwal.fire({
-            title: 'SOLICITUD SIN MODELO',
-            text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
-            icon: 'error',
-            showConfirmButton: true,
-            confirmButtonText: 'CONTINUAR',
-        });
+        if (!model) return swalError({ title: 'SOLICITUD SIN MODELO', text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.' });
+        const assignedStructuralReviewer = props.currentRecord?.worker_name || currentItem.record_eng?.worker_name;
+        if (!assignedStructuralReviewer) return swalError({ title: 'INFORME ESTRUCTURAL SIN REVISOR', text: 'Debe asignar el profesional revisor estructural antes de generar este documento.' });
+        const currentReview = _GET_REVIEW();
+        if (!currentReview.id) return swalError({ title: 'SIN REVISIÓN ESTRUCTURAL REGISTRADA', text: 'Debe registrar la revisión estructural de esta versión antes de generar el informe.' });
 
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordengextra";
-        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordengextra";
-        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordengextra2022";
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
+        if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
+        if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra2022";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
@@ -146,7 +137,6 @@ class RECORD_ENG_REVIEW extends Component {
         // WIDTH = 612, HEIGHT = 936
 
         handleEnghCheck(pdfDoc, page, chekcs, _detail, 0, 1, model)
-
 
         let _city = _headers.city;
         if (_date && _GLOBAL_ID === 'cb1') _city = _headers.city + ", radicado el " + _date;
@@ -177,7 +167,7 @@ class RECORD_ENG_REVIEW extends Component {
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'estructural', 'ingenieria']);
         pdfDoc.setLanguage('es-co');
@@ -187,14 +177,11 @@ class RECORD_ENG_REVIEW extends Component {
         var pdfBytes = await pdfDoc.save();
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'INFORME ESTRUCTURAL ' + id_public + '.pdf');
-        MySwal.close();
-
+        swalClose();
 
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP } = this.props;
-        const { VRDocs } = this.state;
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP } = props;
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -285,7 +272,7 @@ class RECORD_ENG_REVIEW extends Component {
             return _LIST;
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_eng_steps;
+            var _CHILD = Array.isArray(currentRecord.record_eng_steps) ? currentRecord.record_eng_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -356,10 +343,9 @@ class RECORD_ENG_REVIEW extends Component {
         }
         let _GET_PROFESIONAL_NAME = () => {
             var _ROLEID = window.user.roleId;
-            return window.user.name + " " + window.user.surname
             //THIS ROLES ARE PROGRAMER MASTER, CURATOR AND ARCHITEC
             if (_ROLEID == 1 || _ROLEID == 2 || _ROLEID == 6) {
-
+                return window.user.name + " " + window.user.surname
             } else {
                 return "NO ESTA AUTORIZADO A REALIZAR ESTA ACCION"
             }
@@ -382,7 +368,7 @@ class RECORD_ENG_REVIEW extends Component {
 
             return <div className="row py-2">
                 <div className="col-12">
-                    <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                         <div className='col'>
                             <label>Observaciones</label>
                         </div>
@@ -396,7 +382,7 @@ class RECORD_ENG_REVIEW extends Component {
         let _COMPONENT_DETAILS_3 = () => {
             let _CHILD = _GET_REVIEW();
             return <>
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>Notas del Ingeniero Revisor</label>
                     </div>
@@ -408,6 +394,7 @@ class RECORD_ENG_REVIEW extends Component {
         }
         let _COMPONENT_REVIEW = () => {
             let _CHILD = _GET_REVIEW();
+            const hasRegisteredReview = Boolean(_CHILD.id);
 
             let _RR = _GET_RECORD_REVIEW();
 
@@ -426,11 +413,14 @@ class RECORD_ENG_REVIEW extends Component {
 
             const ALLOW_REVIEW = _ALLOW_REVIEW();
             return <>
-                {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                {!ALLOW_REVIEW ? <div className="alert alert-danger">
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 4.1.1 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
-                </MDBTypography> : ''}
-                <div className="row border bg-info py-1 text-white fw-bold">
+                </div> : ''}
+                {!hasRegisteredReview ? <div className="alert alert-warning">
+                    Sin revisión registrada para esta versión. Revisor estructural asignado: {currentRecord.worker_name || 'Sin revisor asignado'}.
+                </div> : ''}
+                <div className="row border bg-primary text-primary-foreground py-1 fw-bold">
                     <div className="col">
                         <label>REVISION</label>
                     </div>
@@ -471,8 +461,8 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label className='fw-bold'>{value}</label>
                                 </div>
                                 <div className="col-3 text-center">
-                                    {this.state['REW' + i]
-                                        ? <input type="text" class="form-control me-1" id={"r_l_review_worker_" + i}
+                                    {rewStates['REW' + i]
+                                        ? <input type="text" className="form-control me-1" id={"r_l_review_worker_" + i}
                                             defaultValue={iworker} disabled />
                                         : <label>{iworker}</label>
                                     }
@@ -481,19 +471,18 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label>{iasing}</label>
                                 </div>
                                 <div className="col text-center">
-                                    {this.state['REW' + i]
-                                        ? <input type="date" class="form-control form-control-sm" id={"r_l_review_date_" + i} max="2100-01-01"
+                                    {rewStates['REW' + i]
+                                        ? <input type="date" className="form-control form-control-sm" id={"r_l_review_date_" + i} max="2100-01-01"
                                             defaultValue={idate} />
                                         : <label>{idate ?? ''}</label>
                                     }
                                 </div>
                                 <div className="col-1">
-                                    {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={this.state['REW' + i]}
-                                        onClick={() => this.setState({ ['REW' + i]: !this.state['REW' + i] })}><i class="far fa-edit"></i></MDBBtn>
+                                    {allowReview ? <Button variant={!rewStates['REW' + i] ? "outline" : "default"} size="sm"
+                                        onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></Button>
                                         : ''}
-                                    {this.state['REW' + i]
-                                        ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                            onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
+                                    {rewStates['REW' + i]
+                                        ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
                                         : ""
                                     }
                                     {true ?
@@ -502,7 +491,7 @@ class RECORD_ENG_REVIEW extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdate={this.props.requestUpdate}
+                                            requestUpdate={props.requestUpdate}
                                             swaMsg={swaMsg}
                                             id6={"eng" + i} />
                                         : ''
@@ -514,14 +503,14 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label>Resultado 1:</label>
                                 </div>
                                 <div className="col-6">
-                                    {this.state['REW' + i]
-                                        ? <input type="text" class="form-control me-1" id={"r_l_review_40_" + i}
+                                    {rewStates['REW' + i]
+                                        ? <input type="text" className="form-control me-1" id={"r_l_review_40_" + i}
                                             defaultValue={idesc1} />
                                         : <label>{idesc1}</label>
                                     }
                                 </div>
                                 <div className="col-3 text-center">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <select className="form-select form-control form-control-sm" defaultValue={ireview} id={"r_l_review_20_" + i}>
                                             <option value="0" className="text-danger">NO ES VIABLE</option>
                                             {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -536,14 +525,14 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label>Resultado 2:</label>
                                 </div>
                                 <div className="col-6">
-                                    {this.state['REW' + i]
-                                        ? <input type="text" class="form-control me-1" id={"r_l_review_50_" + i}
+                                    {rewStates['REW' + i]
+                                        ? <input type="text" className="form-control me-1" id={"r_l_review_50_" + i}
                                             defaultValue={idesc2} />
                                         : <label>{idesc2}</label>
                                     }
                                 </div>
                                 <div className="col-3 text-center">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <select className="form-select form-control form-control-sm" defaultValue={ireview2} id={"r_l_review_30_" + i}>
                                             <option value="0" className="text-danger">NO ES VIABLE</option>
                                             {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -559,14 +548,14 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label>Resultado 3:</label>
                                 </div>
                                 <div className="col-6">
-                                    {this.state['REW' + i]
-                                        ? <input type="text" class="form-control me-1" id={"r_l_review_60_" + i}
+                                    {rewStates['REW' + i]
+                                        ? <input type="text" className="form-control me-1" id={"r_l_review_60_" + i}
                                             defaultValue={idesc3} />
                                         : <label>{idesc3}</label>
                                     }
                                 </div>
                                 <div className="col-3 text-center">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <select className="form-select form-control form-control-sm" defaultValue={ireview3} id={"r_l_review_70_" + i}>
                                             <option value="0" className="text-danger">NO ES VIABLE</option>
                                             {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -587,16 +576,16 @@ class RECORD_ENG_REVIEW extends Component {
             return <>
                 <div className="row">
                     <div className="col-9 p-1">
-                        <label className="fw-bold text-uppercase">Contexto de la revision. </label>
+                        <label className="fw-bold">Contexto de la revision. </label>
                     </div>
                     <div className="col-3 p-1">
-                        <label className="fw-bold text-uppercase">Resultado</label>
+                        <label className="fw-bold">Resultado</label>
                     </div>
                     <div className="col-3 p-1"></div>
                 </div>
                 <div className="row">
                     <div className="col-9 p-1">
-                        <input type="text" class="form-control me-1" id="r_l_review_40"
+                        <input type="text" className="form-control me-1" id="r_l_review_40"
                             defaultValue={_CHILD.check_context ?? ''} />
                     </div>
                     <div className="col-3 p-1">
@@ -610,7 +599,7 @@ class RECORD_ENG_REVIEW extends Component {
 
                 <div className="row">
                     <div className="col-9 p-1">
-                        <input type="text" class="form-control me-1" id="r_l_review_50"
+                        <input type="text" className="form-control me-1" id="r_l_review_50"
                             defaultValue={_CHILD.check_2_cotext ?? ''} />
                     </div>
                     <div className="col-3 p-1">
@@ -634,8 +623,8 @@ class RECORD_ENG_REVIEW extends Component {
 
             return <>
                 <label>Asignación</label>
-                <select className="form-select" id="asign_re">
-                    {asigns.map((value, index) => <option selected={index == reviews_date.length - 1} value={index}># {index + 1} {value}</option>)}
+                <select className="form-select" id="asign_re" defaultValue={reviews_date.length - 1}>
+                    {asigns.map((value, index) => <option key={index} value={index}># {index + 1} {value}</option>)}
                 </select>
             </>
         }
@@ -702,24 +691,24 @@ class RECORD_ENG_REVIEW extends Component {
                     <div className="row mb-3">
                         <div className="col">
                             <label>Autoridad Competente</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_1"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_1"}>
                                     {domains_number}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Ciudad</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_2"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_2"}>
                                     {cities}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Acta</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_version"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_version"}>
                                     <option value={1}>OBSERVACIONES</option>
                                     <option value={2}>CORRECCIONES</option>
                                 </select>
@@ -727,8 +716,8 @@ class RECORD_ENG_REVIEW extends Component {
                         </div>
                         <div className="col">
                             <label>Cabecera</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_header"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_header"}>
                                     <option value={1}>USAR CABECERA</option>
                                     <option value={0}>NO USAR CABECERA</option>
                                 </select>
@@ -738,29 +727,29 @@ class RECORD_ENG_REVIEW extends Component {
                     <div className="row mb-3">
                         <div className="col">
                             <label>Revision</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
                                     {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Profesional</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_worker_name"} disabled defaultValue={reviews[0].worker} />
                             </div>
                         </div>
                         <div className="col">
                             <label>Fecha</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_date"} disabled defaultValue={reviews[0].date} />
                             </div>
                         </div>
                         <div className="col-2">
                             <br />
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="record_eng_pending" />
-                                <label class="form-check-label" for="exampleCheck1">Pendiente</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="record_eng_pending" />
+                                <label className="form-check-label" htmlFor="exampleCheck1">Pendiente</label>
                             </div>
                         </div>
                     </div>
@@ -792,10 +781,10 @@ class RECORD_ENG_REVIEW extends Component {
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col">
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i class="far fa-file-pdf"></i> DESCARGAR INFORME</button>
+                            <Button variant="destructive" size="sm" className="me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</Button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i class="far fa-check-square"></i> DESCARGAR CHECKEO</button>
+                            <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</Button>
                         </div>
                     </div>
                 </div>
@@ -822,71 +811,34 @@ class RECORD_ENG_REVIEW extends Component {
         }
         let manage_item = (useSwal) => {
             var _CHILD = _GET_REVIEW();
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 RECORD_ENG_SERVICE.update_review(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             } else {
                 RECORD_ENG_SERVICE.create_review(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
 
@@ -894,14 +846,7 @@ class RECORD_ENG_REVIEW extends Component {
 
         // REVIEW
         let review_r = (isPrimal, i, iasing) => {
-            MySwal.fire({
-                title: "REALIZAR REVISION",
-                text: `¿Esta seguro de realizar la revision ${currentVersionR} de este Informe?`,
-                icon: 'question',
-                confirmButtonText: "REVISAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "REALIZAR REVISION", text: `¿Esta seguro de realizar la revision ${currentVersionR} de este Informe?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     save_review(isPrimal);
                     save_clock(i, iasing);
@@ -940,48 +885,27 @@ class RECORD_ENG_REVIEW extends Component {
             formData.set('recordEngId', currentRecord.id);
             formData.set('version', currentVersionR);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
                 RECORD_ENG_SERVICE.update_review(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            props.requestUpdateRecord(currentItem.id);
+                            setRewStates(prev => ({ ...prev, REW0: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -990,36 +914,20 @@ class RECORD_ENG_REVIEW extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            props.requestUpdateRecord(currentItem.id);
+                            setRewStates(prev => ({ ...prev, REW0: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -1090,12 +998,7 @@ class RECORD_ENG_REVIEW extends Component {
 
             formDataClock.set('fun0Id', currentItem.id);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
 
             if (_CHILD.id) {
@@ -1103,36 +1006,20 @@ class RECORD_ENG_REVIEW extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            props.requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setRewStates(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -1141,36 +1028,20 @@ class RECORD_ENG_REVIEW extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            props.requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setRewStates(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -1194,7 +1065,6 @@ class RECORD_ENG_REVIEW extends Component {
             let r_engc_pending = document.getElementById("record_eng_pending").checked;
             formData.set('r_engc_pending', r_engc_pending);
 
-
             let r_check = document.getElementById("record_pdf_check_1_v").value;
             formData.set('r_check', r_check);
             let r_check_2 = document.getElementById("record_pdf_check_2_v").value;
@@ -1209,34 +1079,19 @@ class RECORD_ENG_REVIEW extends Component {
             let r_check_3_c = document.getElementById("record_pdf_check_3_c").value;
             formData.set('r_check_3_c', r_check_3_c);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_ENG_SERVICE.pdfgen(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordeng/" + "INFORME ESTRUCTURAL " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordeng/" + "INFORME ESTRUCTURAL " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let _VERSIONS_SELECT = () => {
@@ -1244,7 +1099,7 @@ class RECORD_ENG_REVIEW extends Component {
             for (let i = 0; i < currentItem.version; i++) {
                 _COMPONENT.push(<option value={i + 1}>Revision {i + 1}</option>)
             }
-            return <select class="form-select" id="record_version">{_COMPONENT}</select>
+            return <select className="form-select" id="record_version">{_COMPONENT}</select>
         }
         let CREATE_PDF_CHECK = () => {
             let CLOCK_3 = _GET_CLOCK_STATE(3, 1)
@@ -1263,7 +1118,7 @@ class RECORD_ENG_REVIEW extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
+            CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
         }
         return (
             <div className="record_eng_review container">
@@ -1279,7 +1134,6 @@ class RECORD_ENG_REVIEW extends Component {
                 {_COMPONENT_REVIEW()}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_REVIEW;

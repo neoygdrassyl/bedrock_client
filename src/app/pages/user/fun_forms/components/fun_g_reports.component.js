@@ -1,16 +1,8 @@
-import React, { Component } from 'react';
 import { regexChecker_isPh, regexChecker_movTierra } from '../../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
 //import VIZUALIZER from '../../../../components/vizualizer.component';
 
-class FUN_G_REPORTS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id } = this.props;
-        const { } = this.state;
+function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id, textAlign }) {
         const empty_model = { version: '', worker_name: '', worker_id: '', date_asign: '', worker_prev: '' }
         const reviewStr = ['NO CUMPLE', 'CUMPLE', 'NO APLICA']
         // DATA GETTERS
@@ -114,36 +106,39 @@ class FUN_G_REPORTS extends Component {
         }
         let _GET_REVIEW = (_REVIEW, _REVIEW_CLOCK, REVIEWS) => {
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '125%' }}></i></label>,
-                '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '125%' }}></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '125%' }}></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '125%' }}></i></label>,
+                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} style={{ fontSize: '125%' }} /></label>,
+                '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={16} style={{ fontSize: '125%' }} /></label>,
+                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} style={{ fontSize: '125%' }} /></label>,
+                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} style={{ fontSize: '125%' }} /></label>,
             }
 
             if (REVIEWS) {
                 let asigns = REVIEWS.split(';');
                 let reviews = _REVIEW_CLOCK ? _REVIEW_CLOCK.split(';') : [_REVIEW];
-                return asigns.map((value, index) => res[reviews[index]] ?? res['-1'])
+                return asigns.map((value, index) => <span key={index}>{res[reviews[index]] ?? res['-1']}</span>)
             } else return res[_REVIEW] ?? res['-1']
         }
-        let _GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS) => {
+        let _GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS, hasRegisteredReview = true) => {
+            if (!hasRegisteredReview) {
+                return <span className="text-muted small">Sin revisión registrada</span>;
+            }
             let revies = _REVIEW ?? [-1, -1]
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle"></i></label>,
-                '0': <label className="fw-bold text-danger  me-1"><i class="far fa-times-circle"></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle"></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle"></i></label>,
+                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} /></label>,
+                '0': <label className="fw-bold text-danger  me-1"><Icon name="times-circle" size={16} /></label>,
+                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} /></label>,
+                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} /></label>,
             }
             if (REVIEWS) {
                 let asigns = REVIEWS.split(';');
                 let reviews_c = _REVIEW_CLOCK ? _REVIEW_CLOCK.split(';') : [_REVIEW].join(',');
                 return ['R1:', 'R2:'].map((value, index) =>
-                    <>
+                    <span key={index}>
                         <label>{value}
-                            {asigns.map((value2, index2) => res[reviews_c[index2] ? reviews_c[index2].split(',')[index] : '-1'] ?? res['-1'])}
+                            {asigns.map((value2, index2) => <span key={index2}>{res[reviews_c[index2] ? reviews_c[index2].split(',')[index] : '-1'] ?? res['-1']}</span>)}
                         </label><br />
-                    </>)
-            } else return revies.map((value, index) => <><label>R{index + 1}: {res[value] ?? res['-1']}</label><br /></>)
+                    </span>)
+            } else return revies.map((value, index) => <span key={index}><label>R{index + 1}: {res[value] ?? res['-1']}</label><br /></span>)
 
         }
         let _TABLE_INFO = () => {
@@ -165,7 +160,7 @@ class FUN_G_REPORTS extends Component {
                         worker: review.worker_law_name,
                         review: review.check_law,
                         date: review.date_law_review,
-                        icon: <i class="fas fa-balance-scale me-2"></i>,
+                        icon: <Icon name="balance-scale" size={16} className="me-2" />,
                         type: 'JUR.',
                         process: 'Acta Observaciones',
                     })
@@ -218,7 +213,7 @@ class FUN_G_REPORTS extends Component {
                             worker: review.worker_name,
                             review: revc_f[i],
                             date: review_f[i],
-                            icon: <i class="fas fa-balance-scale me-2"></i>,
+                            icon: <Icon name="balance-scale" size={16} className="me-2" />,
                             type: 'JUR.',
                             process: value,
                         })
@@ -238,7 +233,7 @@ class FUN_G_REPORTS extends Component {
                         worker: review.worker_arc_name,
                         review: review.check,
                         version: review.version,
-                        icon: <i class="far fa-building me-2"></i>,
+                        icon: <Icon name="building" size={16} className="me-2" />,
                         type: 'AEQ.',
                         process: 'Acta Observaciones',
                     })
@@ -290,7 +285,7 @@ class FUN_G_REPORTS extends Component {
                         worker: review.worker_name,
                         review: revc_f[i],
                         date: review_f[i],
-                        icon: <i class="far fa-building me-2"></i>,
+                        icon: <Icon name="building" size={16} className="me-2" />,
                         type: 'ARQ.',
                         process: value,
                     }))
@@ -341,9 +336,10 @@ class FUN_G_REPORTS extends Component {
                         inform: inform_f[i],
                         asign_date: asign_f[i],
                         worker: review.worker_name,
+                        hasRegisteredReview: Boolean(review.id),
                         review: revc_f[i],
                         date: review_f[i],
-                        icon: <i class="fas fa-cogs me-2"></i>,
+                        icon: <Icon name="cogs" size={16} className="me-2" />,
                         type: 'EST.',
                         class: 'eng',
                         process: value,
@@ -356,54 +352,55 @@ class FUN_G_REPORTS extends Component {
         let _TABLE = () => {
             let data = _TABLE_INFO();
             const HEAD = <div className="row text-light">
-                <div className="col-2 border bg-info text-center">
-                    <label className="fw-bold text-uppercase">INFORME</label>
+                <div className="col-2 border bg-primary text-primary-foreground text-center">
+                    <label className="fw-bold">INFORME</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">REVISOR</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">REVISOR</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">REVISIÓN</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">REVISIÓN</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">ASIGNACIÓN</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">ASIGNACIÓN</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">REVISION</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">REVISION</label>
                 </div>
-                <div className="col-1 border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">RES.</label>
+                <div className="col-1 border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">RES.</label>
                 </div>
-                <div className="col border bg-info py-1 text-center">
-                    <label className="fw-bold text-uppercase">INFORMAR</label>
+                <div className="col border bg-primary text-primary-foreground py-1 text-center">
+                    <label className="fw-bold">INFORMAR</label>
                 </div>
             </div>
 
-            const BODY = data.map(value => {
-                return <div className="row ">
+            const BODY = data.map((value, i) => {
+                return <div className="row" key={i}>
                     <div className="col-2 border text-center">
-                        <h5 className="text-uppercase">{value.icon} {value.type}</h5>
+                        <h5 className="">{value.icon} {value.type}</h5>
                     </div>
                     <div className="col border text-center">
-                        <h5 className="text-uppercase fw-normal">{value.asign ||value.worker }</h5>
+                        <h5 className="fw-normal">{value.asign ||value.worker }</h5>
+                        {value.class == 'eng' && value.asign ? <small className="text-muted">Revisor estructural asignado</small> : ''}
                     </div>
                     <div className="col border text-center">
                         <h5 className="fw-normal">{value.process}</h5>
                     </div>
                     <div className="col border text-center">
-                        <label className="text-uppercase">{value.asign_date}</label>
+                        <label className="">{value.asign_date}</label>
                     </div>
                     <div className="col border text-center">
-                        <label className="text-uppercase">{value.date}</label>
+                        <label className="">{value.date}</label>
                     </div>
                     <div className="col-1 border text-center">
-                        <label className="text-uppercase">{value.class == 'eng' ?
-                            _GET_REVIEW_ENG(value.review)
+                        <label className="">{value.class == 'eng' ?
+                            _GET_REVIEW_ENG(value.review, undefined, undefined, value.hasRegisteredReview)
                             : _GET_REVIEW(value.review)}
                         </label>
                     </div>
                     <div className="col border text-center">
-                        <label className="text-uppercase">{value.inform}</label>
+                        <label className="">{value.inform}</label>
                     </div>
                 </div>
             })
@@ -417,15 +414,14 @@ class FUN_G_REPORTS extends Component {
         return (
             <div className="fun_g_mix">
 
-                <legend className={`my-2 px-3 text-uppercase Collapsible text-white ${this.props.textAlign ?? ''}`} id={id}>
-                    <label className="app-p lead text-center fw-normal text-uppercase">{nomenclature} INFORMES</label>
+                <legend className={`my-2 px-3 Collapsible text-white ${textAlign ?? ''}`} id={id}>
+                    <label className="app-p lead text-center fw-normal">{nomenclature} INFORMES</label>
                 </legend>
 
                 {_TABLE()}
 
             </div >
         );
-    }
 }
 
 export default FUN_G_REPORTS;

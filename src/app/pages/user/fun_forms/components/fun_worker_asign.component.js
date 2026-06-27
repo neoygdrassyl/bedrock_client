@@ -1,12 +1,12 @@
-import { MDBBtn, MDBTooltip, MDBTypography, MDBPopover, MDBPopoverBody, MDBPopoverHeader, } from 'mdb-react-ui-kit';
-import { MDBCollapse } from "mdbreact";
-import moment from 'moment';
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import dayjs from 'dayjs';
+import { useState, useEffect } from 'react';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import FunService from '../../../../services/fun.service';
+import { Icon } from '@/components/icon';
 
-var momentB = require('moment-business-days');
 const _fun_0_state = {
     '1': 'RADICACIÓN',
     '-1': 'RADICACIÓN',
@@ -47,66 +47,25 @@ const _fun_0_type_days_matrix = {
     '0': { 'law': 1, 'arc': 1, 'eng': 0 },
 }
 const clocks_process = ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Revision de Correcciones',]
-class FUN_WORKER_ASIGN extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            currentItems: [],
-            currentItems2: [],
-            collapseID: false,
-            lic_list: false,
-            lic_list2: false
-        };
-    }
-    componentDidMount() {
-        this.load()
-    }
-    load() {
-        FunService.loadasign(window.user.id, this.props.type)
-            .then(response => {
-                if (response.data.length) {
-                    this.asignList(response.data)
-                }
-            }).catch(e => {
-                console.log(e);
-            });
+function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
+        const [currentItems, setCurrentItems] = useState([]);
+        const [currentItems2, setCurrentItems2] = useState([]);
+        const [collapseID, setCollapseID] = useState(false);
+        const [licList, setLicList] = useState(false);
+        const [licList2, setLicList2] = useState(false);
 
-    }
-    asignList(_LIST) {
-        var list1 = [];
-        for (let i = 0; i < _LIST.length; i++) {
-            const lItem = _LIST[i];
-            var vrtime = this.get_lastVRTime(lItem);
-            list1.push({ ...lItem, vrtime: vrtime });
-        }
-        list1.sort((a, b) => a.vrtime - b.vrtime)
-
-        this.setState({
-            currentItems: list1.filter(item => {
-                if (this.props.type == 'law') {
-                    if (this._con_law(item) == 1) return true;
-                }
-                if (this.props.type == 'arc'  && !regexChecker_isOA_2(item)) {
-                    if (this._con_arc(item) == 1) return true;
-                }
-                if (this.props.type == 'eng' && !regexChecker_isOA_2(item)) {
-                    if (this._con_eng(item) == 1) return true;
-                }
-            }),
-        })
-    }
-    get_lastVRTime(items) {
+    const get_lastVRTime = (items) => {
         var screated = items.screated ? items.screated.split(';') : [];
-        var today = moment();
-        var diff = moment(today).diff(screated[0], 'days', true);
+        var today = dayjs();
+        var diff = dayjs(today).diff(screated[0], 'days', true);
         screated.map(value => {
-            var diffi = moment(today).diff(value, 'days', true)
+            var diffi = dayjs(today).diff(value, 'days', true)
             if (diffi < diff) diff = diffi
         })
         return diff;
     }
 
-    _con_law(row, returnObj = false) {
+    const _con_law = (row, returnObj = false) => {
         let review_primal = row.review ?? row.reviewph;
         let asgin_primal = row.law_asign ?? row.ph_law_asign;
         let asigns = row.clock_asign_law ? row.clock_asign_law.split(';') : [];
@@ -138,12 +97,12 @@ class FUN_WORKER_ASIGN extends Component {
         if (returnObj) return {
             process: clocks_process[processIndex],
             date_asign: lastA,
-            max_date: dateParser_finalDate(lastA, _fun_0_type_days_matrix[row.type ?? 0][this.props.type])
+            max_date: dateParser_finalDate(lastA, _fun_0_type_days_matrix[row.type ?? 0][type])
         };
         if (lastA && lastR == null) return 1; // YES ASIGN, NO REVIEW
         return 0;
     }
-    _con_arc(row, returnObj = false) {
+    const _con_arc = (row, returnObj = false) => {
         let review_primal = row.review ?? row.reviewph;
         let asgin_primal = row.arc_asign ?? row.ph_arc_asign;
         let asigns = row.clock_asign_arc ? row.clock_asign_arc.split(';') : [];
@@ -175,12 +134,12 @@ class FUN_WORKER_ASIGN extends Component {
         if (returnObj) return {
             process: clocks_process[processIndex],
             date_asign: lastA,
-            max_date: dateParser_finalDate(lastA, _fun_0_type_days_matrix[row.type ?? 0][this.props.type])
+            max_date: dateParser_finalDate(lastA, _fun_0_type_days_matrix[row.type ?? 0][type])
         };
         if (lastA && lastR == null) return 1; // YES ASIGN, NO REVIEW
         return 0;
     }
-    _con_eng(row, returnObj = false) {
+    const _con_eng = (row, returnObj = false) => {
         let review_primal = [row.review, row.review_2];
         let asgin_primal = row.eng_asign;
         let asigns = row.clock_asign_eng ? row.clock_asign_eng.split(';') : [];
@@ -219,50 +178,77 @@ class FUN_WORKER_ASIGN extends Component {
         if (returnObj) return {
             process: clocks_process[processIndex],
             date_asign: lastA,
-            max_date: dateParser_finalDate(lastA, _fun_0_type_days_matrix[row.type ?? 0][this.props.type])
+            max_date: dateParser_finalDate(lastA, _fun_0_type_days_matrix[row.type ?? 0][type])
         };
         if (lastA && con3) return 1; // YES ASIGN, NO REVIEW
         return 0;
     }
 
-    get_obj(row) {
-        if (this.props.type == 'law') return this._con_law(row, true)
-        if (this.props.type == 'arc') return this._con_arc(row, true)
-        if (this.props.type == 'eng') return this._con_eng(row, true)
+    const get_obj = (row) => {
+        if (type == 'law') return _con_law(row, true)
+        if (type == 'arc') return _con_arc(row, true)
+        if (type == 'eng') return _con_eng(row, true)
     }
-    render() {
-        const { translation, globals, type } = this.props;
-        const { currentItems, currentItems2 } = this.state;
+
+    const asignList = (_LIST) => {
+        var list1 = [];
+        for (let i = 0; i < _LIST.length; i++) {
+            const lItem = _LIST[i];
+            var vrtime = get_lastVRTime(lItem);
+            list1.push({ ...lItem, vrtime: vrtime });
+        }
+        list1 = [...list1].sort((a, b) => a.vrtime - b.vrtime)
+
+        setCurrentItems(list1.filter(item => {
+                if (type == 'law') {
+                    if (_con_law(item) == 1) return true;
+                }
+                if (type == 'arc'  && !regexChecker_isOA_2(item)) {
+                    if (_con_arc(item) == 1) return true;
+                }
+                if (type == 'eng' && !regexChecker_isOA_2(item)) {
+                    if (_con_eng(item) == 1) return true;
+                }
+            }));
+    }
+
+    const load = () => {
+        FunService.loadasign(window.user.id, type)
+            .then(response => {
+                if (response.data.length) {
+                    asignList(response.data)
+                }
+            }).catch(e => {
+                console.log(e);
+            });
+    }
+
+    useEffect(() => {
+        load();
+    }, []);
 
         let get_reportBtn = item => {
-            if (regexChecker_isPh(item, true)) return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button
-                    onClick={() => this.props.openModal(item, 'record_ph')}
-                    className="px-2 btn-sm btn-warning btn"
-                > <i class="fas fa-pencil-ruler fa-2x" ></i>
-                </button> </MDBTooltip>
+            if (regexChecker_isPh(item, true)) return <button
+                    onClick={() => openModal(item, 'record_ph')}
+                    size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
+                > <Icon name="pencil-ruler" size={16} />
+                </button>
 
-            if (type == 'law') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button
-                    onClick={() => this.props.openModal(item, 'record_law')}
-                    className="px-2 btn-sm btn-warning btn"
-                > <i class="fas fa-balance-scale fa-2x" ></i>
+            if (type == 'law') return <button
+                    onClick={() => openModal(item, 'record_law')}
+                    size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
+                > <Icon name="balance-scale" size={16} />
                 </button>
-            </MDBTooltip>
-            if (type == 'arc') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button
-                    onClick={() => this.props.openModal(item, 'record_arc')}
-                    className="px-2 btn-sm btn-warning btn"
-                > <i class="far fa-building fa-2x" ></i>
+            if (type == 'arc') return <button
+                    onClick={() => openModal(item, 'record_arc')}
+                    size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
+                > <Icon name="building" size={16} />
                 </button>
-            </MDBTooltip>
-            if (type == 'eng') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button
-                    onClick={() => this.props.openModal(item, 'record_eng')}
-                    className="px-2 btn-sm btn-warning btn"
-                > <i class="fas fa-cogs fa-2x" ></i>
+            if (type == 'eng') return <button
+                    onClick={() => openModal(item, 'record_eng')}
+                    size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
+                > <Icon name="cogs" size={16} />
                 </button>
-            </MDBTooltip>
             return '';
         }
         let get_state_label = row => {
@@ -273,114 +259,106 @@ class FUN_WORKER_ASIGN extends Component {
         }
 
         let reviewNull = () => {
-            return <MDBTypography note noteColor='danger'>
+            return <div className="alert alert-danger">
                 <div className="row">
                     <div className="col-10">
                         <label className="fw-bold">SOLICITUDES SIN REVISAR: {currentItems.filter(item => item.state <= 50).length} (INFORME {type == 'law' ? 'JURIDICO' : type == 'eng' ? 'ESTRUCTURAL' : type == 'arc' ? 'ARQUITECTONICO' : ''})</label>
                     </div>
                     <div className="col text-end">
-                        <MDBTooltip title='Detalles' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <MDBBtn
-                                color="info"
-                                size="sm"
-                                onClick={() => this.setState({ lic_list: !this.state.lic_list })}
+                        <span title="Detalles"><Button variant="ghost" size="sm"
+                                onClick={() => setLicList(!licList)}
                                 className="px-2"
-                            > <i class="fas fa-info-circle fa-2x"></i>
-                            </MDBBtn>
-                        </MDBTooltip>
+                            > <Icon name="info-circle" size={16} />
+                            </Button></span>
                     </div>
                 </div>
 
-
-
-                <MDBCollapse id='lic_list' isOpen={this.state.lic_list}>
-                    <ul class="list-group mx-2">
+                {licList && (
+                    <ul className="list-group mx-2">
                         {listMap(currentItems)}
                     </ul>
-                </MDBCollapse>
+                )}
 
-            </MDBTypography>
+            </div>
         }
         let listMap = (list) => {
             let newList = [];
             list.filter(item => item.state <= 50).map(value => { newList.push(value) })
             const columns = [
                 {
-                    name: <label className="text-center"># RADICACION</label>,
+                    name: '# Radicación',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '140px',
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
-                    name: <label className="text-center">REV</label>,
-                    selector: row => this.get_obj(row).process,
+                    name: 'Rev',
+                    selector: row => get_obj(row).process,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{this.get_obj(row).process}</label>
+                    cell: row => <span className="text-sm">{get_obj(row).process}</span>
                 },
                 {
-                    name: <label className="text-center">FECHA ASIGNACION</label>,
-                    selector: row => this.get_obj(row).date_asign,
+                    name: 'Fecha Asignación',
+                    selector: row => get_obj(row).date_asign,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{this.get_obj(row).date_asign}</label>
+                    cell: row => <span className="text-sm">{get_obj(row).date_asign}</span>
                 },
                 {
-                    name: <label className="text-center">FECHA LIMITE</label>,
-                    selector: row => this.get_obj(row).max_date,
+                    name: 'Fecha Límite',
+                    selector: row => get_obj(row).max_date,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{this.get_obj(row).max_date}</label>
+                    cell: row => <span className="text-sm">{get_obj(row).max_date}</span>
                 },
                 {
-                    name: <label className="text-center">EST</label>,
+                    name: 'Est',
                     selector: row => row.state,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '100px',
                     maxWidth: '100px',
-                    cell: row => <label>{get_state_label(row)}</label>
+                    cell: row => <span className="text-sm">{get_state_label(row)}</span>
                 },
                 {
-                    name: <label className="text-center">CT</label>,
+                    name: 'CT',
                     selector: row => row.type ?? 0,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '60px',
                     maxWidth: '60px',
-                    cell: row => <label>{_fun_0_type[row.type ?? 0]}</label>
+                    cell: row => <span className="text-sm">{_fun_0_type[row.type ?? 0]}</span>
                 },
                 {
-                    name: <label className="text-center">ULTIMO VR</label>,
+                    name: 'Último VR',
                     center: true,
-                    selector: row => this.get_lastVRTime(row),
+                    selector: row => get_lastVRTime(row),
                     sortable: true,
                     filterable: true,
                     minWidth: '100px',
                     cell: row => <label> {get_lastVR(row)}</label>,
                 },
                 {
-                    name: <label className="text-center">ACCIÓN</label>,
+                    name: 'Acción',
                     button: true,
                     center: true,
                     minWidth: '200px',
                     cell: row => <>
                         {listItemPopOver(row)}
-                        <MDBTooltip title='Informacion Solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button
-                                onClick={() => this.props.openModal(row, 'general')}
-                                className="px-2 btn-sm btn-info btn"
-                            > <i class="far fa-folder-open fa-2x" ></i>
+                        <button
+                                onClick={() => openModal(row, 'general')}
+                                size="sm" className="px-2"
+                            > <Icon name="folder-open" size={16} />
                             </button>
-                        </MDBTooltip>
                         {get_reportBtn(row)}
                     </>,
                 },
@@ -417,13 +395,18 @@ class FUN_WORKER_ASIGN extends Component {
                     snames: snames[i],
                 }
             ))
-            vrItem.sort((a, b) => new Date(b.screated) - new Date(a.screated));
-            return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: 400 }}
-                btnChildren={<i class="fas fa-file-import fa-2x"></i>}
-                btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
-                <MDBPopoverHeader>Ventanilla Única</MDBPopoverHeader>
-                <MDBPopoverBody>{vrItem.map(value => listVR(value))}</MDBPopoverBody>
-            </MDBPopover>
+            vrItem = [...vrItem].sort((a, b) => new Date(b.screated) - new Date(a.screated));
+            return <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="px-2 mb-1 me-1">
+                        <Icon name="FileInput" size={16} />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent side="left" className="w-[400px]">
+                    <p className="font-semibold text-sm mb-2">Ventanilla Única</p>
+                    {vrItem.map(value => listVR(value))}
+                </PopoverContent>
+            </Popover>
         }
         let listVR = (item) => {
             var scodes = item.scodes ? item.scodes.split(',') : [];
@@ -439,7 +422,7 @@ class FUN_WORKER_ASIGN extends Component {
             </>
         }
         let get_lastVR = (items) => {
-            var diff = this.get_lastVRTime(items)
+            var diff = get_lastVRTime(items)
             var days = Math.trunc(diff);
             var hours = Math.trunc(diff * 24) % 24;
             var mins = Math.trunc(diff * 24 * 60) % 60;
@@ -458,7 +441,6 @@ class FUN_WORKER_ASIGN extends Component {
                     : ""}
             </div >
         );
-    }
 }
 
 export default FUN_WORKER_ASIGN;

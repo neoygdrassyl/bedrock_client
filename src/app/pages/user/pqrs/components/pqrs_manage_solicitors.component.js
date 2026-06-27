@@ -1,29 +1,22 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import DataTable from 'react-data-table-component';
-import { MDBTooltip } from 'mdb-react-ui-kit';
+import DataTable from '@/components/data-table-bridge';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class PQRS_EDIT_SOLICITORS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
-            document.getElementById("pqrs_edit_solicitor_1_edit").value = _ITEM.name;
-            document.getElementById("pqrs_edit_solicitor_2_edit").value = _ITEM.type;
-            document.getElementById("pqrs_edit_solicitor_3_edit").value = _ITEM.id_number;
-            document.getElementById("pqrs_edit_solicitor_4_edit").value = _ITEM.type_id;
+function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
+    const [edit, setEdit] = useState(false);
+    const [isNew, setIsNew] = useState(false);
+
+    useEffect(() => {
+        if (edit && edit !== false) {
+            document.getElementById("pqrs_edit_solicitor_1_edit").value = edit.name;
+            document.getElementById("pqrs_edit_solicitor_2_edit").value = edit.type;
+            document.getElementById("pqrs_edit_solicitor_3_edit").value = edit.id_number;
+            document.getElementById("pqrs_edit_solicitor_4_edit").value = edit.type_id;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const {} = this.state;
+    }, [edit]);
 
         //DATA GETTERS
         let _GET_SOLICITORS = () => {
@@ -35,41 +28,39 @@ class PQRS_EDIT_SOLICITORS extends Component {
             var _LIST = _GET_SOLICITORS();
             const columns = [
                 {
-                    name: <label>NOMBRE</label>,
-                    selector: 'name',
+                    name: 'NOMBRE',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.name}</label>,
+                    cell: row => <span className="text-sm">{row.name}</span>,
                 },
                 {
-                    name: <label>TIPO PERSONA</label>,
-                    selector: 'competence',
+                    name: 'TIPO PERSONA',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.type}</label>,
+                    cell: row => <span className="text-sm">{row.type}</span>,
                 },
                 {
-                    name: <label>TIPO DOCUMENTO</label>,
-                    selector: 'asign',
+                    name: 'TIPO DOCUMENTO',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.type_id}</label>,
+                    cell: row => <span className="text-sm">{row.type_id}</span>,
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
-                    cell: row => <label>{row.id_number}</label>,
+                    name: 'DOCUMENTO',
+                    cell: row => <span className="text-sm">{row.id_number}</span>,
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => this.setState({ edit: row })} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i class="far fa-edit "></i></button></MDBTooltip>
-                        <MDBTooltip title='Eliminar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <i class="far fa-trash-alt "></i></button></MDBTooltip>
+ <Button variant="outline" size="sm" className="m-0 p-2" title="Modificar item" onClick={() => setEdit(row)} >
+                                <Icon name="edit" size={16} /></Button>
+ <Button variant="destructive" size="sm" className="m-0 p-2" title="Eliminar item" onClick={() => delete_item(row.id)} >
+                                <Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
@@ -86,20 +77,20 @@ class PQRS_EDIT_SOLICITORS extends Component {
         }
         let _COMPONENT_MANAGE = (_edit) => {
             var _COMPONENT = [];
-            _COMPONENT.push(<div className="row">
+            _COMPONENT.push(<div key={`pqrs-manage-solicitor-${_edit || 'new'}`} className="row">
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-user"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="user" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Nombre Completo" id={"pqrs_edit_solicitor_1"+_edit} />
+                        <input type="text" className="form-control" placeholder="Nombre Completo" id={"pqrs_edit_solicitor_1"+_edit} />
                     </div>
 
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-user"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="user" size={16} />
                         </span>
-                        <select class="form-select" id={"pqrs_edit_solicitor_2"+_edit}>
+                        <select className="form-select" id={"pqrs_edit_solicitor_2"+_edit}>
                             <option>NATURAL</option>
                             <option>JURIDICO</option>
                             <option>ESTABLECIMIENTO DE COMERCIO</option>
@@ -108,18 +99,18 @@ class PQRS_EDIT_SOLICITORS extends Component {
                     </div>
                 </div>
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-id-card"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="id-card" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Numero de Documento" id={"pqrs_edit_solicitor_3"+_edit} />
+                        <input type="text" className="form-control" placeholder="Numero de Documento" id={"pqrs_edit_solicitor_3"+_edit} />
                     </div>
 
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-id-card"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="id-card" size={16} />
                         </span>
-                        <select class="form-select" id={"pqrs_edit_solicitor_4"+_edit}>
+                        <select className="form-select" id={"pqrs_edit_solicitor_4"+_edit}>
                             <option>CEDULA DE CIUDADANIA</option>
                             <option>NIT</option>
                             <option>CEDULA DE EXTRANJERIA</option>
@@ -150,42 +141,20 @@ class PQRS_EDIT_SOLICITORS extends Component {
             let type_id = document.getElementById("pqrs_edit_solicitor_4").value;
             formData.set('type_id', type_id);
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.create_solicitor(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshCurrentItem(currentItem.id)
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        refreshCurrentItem(currentItem.id)
                         document.getElementById("form_pqrs_edit_solicitor_new").reset();
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let edit_item = (e) => {
@@ -200,128 +169,77 @@ class PQRS_EDIT_SOLICITORS extends Component {
             let type_id = document.getElementById("pqrs_edit_solicitor_4_edit").value;
             formData.set('type_id', type_id);
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            PQRS_Service.update_solicito(this.state.edit.id, formData)
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            PQRS_Service.update_solicito(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.refreshCurrentItem(currentItem.id)
-                        this.setState({ edit: false });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        refreshCurrentItem(currentItem.id)
+                        setEdit(false);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let delete_item = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ESTE ITEM",
-                text: "¿Esta seguro de eliminar de forma permanente este item?",
-                icon: 'question',
-                confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     PQRS_Service.delete_solicitor(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.refreshCurrentItem(currentItem.id)
-                                this.setState({ edit: false });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                refreshCurrentItem(currentItem.id)
+                                setEdit(false);
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
         }
         return (
             <div>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Peticionario
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <form id="form_pqrs_edit_solicitor_new" onSubmit={new_item}>
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
-                            <button className="btn btn-sm btn-success my-3">
-                                <i class="far fa-share-square"></i> AÑADIR ITEM
-                            </button>
+                            <Button size="sm" className="my-3">
+                                <Icon name="share-square" size={16} /> AÑADIR ITEM
+                            </Button>
                         </div>
                     </form>
                     : ""}
                 {_SOLICITORS_COMPONENT()}
-                {this.state.edit
+                {edit
                     ? <form id="form_pqrs_edit_solicitor_edit" onSubmit={edit_item}>
                         <div className="text-center">
                             <label className="fw-bold py-2">Editar Item</label>
                         </div>
                         {_COMPONENT_MANAGE("_edit")}
                         <div className="text-center">
-                            <button className="btn btn-sm btn-success my-3">
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
-                            </button>
+                            <Button size="sm" className="my-3">
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                            </Button>
                         </div>
                     </form>
                     : ""}
             </div>
         );
-    }
 }
 
 export default PQRS_EDIT_SOLICITORS;

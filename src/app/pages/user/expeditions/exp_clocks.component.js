@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { Button } from '@/components/ui/button';
 
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+import { swalLoading, swalSuccess, swalError, swalInfo, swalFormDialog, Swal } from '../../../utils/swalAdapter';
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
   const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, outCodes } = props;
@@ -89,7 +89,7 @@ export default function EXP_CLOCKS(props) {
       end: endClock,
       days: startClock?.date_start && endClock?.date_start
         ? dateParser_dateDiff(startClock.date_start, endClock.date_start)
-        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, moment().format('YYYY-MM-DD')) : 0)
+        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, dayjs().format('YYYY-MM-DD')) : 0)
     };
   }
 
@@ -102,7 +102,7 @@ export default function EXP_CLOCKS(props) {
       end: endClock,
       days: startClock?.date_start && endClock?.date_start
         ? dateParser_dateDiff(startClock.date_start, endClock.date_start)
-        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, moment().format('YYYY-MM-DD')) : 0)
+        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, dayjs().format('YYYY-MM-DD')) : 0)
     };
   }
 
@@ -192,7 +192,7 @@ export default function EXP_CLOCKS(props) {
         remaining: baseTotal,   // aún no corre
         reference: null,
         from: 'NOT_STARTED',
-        today: moment().format('YYYY-MM-DD'),
+        today: dayjs().format('YYYY-MM-DD'),
         suspensions: totalSuspensionDays,
         extension: extensionDays,
         preActaUsed: 0,
@@ -215,12 +215,12 @@ export default function EXP_CLOCKS(props) {
     if (corrTime)                    firstEventCandidates.push({ date: corrTime,                 type: 'CORR_35' });
 
     const validFirsts = firstEventCandidates.filter(c =>
-      c.date && (moment(c.date).isAfter(ldfTime) || moment(c.date).isSame(ldfTime))
+      c.date && (dayjs(c.date).isAfter(ldfTime) || dayjs(c.date).isSame(ldfTime))
     );
 
     let firstEvent = null;
     if (validFirsts.length) {
-      validFirsts.sort((a, b) => (moment(a.date).isBefore(b.date) ? -1 : 1));
+      validFirsts.sort((a, b) => (dayjs(a.date).isBefore(b.date) ? -1 : 1));
       firstEvent = validFirsts[0];
     }
 
@@ -248,7 +248,7 @@ export default function EXP_CLOCKS(props) {
           remaining: remainingPaused,
           reference: null,
           from: 'PAUSED',
-          today: moment().format('YYYY-MM-DD'),
+          today: dayjs().format('YYYY-MM-DD'),
           suspensions: totalSuspensionDays,
           extension: extensionDays,
           preActaUsed,
@@ -266,7 +266,7 @@ export default function EXP_CLOCKS(props) {
         remaining: baseTotal,
         reference: null,
         from: 'NOT_STARTED',
-        today: moment().format('YYYY-MM-DD'),
+        today: dayjs().format('YYYY-MM-DD'),
         suspensions: totalSuspensionDays,
         extension: extensionDays,
         preActaUsed: 0,
@@ -279,20 +279,20 @@ export default function EXP_CLOCKS(props) {
       };
     }
 
-    candidates.sort((a, b) => (moment(a.date).isAfter(b.date) ? -1 : 1));
+    candidates.sort((a, b) => (dayjs(a.date).isAfter(b.date) ? -1 : 1));
     const lastRef = candidates[0];
 
     // Suspensión activa posterior a la referencia => congelar en su inicio
-    let effectiveToday = moment().format('YYYY-MM-DD');
+    let effectiveToday = dayjs().format('YYYY-MM-DD');
     if (acta1Time) {
       if (postSusp.exists && !postSusp.end?.date_start && postSusp.start?.date_start) {
-        if (moment(postSusp.start.date_start).isAfter(lastRef.date)) {
+        if (dayjs(postSusp.start.date_start).isAfter(lastRef.date)) {
           effectiveToday = postSusp.start.date_start;
         }
       }
     } else {
       if (preSusp.exists && !preSusp.end?.date_start && preSusp.start?.date_start) {
-        if (moment(preSusp.start.date_start).isAfter(lastRef.date)) {
+        if (dayjs(preSusp.start.date_start).isAfter(lastRef.date)) {
           effectiveToday = preSusp.start.date_start;
         }
       }
@@ -325,10 +325,10 @@ export default function EXP_CLOCKS(props) {
   let get_clockExistIcon = (state, icon = "") => {
     var _CHILD = _GET_CLOCK_STATE(state);
     if (_CHILD && icon !== "empty") {
-      if (_CHILD.date_start || _CHILD.name === "RADICACIÓN") return <i className="far fa-check-circle text-success"></i>
-      return <i className="far fa-dot-circle text-warning"></i>
+      if (_CHILD.date_start || _CHILD.name === "RADICACIÓN") return <Icon name="check-circle" size={16} className="text-success" />
+      return <Icon name="dot-circle" size={16} className="text-warning" />
     }
-    return <i className="far fa-dot-circle"></i>
+    return <Icon name="dot-circle" size={16} />
   }
 
   let get_newestDate = (states) => {
@@ -337,7 +337,7 @@ export default function EXP_CLOCKS(props) {
       const st = _GET_CLOCK_STATE(element);
       const date = st ? st.date_start : null;
       if (!newDate && date) newDate = date;
-      else if (date && moment(date).isAfter(newDate)) newDate = date;
+      else if (date && dayjs(date).isAfter(newDate)) newDate = date;
     });
     return newDate;
   }
@@ -345,18 +345,18 @@ export default function EXP_CLOCKS(props) {
   // ************** CATEGORÍAS (color/ícono) ************** //
   const catForTitle = (title = '') => {
     title = title.toUpperCase();
-    if (title.includes('DESISTIDO')) return { color: '#F93154', icon: 'fa-exclamation-circle' };
-    if (title.includes('RADICACIÓN')) return { color: '#5bc0de', icon: 'fa-inbox' };
-    if (title.includes('OBSERVACIONES')) return { color: '#fd7e14', icon: 'fa-clipboard-list' };
-    if (title.includes('CORRECCIONES')) return { color: '#20c997', icon: 'fa-tools' };
-    if (title.includes('VIABILIDAD')) return { color: '#6f42c1', icon: 'fa-compass' };
-    if (title.includes('PAGOS')) return { color: '#198754', icon: 'fa-money-bill' };
-    if (title.includes('RESOLUCIÓN')) return { color: '#0b5ed7', icon: 'fa-file-signature' };
-    if (title.includes('RECURSO')) return { color: '#d63384', icon: 'fa-exclamation-circle' };
-    if (title.includes('LICENCIA')) return { color: '#157347', icon: 'fa-id-card' };
-    if (title.includes('SUSPENSIÓN')) return { color: '#ffc107', icon: 'fa-pause' };
-    if (title.includes('PRÓRROGA')) return { color: '#17a2b8', icon: 'fa-clock' };
-    return { color: '#5bc0de', icon: 'fa-folder-open' };
+    if (title.includes('DESISTIDO')) return { color: '#F93154', icon: 'AlertCircle' };
+    if (title.includes('RADICACIÓN')) return { color: '#5bc0de', icon: 'Inbox' };
+    if (title.includes('OBSERVACIONES')) return { color: '#fd7e14', icon: 'ClipboardList' };
+    if (title.includes('CORRECCIONES')) return { color: '#20c997', icon: 'Wrench' };
+    if (title.includes('VIABILIDAD')) return { color: '#6f42c1', icon: 'Compass' };
+    if (title.includes('PAGOS')) return { color: '#198754', icon: 'Banknote' };
+    if (title.includes('RESOLUCIÓN')) return { color: '#0b5ed7', icon: 'FileSignature' };
+    if (title.includes('RECURSO')) return { color: '#d63384', icon: 'AlertCircle' };
+    if (title.includes('LICENCIA')) return { color: '#157347', icon: 'IdCard' };
+    if (title.includes('SUSPENSIÓN')) return { color: '#ffc107', icon: 'Pause' };
+    if (title.includes('PRÓRROGA')) return { color: '#17a2b8', icon: 'Clock' };
+    return { color: '#5bc0de', icon: 'FolderOpen' };
   };
 
   // *************** BARRA DE CONTROL MEJORADA ****************** //
@@ -395,7 +395,7 @@ export default function EXP_CLOCKS(props) {
 
     const showDesistModal = () => {
       const reason = getDesistReason();
-      const ordered = [...desistEvents].sort((a, b) => (moment(a.date_start).isAfter(b.date_start) ? -1 : 1));
+      const ordered = [...desistEvents].sort((a, b) => (dayjs(a.date_start).isAfter(b.date_start) ? -1 : 1));
       const rows = ordered.map(e => {
         const lbl = NegativePRocessTitle?.[String(e.version)] || `Estado ${e.state}`;
         return `<tr>
@@ -405,13 +405,13 @@ export default function EXP_CLOCKS(props) {
         </tr>`;
       }).join('');
 
-      MySwal.fire({
+      swalInfo({
         title: 'Detalle de desistimiento',
         html: `
-          <div class="text-start">
-            ${reason ? `<div class="mb-2"><strong>Motivo principal:</strong> ${reason}</div>` : ''}
-            <div class="table-responsive">
-              <table class="table table-sm">
+          <div className="text-start">
+            ${reason ? `<div className="mb-2"><strong>Motivo principal:</strong> ${reason}</div>` : ''}
+            <div className="table-responsive">
+              <table className="table table-sm">
                 <thead>
                   <tr>
                     <th>Motivo/Estado</th>
@@ -422,11 +422,10 @@ export default function EXP_CLOCKS(props) {
                 <tbody>${rows}</tbody>
               </table>
             </div>
-            <div class="small text-muted">Las acciones y métricas de tiempo se ocultan mientras el proceso esté desistido.</div>
+            <div className="small text-muted">Las acciones y métricas de tiempo se ocultan mientras el proceso esté desistido.</div>
           </div>
         `,
         icon: 'info',
-        confirmButtonText: 'Cerrar',
         width: 680,
       });
     };
@@ -445,42 +444,41 @@ export default function EXP_CLOCKS(props) {
     const handleShowCuraduriaDetails = () => {
       if (curDetails == null) return;
 
-      let stateChip = '<span class="badge bg-secondary">Sin estado</span>';
-      if (notStarted) stateChip = '<span class="badge bg-secondary">No iniciado</span>';
-      else if (paused) stateChip = '<span class="badge bg-warning text-dark">Pausado</span>';
-      else if (expired) stateChip = '<span class="badge bg-danger">Vencido</span>';
-      else if (inCourse) stateChip = '<span class="badge bg-primary">En curso</span>';
+      let stateChip = '<span className="badge bg-secondary">Sin estado</span>';
+      if (notStarted) stateChip = '<span className="badge bg-secondary">No iniciado</span>';
+      else if (paused) stateChip = '<span className="badge bg-warning text-dark">Pausado</span>';
+      else if (expired) stateChip = '<span className="badge bg-danger">Vencido</span>';
+      else if (inCourse) stateChip = '<span className="badge bg-primary">En curso</span>';
 
       const remainingClass = curDetails.remaining < 0 ? 'text-danger' : 'text-success';
       const fromText = FROM_LABEL[curDetails.from] || curDetails.from || '-';
 
-      MySwal.fire({
+      swalInfo({
         title: 'Detalle de Curaduría',
         html: `
-          <div class="text-start">
-            <div class="mb-2">${stateChip}</div>
-            <div class="row g-2">
-              <div class="col-12">
+          <div className="text-start">
+            <div className="mb-2">${stateChip}</div>
+            <div className="row g-2">
+              <div className="col-12">
                 <strong>Referencia:</strong> ${fromText}
-                <div class="small text-muted">Fecha referencia: ${curDetails.reference || '-'}</div>
+                <div className="small text-muted">Fecha referencia: ${curDetails.reference || '-'}</div>
               </div>
-              <div class="col-12">
+              <div className="col-12">
                 <strong>Fecha de corte:</strong> ${curDetails.today || '-'}
-                <div class="small text-muted">Cálculo relativo a hoy (días hábiles)</div>
+                <div className="small text-muted">Cálculo relativo a hoy (días hábiles)</div>
               </div>
-              <hr class="my-2" />
-              <div class="col-6"><strong>Base:</strong> ${curDetails.total - curDetails.suspensions - curDetails.extension}</div>
-              <div class="col-6"><strong>Usados pre-Acta (5→30):</strong> ${curDetails.preActaUsed ?? 0}</div>
-              <div class="col-6"><strong>Usados desde ref.:</strong> ${Math.max((curDetails.used ?? 0) - (curDetails.preActaUsed ?? 0), 0)}</div>
-              <div class="col-6"><strong>Suspensiones:</strong> ${curDetails.suspensions}</div>
-              <div class="col-6"><strong>Prórroga:</strong> ${curDetails.extension}</div>
-              <div class="col-6"><strong>Total:</strong> ${curDetails.total}</div>
-              <div class="col-6"><strong>Restantes:</strong> <span class="${remainingClass}">${curDetails.remaining}</span></div>
+              <hr className="my-2" />
+              <div className="col-6"><strong>Base:</strong> ${curDetails.total - curDetails.suspensions - curDetails.extension}</div>
+              <div className="col-6"><strong>Usados pre-Acta (5→30):</strong> ${curDetails.preActaUsed ?? 0}</div>
+              <div className="col-6"><strong>Usados desde ref.:</strong> ${Math.max((curDetails.used ?? 0) - (curDetails.preActaUsed ?? 0), 0)}</div>
+              <div className="col-6"><strong>Suspensiones:</strong> ${curDetails.suspensions}</div>
+              <div className="col-6"><strong>Prórroga:</strong> ${curDetails.extension}</div>
+              <div className="col-6"><strong>Total:</strong> ${curDetails.total}</div>
+              <div className="col-6"><strong>Restantes:</strong> <span className="${remainingClass}">${curDetails.remaining}</span></div>
             </div>
           </div>
         `,
         icon: 'info',
-        confirmButtonText: 'Cerrar',
         width: 640,
       });
     };
@@ -491,21 +489,21 @@ export default function EXP_CLOCKS(props) {
           {/* Acciones */}
           <div className="actions d-flex gap-2 flex-wrap align-items-center">
             {!isDesisted && canAddSusp && (
-              <button type="button" className="btn btn-warning btn-sm" onClick={() => addTimeControl('suspension')}>
-                <i className="fas fa-pause me-2"></i>
+              <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => addTimeControl('suspension')}>
+                <Icon name="pause" size={16} className="me-2" />
                 Añadir Suspensión
-              </button>
+              </Button>
             )}
             {!isDesisted && canAddExt && (
-              <button type="button" className="btn btn-info btn-sm" onClick={() => addTimeControl('extension')}>
-                <i className="fas fa-clock me-2"></i>
+              <Button size="sm" onClick={() => addTimeControl('extension')}>
+                <Icon name="clock" size={16} className="me-2" />
                 Prórroga por Complejidad
-              </button>
+              </Button>
             )}
             {!isFull && (
-              <button type="button" className="btn btn-sm btn-light ms-1 exp-full-btn" title="Pantalla completa" onClick={() => setIsFull(true)}>
-                <i className="fas fa-expand"></i>
-              </button>
+              <Button variant="ghost" size="sm" className="ms-1 exp-full-btn" title="Pantalla completa" onClick={() => setIsFull(true)}>
+                <Icon name="expand" size={16} />
+              </Button>
             )}
           </div>
 
@@ -513,11 +511,11 @@ export default function EXP_CLOCKS(props) {
           <div className="control-meta ms-auto small text-end">
             {isDesisted ? (
               <div className="text-danger">
-                <i className="fas fa-ban me-1"></i>
+                <Icon name="ban" size={16} className="me-1" />
                 Proceso desistido
-                <button type="button" className="btn btn-link btn-sm p-0 ms-2 align-baseline" onClick={showDesistModal}>
+                <Button variant="link" size="sm" className="p-0 ms-2 align-baseline" onClick={showDesistModal}>
                   Ver motivo
-                </button>
+                </Button>
               </div>
             ) : (
               <>
@@ -525,27 +523,27 @@ export default function EXP_CLOCKS(props) {
                 <div className="status-chips d-flex justify-content-end flex-wrap gap-2 mb-1">
                   {finalized && (
                     <span className="badge bg-success">
-                      <i className="fas fa-check-circle me-1"></i> Finalizado
+                      <Icon name="check-circle" size={16} className="me-1" /> Finalizado
                     </span>
                   )}
                   {!finalized && curDetails?.notStarted && (
                     <span className="badge bg-secondary">
-                      <i className="fas fa-circle me-1"></i> No iniciado
+                      <Icon name="circle" size={16} className="me-1" /> No iniciado
                     </span>
                   )}
                   {!finalized && !curDetails?.notStarted && curDetails?.paused && (
                     <span className="badge bg-warning text-dark">
-                      <i className="fas fa-pause me-1"></i> Pausado
+                      <Icon name="pause" size={16} className="me-1" /> Pausado
                     </span>
                   )}
                   {!finalized && !curDetails?.notStarted && !curDetails?.paused && curDetails && curDetails.remaining < 0 && (
                     <span className="badge bg-danger">
-                      <i className="fas fa-exclamation-circle me-1"></i> Vencido
+                      <Icon name="exclamation-circle" size={16} className="me-1" /> Vencido
                     </span>
                   )}
                   {!finalized && !curDetails?.notStarted && !curDetails?.paused && curDetails && curDetails.remaining >= 0 && (
                     <span className="badge bg-primary">
-                      <i className="fas fa-hourglass-half me-1"></i> En curso
+                      <Icon name="hourglass-half" size={16} className="me-1" /> En curso
                     </span>
                   )}
                 </div>
@@ -553,16 +551,16 @@ export default function EXP_CLOCKS(props) {
                 {/* Línea de curaduría */}
                 {finalized ? (
                   <div className="text-success">
-                    <i className="fas fa-check-circle me-1"></i>
+                    <Icon name="check-circle" size={16} className="me-1" />
                     Curaduría: Finalizado
                   </div>
                 ) : curDetails?.notStarted ? (
                   <div className="text-muted">
-                    <i className="fas fa-circle me-1"></i>
+                    <Icon name="circle" size={16} className="me-1" />
                     Curaduría: No iniciado
                     <button
                       type="button"
-                      className="btn btn-link btn-sm p-0 ms-2 align-baseline"
+                      className="inline-flex items-center text-sm text-primary underline-offset-4 hover:underline p-0 ms-2 align-baseline"
                       onClick={handleShowCuraduriaDetails}
                     >
                       Más info
@@ -570,11 +568,11 @@ export default function EXP_CLOCKS(props) {
                   </div>
                 ) : curDetails ? (
                   <div className={curDetails.paused ? 'text-warning' : (curDetails.remaining < 0 ? 'text-danger' : 'text-primary')}>
-                    <i className={`me-1 ${curDetails.paused ? 'fas fa-pause' : 'fas fa-hourglass-half'}`}></i>
+                    <Icon name={curDetails.paused ? 'pause' : 'hourglass-half'} size={16} className="me-1" />
                     Curaduría: {curDetails.paused ? 'Pausado' : `${curDetails.remaining} días restantes`}
                     <button
                       type="button"
-                      className="btn btn-link btn-sm p-0 ms-2 align-baseline"
+                      className="inline-flex items-center text-sm text-primary underline-offset-4 hover:underline p-0 ms-2 align-baseline"
                       onClick={handleShowCuraduriaDetails}
                     >
                       Ver detalle
@@ -588,13 +586,13 @@ export default function EXP_CLOCKS(props) {
                 <div className="d-flex justify-content-end flex-wrap gap-2 mt-1">
                   {_GET_TOTAL_SUSPENSION_DAYS() > 0 && (
                     <span className="badge bg-warning text-dark">
-                      <i className="fas fa-pause me-1"></i>
+                      <Icon name="pause" size={16} className="me-1" />
                       Suspensiones: {_GET_TOTAL_SUSPENSION_DAYS()}/10
                     </span>
                   )}
                   {extension.exists && (
-                    <span className="badge bg-info text-dark">
-                      <i className="fas fa-clock me-1"></i>
+                    <span className="badge bg-secondary">
+                      <Icon name="clock" size={16} className="me-1" />
                       Prórroga: {extension.days} d
                     </span>
                   )}
@@ -610,10 +608,10 @@ export default function EXP_CLOCKS(props) {
   // *************** FUNCIÓN PARA MOSTRAR INFORMACIÓN DE SUSPENSIÓN ****************** //
   const showSuspensionInfo = (suspensionData, type) => {
     const typeText = type === 'pre' ? 'Antes del Acta' : 'Después del Acta';
-    MySwal.fire({
+    swalInfo({
       title: `Suspensión ${typeText}`,
       html: `
-        <div class="text-start">
+        <div className="text-start">
           <p><strong>Ubicación:</strong> ${typeText}</p>
           <p><strong>Fecha de Inicio:</strong> ${suspensionData.start?.date_start || 'No definida'}</p>
           <p><strong>Fecha de Fin:</strong> ${suspensionData.end?.date_start || 'Pendiente por definir'}</p>
@@ -622,7 +620,6 @@ export default function EXP_CLOCKS(props) {
         </div>
       `,
       icon: 'info',
-      confirmButtonText: 'Cerrar'
     });
   };
 
@@ -632,15 +629,15 @@ export default function EXP_CLOCKS(props) {
       const availableTypes = _GET_AVAILABLE_SUSPENSION_TYPES();
       const availableDays = 10 - _GET_TOTAL_SUSPENSION_DAYS();
       if (availableTypes.length === 0) {
-        MySwal.fire({ title: 'No disponible', text: 'No hay espacios disponibles para añadir suspensiones', icon: 'warning' });
+        swalError({ title: 'No disponible', text: 'No hay espacios disponibles para añadir suspensiones', icon: 'warning' });
         return;
       }
       let typeSelectHtml = '';
       if (availableTypes.length > 1) {
         typeSelectHtml = `
-          <div class="col-12">
-            <label class="form-label">Ubicación de la Suspensión</label>
-            <select id="susp_type" class="form-select">
+          <div className="col-12">
+            <label className="form-label">Ubicación de la Suspensión</label>
+            <select id="susp_type" className="form-select">
               ${availableTypes.map(type => `<option value="${type.value}">${type.label}</option>`).join('')}
             </select>
           </div>
@@ -648,30 +645,27 @@ export default function EXP_CLOCKS(props) {
       } else {
         typeSelectHtml = `<input type="hidden" id="susp_type" value="${availableTypes[0].value}">`;
       }
-      MySwal.fire({
+      swalFormDialog({
         title: 'Nueva Suspensión de Términos',
         html: `
-          <div class="row g-3">
-            <div class="col-12">
-              <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
+          <div className="row g-3">
+            <div className="col-12">
+              <div className="alert alert-info">
+                <Icon name="info-circle" size={16} className="me-2" />
                 Días disponibles para suspensión: <strong>${availableDays}</strong>
               </div>
             </div>
             ${typeSelectHtml}
-            <div class="col-12">
-              <label class="form-label">Fecha de Inicio</label>
-              <input type="date" id="susp_start" class="form-control"/>
+            <div className="col-12">
+              <label className="form-label">Fecha de Inicio</label>
+              <input type="date" id="susp_start" className="form-control"/>
             </div>
-            <div class="col-12">
-              <label class="form-label">Información Adicional</label>
-              <textarea id="susp_info" class="form-control" rows="3" placeholder="Detalles sobre la suspensión..."></textarea>
+            <div className="col-12">
+              <label className="form-label">Información Adicional</label>
+              <textarea id="susp_info" className="form-control" rows="3" placeholder="Detalles sobre la suspensión..."></textarea>
             </div>
           </div>
         `,
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        cancelButtonText: 'Cancelar',
         preConfirm: () => {
           const suspType = document.getElementById('susp_type').value;
           const startDate = document.getElementById('susp_start').value;
@@ -708,25 +702,22 @@ export default function EXP_CLOCKS(props) {
       });
 
     } else if (type === 'extension') {
-      MySwal.fire({
+      swalFormDialog({
         title: 'Nueva Prórroga por Complejidad',
         html: `
-          <div class="row g-3">
-            <div class="col-12">
-              <div class="alert alert-info">
-                <i class="fas fa-clock me-2"></i>
+          <div className="row g-3">
+            <div className="col-12">
+              <div className="alert alert-info">
+                <Icon name="clock" size={16} className="me-2" />
                 La prórroga por complejidad otorga <strong>22 días hábiles</strong> adicionales
               </div>
             </div>
-            <div class="col-12">
-              <label class="form-label">Fecha de Inicio</label>
-              <input type="date" id="ext_start" class="form-control"/>
+            <div className="col-12">
+              <label className="form-label">Fecha de Inicio</label>
+              <input type="date" id="ext_start" className="form-control"/>
             </div>
           </div>
         `,
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        cancelButtonText: 'Cancelar',
         preConfirm: () => {
           const startDate = document.getElementById('ext_start').value;
           if (!startDate) {
@@ -789,9 +780,9 @@ export default function EXP_CLOCKS(props) {
           <div className="exp-fullscreen-inner">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <h6 className="m-0">Reloj del Proceso</h6>
-              <button className="btn btn-sm btn-light" onClick={() => setIsFull(false)}>
-                <i className="fas fa-compress"></i> Cerrar
-              </button>
+              <Button variant="ghost" size="sm" onClick={() => setIsFull(false)}>
+                <Icon name="compress" size={16} /> Cerrar
+              </Button>
             </div>
             <ControlBar />
             <div className="card exp-card mb-0">
@@ -902,7 +893,7 @@ export default function EXP_CLOCKS(props) {
         if (pre?.start?.date_start) startCandidates.push({ date: pre.start.date_start, kind: 'SUSP_PRE_START' });
 
         const pickMostRecent = (arr) => {
-          const sorted = [...arr].sort((a, b) => (moment(a.date).isAfter(b.date) ? -1 : 1));
+          const sorted = [...arr].sort((a, b) => (dayjs(a.date).isAfter(b.date) ? -1 : 1));
           return sorted[0];
         };
 
@@ -920,7 +911,7 @@ export default function EXP_CLOCKS(props) {
         }
 
         // Días de prórroga aplicables si ya inició antes de la Acta 1
-        const extDays = (ext?.exists && ext.start?.date_start && moment(ext.start.date_start).isSameOrAfter(ldf)) ? ext.days : 0;
+        const extDays = (ext?.exists && ext.start?.date_start && dayjs(ext.start.date_start).isSameOrAfter(ldf)) ? ext.days : 0;
 
         let remainingDays = baseDays - usedBeforeBase + extDays;
         if (remainingDays < 0) remainingDays = 0;
@@ -943,7 +934,7 @@ export default function EXP_CLOCKS(props) {
 
         const pre = _GET_SUSPENSION_PRE_ACTA();
         const post = _GET_SUSPENSION_POST_ACTA();
-        const today = moment().format('YYYY-MM-DD');
+        const today = dayjs().format('YYYY-MM-DD');
 
         const otherUsed = isEndPre
           ? (post?.start?.date_start && post?.end?.date_start ? post.days : 0)
@@ -985,8 +976,8 @@ export default function EXP_CLOCKS(props) {
           {value.title ? (
             <div className="exp-section" style={{ '--cat': cat.color }}>
               <div className="d-flex align-items-center mb-1">
-                <i className={`fas ${cat.icon} me-2`}></i>
-                <strong className="text-uppercase">{value.title}</strong>
+                <Icon name={cat.icon} size={16} className="me-2" />
+                <strong className="">{value.title}</strong>
               </div>
             </div>
           ) : (
@@ -1059,14 +1050,15 @@ export default function EXP_CLOCKS(props) {
                     ) : ''}
                     
                     {value.suspensionInfo && (
-                      <button
-                        type="button"
-                        className="btn btn-outline-info btn-suspension-info"
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="btn-suspension-info"
                         title="Ver información de suspensión"
                         onClick={() => showSuspensionInfo(value.suspensionInfo.data, value.suspensionInfo.type)}
                       >
-                        <i className="fas fa-question"></i>
-                      </button>
+                        <Icon name="question" size={16} />
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -1113,8 +1105,8 @@ export default function EXP_CLOCKS(props) {
                           <VIZUALIZER
                             url={`${file.path}/${file.filename}`}
                             apipath={'/files/'}
-                            icon={'fas fa-search'}
-                            iconWrapper={'btn btn-sm btn-info p-1 shadow-none'}
+                            icon={'Search'}
+                            iconWrapper={'inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'}
                           />
                         )
                       }
@@ -1201,22 +1193,18 @@ export default function EXP_CLOCKS(props) {
     formDataClock.set('fun0Id', currentItem.id);
 
     if (useMySwal) {
-      MySwal.fire({
+      swalLoading({
         title: swaMsg.title_wait,
         text: swaMsg.text_wait,
-        icon: 'info',
-        showConfirmButton: false,
       });
     }
 
     const onOk = () => {
       if (useMySwal) {
-        MySwal.fire({
+        swalSuccess({
           title: swaMsg.publish_success_title,
           text: swaMsg.publish_success_text,
           footer: swaMsg.text_footer,
-          icon: 'success',
-          confirmButtonText: swaMsg.text_btn,
         });
       }
       // Disparar recalculo en padre y refresco local
@@ -1231,11 +1219,10 @@ export default function EXP_CLOCKS(props) {
     const onErr = (e) => {
       console.log(e);
       if (useMySwal) {
-        MySwal.fire({
+        swalError({
           title: swaMsg.generic_eror_title,
           text: swaMsg.generic_error_text,
           icon: 'warning',
-          confirmButtonText: swaMsg.text_btn,
         });
       }
     }

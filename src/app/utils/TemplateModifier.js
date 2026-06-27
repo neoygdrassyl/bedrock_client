@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export class TemplateModifier {
     constructor(data, htmlString) {
         this.data = data;
@@ -1379,9 +1381,7 @@ export class TemplateModifier {
     }
 
     dateParser(date) {
-        const moment = require('moment');
-        let esLocale = require('moment/locale/es');
-        var momentLocale = moment(date, 'YYYY-MM-DD').locale('es', esLocale);
-        return momentLocale.format("LL")
+        var dateLocale = dayjs(date, 'YYYY-MM-DD').locale('es');
+        return dateLocale.format("LL")
     }
 }

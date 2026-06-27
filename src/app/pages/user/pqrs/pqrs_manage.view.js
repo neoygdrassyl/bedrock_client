@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
+import { Fragment, useState, useEffect, useMemo, useRef } from 'react';
+import DataTable from '@/components/data-table-bridge';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import USERS_Service from '../../../services/users.service'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+
 import { dateParser, dateParser_finalDate } from '../../../components/customClasses/typeParse'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 import PQRS_COMPONENT_ATTACH_PROFESIONAL from './components/pqrs_attach_pro.component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import { PQRS_SET_REPLY1 } from './components/pqrs_setReply2.component';
 import JoditEditor from "jodit-pro-react";
 import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
@@ -28,13 +26,57 @@ import { HISTORY_PQRS_INFO } from './components/pqrs_histoy.component';
 import { PQRS_ID_CONFIRM } from './components/pqrs_id_confitm.component';
 import cubXvrService from '../../../services/cubXvr.service';
 
-const moment = require('moment');
-
-const MySwal = withReactContent(Swal);
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function PQRS_MANAGE_COMPONENT(props) {
     const { currentId, globals, swaMsg, translation, retrieveItem, translation_form, retrievePublish, worker } = props;
     var formData = new FormData();
+
+    const buildLoadReportContext = (error, source, extra = {}) => {
+        const responseMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Error de carga sin detalle del servidor.';
+
+        return {
+            reportSource: source,
+            expediente: {
+                radicado: extra.radicado || currentItem?.id_publico || currentItem?.id_global || String(currentId || ''),
+                identifiers: {
+                    currentId,
+                    idPublico: currentItem?.id_publico ?? null,
+                    idGlobal: currentItem?.id_global ?? extra.idGlobal ?? null,
+                },
+            },
+            lastError: {
+                source,
+                error: { message: responseMessage },
+                http: {
+                    status: error?.response?.status ?? null,
+                    statusText: error?.response?.statusText || null,
+                    method: error?.config?.method || null,
+                    url: error?.config?.url || null,
+                    baseURL: error?.config?.baseURL || null,
+                    responseMessage,
+                },
+                info: {
+                    currentId,
+                    ...extra,
+                },
+            },
+        };
+    };
+
+    const showLoadError = (error, source, extra = {}) => {
+        swalError({
+            title: "ERROR AL CARGAR",
+            text: "No ha sido posible cargar este item, intentelo nuevamente.",
+            reportSource: source,
+            reportContext: buildLoadReportContext(error, source, extra),
+        });
+    };
+
     // ** CONSTS ** //
     const cont1 = { a: 'a' };
 
@@ -58,10 +100,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         if (!load) loadData()
     }, [currentItem]);
 
-
-    const config = (edit) => {
+    const createJoditConfig = (edit) => {
         return {
             readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+            language: 'es',
+            iframe: true,
+            allowHTML: true,
+            loadExternalConfig: false,
             uploader: {
                 url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
             },
@@ -71,11 +116,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 },
                 height: 580,
             },
-            language: 'es',
             "readonly": edit,
             "toolbar": !edit,
-            "disablePlugins": "clipboard",
-            "disablePlugins": "xpath",
+            "disablePlugins": "clipboard,xpath",
             minHeight: edit ? 150 : 400,
             removeButtons: ['xpath'],
             controls: {
@@ -85,6 +128,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             }
         }
     }
+
+    const readonlyJoditConfig = useMemo(() => createJoditConfig(true), []);
+    const editableJoditConfig = useMemo(() => createJoditConfig(false), []);
+    const getJoditConfig = (edit) => edit ? readonlyJoditConfig : editableJoditConfig;
 
     // ** DATA GETTERS ** //
     // CALL THE API FUNCTIONS TO LOAD DATA
@@ -97,12 +144,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                showLoadError(e, 'pqrs-manage-load-pqrs');
                 setLoad(true)
             });
         USERS_Service.getAll()
@@ -111,22 +153,22 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                showLoadError(e, 'pqrs-manage-load-users');
                 setLoad(true)
             });
     }
 
     const loadVRs = async (id_global) => {
-        const response = await cubXvrService.getByVR(id_global)
-        const data = response.data.find(item => item.process === 'ENVIAR CONFIRMACION POR EMAIL')
-        const data2 = response.data.find(item => item.process === 'RESPUESTA FORMAL DE LA PETICION')
-        if (data) setIdCUBxVr(data.id)
-        if (data2) setIdCUBxVr2(data2.id)
+        try {
+            const response = await cubXvrService.getByVR(id_global)
+            const data = response.data.find(item => item.process === 'ENVIAR CONFIRMACION POR EMAIL')
+            const data2 = response.data.find(item => item.process === 'RESPUESTA FORMAL DE LA PETICION')
+            if (data) setIdCUBxVr(data.id)
+            if (data2) setIdCUBxVr2(data2.id)
+        } catch (e) {
+            console.log(e);
+            showLoadError(e, 'pqrs-manage-load-cubxvr', { idGlobal: id_global });
+        }
     }
 
     const refreshList = () => {
@@ -203,15 +245,14 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return false;
     }
     let _GET_DOC_BODY = () => {
-        return `Me permite Comunicarle que el ${dateParser(moment(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
-        a las ${moment(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
+        return `Me permite Comunicarle que el ${dateParser(dayjs(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
+        a las ${dayjs(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
         Solicitud con el numero ${currentItem.id_publico}. A partir de este momento la Curaduría Urbana Estudiará
         su peticion y en el termino de ${currentItem.pqrs_time.time} días hábiles le dará respuesta de manera clara, precisa y
         de fondo. No obstante de requerir un mayor término para lograr este cometido la Curaduría
         Urbana Uno de Bucaramanga le informará por este medio de esta situacion.`.replace(/[\n\r]+ */g, ' ');
 
     }
-
 
     let _WORKERS_COMPONENT = () => {
         let _array_workers_names = _GET_USERS_ARRAY();
@@ -220,33 +261,33 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <input type="hidden" id="pqrs_worker_0" defaultValue={_GET_USERS()[0].id} />
                 <div className="col-4">
                     <label>Profesional</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-user-circle"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="user-circle" size={16} />
                         </span>
-                        <select class="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
-                            {_array_workers_names.map(function (name) {
-                                return <option>{name}</option>;
+                        <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
+                            {_array_workers_names.map(function (name, index) {
+                                return <option key={`pqrs-worker-name-${index}`}>{name}</option>;
                             })}
                         </select>
                     </div>
                 </div>
                 <div className="col-4">
                     <label>Fecha Asignación</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-calendar-alt"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="calendar-alt" size={16} />
                         </span>
-                        <input id="pqrs_worker_1" class="form-control" type="date" required />
+                        <input id="pqrs_worker_1" className="form-control" type="date" required />
                     </div>
                 </div>
                 <div className="col-4">
                     <label>Competencia</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-briefcase"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="briefcase" size={16} />
                         </span>
-                        <input class="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
+                        <input className="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
                     </div>
                 </div>
             </div>
@@ -260,73 +301,68 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         }
         const columns = [
             {
-                name: <label><b>PROFESIONAL</b></label>,
-                selector: 'name',
+                name: 'PROFESIONAL',
+                selector: row => row.name,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{row.name}</h6>
+                cell: row => <span className="text-sm">{row.name}</span>
             },
             {
-                name: <label><b>COMPETENCIA</b></label>,
+                name: 'COMPETENCIA',
                 selector: row => row.competence,
                 minWidth: '150px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{row.competence}</h6>
+                cell: row => <span className="text-sm">{row.competence}</span>
             },
             {
-                name: <label><b>FECHA ASIGNACIÓN</b></label>,
-                selector: 'asign',
+                name: 'FECHA ASIGNACIÓN',
+                selector: row => row.asign,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{dateParser(row.asign)}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.asign)}</span>
             },
             {
-                name: <label><b>FECHA RESPUESTA</b></label>,
-                selector: 'date_reply',
+                name: 'FECHA RESPUESTA',
+                selector: row => row.date_reply,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{dateParser(row.date_reply)}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.date_reply)}</span>
             },
             {
-                name: <label><b>FECHA LIMITE </b></label>,
-                selector: 'date_reply',
+                name: 'FECHA LÍMITE',
+                selector: row => row.date_reply,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{(dateParser(dateParser_finalDate(row.asign, business_days()))) ?? ''}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{(dateParser(dateParser_finalDate(row.asign, business_days()))) ?? ''}</span>
             },
             {
-                name: <label><b>DIAS HABILES</b></label>,
-                selector: '',
+                name: 'DÍAS HÁBILES',
                 minWidth: '150px',
                 center: true,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{business_days() ? business_days() : ''}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{business_days() ? business_days() : ''}</span>
             },
             {
-                name: <label><b>¿NOTIFICO EMAIL?</b></label>,
+                name: '¿NOTIFICÓ EMAIL?',
                 center: true,
                 minWidth: '150px',
-                cell: row => <h6 className="pt-3 text-center">{row.sent_email_notify ? "SI" : "NO"}</h6>
+                cell: row => row.sent_email_notify ? <Badge className="text-[10px] bg-accent text-accent-foreground">Sí</Badge> : <Badge variant="secondary" className="text-[10px]">No</Badge>
             },
             {
-                name: <label><b>ACCIÓN</b></label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <MDBTooltip title='Desasignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
-                            <i class="fas fa-user-minus"></i></button>
-                    </MDBTooltip>
-                    <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setCurrentItemAsign(row)}>
-                            <i class="far fa-paper-plane"></i></button>
-                    </MDBTooltip>
+                    <Button variant="destructive" size="sm" className="mx-0 px-2" title="Desasignar Profesional" onClick={() => removeAsign(row.id)}>
+                            <Icon name="user-minus" size={16} /></Button>
+                    <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 mx-0 px-2" title="Enviar Correo" onClick={() => setCurrentItemAsign(row)}>
+                            <Icon name="paper-plane" size={16} /></Button>
                 </>,
             },
         ]
@@ -347,7 +383,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return _COMPONENT;
     }
 
-
     function _SEEN_COMPOENTN() {
         var _LIST = [];
         for (var i = 0; i < currentItem.pqrs_workers.length; i++) {
@@ -355,45 +390,43 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         }
         const columns = [
             {
-                name: <label><b>PROFESIONAL</b></label>,
-                selector: 'name',
+                name: 'PROFESIONAL',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="text-center">{row.name}</h6>
+                cell: row => <span className="text-sm">{row.name}</span>
             },
             {
-                name: <label><b>COMPETENCIA</b></label>,
+                name: 'COMPETENCIA',
                 selector: row => row.competence,
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="text-center">{row.competence}</h6>
+                cell: row => <span className="text-sm">{row.competence}</span>
             },
             {
-                name: <label><b>FECHA ASIGNACIÓN</b></label>,
+                name: 'FECHA ASIGNACIÓN',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="text-center">{dateParser(row.asign)}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.asign)}</span>
             },
             {
-                name: <label><b>VISTO BUENO</b></label>,
+                name: 'VISTO BUENO',
                 center: true,
-                cell: row => <h6 className=" text-center">{row.feedback == 1 ? <label className="fw-bold text-success">SI</label> : row.feedback == 0 ? <label className="fw-bold text-danger">NO</label> : ''}</h6>
+                cell: row => row.feedback == 1 ? <Badge className="text-[10px] bg-accent text-accent-foreground">Sí</Badge> : row.feedback == 0 ? <Badge variant="destructive" className="text-[10px]">No</Badge> : ''
             },
             {
-                name: <label><b>FECHA VISTO BUENO</b></label>,
+                name: 'FECHA VISTO BUENO',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="text-center">{dateParser(row.feedback_date)}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.feedback_date)}</span>
             },
             {
-                name: <label><b>ACCIÓN</b></label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <MDBTooltip title='Confirmar visto bueno' wrapperProps={{ center: true, color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button hidden={window.user.id != row.worker_id} onClick={() => setViewform(row)} className="btn btn-info btn-sm mx-0 px-2 shadow-none">
-                            <i class="fas fa-check-square"></i></button>
-                    </MDBTooltip>
+                    <Button size="sm" title="Confirmar visto bueno" hidden={window.user.id != row.worker_id} onClick={() => setViewform(row)}>
+                            <Icon name="check-square" size={16} /></Button>
                 </>,
             },
         ];
@@ -402,7 +435,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             var Array = [...JSON.parse(data.history) ?? ''];
             return <>
                 <fieldset className="p-3 border border-success mb-2">
-                    <table class="table table-sm table-hover">
+                    <table className="table table-sm table-hover">
                         <thead>
                             <tr className='table-success'>
                                 <th scope="col">Fecha y hora</th>
@@ -411,9 +444,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {Array.map(function (value) {
+                            {Array.map(function (value, index) {
                                 return (
-                                    <tr>
+                                    <tr key={value.id ?? value.date ?? `pqrs-history-${index}`}>
                                         <td><h6>{dateParser(value.date)} - {value.time}</h6></td>
                                         <td><h6>{value.feedback_argument}</h6></td>
                                         <td>{value.feedback == 1 ? <h6>Si</h6> : <h6>No</h6>}</td>
@@ -443,7 +476,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return _COMPONENT;
     }
 
-
     let _GEN_CONFIRM_PDF_COMPONENT = () => {
         return <>
             <div className="border border-success p-2">
@@ -451,31 +483,31 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="row">
                     <div className="col-6">
                         <label>Lista de Correos</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="envelope" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
+                            <input type="text" className="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Lista de Solicitantes</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
+                            <input type="text" className="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
                         </div>
                     </div>
                 </div>
                 <label>Cuerpo del Documento</label>
-                <textarea class="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
+                <textarea className="form-control mb-3" rows="3" maxLength="1024" id="pqrs_confirmation_doc_body"
                     defaultValue={_GET_DOC_BODY()}></textarea>
                 <table className="table table-sm table-hover table-bordered">
                     <tbody>
                         <tr>
                             <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                            <td><MDBBtn className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i class="fas fa-cloud-download-alt fa-2x"></i></MDBBtn></td>
+                            <td><Button variant="destructive" size="sm" onClick={() => request_dpfConfirmation()}><Icon name="cloud-download-alt" size={16} /></Button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -514,78 +546,37 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             let competence = document.getElementById('pqrs_worker_3').value;
             formData.set('competence', competence);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.createWorker(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                         clearForm();
                         loadData(currentId)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
                 });
         } else {
-            MySwal.fire({
-                title: "NO ES POSIBLE ASIGNAR",
-                text: "Este profesional ya fue asignado a esta solicitud, los profesionales solo pueden ser asignador una vez por solicitud.",
-                icon: 'error',
-            });
+            swalError({ title: "NO ES POSIBLE ASIGNAR", text: "Este profesional ya fue asignado a esta solicitud, los profesionales solo pueden ser asignador una vez por solicitud." });
         }
     };
 
     let removeAsign = (id) => {
-        MySwal.fire({
-            title: "REMOVER PROFESIONAL ",
-            text: "¿Esta seguro de remover este profesional de la Peticion?",
-            icon: 'warning',
-            confirmButtonText: "REMOVER",
-            cancelButtonText: "CANCELAR",
-            showCancelButton: true
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "REMOVER PROFESIONAL ", text: "¿Esta seguro de remover este profesional de la Peticion?", icon: 'warning', confirmButtonText: "REMOVER" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 PQRS_Service.deleteWorker(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                             clearForm();
                             loadData(currentId)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
@@ -594,7 +585,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             }
         })
     }
-
 
     let request_dpfConfirmation = () => {
         formData = new FormData();
@@ -610,37 +600,21 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         let body = document.getElementById("pqrs_confirmation_doc_body").value;
         formData.set('body', body);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         PQRS_Service.request_pdfConfirmation(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
+                    swalClose();
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
-
 
     let informalReplyPQRS = (u, worker_id) => {
 
@@ -679,30 +653,15 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             console.log(pair[0] + ', ' + pair[1]);
         }
         */
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         PQRS_Service.informalReply(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.generic_success_title,
-                        text: swaMsg.generic_success_text,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                     loadData(currentItem.id);
                     retrievePublish()
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
@@ -711,38 +670,16 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     };
 
     let deteleAttach = (id) => {
-        MySwal.fire({
-            title: "ELIMINAR ÍTEM",
-            text: "¿Esta seguro de eliminar este ítem de forma permanente?",
-            icon: 'warning',
-            confirmButtonText: "ELIMINAR",
-            cancelButtonText: "CANCELAR",
-            showCancelButton: true
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ELIMINAR ÍTEM", text: "¿Esta seguro de eliminar este ítem de forma permanente?", icon: 'warning', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 PQRS_Service.deleteAttach(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                             retrieveItem(currentItem.id)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
@@ -755,16 +692,16 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     let _ATTACHS_COMPONENT = () => {
         var _COMPONENT = [];
         for (var i = 0; i < stateadd; i++) {
-            _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+            _COMPONENT.push(<div className="row d-flex justify-content-center my-2" key={`informal-attach-${i}`}>
                 <div className="col-lg-8 col-md-8 ">
-                    <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                        <input type="file" class="form-control" name="files_informal" accept="application/pdf, image/png, image/jpeg" />
+                    <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
+                    <div className="input-group">
+                        <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                        <input type="file" className="form-control" name="files_informal" accept="application/pdf, image/png, image/jpeg" />
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                        <input type="text" class="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                    <div className="input-group">
+                        <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                        <input type="text" className="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                     </div>
                 </div>
             </div>)
@@ -774,27 +711,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     }
     let lockPQRS = (e) => {
         e.preventDefault();
-        MySwal.fire({
-            title: "CERRAR PETICION " + currentItem.id_publico,
-            text: "¿Esta seguro de cerrar esta peticion?",
-            icon: 'warning',
-            confirmButtonText: "CERRAR",
-            cancelButtonText: "CANCELAR",
-            showCancelButton: true
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "CERRAR PETICION ", text: "¿Esta seguro de cerrar esta peticion?", icon: 'warning', confirmButtonText: "CERRAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 formData = new FormData();
                 formData.set('id_master', currentItem.id);
                 formData.set('id_reply', currentItem.id_reply);
                 formData.set('time_id', currentItem.pqrs_time.id);
-
-
 
                 let files = document.getElementsByName("files_close");
 
@@ -813,22 +736,12 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 PQRS_Service.close(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.generic_success_title,
-                                text: swaMsg.generic_success_text,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
                             loadData(currentItem.id)
                             refreshList()
                             props.closeModal();
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
@@ -856,26 +769,26 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         }
         const columns = [
             {
-                name: <h3>NOMBRE</h3>,
-                selector: 'name',
+                name: 'NOMBRE',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
-                cell: row => <p className="pt-3 text-center">{row.public_name}</p>
+                cell: row => <span className="text-sm">{row.public_name}</span>
             },
             {
-                name: <h3>TIPO</h3>,
-                selector: 'type',
+                name: 'TIPO',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
-                cell: row => <p className="pt-3">{row.type}</p>
+                cell: row => <span className="text-sm">{row.type}</span>
             },
             {
-                name: <h3>ACCIÓN</h3>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <a className="btn btn-sm btn-danger mx-1" target="_blank" href={process.env.REACT_APP_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
-                    <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                    <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2 mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><Icon name="cloud-download-alt" size={16} /></a>
+                    <Button variant="destructive" size="sm" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></Button>
                 </>,
             },
         ]
@@ -895,20 +808,19 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return <>{_COMPONENT}</>;
     }
 
-
     let _ATTACHS_COMPONENT2 = () => {
         var _COMPONENT = [];
         for (var i = 0; i < stateadd2; i++) {
-            _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+            _COMPONENT.push(<div className="row d-flex justify-content-center my-2" key={`close-attach-${i}`}>
                 <div className="col-lg-8 col-md-8 ">
-                    <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                        <input type="file" class="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
+                    <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
+                    <div className="input-group">
+                        <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                        <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                        <input type="text" class="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                    <div className="input-group">
+                        <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                        <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                     </div>
                 </div>
             </div>)
@@ -917,13 +829,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return <div>{_COMPONENT}</div>;
     }
 
-
-
     // ** DATA CONVERTERS ** //
     // TRANSFORM AND PROCESS DATA
     function compareData() { }
-
-
 
     // ** JSX ELEMENTS ** //
     // SMALL OR SINGLE JSX ELEMENTS
@@ -931,7 +839,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return <>
         </>
     }
-
 
     // ** JSX COMPONENTS ** //
     // BIG OR COMPOSED JSX ELEMENTS
@@ -950,10 +857,15 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
             {currentItem != null ? <>
                 {load ? <>
-
+                    <PQRS_MODULE_NAV
+                        translation={translation}
+                        currentItem={currentItem}
+                        FROM={currentItem.status == 0 ? "manage" : "editable"}
+                        NAVIGATION={props.NAVIGATION}
+                    />
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>1.DOCUMENTOS SOPORTE INGRESO <i class="fas fa-folder"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal"><b>1.DOCUMENTOS SOPORTE INGRESO <Icon name="folder" size={16} /></b></h2>
                         <PQRS_EDIT_ATTACH
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -962,12 +874,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                     </fieldset>
 
-
-
                     <fieldset className="p-3 border border-info mb-2">
                         <div>
 
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>2. CONFIRMAR A PETICIONARIO <i class="fas fa-check-circle"></i></b></label>
+                            <label className="px-4 app-p lead fw-normal"><b>2. CONFIRMAR A PETICIONARIO <Icon name="check-circle" size={16} /></b></label>
                             <br></br>
                             <br></br>
                             <h5 className="px-2"><b>GUÍA PARA ENVIAR LA CONFIRMACIÓN POR EMAIL</b></h5>
@@ -1016,7 +926,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                     <fieldset className="p-3 border border-info mb-2">
 
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>3. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <i class="fas fa-info-circle"></i> </b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal"><b>3. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <Icon name="info-circle" size={16} /> </b></h2>
 
                         <PQRS_EDIT_SOLICITORS
                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1025,7 +935,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         />
                         <br></br>
                         <hr></hr>
-                        <h5 className=" px-4"><b>CONTACTO DE PETICIONARIO(S) <i class="fas fa-address-card"></i> </b> </h5>
+                        <h5 className=" px-4"><b>CONTACTO DE PETICIONARIO(S) <Icon name="address-card" size={16} /> </b> </h5>
                         <PQRS_EDIT_CONTACT
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -1033,7 +943,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         />
                         <br></br>
                         <hr></hr>
-                        <h5 className=" px-4"><b>LA PQRS ESTÁ RELACIONADA CON ALGUNA ACTUACIÓN Y/O SOLICITUD URBANÍSTICA <i class="fas fa-bookmark"></i></b></h5>
+                        <h5 className=" px-4"><b>LA PQRS ESTÁ RELACIONADA CON ALGUNA ACTUACIÓN Y/O SOLICITUD URBANÍSTICA <Icon name="bookmark" size={16} /></b></h5>
                         <PQRS_EDIT_FUN
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -1049,7 +959,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>4. DESCRIPCIÓN DE LA SOLICITUD <i class="fas fa-prescription-bottle"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal"><b>4. DESCRIPCIÓN DE LA SOLICITUD <Icon name="prescription-bottle" size={16} /></b></h2>
                         <Collapsible className='bg-warning  border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">DESCRIPCIÓN</label></>}>
                             <div className="pb-2 text-start">
                                 <PQRS_EDIT_INFO
@@ -1065,7 +975,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>5. CONTROL DE TIEMPOS <i class="fas fa-calendar-check"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal"><b>5. CONTROL DE TIEMPOS <Icon name="calendar-check" size={16} /></b></h2>
                         <div className='px-4'>
                             <PQRS_COMPONENT_CLOCKS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1077,11 +987,11 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={asignPQRS} id="app-formAsign">
 
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>6. ASIGNAR PROFESIONALES </b> <i class="fas fa-user-plus"></i></label>
+                            <label className="px-4 app-p lead fw-normal"><b>6. ASIGNAR PROFESIONALES </b> <Icon name="user-plus" size={16} /></label>
 
-                            <div class="form-check ms-5">
-                                <input class="form-check-input" type="checkbox" onChange={(e) => setnewAsign(e.target.checked)} />
-                                <label class="form-check-label" for="flexCheckDefault">
+                            <div className="form-check ms-5">
+                                <input className="form-check-input" type="checkbox" onChange={(e) => setnewAsign(e.target.checked)} />
+                                <label className="form-check-label" htmlFor="flexCheckDefault">
                                     Asignar Profesional
                                 </label>
                             </div>
@@ -1089,13 +999,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 ? <>
                                     {_WORKERS_COMPONENT()}
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-warning"><i class="fas fa-user-plus"></i> ASIGNAR </button>
+                                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90"><Icon name="user-plus" size={14} /> Asignar</Button>
                                     </div>
                                 </> : ""}
                         </form>
 
-                        <div className="my-2 px-3 text-uppercase bg-white" id="pqrs_info_1">
-                            <label className="app-p lead text-start fw-normal text-uppercase">PROFESIONALES ASIGNADOS</label>
+                        <div className="my-2 px-3 bg-body-secondary" id="pqrs_info_1">
+                            <label className="app-p lead text-start fw-normal">PROFESIONALES ASIGNADOS</label>
                         </div>
                         <div className="mb-2">
                             {_ASIGN_COMPOENTN()}
@@ -1103,7 +1013,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         </div>
                         {currentItemAsign
                             ? <>
-                                <label class="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
+                                <label className="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
                                 <PQRS_WORKERS_EMAILS
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -1115,18 +1025,14 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             </> : ""}
                     </fieldset>
 
-
-
-
                     {/* DE LA VARIABLE currentItem.pqrs_workers, realizar un map por cada elemento del array, y geerar un formulario.
                       A cada formulario asociar el Jd del worker
                       Si el Id del worker coincide con el Id del winow.user.Id, hablitar ese form, de lo contrario, desabilitar el form
                     */}
 
-
                     <fieldset className="p-3 border border-info mb-2">
 
-                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>7. RESPUESTA DE LOS PROFESIONALES ASIGNADOS <i class="fas fa-comment-medical"></i> </b></label>
+                        <label className="px-4 app-p lead fw-normal"><b>7. RESPUESTA DE LOS PROFESIONALES ASIGNADOS <Icon name="comment-medical" size={16} /> </b></label>
 
                         <h5 className="px-4">Instrucciones para dar respuesta a la solicitud: </h5>
                         <ul>
@@ -1152,22 +1058,21 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 }
                             }
 
-                            return <>
+                            return <Fragment key={value.id ?? value.worker_id ?? `pqrs-worker-${i}`}>
 
-                                <label className="px-4 app-p lead fw-normal text-uppercase"><i class="fas fa-arrow-right"></i> {+i} {value.name}</label>
+                                <label className="px-4 app-p lead fw-normal"><Icon name="arrow-right" size={16} /> {+i} {value.name}</label>
                                 <div className="text-center m-3">
                                     <JoditEditor
                                         ref={editor}
                                         value={value.reply}
                                         key={funcion2()}
-                                        config={config(edit)}
+                                        config={getJoditConfig(edit)}
                                         name="pqrs_informal_reply"
                                         tabIndex={1} // tabIndex of textarea
                                         onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                                         onChange={newContent => { }}
-                                        class="form-control mb-3"
                                         rows="5"
-                                        maxlength="409675"
+                                        maxLength="409675"
 
                                     />
 
@@ -1175,12 +1080,12 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 {!funcion1(window.user.id, value.worker_id) ?
                                     <>
                                         <hr className="my-3" />
-                                        <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
+                                        <label className="app-p lead text-start fw-bold">ANEXAR DOCUMENTO</label>
                                         <div className="text-end m-3" >
                                             {stateadd > 0
-                                                ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                                 : ""}
-                                            <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                                            <Button variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </Button>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
 
@@ -1188,27 +1093,27 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         <div className="row" hidden={funcion1(window.user.id, value.worker_id)}>
 
                                             <div className="col-lg-6 col-md-6">
-                                                <input type="text" class="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-calendar-alt"></i>
+                                                <input type="text" className="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
+                                                <div className="input-group mb-3">
+                                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                                        <Icon name="calendar-alt" size={16} />
                                                     </span>
-                                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_informal_time" defaultValue={value.date_reply ?? moment().format('YYYY-MM-DD')} required />
+                                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={value.date_reply ?? dayjs().format('YYYY-MM-DD')} required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-sm btn-success" onClick={() => informalReplyPQRS(i, value.id)}><i class="fas fa-reply"></i> RESPONDER </button>
+                                            <Button size="sm" onClick={() => informalReplyPQRS(i, value.id)}><Icon name="reply" size={16} /> RESPONDER </Button>
 
                                         </div>
                                         <hr></hr>
                                     </> : ''}
 
-                            </>
+                            </Fragment>
                         })}
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
-                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>8. RESPUESTA FORMAL DE LA PETICION <i class="fas fa-envelope-open-text"></i></b></label>
+                        <label className="px-4 app-p lead fw-normal"><b>8. RESPUESTA FORMAL DE LA PETICION <Icon name="envelope-open-text" size={16} /></b></label>
                         <Collapsible className='bg-warning  border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">RESPONDER PETICION</label></>}>
                             <div className='text-start'>
                                 <PQRS_SET_REPLY1
@@ -1229,7 +1134,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                                 {viewform
                                     ? <>
-                                        <label class="text-center py-2 fw-bold">CONFIRMACION VISTO BUENO</label>
+                                        <label className="text-center py-2 fw-bold">CONFIRMACION VISTO BUENO</label>
                                         <SEEN_COMPONENT_FORM
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
@@ -1262,35 +1167,35 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={lockPQRS} id="app-formReply">
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>9. CERRAR PETICIÓN <i class="fab fa-expeditedssl"></i></b></label><br></br>
-                            <label className="px-4"><h5><p>GUIÁ PARA EL CIERRE DE LA PETICIÓN</p></h5></label>
+                            <label className="px-4 app-p lead fw-normal"><b>9. CERRAR PETICIÓN <Icon name="expeditedssl" size={16} /></b></label><br></br>
+                            <label className="px-4"><span className="h5">GUIÁ PARA EL CIERRE DE LA PETICIÓN</span></label>
                             <ul>
-                                <li className="app-p"><h5>Asegurar envío con copia del email o guiá de envío de recibido por parte del peticionario, digitalizar y anexar.</h5></li>
-                                <li className="app-p"><h5>Digitalizar Copias de los correos y anexos enviados al documento de respuesta.</h5></li>
+                                <li className="app-p"><strong>Asegurar envío con copia del email o guiá de envío de recibido por parte del peticionario, digitalizar y anexar.</strong></li>
+                                <li className="app-p"><strong>Digitalizar Copias de los correos y anexos enviados al documento de respuesta.</strong></li>
                             </ul>
                             {_checkForOutputDocsClass2()
-                                ? <table className="table table-sm table-hover table-bordered">
-                                    <tbody>
-                                        <tr className="bg-warning">
-                                            <th><label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTOS DE CIERRE ANEXADOS</label></th>
-                                        </tr>
+                                ? <div className="rounded border border-secondary-subtle mb-3 overflow-hidden">
+                                    <div className="bg-warning px-3 py-2 border-bottom border-secondary-subtle">
+                                        <label className="app-p lead text-start fw-normal">DOCUMENTOS DE CIERRE ANEXADOS</label>
+                                    </div>
+                                    <div className="p-2">
                                         {_ATTACHSCLOSE_COMPONENT()}
-                                    </tbody>
-                                </table>
-                                : <div className="text-start"><label className="app-p fw-bold text-uppercase text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
+                                    </div>
+                                </div>
+                                : <div className="text-start"><label className="app-p fw-bold text-danger">NO SE ENCONTRARON DOCUMENTOS ANEXOS DE CIERRE PARA ESA SOLICITUD</label></div>}
 
-                            <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
+                            <p className="app-p lead text-end fw-bold">ANEXAR DOCUMENTO DE CIERRE</p>
                             <div className="text-end m-3">
                                 {stateadd2 > 0
-                                    ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                    ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttach2()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                     : ""}
-                                <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach2()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                <Button variant="outline" size="sm" onClick={() => addAttach2()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                             </div>
                             {_ATTACHS_COMPONENT2()}
 
                             <hr />
                             <div className="text-center m-3">
-                                <button className="btn btn-sm btn-success" ><i class="fas fa-lock"></i> CERRAR PETICIÓN</button>
+                                <Button size="sm"><Icon name="lock" size={16} /> CERRAR PETICIÓN</Button>
                             </div>
 
                         </form>
@@ -1304,12 +1209,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
             </fieldset>
             }
-            <PQRS_MODULE_NAV
-                translation={translation}
-                currentItem={currentItem}
-                FROM={currentItem.status == 0 ? "manage" : "editable"}
-                NAVIGATION={props.NAVIGATION}
-            />
         </div >
     )
 }

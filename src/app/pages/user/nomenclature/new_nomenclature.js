@@ -1,28 +1,12 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
+import { Button } from '@/components/ui/button';
 import NOMENCLATURE_ANEX from './nomenclature_anex.componen';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 
-const MySwal = withReactContent(Swal);
-
-class NOMENCLATURE_NEW extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-        };
-    }
-
-    refreshList(id) {
-        this.props.refreshList(id);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshList, closeModal }) {
 
         // DATA GETTERS
         let GET_NOMENCLATURE = () => {
@@ -48,6 +32,8 @@ class NOMENCLATURE_NEW extends Component {
                 recipe_office_date: "",
                 recipe_county_id: "",
                 recipe_county_date: "",
+                vr: "",
+                oa: "",
             }
             if (_CHILD) {
                 _CHILD_VARS.id = _CHILD.id;
@@ -70,6 +56,8 @@ class NOMENCLATURE_NEW extends Component {
                 _CHILD_VARS.recipe_office_date = _CHILD.recipe_office_date;
                 _CHILD_VARS.recipe_county_id = _CHILD.recipe_county_id;
                 _CHILD_VARS.recipe_county_date = _CHILD.recipe_county_date;
+                _CHILD_VARS.vr = _CHILD.vr;
+                _CHILD_VARS.oa = _CHILD.oa;
             }
             return _CHILD_VARS;
         }
@@ -99,12 +87,7 @@ class NOMENCLATURE_NEW extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -115,22 +98,22 @@ class NOMENCLATURE_NEW extends Component {
                 <div className="row">
                     <div className="col-4">
                         <label >1. Número de Radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_1" required
+                            <input type="text" className="form-control" id="nomen_1" required
                                 defaultValue={_CHILD.id_public} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col-4">
                         <label >2. Tipo de Nomenclatura</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <select class="form-select" required id="nomen_2"
+                            <select className="form-select" required id="nomen_2"
                                 defaultValue={_CHILD.type}>
                                 <option>CERTIFICADO</option>
                                 <option>NUEVA NOMENCLATURA</option>
@@ -140,43 +123,66 @@ class NOMENCLATURE_NEW extends Component {
                     </div>
                     <div className="col-4">
                         <label >3. Número de Nomenclaturas</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="number" class="form-control" id="nomen_11" step="1" nim="1"
+                            <input type="number" className="form-control" id="nomen_11" step="1" nim="1"
                                 defaultValue={_CHILD.number} />
                         </div>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-4">
-                        <label >4.1 Nombre Solicitante</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <label >4. Número de VR</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_31"
+                            <input type="text" className="form-control" id="nomen_vr" defaultValue={_CHILD.vr} />
+                        </div>
+                    </div>
+                    <div className="col-4">
+                        <label >5. Número de OA</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="file-alt" size={16} />
+                            </span>
+                            <input type="text" className="form-control" id="nomen_oa" defaultValue={_CHILD.oa} />
+                        </div>
+                    </div>
+                    <div className="col-4">
+
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-4">
+                        <label >6.1 Nombre Solicitante</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
+                            </span>
+                            <input type="text" className="form-control" id="nomen_31"
                                 defaultValue={_CHILD.name} />
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >4.2 Apellido(s) Solicitante</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <label >6.2 Apellido(s) Solicitante</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_32"
+                            <input type="text" className="form-control" id="nomen_32"
                                 defaultValue={_CHILD.surname} />
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >5. Documento Solicitante</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-id-card"></i>
+                        <label >7. Documento Solicitante</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="id-card" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_4"
+                            <input type="text" className="form-control" id="nomen_4"
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
                                 defaultValue={_CHILD.number_id} />
                         </div>
@@ -184,36 +190,36 @@ class NOMENCLATURE_NEW extends Component {
                 </div>
                 <div className="row">
                     <div className="col-4">
-                        <label >6. Dirección Predio</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <label >8. Dirección Predio</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_5"
+                            <input type="text" className="form-control" id="nomen_5"
                                 defaultValue={_CHILD.address} />
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >7.1 Tipo localizacion</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <label >9.1 Tipo localizacion</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <select class="form-select" required id="nomen_16_1"
-                            defaultValue={_CHILD.neighbour[1]}>
-                            <option>BARRIO</option>
-                            <option>URBANIZACIÓN</option>
-                            <option>VEREDA</option>
-                        </select>
+                            <select className="form-select" required id="nomen_16_1"
+                                defaultValue={_CHILD.neighbour[1]}>
+                                <option>BARRIO</option>
+                                <option>URBANIZACIÓN</option>
+                                <option>VEREDA</option>
+                            </select>
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >7.2 Barrio</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <label >9.2 Barrio</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_16"
+                            <input type="text" className="form-control" id="nomen_16"
                                 defaultValue={_CHILD.neighbour[0]} />
                         </div>
                     </div>
@@ -221,62 +227,62 @@ class NOMENCLATURE_NEW extends Component {
 
                 <div className="row">
                     <div className="col-6">
-                        <label >8. Número Predial/Catastral</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <label >10. Número Predial/Catastral</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_6"
+                            <input type="text" className="form-control" id="nomen_6"
                                 defaultValue={_CHILD.predial} />
                         </div>
                     </div>
                     <div className="col-6">
-                        <label >9. Número de Matrícula</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-home"></i>
+                        <label >11. Número de Matrícula</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="home" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_7"
+                            <input type="text" className="form-control" id="nomen_7"
                                 defaultValue={_CHILD.matricula} />
                         </div>
                     </div>
                 </div>
                 <div className="row">
-                    <label >10. Destino</label>
+                    <label >12. Destino</label>
                     <div className='row p-3'>
                         <div className="col">
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" name={"use"}
+                            <div className="form-group form-check">
+                                <input type="checkbox" className="form-check-input" name={"use"}
                                     value={"VIVIENDA"} defaultChecked={_CHILD.use.includes("VIVIENDA")} />
-                                <label class="form-check-label" >VIVIENDA</label>
+                                <label className="form-check-label" >VIVIENDA</label>
                             </div>
                         </div>
                         <div className="col">
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" name={"use"}
+                            <div className="form-group form-check">
+                                <input type="checkbox" className="form-check-input" name={"use"}
                                     value={"COMERCIO"} defaultChecked={_CHILD.use.includes("COMERCIO")} />
-                                <label class="form-check-label" >COMERCIO</label>
+                                <label className="form-check-label" >COMERCIO</label>
                             </div>
                         </div>
                         <div className="col">
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" name={"use"}
+                            <div className="form-group form-check">
+                                <input type="checkbox" className="form-check-input" name={"use"}
                                     value={"INDUSTRIAL"} defaultChecked={_CHILD.use.includes("INDUSTRIAL")} />
-                                <label class="form-check-label" >INDUSTRIAL</label>
+                                <label className="form-check-label" >INDUSTRIAL</label>
                             </div>
                         </div>
                         <div className="col">
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" name={"use"}
+                            <div className="form-group form-check">
+                                <input type="checkbox" className="form-check-input" name={"use"}
                                     value={"DOTACIONAL"} defaultChecked={_CHILD.use.includes("DOTACIONAL")} />
-                                <label class="form-check-label" >DOTACIONAL</label>
+                                <label className="form-check-label" >DOTACIONAL</label>
                             </div>
                         </div>
                         <div className="col">
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" name={"use"}
+                            <div className="form-group form-check">
+                                <input type="checkbox" className="form-check-input" name={"use"}
                                     value={"INSTITUCIONAL"} defaultChecked={_CHILD.use.includes("INSTITUCIONAL")} />
-                                <label class="form-check-label" >INSTITUCIONAL</label>
+                                <label className="form-check-label" >INSTITUCIONAL</label>
                             </div>
                         </div>
                     </div>
@@ -284,81 +290,81 @@ class NOMENCLATURE_NEW extends Component {
 
                 <div className="row">
                     <div className="col-4">
-                        <label >11.1. Fecha Radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-check"></i>
+                        <label >13.1. Fecha Radicación</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-check" size={16} />
                             </span>
-                            <input type="date" class="form-control" max="2100-01-01" id="nomen_8"
+                            <input type="date" className="form-control" max="2100-01-01" id="nomen_8"
                                 defaultValue={_CHILD.date_start} />
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >11.2 Fecha Expedición</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-times"></i>
+                        <label >13.2 Fecha Expedición</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-times" size={16} />
                             </span>
-                            <input type="date" class="form-control" max="2100-01-01" id="nomen_9"
+                            <input type="date" className="form-control" max="2100-01-01" id="nomen_9"
                                 defaultValue={_CHILD.date_end} />
                         </div>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-4">
-                        <label >12.1. Número de Recibo Curaduría</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-money-check-alt"></i>
+                        <label >14.1. Número de Recibo Curaduría</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="money-check-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_12"
+                            <input type="text" className="form-control" id="nomen_12"
                                 defaultValue={_CHILD.recipe_office_id} />
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >12.2 Fecha de Recibo Curaduría</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <label >14.2 Fecha de Recibo Curaduría</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" class="form-control" max="2100-01-01" id="nomen_13"
+                            <input type="date" className="form-control" max="2100-01-01" id="nomen_13"
                                 defaultValue={_CHILD.recipe_office_date} />
                         </div>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-4">
-                        <label >13.1. Número de Recibo Municipal</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-money-check-alt"></i>
+                        <label >15.1. Número de Recibo Municipal</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="money-check-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" id="nomen_14"
+                            <input type="text" className="form-control" id="nomen_14"
                                 defaultValue={_CHILD.recipe_county_id} />
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >13.2 Fecha de Recibo Municipal</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <label >15.2 Fecha de Recibo Municipal</label>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" class="form-control" max="2100-01-01" id="nomen_15"
+                            <input type="date" className="form-control" max="2100-01-01" id="nomen_15"
                                 defaultValue={_CHILD.recipe_county_date} />
                         </div>
                     </div>
                 </div>
                 <div className="row mt-2">
                     <div className="col-12">
-                        <label >14. Observaciones (Máximo 2000 Caracteres)</label>
-                        <textarea class="form-control mb-3" rows="3" maxLength="1900" id="nomen_10"
+                        <label >16. Observaciones (Máximo 2000 Caracteres)</label>
+                        <textarea className="form-control mb-3" rows="3" maxLength="1900" id="nomen_10"
                             defaultValue={_CHILD.details}></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-13">
-                        <label >15. Nota (Máximo 1000 Caracteres)</label>
-                        <textarea class="form-control mb-3" rows="2" maxLength="1000" id="nomen_17"
+                        <label >17. Nota (Máximo 1000 Caracteres)</label>
+                        <textarea className="form-control mb-3" rows="2" maxLength="1000" id="nomen_17"
                             defaultValue={_CHILD.note}></textarea>
                     </div>
                 </div>
@@ -395,7 +401,11 @@ class NOMENCLATURE_NEW extends Component {
             if (details) formData.set('details', details);
             let number = document.getElementById("nomen_11").value;
             if (number) formData.set('number', number);
-            let neighbour = [] 
+            let vr = document.getElementById("nomen_vr").value;
+            formData.set('vr', vr);
+            let oa = document.getElementById("nomen_oa").value;
+            formData.set('oa', oa);
+            let neighbour = []
             neighbour.push(document.getElementById("nomen_16").value || '')
             neighbour.push(document.getElementById("nomen_16_1").value || '');
             if (neighbour.length) formData.set('neighbour', neighbour.join(";"));
@@ -429,89 +439,42 @@ class NOMENCLATURE_NEW extends Component {
             let _CHILD = GET_NOMENCLATURE();
 
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 Nomenclature_Service.update(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshList(currentItem.id);
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            refreshList(currentItem.id);
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 Nomenclature_Service.create(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshList();
-                            this.props.closeModal();
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            refreshList();
+                            closeModal();
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -519,16 +482,16 @@ class NOMENCLATURE_NEW extends Component {
         return (
             <div className="Nomenclature_new container">
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                        <label className="app-p lead fw-normal text-uppercase text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} NOMENCLATURA</label>
+                    <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                        <label className="app-p lead fw-normal text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} NOMENCLATURA</label>
                     </legend>
                     <form id="form_new_nomen" onSubmit={save_nomenclature}>
                         {COMPONENT_NEW()}
                         <div className="row mb-3 text-center">
                             <div className="col-12">
                                 {currentItem
-                                    ? <button className="btn btn-success my-3"><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                                    : <button className="btn btn-success my-3"><i class="fas fa-plus-circle"></i> CREAR </button>}
+                                    ? <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                                    : <Button size="sm" className="my-3"><Icon name="plus-circle" size={16} /> CREAR </Button>}
 
                             </div>
                         </div>
@@ -536,19 +499,18 @@ class NOMENCLATURE_NEW extends Component {
                 </fieldset>
                 {currentItem
                     ? <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                            <label className="app-p lead fw-normal text-uppercase text-light">DOCUMENTO</label>
+                        <legend className="my-2 px-3 Collapsible" id="fun_pdf">
+                            <label className="app-p lead fw-normal text-light">DOCUMENTO</label>
                         </legend>
                         <NOMENCLATURE_ANEX
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            refreshItem={this.refreshList}
+                            refreshItem={refreshList}
                         />
                     </fieldset>
                     : ""}
             </div >
         );
-    }
 }
 
 export default NOMENCLATURE_NEW;

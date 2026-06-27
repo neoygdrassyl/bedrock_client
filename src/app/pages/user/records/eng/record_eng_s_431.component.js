@@ -1,45 +1,38 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import Estudios_Simico from '../../../../components/jsons/estudio_eng.json'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
+function RECORD_ENG_STEP_431(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP, version, requestUpdateRecord } = props;
+        const [showSection, setShowSection] = useState(false);
+        const [showSelect, setShowSelect] = useState(false);
 
-class RECORD_ENG_STEP_431 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    componentDidMount() {
-        if (!this.props.isP) this.setState({ showSection: true });
-        else this.setState({ showSelect: true });
-        this.checkForStudy();
-    }
-    checkForStudy() {
-        var _CHILD = this.props.currentRecord.record_eng_steps;
-        var STEP = null;
-        for (var i = 0; i < _CHILD.length; i++) {
-            if (_CHILD[i].version == this.props.currentVersionR && _CHILD[i].id_public == 'sp') {
-                STEP = _CHILD[i];
-                break;
+        const checkForStudy = () => {
+            var _CHILD = currentRecord.record_eng_steps;
+            var STEP = null;
+            for (var i = 0; i < _CHILD.length; i++) {
+                if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == 'sp') {
+                    STEP = _CHILD[i];
+                    break;
+                }
             }
-        }
-        if (STEP) {
-            //document.getElementById('r_e_p_select').value = STEP.check
-            if (STEP.check == 1) this.setState({ showSection: true });
-            if (STEP.check == 0) this.setState({ showSection: false });
-        }
-    }
-    componentDidUpdate(prevProps) {
-        if (this.props.currentRecord !== prevProps.currentRecord) this.checkForStudy();
+            if (STEP) {
+                //document.getElementById('r_e_p_select').value = STEP.check
+                if (STEP.check == 1) setShowSection(true);
+                if (STEP.check == 0) setShowSection(false);
+            }
+        };
 
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP, version } = this.props;
-        const { } = this.state;
+        useEffect(() => {
+            if (!isP) setShowSection(true);
+            else setShowSelect(true);
+            checkForStudy();
+        }, []);
+
+        useEffect(() => {
+            checkForStudy();
+        }, [currentRecord]);
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
         //  CONST
         const STEP_01_SUPPORT = {
@@ -303,11 +296,11 @@ class RECORD_ENG_STEP_431 extends Component {
             return <>
                 <div className="row">
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Categoría Construcción (H.3.1)
                             </span>
-                            <select class="form-select form-control form-control-sm" id="recprd_eng_s01_select" onChange={(e) => _SET_VALUES(e.target.value)}
+                            <select className="form-select form-control form-control-sm" id="recprd_eng_s01_select" onChange={(e) => _SET_VALUES(e.target.value)}
                                 defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 5) ?? 'BAJA'} onBlur={(e) => manage_step_01(e)}>
                                 <option>BAJA</option>
                                 <option>MEDIA</option>
@@ -317,8 +310,8 @@ class RECORD_ENG_STEP_431 extends Component {
                         </div>
                     </div>
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Segun los Niveles
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_1" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 0) ?? 'Hasta 3 niveles'} />
@@ -335,16 +328,16 @@ class RECORD_ENG_STEP_431 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Numero de Sondeos
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_2" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 1) ?? 'Mínimo 3'} />
                         </div>
                     </div>
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Profundidad (h.3.2.1)
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_3" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 2) ?? 'Mínima 6 m.'} />
@@ -361,16 +354,16 @@ class RECORD_ENG_STEP_431 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Cargas en Columna
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_4" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 3) ?? 'Menor de 800 kN'} />
                         </div>
                     </div>
                     <div className="col-5">
-                        <div class="input-group my-0">
-                            <span class="input-group-text bg-info text-white">
+                        <div className="input-group my-0">
+                            <span className="input-group-text bg-primary text-primary-foreground">
                                 Supersivisíon Técnica
                             </span>
                             <input type="text" disabled className="form-control" id="recprd_eng_s01_5" defaultValue={_GET_STEP_TYPE_INDEX('s4311', 'value', 4) ?? 'No necesaria'} />
@@ -392,7 +385,7 @@ class RECORD_ENG_STEP_431 extends Component {
                 {H2221().map((value, i) => (
                     <div className="row border my-0">
                         <div className="col-10">
-                            <div class="input-group my-0">
+                            <div className="input-group my-0">
                                 <label>{value}</label>
                             </div>
                         </div>
@@ -706,7 +699,7 @@ class RECORD_ENG_STEP_431 extends Component {
         }
         let COMPONENT_DETAIL = () => {
             return <div>
-                <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                     <div className='col'>
                         <label>Resumen</label>
                     </div>
@@ -793,142 +786,68 @@ class RECORD_ENG_STEP_431 extends Component {
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ENG_SERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 RECORD_ENG_SERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
         let manage_review = (useSwal, formData) => {
             var _CHILD = _GET_REVIEW();
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 RECORD_ENG_SERVICE.update_review(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             } else {
                 RECORD_ENG_SERVICE.create_review(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
 
@@ -948,11 +867,11 @@ class RECORD_ENG_STEP_431 extends Component {
             <div className="record_eng_desc container">
                 {SUBCATEGORIES[0] == '1' ?
                     <>
-                        <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_431">
-                            <label className="app-p lead fw-normal text-uppercase">4.3.1 ESTUDIO GEOTÉCNICO</label>
+                        <legend className="my-2 px-3 bg-light" id="record_eng_431">
+                            <label className="app-p lead fw-normal">4.3.1 ESTUDIO GEOTÉCNICO</label>
                         </legend>
                         {COMPONENT_01()}
-                        <label className="app-p fw-bold text-uppercase my-2">Contenido del estudio geotécnico definitivo (H.2.2.2.1)</label>
+                        <label className="app-p fw-bold my-2">Contenido del estudio geotécnico definitivo (H.2.2.2.1)</label>
                         {COMPONENT_02()}
                     </>
                     : ""}
@@ -961,13 +880,12 @@ class RECORD_ENG_STEP_431 extends Component {
                 <hr />
                 {SUBCATEGORIES[0] == '1' ?
                     <>
-                        <label className="app-p fw-bold text-uppercase my-2">Resumen del estudio Geotécnico</label>
+                        <label className="app-p fw-bold my-2">Resumen del estudio Geotécnico</label>
                         {COMPONENT_DETAIL()}
                     </>
                     : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_STEP_431;

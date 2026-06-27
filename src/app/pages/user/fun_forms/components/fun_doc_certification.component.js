@@ -1,20 +1,17 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
 
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 import SERVICE_CERTIFICATIONS from '../../../../services/certifications.service';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 
-
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, states } from '../../../../components/jsons/vars';
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function FUN_CERTIFICATION(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, id_related, related } = props;
@@ -27,7 +24,6 @@ export default function FUN_CERTIFICATION(props) {
     useEffect(() => {
         if (load == 0) loadLists();
     }, [load]);
-
 
     // ***************************  DATA CONVERTER *********************** //
     let _GET_CHILD_1 = () => {
@@ -128,19 +124,19 @@ export default function FUN_CERTIFICATION(props) {
             <div className='row mb-2'>
                 <div className="col">
                     <label>Fecha del documento</label>
-                    <input type="date" class="form-control" max='2100-01-01' id="genc_date_doc" required
-                        defaultValue={moment().format('YYYY-MM-DD')} />
+                    <input type="date" className="form-control" max='2100-01-01' id="genc_date_doc" required
+                        defaultValue={dayjs().format('YYYY-MM-DD')} />
                 </div>
 
                 <div className="col">
                     <label>Número de Radicación</label>
-                    <input type="text" class="form-control" id="genc_id_public" disabled
+                    <input type="text" className="form-control" id="genc_id_public" disabled
                         defaultValue={currentItem.id_public} />
                 </div>
                 <div className="col">
                     <label>Estado Proyecto</label>
-                    <div class="input-group">
-                        <select class="form-select" id={"genc_state"}>
+                    <div className="input-group">
+                        <select className="form-select" id={"genc_state"}>
                             <option>ESTUDIOS Y TRAMITES</option>
                             <option>OTORGADA</option>
                             <option>DESISTIDA</option>
@@ -151,16 +147,16 @@ export default function FUN_CERTIFICATION(props) {
                 </div>
                 <div className="col">
                     <label>Ciudad</label>
-                    <div class="input-group">
-                        <select class="form-select" id={"genc_city"}>
+                    <div className="input-group">
+                        <select className="form-select" id={"genc_city"}>
                             {cities}
                         </select>
                     </div>
                 </div>
                 <div className="col">
                     <label>Departamento</label>
-                    <div class="input-group">
-                        <select class="form-select" id={"genc_county"}>
+                    <div className="input-group">
+                        <select className="form-select" id={"genc_county"}>
                             {states}
                         </select>
                     </div>
@@ -169,25 +165,25 @@ export default function FUN_CERTIFICATION(props) {
             <div className='row mb-2'>
                 <div className="col">
                     <label>Responsable</label>
-                    <input type="text" class="form-control" id="genc_name"
+                    <input type="text" className="form-control" id="genc_name"
                         defaultValue={_CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                 </div>
                 <div className="col">
                     <label>Documento</label>
-                    <input type="text" class="form-control" id="genc_id_number"
+                    <input type="text" className="form-control" id="genc_id_number"
                         defaultValue={_CHILD_53.item_532} />
                 </div>
                 <div className="col">
                     <label>Dirección Responsable</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="genc_address"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="genc_address"
                             defaultValue={_CHILD_53.item_536} />
                     </div>
                 </div>
                 <div className="col">
                     <label>En Calidad:</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="genc_role"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="genc_role"
                             defaultValue={_CHILD_53.item_533} />
                     </div>
                 </div>
@@ -195,25 +191,25 @@ export default function FUN_CERTIFICATION(props) {
             <div className='row mb-2'>
                 <div className="col-12">
                     <label>Modalidad</label>
-                    <input type="text" class="form-control" id="genc_type"
+                    <input type="text" className="form-control" id="genc_type"
                         defaultValue={formsParser1(_CHILD_1)} />
                 </div>
                 <div className="col">
                     <label>Dirección Predio</label>
-                    <input type="text" class="form-control" id="genc_address2"
+                    <input type="text" className="form-control" id="genc_address2"
                         defaultValue={_CHILD_2.item_211} />
                 </div>
                 <div className="col">
                     <label>Matricula</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="genc_matricula"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="genc_matricula"
                             defaultValue={_CHILD_2.item_22} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Predial</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="genc_predial"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="genc_predial"
                             defaultValue={_CHILD_2.item_23} />
                     </div>
                 </div>
@@ -225,7 +221,7 @@ export default function FUN_CERTIFICATION(props) {
     // ***************************  DATATABLES *********************** //
     const columns = [
         {
-            name: <label className="text-center">Consecutivo</label>,
+            name: 'Consecutivo',
             selector: row => row.id_public,
             sortable: true,
             filterable: true,
@@ -234,20 +230,20 @@ export default function FUN_CERTIFICATION(props) {
 
         },
         {
-            name: <label className="text-center">Fecha Exp.</label>,
+            name: 'Fecha Exp.',
             selector: row => row.createdAt,
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <h6 className='fw-normal'>{moment(row.createdAt).format('YYYY-MM-DD HH:mm')}</h6>
+            cell: row => <h6 className='fw-normal'>{dayjs(row.createdAt).format('YYYY-MM-DD HH:mm')}</h6>
 
         },
         {
-            name: <label className="text-center">Acción</label>,
+            name: 'Acción',
             center: true,
             maxWidth: '80px',
-            cell: row => <MDBBtn onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
-            color="danger" size="sm" className='m-0 p-1 px-2'><i class="fas fa-file-download"></i></MDBBtn>
+            cell: row => <Button onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
+            color="danger" size="sm" className='m-0 p-1 px-2'><Icon name="file-download" size={16} /></Button>
 
         },
     ]
@@ -264,7 +260,7 @@ export default function FUN_CERTIFICATION(props) {
                     </div>
                     <div className='row'>
                         <div className='col'><label>Fecha y hora creación: </label></div>
-                        <div className='col'><label className='fw-bold'>{moment(data.createdAt).format('YYYY-MM-DD HH:mm')}</label></div>
+                        <div className='col'><label className='fw-bold'>{dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}</label></div>
                     </div>
                     <div className='row'>
                         <div className='col'><label>Fecha documento: </label></div>
@@ -328,7 +324,7 @@ export default function FUN_CERTIFICATION(props) {
 
     let _ARCHIVE_LIST_COMPONENT = () => {
         return <DataTable
-            title={<>LISTADO DE CERTIFICACIONES  <i class="fas fa-file-signature"></i></>}
+            title={<>LISTADO DE CERTIFICACIONES  <Icon name="file-signature" size={16} /></>}
 
             pagination
             paginationPerPage={20}
@@ -341,7 +337,6 @@ export default function FUN_CERTIFICATION(props) {
             data={LIST_A}
             highlightOnHover
             dense
-
 
             progressPending={!load}
             progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
@@ -373,7 +368,6 @@ export default function FUN_CERTIFICATION(props) {
 
         var content = {};
 
-
         content.date_doc = document.getElementById("genc_date_doc").value;
         content.id_public = document.getElementById("genc_id_public").value;
         content.state = document.getElementById("genc_state").value;
@@ -390,45 +384,22 @@ export default function FUN_CERTIFICATION(props) {
 
         formData.set('content', JSON.stringify(content));
 
-
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         SERVICE_CERTIFICATIONS.create(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     setLoad(0);
                     setNewItem(false);
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             });
-
 
     }
 
@@ -450,51 +421,34 @@ export default function FUN_CERTIFICATION(props) {
         formData.set('matricula', data.matricula);
         formData.set('predial', data.predial);
 
-
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         SERVICE_CERTIFICATIONS.gendoc_cert_fun(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/cert/fun/" + "CERTIFICACION ACTUACION URBANISTICA " + currentItem.id_public + ".pdf");
+                    swalClose();
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/cert/fun/" + "CERTIFICACION ACTUACION URBANISTICA " + currentItem.id_public + ".pdf");
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
             });
-
 
     }
     return (
         <>
             <div className='row'>
                 <div className='col'>
-                    <MDBBtn outline={!newItem} size='sm' rounded onClick={() => setNewItem(!newItem)}><i class="fas fa-plus"></i> NUEVA CERTIFICACIÓN</MDBBtn>
+                    <Button variant={!newItem ? "outline" : "default"} size="sm" onClick={() => setNewItem(!newItem)}><Icon name="plus" size={16} /> NUEVA CERTIFICACIÓN</Button>
                 </div>
             </div>
             {newItem ? <>
                 <div className='border p-2'>
                     {_COMPONENT_NEW()}
                     <div className='text-center my-2'>
-                        <MDBBtn size='sm' rounded onClick={() => createCert()} color="success"><i class="fas fa-plus"></i> CREAR</MDBBtn>
+                        <Button size="sm" className="rounded-pill" onClick={() => createCert()}><Icon name="plus" size={16} /> CREAR</Button>
                     </div>
                 </div>
             </> : ''}

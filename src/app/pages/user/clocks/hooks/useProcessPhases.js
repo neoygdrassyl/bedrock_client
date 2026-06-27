@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { calcularDiasHabiles, sumarDiasHabiles, FUN_0_TYPE_TIME } from './useClocksManager';
 
 export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPreActa, suspensionPostActa, extension, phaseOptions }) => {
@@ -89,7 +89,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     const calculateUsedDaysFromNextDay = (startDate, endDate, defaultEnd = today, include_today=false) => {
       if (!startDate) return 0;
       const calcEnd = endDate || defaultEnd;
-      if (moment(calcEnd).isBefore(startDate)) return 0;
+      if (dayjs(calcEnd).isBefore(startDate)) return 0;
       let usedDays = calcularDiasHabiles(startDate, calcEnd, include_today);
       return usedDays;
     };
@@ -194,7 +194,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             parallelActors: {
                 primary: {
                     name: 'Ejecutoria',
-                    icon: 'fa-gavel',
+                    icon: 'Gavel',
                     color: 'primary',
                     totalDays: 10,
                     usedDays: calculateUsedDaysFromNextDay(dNotif, dEjecutoriaEnd),
@@ -206,7 +206,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 },
                 secondary: {
                     name: 'Recurso',
-                    icon: 'fa-file-signature',
+                    icon: 'FileSignature',
                     color: 'info',
                     totalDays: 10,
                     usedDays: calculateUsedDaysFromNextDay(dNotif, dRecurso),
@@ -331,7 +331,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             parallelActors: {
                 primary: { 
                     name: 'Curaduría', 
-                    icon: 'fa-building', 
+                    icon: 'Building', 
                     color: 'primary', 
                     totalDays: baseDaysCuraduria, 
                     usedDays: calculateUsedDaysFromNextDay(ldfDate, vallaDate || today), 
@@ -343,7 +343,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 }, 
                 secondary: { 
                     name: 'Solicitante', 
-                    icon: 'fa-user', 
+                    icon: 'User', 
                     color: 'info', 
                     totalDays: VALLA_LIMIT_DAYS, 
                     usedDays: vallaUsedDays, 
@@ -486,7 +486,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             parallelActors: { 
                 primary: { 
                     name: 'Curaduría', 
-                    icon: 'fa-building', 
+                    icon: 'Building', 
                     color: 'primary', 
                     totalDays: totalCuraduriaDays, 
                     usedDays: phase1UsedDays, 
@@ -498,7 +498,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 }, 
                 secondary: { 
                     name: 'Solicitante', 
-                    icon: 'fa-user', 
+                    icon: 'User', 
                     color: 'info', 
                     totalDays: VALLA_LIMIT_DAYS, 
                     usedDays: calculateUsedDaysFromNextDay(ldfDate, vallaDate), 
@@ -676,7 +676,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             let recursoExpired = false;
             if (notificacionResDate && !recursoDate && !renunciaTerminos) {
                 const recursoLimitDate = sumarDiasHabiles(notificacionResDate, RECURSO_LIMIT_DAYS);
-                if (moment(today).isAfter(recursoLimitDate)) recursoExpired = true;
+                if (dayjs(today).isAfter(recursoLimitDate)) recursoExpired = true;
             }
             let ejecutoriaEndDate = ejecutoriaDate; //|| renunciaTerminos;
             if (recursoDate && !ejecutoriaDate && !renunciaTerminos) ejecutoriaEndDate = null; 
@@ -705,7 +705,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 parallelActors: {
                     primary: {
                         name: 'Ejecutoria',
-                        icon: 'fa-gavel',
+                        icon: 'Gavel',
                         color: 'primary',
                         totalDays: 10,
                         usedDays: calculateUsedDaysFromNextDay(notificacionResDate, ejecutoriaEndDate),
@@ -717,7 +717,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     },
                     secondary: {
                         name: 'Recurso',
-                        icon: 'fa-file-invoice',
+                        icon: 'FileText',
                         color: 'info',
                         totalDays: 10,
                         usedDays: calculateUsedDaysFromNextDay(notificacionResDate, recursoDate || ejecutoriaEndDate),

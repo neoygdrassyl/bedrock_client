@@ -1,13 +1,11 @@
-import React, { Suspense, useEffect, useState, } from 'react';
+import { Suspense, useEffect, useState, } from 'react';
+import { Button } from '@/components/ui/button';
 import Norms_Service from "../../../services/norm.service"
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import PERFILES from "../../../components/jsons/PERFILES.json"
 import { ELEMENTS } from './norm.vars'
-
-const MySwal = withReactContent(Swal);
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function NORM_ELEMENT(props) {
     const { translation, swaMsg, globals, perfil } = props;
@@ -34,12 +32,7 @@ export default function NORM_ELEMENT(props) {
             })
             .catch(e => {
                 console.error(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     function create_item(event) {
@@ -56,41 +49,20 @@ export default function NORM_ELEMENT(props) {
 
         formData.set('normPerfilId', perfil.id);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         Norms_Service.create_element(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadData()
                 }
             })
             .catch(e => {
                 console.log(e);
                 if (e.response.data.message == "Validation error") {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             });
     };
@@ -107,82 +79,38 @@ export default function NORM_ELEMENT(props) {
         let dimension_p = document.getElementById("elelment_dimension_p_edit").value;
         formData.set('dimension_p', dimension_p);
 
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         Norms_Service.update_element(editItem.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     loadData()
                 }
             })
             .catch(e => {
                 console.log(e);
                 if (e.response.data.message == "Validation error") {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             });
     };
 
     function delete_item(id) {
-        MySwal.fire({
-            title: "ELIMINAR ESTE ITEM",
-            text: "¿Esta seguro de eliminar de forma permanente este item?",
-            icon: 'question',
-            confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
-        }).then(SweetAlertResult => {
+        swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 Norms_Service.delete_element(id)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             loadData()
                         }
                     })
                     .catch(e => {
                         console.error(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         });
@@ -209,7 +137,7 @@ export default function NORM_ELEMENT(props) {
     // ***************************  JXS *********************** //
     const columns = [
         {
-            name: <label className="text-center">ELEMENTO</label>,
+            name: 'ELEMENTO',
             selector: row => row.element,
             sortable: true,
             filterable: true,
@@ -217,32 +145,28 @@ export default function NORM_ELEMENT(props) {
             cell: row => ELEMENTS.find(ele => ele.value == row.element) ? ELEMENTS.find(ele => ele.value == row.element).name : 'OTRO ELEMENTO'
         },
         {
-            name: <label className="text-center">DIMENSION NORMA</label>,
+            name: 'DIMENSION NORMA',
             center: true,
             cell: row => row.dimension_n
         },
         {
-            name: <label className="text-center">DIMENSION SITIO</label>,
+            name: 'DIMENSION SITIO',
             center: true,
             cell: row => row.dimension_p
         },
         {
-            name: <label className="text-center">RETROCESO EXIGIDO</label>,
+            name: 'RETROCESO EXIGIDO',
             center: true,
             cell: row => (Number(row.dimension_n)- Number(row.dimension_p)).toFixed(2)
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '80px',
             cell: row => <>
-                <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                    <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i class="far fa-edit"></i></MDBBtn>
-                </MDBTooltip>
-                <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                    <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
-                </MDBTooltip>
+                <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => setEditItem(editItem ? false : row)}><Icon name="edit" size={16} /></Button></span>
+                <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
             </>,
         },
     ]
@@ -269,8 +193,8 @@ export default function NORM_ELEMENT(props) {
             <div className="row">
                 <div className="col">
                     <label>Elemento</label>
-                    <div class="input-group input-group-sm my-1">
-                        <select class="form-select" defaultValue={editItem ? editItem.element : ""} id={"elelment_element" + edit}
+                    <div className="input-group input-group-sm my-1">
+                        <select className="form-select" defaultValue={editItem ? editItem.element : ""} id={"elelment_element" + edit}
                             onChange={(e) => get_element_norm_data(e.target.value, edit)}>
                             {ELEMENTS.map(ele => <option value={ele.value}>{ele.name}</option>)}
                         </select>
@@ -278,14 +202,14 @@ export default function NORM_ELEMENT(props) {
                 </div>
                 <div className="col">
                     <label>Dirección Norma</label>
-                    <div class="input-group input-group-sm my-1">
-                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.dimension_n : ""} class="form-control" id={"elelment_dimension_n" + edit} />
+                    <div className="input-group input-group-sm my-1">
+                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.dimension_n : ""} className="form-control" id={"elelment_dimension_n" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Dimension Sitio</label>
-                    <div class="input-group input-group-sm my-1">
-                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.dimension_p : ""} class="form-control" id={"elelment_dimension_p" + edit} />
+                    <div className="input-group input-group-sm my-1">
+                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.dimension_p : ""} className="form-control" id={"elelment_dimension_p" + edit} />
                     </div>
                 </div>
             </div>
@@ -294,9 +218,9 @@ export default function NORM_ELEMENT(props) {
     }
 
     const NEW_ITEM = <>
-        <div class="form-check ms-5">
-            <input class="form-check-input" type="checkbox" id="cb_new_element" onChange={(e) => setNewItem(e.target.checked)} />
-            <label class="form-check-label" for="flexCheckDefault">
+        <div className="form-check ms-5">
+            <input className="form-check-input" type="checkbox" id="cb_new_element" onChange={(e) => setNewItem(e.target.checked)} />
+            <label className="form-check-label" htmlFor="flexCheckDefault">
                 Nuevo Elemento
             </label>
         </div>
@@ -305,7 +229,7 @@ export default function NORM_ELEMENT(props) {
                 {_COMPONENT_MANAGE("")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i class="fas fa-plus-circle"></i> AÑADIR ITEM </button>
+                        <Button size="sm"><Icon name="plus-circle" size={16} /> AÑADIR ITEM </Button>
                     </div>
                 </div>
             </form>
@@ -319,7 +243,7 @@ export default function NORM_ELEMENT(props) {
                 {_COMPONENT_MANAGE("_edit")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i class="fas fa-edit"></i> ACTUALIZAR ITEM </button>
+                        <Button size="sm"><Icon name="edit" size={16} /> ACTUALIZAR ITEM </Button>
                     </div>
                 </div>
             </form>
@@ -330,7 +254,7 @@ export default function NORM_ELEMENT(props) {
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
                 <div className='border p-2'>
-                    <h4 class="text-uppercase pb-2">ELEMENTOS: {perfil.perfil}</h4>
+                    <h4 className="pb-2">ELEMENTOS: {perfil.perfil}</h4>
                     {NEW_ITEM}
                     {TABLE}
                     {EDIT_ITEM}

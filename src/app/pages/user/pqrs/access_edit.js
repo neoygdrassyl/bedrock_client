@@ -1,36 +1,55 @@
-import React from 'react'
 import './components/editorStyles.css'
+import { Button } from '@/components/ui/button';
 import PQRS_SERVICES from '../../../services/pqrs_main.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component'
-let sha256 = require('js-sha256');
-
-const MySwal = withReactContent(Swal);
+import { Icon } from '@/components/icon';
+import { swalError } from '@/app/utils/swalAdapter';
 
 export const ACESS_EDIT = (props) => {
 
     const { swaMsg, currentItem, translation } = props;
 
+    const showSessionError = () => {
+        swalError({
+            title: swaMsg.generic_eror_title,
+            text: 'La sesión no está activa o expiró. Inicie sesión nuevamente antes de gestionar este PQRS.',
+        });
+    }
+
     const access = (e) => {
         e.preventDefault();
+
+        const token = localStorage.getItem('dovela_token');
+        const userId = window.user?.id;
+
+        if (!token || !userId) {
+            showSessionError();
+            return;
+        }
+
         var formData = new FormData()
-        formData.set('email', window.user.id);
+        formData.set('email', userId);
         let password_user = document.getElementById("user_password").value
-        formData.set('password', sha256(password_user));
+        formData.set('password', password_user);
 
         PQRS_SERVICES.login_access(formData)
             .then(response => {
                 if (response.data === 'OK') {
                     props.editMaster1()
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: 'Acceso denegado',
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: 'Acceso denegado' });
                 }
+            })
+            .catch(error => {
+                if (error?.response?.status === 401) {
+                    showSessionError();
+                    return;
+                }
+
+                swalError({
+                    title: swaMsg.generic_eror_title,
+                    text: 'No fue posible validar el acceso. Inténtelo nuevamente.',
+                });
             })
     }
 
@@ -46,17 +65,17 @@ export const ACESS_EDIT = (props) => {
             <div className='container col-5 opacity-100'>
                 <div className="row d-flex justify-content-center">
                     <div className="col">
-                        <label>Contraseña</label>
+                        <label htmlFor="user_password">Contraseña</label>
                         <div className="input-group my-1">
-                            <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-key"></i>
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="key" size={16} />
                             </span>
                             <input type='password' className='form-control' id='user_password' required></input>
                         </div>
                     </div>
                 </div>
                 <div className='text-center py-3'>
-                    <button type="button" className="btn btn-sm btn-info" onClick={access}>ACCEDER <i className="fas fa-sign-in-alt"></i></button>
+                    <Button size="sm" onClick={access}>ACCEDER <Icon name="sign-in-alt" size={16} /></Button>
                 </div>
             </div>
         </fieldset>

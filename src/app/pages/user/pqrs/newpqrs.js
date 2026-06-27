@@ -1,74 +1,70 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import PQRS_Service from '../../../services/pqrs_main.service';
-import HolyDays from '../../../components/holydays.list.json'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
-const moment = require('moment');
-const momentB = require('moment-business-days');
-const MySwal = withReactContent(Swal);
-class PQRSNEW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            solicitors: 1,
-            contacts: 1,
-            licence: false,
-            attachs: 0,
-        };
-    }
-    clearForm() {
+import PQRS_Service from '../../../services/pqrs_main.service';
+import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshRequested }) {
+    const [solicitors, setSolicitors] = useState(1);
+    const [contacts, setContacts] = useState(1);
+    const [licence, setLicence] = useState(false);
+    const [attachs, setAttachs] = useState(0);
+
+    const clearForm = () => {
         document.getElementById("app-formNew").reset()
-    }
-    addSolicitor() {
-        this.setState({ solicitors: this.state.solicitors + 1 })
-    }
-    minusSolicitor() {
-        this.setState({ solicitors: this.state.solicitors - 1 })
-    }
-    addContact() {
-        this.setState({ contacts: this.state.contacts + 1 })
-    }
-    minusContact() {
-        this.setState({ contacts: this.state.contacts - 1 })
-    }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
-    }
-    toggleLicense() {
-        this.setState({
-            licence: !this.state.licence
-        });
-    }
-    render() {
-        const { translation, swaMsg, globals, translation_form, } = this.props;
-        const { solicitors, contacts, licence, attachs } = this.state;
+    };
+
+    const addSolicitor = () => {
+        setSolicitors(solicitors + 1);
+    };
+
+    const minusSolicitor = () => {
+        setSolicitors(solicitors - 1);
+    };
+
+    const addContact = () => {
+        setContacts(contacts + 1);
+    };
+
+    const minusContact = () => {
+        setContacts(contacts - 1);
+    };
+
+    const addAttach = () => {
+        setAttachs(attachs + 1);
+    };
+
+    const minusAttach = () => {
+        setAttachs(attachs - 1);
+    };
+
+    const toggleLicense = () => {
+        setLicence(prev => !prev);
+    };
         var formData = new FormData();
 
         let _SOLICITORS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < solicitors; i++) {
-                _COMPONENT.push(<div className="row">
-                    <label className="app-p lead text-start fw-normal text-uppercase">SOLICITANTE N° {i + 1}</label>
+                _COMPONENT.push(<div key={`new-pqrs-solicitor-${i}`} className="row">
+                    <label className="app-p lead text-start fw-normal">SOLICITANTE N° {i + 1}</label>
 
                     <div className="col-lg-6 col-md-6">
-                        <label class="m-0">Nombre:</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <label className="m-0">Nombre:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Nombre Completo" name="pqrs_sol_1" />
+                            <input type="text" className="form-control" placeholder="Nombre Completo" name="pqrs_sol_1" />
                         </div>
-                        <label class="m-0">Tipo de persona:</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <label className="m-0">Tipo de persona:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                             </span>
-                            <select class="form-select" name="pqrs_sol_2">
+                            <select className="form-select" name="pqrs_sol_2">
                                 <option>NATURAL</option>
                                 <option>JURIDICO</option>
                                 <option>ESTABLECIMIENTO DE COMERCIO</option>
@@ -77,12 +73,12 @@ class PQRSNEW extends Component {
                         </div>
                     </div>
                     <div className="col-lg-6 col-md-6">
-                        <label class='m-0'>Tipo de documento: </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-id-card"></i>
+                        <label className='m-0'>Tipo de documento: </label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="id-card" size={16} />
                             </span>
-                            <select class="form-select" name="pqrs_sol_4">
+                            <select className="form-select" name="pqrs_sol_4">
                                 <option>CEDULA DE CIUDADANIA</option>
                                 <option>NIT</option>
                                 <option>CEDULA DE EXTRANJERIA</option>
@@ -91,14 +87,13 @@ class PQRSNEW extends Component {
                                 <option>OTRO</option>
                             </select>
                         </div>
-                        <label class='m-0'>Número de documento: </label>
-                        <div class="input-group my-1">
+                        <label className='m-0'>Número de documento: </label>
+                        <div className="input-group my-1">
 
-
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-id-card"></i>
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="id-card" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Numero de Documento" name="pqrs_sol_3" />
+                            <input type="text" className="form-control" placeholder="Numero de Documento" name="pqrs_sol_3" />
                         </div>
                     </div>
                 </div>)
@@ -109,52 +104,52 @@ class PQRSNEW extends Component {
         let _CONTACTS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < contacts; i++) {
-                _COMPONENT.push(<div className="row">
-                    <label className="app-p lead text-start fw-normal text-uppercase">DATOS PARA NOTIFICACIÓN N° {i + 1}</label>
+                _COMPONENT.push(<div key={`new-pqrs-contact-${i}`} className="row">
+                    <label className="app-p lead text-start fw-normal">DATOS PARA NOTIFICACIÓN N° {i + 1}</label>
                     <div className="col-lg-6 col-md-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-signs"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-signs" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Direccion Fisica" name="pqrs_con_1" />
+                            <input type="text" className="form-control" placeholder="Direccion Fisica" name="pqrs_con_1" />
                         </div>
 
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Barrio" name="pqrs_con_2" />
+                            <input type="text" className="form-control" placeholder="Barrio" name="pqrs_con_2" />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="phone-alt" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Numero de Contacto" name="pqrs_con_3" />
+                            <input type="text" className="form-control" placeholder="Numero de Contacto" name="pqrs_con_3" />
                         </div>
-                        <div class="form-check mx-5 my-3">
-                            <input class="form-check-input" type="checkbox" value="" name="pqrs_con_7" />
-                            <p class="form-check-label text-justify" >¿Autoriza respuesta por email?</p>
+                        <div className="form-check mx-5 my-3">
+                            <input className="form-check-input" type="checkbox" value="" name="pqrs_con_7" />
+                            <p className="form-check-label text-justify" >¿Autoriza respuesta por email?</p>
                         </div>
                     </div>
                     <div className="col-lg-6 col-md-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-globe-americas"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="globe-americas" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Departamento" name="pqrs_con_4" />
+                            <input type="text" className="form-control" placeholder="Departamento" name="pqrs_con_4" />
                         </div>
 
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-globe-americas"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="globe-americas" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Municipio" name="pqrs_con_5" />
+                            <input type="text" className="form-control" placeholder="Municipio" name="pqrs_con_5" />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="envelope" size={16} />
                             </span>
-                            <input type="text" class="form-control" placeholder="Correo Electronico" name="pqrs_con_6" />
+                            <input type="text" className="form-control" placeholder="Correo Electronico" name="pqrs_con_6" />
                         </div>
                     </div>
                 </div>)
@@ -165,16 +160,16 @@ class PQRSNEW extends Component {
         let _ATTACHS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < attachs; i++) {
-                _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+                _COMPONENT.push(<div key={`new-pqrs-attach-${i}`} className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files" accept="image/png, image/jpeg application/pdf" />
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="file" className="form-control" name="files" accept="image/png, image/jpeg application/pdf" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="text" class="form-control" name="files_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="text" className="form-control" name="files_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
                 </div>)
@@ -184,7 +179,7 @@ class PQRSNEW extends Component {
         }
         // WORKING SELECTS
         const selectTypeChannel = translation_form.form_radication_chanel.map(function (item) {
-            return <option>{item}</option>
+            return <option key={item}>{item}</option>
         })
 
         // SUBMIT  NEW 1. ENTRY
@@ -220,7 +215,6 @@ class PQRSNEW extends Component {
             let time_time = document.getElementById("pqrs_time_time").value;
             formData.set('time_time', time_time);
 
-
             // GET DATA OF SOLICITORS
             formData.set('solicitors_length', solicitors);
             array_html = document.getElementsByName("pqrs_sol_1");
@@ -254,8 +248,6 @@ class PQRSNEW extends Component {
             formData.set('solicitor_type_id', array_form);
             array_form = [];
             array_html = [];
-
-
 
             // GET DATA OF CONTACTS
             formData.set('contacts_length', contacts);
@@ -331,7 +323,8 @@ class PQRSNEW extends Component {
             let files = document.getElementsByName("files");
             formData.set('attachs_length', attachs);
             for (var i = 0; i < attachs; i++) {
-                formData.append('file', files[i].files[0], "pqrs_" + files[i].files[0].name)
+                const file = files[i]?.files?.[0];
+                if (file) formData.append('file', file, "pqrs_" + file.name)
             }
             array_html = document.getElementsByName("files_names");
             for (var i = 0; i < array_html.length; i++) {
@@ -348,50 +341,25 @@ class PQRSNEW extends Component {
             }
             */
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.clearForm();
-                        this.props.refreshRequested();
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                        clearForm();
+                        refreshRequested();
                     }
                     else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
 
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         };
 
@@ -410,38 +378,24 @@ class PQRSNEW extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
 
+        const _bd = new DiasHabilesColombia();
         let _SET_LEGAL_TIME = () => {
             let _date = document.getElementById('pqrs_time_1').value;
             let _legal_date = _date;
             let _time = document.getElementById('pqrs_time_10').value;
 
-            let _now = moment().format('YYYY-MM-DD');
+            let _now = dayjs().format('YYYY-MM-DD');
             _now = _now + " " + _time;
-            let _hour = moment(_now).format('HH');
-            if (momentB(_date).isBusinessDay()) {
+            let _hour = dayjs(_now).format('HH');
+            if (_bd.esHabil(_date)) {
                 if (_hour < 17) document.getElementById('pqrs_time_2').value = _legal_date;
-                else document.getElementById('pqrs_time_2').value = _GET_NEXT_BUSSINESS_DAY(_date)
-            } else document.getElementById('pqrs_time_2').value = _GET_NEXT_BUSSINESS_DAY(_date)
-        }
-
-        let _GET_NEXT_BUSSINESS_DAY = (_date) => {
-            let date = _date;
-            date = momentB(date).nextBusinessDay();
-            let _year = moment(date).format('YYYY');
-            let _month = moment(date).format('MM') - 1;
-            let _day = moment(date).format('D');
-            if (HolyDays[_year][_month][_day]) return _GET_NEXT_BUSSINESS_DAY(date)
-            return moment(date).format('YYYY-MM-DD');
+                else document.getElementById('pqrs_time_2').value = _bd.siguienteDiaHabil(_date)
+            } else document.getElementById('pqrs_time_2').value = _bd.siguienteDiaHabil(_date)
         }
 
         let _SET_REPLY_TIME = () => {
@@ -464,59 +418,59 @@ class PQRSNEW extends Component {
         }
         return (
             <div>
-                <form onSubmit={generatePQRS} id="app-formNew" enctype="multipart/form-data">
+                <form onSubmit={generatePQRS} id="app-formNew" encType="multipart/form-data">
                     <div className="row my-4 d-flex justify-content-center">
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.1 IDENTIFICACIÓN DEL PETICIONARIO</label>
+                        <label className="app-p lead text-start fw-bold">1.1 IDENTIFICACIÓN DEL PETICIONARIO</label>
                         <div className="text-end m-3">
 
                             {(solicitors && contacts)  > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => (this.minusSolicitor(), this.minusContact())}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => (minusSolicitor(), minusContact())}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </Button>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => (this.addSolicitor(), this.addContact())}
-                            ><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                            <Button variant="outline" size="sm" onClick={() => (addSolicitor(), addContact())}
+                            ><Icon name="plus-circle" size={16} /> AÑADIR OTRO </Button>
                         </div>
                         {_SOLICITORS_COMPONENT()}
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACIÓN</label>
+                        <label className="app-p lead text-start fw-bold">1.2 DATOS PARA NOTIFICACIÓN</label>
                         <div className="text-end m-3">
                             {/* {contacts > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusContact()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusContact()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </Button>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addContact()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn> */}
+                            <Button variant="outline" size="sm" onClick={() => addContact()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </Button> */}
                         </div>
                         {_CONTACTS_COMPONENT()}
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.3 CASOS DE ACTUACIONES Y LICENCIAS</label>
-                        <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => this.toggleLicense()} />
-                            <p class="form-check-label text-start" >¿Esta es una solicitud relacionada con una actuación urbanistica o licencia?</p>
+                        <label className="app-p lead text-start fw-bold">1.3 CASOS DE ACTUACIONES Y LICENCIAS</label>
+                        <div className="form-check my-3 px-5">
+                            <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => toggleLicense()} />
+                            <p className="form-check-label text-start" >¿Esta es una solicitud relacionada con una actuación urbanistica o licencia?</p>
                         </div>
                         {licence
                             ? <div className="row">
                                 <div className="col-lg-6 col-md-6">
-                                    <div class="input-group my-1">
-                                        <span class="input-group-text bg-info text-white">
-                                            <i class="fas fa-map-signs"></i>
+                                    <div className="input-group my-1">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="map-signs" size={16} />
                                         </span>
-                                        <input type="text" class="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1" />
+                                        <input type="text" className="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1" />
                                     </div>
-                                    <div class="input-group my-1">
-                                        <span class="input-group-text bg-info text-white">
-                                            <i class="fas fa-map-marked-alt"></i>
+                                    <div className="input-group my-1">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="map-marked-alt" size={16} />
                                         </span>
-                                        <input type="text" class="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2" />
+                                        <input type="text" className="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2" />
                                     </div>
 
                                 </div>
 
                                 <div className="col-lg-6 col-md-6">
-                                    <div class="input-group my-1">
-                                        <span class="input-group-text bg-info text-white">
-                                            <i class="fas fa-user"></i>
+                                    <div className="input-group my-1">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="user" size={16} />
                                         </span>
-                                        <select class="form-select" id="pqrs_fun_3">
+                                        <select className="form-select" id="pqrs_fun_3">
                                             <option>TITULAR DE LA ACTUACIÓN</option>
                                             <option>INSTITUCIÓN DE CONTROL</option>
                                             <option>VECINO COLINDANTE</option>
@@ -529,30 +483,28 @@ class PQRSNEW extends Component {
                             : ""}
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.4 DESCRIPCIÓN DE LA SOLICITUD</label>
+                        <label className="app-p lead text-start fw-bold">1.4 DESCRIPCIÓN DE LA SOLICITUD</label>
 
                         <div className="row">
                             <div className="col-lg-6 col-md-6">
                                 <label>Número de registro Ventanilla Única</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-hashtag"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="hashtag" size={16} />
                                     </span>
-                                    <input type="text" class="form-control" id="pqrs_mas_6" />
+                                    <input type="text" className="form-control" id="pqrs_mas_6" />
                                 </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                                 <label>Número de registro de caso(histórico año 2021)</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-hashtag"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="hashtag" size={16} />
                                     </span>
-                                    <input type="text" class="form-control" id="pqrs_mas_1" />
-                                    <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                    <input type="text" className="form-control" id="pqrs_mas_1" />
+                                    <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                                 </div>
                             </div>
-
-
 
                         </div>
 
@@ -560,11 +512,11 @@ class PQRSNEW extends Component {
 
                             <div className="col-lg-6 col-md-6">
                                 <label>Clasificación de la Petición</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-check-square"></i>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="check-square" size={16} />
                                     </span>
-                                    <input list="browsers" id="pqrs_mas_2" class="form-control" onChange={() => _SET_REPLY_TIME()}
+                                    <input list="browsers" id="pqrs_mas_2" className="form-control" onChange={() => _SET_REPLY_TIME()}
                                         autoComplete='false' />
                                     <datalist id="browsers">
                                         <option value="Peticion General" />
@@ -582,11 +534,11 @@ class PQRSNEW extends Component {
 
                             <div className="col-lg-6 col-md-6">
                                 <label>Canal de radicación original</label>
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-check-square"></i>
+                                <div className="input-group mb-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="check-square" size={16} />
                                     </span>
-                                    <select class="form-select" id="pqrs_mas_3">
+                                    <select className="form-select" id="pqrs_mas_3">
                                         {selectTypeChannel}
                                     </select>
                                 </div>
@@ -594,11 +546,11 @@ class PQRSNEW extends Component {
                             </div>
                             <div className="col-lg-6 col-md-6">
                                 <label>Palabras Clave (Separadas por coma)</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-font"></i>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="font" size={16} />
                                     </span>
-                                    <input type="text" class="form-control" maxLength="200" id="pqrs_mas_5" />
+                                    <input type="text" className="form-control" maxLength="200" id="pqrs_mas_5" />
                                 </div>
                             </div>
 
@@ -607,36 +559,35 @@ class PQRSNEW extends Component {
                         <div className="row">
                             <div className="col-lg-6 col-md-6">
                                 <label> Fecha de radicación</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
-                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_time_1" required
+                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_time_1" required
                                         onChange={() => _SET_LEGAL_TIME()} />
-                                    <input type="time" class="form-control" id="pqrs_time_10" required
+                                    <input type="time" className="form-control" id="pqrs_time_10" required
                                         onChange={() => _SET_LEGAL_TIME()} />
                                 </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                                 <label>Fecha inicio de términos</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                                        <i class="far fa-calendar-alt"></i>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text bg-primary text-primary-foreground" id="type-pqrs">
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
-                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_time_2" disabled required />
+                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_time_2" disabled required />
                                 </div>
                             </div>
                         </div>
 
-
                         <div className="row">
                             <div className="col-lg-6 col-md-6">
                                 <label>Termino legal de respuesta </label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
-                                    <input type="number" step="1" min="1" class="form-control"
+                                    <input type="number" step="1" min="1" className="form-control"
                                         placeholder="Termino legal de respuesta" id="pqrs_time_time" defaultValue={'15'} />
                                 </div>
                             </div>
@@ -645,47 +596,46 @@ class PQRSNEW extends Component {
                         <div className="row">
                             <div className="col">
                                 <label>Contenido o descripción de la Solicitud (Maximo 2000 Caracteres)</label>
-                                <textarea class="form-control mb-3" rows="3" maxlength="2000" id="pqrs_mas_4"></textarea>
+                                <textarea className="form-control mb-3" rows="3" maxLength="2000" id="pqrs_mas_4"></textarea>
                             </div>
                         </div>
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.5 DOCUMENTOS ANEXOS</label>
+                        <label className="app-p lead text-start fw-bold">1.5 DOCUMENTOS ANEXOS</label>
                         <div className="text-end m-3">
                             {attachs > 0
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </Button>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                            <Button variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </Button>
                         </div>
                         {_ATTACHS_COMPONENT()}
                         <hr className="my-3" />
-                        <label className="app-p lead text-start fw-bold text-uppercase m-3">1.6 INFORMACIÓN DEL PROFESIONAL</label>
+                        <label className="app-p lead text-start fw-bold m-3">1.6 INFORMACIÓN DEL PROFESIONAL</label>
                         <div className="col-lg-6 col-md-6">
-                            <input type="text" class="form-control" placeholder="Profesional que Generar esta Solicitud" disabled />
-                            <div class="input-group mb-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-user"></i>
+                            <input type="text" className="form-control" placeholder="Profesional que Generar esta Solicitud" disabled />
+                            <div className="input-group mb-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="user" size={16} />
                                 </span>
-                                <input type="text" class="form-control" defaultValue={window.user.name + " " + window.user.surname} id="pqrs_mas_worker_creator" disabled />
+                                <input type="text" className="form-control" defaultValue={window.user.name + " " + window.user.surname} id="pqrs_mas_worker_creator" disabled />
                             </div>
                         </div>
                         <div className="col-lg-6 col-md-6">
-                            <input type="text" class="form-control" placeholder="Fecha en la cual se genera esta Solicitud" disabled />
-                            <div class="input-group mb-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <input type="text" className="form-control" placeholder="Fecha en la cual se genera esta Solicitud" disabled />
+                            <div className="input-group mb-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" class="form-control" defaultValue={moment().format('YYYY-MM-DD')} disabled />
+                                <input type="date" className="form-control" defaultValue={dayjs().format('YYYY-MM-DD')} disabled />
                             </div>
                         </div>
                         <div className="text-center py-4 mt-3">
-                            <button className="btn btn-xs btn-success"><i class="fas fa-folder-plus"></i> GENERAR </button>
+                            <Button size="sm"><Icon name="folder-plus" size={16} /> GENERAR </Button>
                         </div>
                     </div>
                 </form>
             </div>
         );
-    }
 }
 
 export default PQRSNEW;

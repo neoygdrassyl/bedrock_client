@@ -1,9 +1,6 @@
-import React from 'react'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { Fragment } from 'react';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-
-const MySwal = withReactContent(Swal);
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export const ENG_MANPOSTERIA = (props) => {
 
@@ -329,72 +326,35 @@ export const ENG_MANPOSTERIA = (props) => {
     let save_step = (_id_public, useSwal, formData) => {
         var STEP = LOAD_STEP(_id_public);
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (STEP.id) {
             RECORD_ENG_SERVICE.update_step(STEP.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         else {
             RECORD_ENG_SERVICE.create_step(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
     }
@@ -403,13 +363,13 @@ export const ENG_MANPOSTERIA = (props) => {
         <div className="row mb-1 mt-5">
             <div className='col'>
                 <div className="row">
-                    {MANPOSTERIA_1.map(item => <>
+                    {MANPOSTERIA_1.map(item => <Fragment key={item.i > -1 ? `mamposteria_01_${item.i}` : `mamposteria_01_c_${item.c}`}>
                         <div className="col-3 mb-1">{item.name}</div>
                         <div className="col-3 mb-1">
                             {item.i > -1 ? <>
                                 {item.values ? <select className='form-select form-control form-control-sm' name="mamposteria_01" id={'mamposteria_01_' + item.i}
                                     defaultValue={_GET_STEP_TYPE_INDEX('mamposteria_01', 'value', item.i) ?? 'SI'} onChange={() => SAVE_STEP_MAMPOSTERIA_1()} >
-                                    {item.values.map(v => <option>{v}</option>)}
+                                    {item.values.map(v => <option key={`mamposteria_01_${item.i}_${v}`}>{v}</option>)}
                                 </select> : <input type={item.open ? "number" : "text"} step="0.01"
                                     className="form-control" name="mamposteria_01" id={'mamposteria_01_' + item.i} disabled={item.open !== true}
                                     onBlur={() => SAVE_STEP_MAMPOSTERIA_1()}
@@ -423,7 +383,7 @@ export const ENG_MANPOSTERIA = (props) => {
                             </select>}
 
                         </div>
-                    </>)}
+                    </Fragment>)}
                 </div>
             </div>
         </div>
@@ -577,8 +537,8 @@ export const ENG_MANPOSTERIA = (props) => {
 
     return <>
         {SUBCATEGORIES[16] == 1 ? <>
-            <legend className="my-3 px-3 text-uppercase bg-light" id="record_eng_433">
-                <label className="app-p lead fw-normal text-uppercase">Edificaciones de Mamposterías Titulo E</label>
+            <legend className="my-3 px-3 bg-light" id="record_eng_433">
+                <label className="app-p lead fw-normal">Edificaciones de Mamposterías Titulo E</label>
             </legend>
 
             {COMPONENT_0()}

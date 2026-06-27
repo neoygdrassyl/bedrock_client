@@ -1,18 +1,9 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class PQRS_EDIT_FUN extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
 
         //DATA GETTERS
         let _GET_FUN = () => {
@@ -32,29 +23,29 @@ class PQRS_EDIT_FUN extends Component {
             var _CHILD = _GET_FUN()
             return <div className="row">
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-map-signs"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="map-signs" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1_edit"
+                        <input type="text" className="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1_edit"
                             defaultValue={_CHILD.id_public} />
                     </div>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-map-marked-alt"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="map-marked-alt" size={16} />
                         </span>
-                        <input type="text" class="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2_edit"
+                        <input type="text" className="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2_edit"
                             defaultValue={_CHILD.catastral} />
                     </div>
 
                 </div>
 
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-user"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-primary text-primary-foreground">
+                            <Icon name="user" size={16} />
                         </span>
-                        <select class="form-select" id="pqrs_fun_3_edit" defaultValue={_CHILD.person}>
+                        <select className="form-select" id="pqrs_fun_3_edit" defaultValue={_CHILD.person}>
                             <option>TITULAR DE LA ACTUACIÓN</option>
                             <option>INSTITUCIÓN DE CONTROL</option>
                             <option>VECINO COLINDANTE</option>
@@ -87,71 +78,34 @@ class PQRS_EDIT_FUN extends Component {
         let save_item = () => {
             var _CHILD = _GET_FUN();
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 PQRS_Service.update_fun(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshCurrentItem(currentItem.id)
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            refreshCurrentItem(currentItem.id)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             } else {
                 PQRS_Service.create_fun(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshCurrentItem(currentItem.id)
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            refreshCurrentItem(currentItem.id)
                         } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
@@ -160,14 +114,13 @@ class PQRS_EDIT_FUN extends Component {
                 <form id="form_pqrs_edit_fun_edit" onSubmit={manage_item}>
                     {_FUN_COMPONENT()}
                     <div className="text-center">
-                        <button className="btn btn-sm btn-success my-3">
-                            <i class="far fa-share-square"></i> GUARDAR CAMBIOS
-                        </button>
+                        <Button size="sm" className="my-3">
+                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                        </Button>
                     </div>
                 </form>
             </div>
         );
-    }
 }
 
 export default PQRS_EDIT_FUN;

@@ -1,6 +1,4 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState } from 'react';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import RECORD_ARCSERVICE from '../../../services/record_arc.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -8,18 +6,12 @@ import JSONObjectParser from '../../../components/jsons/jsonReplacer';
 import { axis, infoCud, zones } from '../../../components/jsons/vars'
 import { getJSONFull, regexChecker_isOA_2, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
+import { Icon } from '@/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-class EXP_2 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate }) {
+    const [pym, setPym] = useState(undefined);
 
         // DATA GETTERS
         let _GET_EXPEDITION_JSON = (field) => {
@@ -38,12 +30,7 @@ class EXP_2 extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -100,9 +87,9 @@ class EXP_2 extends Component {
         // DATA CONVERTERS
         let _SAVING_STATE = (state) => {
             if (!state) return '';
-            if (state == 1) return <label className='text-warning fw-bold'><i class="fas fa-save"></i></label>;
-            if (state == 2) return <label className='text-success fw-bold'><i class="fas fa-save"></i></label>;
-            if (state == 3) return <label className='text-danger fw-bold'><i class="fas fa-save"></i></label>;
+            if (state == 1) return <label className='text-warning fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 2) return <label className='text-success fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 3) return <label className='text-danger fw-bold'><Icon name="save" size={16} /></label>;
         }
         // COMPONENT JSX
         let _COMPONENT_GENERAL = () => {
@@ -150,29 +137,43 @@ class EXP_2 extends Component {
                             <input type="text" className="form-control form-control-sm" id="exp_2_5" min="0" step="1"
                                 defaultValue={control.n_norm} onBlur={() => save_exp()} />
                         </div>
-                        <div className="col-md-3">
-                            <label className="mt-1">N° Parqueaderos</label>
-                            <input type="number" className="form-control form-control-sm" id="exp_2_6" min="0" step="1"
-                                defaultValue={control.n_parq} onBlur={() => save_exp()} />
-                        </div>
+
                         <div className="col-md-3">
                             <label className="mt-1">m2 Área predio</label>
-                            <input type="text" className="form-control form-control-sm" id="exp_2_7"
-                                defaultValue={control.area_predio} onBlur={() => save_exp()} />
+                            <input type="text" className="form-control form-control-sm" id="ra_control_data_1"
+                                defaultValue={control.area_predio} onBlur={() => manage_ra_33_control('pym')} />
                         </div>
                         <div className="col-md-3">
                             <label className="mt-1">Uso Principal</label>
-                            <input type="text" className="form-control form-control-sm" id="exp_2_8"
-                                defaultValue={control.uso_principal} onBlur={() => save_exp()} />
+                            <input type="text" className="form-control form-control-sm" id="ra_control_data_2"
+                                defaultValue={control.uso_principal} onBlur={() =>manage_ra_33_control('pym')} />
                         </div>
-                        
+
                         <div className="col-md-3">
                             <label className="mt-1">Número de Subdivisión</label>
-                            <input type="number" class="form-control form-control-sm" id="ra_control_data_3"
+                            <input type="number" className="form-control form-control-sm" id="ra_control_data_3"
                                 defaultValue={controlArc.n_sub} onBlur={() => manage_ra_33_control('pym')} />
                         </div>
                     </div>
-                    <div className="mt-3"></div>
+                    <div className="mt-3">
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Parqueaderos (Totales)</label>
+                            <input type="number" className="form-control form-control-sm" id="ra_control_data_0" min="0" step="1"
+                                defaultValue={jsonArc.n_parking} onBlur={() => manage_ra_33_control('pym')} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Parqueaderos (Privados)</label>
+                            <input type="number" className="form-control form-control-sm" id="ra_control_data_0_1" min="0" step="1"
+                                defaultValue={jsonArc.n_parking_private} onBlur={() => manage_ra_33_control('pym')} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Parqueaderos (Visitantes)</label>
+                            <input type="number" className="form-control form-control-sm" id="ra_control_data_0_2" min="0" step="1"
+                                defaultValue={jsonArc.n_parking_visit} onBlur={() => manage_ra_33_control('pym')} />
+                        </div>
+
+
+                    </div>
                 </div>
             </>
         }
@@ -188,26 +189,26 @@ class EXP_2 extends Component {
 
                     <div className='col'>
                         <label className='fw-bold'>Ministerio de vivienda</label>
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Bruta m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_4" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Bruta m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_4" min="0" step="0.01"
                                     defaultValue={control.m2_brute} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Neta m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_5" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Neta m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_5" min="0" step="0.01"
                                     defaultValue={control.m2_net} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_6" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_6" min="0" step="0.01"
                                     defaultValue={control.m2_useful} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
@@ -215,26 +216,26 @@ class EXP_2 extends Component {
                     </div>
                     <div className='col'>
                         <label className='fw-bold'>Ministerio de vivienda, Modalidad Urbanización</label>
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util VIS</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_7" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util VIS</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_7" min="0" step="0.01"
                                     defaultValue={control.m2_vis} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util VIP</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_8" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util VIP</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_8" min="0" step="0.01"
                                     defaultValue={control.m2_vip} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util NO VIS</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_9" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util NO VIS</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_9" min="0" step="0.01"
                                     defaultValue={control.m2_novis} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
@@ -242,26 +243,26 @@ class EXP_2 extends Component {
 
                     <div className='col'>
                         <label className='fw-bold'>Ministerio de vivienda, Modalidad Urbanización  y Parcelación</label>
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Industrial</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_10" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Industrial</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_10" min="0" step="0.01"
                                     defaultValue={control.m2_ind} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Com./Serv.</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_11" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Com./Serv.</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_11" min="0" step="0.01"
                                     defaultValue={control.m2_com} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Dotacional</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_12" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Dotacional</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_12" min="0" step="0.01"
                                     defaultValue={control.m2_dot} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
@@ -299,6 +300,8 @@ class EXP_2 extends Component {
             const control = getJSONFull(json);
 
             control.n_parking = document.getElementById('ra_control_data_0').value;
+            control.n_parking_private = document.getElementById('ra_control_data_0_1').value;
+            control.n_parking_visit = document.getElementById('ra_control_data_0_2').value;
             control.m2_predio = document.getElementById('ra_control_data_1').value;
             control.main_use = document.getElementById('ra_control_data_2').value;
             control.n_sub = document.getElementById('ra_control_data_3').value;
@@ -324,136 +327,73 @@ class EXP_2 extends Component {
         }
 
         let save_step = (_id_public, useSwal, formData, state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setPym(1)
             var STEP = LOAD_STEP(_id_public);
 
-            if (useSwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (STEP.id) {
                 RECORD_ARCSERVICE.update_step(STEP.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setPym(2)
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            if (state) this.setState({ [state]: 3 })
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                            if (state) setPym(3)
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        if (state) this.setState({ [state]: 3 })
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                        if (state) setPym(3)
                     });
             }
             else {
                 RECORD_ARCSERVICE.create_step(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setPym(2)
                         } else {
-                            if (useSwal) MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            if (state) this.setState({ [state]: 3 })
+                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                            if (state) setPym(3)
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        if (state) this.setState({ [state]: 3 })
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                        if (state) setPym(3)
                     });
             }
         }
 
         let manage_exp = (useMySwal) => {
-            if (useMySwal) MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            if (useMySwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.update(currentRecord.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useMySwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useMySwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
-                        if (useMySwal) MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useMySwal) swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                     }
                     else {
-                        if (useMySwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useMySwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useMySwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useMySwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
             <div className="record_ph_gen container p-3">
-                <legend className="my-2 px-3 text-uppercase bg-light" id="nav_expedition_10">
-                    <label className="app-p lead fw-normal">Control para Entidades Supervisoras {_SAVING_STATE(this.state.pym)}</label>
+                <legend className="my-2 px-3 bg-light" id="nav_expedition_10">
+                    <label className="app-p lead fw-normal">Control para Entidades Supervisoras {_SAVING_STATE(pym)}</label>
                 </legend>
 
                 {currentItem.record_arc ? <>
@@ -465,7 +405,6 @@ class EXP_2 extends Component {
 
             </div >
         );
-    }
 }
 
 export default EXP_2;

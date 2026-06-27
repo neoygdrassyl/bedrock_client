@@ -1,21 +1,19 @@
-import React, { useState, useRef } from 'react'
-import moment from 'moment';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useMemo, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import CubXVrDataService from '../../../../services/cubXvr.service'
-//const moment = require('moment');
+import { Icon } from '@/components/icon';
+import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 export const PQRS_SET_REPLY1 = (props) => {
     const { currentItem } = props;
 
     const [state, setState] = useState({});
     const editor = useRef(null)
-    const [content, setContent] = useState('')
     const funcion3 = () => {
         const x = currentItem.pqrs_solocitors.map(function (value) { return ` ${value.name}` })
         return x.join(', ');
@@ -34,7 +32,7 @@ export const PQRS_SET_REPLY1 = (props) => {
     const textdefauld = (conten) => (`
     <p style="margin-left: 150px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif;"><br></span></p> 
     <p style="margin-left: 80px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif;"><br></span></p> 
-    <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};">${infoCud.city}, ${dateParser(moment().format('YYYY-MM-DD'))}</span></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};">${infoCud.city}, ${dateParser(dayjs().format('YYYY-MM-DD'))}</span></p>
     <p style="text-align: center; margin-left: 470px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};"><strong>${currentItem.id_reply ?? ''}</strong></span></p>
     <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};, margin-left: 30px;"><strong>Peticionario: </strong></span></p>
     ${get_email() ? `<p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};, margin-left: 30px;"><strong>${get_email()}</strong></span></p>` : ""}
@@ -90,19 +88,28 @@ export const PQRS_SET_REPLY1 = (props) => {
     
     `)
 
-    const [cargar, setCargar] = useState(currentItem.pqrs_info ? currentItem.pqrs_info.reply ?? textdefauld('') : textdefauld(''))
+    const initialReply = currentItem.pqrs_info ? currentItem.pqrs_info.reply ?? textdefauld('') : textdefauld('');
+    const [cargar, setCargar] = useState(initialReply)
+    const [content, setContent] = useState(initialReply)
 
     const funcion5 = () => {
         var y = currentItem.pqrs_workers.map(function (value) { return ` ${value.reply ?? ' '} ` })
         y = y.join('.<br> ')
-        setCargar(textdefauld(y))
+        const nextContent = textdefauld(y);
+        setCargar(nextContent)
+        setContent(nextContent)
     }
 
 
-
-
-    const config = {
+    const config = useMemo(() => ({
         readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+        language: 'es',
+        iframe: true,
+        allowHTML: true,
+        loadExternalConfig: false,
+        minHeight: 0,
+        height: 600,
+        defaultActionOnPaste: "insert_only_text",
         uploader: {
             url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
         },
@@ -112,15 +119,17 @@ export const PQRS_SET_REPLY1 = (props) => {
             },
             height: 580,
         },
-        language: 'es',
-        "readonly": false,
+        cleanHTML: {
+            removeEmptyElements: false,
+            fillEmptyParagraph: false
+        },
         controls: {
             lineHeight: {
                 list: ([0.5, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 3.5])
 
             }
         }
-    }
+    }), [])
 
     const componentDidMount = () => {
         retrieveItem(props.currentId);
@@ -135,12 +144,7 @@ export const PQRS_SET_REPLY1 = (props) => {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este ítem, intentelo nuevamente." });
                 setState({
                     load: false
                 })
@@ -162,11 +166,10 @@ export const PQRS_SET_REPLY1 = (props) => {
         formData.set('id_master', currentItem.id);
         formData.set('info_id', currentItem.pqrs_info.id);
         formData.set('time_id', currentItem.pqrs_time.id);
-        console.log(currentItem.id, currentItem.pqrs_info.id, currentItem.pqrs_time.id)
 
         let reply_doc_date = document.getElementById("pqrs_reply_time_formalReply").value;
         if (reply_doc_date) formData.set('reply_doc_date', reply_doc_date);
-        let info_reply = document.getElementById("pqrs_info_reply").value;
+        let info_reply = content || cargar || '';
         formData.set('info_reply', info_reply);
 
         let prev_id = currentItem.id_reply;
@@ -185,13 +188,7 @@ export const PQRS_SET_REPLY1 = (props) => {
             PQRS_Service.formalReply(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.retrieveItem(currentItem.id);
                         props.refreshList();
                         if (hardReset) {
@@ -199,20 +196,10 @@ export const PQRS_SET_REPLY1 = (props) => {
                         }
 
                     } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACIÓN",
-                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACIÓN", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
@@ -220,11 +207,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 });
 
         } else {
-            MySwal.fire({
-                title: "NO HAY CONSECUTIVO DE SALIDA",
-                text: "Se debe de espeficiar primero el consecutivo de Salida.",
-                icon: 'error',
-            });
+            swalError({ title: "NO HAY CONSECUTIVO DE SALIDA", text: "Se debe de espeficiar primero el consecutivo de Salida." });
         }
 
     };
@@ -241,7 +224,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     if (concecutive < 1000) concecutive = "0" + concecutive
                     if (concecutive < 100) concecutive = "0" + concecutive
                     if (concecutive < 10) concecutive = "0" + concecutive
-                    new_id = res1 + (moment().format('YY')).split('-')[0] + "-" + concecutive
+                    new_id = res1 + (dayjs().format('YY')).split('-')[0] + "-" + concecutive
                     document.getElementById('pqrs_master_idreply').value = new_id;
                 } else {
                     concecutive = new_id.split('-')[1];
@@ -255,12 +238,7 @@ export const PQRS_SET_REPLY1 = (props) => {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                    icon: 'error',
-                    confirmButtonText: props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
             });
     }
     let createVRxCUB_relation = (cub_selected) => {
@@ -283,7 +261,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 .then((response) => {
                     if (response.data === 'OK') {
                         // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
+                        props.requestUpdate(currentItem.id, true);
                     }
                 })
                 .catch((error) => {
@@ -294,7 +272,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 .then((response) => {
                     if (response.data === 'OK') {
                         // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
+                        props.requestUpdate(currentItem.id, true);
                     }
                 })
                 .catch((error) => {
@@ -311,54 +289,54 @@ export const PQRS_SET_REPLY1 = (props) => {
                 <div className="row">
                     <div className="col-5">
                         <label className='text-start'>Consecutivo de Salida</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="text" class="form-control" defaultValue={currentItem.id_reply}
-                                id="pqrs_master_idreply" require />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <input type="text" className="form-control" defaultValue={currentItem.id_reply}
+                                id="pqrs_master_idreply" required />
+                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
 
                     <div className="col-3">
                         <label>Fecha creación documento</label>
-                        <div class="input-group my-1 ">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1 ">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control"
-                                defaultValue={validar ?? moment().format('YYYY-MM-DD')}
-                                id="pqrs_reply_time_formalReply" require />
+                            <input type="date" max="2100-01-01" className="form-control"
+                                defaultValue={validar ?? dayjs().format('YYYY-MM-DD')}
+                                id="pqrs_reply_time_formalReply" required />
                         </div>
                     </div>
 
                 </div>
 
+                <div className="mb-3">
                 <JoditEditor
                     ref={editor}
                     value={cargar}
                     config={config}
-                    disabled={true}
                     tabIndex={1} // tabIndex of textarea
-                    onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
-                    onChange={newContent => { }}
-                    class="form-control mb-3"
+                    onBlur={setContent}
+                    onChange={setContent}
                     rows="5"
-                    maxlength="4096"
+                    maxLength="4096"
                     id="pqrs_info_reply"
                 />
+                </div>
 
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-3">
+                <div className="container">
+                    <div className="row justify-content-center">
+                        <div className="col-3">
                             <div className="text-center m-3">
-                                <button type="button" class="btn btn-sm btn-info" onClick={funcion5}><i class="fas fa-exchange-alt"></i> CARGAR INFORMACIÓN</button>
+                                <Button type="button" size="sm" onClick={funcion5}><Icon name="exchange-alt" size={16} /> CARGAR INFORMACIÓN</Button>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div className="col-3">
                             <div className="text-center m-3">
-                                <button className="btn btn-sm btn-success" ><i class="fas fa-edit"></i> GUARDAR RESPUESTA </button>
+                                <Button type="submit" size="sm"><Icon name="edit" size={16} /> GUARDAR RESPUESTA </Button>
                             </div>
                         </div>
                     </div>

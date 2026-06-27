@@ -1,7 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn, MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
+
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
 import FUN_SERVICE from '../../../services/fun.service';
@@ -13,172 +11,159 @@ import { dateParser_finalDate, dateParser_timeLeft, regexChecker_isOA_2, _MANAGE
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FunService from '../../../services/fun.service';
 import { cities, domains_number, infoCud } from '../../../components/jsons/vars';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { handleArchCheck, handleEnghCheck, handleLAWhCheck } from '../../../components/customClasses/pdfCheckHandler';
 import RECORD_DOC_LETTER from './record_letter.component';
 import RECORD_DOC_LETTER_2 from './record_letter_2.component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
+export function resolveStructuralReviewDate({ reviewDate = '', clocks = [] } = {}) {
+    if (reviewDate) return reviewDate;
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-
-class RECORD_REVIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.setItem_Record = this.setItem_Record.bind(this);
-        this.requestUpdateRecord = this.requestUpdateRecord.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.state = {
-            currentRecord: null,
-            currentVersionR: null,
-            loaded: false,
-            currentStepIndex: 0,
-            pqrsxfun: false,
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null,
-        };
+    for (const version of [200, 300, 100]) {
+        const clock = clocks.find(item => Number(item?.state) === 12 && Number(item?.version) === version);
+        if (clock?.date_start) return String(clock.date_start).split(';')[0] || '';
     }
-    componentDidMount() {
-        this.setItem_Record();
-        this.retrieveItem(this.props.currentId);
-    }
-    setItem_Record() {
-        RECORD_REVIEW_SERVICE.getRecord(this.props.currentId)
+
+    return '';
+}
+
+function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, translation, globals, currentVersion, closeModal, NAVIGATION, navigation_version }) {
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [currentStepIndex, setCurrentStepIndex] = useState(0);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected, setVrSelected] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+    const [tn, setTn] = useState(undefined);
+
+    useEffect(() => {
+        setItem_Record();
+        retrieveItem(currentId);
+    }, []);
+
+    function setItem_Record() {
+        RECORD_REVIEW_SERVICE.getRecord(currentId)
             .then(response => {
                 if (response.data.length < 1) {
-                    this.setState({
-                        currentRecord: null,
-                        currentVersionR: null,
-                        loaded: true,
-                    });
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
                 } else {
-                    this.setState({
-                        currentRecord: response.data[0],
-                        currentVersionR: response.data[0].version,
-                        loaded: true,
-                    });
+                    setCurrentRecord(response.data[0]);
+                    setCurrentVersionR(response.data[0].version);
+                    setLoaded(true);
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
-    requestUpdateRecord(id) {
+
+    function requestUpdateRecord(id) {
         RECORD_REVIEW_SERVICE.getRecord(id)
             .then(response => {
-                this.setState({
-                    currentRecord: response.data[0],
-                    currentVersionR: response.data[0].version,
-                    loaded: true,
-                });
+                setCurrentRecord(response.data[0]);
+                setCurrentVersionR(response.data[0].version);
+                setLoaded(true);
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    requestUpdate(id) {
-        this.props.requestUpdate(id);
+
+    function requestUpdate(id) {
+        requestUpdateProp(id);
     }
-    retrieveItem(id) {
+
+    function retrieveItem(id) {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                setLoad(true);
+                retrievePQRSxFUN(response.data.id_public);
                 SubmitService.getIdRelated(response.data.id_public).then(resres => {
-                    this.setState({ vrsRelated: resres.data })
+                    setVrsRelated(resres.data);
                 })
-                this.retrieveCubXvrs(response.data.id_public)
+                retrieveCubXvrs(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     }
-    retrievePQRSxFUN(id_public) {
+
+    function retrievePQRSxFUN(id_public) {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    async retrieveCubXvrs(id_public) {
+
+    async function retrieveCubXvrs(id_public) {
         console.log(id_public)
         const response = await CubXVrDataService.getByFUN(id_public)
         const data = response.data.find(item => item.process === 'OBSERVACIONES Y CORRECIONES')
 
         if (data) {
             document.getElementById("vr_selected11").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            setVrSelected(data.vr);
+            setCubSelected(data.cub);
+            setIdCUBxVr(data.id);
         }
     }
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
-        let swaMsg = this.props.swaMsg;
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+
+    async function CREATE_CHECK_PDF(_detail, chekcs, _currentItem, _headers) {
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         // ****************** CREATES NEW PDF DOC AND PASTE THE OLD PDF ON TOP *********** //
         const mergedPdf = await PDFDocument.create();
 
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordlawextra";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDocLaw = await PDFDocument.load(formPdfBytes);
         const copiedPagesA = await mergedPdf.copyPages(pdfDocLaw, pdfDocLaw.getPageIndices());
         copiedPagesA.forEach((page) => mergedPdf.addPage(page));
 
-        formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
+        formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
         formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDocArc = await PDFDocument.load(formPdfBytes);
         const copiedPagesB = await mergedPdf.copyPages(pdfDocArc, pdfDocArc.getPageIndices());
         copiedPagesB.forEach((page) => mergedPdf.addPage(page));
 
-        formUrl = process.env.REACT_APP_API_URL + "/pdf/recordengextra";
+        formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
         formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDocEng = await PDFDocument.load(formPdfBytes);
         const copiedPagesC = await mergedPdf.copyPages(pdfDocEng, pdfDocEng.getPageIndices());
         copiedPagesC.forEach((page) => mergedPdf.addPage(page));
 
-        const currentItem = _currentItem
-        const id_public = currentItem.id_public;
+        const _currentItemLocal = _currentItem
+        const id_public = _currentItemLocal.id_public;
 
         let page = mergedPdf.getPage(0)
         const helveticaFont = await mergedPdf.embedFont(StandardFonts.Helvetica)
         page.setFont(helveticaFont)
 
-
         handleLAWhCheck(mergedPdf, page, chekcs[0], _detail[0], 0, 1);
         handleArchCheck(mergedPdf, page, chekcs[1], _detail[1], 2, 3);
         handleEnghCheck(mergedPdf, page, chekcs[2], _detail[2], 4, 5);
-
 
         let _city = _headers.city;
         let _number = _headers.number;
@@ -196,7 +181,7 @@ class RECORD_REVIEW extends Component {
         }
 
         mergedPdf.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        mergedPdf.setCreationDate(moment().toDate());
+        mergedPdf.setCreationDate(dayjs().toDate());
         mergedPdf.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         mergedPdf.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'juridico']);
         mergedPdf.setLanguage('es-co');
@@ -206,14 +191,8 @@ class RECORD_REVIEW extends Component {
         var pdfBytes = await mergedPdf.save();
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'FORMATO DE REVISIÓN E INFORMACIÓN DEPROYECTOS ' + id_public + '.pdf');
-        MySwal.close();
-
-
+        swalClose();
     }
-
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem, currentStepIndex, vrsRelated } = this.state;
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -391,12 +370,7 @@ class RECORD_REVIEW extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -475,8 +449,8 @@ class RECORD_REVIEW extends Component {
         }
         let get_clockExistIcon = (state) => {
             var _CHILD = _GET_CLOCK_STATE(state);
-            if (_CHILD) return <i class="far fa-check-circle text-success"></i>
-            return <i class="far fa-dot-circle"></i>
+            if (_CHILD) return <Icon name="check-circle" size={16} className="text-success" />
+            return <Icon name="dot-circle" size={16} />
         }
         let pro = () => {
             return _GET_CLOCK_STATE(34).date_start ?? false;
@@ -533,38 +507,38 @@ class RECORD_REVIEW extends Component {
                     <strong>TIPO DE NOTIFICACIÓN</strong>
 
                     <div className="col-4">
-                        <select className='form-select' id="type_not" onChange={(e) => this.setState({ 'tn': e.target.value })}>
+                        <select className='form-select' id="type_not" onChange={(e) => setTn(e.target.value)}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
-                    {this.state.tn == 2 || this.state.tn == 3 ?
+                    {tn == 2 || tn == 3 ?
                         <>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="text" class="form-control" id="type_not_name" placeholder='Sujeto Notificación' />
+                                <div className="input-group my-1">
+                                    <input type="text" className="form-control" id="type_not_name" placeholder='Sujeto Notificación' />
                                 </div>
                             </div>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="text" class="form-control" id="type_not_email" placeholder='Correo Notificación' />
+                                <div className="input-group my-1">
+                                    <input type="text" className="form-control" id="type_not_email" placeholder='Correo Notificación' />
                                 </div>
                             </div>
                         </>
                         : ''}
-                    {this.state.tn == 4 ?
+                    {tn == 4 ?
                         <>
                          <div className="col-4">
-                                <div class="input-group my-1">
+                                <div className="input-group my-1">
                                     <label>Fecha Comunicación: </label>
                                 </div>
                             </div>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
+                                <div className="input-group my-1">
+                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
                                 </div>
                             </div>
                         </>
@@ -591,21 +565,21 @@ class RECORD_REVIEW extends Component {
                     </div>
                     <div className="col-5">
                         <label>Fecha del acta de observaciones</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" class="form-control" id="record_review_2" max="2100-01-01"
+                            <input type="date" className="form-control" id="record_review_2" max="2100-01-01"
                                 defaultValue={currentRecord.date ?? ''} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Resultado</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
-                            <select class="form-select" id="record_review_3" defaultValue={currentRecord.check ?? 2} >
+                            <select className="form-select" id="record_review_3" defaultValue={currentRecord.check ?? 2} >
                                 <option value="0" className="text-danger">TIENE OBSERVACIONES</option>
                                 <option value="1" className="text-success">CUMPLE CON TODO</option>
                                 <option value="2" className="text-warning">SIN REVISAR</option>
@@ -621,21 +595,21 @@ class RECORD_REVIEW extends Component {
                     </div>
                     <div className="col-5">
                         <label>Fecha del acta de Correcciones</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" class="form-control" id="record_review_4" max="2100-01-01"
+                            <input type="date" className="form-control" id="record_review_4" max="2100-01-01"
                                 defaultValue={currentRecord.date_2 ?? ''} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Resultado</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="check-square" size={16} />
                             </span>
-                            <select class="form-select" id="record_review_5" defaultValue={currentRecord.check_2 ?? 2} >
+                            <select className="form-select" id="record_review_5" defaultValue={currentRecord.check_2 ?? 2} >
                                 <option value="0" className="text-danger">NO CUMPLE (NEGADO)</option>
                                 <option value="1" className="text-success">CUMPLE CON TODO (APROBADO)</option>
                                 <option value="2" className="text-warning">SIN REVISAR</option>
@@ -655,8 +629,8 @@ class RECORD_REVIEW extends Component {
                     let values = array.split(';');
                     return <>
                         <div className="row">
-                            <legend className="my-2 px-3 text-uppercase bg-light" id="record_ph_2">
-                                <label className="app-p lead fw-normal text-uppercase">HISTORIAL DE REVISIONES DE ACTAS</label>
+                            <legend className="my-2 px-3 bg-light" id="record_ph_2">
+                                <label className="app-p lead fw-normal">HISTORIAL DE REVISIONES DE ACTAS</label>
                             </legend>
                         </div>
                         <div className="row">
@@ -665,21 +639,21 @@ class RECORD_REVIEW extends Component {
                             </div>
                             <div className="col-4">
                                 <label>Fecha del acta de observaciones</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
-                                    <input type="date" class="form-control" id="record_ph_worker_arc_2" required
+                                    <input type="date" className="form-control" id="record_ph_worker_arc_2" required
                                         defaultValue={values[1]} />
                                 </div>
                             </div>
                             <div className="col-4">
                                 <label>Aprobado</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-check-square"></i>
+                                <div className="input-group my-1">
+                                    <span className="input-group-text bg-primary text-primary-foreground">
+                                        <Icon name="check-square" size={16} />
                                     </span>
-                                    <select class="form-control" id="recprd_ph_final_check" defaultValue={values[0]} >
+                                    <select className="form-control" id="recprd_ph_final_check" defaultValue={values[0]} >
                                         <option value="0" className="text-danger">NO</option>
                                         <option value="1" className="text-success">SI</option>
                                     </select>
@@ -694,7 +668,7 @@ class RECORD_REVIEW extends Component {
         let _COMPONENT_NOTIFICATION_OBS = () => {
             return <>
 
-                <div className="row mx-2 bg-info text-white">
+                <div className="row mx-2 bg-primary text-primary-foreground">
                     <div className="col-3 text-center">
                         <label className="fw-bold mt-1">EVENTO</label>
                     </div>
@@ -742,7 +716,6 @@ class RECORD_REVIEW extends Component {
         }
         let _COMPONENT_CLOCK_LIST = () => {
 
-
             return record_clocks.map((value, i) => <>
                 {value.alert ? <div className="row mx-2 my-0 text-center">
                     <div className="col border border-danger">
@@ -756,7 +729,7 @@ class RECORD_REVIEW extends Component {
                         </div>
                         <div className="col border py-1">
                             {value.state ?
-                                <input type="date" class="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
+                                <input type="date" className="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
                                     defaultValue={_GET_CLOCK_STATE(value.state).date_start ?? ''} onBlur={(e) => save_clock2(value, i)} />
                                 : ''}
                         </div>
@@ -791,7 +764,6 @@ class RECORD_REVIEW extends Component {
                         </div>
                     </div>}
 
-
             </>)
         }
         let PDF_GEN_ACTA = () => {
@@ -822,7 +794,7 @@ class RECORD_REVIEW extends Component {
             ]
             // ***************** ENG ***************** // 
             let _REVIEW_ENG_DELTA = _GET_REVIEW_ENG();
-            let _REVIEW_ENG_WORER = _GET_ENG().worker_name ?? _REVIEW_ENG_DELTA.worker_name;
+            let _REVIEW_ENG_WORER = _GET_ENG().worker_name || _REVIEW_ENG_DELTA.worker_name;
             let _REVIEWS_ENG = _GET_CLOCK_STATE_VERSION(12, 200).resolver_context ? _GET_CLOCK_STATE_VERSION(12, 200).resolver_context.split(';') : [];
             let _REVIEWS_DATES_ENG = _GET_CLOCK_STATE_VERSION(12, 200).date_start ? _GET_CLOCK_STATE_VERSION(12, 200).date_start.split(';') : [];
             let _REVIEWS_DESC_ENG = _GET_CLOCK_STATE_VERSION(12, 200).desc ? _GET_CLOCK_STATE_VERSION(12, 200).desc.split(';') : [];
@@ -849,7 +821,10 @@ class RECORD_REVIEW extends Component {
                     reviews_eng[i].check = _REVIEW_ENG_DELTA.check || (eng_checks[0] ? eng_checks[0] : 0);
                     reviews_eng[i].check2 = _REVIEW_ENG_DELTA.check_2 || (eng_checks[1] ? eng_checks[1] : 0);
                     reviews_eng[i].check3 = _REVIEW_ENG_DELTA.check_3 || (eng_checks[2] ? eng_checks[2] : 0);
-                    reviews_eng[i].date = _REVIEW_ENG_DELTA.date || (_REVIEWS_DATES_ENG[i] ? _REVIEWS_DATES_ENG[i] : '');
+                    reviews_eng[i].date = resolveStructuralReviewDate({
+                        reviewDate: _REVIEW_ENG_DELTA.date || (_REVIEWS_DATES_ENG[i] ? _REVIEWS_DATES_ENG[i] : ''),
+                        clocks: _GET_CLOCK(),
+                    });
                     reviews_eng[i].c1 = _REVIEW_ENG_DELTA.check_context || (eng_checks_desc[0] ? eng_checks_desc[0] : '');
                     reviews_eng[i].c2 = _REVIEW_ENG_DELTA.check_2_cotext || (eng_checks_desc[1] ? eng_checks_desc[1] : '');
                     reviews_eng[i].c3 = _REVIEW_ENG_DELTA.check_3_cotext || (eng_checks_desc[2] ? eng_checks_desc[2] : '');
@@ -876,24 +851,24 @@ class RECORD_REVIEW extends Component {
                 <div className="row mb-3">
                     <div className="col">
                         <label>Autoridad Competente</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"func_pdf_0_1"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"func_pdf_0_1"}>
                                 {domains_number}
                             </select>
                         </div>
                     </div>
                     <div className="col">
                         <label>Ciudad</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"func_pdf_0_2"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"func_pdf_0_2"}>
                                 {cities}
                             </select>
                         </div>
                     </div>
                     <div className="col">
                         <label>Acta</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"record_version"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"record_version"}>
                                 <option value={1}>OBSERVACIONES</option>
                                 <option value={2}>CORRECCIONES</option>
                             </select>
@@ -901,9 +876,9 @@ class RECORD_REVIEW extends Component {
                     </div>
                     <div className="col">
                         <label>Fecha expedición</label>
-                        <div class="input-group my-1">
-                            <input type="date" max="2100-01-01" class="form-control me-1" id="record_date"
-                                defaultValue={moment().format('YYYY-MM-DD')} />
+                        <div className="input-group my-1">
+                            <input type="date" max="2100-01-01" className="form-control me-1" id="record_date"
+                                defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                 </div>
@@ -916,90 +891,90 @@ class RECORD_REVIEW extends Component {
                     <div className="col-1"> <label className='fw-bold'>PEND.</label> </div>
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i class="fas fa-balance-scale"></i> JUR.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="balance-scale" size={16} /> JUR.</label> </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
-                            <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('law', reviews_law, e.target.value)}>
+                        <div className="input-group input-group-sm">
+                            <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('law', reviews_law, e.target.value)}>
                                 {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                             </select>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_worker_name_law"} disabled defaultValue={reviews_law[0].worker} />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_check_law"} disabled defaultValue={reviews_law[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_date_law"} disabled defaultValue={reviews_law[0].date} />
                         </div>
                     </div>
                     <div className="col-1 d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_law_pending" />
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_law_pending" />
                         </div>
                     </div>
 
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i class="far fa-building"></i>  ARQ.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="building" size={16} />  ARQ.</label> </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
-                            <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('arc', reviews_arc, e.target.value)}>
+                        <div className="input-group input-group-sm">
+                            <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('arc', reviews_arc, e.target.value)}>
                                 {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                             </select>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_worker_name_arc"} disabled defaultValue={reviews_arc[0].worker} />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_check_arc"} disabled defaultValue={reviews_arc[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_date_arc"} disabled defaultValue={reviews_arc[0].date} />
                         </div>
                     </div>
                     <div className="col-1 d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_arc_pending" />
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_arc_pending" />
                         </div>
                     </div>
 
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i class="fas fa-cogs"></i> EST.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="cogs" size={16} /> EST.</label> </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
-                            <select class="form-select me-1" id={"record_pdf_version_eng"} onChange={(e) => _CHANGE_VALUES_ENG(reviews_eng, e.target.value)}>
+                        <div className="input-group input-group-sm">
+                            <select className="form-select me-1" id={"record_pdf_version_eng"} onChange={(e) => _CHANGE_VALUES_ENG(reviews_eng, e.target.value)}>
                                 {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                             </select>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_worker_name_eng"} disabled defaultValue={reviews_eng[0].worker} />
                         </div>
                     </div>
                     <div className="col"></div>
                     <div className="col">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_date_eng"} disabled defaultValue={reviews_eng[0].date} />
                         </div>
                     </div>
                     <div className="col-1 d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_eng_pending" />
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_eng_pending" />
                         </div>
                     </div>
                 </div>
@@ -1032,60 +1007,44 @@ class RECORD_REVIEW extends Component {
                 </div>
 
                 {_NOTY_TYPE_COMPONENENT()}
-                {/**
-                 *  <div className="row mb-1">
-                    <div className="col-2 d-flex justify-content-end">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_notdig" onChange={() => { this.setState({ notdig: !this.state.notdig }) }} />
-                            <label class="form-check-label">Not. Digital</label>
-                        </div>
-                    </div>
-                    <div className="col-2">
-                        <input type="text" className='form-control form-control-sm' id={"record_rew_notdig_pro"} disabled={!this.state.notdig} defaultValue={'Señor(a)'} />
-                    </div>
-                    <div className="col">
-                        <input type="text" className='form-control form-control-sm' id={"record_rew_notdig_names"} disabled={!this.state.notdig} defaultValue={''} placeholder={'nombres separados por coma'} />
-                    </div>
-                </div>
-                 * 
-                 */}
+                {/* notdig section removed */}
 
                 <div className="row my-3">
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_simple" />
-                            <label class="form-check-label" for="exampleCheck1">Acta simple</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_simple" />
+                            <label className="form-check-label" htmlFor="exampleCheck1">Acta simple</label>
                         </div>
                     </div>
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_footer" defaultChecked={'true'} />
-                            <label class="form-check-label" for="exampleCheck1" >Usar Pie de pagina</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_footer" defaultChecked={'true'} />
+                            <label className="form-check-label" htmlFor="exampleCheck1" >Usar Pie de pagina</label>
                         </div>
                     </div>
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_pagination" />
-                            <label class="form-check-label" for="exampleCheck1">Usar Paginación</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_rew_pagination" />
+                            <label className="form-check-label" htmlFor="exampleCheck1">Usar Paginación</label>
                         </div>
                     </div>
                 </div>
 
                 <div className="row my-3">
                     <div className="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_eng_diagnostic" />
-                            <label class="form-check-label" for="exampleCheck1">Diagnostico NSR-10</label>
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id="record_eng_diagnostic" />
+                            <label className="form-check-label" htmlFor="exampleCheck1">Diagnostico NSR-10</label>
                         </div>
                     </div>
                 </div>
 
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-danger me-1 btn-sm" onClick={() => creae_pdf()}> <i class="far fa-file-pdf"></i> DESCARGAR ACTA</button>
+                        <Button type="button" variant="destructive" size="sm" className="me-1" onClick={() => creae_pdf()}> <Icon name="file-pdf" size={16} /> DESCARGAR ACTA</Button>
                     </div>
                     <div className="col text-center">
-                        <button className="btn btn-danger btn-sm" onClick={() => CREATE_PDF_CHECK()}> <i class="far fa-file-pdf"></i> DESCARGAR CHEKEO</button>
+                        <Button type="button" variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="file-pdf" size={16} /> DESCARGAR CHEKEO</Button>
                     </div>
                 </div>
             </>
@@ -1097,16 +1056,16 @@ class RECORD_REVIEW extends Component {
                     </div>
                     <div className="col-5">
                         <label className="mt-2">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="rev_cub"
-                                defaultValue={this.state.cubSelected || currentRecord.id_public || ""} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="rev_cub"
+                                defaultValue={cubSelected || currentRecord.id_public || ""} />
+                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected11" defaultValue={this.state.vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected11" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -1115,7 +1074,6 @@ class RECORD_REVIEW extends Component {
                                 ))}
                             </select>
                         </div>
-
 
                     </div>
                 </div>
@@ -1132,31 +1090,15 @@ class RECORD_REVIEW extends Component {
             RECORD_REVIEW_SERVICE.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.requestUpdateRecord(currentItem.id)
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id)
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let new_version = () => {
@@ -1164,36 +1106,13 @@ class RECORD_REVIEW extends Component {
             let engId = _CHECK_ENG_REPORT();
             let arcId = _CHECK_ARC_REPORT();
 
-            if (currentItem.version >= 2) return MySwal.fire({
-                title: "MAXIMO NUMERO DE REVISIONES ALCANZADO",
-                text: `Esta solicitud ya tiene 2 revisiones, el sistema no puede generar mas.`,
-                icon: 'warning',
-                confirmButtonText: "CONTINUAR",
-            })
+            if (currentItem.version >= 2) return swalError({ title: "MAXIMO NUMERO DE REVISIONES ALCANZADO", text: `Esta solicitud ya tiene 2 revisiones, el sistema no puede generar mas.`, icon: 'warning' })
 
-            if (!lawId || !engId || !arcId) return MySwal.fire({
-                title: "FALTAN INFORMES",
-                text: `Para poder generar una nueva revision, se debe de tener los informes ya revisados.`,
-                icon: 'error',
-                confirmButtonText: "REVISAR",
-            })
+            if (!lawId || !engId || !arcId) return swalError({ title: "FALTAN INFORMES", text: `Para poder generar una nueva revision, se debe de tener los informes ya revisados.` })
 
-
-            MySwal.fire({
-                title: "NUEVA REVISION",
-                text: `¿Esta seguro de generar una nueva revision (${currentItem.version + 1}) de esta solicitud?`,
-                icon: 'question',
-                confirmButtonText: "REVISAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "NUEVA REVISION", text: `¿Esta seguro de generar una nueva revision (${currentItem.version + 1}) de esta solicitud?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     formData = new FormData();
                     formData.set('fun0Id', currentItem.id);
                     formData.set('version', currentItem.version);
@@ -1205,32 +1124,16 @@ class RECORD_REVIEW extends Component {
                     RECORD_REVIEW_SERVICE.newVersion(formData)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.requestUpdateRecord(currentItem.id);
-                                this.retrieveItem(currentItem.id)
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdateRecord(currentItem.id);
+                                retrieveItem(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
                             console.log(e);
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });
                 }
             });
@@ -1243,28 +1146,15 @@ class RECORD_REVIEW extends Component {
 
             /*
             if (window.user.roleId != 1) {
-                if ((!lawId || !engId || !arcId)) return MySwal.fire({
-                    title: "FALTAN INFORMES",
-                    text: `Para poder generar la revicion, se debe de tener los informes ya revisados.`,
-                    icon: 'error',
-                    confirmButtonText: "REVISAR",
-                })
+                if ((!lawId || !engId || !arcId)) return swalError({ title: "FALTAN INFORMES", text: `Para poder generar la revicion, se debe de tener los informes ya revisados.` })
             }*/
 
-
-            MySwal.fire({
-                title: "REALIZAR REVISION",
-                text: `¿Esta seguro de realizar la revision ${currentItem.version} del ACTA DE CORRECIONES / OBSERVACIONES?`,
-                icon: 'question',
-                confirmButtonText: "REVISAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "REALIZAR REVISION", text: `¿Esta seguro de realizar la revision ${currentItem.version} del ACTA DE CORRECIONES / OBSERVACIONES?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     save_review();
                     save_clock();
                     createVRxCUB_relation();
-                    this.retrieveItem(currentItem.id);
+                    retrieveItem(currentItem.id);
                 }
             });
         }
@@ -1297,55 +1187,29 @@ class RECORD_REVIEW extends Component {
         let manage_review = (useMySwal) => {
             let _CHILD = currentRecord;
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             RECORD_REVIEW_SERVICE.update(_CHILD.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
-                        this.requestUpdateRecord(currentItem.id)
-                        this.retrieveItem(currentItem.id)
-                        this.requestUpdate(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
+                        retrieveItem(currentItem.id)
+                        requestUpdate(currentItem.id)
                     } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACION", text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo` });
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 });
         }
@@ -1365,7 +1229,6 @@ class RECORD_REVIEW extends Component {
 
             //let state = 30 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
             let version = currentItem.version;
-
 
             let date = document.getElementById("record_review_2").value;
             let date_2 = document.getElementById("record_review_4").value;
@@ -1422,12 +1285,7 @@ class RECORD_REVIEW extends Component {
 
             formDataClock.set('fun0Id', currentItem.id);
             if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
 
             if (_CHILD.id) {
@@ -1435,36 +1293,20 @@ class RECORD_REVIEW extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.requestUpdateRecord(currentItem.id)
-                            this.retrieveItem(currentItem.id)
+                            requestUpdateRecord(currentItem.id)
+                            retrieveItem(currentItem.id)
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -1473,36 +1315,20 @@ class RECORD_REVIEW extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                             }
-                            this.requestUpdateRecord(currentItem.id)
-                            this.retrieveItem(currentItem.id)
+                            requestUpdateRecord(currentItem.id)
+                            retrieveItem(currentItem.id)
                         } else {
                             if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         }
                     })
                     .catch(e => {
                         console.log(e);
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     });
             }
@@ -1514,21 +1340,9 @@ class RECORD_REVIEW extends Component {
             let acta1 = [currentRecord.date, currentRecord.check];
             let acta2 = [currentRecord.date_2, currentRecord.check_2];
 
-            if (!(acta1[1] == 1 || (acta1[1] == 0 && acta2[1] == 1))) MySwal.fire({
-                title: "ADVERTENCIA",
-                text: `No hay valores validos para el Acta, si realmente desea continuar, realicé la revision.`,
-                icon: 'info',
-                confirmButtonText: "CONTINUAR",
-            }).then(SweetAlertResult => {
+            if (!(acta1[1] == 1 || (acta1[1] == 0 && acta2[1] == 1))) swalConfirm({ title: "ADVERTENCIA", text: `No hay valores validos para el Acta, si realmente desea continuar, realicé la revision.`, icon: 'warning', confirmButtonText: 'CONTINUAR' }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: "¿PROSEGUIR A EXPEDICIÓN?",
-                        text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`,
-                        icon: 'question',
-                        confirmButtonText: "PROSEGUIR",
-                        showCancelButton: true,
-                        cancelButtonText: "CANCELAR"
-                    }).then(SweetAlertResult => {
+                    swalConfirm({ title: "¿PROSEGUIR A EXPEDICIÓN?", text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`, icon: 'question', confirmButtonText: "PROSEGUIR" }).then(SweetAlertResult => {
                         if (SweetAlertResult.isConfirmed) {
                             manage_fun_0();
                             save_clock_exp();
@@ -1536,21 +1350,12 @@ class RECORD_REVIEW extends Component {
                     });
                 }
             });
-            else MySwal.fire({
-                title: "¿PROSEGUIR A EXPEDICIÓN?",
-                text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`,
-                icon: 'question',
-                confirmButtonText: "PROSEGUIR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
-            }).then(SweetAlertResult => {
+            else swalConfirm({ title: "¿PROSEGUIR A EXPEDICIÓN?", text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`, icon: 'question', confirmButtonText: "PROSEGUIR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     manage_fun_0();
                     save_clock_exp();
                 }
             });
-
-
 
         }
 
@@ -1560,35 +1365,19 @@ class RECORD_REVIEW extends Component {
             FunService.update(currentItem.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.requestUpdateRecord(currentItem.id)
-                        this.retrieveItem(currentItem.id)
-                        this.requestUpdate(currentItem.id)
-                        this.props.closeModal();
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id)
+                        retrieveItem(currentItem.id)
+                        requestUpdate(currentItem.id)
+                        closeModal();
 
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
 
@@ -1652,7 +1441,6 @@ class RECORD_REVIEW extends Component {
             let r_check_3_eng = document.getElementById("record_pdf_check_3_v_eng").value;
             formData.set('r_check_3_eng', r_check_3_eng);
 
-
             let r_check_c_eng = document.getElementById("record_pdf_check_1_c_eng").value;
             formData.set('r_check_c_eng', r_check_c_eng);
             let r_check_2_c_eng = document.getElementById("record_pdf_check_2_c_eng").value;
@@ -1663,34 +1451,19 @@ class RECORD_REVIEW extends Component {
             let r_eng_diagnostic = document.getElementById("record_eng_diagnostic").checked;
             formData.set('r_eng_diagnostic', r_eng_diagnostic);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_REVIEW_SERVICE.pdfgen(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordrew/" + "ACTA OBSERVACIONES Y CORECCIONES " + currentItem.id_public + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordrew/" + "ACTA OBSERVACIONES Y CORECCIONES " + currentItem.id_public + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let CREATE_PDF_CHECK = () => {
@@ -1742,9 +1515,6 @@ class RECORD_REVIEW extends Component {
                 if (currentIndex > -1) { index = currentIndex; break; }
             }
             checks.push({ index: _check[index], Y: 266 })
-
-
-
 
             let _resume = [];
             let values_1 = _GET_STEP_TYPE('s1', 'value', 'record_law_steps');
@@ -1840,8 +1610,6 @@ class RECORD_REVIEW extends Component {
                 checks.push(partialChecks[1]); // 27
             }
 
-
-
             _RESUME.push(_resume);
             _CHECKS.push(checks)
             // *************** ENG ***************//
@@ -1863,7 +1631,7 @@ class RECORD_REVIEW extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, _CHECKS, currentItem, headers)
+            CREATE_CHECK_PDF(_RESUME, _CHECKS, currentItem, headers)
         }
         let createVRxCUB_relation = () => {
             let vr = document.getElementById("vr_selected11").value;
@@ -1876,16 +1644,15 @@ class RECORD_REVIEW extends Component {
             formatData.set('process', 'OBSERVACIONES Y CORRECIONES');
             formatData.set('desc', 'Observaciones y correciones');
 
-
             let date = document.getElementById('record_review_2').value;
             formatData.set('date', date);
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdateProp(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1897,7 +1664,7 @@ class RECORD_REVIEW extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdateProp(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1926,8 +1693,8 @@ class RECORD_REVIEW extends Component {
                                         noEng={conOA() || rules[1] == 1}
                                     />
 
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_2">
-                                        <label className="app-p lead fw-normal text-uppercase">2. DECLARACIÓN DEL ACTA</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_2">
+                                        <label className="app-p lead fw-normal">2. DECLARACIÓN DEL ACTA</label>
                                     </legend>
 
                                     <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">2.1 CARTA DE RATIFICACIÓN</label>}>
@@ -1938,7 +1705,7 @@ class RECORD_REVIEW extends Component {
                                                 globals={globals}
                                                 currentItem={currentItem}
                                                 currentVersion={currentVersion}
-                                                requestUpdate={this.requestUpdate}
+                                                requestUpdate={requestUpdate}
                                                 edit />
                                         </div>
                                     </Collapsible>
@@ -1950,7 +1717,7 @@ class RECORD_REVIEW extends Component {
                                                 globals={globals}
                                                 currentItem={currentItem}
                                                 currentVersion={currentVersion}
-                                                requestUpdate={this.requestUpdate}
+                                                requestUpdate={requestUpdate}
                                                 edit />
                                         </div>
                                     </Collapsible>
@@ -1965,15 +1732,12 @@ class RECORD_REVIEW extends Component {
                                         {currentItem.state > -5
                                             ? <>
                                                 <div className="col">
-                                                    <MDBBtn className="btn btn-danger my-3" onClick={() => review()}><i class="far fa-check-square"></i> REALIZAR REVISIÓN </MDBBtn>
+                                                    <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
                                                 </div>
                                             </>
-                                            : <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
+                                            : <label className="app-p lead fw-normal text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
                                                 NO SE PUEDE REALIZAR REVISIONES HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
                                     </div>
-
-
-
 
                                     {/**
                                      * 
@@ -1985,7 +1749,7 @@ class RECORD_REVIEW extends Component {
                                         {currentRecord.check == 0
                                             ? <>
                                                 <div className="col text-center">
-                                                    <MDBBtn className="btn btn-secondary my-3" onClick={() => new_version()} ><i class="fas fa-plus-circle"></i> NUEVA REVISION</MDBBtn>
+                                                    <Button variant="outline" size="sm" className="my-3" onClick={() => new_version()}><Icon name="plus-circle" size={16} /> NUEVA REVISION</Button>
                                                 </div>
                                                 <div className="col">
                                                     <label>Genera una nueva version de esta solicitud, guardando la información anterior.</label>
@@ -1995,21 +1759,19 @@ class RECORD_REVIEW extends Component {
                                     </div>
                                      * 
                                      */}
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_3">
-                                        <label className="app-p lead fw-normal text-uppercase">3. DESCARGAR ACTA</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_3">
+                                        <label className="app-p lead fw-normal">3. DESCARGAR ACTA</label>
                                     </legend>
                                     {PDF_GEN_ACTA()}
 
-
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_3">
-                                        <label className="app-p lead fw-normal text-uppercase">4. PROCESO DE NOTIFICACIÓN</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_3">
+                                        <label className="app-p lead fw-normal">4. PROCESO DE NOTIFICACIÓN</label>
                                     </legend>
 
                                     {_COMPONENT_NOTIFICATION_OBS()}
 
-
-                                    <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_4">
-                                        <label className="app-p lead fw-normal text-uppercase">5. PROSEGUIR A EXPEDICIÓN</label>
+                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_4">
+                                        <label className="app-p lead fw-normal">5. PROSEGUIR A EXPEDICIÓN</label>
                                     </legend>
                                     {currentItem.state > 0
                                         ?
@@ -2023,14 +1785,14 @@ class RECORD_REVIEW extends Component {
                                                             <label className="fw-bold mt-1">Fecha de evento:</label>
                                                         </div>
                                                         <div className="col">
-                                                            <input type="date" class="form-control" id="record_review_next" max="2100-01-01"
+                                                            <input type="date" className="form-control" id="record_review_next" max="2100-01-01"
                                                                 defaultValue={_GET_CLOCK_STATE(51).date_start ?? ''} required />
                                                         </div>
                                                     </div>
                                                     <div className="row">
                                                         <div className="col text-center">
 
-                                                            <button className="btn btn-danger my-3"><i class="far fa-check-square"></i> PROSEGUIR A EXPEDICIÓN </button>
+                                                            <Button type="submit" variant="destructive" size="sm" className="my-3"><Icon name="check-square" size={16} /> PROSEGUIR A EXPEDICIÓN </Button>
                                                         </div>
                                                     </div>
                                                 </form>
@@ -2038,11 +1800,11 @@ class RECORD_REVIEW extends Component {
                                             </>
                                             : <div className="row">
                                                 <div className="col text-center">
-                                                    <label className="app-p lead fw-normal text-uppercase text-success">ESTA SOLICITUD YA SE ENCUENTRA EN EXPEDICIÓN</label>
+                                                    <label className="app-p lead fw-normal text-success">ESTA SOLICITUD YA SE ENCUENTRA EN EXPEDICIÓN</label>
                                                 </div>
                                             </div>
                                         :
-                                        <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIMIENTO,
+                                        <label className="app-p lead fw-normal text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIMIENTO,
                                             NO SE PUEDE PROSEGUIR HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
                                 </div>
                                 {/* {NAV_FUNA()} */}
@@ -2050,7 +1812,7 @@ class RECORD_REVIEW extends Component {
 
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <button className="btn btn-info btn-lg" onClick={() => new_record_review()}> GENERAR ACTA EN BLANCO</button>
+                                        <Button type="button" size="sm" onClick={() => new_record_review()}><Icon name="FilePlus" size={14} /> Generar acta en blanco</Button>
                                     </div>
                                 </fieldset>
 
@@ -2062,7 +1824,7 @@ class RECORD_REVIEW extends Component {
                         translation={translation}
                         currentItem={currentRecord}
                         currentVersion={currentVersionR}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION_VERSION={navigation_version}
                         _RECORD
                     />
                     <FUN_MODULE_NAV
@@ -2070,70 +1832,69 @@ class RECORD_REVIEW extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"record_review"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
                 </fieldset>}
             </div >
         );
-    }
 }
 
 const NAV_FUNA = (_CHILD) => {
     return (
         <div className="btn-navpqrs">
             <div className="fung_nav">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
-                        <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
+                        <legend className="px-3 pt-2 bg-light text-center">
                             <h6>Menu de Navegacion</h6>
                         </legend>
                         <br />
                         <a href="#record_review_title_1">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>1. INFORMES</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_report_jur">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>9.1 INFORME JURIDICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_repor_arc">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>9.2 INFORME ARQUITECTONICO</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#fung_repor_eng">
-                            <legend className="px-3 text-uppercase btn-light">
+                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
                                 <h6>9.3 INFORME ESTRUCTURAL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_2">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>2. DECLARACION DEL ACTA</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_3">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>3. PROCESO DE NOTIFICACIÓNL</h6>
                             </legend>
                         </a>
                         <br />
                         <a href="#record_review_title_4">
-                            <legend className="px-3 text-uppercase btn-info">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
                                 <h6>4. PROSEGUIR A EXPEDICION</h6>
                             </legend>
                         </a>
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );

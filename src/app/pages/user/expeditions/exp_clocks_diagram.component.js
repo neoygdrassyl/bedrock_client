@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { swalLoading, swalSuccess, swalError } from '../../../utils/swalAdapter';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS_DIAGRAM(props) {
   const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, outCodes } = props;
@@ -80,7 +80,7 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
       const st = _GET_CLOCK_STATE(element);
       const date = st ? st.date_start : null;
       if (!newDate && date) newDate = date;
-      else if (date && moment(date).isAfter(newDate)) newDate = date;
+      else if (date && dayjs(date).isAfter(newDate)) newDate = date;
     });
     return newDate;
   }
@@ -401,10 +401,12 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header" style={{ background: '#667eea' }}>
             <h5 className="modal-title text-white">
-              <i className="fas fa-clock me-2"></i>
+              <Icon name="clock" size={16} className="me-2" />
               {selectedNode.name}
             </h5>
-            <button className="btn-close btn-close-white" onClick={handleClose}></button>
+            <button onClick={handleClose} className="rounded-md p-1 hover:bg-white/20 transition-colors" aria-label="Cerrar">
+              <Icon name="X" size={16} className="text-white" />
+            </button>
           </div>
           
           <div className="modal-body">
@@ -489,8 +491,8 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
                           <VIZUALIZER
                             url={`${file.path}/${file.filename}`}
                             apipath={'/files/'}
-                            icon={'fas fa-search'}
-                            iconWrapper={'btn btn-info'}
+                            icon={'Search'}
+                            iconWrapper={'inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'}
                           />
                         );
                       }
@@ -519,10 +521,10 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
           </div>
 
           <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={handleClose}>Cancelar</button>
-            <button className="btn btn-primary" onClick={handleSave}>
-              <i className="fas fa-save me-2"></i>Guardar
-            </button>
+            <Button variant="outline" size="sm" onClick={handleClose}>Cancelar</Button>
+            <Button size="sm" onClick={handleSave}>
+              <Icon name="save" size={16} className="me-2" />Guardar
+            </Button>
           </div>
         </div>
       </div>
@@ -562,34 +564,18 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
     formDataClock.set('fun0Id', currentItem.id);
 
     if (useMySwal) {
-      MySwal.fire({
-        title: swaMsg.title_wait,
-        text: swaMsg.text_wait,
-        icon: 'info',
-        showConfirmButton: false,
-      });
+      swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
     }
 
     const onOk = () => {
       if (useMySwal) {
-        MySwal.fire({
-          title: swaMsg.publish_success_title,
-          text: swaMsg.publish_success_text,
-          footer: swaMsg.text_footer,
-          icon: 'success',
-          confirmButtonText: swaMsg.text_btn,
-        });
+        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
       }
       buildProcessList();
     }
     const onErr = () => {
       if (useMySwal) {
-        MySwal.fire({
-          title: swaMsg.generic_eror_title,
-          text: swaMsg.generic_error_text,
-          icon: 'warning',
-          confirmButtonText: swaMsg.text_btn,
-        });
+        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
       }
     }
 
@@ -609,7 +595,7 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
     <div className="diagram-wrapper">
       <div className="diagram-header">
         <h5 className="mb-0">
-          <i className="fas fa-project-diagram me-2"></i>
+          <Icon name="project-diagram" size={16} className="me-2" />
           Diagrama del Proceso
         </h5>
         <div className="legend">
@@ -649,7 +635,7 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
               ))
             ) : (
               <div className="no-data-message">
-                <i className="fas fa-info-circle me-2"></i>
+                <Icon name="info-circle" size={16} className="me-2" />
                 No hay eventos para mostrar en el diagrama
               </div>
             )}

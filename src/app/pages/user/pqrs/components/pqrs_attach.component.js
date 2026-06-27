@@ -1,28 +1,21 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+
+import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-class PQRS_COMPONENT_ATTACHS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            attachs: 0,
-        };
-    }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, add } = this.props;
-        const { attachs } = this.state;
+function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add, retrieveItem }) {
+    const [attachs, setAttachs] = useState(0);
+
+    const addAttach = () => {
+        setAttachs(attachs + 1);
+    };
+    const minusAttach = () => {
+        setAttachs(attachs - 1);
+    };
         const fileType = {
             '0': 'ANEXO',
             '1': 'ANEXO',
@@ -38,34 +31,34 @@ class PQRS_COMPONENT_ATTACHS extends Component {
             var _LIST = _GET_ATTACHS();
             const columns = [
                 {
-                    name: <label>NOMBRE</label>,
-                    selector: 'public_name',
+                    name: 'NOMBRE',
+                    selector: row => row.public_name,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.public_name}</label>,
+                    cell: row => <span className="text-sm">{row.public_name}</span>,
                 },
                 {
-                    name: <label>TIPO</label>,
-                    selector: 'class',
+                    name: 'TIPO',
+                    selector: row => row.class,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{fileType[row.class ?? 0]}</label>,
+                    cell: row => <span className="text-sm">{fileType[row.class ?? 0]}</span>,
                 },
                 {
-                    name: <label>FORMATO</label>,
-                    selector: 'type',
+                    name: 'FORMATO',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.type}</label>,
+                    cell: row => <span className="text-sm">{row.type}</span>,
                 },
 
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
                         <VIZUALIZER url={row.name} apipath={row.path.includes('input') ? '/files/pqrsa/' : '/files/pqrs/'} />
-                        {add ? <MDBBtn className="btn btn-sm btn-danger mx-1 p-2" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn> : ''}
+                        {add ? <Button variant="destructive" size="sm" className="mx-1 p-2" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></Button> : ''}
                     </>,
                 },
             ]
@@ -84,17 +77,17 @@ class PQRS_COMPONENT_ATTACHS extends Component {
         let _ATTACHS_COMPONENT = () => {
             var _COMPONENT = [];
             for (var i = 0; i < attachs; i++) {
-                _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
+                _COMPONENT.push(<div key={`pqrs-attach-${i}`} className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
-                        <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
+                        <label className="app-p lead text-start fw-normal">DOCUMENTO ANEXO N° {i + 1}</label>
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="text" class="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
-                            <select class="form-select"  name="files_class">
+                        <div className="input-group">
+                            <span className="input-group-text bg-primary text-primary-foreground" id="name"><Icon name="paperclip" size={16} /></span>
+                            <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                            <select className="form-select"  name="files_class">
                                 <option value={'0'}>DOCUMENTO DE ENTRADA / ANEXO</option>
                                 <option value={'2'}>DOCUMENTO DE RESPUESTA / SALIDA</option>
                             </select>
@@ -104,13 +97,13 @@ class PQRS_COMPONENT_ATTACHS extends Component {
             }
 
             return <div>
-                <p className="lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO</p>
+                <p className="lead text-end fw-bold">ANEXAR DOCUMENTO</p>
                 <div className="text-end m-3">
-                    {attachs > 0 ? <MDBBtn className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><i class="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
+                    {attachs > 0 ? <Button size="sm" onClick={() => addAttachsClose()}><Icon name="paperclip" size={16} /> ANEXAR {attachs} DOCUMENTOS </Button> : ""}
                     {attachs > 0
-                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                        ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                         : ""}
-                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                    <Button variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                 </div>
                 {_COMPONENT}
 
@@ -142,31 +135,15 @@ class PQRS_COMPONENT_ATTACHS extends Component {
             }
             formData.set('files_class', array_form.join());
 
-
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.addAttachsClose(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.generic_success_title,
-                            text: swaMsg.generic_success_text,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        this.props.retrieveItem(currentItem.id)
-                        this.setState({ attachs: 0 });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                        retrieveItem(currentItem.id)
+                        setAttachs(0);
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
@@ -175,38 +152,16 @@ class PQRS_COMPONENT_ATTACHS extends Component {
         }
 
         let deteleAttach = (id) => {
-            MySwal.fire({
-                title: "ELIMINAR ITEM",
-                text: "¿Esta seguro de eliminar este item de forma permanente?",
-                icon: 'warning',
-                confirmButtonText: "ELIMINAR",
-                cancelButtonText: "CANCELAR",
-                showCancelButton: true
-            }).then(SweetAlertResult => {
+            swalConfirm({ title: "ELIMINAR ITEM", text: "¿Esta seguro de eliminar este item de forma permanente?", icon: 'warning', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    MySwal.fire({
-                        title: swaMsg.title_wait,
-                        text: swaMsg.text_wait,
-                        icon: 'info',
-                        showConfirmButton: false,
-                    });
+                    swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                     PQRS_Service.deleteAttach(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                MySwal.fire({
-                                    title: swaMsg.generic_success_title,
-                                    text: swaMsg.generic_success_text,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                                this.props.retrieveItem(currentItem.id)
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
+                                retrieveItem(currentItem.id)
                             } else {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
                         .catch(e => {
@@ -215,14 +170,13 @@ class PQRS_COMPONENT_ATTACHS extends Component {
                 }
             });
         }
-        return (
-            <div>
-                {add ? _ATTACHS_COMPONENT() : ""}
+    return (
+        <div>
+            {add ? _ATTACHS_COMPONENT() : ""}
 
-                {_ATTACHES_COMPONENT()}
-            </div>
-        );
-    }
+            {_ATTACHES_COMPONENT()}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_ATTACHS;

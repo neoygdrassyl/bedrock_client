@@ -1,17 +1,7 @@
-import React, { Component } from 'react';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 
-class PQRS_COMPONENT_CONTACTS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_CONTACTS({ translation, swaMsg, globals, currentItem }) {
 
         //DATA GETTERS
         let _GET_CONTACTS = () => {
@@ -30,44 +20,44 @@ class PQRS_COMPONENT_CONTACTS extends Component {
             var _LIST = _GET_CONTACTS();
             const columns = [
                 {
-                    name: <label>DIRECCIÓN</label>,
-                    selector: 'name',
+                    name: 'DIRECCIÓN',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.address}</label>,
+                    cell: row => <span className="text-sm">{row.address}</span>,
                 },
                 {
-                    name: <label>BARRIO</label>,
-                    selector: 'competence',
+                    name: 'BARRIO',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.neighbour}</label>,
+                    cell: row => <span className="text-sm">{row.neighbour}</span>,
                 },
                 {
-                    name: <label>MUNICIPIO</label>,
-                    cell: row => <label>{row.county}</label>,
+                    name: 'MUNICIPIO',
+                    cell: row => <span className="text-sm">{row.county}</span>,
                 },
                 {
-                    name: <label>TELÉFONO</label>,
-                    selector: 'asign',
+                    name: 'TELÉFONO',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.phone}</label>,
+                    cell: row => <span className="text-sm">{row.phone}</span>,
                 },
                 {
-                    name: <label>CONTACTO</label>,
+                    name: 'CONTACTO',
                     minWidth: '180px',
-                    cell: row => <label>{row.email}</label>,
+                    cell: row => <span className="text-sm">{row.email}</span>,
                 },
                 {
-                    name: <label>DEPARTAMENTO</label>,
-                    cell: row => <label>{row.state}</label>,
+                    name: 'DEPARTAMENTO',
+                    cell: row => <span className="text-sm">{row.state}</span>,
                 },
                 {
-                    name: <label>¿NOTIFICA CORREO?</label>,
+                    name: '¿NOTIFICA CORREO?',
                     minWidth: '180px',
                     center: true,
-                    cell: row => <label>{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</label>,
+                    cell: row => <span className="text-sm">{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</span>,
                 },
             ]
             var _COMPONENT = <DataTable
@@ -81,13 +71,12 @@ class PQRS_COMPONENT_CONTACTS extends Component {
             />
             return _COMPONENT;
         }
-        return (
-            <div>
-                {_CONTACTS_COMPONENT()}
+    return (
+        <div>
+            {_CONTACTS_COMPONENT()}
 
-            </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_CONTACTS;

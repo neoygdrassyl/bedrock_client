@@ -1,12 +1,10 @@
-
-import React from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { Fragment } from 'react';
+import Icon from '@/components/icon';
 import { dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../../services/fun.service';
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 export default function FUN_C_CLOCKS(props) {
     const { swaMsg, translation, globals, currentItem, currentVersion } = props;
 
@@ -85,8 +83,8 @@ export default function FUN_C_CLOCKS(props) {
     }
     let get_clockExistIcon = (state) => {
         var _CHILD = _GET_CLOCK_STATE(state);
-        if (_CHILD) return <i class="far fa-check-circle text-success"></i>
-        return <i class="far fa-dot-circle"></i>
+        if (_CHILD) return <Icon name="check-circle" size={16} className="text-success" />
+        return <Icon name="dot-circle" size={16} />
     }
 
     let get_map_clock = (_array) => {
@@ -102,13 +100,13 @@ export default function FUN_C_CLOCKS(props) {
         let _LIST = _GET_CHILD_6();
         let _COMPONENT = [];
         for (var i = 0; i < _LIST.length; i++) {
-            _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+            _COMPONENT.push(<option key={_LIST[i].id || i} value={_LIST[i].id}>{_LIST[i].description}</option>)
         }
         return <>{_COMPONENT}</>
     }
 
     let _COMPONENT_CLOCK_LIST = () => {
-        return record_clocks.map((value, i) => <>
+        return record_clocks.map((value, i) => <Fragment key={value.state}>
             {value.alert ? <div className="row mx-2 my-0 text-center">
                 <div className="col border border-danger">
                     <label className="fw-bold mt-2 "> {value.alert}</label>
@@ -121,7 +119,7 @@ export default function FUN_C_CLOCKS(props) {
                     </div>
                     <div className="col border py-1">
                         {value.state ?
-                            <input type="date" class="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
+                            <input type="date" className="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
                                 defaultValue={_GET_CLOCK_STATE(value.state).date_start ?? ''} onBlur={(e) => save_clock2(value, i)} />
                             : ''}
                     </div>
@@ -134,7 +132,7 @@ export default function FUN_C_CLOCKS(props) {
                         {value.types
                             ? <select className='form-select' id={'clock_acta_res_' + i} defaultValue={_GET_CLOCK_STATE(value.state).resolver_context ?? 0}
                                 onChange={(e) => save_clock2(value, i)}>
-                                {value.types.map(value => <option>{value}</option>)}
+                                {value.types.map((v, idx) => <option key={idx}>{v}</option>)}
                             </select>
                             : ''}
                     </div>
@@ -158,7 +156,7 @@ export default function FUN_C_CLOCKS(props) {
                 </div>}
 
 
-        </>)
+        </Fragment>)
     }
 
     let _COMPONENT_CLOCK_PRO = () => {
@@ -167,7 +165,7 @@ export default function FUN_C_CLOCKS(props) {
             <label className="fw-bold mt-2">{get_clockExistIcon(4)} Vencimiento Licencia Inicial</label>
         </div>
         <div className="col border py-1">
-        <input type="date" class="form-control" id={'clock_acta_date_' + 'pro'} max="2100-01-01"
+        <input type="date" className="form-control" id={'clock_acta_date_' + 'pro'} max="2100-01-01"
                     defaultValue={_GET_CLOCK_STATE(4).date_start ?? ''} onBlur={(e) => save_clock2(PRO_CLOCK, 'pro')} />
         </div>
         <div className="col text-center border py-1">
@@ -198,7 +196,7 @@ export default function FUN_C_CLOCKS(props) {
 
     let _BODY_COMPONENT = () => {
         return <>
-            <div className="row mx-2 bg-info text-white">
+            <div className="row mx-2 bg-primary text-primary-foreground">
                 <div className="col-3 text-center">
                     <label className="fw-bold mt-1">EVENTO</label>
                 </div>
@@ -276,12 +274,7 @@ export default function FUN_C_CLOCKS(props) {
 
         formDataClock.set('fun0Id', currentItem.id);
         if (useMySwal) {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         }
 
         if (_CHILD.id) {
@@ -289,35 +282,19 @@ export default function FUN_C_CLOCKS(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         props.requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 });
         }
@@ -326,35 +303,19 @@ export default function FUN_C_CLOCKS(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         }
                         props.requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     if (useMySwal) {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 });
         }

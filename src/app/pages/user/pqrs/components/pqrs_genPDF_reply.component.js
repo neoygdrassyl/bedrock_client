@@ -1,23 +1,12 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { dateParser } from '../../../../components/customClasses/typeParse'
 import { cities } from '../../../../components/jsons/vars';
 
-
-const moment = require('moment');
-const MySwal = withReactContent(Swal);
-class PQRS_PDFGEN_REPLY extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
         var formData = new FormData();
 
         // DATA GETTERS 
@@ -65,38 +54,38 @@ class PQRS_PDFGEN_REPLY extends Component {
                     <div className="row">
                         <div className="col">
                             <label>Fecha Documento</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" max="2100-01-01" class="form-control" id="pqrs_reply_date" 
-                                defaultValue={moment().format('YYYY-MM-DD')} required />
+                                <input type="date" max="2100-01-01" className="form-control" id="pqrs_reply_date" 
+                                defaultValue={dayjs().format('YYYY-MM-DD')} required />
                             </div>
                         </div>
                         <div className="col">
                             <label>Consecutivo Entrada</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                                 </span>
-                                <input type="text" class="form-control" id="pqrs_reply_id_public" 
+                                <input type="text" className="form-control" id="pqrs_reply_id_public" 
                                 defaultValue={currentItem.id_publico} disabled />
                             </div>
                         </div>
                         <div className="col">
                             <label>Consecutivo Salida</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="hashtag" size={16} />
                                 </span>
-                                <input type="text" class="form-control" id="pqrs_reply_id_reply" 
+                                <input type="text" className="form-control" id="pqrs_reply_id_reply" 
                                 defaultValue={currentItem.id_reply} disabled />
                             </div>
                         </div>
                         <div className="col">
                             <label className="mt-1">Ciudad</label>
-                            <div class="input-group">
-                                <select class="form-select me-1" id={"pqrs_reply_city"}>
+                            <div className="input-group">
+                                <select className="form-select me-1" id={"pqrs_reply_city"}>
                                     {cities}
                                 </select>
                             </div>
@@ -106,11 +95,11 @@ class PQRS_PDFGEN_REPLY extends Component {
                     <div className="row">
                         <div className="col-4">
                             <label>Titulo referido</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                <Icon name="user" size={16} />
                                 </span>
-                                <input list="titles" class="form-select" id="pqrs_reply_titles" />
+                                <input list="titles" className="form-select" id="pqrs_reply_titles" />
                                 <datalist id="titles">
                                     <option value="Señor" />
                                     <option value="Señora" />
@@ -130,11 +119,11 @@ class PQRS_PDFGEN_REPLY extends Component {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Solicitantes</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-user"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="user" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Solicitantes" 
+                                <input type="text" className="form-control" placeholder="Lista de Solicitantes" 
                                 defaultValue={_getSolicitorlList()} id="pqrs_reply_solicitor_list" />
                             </div>
                         </div>
@@ -143,11 +132,11 @@ class PQRS_PDFGEN_REPLY extends Component {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Correos</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-envelope"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="envelope" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Correos" 
+                                <input type="text" className="form-control" placeholder="Lista de Correos" 
                                 defaultValue={_getEmailList()} id="pqrs_reply_email_list" />
                             </div>
                         </div>
@@ -156,24 +145,24 @@ class PQRS_PDFGEN_REPLY extends Component {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Direcciones</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-home"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="home" size={16} />
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Correos" 
+                                <input type="text" className="form-control" placeholder="Lista de Correos" 
                                 defaultValue={_getAdresslList()} id="pqrs_reply_address_list" />
                             </div>
                         </div>
                     </div>
 
                     <label>Cuerpo del Documento</label>
-                    <textarea class="form-control mb-3" rows="3" maxlength="1024" id="pqrs_reply_doc_body"
+                    <textarea className="form-control mb-3" rows="3" maxLength="1024" id="pqrs_reply_doc_body"
                         defaultValue={currentItem.pqrs_info.reply}></textarea>
                     <table className="table table-sm table-hover table-bordered">
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar oficio de respuesta.</label></th>
-                                <td><i class="fas fa-cloud-download-alt fa-2x" onClick={() => request_dpf()} style={{color: "Crimson"}}></i></td>
+                                <td><Icon name="cloud-download-alt" size={24} className="cursor-pointer" onClick={() => request_dpf()} style={{color: "Crimson"}} /></td>
                             </tr>
                         </tbody>
                     </table>
@@ -206,34 +195,19 @@ class PQRS_PDFGEN_REPLY extends Component {
             let city = document.getElementById("pqrs_reply_city").value;
             formData.set('city', city);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             PQRS_Service.request_pdfReply(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
+                        swalClose();
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
                     } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
@@ -241,7 +215,6 @@ class PQRS_PDFGEN_REPLY extends Component {
                 {_GEN_REPLY_PDF_COMPONENT()}
             </div>
         );
-    }
 }
 
 export default PQRS_PDFGEN_REPLY;

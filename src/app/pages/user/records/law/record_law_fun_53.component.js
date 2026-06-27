@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
-import Modal from 'react-modal';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
+
 import FUNN53 from '../../fun_forms/fun_n_53'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_LAW_FUN_53(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, quickModalStyle } = props;
@@ -21,7 +22,6 @@ export default function RECORD_LAW_FUN_53(props) {
         address: "",
         docs: [],
     }
-    const MySwal = withReactContent(Swal);
     var [Fun53, setFun53] = useState(fun53Null);
     var [load, setLod] = useState(false)
     var [modal, setModal] = useState(false);
@@ -52,7 +52,7 @@ export default function RECORD_LAW_FUN_53(props) {
         setLod(true);
     }
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_law_steps;
+        var _CHILD = Array.isArray(currentRecord.record_law_steps) ? currentRecord.record_law_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }
@@ -104,7 +104,7 @@ export default function RECORD_LAW_FUN_53(props) {
     let _GET_DOCS_BTN = (_id, typeIndex) => {
         if (_id < 1 || !_id) return ''
         let ColorIndex = ['DeepSkyBlue', 'DarkOrchid', 'GoldenRod', 'LimeGreen'];
-        let IconIndex = ['far fa-id-card fa-2x me-1', 'far fa-id-badge fa-2x me-1', 'fas fa-book fa-2x me-1', 'fas fa-file-invoice fa-2x me-1']
+        let IconIndex = ['IdCard', 'BadgeCheck', 'BookOpen', 'FileText']
         return <VIZUALIZER url={_FIND_6(_id).path + "/" + _FIND_6(_id).filename} apipath={'/files/'}
             icon={IconIndex[typeIndex]} color={ColorIndex[typeIndex]} />
     }
@@ -113,13 +113,13 @@ export default function RECORD_LAW_FUN_53(props) {
         let docsValues = Fun53.docs;
         return <>
 
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>5.3 RESPONSABLE DE LA SOLICITUD</label> {_EDIT_BTN()}
                 </div>
             </div>
 
-            <div className='row  border bg-info text-light text-center fwb-bold py-1'>
+            <div className='row  border bg-primary text-primary-foreground text-center fwb-bold py-1'>
                 <div className='col'>
                     <label>DATOS FORMULARIO</label>
                 </div>
@@ -230,7 +230,7 @@ export default function RECORD_LAW_FUN_53(props) {
                 <div className='row'>
                     <div className="col-8 py-0"><label> <label className='fw-bold'>{i + 1}. </label>{value.desc}</label> </div>
                     <div className="col-4 py-0 ">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
 
                             <select className={value.className ?? _GET_SELECT_COLOR_VALUE(_VALUE_ARRAY[value.ind])} name="s_f53_checks"
                                 defaultValue={_VALUE_ARRAY[value.ind]} onChange={() => manage_rl_f53(false)} id={'s_f53_checks_' + value.ind}>
@@ -258,7 +258,7 @@ export default function RECORD_LAW_FUN_53(props) {
     let _COMPOENTN_DETAIL = () => {
         let values = _GET_STEP_TYPE('f53', 'value');
         return <>
-            <div className='row  border border-dark bg-info text-light fwb-bold py-1 mx-0 mt-3'>
+            <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
                 <div className='col'>
                     <label>OBSERVACIONES FORMULARIO ÚNICO NACIONAL</label>
                 </div>
@@ -274,16 +274,23 @@ export default function RECORD_LAW_FUN_53(props) {
     }
     let _EDIT_BTN = () => {
         return <>
-            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal(!modal)}><i class="far fa-edit" style={{ fontSize: '150%' }}></i></button>
+            <Button variant="ghost" size="sm" className="m-0 p-1" onClick={() => setModal(!modal)}><Icon name="edit" size={24} /></Button>
 
             <Modal contentLabel="EDIT FUN 1"
                 isOpen={modal}
                 style={quickModalStyle}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label className="fw-bold align-middle"> <i class="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="edit" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Actualización rápida</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal(!modal)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
 
                 <FUNN53
@@ -293,7 +300,6 @@ export default function RECORD_LAW_FUN_53(props) {
                     currentItem={currentItem}
                     currentVersion={currentVersion}
                     requestUpdate={props.requestUpdate} />
-
 
             </Modal>
         </>
@@ -319,8 +325,6 @@ export default function RECORD_LAW_FUN_53(props) {
         }
         formData.set('check', checks.join(';'));
 
-
-
         formData.set('version', currentVersionR);
         formData.set('recordLawId', currentRecord.id);
         formData.set('id_public', 'f53');
@@ -331,76 +335,38 @@ export default function RECORD_LAW_FUN_53(props) {
     let save_step = (_id_public, useSwal, formData) => {
         var STEP = LOAD_STEP(_id_public);
 
-        if (useSwal) MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         if (STEP.id) {
             Record_lawService.update_step(STEP.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         else {
             Record_lawService.create_step(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         props.requestUpdateRecord(currentItem.id);
                     } else {
-                        if (useSwal) MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    if (useSwal) MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
     }
-
 
     return (
         <div className='mt-4'>

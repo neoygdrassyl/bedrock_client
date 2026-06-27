@@ -1,48 +1,49 @@
-import moment from 'moment';
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
+import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
 import FunService from '../../../services/fun.service';
 import SUBMIT_ANEX from './submit_anex.component';
 import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class SUBMIT_MANAGE extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshItem = this.refreshItem.bind(this);
-        this.state = {
-            list: [],
-            currentItem: false
-        };
-    }
-    componentDidMount() {
-        this.refreshItem()
-    }
-    refreshItem() {
-        if (this.props.currentId) {
-            SubmitService.get(this.props.currentId).then(response => {
-                let item = response.data
-                this.setState({
-                    currentItem: item,
-                })
-            })
+function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: propRefreshList, closeModal, edit }) {
+    const [currentItem, setCurrentItem] = useState(false);
+    const [verifyMSG, setVerifyMSG] = useState(null);
+    const [vrWarning, setVrWarning] = useState(null);
+    const [isVrDuplicate, setIsVrDuplicate] = useState(false);
+    const [payment, setPayment] = useState(false);
+    const [documentPanel, setDocumentPanel] = useState('physical');
+    const [digitalCount, setDigitalCount] = useState(0);
+    const [digitalDocuments, setDigitalDocuments] = useState([]);
+
+    useEffect(() => {
+        refreshItem();
+    }, []);
+
+    function refreshItem() {
+        if (currentId) {
+            SubmitService.get(currentId).then(response => {
+                let item = response.data;
+                setCurrentItem(item);
+            });
         }
     }
-    refreshList(id) {
-        this.props.refreshList(id);
+
+    function refreshList(id) {
+        propRefreshList(id);
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentId } = this.props;
-        const { currentItem } = this.state;
+    function handleDigitalDocumentsChange(count, rows = []) {
+        setDigitalCount(count);
+        setDigitalDocuments(Array.isArray(rows) ? rows : []);
+    }
+
 
         // DATA GETTERS
         let GET_SUBMIT = () => {
@@ -54,8 +55,8 @@ class SUBMIT_MANAGE extends Component {
                 type: _CHILD ? _CHILD.type : null,
                 list_type: _CHILD ? _CHILD.list_type : null,
                 list_type_str: _CHILD ? _CHILD.list_type_str : null,
-                date: _CHILD ? _CHILD.date : moment().format('YYYY-MM-DD'),
-                time: _CHILD ? _CHILD.time : moment().format('HH:mm'),
+                date: _CHILD ? _CHILD.date : dayjs().format('YYYY-MM-DD'),
+                time: _CHILD ? _CHILD.time : dayjs().format('HH:mm'),
                 owner: _CHILD ? _CHILD.owner : null,
                 worker_reciever: _CHILD ? _CHILD.worker_reciever : window.user.name + " " + window.user.surname,
                 name_retriever: _CHILD ? _CHILD.name_retriever : null,
@@ -99,40 +100,70 @@ class SUBMIT_MANAGE extends Component {
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = new_id.split('-')[0] + "-" + concecutive
                             document.getElementById(htmlId).value = new_id;
-                        } else document.getElementById(htmlId).value = "VR" + moment().format('YY') + "-0001";
-                    } else document.getElementById(htmlId).value = "VR" + moment().format('YY') + "-0001";
+                            _VERIFY_VR_DUPLICATE(htmlId);
+                        } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
+                    } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
+        let _VERIFY_VR_DUPLICATE = (_htmlId) => {
+            let htmlId = _htmlId ?? 'submit_1';
+            let vrCode = document.getElementById(htmlId).value;
+            if (!vrCode || vrCode.length < 4) {
+                setVrWarning(null);
+                return;
+            }
+            setVrWarning(<label className="fw-bold"><Icon name="search-location" size={14} className="text-info" /> Verificando duplicado...</label>);
+            SubmitService.getSearch(1, vrCode)
+                .then(response => {
+                    let duplicates = response.data;
+                    if (currentItem && currentItem.id_public) {
+                        duplicates = duplicates.filter(d => d.id_public !== currentItem.id_public);
+                    }
+                    if (duplicates.length) {
+                        setIsVrDuplicate(true);
+                        setVrWarning(<label className="fw-bold" style={{ fontSize: '12px' }}>
+                            <Icon name="exclamation-triangle" size={14} className="text-danger" /> El código VR <strong>{vrCode}</strong> ya existe en ventanilla única. Se guardará como duplicado si continúa.
+                        </label>);
+                    } else {
+                        setIsVrDuplicate(false);
+                        setVrWarning(<label className="fw-bold" style={{ fontSize: '12px' }}>
+                            <Icon name="check" size={14} className="text-success" /> Código VR disponible.
+                        </label>);
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    setIsVrDuplicate(false);
+                    setVrWarning(<label className="fw-bold" style={{ fontSize: '12px' }}>
+                        <Icon name="exclamation" size={14} className="text-warning" /> No se pudo verificar duplicado. El backend validará al guardar.
+                    </label>);
+                });
+        }
         let _VERIFY_RELATED_ID = () => {
-            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-search-location text-info"></i> Buscando...</label> })
+            setVerifyMSG(<label className="fw-bold"><Icon name="search-location" size={16} className="text-info" /> Buscando...</label>)
             var id = document.getElementById('submit_2').value;
             if (id.length) {
                 _GET_TYPE(id)
                 SubmitService.verifyid(id)
                     .then(response => {
                         if (response.data.length) {
-                            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-check text-success"></i> Se encontro consecutivo</label> })
+                            setVerifyMSG(<label className="fw-bold"><Icon name="check" size={16} className="text-success" /> Se encontro consecutivo</label>)
                         } else {
-                            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> No se encontro consecutivo</label> })
+                            setVerifyMSG(<label className="fw-bold"><Icon name="exclamation" size={16} className="text-warning" /> No se encontro consecutivo</label>)
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> Se encontraron errores en el Codigo a buscar</label> })
+                        setVerifyMSG(<label className="fw-bold"><Icon name="exclamation" size={16} className="text-warning" /> Se encontraron errores en el Codigo a buscar</label>)
                     });
             } else {
                 document.getElementById('submit_4').value = ""
-                this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-times text-danger"></i> Debe especificar un consecutivo de Licencia o JUR.</label> })
+                setVerifyMSG(<label className="fw-bold"><Icon name="times" size={16} className="text-danger" /> Debe especificar un consecutivo de Licencia o JUR.</label>)
             }
         }
         let _GET_TYPE = (id_public) => {
@@ -184,17 +215,12 @@ class SUBMIT_MANAGE extends Component {
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${_id[1]}-${_id[2]}-${concecutive}`
                             document.getElementById('submit_2').value = new_id;
-                        } else document.getElementById('submit_2').value = "68001-1-" + moment().format('YY') + "-0001";
-                    } else document.getElementById('submit_2').value = "68001-1-" + moment().format('YY') + "-0001";
+                        } else document.getElementById('submit_2').value = "68001-1-" + dayjs().format('YY') + "-0001";
+                    } else document.getElementById('submit_2').value = "68001-1-" + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -213,17 +239,12 @@ class SUBMIT_MANAGE extends Component {
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${concecutive}`
                             document.getElementById('submit_2').value = new_id;
-                        } else document.getElementById('submit_2').value = "OA" + moment().format('YYYY') + "-0001";
-                    } else document.getElementById('submit_2').value = "OA" + moment().format('YYYY') + "-0001";
+                        } else document.getElementById('submit_2').value = "OA" + dayjs().format('YYYY') + "-0001";
+                    } else document.getElementById('submit_2').value = "OA" + dayjs().format('YYYY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -231,86 +252,57 @@ class SUBMIT_MANAGE extends Component {
         let COMPONENT_NEW = () => {
             let _CHILD = GET_SUBMIT();
             return <>
-                <div className="row">
-                    <div className="col-4">
-                        <label >1. Número de radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_1" required
-                                defaultValue={_CHILD.id_public} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                <div className="space-y-3 text-[clamp(0.78rem,0.72rem+0.2vw,0.92rem)] leading-snug">
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_1" className="mb-1 block font-semibold text-foreground">1. Número de radicación</label>
+                        <div className="input-group input-group-sm">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                            <input type="text" className="form-control form-control-sm" id="submit_1" required defaultValue={_CHILD.id_public} onBlur={() => _VERIFY_VR_DUPLICATE()} />
+                            <Button size="sm" type="button" className="h-[31px] px-2 text-[11px]" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
+                        {vrWarning ? <div className="mt-1 text-[11px] leading-snug">{vrWarning}</div> : null}
                     </div>
-                    <div className="col-5">
-                        <label >2. Número de solicitud</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_2"
-                                defaultValue={_CHILD.id_related} />
-                            <button type="button" class="btn btn-warning shadow-none"
-                                onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</button>
+
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_2" className="mb-1 block font-semibold text-foreground">2. Número de solicitud</label>
+                        <div className="input-group input-group-sm">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                            <input type="text" className="form-control form-control-sm" id="submit_2" defaultValue={_CHILD.id_related} />
+                            <Button size="sm" type="button" className="h-[31px] bg-warning px-2 text-[11px] text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
                         </div>
-                        {this.state.verifyMSG}
+                        {verifyMSG ? <div className="mt-1 text-[11px] leading-snug">{verifyMSG}</div> : null}
                     </div>
-                    <div className="col-3">
-                        {this.state.payment
-                            ? <>
-                                <label >2.1 Consecutivo Pago</label>
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-hashtag"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="submit_21" required
-                                        defaultValue={_CHILD.id_related} />
+
+                    <div className="rounded-lg border border-border/70 bg-muted/10 p-2.5">
+                        <div className="form-check m-0 flex items-start gap-2 p-0">
+                            <input className="form-check-input mt-1 ms-0" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
+                            <label className="form-check-label flex-1 text-[0.82em] font-semibold leading-snug text-foreground" htmlFor="payment_cb">Se entrega pago de expensas fijas y generar solicitud</label>
+                        </div>
+                        {payment
+                            ? <div className="mt-2 space-y-2 border-t border-border/60 pt-2">
+                                <label htmlFor="submit_21" className="mb-1 block text-[0.82em] font-semibold text-muted-foreground">2.1 Consecutivo pago</label>
+                                <div className="input-group input-group-sm">
+                                    <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                                    <input type="text" className="form-control form-control-sm" id="submit_21" required defaultValue={_CHILD.id_related} />
                                 </div>
-                            </>
-                            : ""}
-                    </div>
-                </div>
-                {!this.props.edit
-                    ? <div className="row text-end">
-                        <div className="col-8">
-                            <div class="form-check my-3 px-5">
-                                <input class="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => this.setState({ payment: e.target.checked })} />
-                                <p class="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <Button size="sm" type="button" className="h-8 text-[11px]" onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
+                                    <Button size="sm" type="button" className="h-8 text-[11px]" onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
+                                </div>
                             </div>
-                        </div>
-                        <div className="col-4">
-                            {this.state.payment
-                                ? <>
-                                    <button type="button" class="btn btn-info shadow-none me-1"
-                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</button>
-                                    <button type="button" class="btn btn-info shadow-none"
-                                        onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</button>
-                                </>
-                                : ""}
-                        </div>
+                            : null}
                     </div>
-                    : ""}
 
-                <div className="row text-end">
-                    <div className="col-12">
-
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-12">
-                        <label >3.1 Tipo</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
-                            </span>
-                            <input list="submit_type" class="form-control" id="submit_4"
-                                defaultValue={_CHILD.type} utocomplete="off" maxLength={250} />
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_4" className="mb-1 block font-semibold text-foreground">3.1 Tipo</label>
+                        <div className="input-group input-group-sm">
+                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="check-square" size={14} /></span>
+                            <input list="submit_type" className="form-control form-control-sm" id="submit_4" defaultValue={_CHILD.type} autoComplete="off" maxLength={250} placeholder="Seleccione o escriba un tipo..." />
                             <datalist id="submit_type">
                                 <option value="LICENCIA" />
                                 <option value="URBANIZACION" />
                                 <option value="PARCELACION" />
-                                <option value="SUBDIVICON" />
+                                <option value="SUBDIVISION" />
                                 <option value="RECONOCIMIENTO" />
                                 <option value="COSTRUCCION" />
                                 <option value="OTRAS ACTUACIONES" />
@@ -319,116 +311,79 @@ class SUBMIT_MANAGE extends Component {
                                 <option value="EXPENSAS / IMPUESTOS " />
                             </datalist>
                         </div>
+                        <p className="mb-0 mt-1 text-[0.75em] leading-snug text-muted-foreground"><Icon name="info-circle" size={12} /> Puede escoger una opción o escribir un valor libre.</p>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label >3.2 Estado</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_42" className="mb-1 block font-semibold text-foreground">3.2 Estado</label>
+                            <div className="input-group input-group-sm">
+                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                                <input type="text" className="form-control form-control-sm" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-6">
-                        <label >3.3 Tipo de Radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
-                            </span>
-                            <select className='form-select' id="submit_41" defaultValue={_CHILD.list_type}>
-                                <option value={1} selected={_CHILD.list_type == 1}>RADICACIÓN SOLICITUD</option>
-                                <option value={2} selected={_CHILD.list_type == 2}>ASESORÍA TÉCNICA</option>
-                                <option value={3} selected={_CHILD.list_type == 3}>CORRECCIONES SOLICITUD</option>
-                                <option value={4} selected={_CHILD.list_type == 4}>TRAMITE</option>
-                                <option value={5} selected={_CHILD.list_type == 5}>PQRS</option>
-                                <option value={0} selected={_CHILD.list_type == 0}>OTRO</option>
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_41" className="mb-1 block font-semibold text-foreground">3.3 Tipo de radicación</label>
+                            <select className='form-select form-select-sm' id="submit_41" defaultValue={_CHILD.list_type}>
+                                <option value={1}>RADICACIÓN SOLICITUD</option>
+                                <option value={2}>ASESORÍA TÉCNICA</option>
+                                <option value={3}>CORRECCIONES SOLICITUD</option>
+                                <option value={4}>TRAMITE</option>
+                                <option value={5}>PQRS</option>
+                                <option value={0}>OTRO</option>
                                 {_GLOBAL_ID == 'cp1' ?
                                     <>
-                                        <option value={6} selected={_CHILD.list_type == 6}>FOTO VALLA</option>
-                                        <option value={7} selected={_CHILD.list_type == 7}>SOLICITUD LICENCIAS URBANISTICA </option>
-                                        <option value={8} selected={_CHILD.list_type == 8}>SOLICITUD MODIFICACION LICENCIA VIGENTE</option>
-                                        <option value={9} selected={_CHILD.list_type == 9}>SOLICITUD DE CONCEPTO DE USO</option>
-                                        <option value={10} selected={_CHILD.list_type == 10}>SOLICITUD DE NORMA URBANA</option>
-                                        <option value={11} selected={_CHILD.list_type == 11}>SOLICITUD OTRAS ACTUACIONES</option>
-                                        <option value={12} selected={_CHILD.list_type == 12}>SOLICITUD PRORROGA</option>
-                                        <option value={13} selected={_CHILD.list_type == 13}>SOLICITUD REVALIDACION</option>
-                                        <option value={14} selected={_CHILD.list_type == 14}>PAGO EXPENSAS Y/O IMPUESTOS / OTROS</option>
-                                        <option value={15} selected={_CHILD.list_type == 15}>DOCUMENTOS PARA RLDF</option>
-                                        <option value={16} selected={_CHILD.list_type == 16}>DOCUMENTOS ACTAS OBSERVACIONES</option>
-                                        <option value={17} selected={_CHILD.list_type == 17}>DOCUMENTOS TRAMITE</option>
+                                        <option value={6}>FOTO VALLA</option>
+                                        <option value={7}>SOLICITUD LICENCIAS URBANISTICA </option>
+                                        <option value={8}>SOLICITUD MODIFICACION LICENCIA VIGENTE</option>
+                                        <option value={9}>SOLICITUD DE CONCEPTO DE USO</option>
+                                        <option value={10}>SOLICITUD DE NORMA URBANA</option>
+                                        <option value={11}>SOLICITUD OTRAS ACTUACIONES</option>
+                                        <option value={12}>SOLICITUD PRORROGA</option>
+                                        <option value={13}>SOLICITUD REVALIDACION</option>
+                                        <option value={14}>PAGO EXPENSAS Y/O IMPUESTOS / OTROS</option>
+                                        <option value={15}>DOCUMENTOS PARA RLDF</option>
+                                        <option value={16}>DOCUMENTOS ACTAS OBSERVACIONES</option>
+                                        <option value={17}>DOCUMENTOS TRAMITE</option>
                                     </>
                                     : null}
                             </select>
                         </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label >4 Fecha y hora ingreso</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
-                            </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="submit_3" required
-                                defaultValue={_CHILD.date} />
-                            <input type="time" class="form-control" id="submit_32"
-                                defaultValue={_CHILD.time} />
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_3" className="mb-1 block font-semibold text-foreground">4. Fecha y hora de ingreso</label>
+                            <div className="grid grid-cols-[minmax(0,1fr)_112px] gap-2">
+                                <input type="date" max="2100-01-01" className="form-control form-control-sm" id="submit_3" required defaultValue={_CHILD.date} />
+                                <input type="time" className="form-control form-control-sm" id="submit_32" defaultValue={_CHILD.time} />
+                            </div>
+                        </div>
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_5" className="mb-1 block font-semibold text-foreground">5. Propietarios</label>
+                            <input type="text" className="form-control form-control-sm" id="submit_5" maxLength={250} defaultValue={_CHILD.owner} />
                         </div>
                     </div>
 
-                    <div className="col-6">
-                        <label >5. Propietarios</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_5" maxLength={250}
-                                defaultValue={_CHILD.owner} />
-                        </div>
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_7" className="mb-1 block font-semibold text-foreground">7. Funcionario que recibe</label>
+                        <input type="text" className="form-control form-control-sm" id="submit_7" disabled defaultValue={_CHILD.worker_reciever} />
                     </div>
-                </div>
 
-                <div className="row">
-                    <div className="col-4">
-                        <label >7. Funcionario que recibe</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_7" disabled
-                                defaultValue={_CHILD.worker_reciever} />
+                    <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_150px]">
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_8" className="mb-1 block font-semibold text-foreground">8. Persona que entrega</label>
+                            <input type="text" className="form-control form-control-sm" id="submit_8" maxLength={250} defaultValue={_CHILD.name_retriever} />
+                        </div>
+                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                            <label htmlFor="submit_81" className="mb-1 block font-semibold text-foreground">8.1 C.C.</label>
+                            <input type="text" className="form-control form-control-sm" id="submit_81" maxLength={250} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} defaultValue={_CHILD.id_number_retriever} />
                         </div>
                     </div>
-                    <div className="col-4">
-                        <label >8. Persona que entrega</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_8" maxLength={250}
-                                defaultValue={_CHILD.name_retriever} />
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        <label >8.1 C.C. Persona</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_81" maxLength={250}
-                                onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
-                                defaultValue={_CHILD.id_number_retriever} />
-                        </div>
-                    </div>
-                </div>
 
-                <div className="row mt-2">
-                    <div className="col-12">
-                        <label >9. Observaciones y detalles (Maximo 2000 Caracteres)</label>
-                        <textarea class="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
-                            defaultValue={_CHILD.details}></textarea>
+                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
+                        <label htmlFor="submit_9" className="mb-1 block font-semibold text-foreground">9. Observaciones y detalles</label>
+                        <textarea className="form-control form-control-sm" rows="4" maxLength="2000" id="submit_9" defaultValue={_CHILD.details}></textarea>
                     </div>
                 </div>
 
@@ -436,6 +391,12 @@ class SUBMIT_MANAGE extends Component {
         }
         // FUNCTIONS AND APIS
         var formData = new FormData();
+
+        let handleFormKeyDown = (e) => {
+            if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit') {
+                e.preventDefault();
+            }
+        };
 
         let save_submit = (e) => {
             e.preventDefault();
@@ -462,12 +423,19 @@ class SUBMIT_MANAGE extends Component {
             let id_public = document.getElementById("submit_1").value;
             formData.set('id_public', id_public);
 
-            if (false) return MySwal.fire({
-                title: "ERROR DE DUPLICACIÓN",
-                text: "(1. Número de radicación ) y (2. Número de Solicitud)  deben ser consecutivos diferentes",
-                icon: 'error',
-                confirmButtonText: swaMsg.text_btn,
-            });
+            if (isVrDuplicate) {
+                swalConfirm({
+                    title: "POSIBLE DUPLICADO",
+                    text: `El código VR ${id_public} ya existe en ventanilla única. ¿Desea guardar de todos modos?`,
+                    icon: 'warning',
+                    confirmButtonText: "Guardar de todos modos"
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        manage_submit(id_public);
+                    }
+                });
+                return;
+            }
 
             let date = document.getElementById("submit_3").value;
             if (date) formData.set('date', date);
@@ -491,12 +459,13 @@ class SUBMIT_MANAGE extends Component {
         let manage_submit = (id_public) => {
             let _CHILD = GET_SUBMIT();
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            // Protección: si estamos en modo edición pero currentItem no ha cargado, bloquear
+            if (edit && (!_CHILD.id || !currentItem)) {
+                swalError({ title: "DATOS NO CARGADOS", text: "Los datos aún se están cargando. Por favor espere un momento e intente nuevamente." });
+                return;
+            }
+
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
                 formData.set('new_id', document.getElementById("submit_1").value);
                 formData.set('prev_id', _CHILD.id_public);
@@ -504,132 +473,109 @@ class SUBMIT_MANAGE extends Component {
                 SubmitService.update(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshList(currentItem.id);
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            propRefreshList(currentItem.id);
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACIÓN", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
             else {
                 SubmitService.create(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshList();
-                            this.props.closeModal();
+                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            propRefreshList();
+                            closeModal();
                         } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: "ERROR DE DUPLICACIÓN", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                         }
                         else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     });
             }
         }
 
-        return (
-            <div className="Nomenclature_new container">
-                <>
-                    <fieldset className="p-3">
-                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                            <label className="app-p lead fw-normal text-uppercase text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} ENTRADA</label>
-                        </legend>
-                        <form id="form_manage_submit" onSubmit={save_submit}>
-                            {COMPONENT_NEW()}
-                            <div className="row mb-3 text-center">
-                                <div className="col-12">
-                                    {currentItem
-                                        ? <button className="btn btn-success my-3"><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                                        : <button className="btn btn-success my-3"><i class="fas fa-plus-circle"></i> CREAR </button>}
-
-                                </div>
-                            </div>
-                        </form>
-                    </fieldset>
-                    {currentItem
-                        ? <>
-                            <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-uppercase text-light">LISTA DE DOCUMENTOS</label>
-                                </legend>
-
-                                <SUBMIT_LIST
-                                    translation={translation} swaMsg={swaMsg} globals={globals}
-                                    currentItem={currentItem}
-                                    refreshList={this.refreshItem} />
-
-                            </fieldset>
-                            <fieldset className="p-3">
-                                <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-uppercase text-light">DOCUMENTO</label>
-                                </legend>
-                                <SUBMIT_ANEX
-                                    translation={translation} swaMsg={swaMsg} globals={globals}
-                                    currentItem={currentItem}
-                                    refreshList={this.refreshList}
-                                    refreshItem={this.refreshItem}
-                                />
-                            </fieldset>
-                        </>
-                        : ""}
-                </>
-            </div >
+        let renderPrimarySubmitAction = () => (
+            edit || currentItem
+                ? <Button type="submit" size="sm" className="w-full justify-center md:w-auto"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                : <Button type="submit" size="sm" className="w-full justify-center md:w-auto"><Icon name="plus-circle" size={16} /> CREAR </Button>
         );
-    }
+
+        return (
+            <div className="grid h-full min-h-0 grid-cols-1 gap-2 xl:grid-cols-[minmax(390px,0.36fr)_minmax(0,0.64fr)]">
+                <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
+                    <form id="form_manage_submit" onSubmit={save_submit} onKeyDown={handleFormKeyDown} className="flex min-h-0 flex-1 flex-col">
+                        <div className="min-h-0 flex-1 overflow-y-auto p-2">
+                            <div className="space-y-3">
+                                {COMPONENT_NEW()}
+                            </div>
+                        </div>
+
+                        <div className="sticky bottom-0 z-10 shrink-0 space-y-2 border-t border-border/60 bg-card/95 px-3 py-2 backdrop-blur">
+                            <div className="flex justify-end">
+                                {renderPrimarySubmitAction()}
+                            </div>
+                        </div>
+                    </form>
+
+                    {currentItem ? <div className="shrink-0 border-t border-border/60 bg-card px-2 py-2">
+                        <SUBMIT_ANEX
+                            swaMsg={swaMsg}
+                            currentItem={currentItem}
+                            refreshList={refreshList}
+                            refreshItem={refreshItem}
+                            variant="primary"
+                            onDigitalCountChange={handleDigitalDocumentsChange}
+                        />
+                    </div> : null}
+                </aside>
+
+                <section className="flex min-h-0 flex-col overflow-hidden">
+                    {currentItem
+                        ? <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
+                                <div className="min-h-0 flex-1 overflow-hidden p-1.5">
+                                    <SUBMIT_LIST
+                                        translation={translation}
+                                        swaMsg={swaMsg}
+                                        globals={globals}
+                                        currentItem={currentItem}
+                                        refreshList={refreshItem}
+                                        activePanel={documentPanel}
+                                        digitalCount={digitalCount}
+                                        digitalDocuments={digitalDocuments}
+                                        onPanelChange={setDocumentPanel}
+                                        renderDigitalPanel={() => <SUBMIT_ANEX
+                                            swaMsg={swaMsg}
+                                            currentItem={currentItem}
+                                            refreshList={refreshList}
+                                            refreshItem={refreshItem}
+                                            variant="digital"
+                                            onDigitalCountChange={handleDigitalDocumentsChange}
+                                        />}
+                                    />
+                                </div>
+                            </section>
+                        : <div className="flex min-h-64 flex-1 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 p-6 text-center">
+                            <p className="mb-0 max-w-md text-sm text-muted-foreground">
+                                Primero guarda la entrada para habilitar listas físicas y documentos digitales.
+                            </p>
+                        </div>}
+                </section>
+            </div>
+        );
 }
 
 export default SUBMIT_MANAGE;

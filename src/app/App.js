@@ -1,377 +1,477 @@
-import './App.css';
-import React, { useContext, createContext, useState } from "react";
+import React, { useContext, createContext, useEffect, useMemo, useState, Suspense, lazy } from 'react';
 import {
   BrowserRouter as Router,
-  Switch,
+  Routes,
   Route,
-  Redirect,
-  useHistory,
-  //useLocation,
-  Link,
-  //useParams,
-} from "react-router-dom";
+  Navigate,
+  Outlet,
+  useNavigate,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 
-// PQRS
-import PQRSADMIN from './pages/user/pqrs/pqrsadmin'
+// Auth
+import DataSerive from './services/data.service';
+import FUNService from './services/fun.service';
 
+// Translations
+import { useTranslation } from 'react-i18next';
+import './translation/i18n';
 
-// Pages -> Liquidator
-import Liquidator from './pages/liquidator/liquidator'
+// New shell & theme
+import { ThemeProvider } from '@/components/theme-provider';
+import { AppShell } from './layouts/AppShell';
+import { Toaster } from '@/components/ui/sonner';
+import { getRouteRedirects } from './layouts/navigation-config';
+import { ErrorReportInlineTrigger } from './components/DovelaSupportLayer';
+import { captureDovelaError } from './utils/errorReporting';
+import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from './pages/user/fun_forms/utils/expedienteWorkspaceRoute';
 
+// CSS: loaded after Bootstrap (imported in index.js) so our overrides win
+import './App.css';
+import './styles/legacy-bridge.css';
+import './styles/swal-theme.css';
 
-// Atuh and Login
-//import Login from './pages/user/login'
-import CustomsDataService from "./services/custom.service";
-import DataSerive from './services/data.service'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+// Login (extracted, eager — entry point for unauthenticated users)
+import LoginPage from './pages/auth/LoginPage';
+import Home from './pages/home';
 
+// ── Lazy-loaded page components (code-split per route) ──────────────
+const PQRSADMIN = lazy(() => import('./pages/user/pqrs/pqrsadmin'));
+const Liquidator = lazy(() => import('./pages/liquidator/liquidator'));
+const Dashboard = lazy(() => import('./pages/user/dashboard'));
+const Publish = lazy(() => import('./pages/user/publish'));
+const Seals = lazy(() => import('./pages/user/seal'));
+const Appointments = lazy(() => import('./pages/user/appointments'));
+const Mail = lazy(() => import('./pages/user/mail'));
+const FUN = lazy(() => import('./pages/user/fun'));
+const OSHA = lazy(() => import('./pages/user/osha'));
+const NOMENCLATURE = lazy(() => import('./pages/user/nomenclature/nomenclature'));
+const SUBMIT = lazy(() => import('./pages/user/submit/submit'));
+const ARCHIVE = lazy(() => import('./pages/user/archive/archive.page'));
+const DICTIONARY = lazy(() => import('./pages/user/dictionary.page'));
+const FUN_MANAGE = lazy(() => import('./pages/user/funmanage.page'));
+const FUN_MANAGE_NEW = lazy(() => import('./pages/user/funmanage_new.page'));
+const FUN_EXPEDIENTE_FULLSCREEN = lazy(() => import('./pages/user/fun_forms/components/FunExpedienteFullscreen').then((mod) => ({ default: mod.FunExpedienteFullscreen })));
+const PROFESIONALS = lazy(() => import('./pages/user/profesionals/profesionals.page'));
+const GUIDE_USER = lazy(() => import('./pages/user/guide_user/guide_user.page'));
+const DEV_GUIDE = lazy(() => import('./pages/user/dev_guide/dev_guide.page'));
+const NORMS = lazy(() => import('./pages/user/norms/norms.page'));
+const CERTIFICATE_WORKER = lazy(() => import('./pages/user/certifications/certification.page'));
+const ZONE_USE = lazy(() => import('./pages/user/zone_use/zone_use.page'));
+const SETTINGS = lazy(() => import('./pages/user/SettingsPage'));
+const LEGAL_FLOW_GUIDE = lazy(() => import('./pages/user/legal_flow_guide/LegalFlowGuide.page'));
+const SIMULADOR = lazy(() => import('./pages/user/simulador'));
+const DOCUMENTOS_SIMULATOR = lazy(() => import('./pages/user/simulador/documentos/DocumentosSimulatorPage'));
 
-// Users and APP
-import Dashboard from './pages/user/dashboard'
-import Publish from './pages/user/publish'
-import Seals from './pages/user/seal'
-import Appointments from './pages/user/appointments'
-import Mail from './pages/user/mail'
-import FUN from './pages/user/fun'
-import OSHA from './pages/user/osha'
-import NOMENCLATURE from './pages/user/nomenclature/nomenclature';
-import SUBMIT from './pages/user/submit/submit';
-import ARCHIVE from './pages/user/archive/archive.page';
-import DICTIONARY from './pages/user/dictionary.page';
-import FUN_MANAGE from './pages/user/funmanage.page';
+const loadingFallbackItems = Array.from({ length: 8 }, (_, index) => `route-loading-card-${index + 1}`);
 
-// Components
-import Footer from './components/footer'
-//import Title from './components/title'
-import Navbar1 from './components/navbar'
-import BtnStart from './components/btnStart'
-import BtnChat from './components/btnChat'
-import BtnAccesibiity from './components/btnAccesibility'
+// ── Loading fallback for Suspense ───────────────────────────────────
+function LoadingFallback() {
+  return (
+    <div className="space-y-6 p-2 md:p-4 animate-in fade-in duration-300">
+      {/* Title skeleton */}
+      <div className="space-y-2">
+        <div className="h-7 w-48 bg-muted rounded-md animate-pulse" />
+        <div className="h-4 w-32 bg-muted/60 rounded animate-pulse" />
+      </div>
+      {/* Content skeleton — mimics card grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        {loadingFallbackItems.map((itemKey, index) => (
+          <div key={itemKey} className="rounded-lg border border-border/40 p-4 space-y-3" style={{ animationDelay: `${index * 50}ms` }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-muted animate-pulse" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-4 w-3/4 bg-muted rounded animate-pulse" />
+                <div className="h-3 w-1/2 bg-muted/60 rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-// Translations Services
-import { useTranslation } from "react-i18next";
-import "./translation/i18n";
+class RouteErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorSnapshot: null };
+  }
 
-// Dark Theme Services
-import { ThemeProvider } from 'styled-components'
-import { lightTheme, darkTheme } from './components/theme';
-import { fontZise1, fontZise2, fontZise3, fontZise4, fontZise5 } from './components/font';
-import { GlobalStyles } from './components/global';
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
 
-import 'bootstrap'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import ReCAPTCHA from 'react-google-recaptcha';
-import { Nav, Navbar } from 'rsuite';
-import PROFESIONALS from './pages/user/profesionals/profesionals.page';
-import GUIDE_USER from './pages/user/guide_user/guide_user.page';
-import DEV_GUIDE from './pages/user/dev_guide/dev_guide.page';
-import { infoCud } from './components/jsons/vars';
-import NORMS from './pages/user/norms/norms.page';
-import CERTIFICATE_WORKER from './pages/user/certifications/certification.page';
-import ZONE_USE from './pages/user/zone_use/zone_use.page';
+  componentDidUpdate(prevProps) {
+    // Reset error when user navigates away from the broken route
+    if (this.props.pathname !== prevProps.pathname && this.state.hasError) {
+      this.setState({ hasError: false, error: null, errorSnapshot: null });
+    }
+  }
 
+  componentDidCatch(error, info) {
+    const errorSnapshot = captureDovelaError(error, {
+      source: 'route-error-boundary',
+      componentStack: info?.componentStack,
+      notify: false,
+    });
+    this.setState({ errorSnapshot });
+    console.error('Route subtree error captured:', error, info);
+  }
 
-const MySwal = withReactContent(Swal);
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="max-w-2xl mx-auto py-8 px-4">
+          <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
+            <h4 className="text-base font-semibold text-destructive">Error en este módulo</h4>
+            <p className="text-sm text-muted-foreground">La vista actual presentó un error y se detuvo para evitar una pantalla en blanco.</p>
+            <div className="flex flex-wrap items-center gap-2 pt-2 text-sm">
+              <ErrorReportInlineTrigger context={{ lastError: this.state.errorSnapshot }} />
+              <a href="/dashboard" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/dashboard'); window.location.reload(); }} className="text-primary hover:underline">
+                Volver al panel
+              </a>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function RoutesWithBoundary({ children }) {
+  const location = useLocation();
+  return <RouteErrorBoundary pathname={location.pathname}>{children}</RouteErrorBoundary>;
+}
+
+function ShellAwarePublicRoute({ children }) {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  if (!auth.user) {
+    return children;
+  }
+
+  return (
+    <AppShell
+      user={auth.user}
+      onLogout={() => auth.signout(() => navigate('/login'))}
+    >
+      {children}
+    </AppShell>
+  );
+}
+
+// ── Main App ────────────────────────────────────────────────────────
 
 export default function App() {
   const { t } = useTranslation();
-  const [theme, setTheme] = useState('light');
-  const [font, setFont] = useState(3);
-  const toggleTheme = () => {
-    theme === 'light' ? setTheme('dark') : setTheme('light')
-  }
-  const changeFontsizePlus = () => {
-    if (font >= 1 && font < 5) {
-      setFont(font + 1);
-    }
-  }
-  const changeFontsizeMinus = () => {
-    if (font > 1 && font <= 5) {
-      setFont(font - 1);
-    }
-  }
 
+  // Common translation prop bundles (same keys the pages currently receive)
+  const titleT = t('title', { returnObjects: true });
+  const loginT = t('login', { returnObjects: true });
+  const globalsT = t('globals', { returnObjects: true });
+  const swaMsg = t('swa_messages', { returnObjects: true });
+  const breadCrums = t('breadCrums', { returnObjects: true });
+  const pqrsFormT = t('transparency.pqrs_form', { returnObjects: true });
+  const schedulingT = t('scheduling.scheduling', { returnObjects: true });
+  const liquidatorT = t('liquidator.liquidator', { returnObjects: true });
 
   return (
     <ProvideAuth>
-      <Router>
-        <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme} font={font === 5 ? fontZise1 : fontZise2}>
-          <ThemeProvider theme={font === 5 ? fontZise5 : font === 4 ? fontZise4 : font === 3 ? fontZise3 : font === 2 ? fontZise2 : fontZise1} >
-            <>
-              <GlobalStyles />
-              <div className="App">
-                {/* <BtnAccesibiity theme={theme} font={font} toggleTheme={toggleTheme}
-                  changeFontsizePlus={changeFontsizePlus} changeFontsizeMinus={changeFontsizeMinus}
-                  style={{ position: 'relative', zIndex: '3' }} /> */}
-                {/* <BtnStart /> */}
-                {/* <BtnChat translation={t("misc.btn_chat", { returnObjects: true })} /> */}
-                <div className="app-navbar-fixed">
-                  <NavbarWithAuth
-                  toggleTheme={toggleTheme}
-                  changeFontsizePlus={changeFontsizePlus}
-                  changeFontsizeMinus={changeFontsizeMinus} />
-                </div>
+      <ThemeProvider defaultTheme="system" storageKey="dovela-theme">
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+              <Toaster position="bottom-right" richColors closeButton />
 
-                <main className="app-main" id="main-content">              
-                    <div class="bg-image-gr">
-                      <div id="overlayer" className="container-fluid overlay-container container-primary p-2">
-                        
-                        {/* <Route render={(props) => (
-                          <Title {...props} translation={t("title", { returnObjects: true })}
-                            swaMsg={t("swa_messages", { returnObjects: true })}
-                            breadCrums={t("breadCrums", { returnObjects: true })} />
-                        )} /> */}
-                        {/* <div className="sticky-top" style={{ zIndex: 2000 }}>
-                          <Navbar1 authBtn={<AuthButton />} />
-                        </div> */}
-                        <Switch>
+              <RoutesWithBoundary>
+                  <Routes>
+                    {/* ── Public routes (no shell) ──────────────────── */}
+                    <Route path="/login" element={<LoginPageWithAuth />} />
+                    <Route path="/home" element={
+                      <ShellAwarePublicRoute>
+                        <Home translation={loginT} />
+                      </ShellAwarePublicRoute>
+                    } />
 
-                          <Route path='/home'
-                            render={(props) => (
-                              <LoginPage {...props}
-                                translation={t("login", { returnObjects: true })}
-                                swaMsg={t("swa_messages", { returnObjects: true })}
-                                breadCrums={t("breadCrums", { returnObjects: true })}
-                              />
-                            )}
-                          />
+                    <Route path="/normas" element={
+                      <ShellAwarePublicRoute>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <NORMS translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                        </Suspense>
+                      </ShellAwarePublicRoute>
+                    } />
+                    <Route path="/certificados" element={
+                      <ShellAwarePublicRoute>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <CERTIFICATE_WORKER translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                        </Suspense>
+                      </ShellAwarePublicRoute>
+                    } />
+                    <Route path="/uso-suelo" element={
+                      <ShellAwarePublicRoute>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <ZONE_USE translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                        </Suspense>
+                      </ShellAwarePublicRoute>
+                    } />
+                    <Route path="/dev-guide" element={
+                      <ShellAwarePublicRoute>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <DEV_GUIDE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
+                        </Suspense>
+                      </ShellAwarePublicRoute>
+                    } />
 
-                          <Route path='/login'
-                            render={(props) => (
-                              <LoginPage {...props}
-                                translation={t("login", { returnObjects: true })}
-                                swaMsg={t("swa_messages", { returnObjects: true })}
-                                breadCrums={t("breadCrums", { returnObjects: true })}
-                              />
-                            )}
-                          />
+                    {/* ── Legacy route redirects ────────────────────── */}
+                    {Object.entries(getRouteRedirects()).map(([from, to]) => (
+                      <Route key={from} path={from} element={<Navigate to={to} replace />} />
+                    ))}
+                    <Route path="/settings" element={<Navigate replace to="/configuracion" />} />
+                    <Route path="/ajustes" element={<Navigate replace to="/configuracion" />} />
 
+                    {/* ── Authenticated routes (inside AppShell) ───── */}
+                    <Route element={<PrivateLayout />}>
+                      <Route path="/dashboard" element={
+                        <Dashboard translation={titleT} swaMsg={swaMsg} breadCrums={breadCrums} theme="auto" />
+                      } />
+                      <Route path="/licencias" element={
+                        <FUN translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/licencias/gestion" element={
+                        <FUN_MANAGE translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/funmanage/expediente/:radicado" element={
+                        <FunmanageExpedienteRoute translation={titleT} globals={globalsT} swaMsg={swaMsg} />
+                      } />
+                      <Route path="/licencias/gestion-nueva" element={
+                        <FUN_MANAGE_NEW translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/peticiones" element={
+                        <PQRSADMIN translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation_form={pqrsFormT} />
+                      } />
+                      <Route path="/ventanilla" element={
+                        <SUBMIT translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/mensajes" element={
+                        <Mail translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/calendario" element={
+                        <Appointments translation={schedulingT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/archivo" element={
+                        <ARCHIVE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
+                      } />
+                      <Route path="/publicaciones" element={
+                        <Publish translation={titleT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/nomenclatura" element={
+                        <NOMENCLATURE translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation_form={pqrsFormT} />
+                      } />
+                      <Route path="/documentos" element={
+                        <OSHA translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation_form={pqrsFormT} />
+                      } />
+                      <Route path="/simulador" element={
+                        <SIMULADOR translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/simulador/documentos" element={
+                        <DOCUMENTOS_SIMULATOR translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
+                      <Route path="/simulador/legal" element={<LEGAL_FLOW_GUIDE />} />
+                      <Route path="/calculadora" element={
+                        <Liquidator globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} versioni="2024" hideInfo useSelector />
+                      } />
+                      <Route path="/consecutivos" element={
+                        <DICTIONARY globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
+                      } />
+                      <Route path="/profesionales" element={
+                        <PROFESIONALS globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
+                      } />
+                      <Route path="/ayuda" element={
+                        <GUIDE_USER globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
+                      } />
+                      <Route path="/legal-flow-guide" element={<LEGAL_FLOW_GUIDE />} />
+                      <Route path="/configuracion" element={<SETTINGS />} />
+                      <Route path="/user/settings" element={<SETTINGS />} />
+                      <Route path="/sellos" element={
+                        <Seals translation={titleT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      } />
 
-                          <PrivateRoute path='/dashboard'>
-                            <Dashboard translation={t("title", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              theme={theme}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/publish'>
-                            <Publish translation={t("title", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/seals'>
-                            <Seals translation={t("title", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/appointments'>
-                            <Appointments translation={t("scheduling.scheduling", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/mail'>
-                            <Mail translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/fun'>
-                            <FUN
-                              translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/funmanage'>
-                            <FUN_MANAGE
-                              translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/pqrsadmin'>
-                            <PQRSADMIN translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation_form={t("transparency.pqrs_form", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/osha'>
-                            <OSHA translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation_form={t("transparency.pqrs_form", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/nomenclature'>
-                            <NOMENCLATURE translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation_form={t("transparency.pqrs_form", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/submit'>
-                            <SUBMIT translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/calculator'>
-                            <Liquidator
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                              versioni={'2024'} hideInfo useSelector
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/archive'>
-                            <ARCHIVE
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
+                      {/* Catch-all for authenticated area → dashboard */}
+                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    </Route>
 
-                          <PrivateRoute path='/dictionary'>
-                            <DICTIONARY
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
+                    {/* ── Root & fallback ───────────────────────────── */}
+                    <Route path="/" element={<Navigate to="/login" replace />} />
+                  </Routes>
+              </RoutesWithBoundary>
 
-
-                          <PrivateRoute path='/profesionals'>
-                            <PROFESIONALS
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
-
-                          </PrivateRoute>
-
-                          <PrivateRoute path='/guide_user'>
-                            <GUIDE_USER
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-
-                          <Route path='/dev-guide'>
-                            <DEV_GUIDE
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
-                          </Route>
-
-
-                          <Route exact path='/norms'
-                            render={(props) => (
-                              <NORMS {...props}
-                                translation={t("login", { returnObjects: true })}
-                                swaMsg={t("swa_messages", { returnObjects: true })}
-                                breadCrums={t("breadCrums", { returnObjects: true })}
-                              />
-                            )}
-                          />
-
-
-                          <Route exact path='/certs'
-                            render={(props) => (
-                              <CERTIFICATE_WORKER {...props}
-                                translation={t("login", { returnObjects: true })}
-                                swaMsg={t("swa_messages", { returnObjects: true })}
-                                breadCrums={t("breadCrums", { returnObjects: true })}
-                              />
-                            )}
-                          />
-
-                           <Route exact path='/zone_use'
-                            render={(props) => (
-                              <ZONE_USE {...props}
-                                translation={t("login", { returnObjects: true })}
-                                swaMsg={t("swa_messages", { returnObjects: true })}
-                                breadCrums={t("breadCrums", { returnObjects: true })}
-                              />
-                            )}
-                          />
-
-
-                          <Route exact path='/'
-                            render={(props) => (
-                              <LoginPage {...props}
-                                translation={t("login", { returnObjects: true })}
-                                swaMsg={t("swa_messages", { returnObjects: true })}
-                                breadCrums={t("breadCrums", { returnObjects: true })}
-                              />
-                            )}
-                          />
-
-                          <Route path='*' exact={true} component={LoginPage} />
-                        </Switch>
-                      </div>
-                    </div>
-                </main>
-                <Footer id="footer-app-main" translation={t("footer", { returnObjects: true })} />
-              </div>
-            </>
-          </ThemeProvider>
-        </ThemeProvider>
-      </Router>
+        </Router>
+      </ThemeProvider>
     </ProvideAuth>
   );
 }
+
+// ── Private layout: auth guard + AppShell ───────────────────────────
+
+function PrivateLayout() {
+  const auth = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  if (!auth.user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return (
+    <AppShell
+      user={auth.user}
+      onLogout={() => auth.signout(() => navigate('/login'))}
+    >
+      <Suspense fallback={<LoadingFallback />}>
+        <Outlet />
+      </Suspense>
+    </AppShell>
+  );
+}
+
+// ── Login wrapper: redirects if already authenticated ───────────────
+
+function LoginPageWithAuth() {
+  const auth = useAuth();
+  return auth.user
+    ? <Navigate to="/dashboard" replace />
+    : <LoginPage signin={auth.signin} />;
+}
+
+function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
+  const { radicado } = useParams();
+  const location = useLocation();
+  const [expediente, setExpediente] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const workspaceTarget = useMemo(
+    () => parseExpedienteWorkspaceSearch(location.search),
+    [location.search]
+  );
+
+  const closeExpedienteWindow = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.assign('/dashboard');
+    }
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!radicado) {
+      setExpediente(null);
+      setError('No se encontró el radicado solicitado.');
+      setLoading(false);
+      return undefined;
+    }
+
+    setLoading(true);
+    setError('');
+
+    FUNService.get_fun_IdPublic(radicado)
+      .then((response) => {
+        if (cancelled) return;
+        const data = response?.data?.data ?? response?.data ?? null;
+        setExpediente(data);
+        if (!data) setError('No fue posible cargar el expediente solicitado.');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setExpediente(null);
+        setError('No fue posible cargar el expediente solicitado.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [radicado]);
+
+  useEffect(() => {
+    if (!expediente) return;
+
+    rememberRecentExpediente(expediente, {
+      section: workspaceTarget.section,
+      report: workspaceTarget.report,
+      limit: 6,
+    });
+  }, [expediente, workspaceTarget.report, workspaceTarget.section]);
+
+  if (loading) {
+    return <LoadingFallback />;
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto py-8 px-4">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
+          <h4 className="text-base font-semibold text-destructive">Expediente no disponible</h4>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <div className="flex flex-wrap items-center gap-2 pt-2 text-sm">
+            <ErrorReportInlineTrigger
+              context={{
+                expediente: { radicado },
+                lastError: {
+                  source: 'funmanage-expediente-route',
+                  error: { message: error },
+                },
+              }}
+            />
+            <a href="/licencias/gestion-nueva" className="text-primary hover:underline">
+              Volver a Gestión Licencias Nuevo
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <FUN_EXPEDIENTE_FULLSCREEN
+      expediente={expediente}
+      translation={translation}
+      globals={globals}
+      swaMsg={swaMsg}
+      initialSection={workspaceTarget.section}
+      initialReport={workspaceTarget.report}
+      defaultRightPanelOpen={workspaceTarget.rightPanel}
+      onClose={closeExpedienteWindow}
+    />
+  );
+}
+
+// ── Auth context (unchanged) ────────────────────────────────────────
 
 const fakeAuth = {
   isAuthenticated: false,
   signin(cb) {
     fakeAuth.isAuthenticated = true;
-    setTimeout(cb, 100); // fake async
+    setTimeout(cb, 100);
   },
   signout(cb) {
     fakeAuth.isAuthenticated = false;
     setTimeout(cb, 100);
-  }
+  },
 };
 
 const authContext = createContext();
-
-function NavbarWithAuth({ toggleTheme, changeFontsizePlus, changeFontsizeMinus }) {
-  const auth = useAuth();
-  const { t } = useTranslation();
-
-  return (
-    <Navbar1
-      authBtn={<AuthButton />}
-      isLoggedIn={!!auth.user}
-      roleShort={auth.user?.role_short}
-      toggleTheme={toggleTheme}
-      changeFontsizePlus={changeFontsizePlus}
-      changeFontsizeMinus={changeFontsizeMinus}
-      chatLabel={t('misc.btn_chat')}
-    />
-  );
-}
 
 function ProvideAuth({ children }) {
   const auth = useProvideAuth();
@@ -387,16 +487,22 @@ function useAuth() {
 }
 
 function useProvideAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    if (DataSerive.restoreSession()) {
+      fakeAuth.isAuthenticated = true;
+      return DataSerive.getUserData();
+    }
+    return null;
+  });
 
-  const signin = cb => {
+  const signin = (cb) => {
     return fakeAuth.signin(() => {
       setUser(DataSerive.getUserData());
       cb();
     });
   };
 
-  const signout = cb => {
+  const signout = (cb) => {
     return fakeAuth.signout(() => {
       setUser(null);
       DataSerive.setUserNull();
@@ -404,170 +510,5 @@ function useProvideAuth() {
     });
   };
 
-  return {
-    user,
-    signin,
-    signout
-  };
-}
-const MyLink = React.forwardRef(({ href, as, children, ...rest }, ref) => (
-  <Link
-    ref={ref}
-    to={href}
-    {...rest}
-    style={{ color: '#575757', textDecoration: 'none' }}
-  >
-    {children}
-  </Link>
-));
-function AuthButton() {
-  let history = useHistory();
-  let auth = useAuth();
-  // let params = useParams();
-
-  return auth.user ? (
-    <div className='px-2'>
-      <Nav pullRight className='px-2 mx-4'>
-        <Nav.Menu title={<label><i class="fas fa-user-circle "></i> <label >{auth.user.name + ' ' + auth.user.surname}</label></label>} >
-          <Nav.Item eventKey="5" as={MyLink} href="/dashboard"><i class="fas fa-tv"></i> Panel de Control</Nav.Item>
-          <hr className='bg-info'></hr>
-          <Nav.Item eventKey="6" as={MyLink} href="/mail"><i class="fas fa-envelope-open-text" style={{ "color": "Crimson" }}></i> Buzón de mensajes</Nav.Item>
-          <Nav.Item eventKey="7" as={MyLink} href="/appointments"><i class="far fa-calendar-alt" style={{ "color": "MediumSeaGreen" }}></i> Calendario de citas</Nav.Item>
-          <Nav.Item eventKey="8" as={MyLink} href="/submit"> <i class="fas fa-file-import" style={{ "color": "Khaki" }}></i> Ventanilla única</Nav.Item>
-          <hr className='bg-info'></hr>
-          <Nav.Item eventKey="9" as={MyLink} href="/publish"><i class="fas fa-newspaper" style={{ "color": "LightSalmon" }}></i> Publicaciones</Nav.Item>
-          <Nav.Item eventKey="10" as={MyLink} href="/fun"><i class="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Solicitudes y Licencias</Nav.Item>
-          <Nav.Item eventKey="10" as={MyLink} href="/funmanage"><i class="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Gestion Soli. y Lic.</Nav.Item>
-          <Nav.Item eventKey="11" as={MyLink} href="/nomenclature"><i class="fas fa-file-signature" style={{ "color": "Plum" }}></i> Nomenclaturas</Nav.Item>
-          <Nav.Item eventKey="12" as={MyLink} href="/pqrsadmin"><i class="fas fa-file-invoice" style={{ "color": "MediumPurple" }}></i>  Peticiones PQRS</Nav.Item>
-          <hr className='bg-info'></hr>
-          <Nav.Item eventKey="13" onClick={() => {
-            auth.signout(() => history.push("/home"));
-          }}> Log out <i class="fas fa-sign-out-alt"></i></Nav.Item>
-        </Nav.Menu>
-      </Nav>
-    </div>
-  ) : (
-    <Nav pullRight>
-      <Nav.Item eventKey="" as={MyLink} href="/login"><i class="fas fa-sign-in-alt px-1"></i> Login</Nav.Item>
-      <Navbar.Brand> </Navbar.Brand>
-    </Nav>
-  );
-}
-
-function PrivateRoute({ children, ...rest }) {
-  let auth = useAuth();
-  const { t } = useTranslation();
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        auth.user ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: location },
-              translation: t("login", { returnObjects: true })
-            }}
-          />
-        )
-      }
-    />
-  );
-}
-
-function LoginPage() {
-  let sha256 = require('js-sha256');
-  const { t } = useTranslation();
-  let history = useHistory();
-  let auth = useAuth();
-  const recaptchaRef = React.createRef();
-  var formData = new FormData();
-
-  let { from } = { from: { pathname: "/dashboard" } };
-
-  let handleSubmit = (event) => {
-    event.preventDefault();
-
-    recaptchaRef.current.execute().then(response => {
-      CustomsDataService.appLogin(formData)
-        .then(response => {
-          if (response.data.length === 1) {
-            let userInfo = {};
-            userInfo.name = response.data[0].name;
-            userInfo.surname = response.data[0].surname;
-            userInfo.role = response.data[0].role.name;
-            userInfo.role_short = response.data[0].role.short;
-            userInfo.roleDesc = response.data[0].role.desc;
-            userInfo.active = response.data[0].active;
-            userInfo.roleId = response.data[0].roleId;
-            userInfo.id = response.data[0].id;
-            userInfo.name_short = response.data[0].name + ' ' + response.data[0].surname;
-            userInfo.name_full = response.data[0].name + ' ' + response.data[0].name_2 + ' ' + response.data[0].surname + ' ' + response.data[0].surname_2;
-            DataSerive.setUser(userInfo);
-            login();
-          } else {
-            MySwal.fire({
-              title: <h2>CERTIFICACION FALLIDA</h2>,
-              text: 'Hubo un error de acceso a la aplicación',
-              footer: 'Revise sus credenciales e intentelo nuevamente',
-              icon: 'error',
-              confirmButtonText: 'CONTINUAR',
-            })
-          }
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    }).catch(e => {
-      console.log(e);
-    });;
-
-
-  };
-
-  let login = () => {
-    auth.signin(() => {
-      history.replace(from);
-    });
-  };
-
-
-  return (
-    <div className="Login container py-3">
-      <div className="row my-4 d-flex justify-content-center">
-        <div className="col-lg-8 col-md-12">
-          <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
-          <div className="d-flex justify-content-center mt-5">
-            <div className="w-75 rounded">
-              <div class="card-body" style={{backgroundColor: '#d3d3d3'}}>
-                <form onSubmit={handleSubmit}>
-                  <div class="mb-3">
-                    <label for="email" class="form-label text-black">{t('login.str_user')}</label>
-                    <input type="email" class="form-control" id="email"
-                      onChange={(e) => formData.set('email', e.target.value)} />
-                  </div>
-                  <div class="mb-3">
-                    <label for="password" class="form-label text-black">{t('login.str_pass')}</label>
-                    <input type="password" class="form-control" id="password"
-                      onChange={(e) => formData.set('password', sha256(e.target.value))} />
-                  </div>
-                  <div className="text-center pt-4 mt-3">
-                    <button type="submit" class="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
-                  </div>
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    size="invisible"
-                    sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_HTML}
-                  />
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return { user, signin, signout };
 }

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/icon';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import JSONObjectParser from '../../../components/jsons/jsonReplacer';
@@ -8,56 +8,51 @@ import { axis, infoCud, zones, zonesTable } from '../../../components/jsons/vars
 import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
 import { _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
-import moment from 'moment'
+import dayjs from 'dayjs'
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
+import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-class EXP_1 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            vrSelected1: null,
-            vrSelected2: null,
-            cubSelected1: null,
-            cubSelected2: null,
-            idCUBxVr1: null,
-            idCUBxVr2: null,
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    async retrieveItem() {
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected1, setVrSelected1] = useState(null);
+    const [vrSelected2, setVrSelected2] = useState(null);
+    const [cubSelected1, setCubSelected1] = useState(null);
+    const [cubSelected2, setCubSelected2] = useState(null);
+    const [idCUBxVr1, setIdCUBxVr1] = useState(null);
+    const [idCUBxVr2, setIdCUBxVr2] = useState(null);
+
+    const retrieveItem = async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data);
             })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             //findOne
             const data1 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
             const data2 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
 
             if (data1) {
-                this.setState({ vrSelected1: data1.vr, cubSelected1: data1.cub, idCUBxVr1: data1.id })
-                document.getElementById("vr_selected").value = data1.vr
+                setVrSelected1(data1.vr);
+                setCubSelected1(data1.cub);
+                setIdCUBxVr1(data1.id);
+                document.getElementById("vr_selected").value = data1.vr;
             }
             if (data2 && document.getElementById("vr_selected1")) {
-                document.getElementById("vr_selected1").value = data2.vr
-                this.setState({ vrSelected2: data2.vr, cubSelected2: data2.cub, idCUBxVr2: data2.id })
+                document.getElementById("vr_selected1").value = data2.vr;
+                setVrSelected2(data2.vr);
+                setCubSelected2(data2.cub);
+                setIdCUBxVr2(data2.id);
             }
-
-
-
         } catch (error) {
             console.log(error);
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    };
+
+    useEffect(() => {
+        retrieveItem();
+    }, []);
         // DATA GETTERS
         let _GET_CHILD_CLOCK = () => {
             var _CHILD = currentItem.fun_clocks;
@@ -83,12 +78,7 @@ class EXP_1 extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte." });
                 });
 
         }
@@ -249,7 +239,7 @@ class EXP_1 extends Component {
             var use = _FUN_6_PARSER(_GET_CHILD_1().usos, true);
             var st = _GET_CHILD_2().item_267 - 1;
             var Q = area || _GET_EXPEDITION_JSON('taxes').id_payment_0_area || false;
-            var year = moment(_GET_CLOCK(3).date_start).format('YYYY')
+            var year = dayjs(_GET_CLOCK(3).date_start).format('YYYY')
 
             var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year)
             return expenses
@@ -264,100 +254,100 @@ class EXP_1 extends Component {
             let taxes = _GET_EXPEDITION_JSON('taxes');
             let mun_tax = zonesTable[_GET_EXPEDITION_JSON('tmp').zone] ?? 0.1;
             let mun_1 = _GET_EXP_SECOND_COST();
-            //console.log(this.state.vrsRelated)
+            //console.log(vrsRelated)
             return <>
-                <div class="card border border-dark mb-3">
-                    <div class="card-header text-uppercase">Expensas Fijas</div>
-                    <div class="card-body text-dark">
+                <div className="card border border-dark mb-3">
+                    <div className="card-header">Expensas Fijas</div>
+                    <div className="card-body text-dark">
                         <div className="row">
                             <div className="col">
                                 <label className="mt-1">Area (m2)</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="expedition_25" min="0" step="0.01"
+                                <div className="input-group">
+                                    <input type="number" className="form-control" id="expedition_25" min="0" step="0.01"
                                         defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_0_area ?? ''} onChange={(e) => document.getElementById("exxp_fix_1").value = _GET_EXPENSES(e.target.value).cf} />
                                 </div>
 
                             </div>
                             <div className="col">
                                 <label className="mt-1">Valor (COP)</label>
-                                <input type="text" class="form-control" id="exxp_fix_1" disabled value={epenses.cf ?? 0} />
+                                <input type="text" className="form-control" id="exxp_fix_1" disabled value={epenses.cf ?? 0} />
                             </div>
                             <div className="col">
                                 <label className="mt-1">Valor Pagado (COP)</label>
-                                <input type="number" step={1} class="form-control" id="expedition_27" defaultValue={taxes.id_payment_0_real ?? ''} />
+                                <input type="number" step={1} className="form-control" id="expedition_27" defaultValue={taxes.id_payment_0_real ?? ''} />
                             </div>
                             <div className="col">
                                 <label className="mt-1">Fecha</label>
-                                <input type="text" class="form-control" id="exxp_fix_2" disabled value={CLOCK_FIX_PAYMENT.date_start} />
+                                <input type="text" className="form-control" id="exxp_fix_2" disabled value={CLOCK_FIX_PAYMENT.date_start} />
                             </div>
                             <div className="col">
                                 <label className="mt-1">Factura #</label>
-                                <input type="text" class="form-control" id="exxp_fix_3" disabled value={currentItem.id_payment} />
+                                <input type="text" className="form-control" id="exxp_fix_3" disabled value={currentItem.id_payment} />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {!isPH() ? <>
-                    <div class="card border border-dark mb-3">
-                        <div class="card-header text-uppercase">Expensas variables</div>
-                        <div class="card-body text-dark">
+                    <div className="card border border-dark mb-3">
+                        <div className="card-header">Expensas variables</div>
+                        <div className="card-body text-dark">
                             <div className="row">
                                 <div className="col">
                                     <label className="mt-1">Area (m2)</label>
-                                    <input type="text" class="form-control" id="exp_var_0" disabled value={_GET_EXP_VAR_AREA()} />
+                                    <input type="text" className="form-control" id="exp_var_0" disabled value={_GET_EXP_VAR_AREA()} />
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Valor (COP)</label>
-                                    <input type="text" class="form-control" id="exp_var_1" disabled value={_GET_EXP_VAR_COST()} />
+                                    <input type="text" className="form-control" id="exp_var_1" disabled value={_GET_EXP_VAR_COST()} />
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Valor Pagado (COP)</label>
-                                    <input type="number" step={1} class="form-control" id="expedition_26" defaultValue={taxes.id_payment_1_real ?? ''} />
+                                    <input type="number" step={1} className="form-control" id="expedition_26" defaultValue={taxes.id_payment_1_real ?? ''} />
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Fecha</label>
-                                    <input type="date" class="form-control" id="expedition_24" max="2100-01-01"
+                                    <input type="date" className="form-control" id="expedition_24" max="2100-01-01"
                                         defaultValue={taxes.id_payment_1_date ?? ''} />
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Factura #</label>
-                                    <input type="text" class="form-control" id="expedition_18" defaultValue={taxes.id_payment_1 ?? ''} />
+                                    <input type="text" className="form-control" id="expedition_18" defaultValue={taxes.id_payment_1 ?? ''} />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card border border-dark mb-3">
-                        <div class="card-header text-uppercase">Acto de tramite de licencia</div>
-                        <div class="card-body text-dark">
+                    <div className="card border border-dark mb-3">
+                        <div className="card-header">Acto de tramite de licencia</div>
+                        <div className="card-body text-dark">
                             <div className="row">
                                 <div className="col-3">
                                     <label className="mt-1">Fecha</label>
-                                    <input type="date" class="form-control" id="expedition_1" max="2100-01-01"
+                                    <input type="date" className="form-control" id="expedition_1" max="2100-01-01"
                                         defaultValue={currentRecord.date ?? ''} />
                                 </div>
                                 <div className="col-3">
                                     <label className="mt-1">Ajuste Cargo Fijo</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="expedition_23"
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="expedition_23"
                                             defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_fix ?? 0} />
                                     </div>
                                 </div>
                                 <div className="col-3">
                                     <label className="mt-1">{infoCud.serials.end} Acto</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="expedition_2"
-                                            defaultValue={currentRecord.cub1 || this.state.cubSelected1 || ""} />
-                                        <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="expedition_2"
+                                            defaultValue={currentRecord.cub1 || cubSelected1 || ""} />
+                                        <Button type="button" size="sm" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</Button>
                                     </div>
                                 </div>
                                 <div className="col-3" >
                                     <label className="mt-1">{infoCud.serials.start}</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected1 || ""}>
+                                    <div className="input-group">
+                                        <select className="form-select" id="vr_selected" defaultValue={vrSelected1 || ""}>
                                             <option disabled value=''>Seleccione una opción</option>
-                                            {this.state.vrsRelated.map((value, key) => (
+                                            {vrsRelated.map((value, key) => (
                                                 <option key={value.id} value={value.id_public}>
                                                     {value.id_public}
                                                 </option>
@@ -374,9 +364,9 @@ class EXP_1 extends Component {
 
                 {!conOA() && _GLOBAL_ID === 'cb1' && !isPH() ? <>
 
-                    <div class="card border border-dark mb-3">
-                        <div class="card-header text-uppercase">Impuestos, tasas y estampillas</div>
-                        <div class="card-body text-dark">
+                    <div className="card border border-dark mb-3">
+                        <div className="card-header">Impuestos, tasas y estampillas</div>
+                        <div className="card-body text-dark">
                             <div className="row">
                                 <div className="col">
                                     <label className="mt-1">Tratamiento</label>
@@ -410,69 +400,69 @@ class EXP_1 extends Component {
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Factura #</label>
-                                    <input type="text" class="form-control" id="expedition_21"
+                                    <input type="text" className="form-control" id="expedition_21"
                                         defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_4 ?? ''} />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card border border-dark mb-3">
-                        <div class="card-header text-uppercase">Impuestos Municipales</div>
-                        <div class="card-body text-dark">
+                    <div className="card border border-dark mb-3">
+                        <div className="card-header">Impuestos Municipales</div>
+                        <div className="card-body text-dark">
                             <div className="row">
                                 <div className="col">
                                     <label className="mt-1">Delineación y Urbanismo</label>
-                                    <input type="number" step={1} class="form-control" id="expedition_28" defaultValue={taxes.muni_deli || mun_1 || ''} />
+                                    <input type="number" step={1} className="form-control" id="expedition_28" defaultValue={taxes.muni_deli || mun_1 || ''} />
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Uso y excavación subsuelo</label>
-                                    <input type="number" step={1} class="form-control" id="expedition_29" defaultValue={taxes.muni_uso || (Math.ceil(mun_1 * mun_tax / 50) * 50).toFixed(0) || ''} />
+                                    <input type="number" step={1} className="form-control" id="expedition_29" defaultValue={taxes.muni_uso || (Math.ceil(mun_1 * mun_tax / 50) * 50).toFixed(0) || ''} />
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Fondo de embellecimiento</label>
-                                    <input type="number" step={1} class="form-control" id="expedition_30" defaultValue={taxes.muni_enb ?? ''} />
+                                    <input type="number" step={1} className="form-control" id="expedition_30" defaultValue={taxes.muni_enb ?? ''} />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </> : ''}
 
-                <div class="card border border-dark mb-3">
-                    <div class="card-header text-uppercase">Estampilla PRO-UIS (SI ESTRATO {'>'} 2)</div>
-                    <div class="card-body text-dark">
+                <div className="card border border-dark mb-3">
+                    <div className="card-header">Estampilla PRO-UIS (SI ESTRATO {'>'} 2)</div>
+                    <div className="card-body text-dark">
                         <div className="row">
                             <div className="col">
                                 <label className="mt-1">Area Intervenida</label>
-                                <div class="input-group">
+                                <div className="input-group">
                                     <EXP_CALC
                                         ranslation={translation} swaMsg={swaMsg} globals={globals}
                                         domArea={'expedition_8'}
                                         domMt={'expedition_9'}
                                         compact
                                     />
-                                    <input type="number" class="form-control" id="expedition_8" min="0" step="0.01"
+                                    <input type="number" className="form-control" id="expedition_8" min="0" step="0.01"
                                         defaultValue={_GET_EXPEDITION_JSON('tmp').uis ?? ''} />
                                 </div>
                             </div>
                             <div className="col">
                                 <label className="mt-1">Valor (COP)</label>
-                                <input type="number" class="form-control" id="expedition_9" min="0" step="1"
+                                <input type="number" className="form-control" id="expedition_9" min="0" step="1"
                                     defaultValue={_GET_EXPEDITION_JSON('taxes').uis ?? ''} />
                             </div>
                             <div className="col">
                                 <label className="mt-1">Extra Valor (%)</label>
-                                <input type="text" class="form-control" id="expedition_22"
+                                <input type="text" className="form-control" id="expedition_22"
                                     defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_2_p ?? (_GLOBAL_ID == 'cb1' ? 0 : 10)} />
                             </div>
                             <div className="col">
                                 <label className="mt-1">Documento Soporte #</label>
-                                <input type="text" class="form-control" id="expedition_19"
+                                <input type="text" className="form-control" id="expedition_19"
                                     defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_2 ?? ''} />
                             </div>
                             <div className="col">
                                 <label className="mt-1">Fecha Documento</label>
-                                <input type="date" class="form-control" id="uis_date"
+                                <input type="date" className="form-control" id="uis_date"
                                     max="2100-01-01" defaultValue={_GET_EXPEDITION_JSON('taxes').uis_date ?? ''} />
                             </div>
                         </div>
@@ -483,30 +473,30 @@ class EXP_1 extends Component {
                 {_GLOBAL_ID === 'cb1' ?
                     <>
 
-                        <div class="card border border-dark mb-3">
-                            <div class="card-header text-uppercase">Deberes Urbanísticos (SI ESTRATO {'>'} 2)</div>
-                            <div class="card-body text-dark">
+                        <div className="card border border-dark mb-3">
+                            <div className="card-header">Deberes Urbanísticos (SI ESTRATO {'>'} 2)</div>
+                            <div className="card-body text-dark">
 
                                 <div className="row">
                                     <div className="col">
                                         <label className="mt-1">Fecha</label>
-                                        <input type="date" class="form-control" id="expedition_10" max="2100-01-01"
+                                        <input type="date" className="form-control" id="expedition_10" max="2100-01-01"
                                             defaultValue={currentRecord.date2 ?? ''} />
                                     </div>
                                     <div className="col">
                                         <label className="mt-1">{infoCud.serials.end}</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="expedition_11"
-                                                defaultValue={currentRecord.cub2 || this.state.cubSelected2 || ""} />
-                                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
+                                        <div className="input-group">
+                                            <input type="text" className="form-control" id="expedition_11"
+                                                defaultValue={currentRecord.cub2 || cubSelected2 || ""} />
+                                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</Button>
                                         </div>
                                     </div>
                                     <div className="col" >
                                         <label className="mt-1">{infoCud.serials.start}</label>
-                                        <div class="input-group">
-                                            <select class="form-select" id="vr_selected1" defaultValue={this.state.vrSelected2 || ""}>
+                                        <div className="input-group">
+                                            <select className="form-select" id="vr_selected1" defaultValue={vrSelected2 || ""}>
                                                 <option disabled value=''>Seleccione una opción</option>
-                                                {this.state.vrsRelated.map((value, key) => (
+                                                {vrsRelated.map((value, key) => (
                                                     <option key={value.id} value={value.id_public}>
                                                         {value.id_public}
                                                     </option>
@@ -516,7 +506,7 @@ class EXP_1 extends Component {
                                     </div>
                                     <div className="col-3">
                                         <label className="mt-2">Factura #</label>
-                                        <input type="text" class="form-control" id="expedition_20"
+                                        <input type="text" className="form-control" id="expedition_20"
                                             defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_3 ?? ''} />
                                     </div>
                                 </div>
@@ -524,22 +514,22 @@ class EXP_1 extends Component {
                                 <div className="row">
                                     <div className="col">
                                         <label className="mt-1">Unidades Vivienda</label>
-                                        <input type="number" class="form-control" id="expedition_12" min="0" step="1"
+                                        <input type="number" className="form-control" id="expedition_12" min="0" step="1"
                                             defaultValue={_GET_EXPEDITION_JSON('duty').units || value35[2] || ''} />
                                     </div>
                                     <div className="col">
                                         <label className="mt-1">Áreas uso Comercio</label>
-                                        <input type="number" class="form-control" id="expedition_13" min="0" step="0.01"
+                                        <input type="number" className="form-control" id="expedition_13" min="0" step="0.01"
                                             defaultValue={_GET_EXPEDITION_JSON('duty').comerce || value35[0] || ''} />
                                     </div>
                                     <div className="col">
                                         <label className="mt-1">Valor ZGU m2 (COP)</label>
-                                        <input type="number" class="form-control" id="expedition_14" min="0" step="0.01"
+                                        <input type="number" className="form-control" id="expedition_14" min="0" step="0.01"
                                             defaultValue={_GET_EXPEDITION_JSON('duty').charge || json34.zugm || ''} />
                                     </div>
                                     <div className="col-2">
                                         <label className="mt-1">ZGU</label>
-                                        <input type="text" class="form-control" id="expedition_15"
+                                        <input type="text" className="form-control" id="expedition_15"
                                             defaultValue={_GET_EXPEDITION_JSON('duty').zgu || json34.zgu || ''} />
                                     </div>
                                 </div>
@@ -552,30 +542,30 @@ class EXP_1 extends Component {
 
 
                 {_GLOBAL_ID === 'cp1' ? <>
-                    <div class="card border border-dark mb-3">
-                        <div class="card-header text-uppercase">Delineación Urbana</div>
-                        <div class="card-body text-dark">
+                    <div className="card border border-dark mb-3">
+                        <div className="card-header">Delineación Urbana</div>
+                        <div className="card-body text-dark">
                             <div className="row">
 
                                 <div className="col-3">
                                     <label className="mt-1">Valor (COP)</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="del_4" defaultValue={taxes.muni_deli || mun_1 || ''} disabled />
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="del_4" defaultValue={taxes.muni_deli || mun_1 || ''} disabled />
                                     </div>
                                 </div>
                                 <div className="col-3">
                                     <label className="mt-1">Valor Pagado (COP)</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="del_pay" defaultValue={_GET_EXPEDITION_JSON('taxes').del_pay ?? ''} />
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="del_pay" defaultValue={_GET_EXPEDITION_JSON('taxes').del_pay ?? ''} />
                                     </div>
                                 </div>
                                 <div className="col-3">
                                     <label className="mt-1">Fecha Factura</label>
-                                    <input type="date" class="form-control" id="del_date" max="2100-01-01" defaultValue={_GET_EXPEDITION_JSON('taxes').del_date ?? ''} />
+                                    <input type="date" className="form-control" id="del_date" max="2100-01-01" defaultValue={_GET_EXPEDITION_JSON('taxes').del_date ?? ''} />
                                 </div>
                                 <div className="col-3">
                                     <label className="mt-1">Factura #</label>
-                                    <input type="text" class="form-control" id="del_number" defaultValue={_GET_EXPEDITION_JSON('taxes').del_number ?? ''} />
+                                    <input type="text" className="form-control" id="del_number" defaultValue={_GET_EXPEDITION_JSON('taxes').del_number ?? ''} />
                                 </div>
                             </div>
                         </div>
@@ -656,7 +646,7 @@ class EXP_1 extends Component {
 
             createVRxCUB_relation(cub1, cub2)
             manage_exp();
-            this.retrieveItem()
+            retrieveItem()
         }
 
         let createVRxCUB_relation = (cub_selected, cub_selected1) => {
@@ -700,14 +690,14 @@ class EXP_1 extends Component {
 
 
             // Mostrar mensaje inicial de espera
-            if ((type === 1 && this.state.idCUBxVr1) || (type === 2 && this.state.idCUBxVr2)) {
-                const id = type === 1 ? this.state.idCUBxVr1 : this.state.idCUBxVr2;
+            if ((type === 1 && idCUBxVr1) || (type === 2 && idCUBxVr2)) {
+                const id = type === 1 ? idCUBxVr1 : idCUBxVr2;
 
                 CubXVrDataService.updateCubVr(id, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -720,7 +710,7 @@ class EXP_1 extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -730,68 +720,41 @@ class EXP_1 extends Component {
         };
 
         let manage_exp = () => {
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.update(currentRecord.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: "ERROR DE DUPLICACION", text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo` });
                     }
                     else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         return (
             <div className="record_ph_gen container p-3">
-                <legend className="my-2 px-2 text-uppercase Collapsible text-center" id="nav_expedition_1">
+                <legend className="my-2 px-2 Collapsible text-center" id="nav_expedition_1">
                     <label className="app-p lead fw-normal">INFORMACIÓN GENERAL</label>
                 </legend>
                 <form id="form_expedition" onSubmit={save_exp}>
                     {_COMPONENT_GENERAL()}
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3"><i class="far fa-check-square"></i> GUARDAR CAMBIOS </button>
+                            <Button type="submit" size="sm" className="my-3"><Icon name="check-square" size={16} /> GUARDAR CAMBIOS </Button>
                         </div>
                     </div>
                 </form>
             </div >
         );
-    }
 }
 
 export default EXP_1;

@@ -1,17 +1,7 @@
-import React, { Component } from 'react';
 import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
-import DataTable, { Alignment } from 'react-data-table-component';
+import DataTable, { Alignment } from '@/components/data-table-bridge';
 
-class PQRS_COMPONENT_CLOCKS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, translation_form, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form, currentItem }) {
 
         // DATA GETTERS 
         let get_PQRS_TIME = () => {
@@ -43,15 +33,15 @@ class PQRS_COMPONENT_CLOCKS extends Component {
             
             const columns = [
                 {
-                    name: <label><b>CONTACTO</b></label>,
-                    selector: 'name',
+                    name: '<b>CONTACTO</b>',
+                    selector: row => row.name,
                     minWidth: '100px',
                     sortable: true,
                     filterable: true,
                     cell: row => <h6 className="pt-3 text-center">{row.email ? row.email : row.address}</h6>
                 },
                 {
-                    name: <label><b>NOTIFICACIÓN - CONFIRMACIÓN</b></label>,
+                    name: '<b>NOTIFICACIÓN - CONFIRMACIÓN</b>',
                     selector: row => row.competence,
                     minWidth: '100px',
                     sortable: true,
@@ -59,16 +49,16 @@ class PQRS_COMPONENT_CLOCKS extends Component {
                     cell: row => <h6>{ row.notify_confirm ? _GET_NOTIFY_CONTEXT(row.notify_confirm, row.notify_confirm_date) : <label className="text-warning">PENDIENTE</label> }</h6>
                 },
                 {
-                    name: <label><b>NOTIFICACIÓN - EXTENSION</b></label>,
-                    selector: 'asign',
+                    name: '<b>NOTIFICACIÓN - EXTENSION</b>',
+                    selector: row => row.asign,
                     minWidth: '100px',
                     sortable: true,
                     filterable: true,
                     cell: row => <h6>{ row.notify_reply ? _GET_NOTIFY_CONTEXT(row.notify_reply, row.notify_date): <label className="text-warning">PENDIENTE</label>}</h6>,
                 },
                 {
-                    name: <label><b>NOTIFICACIÓN - OFICIO RESPUESTA</b></label>,
-                    selector: 'asign',
+                    name: '<b>NOTIFICACIÓN - OFICIO RESPUESTA</b>',
+                    selector: row => row.asign,
                     minWidth: '100px',
                     sortable: true,
                     omit: currentItem.pqrs_law ? currentItem.pqrs_law.extension ? 0 : 1 : 1,
@@ -97,43 +87,43 @@ class PQRS_COMPONENT_CLOCKS extends Component {
             let pTime = get_PQRS_TIME();
             let ext = currentItem.pqrs_law ? currentItem.pqrs_law.extension ? 2 : 1 : 1;
             return <>            
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-3">
+                <div className="container">
+                    <div className="row align-items-center">
+                        <div className="col-3">
 
                             <div className="col">
-                                <lavel>Fecha inicio de terminos</lavel>
+                                <label>Fecha inicio de terminos</label>
                             </div>
                             <div className="col">
-                                <lavel>Fecha limite de respuesta</lavel>
+                                <label>Fecha limite de respuesta</label>
                             </div>
                             <div className="col">
-                                <lavel>Termino legal de respuesta</lavel>
+                                <label>Termino legal de respuesta</label>
                             </div>
                             <div className="col">
-                                <lavel>(Con prorroga)</lavel>
+                                <label>(Con prorroga)</label>
                             </div>
                             {pTime.reply_formal ? <>
                                 <div className="col">
 
-                                    <lavel>Fecha envío respuesta</lavel>
+                                    <label>Fecha envío respuesta</label>
                                 </div>
                                 <div className="col">
-                                    <lavel>Tiempo real de respuesta</lavel>
+                                    <label>Tiempo real de respuesta</label>
                                 </div>
                             </> : <>
                                 <div className="col">
-                                    <lavel>Tiempo de Respuesta Restante</lavel>
+                                    <label>Tiempo de Respuesta Restante</label>
                                 </div>
                                 <div className="col">
-                                    <lavel>Fecha Limite Respuesta</lavel>
+                                    <label>Fecha Limite Respuesta</label>
                                 </div>
                             </>}
                           
 
 
                         </div>
-                        <div class="col-3">
+                        <div className="col-3">
                             <div className="col">
                                 <label className="fw-bold">{dateParser(pTime.legal)}</label>
                             </div>
@@ -165,7 +155,7 @@ class PQRS_COMPONENT_CLOCKS extends Component {
                                 </>}
                           
                         </div>
-                        <div class="col-6">
+                        <div className="col-6">
                             {SHOW_NOTIFICATIONS()}
                         </div>
                     </div>
@@ -191,9 +181,9 @@ class PQRS_COMPONENT_CLOCKS extends Component {
             return <>
                 <hr />
                 <div className="row">
-                    <labal className="fw-bold">Acción de Mejora</labal>
+                    <label className="fw-bold">Acción de Mejora</label>
                     <div className="col-12">
-                        <lavel>{currentItem.action_review}</lavel>
+                        <label>{currentItem.action_review}</label>
                     </div>
                 </div>
             </>
@@ -202,17 +192,16 @@ class PQRS_COMPONENT_CLOCKS extends Component {
         // DATA CONVERTERS
 
 
-        return (
-            <div>
-                {_TIME_CONTROL_COMPONENT()}
-                {currentItem.action_review
-                    ? <>
-                        {_ACTION_REVIEW_COMPONENT()}
-                    </>
-                    : ""}
-            </div>
-        );
-    }
+    return (
+        <div>
+            {_TIME_CONTROL_COMPONENT()}
+            {currentItem.action_review
+                ? <>
+                    {_ACTION_REVIEW_COMPONENT()}
+                </>
+                : ""}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_CLOCKS;

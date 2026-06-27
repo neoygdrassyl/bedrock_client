@@ -1,8 +1,6 @@
-import React, { useRef, useState } from 'react'
-import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse'
+import { useMemo, useRef, useState } from 'react';
+import { dateParser, dateParser_finalDate, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
-const moment = require('moment');
-const momentB = require('moment-business-days');
 
 
 export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
@@ -11,9 +9,12 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
     const editor = useRef(null)
     const [content, setContent] = useState('')
 
-    const config = () => {
-        return {
+    const config = useMemo(() => ({
             readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+            language: 'es',
+            iframe: true,
+            allowHTML: true,
+            loadExternalConfig: false,
             uploader: {
                 url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
             },
@@ -23,11 +24,9 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
                 },
                 height: 580,
             },
-            language: 'es',
             "readonly": true,
             "toolbar": false,
-            "disablePlugins": "clipboard",
-            "disablePlugins": "xpath",
+            "disablePlugins": "clipboard,xpath",
             minHeight: 150,
             removeButtons: ['xpath'],
             controls: {
@@ -37,8 +36,7 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
 
                 }
             }
-        }
-    }
+        }), [])
 
 
 
@@ -47,20 +45,19 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
         var _COMPONENT = [];
         for (var i = 0; i < currentItem.pqrs_workers.length; i++) {
             if ((currentItem.pqrs_workers[i].reply && currentItem.pqrs_workers[i].roleId == window.user.roleId) || (window.user.roleId == 1 && currentItem.pqrs_workers[i].reply)) {
-                _COMPONENT.push(<>
-                    <div className="row m-2">
+                _COMPONENT.push(<div key={currentItem.pqrs_workers[i].id ?? currentItem.pqrs_workers[i].worker_id ?? `reply-prof-1-${i}`} className="row m-2">
                         <div className="col-6">
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Profesional</lavel>
+                                    <label>Profesional</label>
                                 </div>
                                 <div className="col-6">
-                                    <lavel className="fw-bold">{currentItem.pqrs_workers[i].name}</lavel>
+                                    <label className="fw-bold">{currentItem.pqrs_workers[i].name}</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Competencia</lavel>
+                                    <label>Competencia</label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{currentItem.pqrs_workers[i].competence}</label>
@@ -68,7 +65,7 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Fecha de Asignación</lavel>
+                                    <label>Fecha de Asignación</label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{dateParser(currentItem.pqrs_workers[i].asign)}</label>
@@ -76,7 +73,7 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Fecha limite de respuesta</lavel>
+                                    <label>Fecha limite de respuesta</label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{dateParser(dateParser_finalDate(currentItem.pqrs_workers[i].asign, 5))}</label>
@@ -84,7 +81,7 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Fecha real respuesta </lavel>
+                                    <label>Fecha real respuesta </label>
                                 </div>
                                 <div className="col-6">
                                     <label className="fw-bold">{dateParser(currentItem.pqrs_workers[i].date_reply)}</label>
@@ -92,10 +89,10 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
                             </div>
                             <div className="row">
                                 <div className="col-6">
-                                    <lavel>Tiempo real de respuesta</lavel>
+                                    <label>Tiempo real de respuesta</label>
                                 </div>
                                 <div className="col-6">
-                                    <label className="fw-bold">{momentB(currentItem.pqrs_workers[i].asign, 'YYYY-MM-DD').businessDiff(moment(currentItem.pqrs_workers[i].date_reply, 'YYYY-MM-DD')) + " dia(s) habiles"}</label>
+                                    <label className="fw-bold">{dateParser_dateDiff(currentItem.pqrs_workers[i].asign, currentItem.pqrs_workers[i].date_reply, true) + " dia(s) habiles"}</label>
                                 </div>
                             </div>
                         </div>
@@ -104,19 +101,18 @@ export const PQRS_COMPONENT_REPLIES_PROFESIONAL1 = (props) => {
                         <JoditEditor
                             ref={editor}
                             value={currentItem.pqrs_workers[i].reply}
-                            config={config()}
+                            config={config}
                             tabIndex={1} // tabIndex of textarea
                             onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                             onChange={newContent => { }}
-                            class="form-control mb-3"
                             rows="5"
-                            maxlength="409675"
+                            maxLength="409675"
 
                         />
                     </div>
 
 
-                </>)
+                )
             }
 
         }
