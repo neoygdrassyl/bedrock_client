@@ -43,6 +43,7 @@ import RECORD_REVIEW from './records/record_review';
 import EXPEDITION from './expeditions/expedition.page';
 import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
 import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
+import { shouldUseStructuralReport } from './fun_forms/utils/expedienteDomainRules';
 import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
@@ -1141,6 +1142,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             let rules = row.rules ? row.rules.split(';') : [];
             const canEdit = row.state != 101 && row.state <= 200;
             const isPH = regexChecker_isPh(row, true);
+            const showStructuralReport = shouldUseStructuralReport(row, row.version, { isPropertyHorizontal: isPH });
             const canAssign = window.user.id == 1 || window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 6;
             const stopRowClick = (event) => {
                 event?.stopPropagation?.();
@@ -1216,7 +1218,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                     <Icon name="Building" size={14} className="text-warning" />
                                                     Inf. Arquitectónico
                                                 </DropdownMenuItem>
-                                                {rules[1] != 1 && (
+                                                {showStructuralReport && (
                                                     <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'record_eng'))}>
                                                         <Icon name="Cog" size={14} className="text-warning" />
                                                         Inf. Estructural

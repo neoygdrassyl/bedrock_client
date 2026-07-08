@@ -1,7 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, FileText, FlaskConical, Loader2, RefreshCcw, Save, UploadCloud } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import {
+  DovelaBadge,
+  DovelaButton,
+  DovelaCard,
+  DovelaCardContent,
+  DovelaField,
+  DovelaInlineAlert,
+  DovelaPageHeader,
+  DovelaSectionPanel,
+  DovelaTextarea,
+} from '@/components/dovela-ui';
 import { getDocumentRequirementErrorMessage, useDocumentRequirementConfig } from './useDocumentRequirementConfig.js';
 import './DocumentRequirementsConfigPanel.css';
 
@@ -39,34 +48,43 @@ function formatDate(value) {
 
 function SummaryCard({ label, value, description }) {
   return (
-    <article className="document-requirements-panel__summary-card">
-      <span className="document-requirements-panel__summary-label">{label}</span>
-      <strong className="document-requirements-panel__summary-value">{value}</strong>
-      <span className="document-requirements-panel__summary-description">{description}</span>
-    </article>
+    <DovelaCard className="min-h-[118px]">
+      <DovelaCardContent className="flex h-full flex-col gap-1.5 pt-[var(--card-padding)]">
+        <span className="text-[0.7rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{label}</span>
+        <strong className="text-lg font-semibold leading-5 text-foreground">{value}</strong>
+        <span className="text-[0.78rem] leading-5 text-muted-foreground">{description}</span>
+      </DovelaCardContent>
+    </DovelaCard>
   );
 }
 
 function InlineAlert({ type = 'info', children, onClose }) {
+  const tone = {
+    success: 'success',
+    danger: 'danger',
+    warning: 'warning',
+    info: 'info',
+  }[type] || 'info';
+
   return (
-    <div className={`document-requirements-panel__alert document-requirements-panel__alert--${type}`} role={type === 'danger' ? 'alert' : 'status'}>
-      <span>{children}</span>
-      {onClose && (
-        <button type="button" onClick={onClose} aria-label="Cerrar mensaje">
-          ×
-        </button>
-      )}
-    </div>
+    <DovelaInlineAlert tone={tone} onDismiss={onClose}>
+      {children}
+    </DovelaInlineAlert>
   );
 }
 
 function StatusIndicator({ type, children }) {
-  const Icon = type === 'published' ? CheckCircle2 : FileText;
+  const tone = {
+    draft: 'warning',
+    published: 'success',
+    missing: 'danger',
+  }[type] || 'neutral';
+  const Icon = type === 'published' ? CheckCircle2 : type === 'missing' ? AlertTriangle : FileText;
+
   return (
-    <span className={`document-requirements-panel__status document-requirements-panel__status--${type}`}>
-      <Icon size={14} aria-hidden="true" />
+    <DovelaBadge tone={tone} icon={Icon}>
       {children}
-    </span>
+    </DovelaBadge>
   );
 }
 
@@ -149,38 +167,38 @@ export default function DocumentRequirementsConfigPanel() {
   if (loading && !draft && !published) {
     return (
       <div className="document-requirements-panel" data-testid="document-requirements-panel">
-        <div className="settings-panel__header">
-          <h2>Requisitos documentales</h2>
-          <p>Cargando configuración documental versionada…</p>
-        </div>
-        <InlineAlert>
-          <Loader2 size={14} className="document-requirements-panel__spinner" aria-hidden="true" />
+        <DovelaPageHeader
+          eyebrow="Configuración operativa"
+          title="Requisitos documentales"
+          description="Cargando configuración documental versionada..."
+        />
+        <DovelaInlineAlert icon={Loader2} iconClassName="document-requirements-panel__spinner">
           Consultando borrador y versión publicada.
-        </InlineAlert>
+        </DovelaInlineAlert>
       </div>
     );
   }
 
   return (
     <div className="document-requirements-panel" data-testid="document-requirements-panel">
-      <div className="settings-panel__header">
-        <h2>Requisitos documentales</h2>
-        <p>
-          Configura en fase uno la estructura JSON de grupos, documentos y reglas por actuación. La seguridad y validación final permanecen en backend.
-        </p>
-      </div>
+      <DovelaPageHeader
+        eyebrow="Configuración operativa"
+        title="Requisitos documentales"
+        description="Configura en fase uno la estructura JSON de grupos, documentos y reglas por actuación. La seguridad y validación final permanecen en backend."
+        meta={(
+          <>
+            {draft && <StatusIndicator type="draft">Borrador</StatusIndicator>}
+            {published && <StatusIndicator type="published">Publicada</StatusIndicator>}
+            {!draft && !published && <StatusIndicator type="missing">Sin configuración cargada</StatusIndicator>}
+            <DovelaBadge tone="outline">Edición estructurada JSON</DovelaBadge>
+            <DovelaBadge tone="neutral">Fuente backend</DovelaBadge>
+          </>
+        )}
+      />
 
-      <div className="document-requirements-panel__meta" aria-label="Estado de configuración documental">
-        {draft && <StatusIndicator type="draft">Borrador</StatusIndicator>}
-        {published && <StatusIndicator type="published">Publicada</StatusIndicator>}
-        {!draft && !published && <StatusIndicator type="missing">Sin configuración cargada</StatusIndicator>}
-        <Badge variant="outline">Edición estructurada JSON</Badge>
-        <Badge variant="secondary">Fuente backend</Badge>
-      </div>
-
-      <div className="document-requirements-panel__notice">
-        <strong>Alcance de esta fase:</strong> edita el JSON estructurado aprobado. El constructor visual de reglas y la simulación con preview corresponden a la siguiente tarea.
-      </div>
+      <DovelaInlineAlert tone="warning" title="Alcance de esta fase">
+        Edita el JSON estructurado aprobado. El constructor visual de reglas y la simulación con preview corresponden a la siguiente tarea.
+      </DovelaInlineAlert>
 
       {errorMessage && (
         <InlineAlert type="danger">
@@ -208,76 +226,81 @@ export default function DocumentRequirementsConfigPanel() {
         <SummaryCard label="Última actualización" value={formatDate(summary.lastUpdated)} description="Fecha reportada por backend" />
       </section>
 
-      <div className="document-requirements-panel__toolbar">
-        <Button
-          type="button"
-          size="sm"
-          onClick={handleSaveDraft}
-          disabled={saving || publishing || !dirty || !draftText.trim()}
-          aria-label="Guardar borrador de requisitos documentales"
-        >
-          {saving ? <Loader2 size={14} className="document-requirements-panel__spinner" aria-hidden="true" /> : <Save size={14} aria-hidden="true" />}
-          {saving ? 'Guardando…' : 'Guardar borrador'}
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={handlePublish}
-          disabled={saving || publishing || loading || !draft?.config}
-          aria-label="Publicar configuración documental"
-        >
-          {publishing ? <Loader2 size={14} className="document-requirements-panel__spinner" aria-hidden="true" /> : <UploadCloud size={14} aria-hidden="true" />}
-          {publishing ? 'Publicando…' : 'Publicar configuración'}
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          onClick={handleSimulate}
-          aria-label="Simular reglas documentales"
-        >
-          <FlaskConical size={14} aria-hidden="true" />
-          Simular reglas
-        </Button>
-        <span className="document-requirements-panel__toolbar-spacer" />
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          onClick={refetch}
-          disabled={loading || saving || publishing}
-          aria-label="Recargar configuración documental"
-        >
-          <RefreshCcw size={14} aria-hidden="true" />
-          Recargar
-        </Button>
-      </div>
+      <DovelaCard tone="subtle">
+        <DovelaCardContent className="document-requirements-panel__toolbar pt-[var(--card-padding)]">
+          <DovelaButton
+            type="button"
+            size="sm"
+            onClick={handleSaveDraft}
+            disabled={saving || publishing || !dirty || !draftText.trim()}
+            aria-label="Guardar borrador de requisitos documentales"
+            leadingIcon={Save}
+            loading={saving}
+            loadingLabel="Guardando..."
+          >
+            Guardar borrador
+          </DovelaButton>
+          <DovelaButton
+            type="button"
+            size="sm"
+            tone="success"
+            onClick={handlePublish}
+            disabled={saving || publishing || loading || !draft?.config}
+            aria-label="Publicar configuración documental"
+            leadingIcon={UploadCloud}
+            loading={publishing}
+            loadingLabel="Publicando..."
+          >
+            Publicar configuración
+          </DovelaButton>
+          <DovelaButton
+            type="button"
+            size="sm"
+            tone="ghost"
+            onClick={handleSimulate}
+            aria-label="Simular reglas documentales"
+            leadingIcon={FlaskConical}
+          >
+            Simular reglas
+          </DovelaButton>
+          <span className="document-requirements-panel__toolbar-spacer" />
+          <DovelaButton
+            type="button"
+            size="sm"
+            tone="ghost"
+            onClick={refetch}
+            disabled={loading || saving || publishing}
+            aria-label="Recargar configuración documental"
+            leadingIcon={RefreshCcw}
+          >
+            Recargar
+          </DovelaButton>
+        </DovelaCardContent>
+      </DovelaCard>
 
-      <section className="document-requirements-panel__editor-card" aria-labelledby="document-requirements-editor-title">
-        <div className="document-requirements-panel__editor-header">
-          <div>
-            <h3 id="document-requirements-editor-title">Borrador estructurado</h3>
-            <p>Conserva `schemaVersion`, `groups`, `documents` y `rules`. Los errores de validación del backend se muestran aquí sin ocultar el panel.</p>
-          </div>
-          <AlertTriangle size={18} aria-hidden="true" />
-        </div>
-        <label className="document-requirements-panel__editor-label" htmlFor="document-requirements-editor">
-          Editor JSON del borrador documental
-        </label>
-        <textarea
-          id="document-requirements-editor"
-          className="document-requirements-panel__editor"
-          value={draftText}
-          onChange={handleEditorChange}
-          spellCheck="false"
-          rows={18}
-          aria-describedby="document-requirements-editor-help"
-        />
-        <p id="document-requirements-editor-help" className="document-requirements-panel__editor-help">
-          Esta edición es deliberadamente técnica para la fase inicial: pega JSON válido y guarda el borrador antes de publicar.
-        </p>
-      </section>
+      <DovelaSectionPanel
+        title="Borrador estructurado"
+        description="Conserva `schemaVersion`, `groups`, `documents` y `rules`. Los errores de validación del backend se muestran aquí sin ocultar el panel."
+        actions={<AlertTriangle size={18} aria-hidden="true" />}
+        headerClassName="document-requirements-panel__editor-header"
+        contentClassName="px-0 pb-0 pt-0"
+      >
+        <DovelaField
+          label="Editor JSON del borrador documental"
+          helperText="Esta edición es deliberadamente técnica para la fase inicial: pega JSON válido y guarda el borrador antes de publicar."
+          className="document-requirements-panel__editor-field"
+        >
+          <DovelaTextarea
+            id="document-requirements-editor"
+            density="editor"
+            className="document-requirements-panel__editor"
+            value={draftText}
+            onChange={handleEditorChange}
+            spellCheck="false"
+            rows={18}
+          />
+        </DovelaField>
+      </DovelaSectionPanel>
     </div>
   );
 }

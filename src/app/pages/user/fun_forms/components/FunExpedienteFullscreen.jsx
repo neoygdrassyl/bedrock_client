@@ -19,6 +19,7 @@ import { useAlarms } from '../hooks/useAlarms';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { formsParser1, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+import { isSubdivisionExpediente, shouldUseStructuralReport } from '../utils/expedienteDomainRules.js';
 
 const FUNG = React.lazy(() => import('../fun_g'));
 const FUNC = React.lazy(() => import('../fun_c'));
@@ -27,6 +28,7 @@ const FUND = React.lazy(() => import('./fun_docs'));
 const FUN_ALERT = React.lazy(() => import('../fun_alertn'));
 const FUNCLOCK = React.lazy(() => import('../fun_clock'));
 const RECORD_ARC = React.lazy(() => import('../../records/record_arc'));
+const SUBDIVISION_ARCHITECTURE_REPORT = React.lazy(() => import('../../records/record_arc_subdivision/SubdivisionArchitectureReport'));
 const RECORD_LAW = React.lazy(() => import('../../records/record_law'));
 const RECORD_ENG = React.lazy(() => import('../../records/record_eng'));
 const RECORD_REVIEW = React.lazy(() => import('../../records/record_review'));
@@ -537,7 +539,12 @@ function isPropertyHorizontalExpediente(expediente, version) {
 }
 
 function getReportItemsForExpediente(expediente, version, tone) {
-  const items = isPropertyHorizontalExpediente(expediente, version) ? [PH_REPORT_ITEM] : STANDARD_REPORT_ITEMS;
+  const isPH = isPropertyHorizontalExpediente(expediente, version);
+  const items = isPH
+    ? [PH_REPORT_ITEM]
+    : STANDARD_REPORT_ITEMS.filter((item) => item.id !== 'estructural'
+      || shouldUseStructuralReport(expediente, version, { isPropertyHorizontal: isPH }));
+
   return items.map((item) => ({ ...item, accent: tone || item.accent }));
 }
 
@@ -1066,7 +1073,7 @@ function BitacoraDialog({ open, onOpenChange, entries, groups, currentPublic }) 
 }
 
 function renderModuleContent(activeSection, moduleProps, options = {}) {
-  const { isPropertyHorizontal = false } = options;
+  const { isPropertyHorizontal = false, isSubdivision = false } = options;
 
   switch (activeSection) {
     case 'detalles':
@@ -1084,7 +1091,9 @@ function renderModuleContent(activeSection, moduleProps, options = {}) {
     case 'ph':
       return <RECORD_PH {...moduleProps} />;
     case 'arquitectonico':
-      return <RECORD_ARC {...moduleProps} />;
+      return isSubdivision
+        ? <SUBDIVISION_ARCHITECTURE_REPORT {...moduleProps} />
+        : <RECORD_ARC {...moduleProps} />;
     case 'estructural':
       return <RECORD_ENG {...moduleProps} />;
     case 'juridico':
@@ -1101,14 +1110,16 @@ function renderModuleContent(activeSection, moduleProps, options = {}) {
   }
 }
 
-function normalizeInitialSection(section, report, isPropertyHorizontal = false) {
+function normalizeInitialSection(section, report, isPropertyHorizontal = false, structuralReportAvailable = true) {
   if (section === 'informes') {
     if (isPropertyHorizontal) {
       return 'ph';
     }
 
     const normalizedReport = normalizeInitialReport(report);
-    return normalizedReport === 'ph' ? 'juridico' : normalizedReport;
+    if (normalizedReport === 'ph') return 'juridico';
+    if (normalizedReport === 'estructural' && !structuralReportAvailable) return 'juridico';
+    return normalizedReport;
   }
 
   if (isPropertyHorizontal && (section === 'ph' || STANDARD_REPORT_ITEMS.some((item) => item.id === section))) {
@@ -1116,6 +1127,10 @@ function normalizeInitialSection(section, report, isPropertyHorizontal = false) 
   }
 
   if (!isPropertyHorizontal && section === 'ph') {
+    return 'juridico';
+  }
+
+  if (section === 'estructural' && !structuralReportAvailable) {
     return 'juridico';
   }
 
@@ -1137,11 +1152,13 @@ export function FunExpedienteFullscreen({
   initialReport = 'juridico',
   defaultRightPanelOpen = false,
 }) {
-  const initialIsPropertyHorizontal = isPropertyHorizontalExpediente(expediente, getExpedienteVersion(expediente));
+  const initialVersion = getExpedienteVersion(expediente);
+  const initialIsPropertyHorizontal = isPropertyHorizontalExpediente(expediente, initialVersion);
+  const initialStructuralReportAvailable = shouldUseStructuralReport(expediente, initialVersion, { isPropertyHorizontal: initialIsPropertyHorizontal });
   const [summary, setSummary] = useState(expediente);
-  const [activeSection, setActiveSection] = useState(() => normalizeInitialSection(initialSection, initialReport, initialIsPropertyHorizontal));
+  const [activeSection, setActiveSection] = useState(() => normalizeInitialSection(initialSection, initialReport, initialIsPropertyHorizontal, initialStructuralReportAvailable));
   const [currentId, setCurrentId] = useState(getExpedienteId(expediente));
-  const [currentVersion, setCurrentVersion] = useState(getExpedienteVersion(expediente));
+  const [currentVersion, setCurrentVersion] = useState(initialVersion);
   const [currentPublic, setCurrentPublic] = useState(getExpedienteRadicado(expediente));
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [headerExpanded, setHeaderExpanded] = useState(false);
@@ -1467,8 +1484,9 @@ export function FunExpedienteFullscreen({
       closeModal: noop,
       NAVIGATION: handleLegacyNavigation,
       NAVIGATION_VERSION: handleVersionNavigation,
+      expediente: summary,
     }),
-    [currentId, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, swaMsg, translation]
+    [currentId, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, summary, swaMsg, translation]
   );
 
   const visibleSectionGroups = useMemo(
@@ -1478,6 +1496,16 @@ export function FunExpedienteFullscreen({
 
   const isPropertyHorizontal = useMemo(
     () => isPropertyHorizontalExpediente(summary, currentVersion),
+    [currentVersion, summary]
+  );
+
+  const structuralReportAvailable = useMemo(
+    () => shouldUseStructuralReport(summary, currentVersion, { isPropertyHorizontal }),
+    [currentVersion, isPropertyHorizontal, summary]
+  );
+
+  const isSubdivision = useMemo(
+    () => isSubdivisionExpediente(summary, currentVersion),
     [currentVersion, summary]
   );
 
@@ -1501,8 +1529,13 @@ export function FunExpedienteFullscreen({
       return;
     }
 
+    if (activeSection === 'estructural' && !structuralReportAvailable) {
+      setActiveSection('juridico');
+      return;
+    }
+
     setActiveSection('detalles');
-  }, [activeSection, isPropertyHorizontal, visibleSectionIds]);
+  }, [activeSection, isPropertyHorizontal, structuralReportAvailable, visibleSectionIds]);
 
   useEffect(() => {
     if (activeSection !== 'expedicion' || !isPropertyHorizontal) {
@@ -1522,7 +1555,7 @@ export function FunExpedienteFullscreen({
     return () => window.clearTimeout(timeout);
   }, [activeSection, isPropertyHorizontal]);
 
-  const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal });
+  const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal, isSubdivision });
 
   const content = (
     <div

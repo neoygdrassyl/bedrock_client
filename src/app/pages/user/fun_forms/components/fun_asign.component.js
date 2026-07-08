@@ -5,6 +5,7 @@ import USER_SERVICE from '../../../../services/users.service';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
+import { shouldUseStructuralReport } from '../utils/expedienteDomainRules.js';
 import TABLE_COMPONENT_EXPANDED from './table_components/table.component_expanded';
 import HeatMap from '@uiw/react-heat-map';
 import { infoCud, nomens } from '../../../../components/jsons/vars';
@@ -569,6 +570,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     let _MODULE_BTN_POP = (row) => {
         const isOA = regexChecker_isOA_2(row);
         let rules = row.rules ? row.rules.split(';') : [];
+        const isPH = regexChecker_isPh(row, true);
+        const showStructuralReport = shouldUseStructuralReport(row, row.version, { isPropertyHorizontal: isPH });
         return <>
                 {window.user.id == 1 || window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 6 ?
                     <DropdownMenuItem onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }}><Icon name="UserClock" size={14} className="mr-2" /> Asignar</DropdownMenuItem>
@@ -581,7 +584,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'edit', '')}><Icon name="FolderOpen" size={14} className="mr-2 text-muted-foreground" /> Actualizar</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'check', '')}><Icon name="CheckSquare" size={14} className="mr-2 text-warning" /> Checkeo</DropdownMenuItem>
-                        {regexChecker_isPh(row, true) ?
+                        {isPH ?
                             <>
                                 <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')}><Icon name="PencilRuler" size={14} className="mr-2 text-warning" /> Inf. P.H.</DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')}><Icon name="FileText" size={14} className="mr-2 text-warning" /> Expedición</DropdownMenuItem>
@@ -592,7 +595,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                 <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')}><Icon name="Scale" size={14} className="mr-2 text-warning" /> Inf. Jurídico</DropdownMenuItem>
                                 {!isOA ? <>
                                     <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')}><Icon name="Building2" size={14} className="mr-2 text-warning" /> Inf. Arquitectónico</DropdownMenuItem>
-                                    {rules[1] != 1 ? <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')}><Icon name="Cog" size={14} className="mr-2 text-warning" /> Inf. Estructural</DropdownMenuItem> : ''}
+                                    {showStructuralReport ? <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')}><Icon name="Cog" size={14} className="mr-2 text-warning" /> Inf. Estructural</DropdownMenuItem> : ''}
                                     <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')}><Icon name="FileCheck" size={14} className="mr-2 text-warning" /> Acta</DropdownMenuItem>
                                 </> : ''}
                                 <DropdownMenuItem onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')}><Icon name="FileText" size={14} className="mr-2 text-warning" /> Expedición</DropdownMenuItem>

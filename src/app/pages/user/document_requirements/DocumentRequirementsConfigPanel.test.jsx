@@ -200,7 +200,7 @@ describe('DocumentRequirementsConfigPanel', () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByTestId('document-requirements-panel')).toBeInTheDocument();
+    expect(await screen.findByTestId('doc-explorer-page')).toBeInTheDocument();
     expect(screen.getByTestId('settings-nav-requisitos-documentales')).toHaveClass('is-active');
   });
 });

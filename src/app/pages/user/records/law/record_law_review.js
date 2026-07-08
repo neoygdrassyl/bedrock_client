@@ -10,6 +10,7 @@ import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../components/c
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/components/icon';
+import { DovelaTextarea } from '@/components/dovela-ui/dovela-textarea';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function RECORD_LAW_EVALUATION(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord } = props;
@@ -250,6 +251,15 @@ function RECORD_LAW_EVALUATION(props) {
 
             if (_RESUME) _RESUME = _RESUME.join('\n\n')
             return <>
+                <DovelaTextarea
+                    id="law-total-observations-panel-1"
+                    density="editor"
+                    className="document-requirements-panel__editor"
+                    value={`${_RESUME}`}
+                    // onChange={handleEditorChange}
+                    spellCheck="false"
+                    rows={18}
+                />
                 <div className='row mx-0 mt-3'>
                     <div className='col-12 px-0'>
                         <button
@@ -270,6 +280,7 @@ function RECORD_LAW_EVALUATION(props) {
                         </button>
                     </div>
                 </div>
+
                 <div
                     id="law-total-observations-panel"
                     className="row mx-0"
