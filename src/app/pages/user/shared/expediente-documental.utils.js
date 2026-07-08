@@ -17,6 +17,7 @@ export {
 };
 
 const YES_REVIEW_VALUES = new Set(['SI', 'S', '1', 'TRUE']);
+const INTERNAL_EVALUATION_DOCUMENT_CODE_PATTERN = /^(law|arc|eng|rew)\d+$/i;
 
 export function splitValue(value, separator) {
     if (Array.isArray(value)) {
@@ -38,6 +39,10 @@ function normalizeCode(value) {
 
 function normalizeText(value) {
     return String(value || '').trim();
+}
+
+function isInternalEvaluationDocumentCode(value) {
+    return INTERNAL_EVALUATION_DOCUMENT_CODE_PATTERN.test(normalizeText(value));
 }
 
 function normalizeOriginState(value) {
@@ -351,7 +356,9 @@ function hasMatchingPhysicalEntry(digitalDoc, physicalEntries = []) {
 }
 
 export function buildDocumentEntriesFromLegacyData(digitalizedDocs = [], ventanillaDocs = []) {
-    const normalizedDigitalizedDocs = Array.isArray(digitalizedDocs) ? digitalizedDocs : [];
+    const normalizedDigitalizedDocs = Array.isArray(digitalizedDocs)
+        ? digitalizedDocs.filter((digitalDoc) => !isInternalEvaluationDocumentCode(digitalDoc?.id_replace || digitalDoc?.vr))
+        : [];
     const normalizedVentanillaDocs = Array.isArray(ventanillaDocs) && ventanillaDocs.some((entry) => Array.isArray(entry?.sub_lists))
         ? normalizeVentanillaDocs(ventanillaDocs)
         : (Array.isArray(ventanillaDocs) ? ventanillaDocs : []);

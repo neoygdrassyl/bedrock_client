@@ -5,6 +5,7 @@ import VIZUALIZER from '../../../../components/vizualizer.component';
 import FUNService from '../../../../services/fun.service';
 import Record_lawService from '../../../../services/record_law.service';
 import FUN_3_G_VIEW from '../../fun_forms/components/fun_3_g_view';
+import ObservationPanel from '../../../../components/ObservationPanel';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_LAW_FUN_LAW(props) {
@@ -225,21 +226,19 @@ export default function RECORD_LAW_FUN_LAW(props) {
     }
     let _COMPOENTN_DETAIL = () => {
         let values = _GET_STEP_TYPE('flaw', 'value');
-        return <>
-            <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                <div className='col'>
-                    <label>OBSERVACIONES ACCIONES DE PUBLICIDAD DE PROCESO</label>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-12">
-
-                    <textarea className="input-group" maxLength="4096" name="s_flaw_values" rows="3"
-                        defaultValue={values[0]} onBlur={() => manage_rl_flaw(false)}></textarea>
-                    <label>(maximo 4000 caracteres)</label>
-                </div>
-            </div>
-        </>
+        return <ObservationPanel
+            title="OBSERVACIONES ACCIONES DE PUBLICIDAD DE PROCESO"
+            helperText="(maximo 4000 caracteres)"
+            textareaProps={{
+                className: 'input-group',
+                maxLength: '4096',
+                name: 's_flaw_values',
+                rows: '3',
+                defaultValue: values[0],
+                onBlur: () => manage_rl_flaw(false),
+            }}
+            className="mt-3"
+        />
     }
     // ******************************* APIS **************************** // 
     var formData = new FormData();

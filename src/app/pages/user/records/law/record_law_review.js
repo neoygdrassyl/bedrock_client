@@ -10,7 +10,7 @@ import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../components/c
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/components/icon';
-import { DovelaTextarea } from '@/components/dovela-ui/dovela-textarea';
+import ObservationPanel from '../../../../components/ObservationPanel';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function RECORD_LAW_EVALUATION(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord } = props;
@@ -18,7 +18,6 @@ function RECORD_LAW_EVALUATION(props) {
     const [VRDocs, setVRDocs] = useState([]);
     const [load, setLoad] = useState(false);
     const [dynState, setDynState] = useState({});
-    const [showHistoricCorrections, setShowHistoricCorrections] = useState(false);
 
     const setVRList = (id_public) => {
         if (!id_public) return;
@@ -221,19 +220,19 @@ function RECORD_LAW_EVALUATION(props) {
         let _COMPONENT_CORRECTIONS = () => {
             let _CHILD = _GET_CHILD_REVIEW();
 
-            return <>
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>OBSERVACIONES FINALES ADICIONALES</label>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-12">
-                        <textarea className="input-group" maxLength="8176" id="r_l_g_corrections" rows="4"
-                            defaultValue={_CHILD.detail} onBlur={() => save_doc_corrections()}></textarea>
-                        <label>(maximo 8000 caracteres)</label>
-                    </div>
-                </div></>
+            return <ObservationPanel
+                title="OBSERVACIONES FINALES ADICIONALES"
+                helperText="(maximo 8000 caracteres)"
+                textareaProps={{
+                    className: 'input-group',
+                    maxLength: '8176',
+                    id: 'r_l_g_corrections',
+                    rows: '4',
+                    defaultValue: _CHILD.detail,
+                    onBlur: () => save_doc_corrections(),
+                }}
+                className="mt-3"
+            />
         }
         let _COMPOENTN_CORRECTIONS_HISTORIC = () => {
             let values_1 = _GET_STEP_TYPE('s1', 'value');
@@ -250,55 +249,19 @@ function RECORD_LAW_EVALUATION(props) {
             if (values_law[0]) _RESUME.push(`- Observaciones (Publicidad): \n${values_law[0]}`)
 
             if (_RESUME) _RESUME = _RESUME.join('\n\n')
-            return <>
-                <DovelaTextarea
-                    id="law-total-observations-panel-1"
-                    density="editor"
-                    className="document-requirements-panel__editor"
-                    value={`${_RESUME}`}
-                    // onChange={handleEditorChange}
-                    spellCheck="false"
-                    rows={18}
-                />
-                <div className='row mx-0 mt-3'>
-                    <div className='col-12 px-0'>
-                        <button
-                            type="button"
-                            className="w-100 d-flex align-items-center justify-content-between bg-white text-dark px-3 py-2"
-                            onClick={() => setShowHistoricCorrections(!showHistoricCorrections)}
-                            aria-expanded={showHistoricCorrections}
-                            aria-controls="law-total-observations-panel"
-                            style={{
-                                border: '1px solid #d5d9e2',
-                                borderRadius: '0.5rem',
-                                boxShadow: 'none',
-                                transition: 'border-color 200ms ease, box-shadow 200ms ease'
-                            }}
-                        >
-                            <span className='fw-bold'>OBSERVACIONES TOTALES</span>
-                            <Icon name={showHistoricCorrections ? 'ChevronUp' : 'ChevronDown'} size={16} />
-                        </button>
-                    </div>
-                </div>
-
-                <div
-                    id="law-total-observations-panel"
-                    className="row mx-0"
-                    aria-hidden={!showHistoricCorrections}
-                    style={{
-                        maxHeight: showHistoricCorrections ? '260px' : '0px',
-                        opacity: showHistoricCorrections ? 1 : 0,
-                        overflow: 'hidden',
-                        transition: 'max-height 260ms ease, opacity 220ms ease, margin-top 220ms ease',
-                        marginTop: showHistoricCorrections ? '0.5rem' : '0rem'
-                    }}
-                >
-                    <div className="col-12 px-0">
-                        {showHistoricCorrections ? <textarea className="input-group" maxLength="10100" name="s_flaw_values" rows="8" readOnly style={{ backgroundColor: '#2f2d38', color: '#f5f7fb' }}
-                            value={`${_RESUME}`}></textarea> : null}
-                    </div>
-                </div>
-            </>
+            return <ObservationPanel
+                title="OBSERVACIONES TOTALES"
+                headerId="law-total-observations-trigger"
+                panelId="law-total-observations-panel"
+                textareaProps={{
+                    className: 'input-group',
+                    maxLength: '10100',
+                    rows: '8',
+                    readOnly: true,
+                    value: `${_RESUME}`,
+                }}
+                className="mt-3"
+            />
         }
         let _COMPONENT_REVIEW = () => {
             let _CHILD = _GET_CHILD_REVIEW();

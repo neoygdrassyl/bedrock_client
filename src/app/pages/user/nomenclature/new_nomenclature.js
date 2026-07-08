@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import NOMENCLATURE_ANEX from './nomenclature_anex.componen';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import ObservationPanel from '../../../components/ObservationPanel';
 
 
 function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshList, closeModal }) {
@@ -356,9 +357,17 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 </div>
                 <div className="row mt-2">
                     <div className="col-12">
-                        <label >16. Observaciones (Máximo 2000 Caracteres)</label>
-                        <textarea className="form-control mb-3" rows="3" maxLength="1900" id="nomen_10"
-                            defaultValue={_CHILD.details}></textarea>
+                        <ObservationPanel
+                            title="16. Observaciones"
+                            helperText="(Máximo 2000 Caracteres)"
+                            textareaProps={{
+                                className: 'form-control mb-3',
+                                rows: '3',
+                                maxLength: '1900',
+                                id: 'nomen_10',
+                                defaultValue: _CHILD.details,
+                            }}
+                        />
                     </div>
                 </div>
                 <div className="row">

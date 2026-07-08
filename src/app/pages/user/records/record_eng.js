@@ -36,7 +36,7 @@ import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 
 // RECORDS
 
-function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION }) {
+function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, hideInlineBinnacles = false }) {
     const [currentRecord, setCurrentRecord] = useState(null);
     const [currentVersionR, setCurrentVersionR] = useState(null);
     const [loaded, setLoaded] = useState(false);
@@ -437,36 +437,38 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             category={currentRecord.category}
                                             arcSteps={arcSteps}
                                         />
-                                        <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
-                                            currentItem={currentItem}
-                                            currentVersion={currentVersion}
-                                            currentRecord={currentRecord}
-                                            currentVersionR={currentVersionR}
-                                            SERVICE={RECORD_LAW_SERVICE}
-                                            requestUpdateRecord={requestUpdateRecord}
-                                            AIM={"Jurídico"}
-                                            readOnly
-                                        />
-                                        <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
-                                            currentItem={currentItem}
-                                            currentVersion={currentVersion}
-                                            currentRecord={currentRecord}
-                                            currentVersionR={currentVersionR}
-                                            SERVICE={RECORD_ARCSERVICE}
-                                            requestUpdateRecord={requestUpdateRecord}
-                                            AIM={"Arquitectura"}
-                                            PATH={"record_arc"}
-                                            readOnly
-                                        />
-                                        <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
-                                            currentItem={currentItem}
-                                            currentVersion={currentVersion}
-                                            currentRecord={currentRecord}
-                                            currentVersionR={currentVersionR}
-                                            SERVICE={RECORD_ENG_SERVICE}
-                                            requestUpdateRecord={requestUpdateRecord}
-                                            AIM={"Estructural"}
-                                        />
+                                        {!hideInlineBinnacles ? <>
+                                            <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                SERVICE={RECORD_LAW_SERVICE}
+                                                requestUpdateRecord={requestUpdateRecord}
+                                                AIM={"Jurídico"}
+                                                readOnly
+                                            />
+                                            <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                SERVICE={RECORD_ARCSERVICE}
+                                                requestUpdateRecord={requestUpdateRecord}
+                                                AIM={"Arquitectura"}
+                                                PATH={"record_arc"}
+                                                readOnly
+                                            />
+                                            <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                SERVICE={RECORD_ENG_SERVICE}
+                                                requestUpdateRecord={requestUpdateRecord}
+                                                AIM={"Estructural"}
+                                            />
+                                        </> : null}
                                         {currentRecord.category == 0
                                             ?
                                             <>

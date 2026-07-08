@@ -44,7 +44,7 @@ export default function EXP_CLOCKS(props) {
   const [sidebarHeight, setSidebarHeight] = useState('auto');
 
   const [showTimeTravel, setShowTimeTravel] = useState(false);
-  const [showAlarms, setShowAlarms] = useState(true); // CAMBIO: true por defecto
+  const [showAlarms, setShowAlarms] = useState(false); // Cerrado por defecto; se abre desde el botón flotante.
   const [showCalendar, setShowCalendar] = useState(false);
 
   const [systemDate, setSystemDate] = useState(dayjs().format('YYYY-MM-DD'));
