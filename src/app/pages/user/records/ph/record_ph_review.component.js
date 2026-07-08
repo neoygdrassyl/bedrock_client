@@ -18,6 +18,7 @@ import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import usePHSave from './hooks/usePHSave';
 import { savePHStep } from './utils/phSaveStep';
+import ObservationPanel from '../../../../components/ObservationPanel';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -327,9 +328,18 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         let _COMPONENT_DETAILS_2 = () => {
             return <div className="row py-2">
                 <div className="col-12">
-                    <label>Observaciones, separe cada punto con (solo) un salto de linea. (máximo 5000 caracteres)</label>
-                    <textarea className="input-group" maxLength="5000" id="review_ph_detail_2" rows="4"
-                        value={acta.detail_2} onChange={(e) => setActa(prev => ({ ...prev, detail_2: e.target.value }))}></textarea>
+                    <ObservationPanel
+                        title="Observaciones"
+                        helperText="Separe cada punto con (solo) un salto de linea. (máximo 5000 caracteres)"
+                        textareaProps={{
+                            className: 'input-group',
+                            maxLength: '5000',
+                            id: 'review_ph_detail_2',
+                            rows: '4',
+                            value: acta.detail_2,
+                            onChange: (e) => setActa(prev => ({ ...prev, detail_2: e.target.value })),
+                        }}
+                    />
                 </div>
             </div>
         }
@@ -374,17 +384,19 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 }
             })
 
-            return <>
-                <div className="row py-3">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Observaciones totales</label>
-                        </div>
-                    </div>
-                    <textarea className="input-group" rows="8" style={{ backgroundColor: 'gainsboro' }}
-                        readOnly value={_RESUME}></textarea>
+            return <div className="row py-3">
+                <div className="col-12">
+                    <ObservationPanel
+                        title="Observaciones totales"
+                        textareaProps={{
+                            className: 'input-group',
+                            rows: '8',
+                            readOnly: true,
+                            value: _RESUME,
+                        }}
+                    />
                 </div>
-            </>
+            </div>
         }
         let _COMPONENTN_NOT = () => {
             return <>

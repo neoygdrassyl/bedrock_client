@@ -256,6 +256,63 @@ describe('expediente-documental utils', () => {
         });
     });
 
+    it('excluye documentos internos de evaluación del fallback de gestión documental', () => {
+        const entries = buildDocumentEntriesFromLegacyData([
+            {
+                id: 20,
+                id_public: 'A-01',
+                description: 'Documento normal',
+                id_replace: 'VR-1001',
+                pages: 4,
+                date: '2026-04-02',
+                path: 'docs/process/2026/1700',
+                filename: 'documento-normal.pdf',
+            },
+            {
+                id: 21,
+                id_public: '',
+                description: 'Acta Observaciones Juridico',
+                id_replace: 'law0',
+                pages: 1,
+                date: '2026-04-03',
+                path: 'docs/process/2026/1700',
+                filename: 'law0.pdf',
+            },
+            {
+                id: 22,
+                id_public: '',
+                description: 'Revision Arquitectonica',
+                id_replace: 'arc1',
+                pages: 1,
+                date: '2026-04-03',
+                path: 'docs/process/2026/1700',
+                filename: 'arc1.pdf',
+            },
+            {
+                id: 23,
+                id_public: '',
+                description: 'Revision Tecnica',
+                id_replace: 'eng2',
+                pages: 1,
+                date: '2026-04-03',
+                path: 'docs/process/2026/1700',
+                filename: 'eng2.pdf',
+            },
+            {
+                id: 24,
+                id_public: '',
+                description: 'Revision',
+                id_replace: 'rew1',
+                pages: 1,
+                date: '2026-04-03',
+                path: 'docs/process/2026/1700',
+                filename: 'rew1.pdf',
+            },
+        ]);
+
+        expect(entries.map((entry) => entry.vr)).toEqual(['VR-1001']);
+    });
+
     it('clasifica como escaneadas las filas consolidadas v3 con fuentes escaneadas y VR físico', () => {
         const rows = buildDocumentTableRows([
             {

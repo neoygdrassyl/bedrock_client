@@ -224,14 +224,19 @@ describe('RecordsLaw — Render', () => {
     });
 
     const trigger = screen.getByRole('button', { name: /observaciones totales/i });
+    const panel = container.querySelector('#law-total-observations-panel');
+    const resumeTextarea = container.querySelector('#law-total-observations-panel textarea[readonly]');
+
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(container.querySelector('textarea[name="s_flaw_values"][readonly]')).toBeNull();
+    expect(panel).toHaveAttribute('data-open', 'false');
+    expect(resumeTextarea).toBeTruthy();
+    expect(resumeTextarea).not.toHaveAttribute('name', 's_flaw_values');
+    expect(resumeTextarea).toHaveAccessibleName('OBSERVACIONES TOTALES');
 
     await user.click(trigger);
 
-    const resumeTextarea = container.querySelector('textarea[name="s_flaw_values"][readonly]');
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    expect(resumeTextarea).toBeTruthy();
+    expect(panel).toHaveAttribute('data-open', 'true');
     expect(resumeTextarea).not.toBeDisabled();
     expect(resumeTextarea).toHaveStyle({ backgroundColor: '#2f2d38', color: '#f5f7fb' });
     expect(resumeTextarea.value).toContain('Observacion documental');
@@ -241,6 +246,6 @@ describe('RecordsLaw — Render', () => {
     await user.click(trigger);
 
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(container.querySelector('textarea[name="s_flaw_values"][readonly]')).toBeNull();
+    expect(panel).toHaveAttribute('data-open', 'false');
   });
 });

@@ -326,12 +326,12 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(1)}><Icon name="file" size={16} /> GENERAR ORIGINAL </Button>
+                                <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(1)}><Icon name="file" size={16} /> GENERAR ORIGINAL </Button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(0)}><Icon name="file" size={16} /> GENERAR TITULAR </Button>
+                                <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(0)}><Icon name="file" size={16} /> GENERAR TITULAR </Button>
                             </div>
                         </div>
                     </div>

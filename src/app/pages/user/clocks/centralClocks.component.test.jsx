@@ -1,0 +1,160 @@
+import { fireEvent, render, screen } from '@testing-library/react';
+import EXP_CLOCKS from './centralClocks.component';
+
+const mockNotificationAlarms = vi.hoisted(() => [
+  {
+    id: 'alarm-1',
+    eventName: 'Notificación por aviso',
+    suggestion: 'Revisar fecha pendiente.',
+    severity: 'critical',
+    type: 'legal',
+    typeLabel: 'Legal',
+    remainingDays: -7,
+  },
+]);
+
+vi.mock('./hooks/useClocksManager', () => ({
+  calcularDiasHabiles: vi.fn(() => 0),
+  sumarDiasHabiles: vi.fn(() => 0),
+  useScheduleConfig: vi.fn(() => ({
+    scheduleConfig: {},
+    saveScheduleConfig: vi.fn(),
+    clearScheduleConfig: vi.fn(),
+    hasSchedule: false,
+  })),
+  useClocksManager: vi.fn(() => ({
+    canAddSuspension: false,
+    canAddExtension: false,
+    isDesisted: false,
+    processPhases: [],
+    curaduriaDetails: {},
+    suspensionPreActa: {},
+    suspensionPostActa: {},
+    extension: {},
+    getClock: vi.fn(() => null),
+    getClockVersion: vi.fn(() => null),
+    availableSuspensionTypes: [],
+    totalSuspensionDays: 0,
+  })),
+}));
+
+vi.mock('./config/clocks.definitions', () => ({
+  generateClocks: vi.fn(() => []),
+}));
+
+vi.mock('./hooks/useAlarms', () => ({
+  useAlarms: vi.fn(() => ({
+    notificationAlarms: mockNotificationAlarms,
+    processAlarms: [],
+    allAlarms: mockNotificationAlarms,
+  })),
+}));
+
+vi.mock('./components/AlarmsWidget', () => ({
+  AlarmsWidget: ({ alarms }) => <div data-testid="alarms-widget">Alertas ({alarms.length})</div>,
+}));
+
+vi.mock('./components/ClockRow', () => ({
+  DEFAULT_CLOCK_COLUMN_VISIBILITY: {},
+  getClockTableWidth: vi.fn(() => 320),
+  ClockTableHeader: () => <div data-testid="clock-table-header" />,
+  ClockRow: () => <div data-testid="clock-row" />,
+}));
+
+vi.mock('./components/SidebarInfo', () => ({
+  SidebarInfo: () => <aside data-testid="sidebar-info" />,
+}));
+
+vi.mock('./components/HolidayCalendar', () => ({
+  HolidayCalendar: () => <div data-testid="holiday-calendar" />,
+}));
+
+vi.mock('./components/ControlBar', () => ({
+  ControlBar: () => <div data-testid="control-bar" />,
+}));
+
+vi.mock('./components/ScheduleModal', () => ({
+  ScheduleModal: () => <div data-testid="schedule-modal" />,
+}));
+
+vi.mock('./components/ToolsMenu', () => ({
+  ToolsMenu: () => <div data-testid="tools-menu" />,
+}));
+
+vi.mock('./components/gantt/GanttModal', () => ({
+  GanttModal: () => <div data-testid="gantt-modal" />,
+}));
+
+vi.mock('../shared/processClosure.helpers', () => ({
+  getLicenseCompletionClock: vi.fn(() => ({ dateStart: '', label: '' })),
+}));
+
+vi.mock('@/components/icon', () => ({
+  Icon: ({ name }) => <span aria-hidden="true">{name}</span>,
+}));
+
+vi.mock('@/components/ui/button', () => ({
+  Button: ({ children, ...props }) => <button {...props}>{children}</button>,
+}));
+
+vi.mock('@/components/ui/checkbox', () => ({
+  Checkbox: ({ onCheckedChange, ...props }) => <input type="checkbox" onChange={(event) => onCheckedChange?.(event.target.checked)} {...props} />,
+}));
+
+vi.mock('../../../services/fun.service', () => ({
+  default: {
+    update: vi.fn(() => Promise.resolve({ data: 'OK' })),
+    update_sign: vi.fn(() => Promise.resolve({ data: 'OK' })),
+  },
+}));
+
+vi.mock('../../../utils/swalAdapter', () => ({
+  swalLoading: vi.fn(),
+  swalSuccess: vi.fn(),
+  swalError: vi.fn(),
+  swalConfirm: vi.fn(),
+  swalClose: vi.fn(),
+  swalFormDialog: vi.fn(),
+  Swal: {},
+}));
+
+vi.mock('../../../utils/iconSvgString', () => ({
+  getIconSvg: vi.fn(() => ''),
+}));
+
+const baseProps = {
+  swaMsg: {
+    title_wait: 'Espere',
+    text_wait: 'Guardando',
+    publish_success_title: 'Guardado',
+    publish_success_text: 'OK',
+    text_footer: '',
+    generic_eror_title: 'Error',
+    generic_error_text: 'Error',
+  },
+  currentItem: {
+    id: 1,
+    date: '2026-01-01',
+    fun_clocks: [],
+    fun_law: { id: 7, sign: '' },
+  },
+  currentVersion: 0,
+  outCodes: [],
+  requestUpdate: vi.fn(),
+};
+
+describe('EXP_CLOCKS alarm widget', () => {
+  it('starts with alarms closed and opens them from the floating button', () => {
+    render(<EXP_CLOCKS {...baseProps} />);
+
+    expect(screen.queryByTestId('alarms-widget')).not.toBeInTheDocument();
+
+    const showButton = screen.getByTitle('Mostrar Alertas');
+    expect(showButton).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+
+    fireEvent.click(showButton);
+
+    expect(screen.getByTestId('alarms-widget')).toHaveTextContent('Alertas (1)');
+  });
+});

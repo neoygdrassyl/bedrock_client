@@ -389,9 +389,9 @@ function FUN_CLOCKS_EMAILS(props) {
                                         <div className="text-end m-3">
                                             <p className="lead text-end fw-bold">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => this.minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
+                                                ? <Button type="button" variant="outline" size="sm" className="mx-3" onClick={() => this.minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                                 : ""}
-                                            <Button variant="outline" size="sm" onClick={() => this.addAttachEmail()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
+                                            <Button type="button" variant="outline" size="sm" onClick={() => this.addAttachEmail()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

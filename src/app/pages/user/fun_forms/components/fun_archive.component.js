@@ -344,7 +344,7 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                             </div>
                             : ""}
                         <div className="col  text-center">
-                            <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                            <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                         </div>
                     </div>
 

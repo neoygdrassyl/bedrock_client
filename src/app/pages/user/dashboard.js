@@ -14,6 +14,7 @@ import MailboxService from '../../services/mailbox.service';
 import AppointmentsService from '../../services/appointments.service';
 import BookmarkService from '../../services/bookmark.service';
 import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from './fun_forms/utils/expedienteWorkspaceRoute';
+import DashboardCriticalAlerts from './components/DashboardCriticalAlerts';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -340,6 +341,7 @@ function Dashboard() {
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-4 xl:ml-auto xl:w-[26rem] xl:flex-none" data-dovela-tour-id="dashboard-tracking">
+          <DashboardCriticalAlerts />
           <RecentExpedientesSummary items={recentExpedientes} />
           <TrackedExpedientesSummary
             personal={trackedExpedientes.personal}

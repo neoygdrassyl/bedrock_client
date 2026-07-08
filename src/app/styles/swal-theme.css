@@ -21,6 +21,7 @@
 
 /* Backdrop */
 .swal2-container {
+  z-index: 30000 !important;
   backdrop-filter: blur(4px);
   background: rgb(0 0 0 / 0.4) !important;
 }
