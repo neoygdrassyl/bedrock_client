@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import submitService from '../../../services/submit.service';
 import { GEM_CODE_LIST } from '../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
+import ObservationPanel from '../../../components/ObservationPanel';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation, globals, currentVersion, NAVIGATION, NAVIGATION_VERSION, requesRefresh, closeModal }) {
@@ -522,9 +523,17 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                                 defaultValue={LYDF_DATE} />
                         </div>
                         <div className="col-12">
-                            <label>Observaciones (Max 2000 Caracteres)</label>
-                            <textarea className="form-control mb-3" rows="3" id="c_46" maxLength="2000"
-                                defaultValue={_CHILD_VARS.item_c4}></textarea>
+                            <ObservationPanel
+                                title="Observaciones"
+                                helperText="(Max 2000 Caracteres)"
+                                textareaProps={{
+                                    className: 'form-control mb-3',
+                                    rows: '3',
+                                    id: 'c_46',
+                                    maxLength: '2000',
+                                    defaultValue: _CHILD_VARS.item_c4,
+                                }}
+                            />
                         </div>
                     </div>
                 </fieldset>
@@ -752,7 +761,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                                 <Button size="sm"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</Button>
                             </div>
                             <div className="col">
-                                <Button size="sm" onClick={() => _SET_MISSING_FUN_R()}><Icon name="tasks" size={16} /> CARGAR FALTANTES</Button>
+                                <Button type="button" size="sm" onClick={() => _SET_MISSING_FUN_R()}><Icon name="tasks" size={16} /> CARGAR FALTANTES</Button>
                             </div>
                         </div>
 

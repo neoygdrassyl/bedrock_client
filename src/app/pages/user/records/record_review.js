@@ -36,6 +36,96 @@ export function resolveStructuralReviewDate({ reviewDate = '', clocks = [] } = {
     return '';
 }
 
+function normalizeReviewValue(value) {
+    return value === undefined || value === null ? '' : String(value).trim();
+}
+
+function getElementValue(id, fallback = '') {
+    return globalThis.document?.getElementById(id)?.value ?? fallback;
+}
+
+function getReviewFormValues() {
+    return {
+        date: getElementValue('record_review_2'),
+        check: getElementValue('record_review_3'),
+        date_2: getElementValue('record_review_4'),
+        check_2: getElementValue('record_review_5'),
+        cub: getElementValue('rev_cub'),
+        vr: getElementValue('vr_selected11'),
+    };
+}
+
+export function shouldSaveReviewClock({ date = '', check = '2' } = {}) {
+    const selectedCheck = normalizeReviewValue(check);
+    return Boolean(selectedCheck) && selectedCheck !== '2' && Boolean(normalizeReviewValue(date));
+}
+
+export function validateObservationReview({ date = '', check = '2' } = {}) {
+    if (!normalizeReviewValue(date)) {
+        return {
+            ok: false,
+            title: 'FECHA REQUERIDA',
+            text: 'Debe ingresar la fecha del acta de observaciones.',
+        };
+    }
+
+    const selectedCheck = normalizeReviewValue(check);
+    if (!selectedCheck || selectedCheck === '2') {
+        return {
+            ok: false,
+            title: 'RESULTADO REQUERIDO',
+            text: 'Debe seleccionar el resultado del acta de observaciones.',
+        };
+    }
+
+    return { ok: true };
+}
+
+export function getObservationReviewDefaultValue(value = '') {
+    const selectedCheck = normalizeReviewValue(value);
+    return selectedCheck === '2' ? '' : selectedCheck;
+}
+
+export function shouldPersistReviewCub({ cub = '', vr = '' } = {}) {
+    return Boolean(normalizeReviewValue(cub) && normalizeReviewValue(vr));
+}
+
+export function shouldApplyLoadedCubRelation({ relationCub = '', currentRecordIdPublic = '' } = {}) {
+    const currentCub = normalizeReviewValue(currentRecordIdPublic);
+    return Boolean(currentCub) && normalizeReviewValue(relationCub) === currentCub;
+}
+
+export function getOptionalCorrectionDefaultValue(value = '') {
+    return normalizeReviewValue(value);
+}
+
+export function getOptionalCubDefaultValue({ cubSelected, currentRecordIdPublic = '' } = {}) {
+    if (cubSelected === undefined || cubSelected === null) return normalizeReviewValue(currentRecordIdPublic);
+    return normalizeReviewValue(cubSelected);
+}
+
+export function getOptionalVrDefaultValue(vrSelected = '') {
+    return normalizeReviewValue(vrSelected);
+}
+
+export function appendReviewCubFields(formData, { cub = '', prevCub = '' } = {}) {
+    const nextCub = normalizeReviewValue(cub);
+    const previousCub = normalizeReviewValue(prevCub);
+
+    if (!nextCub) {
+        if (!previousCub) return false;
+        formData.set('prev_cub', previousCub);
+        return true;
+    }
+
+    formData.set('id_public', nextCub);
+    formData.set('new_cub', nextCub);
+
+    if (previousCub) formData.set('prev_cub', previousCub);
+
+    return true;
+}
+
 function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, translation, globals, currentVersion, closeModal, NAVIGATION, navigation_version }) {
     const [currentRecord, setCurrentRecord] = useState(null);
     const [currentVersionR, setCurrentVersionR] = useState(null);
@@ -54,6 +144,11 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         setItem_Record();
         retrieveItem(currentId);
     }, []);
+
+    useEffect(() => {
+        if (!currentItem?.id_public || !currentRecord) return;
+        retrieveCubXvrs(currentItem.id_public, currentRecord.id_public);
+    }, [currentItem?.id_public, currentRecord?.id_public]);
 
     function setItem_Record() {
         RECORD_REVIEW_SERVICE.getRecord(currentId)
@@ -99,7 +194,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 SubmitService.getIdRelated(response.data.id_public).then(resres => {
                     setVrsRelated(resres.data);
                 })
-                retrieveCubXvrs(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -117,16 +211,27 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             });
     }
 
-    async function retrieveCubXvrs(id_public) {
+    async function retrieveCubXvrs(id_public, currentRecordIdPublic = '') {
         console.log(id_public)
         const response = await CubXVrDataService.getByFUN(id_public)
         const data = response.data.find(item => item.process === 'OBSERVACIONES Y CORRECIONES')
 
         if (data) {
-            document.getElementById("vr_selected11").value = data.vr
-            setVrSelected(data.vr);
-            setCubSelected(data.cub);
             setIdCUBxVr(data.id);
+            if (!shouldApplyLoadedCubRelation({ relationCub: data.cub, currentRecordIdPublic })) {
+                setCubSelected(null);
+                setVrSelected('');
+                return;
+            }
+
+            const vrSelect = document.getElementById("vr_selected11");
+            if (vrSelect) vrSelect.value = data.vr;
+            setVrSelected(data.vr);
+            setCubSelected(null);
+        } else {
+            setIdCUBxVr(null);
+            setVrSelected('');
+            setCubSelected(null);
         }
     }
 
@@ -366,7 +471,9 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 .then(response => {
                     new_id = response.data[0].cub;
                     new_id = _MANAGE_IDS(new_id, 'end')
-                    document.getElementById(_id).value = new_id;
+                    const target = document.getElementById(_id);
+                    if (target) target.value = new_id;
+                    if (_id === 'rev_cub') setCubSelected(new_id);
                 })
                 .catch(e => {
                     console.log(e);
@@ -579,7 +686,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
-                            <select className="form-select" id="record_review_3" defaultValue={currentRecord.check ?? 2} >
+                            <select className="form-select" id="record_review_3" defaultValue={getObservationReviewDefaultValue(currentRecord.check)} >
+                                <option value="">Seleccione resultado</option>
                                 <option value="0" className="text-danger">TIENE OBSERVACIONES</option>
                                 <option value="1" className="text-success">CUMPLE CON TODO</option>
                                 <option value="2" className="text-warning">SIN REVISAR</option>
@@ -609,7 +717,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="check-square" size={16} />
                             </span>
-                            <select className="form-select" id="record_review_5" defaultValue={currentRecord.check_2 ?? 2} >
+                            <select className="form-select" id="record_review_5" defaultValue={getOptionalCorrectionDefaultValue(currentRecord.check_2)} >
+                                <option value="">Sin aplicar</option>
                                 <option value="0" className="text-danger">NO CUMPLE (NEGADO)</option>
                                 <option value="1" className="text-success">CUMPLE CON TODO (APROBADO)</option>
                                 <option value="2" className="text-warning">SIN REVISAR</option>
@@ -1058,15 +1167,16 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         <label className="mt-2">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="rev_cub"
-                                defaultValue={cubSelected || currentRecord.id_public || ""} />
+                                value={getOptionalCubDefaultValue({ cubSelected, currentRecordIdPublic: currentRecord.id_public })}
+                                onChange={(e) => setCubSelected(e.target.value)} />
                             <Button type="button" size="sm" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div className="input-group">
-                            <select className="form-select" id="vr_selected11" defaultValue={vrSelected || ""}>
-                                <option disabled value=''>Seleccione una opción</option>
+                            <select className="form-select" id="vr_selected11" value={getOptionalVrDefaultValue(vrSelected)} onChange={(e) => setVrSelected(e.target.value)}>
+                                <option value=''>Sin seleccionar</option>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
@@ -1140,56 +1250,55 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
 
         let review = () => {
-            let lawId = _CHECK_LAW_REPORT();
-            let engId = _CHECK_ENG_REPORT();
-            let arcId = _CHECK_ARC_REPORT();
+            const reviewValues = getReviewFormValues();
 
-            /*
-            if (window.user.roleId != 1) {
-                if ((!lawId || !engId || !arcId)) return swalError({ title: "FALTAN INFORMES", text: `Para poder generar la revicion, se debe de tener los informes ya revisados.` })
-            }*/
-
-            swalConfirm({ title: "REALIZAR REVISION", text: `¿Esta seguro de realizar la revision ${currentItem.version} del ACTA DE CORRECIONES / OBSERVACIONES?`, icon: 'question', confirmButtonText: "REVISAR" }).then(SweetAlertResult => {
+            swalConfirm({ title: "REALIZAR REVISION", text: `¿Esta seguro de realizar la revision ${currentItem.version} del ACTA DE CORRECIONES / OBSERVACIONES?`, icon: 'question', confirmButtonText: "REVISAR" }).then(async SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    save_review();
-                    save_clock();
-                    createVRxCUB_relation();
-                    retrieveItem(currentItem.id);
+                    const observationValidation = validateObservationReview({
+                        date: reviewValues.date,
+                        check: reviewValues.check,
+                    });
+
+                    if (!observationValidation.ok) {
+                        return swalError({
+                            title: observationValidation.title,
+                            text: observationValidation.text,
+                            icon: 'warning',
+                        });
+                    }
+
+                    await save_review(reviewValues);
+                    save_clock(reviewValues);
+                    createVRxCUB_relation(reviewValues);
                 }
             });
         }
 
-        let save_review = () => {
+        let save_review = (reviewValues = getReviewFormValues()) => {
             formData = new FormData();
 
-            let date = document.getElementById("record_review_2").value;
-            let check = document.getElementById("record_review_3").value;
-            if (check != 2) {
-                formData.set('check', check);
-                formData.set('date', date);
-            }
-            let date_2 = document.getElementById("record_review_4").value;
-            let check_2 = document.getElementById("record_review_5").value;
-            if (check_2 != 2) {
-                formData.set('check_2', check_2);
+            let date = reviewValues.date;
+            let check = reviewValues.check;
+            formData.set('check', normalizeReviewValue(check));
+            formData.set('date', normalizeReviewValue(date));
 
-                formData.set('date_2', date_2);
-            }
+            let date_2 = reviewValues.date_2;
+            let check_2 = reviewValues.check_2;
+            formData.set('check_2', normalizeReviewValue(check_2));
+            formData.set('date_2', normalizeReviewValue(date_2));
 
-            let id_public = document.getElementById("rev_cub").value;
+            let id_public = reviewValues.cub;
             //let id_public = currentItem.id_public;
-            formData.set('id_public', id_public);
-            formData.set('new_cub', id_public);
-            formData.set('prev_cub', currentRecord.id_public);
+            appendReviewCubFields(formData, { cub: id_public, prevCub: currentRecord.id_public });
 
-            manage_review(true);
+            return manage_review(true);
         }
         let manage_review = (useMySwal) => {
             let _CHILD = currentRecord;
             if (useMySwal) {
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
-            RECORD_REVIEW_SERVICE.update(_CHILD.id, formData)
+            return RECORD_REVIEW_SERVICE.update(_CHILD.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
@@ -1224,20 +1333,20 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
             manage_clock(false, 50, false, formDataClock)
         }
-        let save_clock = () => {
+        let save_clock = (reviewValues = getReviewFormValues()) => {
             var formDataClock = new FormData();
 
             //let state = 30 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
             let version = currentItem.version;
 
-            let date = document.getElementById("record_review_2").value;
-            let date_2 = document.getElementById("record_review_4").value;
-            let review_1 = document.getElementById("record_review_3").value;
-            let review_2 = document.getElementById("record_review_5").value;
+            let date = reviewValues.date;
+            let date_2 = reviewValues.date_2;
+            let review_1 = reviewValues.check;
+            let review_2 = reviewValues.check_2;
             let desc_1 = review_1 == 1 ? "CUMPLE" : "NO CUMPLE";
             let desc_2 = review_2 == 1 ? "CUMPLE" : "NO CUMPLE";
 
-            if (review_1 != 2) {
+            if (shouldSaveReviewClock({ date, check: review_1 })) {
                 formDataClock = new FormData();
                 let state = 30;
                 formDataClock.set('date_start', date);
@@ -1248,7 +1357,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                 manage_clock(false, state, version, formDataClock);
             }
-            if (review_2 != 2) {
+            if (shouldSaveReviewClock({ date: date_2, check: review_2 })) {
                 formDataClock = new FormData();
                 let state = 49;
                 formDataClock.set('date_start', date_2);
@@ -1258,6 +1367,9 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 formDataClock.set('version', version);
 
                 manage_clock(false, state, version, formDataClock);
+            }
+            else {
+                clear_clock(49, version);
             }
 
         }
@@ -1333,6 +1445,21 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     });
             }
 
+        }
+        let clear_clock = (findOne, version) => {
+            const _CHILD = version ? _GET_CLOCK_STATE_VERSION(findOne, version) : _GET_CLOCK_STATE(findOne);
+            if (!_CHILD?.id) return;
+
+            FUN_SERVICE.delete_clock(_CHILD.id)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        requestUpdateRecord(currentItem.id)
+                        retrieveItem(currentItem.id)
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                });
         }
 
         let update_fun_0 = (e) => {
@@ -1633,9 +1760,12 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
             CREATE_CHECK_PDF(_RESUME, _CHECKS, currentItem, headers)
         }
-        let createVRxCUB_relation = () => {
-            let vr = document.getElementById("vr_selected11").value;
-            let cub = document.getElementById("rev_cub").value;
+        let createVRxCUB_relation = (reviewValues = getReviewFormValues()) => {
+            let vr = reviewValues.vr;
+            let cub = reviewValues.cub;
+
+            if (!shouldPersistReviewCub({ cub, vr })) return;
+
             let formatData = new FormData();
 
             formatData.set('vr', vr);
@@ -1644,7 +1774,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             formatData.set('process', 'OBSERVACIONES Y CORRECIONES');
             formatData.set('desc', 'Observaciones y correciones');
 
-            let date = document.getElementById('record_review_2').value;
+            let date = reviewValues.date;
             formatData.set('date', date);
 
             if (idCUBxVr) {

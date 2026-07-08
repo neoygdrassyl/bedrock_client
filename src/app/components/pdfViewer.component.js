@@ -1,12 +1,11 @@
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import { PDFDocument } from 'pdf-lib';
 import { useState, useEffect, useRef } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
 import http from '../../http-common';
-import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url';
+import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
 
@@ -111,11 +110,12 @@ function PDF_VIEWER({
                     throw new Error(`El servidor respondió con un contenido no compatible (${contentType}).`);
                 }
 
-                const pdfDoc = await PDFDocument.load(response.data);
-                const base64String = await pdfDoc.saveAsBase64({ dataUri: true });
+                const pdfData = response.data instanceof Uint8Array
+                    ? response.data
+                    : new Uint8Array(response.data);
 
                 if (!ignore) {
-                    setPdf(base64String);
+                    setPdf({ data: pdfData });
                 }
             } catch (error) {
                 console.log(error);
@@ -192,6 +192,15 @@ function PDF_VIEWER({
         setPageNumber(1);
     };
 
+    const onDocumentLoadError = (error) => {
+        setLoadError({
+            message: extractErrorMessage(error),
+            status: null,
+            requestId: null,
+            backendErrorId: null,
+        });
+    };
+
     const onPageLoadSuccess = () => {
         if (numPages == 1) {
             setRightBtn(1);
@@ -241,6 +250,7 @@ function PDF_VIEWER({
                         <Document
                             file={pdf}
                             onLoadSuccess={onDocumentLoadSuccess}
+                            onLoadError={onDocumentLoadError}
                             className="m-0 p-0"
                         >
                             <Page

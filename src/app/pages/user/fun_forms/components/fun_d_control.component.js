@@ -157,7 +157,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                                     <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                                 <div className="col">
-                                    <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                                    <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                 </div>
                             </div>
                             <ul className="list-group mx-2">

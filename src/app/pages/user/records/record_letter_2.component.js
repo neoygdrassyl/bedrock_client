@@ -418,7 +418,7 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
                         </div>
                         : ''}
                     <div className="col">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
                     </div>
                 </div>
             </form>

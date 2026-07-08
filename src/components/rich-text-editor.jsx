@@ -104,6 +104,7 @@ function RichTextEditor({
     readOnly = false,
     minHeight = 150,
     placeholder = 'Escribe aquí...',
+    toolbarItems,
     onBlur,
     onSave,
     onPlainTextChange,
@@ -122,6 +123,20 @@ function RichTextEditor({
     const [uploadingImage, setUploadingImage] = useState(false);
     const [showTextColorPicker, setShowTextColorPicker] = useState(false);
     const [showHighlightPicker, setShowHighlightPicker] = useState(false);
+    const visibleToolbarItems = useMemo(() => new Set(toolbarItems || [
+        'bold',
+        'italic',
+        'underline',
+        'strike',
+        'textColor',
+        'highlight',
+        'heading',
+        'bulletList',
+        'numberedList',
+        'checkList',
+        'quote',
+        'image',
+    ]), [toolbarItems]);
 
     const editorUploadFile = useCallback(async (file) => {
         if (!uploadFile) {
@@ -316,60 +331,64 @@ function RichTextEditor({
         /> : null}
         <div className={`rich-text-editor-shell ${readOnly ? 'rich-text-editor-shell--readonly' : ''}`} style={{ '--rich-text-min-height': `${minHeight}px` }}>
             {!readOnly ? <div className="rich-text-editor-toolbar" role="toolbar" aria-label="Opciones de formato del editor enriquecido">
-                <div className="rich-text-editor-toolbar-group">
-                    <Button type="button" variant="ghost" size="sm" title="Negrita" onMouseDown={(event) => event.preventDefault()} onClick={() => applyInlineStyle('bold')}><Icon name="Bold" size={14} /></Button>
-                    <Button type="button" variant="ghost" size="sm" title="Cursiva" onMouseDown={(event) => event.preventDefault()} onClick={() => applyInlineStyle('italic')}><Icon name="Italic" size={14} /></Button>
-                    <Button type="button" variant="ghost" size="sm" title="Subrayado" onMouseDown={(event) => event.preventDefault()} onClick={() => applyInlineStyle('underline')}><Icon name="Underline" size={14} /></Button>
-                    <Button type="button" variant="ghost" size="sm" title="Tachado" onMouseDown={(event) => event.preventDefault()} onClick={() => applyInlineStyle('strike')}><Icon name="Strikethrough" size={14} /></Button>
-                </div>
-                <div className="rich-text-editor-toolbar-group" style={{ position: 'relative' }}>
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        title="Color de texto"
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => { setShowTextColorPicker((v) => !v); setShowHighlightPicker(false); }}
-                    >
-                        <Icon name="Palette" size={14} />
-                    </Button>
-                    {showTextColorPicker && (
-                        <ColorPicker
-                            label="Paleta de color de texto"
-                            colors={TEXT_COLORS}
-                            onSelect={applyTextColor}
-                            onClose={() => setShowTextColorPicker(false)}
-                        />
-                    )}
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        title="Resaltado"
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => { setShowHighlightPicker((v) => !v); setShowTextColorPicker(false); }}
-                    >
-                        <Icon name="Highlighter" size={14} />
-                    </Button>
-                    {showHighlightPicker && (
-                        <ColorPicker
-                            label="Paleta de resaltado"
-                            colors={HIGHLIGHT_COLORS}
-                            onSelect={applyHighlightColor}
-                            onClose={() => setShowHighlightPicker(false)}
-                        />
-                    )}
-                </div>
-                <div className="rich-text-editor-toolbar-group">
-                    <Button type="button" variant="ghost" size="sm" title="Título" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('heading', { level: 3 })}><Icon name="Heading3" size={14} /></Button>
-                    <Button type="button" variant="ghost" size="sm" title="Lista" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('bulletListItem')}><Icon name="List" size={14} /></Button>
-                    <Button type="button" variant="ghost" size="sm" title="Lista numerada" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('numberedListItem')}><Icon name="ListOrdered" size={14} /></Button>
-                    <Button type="button" variant="ghost" size="sm" title="Checklist" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('checkListItem')}><Icon name="ListChecks" size={14} /></Button>
-                    <Button type="button" variant="ghost" size="sm" title="Cita" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('quote')}><Icon name="Quote" size={14} /></Button>
-                </div>
+                {['bold', 'italic', 'underline', 'strike'].some((item) => visibleToolbarItems.has(item)) ? <div className="rich-text-editor-toolbar-group">
+                    {visibleToolbarItems.has('bold') ? <Button type="button" variant="ghost" size="sm" title="Negrita" onMouseDown={(event) => event.preventDefault()} onClick={() => applyInlineStyle('bold')}><Icon name="Bold" size={14} /></Button> : null}
+                    {visibleToolbarItems.has('italic') ? <Button type="button" variant="ghost" size="sm" title="Cursiva" onMouseDown={(event) => event.preventDefault()} onClick={() => applyInlineStyle('italic')}><Icon name="Italic" size={14} /></Button> : null}
+                    {visibleToolbarItems.has('underline') ? <Button type="button" variant="ghost" size="sm" title="Subrayado" onMouseDown={(event) => event.preventDefault()} onClick={() => applyInlineStyle('underline')}><Icon name="Underline" size={14} /></Button> : null}
+                    {visibleToolbarItems.has('strike') ? <Button type="button" variant="ghost" size="sm" title="Tachado" onMouseDown={(event) => event.preventDefault()} onClick={() => applyInlineStyle('strike')}><Icon name="Strikethrough" size={14} /></Button> : null}
+                </div> : null}
+                {['textColor', 'highlight'].some((item) => visibleToolbarItems.has(item)) ? <div className="rich-text-editor-toolbar-group" style={{ position: 'relative' }}>
+                    {visibleToolbarItems.has('textColor') ? <>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            title="Color de texto"
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => { setShowTextColorPicker((v) => !v); setShowHighlightPicker(false); }}
+                        >
+                            <Icon name="Palette" size={14} />
+                        </Button>
+                        {showTextColorPicker && (
+                            <ColorPicker
+                                label="Paleta de color de texto"
+                                colors={TEXT_COLORS}
+                                onSelect={applyTextColor}
+                                onClose={() => setShowTextColorPicker(false)}
+                            />
+                        )}
+                    </> : null}
+                    {visibleToolbarItems.has('highlight') ? <>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            title="Resaltado"
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => { setShowHighlightPicker((v) => !v); setShowTextColorPicker(false); }}
+                        >
+                            <Icon name="Highlighter" size={14} />
+                        </Button>
+                        {showHighlightPicker && (
+                            <ColorPicker
+                                label="Paleta de resaltado"
+                                colors={HIGHLIGHT_COLORS}
+                                onSelect={applyHighlightColor}
+                                onClose={() => setShowHighlightPicker(false)}
+                            />
+                        )}
+                    </> : null}
+                </div> : null}
+                {['heading', 'bulletList', 'numberedList', 'checkList', 'quote'].some((item) => visibleToolbarItems.has(item)) ? <div className="rich-text-editor-toolbar-group">
+                    {visibleToolbarItems.has('heading') ? <Button type="button" variant="ghost" size="sm" title="Título" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('heading', { level: 3 })}><Icon name="Heading3" size={14} /></Button> : null}
+                    {visibleToolbarItems.has('bulletList') ? <Button type="button" variant="ghost" size="sm" title="Lista" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('bulletListItem')}><Icon name="List" size={14} /></Button> : null}
+                    {visibleToolbarItems.has('numberedList') ? <Button type="button" variant="ghost" size="sm" title="Lista numerada" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('numberedListItem')}><Icon name="ListOrdered" size={14} /></Button> : null}
+                    {visibleToolbarItems.has('checkList') ? <Button type="button" variant="ghost" size="sm" title="Checklist" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('checkListItem')}><Icon name="ListChecks" size={14} /></Button> : null}
+                    {visibleToolbarItems.has('quote') ? <Button type="button" variant="ghost" size="sm" title="Cita" onMouseDown={(event) => event.preventDefault()} onClick={() => applyBlockType('quote')}><Icon name="Quote" size={14} /></Button> : null}
+                </div> : null}
                 <div className="rich-text-editor-toolbar-group rich-text-editor-toolbar-group--grow">
                     <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleFileChange} />
-                    <Button type="button" variant="ghost" size="sm" title="Insertar imagen" disabled={!uploadFile || uploadingImage} onClick={() => fileInputRef.current?.click()}><Icon name="ImagePlus" size={14} /></Button>
+                    {visibleToolbarItems.has('image') ? <Button type="button" variant="ghost" size="sm" title="Insertar imagen" disabled={!uploadFile || uploadingImage} onClick={() => fileInputRef.current?.click()}><Icon name="ImagePlus" size={14} /></Button> : null}
                     <Button type="button" variant="default" size="sm" className="rich-text-editor-save" onClick={handleSave}><Icon name="Save" size={14} /> Guardar</Button>
                 </div>
             </div> : null}
