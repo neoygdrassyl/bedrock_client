@@ -4,6 +4,8 @@ import { Bell, Bug, Check, FileText, LayoutDashboard, RotateCcw, UserCircle2, Se
 import DataService from '../../services/data.service.js';
 import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
 import DocumentRequirementsConfigPanel from './document_requirements/DocumentRequirementsConfigPanel.jsx';
+import DocumentRequirementsExplorerPage from './document_requirements/DocumentRequirementsExplorerPage.jsx';
+import LegalConfigInitialPage from './legal_config/LegalConfigInitialPage.jsx';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
 import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
 import {
@@ -28,7 +30,13 @@ const NAV_ITEMS = [
   {
     key: 'requisitos-documentales',
     label: 'Requisitos documentales',
-    description: 'Borrador, publicación y reglas documentales',
+    description: 'Consulta requisitos por actuación y entiende por qué aplican',
+    icon: FileText,
+  },
+  {
+    key: 'configuracion-actuaciones',
+    label: 'Actuaciones y textos',
+    description: 'Configura reglas, documentos y fundamentos',
     icon: FileText,
   },
   {
@@ -95,7 +103,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="settings-shell">
+    <div className={`settings-shell${activeKey === 'configuracion-actuaciones' ? ' settings-shell--wide' : ''}`}>
       <header className="settings-shell__header">
         <div className="settings-shell__title">
           <SettingsIcon size={20} className="settings-shell__title-icon" />
@@ -135,7 +143,8 @@ export default function SettingsPage() {
 
         <main className="settings-panel" role="main">
           {activeKey === 'alarmas' && <AlarmsV2ConfigPanel />}
-          {activeKey === 'requisitos-documentales' && <DocumentRequirementsConfigPanel />}
+          {activeKey === 'requisitos-documentales' && <DocumentRequirementsExplorerPage />}
+          {activeKey === 'configuracion-actuaciones' && <LegalConfigInitialPage />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
           {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
           {activeKey === 'errorReports' && canManageErrorReports && (

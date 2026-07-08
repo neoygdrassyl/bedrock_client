@@ -7,6 +7,7 @@
 /* ── Design Tokens (Dovela redesign) ─────────────────────────────── */
 @layer base {
   :root {
+    /* Semantic tokens */
     --background: 210 20% 98%;
     --foreground: 222.2 47.4% 11.2%;
     --card: 0 0% 100%;
@@ -32,9 +33,57 @@
     --sidebar: 222.2 47.4% 11.2%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-accent: 221 83% 53%;
+
+    /* Component tokens */
+    --button-radius: 0.5rem;
+    --button-height-sm: 2.25rem;
+    --button-height-md: 2.5rem;
+    --button-height-lg: 2.75rem;
+    --button-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
+
+    --badge-radius: 999px;
+    --badge-padding-x: 0.7rem;
+    --badge-padding-y: 0.3rem;
+    --badge-font-size: 0.75rem;
+
+    --operational-review-bg: 214 100% 97%;
+    --operational-review-border: 214 84% 72%;
+    --operational-review-text: 222.2 47.4% 11.2%;
+    --operational-warning-bg: 48 96% 89%;
+    --operational-warning-border: 38 92% 50%;
+    --operational-warning-text: 30 88% 22%;
+    --operational-danger-bg: 0 93% 94%;
+    --operational-danger-border: 0 72% 51%;
+    --operational-danger-text: 0 74% 28%;
+    --operational-success-bg: 142 76% 94%;
+    --operational-success-border: 142 55% 45%;
+    --operational-success-text: 142 72% 22%;
+    --operational-neutral-bg: 210 20% 96%;
+    --operational-neutral-border: 214.3 31.8% 91.4%;
+    --operational-neutral-text: 215.4 16.3% 46.9%;
+
+    --card-radius: 0.5rem;
+    --card-padding: 1rem;
+    --card-padding-compact: 0.85rem;
+    --card-shadow: 0 1px 2px hsl(var(--foreground) / 0.05);
+
+    --alert-radius: 0.5rem;
+    --alert-padding-x: 0.95rem;
+    --alert-padding-y: 0.75rem;
+    --alert-gap: 0.85rem;
+    --alert-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
+
+    --input-radius: 0.5rem;
+    --input-height-compact: 2.25rem;
+    --input-height: 2.5rem;
+    --input-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
+    --textarea-min-height-compact: 6rem;
+    --textarea-min-height: 8rem;
+    --textarea-min-height-editor: 26rem;
   }
 
   .dark {
+    /* Semantic tokens */
     --background: 222.2 47.4% 11.2%;
     --foreground: 210 40% 98%;
     --card: 217.2 32.6% 17.5%;
@@ -59,6 +108,12 @@
     --sidebar: 222.2 47.4% 11.2%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-accent: 217.2 91.2% 59.8%;
+
+    /* Component tokens */
+    --button-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.24);
+    --card-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.22);
+    --alert-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.18);
+    --input-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.18);
   }
 
   :root[data-dovela-palette='dovela'] {
@@ -174,6 +229,39 @@
     --warning-foreground: 222.2 47.4% 11.2%;
     --ring: 199 69% 58%;
     --sidebar-accent: 199 69% 58%;
+  }
+}
+
+@layer components {
+  .dovela-operational-state {
+    border: 1px solid hsl(var(--operational-neutral-border));
+    border-radius: var(--radius);
+    background: hsl(var(--operational-neutral-bg));
+    color: hsl(var(--operational-neutral-text));
+  }
+
+  .dovela-operational-state[data-tone='info'] {
+    border-color: hsl(var(--operational-review-border));
+    background: hsl(var(--operational-review-bg));
+    color: hsl(var(--operational-review-text));
+  }
+
+  .dovela-operational-state[data-tone='warning'] {
+    border-color: hsl(var(--operational-warning-border));
+    background: hsl(var(--operational-warning-bg));
+    color: hsl(var(--operational-warning-text));
+  }
+
+  .dovela-operational-state[data-tone='danger'] {
+    border-color: hsl(var(--operational-danger-border));
+    background: hsl(var(--operational-danger-bg));
+    color: hsl(var(--operational-danger-text));
+  }
+
+  .dovela-operational-state[data-tone='success'] {
+    border-color: hsl(var(--operational-success-border));
+    background: hsl(var(--operational-success-bg));
+    color: hsl(var(--operational-success-text));
   }
 }
 

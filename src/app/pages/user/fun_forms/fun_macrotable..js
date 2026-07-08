@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect, useRef } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
+import { shouldUseStructuralReport } from './utils/expedienteDomainRules.js';
 
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
@@ -2191,6 +2192,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         let _MODULE_BTN_POP = (row) => {
             const isOA = regexChecker_isOA_2(row);
             let rules = row.rules ? row.rules.split(';') : [];
+            const showStructuralReport = shouldUseStructuralReport(row, row.version, { isPropertyHorizontal: regexChecker_isPh(row, true) });
             return <>
                 <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'general', 'macro')}>
                     <Icon name="FolderOpen" size={14} className="text-primary" /> Detalles
@@ -2233,7 +2235,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                     <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')}>
                                         <Icon name="Building2" size={14} className="text-warning" /> Inf. Arquitectónico
                                     </DropdownMenuItem>
-                                    {rules[1] != 1 ? <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')}>
+                                    {showStructuralReport ? <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')}>
                                         <Icon name="Cog" size={14} className="text-warning" /> Inf. Estructural
                                     </DropdownMenuItem> : ''}
                                     <DropdownMenuItem onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')}>

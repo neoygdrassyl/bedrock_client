@@ -35,7 +35,7 @@ import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION }) {
+function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, hideStructuralBinnacle = false }) {
     const [currentRecord, setCurrentRecord] = useState(null);
     const [currentVersionR, setCurrentVersionR] = useState(null);
     const [loaded, setLoaded] = useState(false);
@@ -402,7 +402,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         AIM={"Arquitectura"}
                                         PATH={"record_arc"}
                                     />
-                                    <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                    {!hideStructuralBinnacle ? <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
                                         currentItem={currentItem}
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
@@ -410,7 +410,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         SERVICE={RECORD_ENG_SERVICE}
                                         requestUpdateRecord={requestUpdateRecord}
                                         AIM={"Estructural"}
-                                        readOnly />
+                                        readOnly /> : null}
 
                                 </fieldset>
                                 {_GLOBAL_ID == 'cb1' ?

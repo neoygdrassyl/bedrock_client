@@ -1,0 +1,348 @@
+/* Configuración de actuaciones — usa los tokens semánticos de src/index.css
+   (--background, --card, --border, --primary, etc.) y los componentes
+   dovela-ui para bordes, fondos, radios y sombras. Las reglas que quedan
+   aquí son únicamente de layout específico de este módulo (grids,
+   posicionamiento del grafo, alturas), tal como indica
+   src/components/dovela-ui/README.md. */
+
+.legal-config-page--simple {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+  width: 100%;
+  color: hsl(var(--foreground));
+}
+
+.legal-config-pane-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  background: hsl(var(--muted) / 0.4);
+}
+
+.legal-config-pane-nav .is-active {
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.35);
+}
+
+.legal-config-actuation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 0.85rem;
+  min-height: 560px;
+}
+
+/* ───────── Árbol de actuaciones ───────── */
+
+.actuation-graph-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.actuation-graph-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.6);
+}
+
+.actuation-graph-card__header h3 {
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  font-size: 0.95rem;
+}
+
+.actuation-graph-card__header span {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.78rem;
+}
+
+.actuation-graph-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.actuation-graph-controls strong {
+  min-width: 3.2rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.actuation-graph-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 470px;
+  overflow: auto;
+  background:
+    linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px),
+    radial-gradient(circle at 20% 10%, hsl(var(--primary) / 0.12), transparent 28%),
+    hsl(var(--muted) / 0.25);
+  background-size: 28px 28px, 28px 28px, auto, auto;
+}
+
+.actuation-graph-stage {
+  position: relative;
+  transform-origin: top left;
+}
+
+.actuation-graph-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.actuation-graph-lines path {
+  fill: none;
+  stroke: hsl(var(--primary) / 0.45);
+  stroke-width: 2;
+}
+
+.actuation-graph-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.26rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  padding: 0.85rem 0.95rem;
+  text-align: left;
+  box-shadow: var(--card-shadow);
+}
+
+.actuation-graph-node strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: hsl(var(--foreground));
+  font-size: 0.88rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.actuation-graph-node span {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.72rem;
+}
+
+.actuation-graph-node.is-selected {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.12);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.18);
+}
+
+/* ───────── Panel de acciones ───────── */
+
+.legal-config-action-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.9rem;
+}
+
+.legal-config-selected-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem;
+}
+
+.legal-config-selected-card span {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.78rem;
+}
+
+.legal-config-selected-card strong {
+  color: hsl(var(--foreground));
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.legal-config-selected-card small {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.78rem;
+}
+
+.legal-config-action-stack {
+  display: grid;
+  gap: 0.55rem;
+}
+
+/* ───────── Relaciones rápidas y lista ───────── */
+
+.legal-config-quick-relations header,
+.legal-config-relation-list header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.6);
+}
+
+.legal-config-quick-relations header h3,
+.legal-config-relation-list header h3 {
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  font-size: 0.95rem;
+}
+
+.legal-config-relation-list header span {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.78rem;
+}
+
+.legal-config-quick-relations__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.72rem;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.legal-config-native-select {
+  width: 100%;
+  min-height: var(--input-height);
+  border: 1px solid hsl(var(--input));
+  border-radius: var(--input-radius);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: var(--input-shadow);
+  outline: none;
+  padding: 0.55rem 0.68rem;
+  font-size: 0.875rem;
+}
+
+.legal-config-native-select:focus-visible {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.35);
+}
+
+.legal-config-native-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.legal-config-native-select option {
+  /* El navegador renderiza el popup nativo del <select> con su propio tema;
+     se fija un texto oscuro para legibilidad, ya que la mayoría de motores
+     ignoran los tokens de color en <option>. */
+  color: #111827;
+}
+
+.legal-config-relation-list__items {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.legal-config-relation-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.legal-config-relation-card strong {
+  overflow: hidden;
+  color: hsl(var(--foreground));
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legal-config-relation-card small {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.74rem;
+}
+
+.legal-config-empty-compact {
+  padding: 1rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.74rem;
+}
+
+/* ───────── Formularios de diálogo ───────── */
+
+.legal-config-modal-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+/* ───────── Modal de previsualización de relaciones ───────── */
+
+.legal-config-preview-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.legal-config-preview-list {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.legal-config-preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.7rem 0.85rem;
+}
+
+.legal-config-preview-item strong {
+  color: hsl(var(--foreground));
+  font-size: 0.85rem;
+}
+
+.legal-config-preview-empty {
+  margin: 0;
+  padding: 1rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+/* ───────── Responsive ───────── */
+
+@media (max-width: 1080px) {
+  .legal-config-actuation-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .legal-config-action-panel {
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .actuation-graph-card__header,
+  .legal-config-quick-relations header,
+  .legal-config-relation-list header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .legal-config-pane-nav {
+    grid-template-columns: 1fr;
+  }
+}

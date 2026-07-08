@@ -1098,3 +1098,16 @@
     align-items: stretch;
   }
 }
+
+/* Wide, isolated canvas for the new legal_config presentation module. */
+.settings-shell--wide {
+  max-width: min(1680px, calc(100vw - 1.5rem));
+}
+
+.settings-shell--wide .settings-shell__body {
+  grid-template-columns: 250px minmax(0, 1fr);
+}
+
+.settings-shell--wide .settings-panel {
+  min-width: 0;
+}
