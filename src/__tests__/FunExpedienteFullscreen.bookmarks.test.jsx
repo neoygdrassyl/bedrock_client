@@ -77,6 +77,7 @@ vi.mock('../app/pages/user/records/record_eng', () => ({ __esModule: true, defau
 vi.mock('../app/pages/user/records/record_review', () => ({ __esModule: true, default: () => <div data-testid="module-review" /> }));
 vi.mock('../app/pages/user/records/record_ph', () => ({ __esModule: true, default: () => <div data-testid="module-ph" /> }));
 vi.mock('../app/pages/user/expeditions/expedition.page', () => ({ __esModule: true, default: () => <div data-testid="module-expedition" /> }));
+vi.mock('../app/pages/user/records/RecordsBinnacleStack', () => ({ __esModule: true, default: () => <div data-testid="records-binnacle-stack" /> }));
 
 import { FunExpedienteFullscreen } from '../app/pages/user/fun_forms/components/FunExpedienteFullscreen';
 import { buildExpedienteWorkspaceUrl, parseExpedienteWorkspaceSearch } from '../app/pages/user/fun_forms/utils/expedienteWorkspaceRoute';
@@ -189,6 +190,56 @@ describe('FunExpedienteFullscreen bookmarks', () => {
       section: 'informes',
       report: 'ph',
       rightPanel: false,
+    });
+
+    expect(buildExpedienteWorkspaceUrl(expediente, { module: 'record_ph', rightPanel: true })).toBe(
+      '/funmanage/expediente/2026-00123?section=informes&report=ph&panel=open'
+    );
+
+    expect(parseExpedienteWorkspaceSearch('?section=informes&report=ph&panel=open')).toMatchObject({
+      section: 'informes',
+      report: 'ph',
+      rightPanel: true,
+    });
+
+    expect(buildExpedienteWorkspaceUrl(expediente, { module: 'record_ph', rightPanel: false })).toBe(
+      '/funmanage/expediente/2026-00123?section=informes&report=ph'
+    );
+
+    expect(parseExpedienteWorkspaceSearch('?section=informes&report=ph&panel=closed')).toMatchObject({
+      section: 'informes',
+      report: 'ph',
+      rightPanel: false,
+    });
+  });
+
+  it('abre por defecto el panel solo en informes juridico, arquitectonico y estructural', () => {
+    expect(parseExpedienteWorkspaceSearch('?section=informes')).toMatchObject({
+      section: 'informes',
+      report: 'juridico',
+      rightPanel: true,
+    });
+
+    expect(parseExpedienteWorkspaceSearch('?section=informes&report=arquitectonico')).toMatchObject({
+      section: 'informes',
+      report: 'arquitectonico',
+      rightPanel: true,
+    });
+
+    expect(parseExpedienteWorkspaceSearch('?section=informes&report=estructural')).toMatchObject({
+      section: 'informes',
+      report: 'estructural',
+      rightPanel: true,
+    });
+
+    expect(parseExpedienteWorkspaceSearch('?section=tiempos')).toMatchObject({
+      section: 'tiempos',
+      rightPanel: false,
+    });
+
+    expect(parseExpedienteWorkspaceSearch('?section=tiempos&panel=open')).toMatchObject({
+      section: 'tiempos',
+      rightPanel: true,
     });
   });
 

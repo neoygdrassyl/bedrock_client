@@ -11,6 +11,7 @@ const WORKSPACE_SECTIONS = new Set([
 ]);
 
 const WORKSPACE_REPORTS = new Set(['juridico', 'arquitectonico', 'estructural', 'ph']);
+const DEFAULT_RIGHT_PANEL_REPORTS = new Set(['juridico', 'arquitectonico', 'estructural']);
 const RECENT_EXPEDIENTES_STORAGE_KEY = 'dovela.recentExpedientes';
 const RECENT_EXPEDIENTES_CHANGED_EVENT = 'dovela:recent-expedientes-changed';
 
@@ -33,15 +34,25 @@ export function getExpedienteWorkspaceRadicado(expediente) {
   return expediente?.id_public ?? expediente?.radicado ?? expediente?.currentPublic ?? '';
 }
 
+export function isBinnaclePanelDefaultOpen(section, report = 'juridico') {
+  if (section === 'informes') return DEFAULT_RIGHT_PANEL_REPORTS.has(report);
+  return DEFAULT_RIGHT_PANEL_REPORTS.has(section);
+}
+
 export function normalizeExpedienteWorkspaceTarget(options = {}) {
   const legacyTarget = LEGACY_MODULE_TO_WORKSPACE[options.module] || {};
   const section = options.section || legacyTarget.section || 'detalles';
   const report = options.report || legacyTarget.report || 'juridico';
+  const normalizedSection = WORKSPACE_SECTIONS.has(section) ? section : 'detalles';
+  const normalizedReport = WORKSPACE_REPORTS.has(report) ? report : 'juridico';
+  const hasExplicitRightPanel = Object.prototype.hasOwnProperty.call(options, 'rightPanel');
 
   return {
-    section: WORKSPACE_SECTIONS.has(section) ? section : 'detalles',
-    report: WORKSPACE_REPORTS.has(report) ? report : 'juridico',
-    rightPanel: options.rightPanel === true,
+    section: normalizedSection,
+    report: normalizedReport,
+    rightPanel: hasExplicitRightPanel
+      ? options.rightPanel === true
+      : isBinnaclePanelDefaultOpen(normalizedSection, normalizedReport),
   };
 }
 
@@ -51,6 +62,8 @@ export function buildExpedienteWorkspaceUrl(expediente, options = {}) {
 
   const target = normalizeExpedienteWorkspaceTarget(options);
   const params = new URLSearchParams();
+  const hasExplicitRightPanel = Object.prototype.hasOwnProperty.call(options, 'rightPanel');
+  const defaultRightPanelOpen = isBinnaclePanelDefaultOpen(target.section, target.report);
 
   if (target.section !== 'detalles') {
     params.set('section', target.section);
@@ -60,8 +73,10 @@ export function buildExpedienteWorkspaceUrl(expediente, options = {}) {
     params.set('report', target.report);
   }
 
-  if (target.rightPanel) {
+  if (hasExplicitRightPanel && target.rightPanel !== defaultRightPanelOpen && target.rightPanel) {
     params.set('panel', 'open');
+  } else if (hasExplicitRightPanel && target.rightPanel !== defaultRightPanelOpen && !target.rightPanel) {
+    params.set('panel', 'closed');
   }
 
   const query = params.toString();
@@ -86,12 +101,19 @@ export function openExpedienteWorkspace(expediente, options = {}) {
 
 export function parseExpedienteWorkspaceSearch(search) {
   const params = search instanceof URLSearchParams ? search : new URLSearchParams(search || '');
-
-  return normalizeExpedienteWorkspaceTarget({
+  const panel = params.get('panel');
+  const target = {
     section: params.get('section') || undefined,
     report: params.get('report') || undefined,
-    rightPanel: params.get('panel') === 'open',
-  });
+  };
+
+  if (panel === 'open') {
+    target.rightPanel = true;
+  } else if (panel === 'closed') {
+    target.rightPanel = false;
+  }
+
+  return normalizeExpedienteWorkspaceTarget(target);
 }
 
 export function getRecentExpedientes(limit = 6) {

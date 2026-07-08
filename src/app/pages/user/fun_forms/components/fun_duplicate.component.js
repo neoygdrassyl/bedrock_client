@@ -214,6 +214,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                             {selectedCount} de {ALL_OPTION_KEYS.length} entidades seleccionadas
                         </span>
                         <Button
+                            type="button"
                             variant="outline"
                             size="sm"
                             onClick={toggleAll}

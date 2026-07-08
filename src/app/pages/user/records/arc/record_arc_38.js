@@ -16,6 +16,7 @@ import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/a
 import RichTextEditor from '@/components/rich-text-editor';
 import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
+import ObservationPanel from '../../../../components/ObservationPanel';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -309,17 +310,19 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
         let _COMPONENT_0 = () => {
             let _RESUME = `-Observaciones (Descripcion de la Actuacion Urbanistica): \n${richTextToPlainText(value33_detail[2])}\n\n-Observaciones (Analisis de las determinantes urbanas del predio): \n${richTextToPlainText(value34_detail[10])}\n\n-Observaciones (Parqueaderos): \n${richTextToPlainText(value35_detail[1])}\n\n-Observaciones (Espacio Publico): \n${richTextToPlainText(value36_detail[8])}`;
 
-            return <>
-                <div className="row py-3">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Observaciones totales</label>
-                        </div>
-                    </div>
-                    <textarea className="input-group" rows="8" style={{ backgroundColor: 'gainsboro' }}
-                        readOnly value={_RESUME}></textarea>
+            return <div className="row py-3">
+                <div className="col-12">
+                    <ObservationPanel
+                        title="Observaciones totales"
+                        textareaProps={{
+                            className: 'input-group',
+                            rows: '8',
+                            readOnly: true,
+                            value: _RESUME,
+                        }}
+                    />
                 </div>
-            </>
+            </div>
         }
 
         let _COMPONENT_0_CP1 = () => {
@@ -349,17 +352,19 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                 }
             })
 
-            return <>
-                <div className="row py-3">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Observaciones totales</label>
-                        </div>
-                    </div>
-                    <textarea className="input-group" rows="8" style={{ backgroundColor: 'gainsboro' }}
-                        readOnly value={_RESUME}></textarea>
+            return <div className="row py-3">
+                <div className="col-12">
+                    <ObservationPanel
+                        title="Observaciones totales"
+                        textareaProps={{
+                            className: 'input-group',
+                            rows: '8',
+                            readOnly: true,
+                            value: _RESUME,
+                        }}
+                    />
                 </div>
-            </>
+            </div>
         }
         let _COMPONENT_1 = () => {
             let _CHILD = _GET_CHILD_38();
