@@ -11,6 +11,18 @@ class LegalConfigService {
     return http.get(`/${ROUTE}/document-codes`, { params });
   }
 
+  createDocumentCode(payload = {}) {
+    return http.post(`/${ROUTE}/document-codes`, payload);
+  }
+
+  createDocumentDefinition(payload = {}) {
+    return http.post(`/${ROUTE}/documents`, payload);
+  }
+
+  updateDocumentDefinition(id, payload = {}) {
+    return http.put(`/${ROUTE}/documents/${encodeURIComponent(id)}`, payload);
+  }
+
   listConfigurationLabels(params = {}) {
     return http.get(`/${ROUTE}/labels`, { params });
   }
@@ -39,6 +51,10 @@ class LegalConfigService {
     return http.post(`/${ROUTE}/actuation-types`, payload);
   }
 
+  updateActuationType(id, payload = {}) {
+    return http.put(`/${ROUTE}/actuation-types/${encodeURIComponent(id)}`, payload);
+  }
+
   createActuationDocumentRule(payload = {}) {
     return http.post(`/${ROUTE}/rules/actuation-documents`, payload);
   }
@@ -53,6 +69,10 @@ class LegalConfigService {
 
   createActuationTextsByLabelRule(payload = {}) {
     return http.post(`/${ROUTE}/rules/actuation-texts-by-labels`, payload);
+  }
+
+  deleteRule(type, id) {
+    return http.delete(`/${ROUTE}/rules/${encodeURIComponent(type)}/${encodeURIComponent(id)}`);
   }
 
   createCaseActuationUnit(caseCode, payload = {}) {
