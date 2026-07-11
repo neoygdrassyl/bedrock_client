@@ -1157,3 +1157,36 @@
 .legal-config-variants-list small { font-size: .64rem; }
 @media (max-width: 1180px) { .legal-config-document-table { font-size: .72rem; } .legal-config-document-table th, .legal-config-document-table td { padding: .4rem .42rem; } }
 @media (max-width: 720px) { .legal-config-document-table { min-width: 650px; font-size: .67rem; } .legal-config-document-table th { font-size: .58rem; } .legal-config-document-table th, .legal-config-document-table td { padding: .32rem .35rem; } .legal-config-definition-row-actions button { padding: .16rem .22rem; font-size: .61rem; } .legal-config-variants-list li { grid-template-columns: 5.4rem 1fr; } .legal-config-variants-list li .legal-config-definition-row-actions { grid-column: 1 / -1; } }
+
+
+/* Entrega: superficies secundarias densas, acciones en línea y margen lateral real. */
+.legal-config-page--simple { gap: .7rem; padding: 0 .75rem 1rem; }
+.legal-config-actuation-layout, .legal-config-documents-layout { min-height: 0; gap: .75rem; }
+.legal-config-action-panel { padding: .7rem; gap: .55rem; }
+.legal-config-selected-card { padding: .7rem; gap: .25rem; }
+.legal-config-action-grid { gap: .35rem; }
+.legal-config-action-grid button { min-width: 0; padding-inline: .5rem; font-size: .76rem; }
+.legal-config-quick-relations__grid, .legal-config-relation-list__items { padding: .65rem .75rem .75rem; gap: .45rem; }
+.legal-config-relation-card { padding: .55rem .65rem; }
+.legal-config-detail-dialog { width: min(960px, calc(100vw - 2.5rem)) !important; max-width: min(960px, calc(100vw - 2.5rem)) !important; padding: 1.1rem !important; }
+.legal-config-manager-dialog .dovela-data-table-wrap { max-height: 360px; overflow: auto; border: 1px solid hsl(var(--border) / .55); border-radius: var(--radius); }
+.legal-config-manager-dialog .dovela-data-table { min-width: 620px; font-size: .78rem; }
+.legal-config-manager-dialog .dovela-data-table th, .legal-config-manager-dialog .dovela-data-table td { padding: .48rem .58rem; line-height: 1.2; vertical-align: middle; }
+.legal-config-manager-toolbar { display:flex; align-items:center; gap:.55rem; padding:.65rem .75rem; border:1px solid hsl(var(--border) / .55); border-radius:var(--radius); background:hsl(var(--muted) / .2); }
+.legal-config-manager-toolbar > :first-child { flex:1; min-width:0; }
+.legal-config-manager-toolbar button { flex:0 0 auto; white-space:nowrap; }
+.legal-config-manager-editor { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; gap:.5rem; align-items:center; padding:.65rem .75rem; border-left:3px solid hsl(var(--primary)); background:hsl(var(--primary) / .06); }
+.legal-config-manager-editor > div, .legal-config-definition-row-actions { display:inline-flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:.35rem; }
+.legal-config-definition-row-actions button { white-space:nowrap; }
+.legal-config-document-action-stack { display:flex; flex-wrap:wrap; gap:.45rem; padding:.75rem; }
+.legal-config-document-action-stack button { width:auto !important; flex:1 1 140px; }
+.dovela-data-table th, .dovela-data-table td { padding:.54rem .65rem; font-size:.79rem; line-height:1.25; }
+.legal-config-document-table th, .legal-config-document-table td { padding:.48rem .62rem; line-height:1.25; }
+.legal-config-document-table { font-size:.78rem; }
+@media (max-width: 720px) { .legal-config-page--simple { padding-inline:.35rem; } .legal-config-manager-toolbar, .legal-config-manager-editor { grid-template-columns:1fr; flex-wrap:wrap; } .legal-config-manager-toolbar button { width:100%; } .legal-config-detail-dialog { width:calc(100vw - 1rem) !important; max-width:calc(100vw - 1rem) !important; padding:.85rem !important; } }
+
+/* El catálogo no debe estirarse a la altura del inspector: ese stretch distribuía espacio vacío dentro de las filas de la tabla. */
+.legal-config-documents-layout { align-items: start; }
+.legal-config-document-catalog, .legal-config-document-inspector { align-self: start; }
+
+.legal-config-document-catalog { height: auto !important; }
