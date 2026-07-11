@@ -73,3 +73,5 @@ scripts/
 .env.development
 .env.production
 /.sisyphus
+# design-sync generated CSS
+.ds-css/
