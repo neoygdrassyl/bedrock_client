@@ -23,8 +23,32 @@ class LegalConfigService {
     return http.put(`/${ROUTE}/documents/${encodeURIComponent(id)}`, payload);
   }
 
+  listDocumentTypologies(params = {}) {
+    return http.get(`/${ROUTE}/document-typologies`, { params });
+  }
+
+  createDocumentTypology(payload = {}) {
+    return http.post(`/${ROUTE}/document-typologies`, payload);
+  }
+
+  updateDocumentTypology(id, payload = {}) {
+    return http.put(`/${ROUTE}/document-typologies/${encodeURIComponent(id)}`, payload);
+  }
+
+  proposeDocumentCode(payload = {}) {
+    return http.post(`/${ROUTE}/documents/code-proposal`, payload);
+  }
+
   listConfigurationLabels(params = {}) {
     return http.get(`/${ROUTE}/labels`, { params });
+  }
+
+  createConfigurationLabel(payload = {}) {
+    return http.post(`/${ROUTE}/labels`, payload);
+  }
+
+  updateConfigurationLabel(id, payload = {}) {
+    return http.put(`/${ROUTE}/labels/${encodeURIComponent(id)}`, payload);
   }
 
   listDocumentDefinitions(params = {}) {

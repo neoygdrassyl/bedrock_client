@@ -910,6 +910,53 @@
   color: hsl(var(--primary));
 }
 
+.legal-config-label-picker__chips,
+.legal-config-label-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.legal-config-label-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.28rem 0.52rem;
+  background: hsl(var(--primary) / 0.12);
+  color: hsl(var(--primary));
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.legal-config-label-chip button,
+.legal-config-label-options button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.legal-config-label-options {
+  padding: 0.4rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  background: hsl(var(--background));
+}
+
+.legal-config-label-options button {
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.35rem;
+}
+
+.legal-config-label-options button:hover,
+.legal-config-label-options button:focus-visible {
+  background: hsl(var(--muted));
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 1px;
+}
+
 .legal-config-definition-row-actions {
   display: inline-flex;
   align-items: center;
@@ -996,3 +1043,117 @@
 }
 .legal-config-document-applications strong { font-size: .82rem; }
 .legal-config-document-applications small { color: hsl(var(--muted-foreground)); font-size: .75rem; }
+
+
+/* Creation dialogs: a compact visual hierarchy for reusable catalog values. */
+.legal-config-creation-dialog {
+  width: min(620px, calc(100vw - 2rem)) !important;
+  max-width: min(620px, calc(100vw - 2rem)) !important;
+  overflow: hidden;
+}
+
+.legal-config-creation-hero {
+  margin: -1.5rem -1.5rem 0;
+  padding: 1.35rem 1.5rem 1.15rem;
+  border-bottom: 1px solid hsl(var(--border) / .7);
+  background: linear-gradient(135deg, hsl(var(--primary) / .12), hsl(var(--muted) / .28));
+}
+
+.legal-config-creation-eyebrow {
+  display: block;
+  margin-bottom: .35rem;
+  color: hsl(var(--primary));
+  font-size: .69rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.legal-config-creation-hero h2 { margin-bottom: .4rem; }
+.legal-config-creation-form { gap: 1rem; }
+.legal-config-creation-grid { display: grid; grid-template-columns: 1fr 1.35fr; gap: .85rem; }
+.legal-config-field-help { display: block; margin-top: .35rem; color: hsl(var(--muted-foreground)); font-size: .75rem; line-height: 1.35; }
+
+.legal-config-creation-preview {
+  display: grid;
+  gap: .5rem;
+  padding: .8rem .9rem;
+  border: 1px solid hsl(var(--primary) / .23);
+  border-radius: .75rem;
+  background: hsl(var(--primary) / .055);
+}
+
+.legal-config-creation-preview > span {
+  color: hsl(var(--muted-foreground));
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .075em;
+  text-transform: uppercase;
+}
+
+.legal-config-creation-preview > div { display: flex; align-items: center; gap: .65rem; }
+.legal-config-creation-preview small { color: hsl(var(--muted-foreground)); font-size: .77rem; }
+.legal-config-typology-preview code { border-radius: .45rem; background: hsl(var(--foreground) / .08); color: hsl(var(--foreground)); padding: .38rem .5rem; font-size: .8rem; font-weight: 750; }
+.legal-config-typology-preview > div { display: grid; gap: .12rem; }
+.legal-config-typology-preview strong { font-size: .86rem; }
+
+/* Variants stay discoverable without expanding the whole table. */
+.legal-config-variants-dropdown { min-width: 9.5rem; }
+.legal-config-variants-dropdown summary { display: inline-flex; cursor: pointer; list-style: none; align-items: center; gap: .35rem; color: hsl(var(--primary)); font-size: .8rem; font-weight: 750; }
+.legal-config-variants-dropdown summary::-webkit-details-marker { display: none; }
+.legal-config-variants-dropdown summary::before { content: '›'; display: inline-block; font-size: 1.1rem; line-height: .75rem; transition: transform 150ms ease; }
+.legal-config-variants-dropdown[open] summary::before { transform: rotate(90deg); }
+.legal-config-variants-dropdown ul { display: grid; gap: .45rem; margin: .55rem 0 0; padding: .55rem; border: 1px solid hsl(var(--border) / .7); border-radius: .65rem; background: hsl(var(--muted) / .16); list-style: none; }
+.legal-config-variants-dropdown li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .45rem; }
+.legal-config-variants-dropdown li > code { border-radius: .35rem; background: hsl(var(--background)); color: hsl(var(--primary)); padding: .25rem .35rem; font-size: .72rem; font-weight: 750; }
+.legal-config-variants-dropdown li > div:nth-child(2) { display: grid; min-width: 0; gap: .08rem; }
+.legal-config-variants-dropdown li strong { overflow: hidden; font-size: .76rem; text-overflow: ellipsis; white-space: nowrap; }
+.legal-config-variants-dropdown li small { color: hsl(var(--muted-foreground)); font-size: .68rem; }
+.legal-config-variants-dropdown .legal-config-definition-row-actions { grid-column: 1 / -1; }
+.legal-config-no-variants { color: hsl(var(--muted-foreground)); }
+
+@media (max-width: 720px) {
+  .legal-config-creation-grid { grid-template-columns: 1fr; }
+  .legal-config-creation-hero { margin: -1.5rem -1.5rem 0; }
+}
+
+
+/* Full-width variants list: codes and actions remain legible within the table. */
+.legal-config-variants-list-row > td { padding: 0 !important; background: hsl(var(--muted) / .12); }
+.legal-config-variants-list { display: grid; gap: .45rem; margin: 0; padding: .65rem .9rem .75rem; list-style: none; }
+.legal-config-variants-list li { display: grid; grid-template-columns: minmax(7rem, auto) minmax(10rem, 1fr) auto; align-items: center; gap: .7rem; padding: .58rem .7rem; border: 1px solid hsl(var(--border) / .68); border-radius: .65rem; background: hsl(var(--background)); }
+.legal-config-variants-list code { border-radius: .35rem; background: hsl(var(--primary) / .1); color: hsl(var(--primary)); padding: .32rem .42rem; font-size: .76rem; font-weight: 800; white-space: nowrap; }
+.legal-config-variants-list li > div:nth-child(2) { display: grid; gap: .1rem; min-width: 0; }
+.legal-config-variants-list strong { overflow: hidden; font-size: .8rem; text-overflow: ellipsis; white-space: nowrap; }
+.legal-config-variants-list small { color: hsl(var(--muted-foreground)); font-size: .7rem; }
+@media (max-width: 720px) { .legal-config-variants-list li { grid-template-columns: 1fr; } }
+
+
+/* Dense catalog mode: stable single-line rows for high-volume documentary review. */
+.legal-config-documents-layout { gap: .65rem; min-height: 0; }
+.legal-config-document-catalog__header { gap: .6rem; padding: .68rem .78rem; }
+.legal-config-document-toolbar { gap: .5rem; padding: .55rem .7rem; }
+.legal-config-document-table-wrap { max-height: 640px; }
+.legal-config-document-table { min-width: 740px; font-size: .76rem; line-height: 1.18; }
+.legal-config-document-table th,
+.legal-config-document-table td { padding: .46rem .52rem; }
+.legal-config-document-table th { font-size: .64rem; letter-spacing: .035em; }
+.legal-config-document-table td { white-space: nowrap; }
+.legal-config-document-table td:nth-child(1) { width: 5.6rem; }
+.legal-config-document-table td:nth-child(2) { width: 13.5rem; max-width: 13.5rem; }
+.legal-config-document-table td:nth-child(3) { width: 8rem; max-width: 8rem; overflow: hidden; text-overflow: ellipsis; }
+.legal-config-document-table td:nth-child(4) { width: 10rem; max-width: 10rem; overflow: hidden; text-overflow: ellipsis; }
+.legal-config-document-table td:nth-child(5) { width: 4.6rem; }
+.legal-config-document-table__name { overflow: hidden; text-overflow: ellipsis; }
+.legal-config-document-table__name strong { display: block; overflow: hidden; text-overflow: ellipsis; font-weight: 700; }
+.legal-config-document-table__labels { color: hsl(var(--muted-foreground)); overflow: hidden; text-overflow: ellipsis; }
+.legal-config-document-table__status { color: hsl(var(--emerald-foreground, 152 52% 26%)); font-size: .7rem; font-weight: 750; }
+.legal-config-definition-row-actions { display: inline-flex; align-items: center; gap: .15rem; white-space: nowrap; }
+.legal-config-definition-row-actions button { min-height: auto; padding: .2rem .3rem; font-size: .68rem; font-weight: 700; }
+.legal-config-variants-list { gap: .22rem; padding: .38rem .55rem .48rem; }
+.legal-config-variants-list li { grid-template-columns: 6.5rem minmax(8rem, 1fr) auto; gap: .45rem; padding: .34rem .44rem; border: 0; border-radius: .28rem; background: hsl(var(--background) / .72); }
+.legal-config-variants-list code { padding: .2rem .3rem; font-size: .68rem; }
+.legal-config-variants-list strong { font-size: .72rem; }
+.legal-config-variants-list small { font-size: .64rem; }
+@media (max-width: 1180px) { .legal-config-document-table { font-size: .72rem; } .legal-config-document-table th, .legal-config-document-table td { padding: .4rem .42rem; } }
+@media (max-width: 720px) { .legal-config-document-table { min-width: 650px; font-size: .67rem; } .legal-config-document-table th { font-size: .58rem; } .legal-config-document-table th, .legal-config-document-table td { padding: .32rem .35rem; } .legal-config-definition-row-actions button { padding: .16rem .22rem; font-size: .61rem; } .legal-config-variants-list li { grid-template-columns: 5.4rem 1fr; } .legal-config-variants-list li .legal-config-definition-row-actions { grid-column: 1 / -1; } }
