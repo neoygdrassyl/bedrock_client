@@ -1208,12 +1208,16 @@ export function _MANAGE_IDS(_data, _type) {
     let concecutive;
     if (_type == 'end') {
         if (!new_id) new_id = `${infoCud.serials.end}${dayjs().format('YY')}-0000`
-        concecutive = new_id.split('-')[1];
-        concecutive = Number(concecutive) + 1
-        if (concecutive < 1000) concecutive = "0" + concecutive
-        if (concecutive < 100) concecutive = "0" + concecutive
-        if (concecutive < 10) concecutive = "0" + concecutive
-        new_id = new_id.split('-')[0] + "-" + concecutive
+        const rawId = String(new_id);
+        const compactSource = rawId.split('-')[0];
+        const compactMatch = compactSource.match(/^(.+?\d{2})(\d{4})$/);
+        const canonicalMatch = rawId.match(/^(.+?\d{2})-(\d+)(?:\D.*)?$/);
+        const prefixMatch = rawId.match(/^(.+?\d{2})(?:-.+)?$/);
+        const idMatch = compactMatch || canonicalMatch;
+        const prefix = idMatch?.[1] || prefixMatch?.[1] || rawId.split('-')[0];
+        concecutive = idMatch?.[2] || 0;
+        concecutive = String(Number(concecutive) + 1).padStart(4, '0')
+        new_id = `${prefix}-${concecutive}`
     }
 
     return new_id;

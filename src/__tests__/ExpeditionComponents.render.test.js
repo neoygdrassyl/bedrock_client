@@ -484,6 +484,97 @@ describe('Expedition Components — Render', () => {
     expect(container).toBeTruthy();
   }, 60000);
 
+<<<<<<< Updated upstream
+=======
+  test('exp_res muestra texto plano de BlockNote en Artículo 4 de resolución', async () => {
+    const { default: EXP_RES } = await vi.importActual(
+      '../app/pages/user/expeditions/exp._res.component'
+    );
+    const blockNoteAntecedentes = serializeRichTextBlocks([
+      { type: 'paragraph', content: [{ type: 'text', text: 'Antecedente claro para resolución', styles: {} }] },
+    ]);
+    const blockNoteDescripcion = serializeRichTextBlocks([
+      { type: 'paragraph', content: [{ type: 'text', text: 'Descripción clara para resolución', styles: {} }] },
+    ]);
+    const itemWithRichTextArcStep = {
+      ...minimalCurrentItem,
+      record_arc_steps: [
+        {
+          id: 33,
+          id_public: 's33',
+          value: `${blockNoteAntecedentes};${blockNoteDescripcion}`,
+        },
+      ],
+    };
+
+    render(
+      <MemoryRouter>
+        <EXP_RES
+          translation={{}}
+          swaMsg={swaMsg}
+          globals={{ id: '1' }}
+          currentItem={itemWithRichTextArcStep}
+          currentVersion={1}
+          currentRecord={{ ...minimalCurrentRecord, id_public: 'RES-TEST-001', model: 'open' }}
+          currentVersionR={1}
+          recordArc={minimalCurrentItem.record_arc}
+          requestUpdate={vi.fn()}
+          requestUpdateRecord={vi.fn()}
+        />
+      </MemoryRouter>
+    );
+
+    const antecedentes = document.getElementById('expedition_doc_res_art_4_1_dv');
+    const descripcion = document.getElementById('expedition_doc_res_art_4_2_dv');
+
+    expect(antecedentes.value).toBe('Antecedente claro para resolución');
+    expect(descripcion.value).toBe('Descripción clara para resolución');
+    expect(antecedentes.value).not.toContain(RICH_TEXT_PREFIX);
+    expect(descripcion.value).not.toContain(RICH_TEXT_PREFIX);
+  }, 60000);
+
+  test('exp_res no imprime undefined cuando s33 no tiene descripción', async () => {
+    const { default: EXP_RES } = await vi.importActual(
+      '../app/pages/user/expeditions/exp._res.component'
+    );
+    const blockNoteAntecedentes = serializeRichTextBlocks([
+      { type: 'paragraph', content: [{ type: 'text', text: 'Antecedente sin descripción', styles: {} }] },
+    ]);
+    const itemWithoutDescription = {
+      ...minimalCurrentItem,
+      record_arc_steps: [
+        {
+          id: 33,
+          id_public: 's33',
+          value: blockNoteAntecedentes,
+        },
+      ],
+    };
+
+    render(
+      <MemoryRouter>
+        <EXP_RES
+          translation={{}}
+          swaMsg={swaMsg}
+          globals={{ id: '1' }}
+          currentItem={itemWithoutDescription}
+          currentVersion={1}
+          currentRecord={{ ...minimalCurrentRecord, id_public: 'RES-TEST-001', model: 'open' }}
+          currentVersionR={1}
+          recordArc={minimalCurrentItem.record_arc}
+          requestUpdate={vi.fn()}
+          requestUpdateRecord={vi.fn()}
+        />
+      </MemoryRouter>
+    );
+
+    const descripcion = document.getElementById('expedition_doc_res_art_4_2_dv');
+
+    expect(descripcion.value).toBe('');
+    expect(descripcion.value).not.toContain('undefined');
+  }, 60000);
+
+>>>>>>> Stashed changes
   // ── exp_lic ─────────────────────────────────────────────────────────────────
 
   test('exp_lic renders without crashing (state < 99)', async () => {
