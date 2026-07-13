@@ -50,6 +50,22 @@ describe('LegalConfigInitialPage document variants and typologies', () => {
     expect(service.createDocumentCode).toBeUndefined();
   });
 
+  it('normalizes serialized label ids and resolves the document catalog code', async () => {
+    service.listDocumentDefinitions.mockResolvedValue({
+      data: [{
+        id: 'serialized', name: 'Formulario serializado', slug: 'serialized', code: null,
+        document_code_id: 'catalog-511', label_ids: '["label-doc"]', is_active: true,
+      }],
+    });
+    service.listDocumentCodes.mockResolvedValue({ data: [{ id: 'catalog-511', code: '511' }] });
+
+    await openDocuments();
+
+    expect(screen.getByText('Formulario serializado')).toBeInTheDocument();
+    expect(screen.getByText('511')).toBeInTheDocument();
+    expect(screen.getByText('Documentos comunes')).toBeInTheDocument();
+  });
+
   it('creates a document with independent typology and labels', async () => {
     service.createDocumentDefinition.mockResolvedValue({ data: { id: 'new' } });
     await openDocuments();

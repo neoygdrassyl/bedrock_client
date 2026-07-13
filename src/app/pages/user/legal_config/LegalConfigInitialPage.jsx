@@ -113,6 +113,66 @@ function getMetadata(row) {
   return row.metadata || {};
 }
 
+function parseJsonArray(value) {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== 'string' || !value.trim()) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseJsonObject(value) {
+  if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+  if (typeof value !== 'string' || !value.trim()) return {};
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function normalizeDocumentDefinition(definition, documentCodes) {
+  const catalogCode = documentCodes.find((item) => item.id === definition.document_code_id)?.code;
+  return {
+    ...definition,
+    code: definition.code || catalogCode || '',
+    label_ids: parseJsonArray(definition.label_ids),
+    validation_config: parseJsonObject(definition.validation_config),
+    metadata: parseJsonObject(definition.metadata),
+  };
+}
+
+function normalizeTypologyPayload(payload = {}) {
+  return {
+    code: String(payload.code || '').trim().toUpperCase(),
+    name: String(payload.name || '').trim(),
+    description: payload.description?.trim() || null,
+    metadata: parseJsonObject(payload.metadata),
+    is_active: payload.is_active !== false,
+    sort_order: Number(payload.sort_order || 0),
+  };
+}
+
+function normalizeLabelPayload(payload = {}) {
+  const name = String(payload.name || '').trim();
+  return {
+    name,
+    slug: slugify(payload.slug || name),
+    description: payload.description?.trim() || null,
+    label_scope: payload.label_scope || 'document',
+    document_code_id: payload.document_code_id || null,
+    default_rule_config: parseJsonObject(payload.default_rule_config),
+    validation_config: parseJsonObject(payload.validation_config),
+    metadata: parseJsonObject(payload.metadata),
+    is_active: payload.is_active !== false,
+    sort_order: Number(payload.sort_order || 0),
+  };
+}
+
 function getRuleConditionSummary(rule) {
   const conditions = rule?.config?.conditions || {};
   const active = Object.entries(conditions)
@@ -900,7 +960,7 @@ function DocumentDefinitionModal({ open, mode: initialMode = 'standalone', paren
           <DovelaField label="Descripción de validación"><textarea className="legal-config-textarea" value={form.description} onChange={(event) => update('description', event.target.value)} placeholder="Qué debe contener o cómo se reconoce este documento." rows={3} /></DovelaField>
           <DovelaField label="Nota de soporte esperado"><DovelaInput value={form.supportNote} onChange={(event) => update('supportNote', event.target.value)} placeholder="Ej. PDF firmado, plano legible, certificado vigente" /></DovelaField>
           <div className="legal-config-definition-switches"><label><input type="checkbox" checked={form.isRecord} onChange={(event) => update('isRecord', event.target.checked)} /> Es expediente/registro</label></div>
-          <DialogFooter><DovelaButton type="button" tone="neutral" onClick={onClose} disabled={submitting}>Cancelar</DovelaButton><DovelaButton type="submit" tone="primary" loading={submitting}>{definition ? 'Guardar cambios' : isVariant ? 'Crear variante' : 'Crear documento'}</DovelaButton></DialogFooter>
+          <DialogFooter><DovelaButton type="button" tone="neutral" onClick={onClose} disabled={submitting}>Cancelar</DovelaButton><DovelaButton type="submit" tone="primary" loading={submitting} disabled={submitting || (isVariant && !parent?.code)}>{definition ? 'Guardar cambios' : isVariant ? 'Crear variante' : 'Crear documento'}</DovelaButton></DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
@@ -970,6 +1030,7 @@ export default function LegalConfigInitialPage() {
       const responses = await Promise.allSettled([
         LegalConfigService.listActuationTypes({ is_active: true }),
         LegalConfigService.listDocumentDefinitions({ is_active: true }),
+        LegalConfigService.listDocumentCodes({ is_active: true }),
         LegalConfigService.listConfigurationLabels(),
         LegalConfigService.listLegalTexts({ is_active: true }),
         LegalConfigService.listReadContracts({ is_active: true }),
@@ -986,9 +1047,11 @@ export default function LegalConfigInitialPage() {
       // anterior. Si ya no somos la llamada más reciente, no pisamos el estado.
       if (requestId !== loadRequestIdRef.current) return true;
 
+      const nextDocumentCodes = responseData(documentCodes, []);
       const nextData = {
         actuationTypes: responseData(actuations, []),
-        documents: responseData(documents, []),
+        documentCodes: nextDocumentCodes,
+        documents: responseData(documents, []).map((definition) => normalizeDocumentDefinition(definition, nextDocumentCodes)),
         labels: responseData(labels, []),
         texts: responseData(texts, []),
         readContracts: responseData(contracts, []),
@@ -1033,7 +1096,7 @@ export default function LegalConfigInitialPage() {
   }
 
   async function createDocumentTypology(payload) {
-    await LegalConfigService.createDocumentTypology(payload);
+    await LegalConfigService.createDocumentTypology(normalizeTypologyPayload(payload));
     if (!await loadData()) throw new Error('La tipología se creó, pero no fue posible actualizar la vista. Usa "Actualizar".');
   }
 
@@ -1043,7 +1106,7 @@ export default function LegalConfigInitialPage() {
   }
 
   async function createConfigurationLabel(payload) {
-    const response = await LegalConfigService.createConfigurationLabel(payload);
+    const response = await LegalConfigService.createConfigurationLabel(normalizeLabelPayload(payload));
     const label = response?.data;
     if (label) setData((current) => ({ ...current, labels: [...current.labels, label] }));
     return label;
