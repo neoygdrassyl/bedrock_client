@@ -124,9 +124,6 @@ class UserslDataService {
   getAll_VrFun(fun_id, vr_id) {
     return http.get(`/${route}/documents/vr-digital/${fun_id}&${vr_id}`);
   }
-  getVrDigitalDocuments(fun_id, vr_id) {
-    return http.get(`/${route}/documents/vr-digital/${fun_id}&${vr_id}`);
-  }
 
   create(data) {
     return http.post(`/${route}`, data);

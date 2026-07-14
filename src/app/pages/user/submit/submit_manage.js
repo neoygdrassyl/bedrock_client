@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
 import FunService from '../../../services/fun.service';
@@ -22,6 +22,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
     const [documentPanel, setDocumentPanel] = useState('physical');
     const [digitalCount, setDigitalCount] = useState(0);
     const [digitalDocuments, setDigitalDocuments] = useState([]);
+    const refreshRequestIdRef = useRef(0);
 
     useEffect(() => {
         refreshItem();
@@ -29,7 +30,9 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
     function refreshItem() {
         if (currentId) {
+            const requestId = ++refreshRequestIdRef.current;
             SubmitService.get(currentId).then(response => {
+                if (requestId !== refreshRequestIdRef.current) return;
                 let item = response.data;
                 setCurrentItem(item);
             });

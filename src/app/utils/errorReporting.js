@@ -301,8 +301,12 @@ export function captureDovelaHttpError(error) {
   const requestId = responseData.requestId || responseHeaders['x-dovela-request-id'] || responseHeaders['X-Dovela-Request-Id'] || null;
   const backendErrorId = responseData.backendErrorId || responseHeaders['x-dovela-backend-error-id'] || responseHeaders['X-Dovela-Backend-Error-Id'] || null;
   const isExpectedAuthRedirect = status === 401 && error?.response?.data?.expired === true;
+  // 404/422 casi siempre delatan un contrato roto (ruta inexistente, payload
+  // rechazado) y deben verse en telemetría; el resto de 4xx sigue filtrado
+  // porque suele ser validación esperada de UI.
+  const isContractError = status === 404 || status === 422;
   if (url.includes('error-reports')) return null;
-  if (isExpectedAuthRedirect || (status && status < 500)) return null;
+  if (isExpectedAuthRedirect || (status && status < 500 && !isContractError)) return null;
 
   const snapshot = captureDovelaError(error, {
     source: 'http-client',

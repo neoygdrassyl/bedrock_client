@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import PQRS_EDIT_SOLICITORS from './components/pqrs_manage_solicitors.component';
 import PQRS_EDIT_CONTACT from './components/pqrs_manage_contact.component';
@@ -11,18 +11,22 @@ import { swalError } from '@/app/utils/swalAdapter';
 function PQRS_EDIT({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
+    const retrieveRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrieveItem(currentId);
     }, []);
 
     const retrieveItem = (id) => {
+        const requestId = ++retrieveRequestIdRef.current;
         PQRS_Service.get(id)
             .then(response => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 setCurrentItem(response.data);
                 setLoad(true);
             })
             .catch(e => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este ítem, intentelo nuevamente." });
                 setLoad(false);

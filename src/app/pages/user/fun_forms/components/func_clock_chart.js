@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { isEmptyEntity } from '../../../../utils/isEmptyEntity';
 import dayjs from 'dayjs';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, formsParser1 } from '../../../../components/customClasses/typeParse';
 import {
@@ -213,7 +214,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
         // SETTING MINOR EVENTS
 
         // SIGN
-        if (currentItem.fun_law) {
+        if (!isEmptyEntity(currentItem.fun_law)) {
             if (currentItem.fun_law.sign) {
                 let _sign = currentItem.fun_law.sign.split(',')
                 if (_sign[1]) calendar_clocks = addClock(calendar_clocks, dayjs(_sign[1]).format('YYYY/MM/DD'), 7, ', nRADICACION VALLA')
@@ -699,7 +700,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
             let _marks = [];
             // SIGN
 
-            if (currentItem.fun_law) {
+            if (!isEmptyEntity(currentItem.fun_law)) {
                 if (currentItem.fun_law.sign) {
                     let _sign = currentItem.fun_law.sign.split(',')
                     if (_sign[1]) {
