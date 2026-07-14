@@ -156,10 +156,10 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(publicidadButton).toBeInTheDocument();
 
     await user.click(actualizarButton);
-    expect(screen.getByTestId('module-actualizar')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-actualizar')).toBeInTheDocument();
 
     await user.click(publicidadButton);
-    expect(screen.getByTestId('module-publicidad')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-publicidad')).toBeInTheDocument();
   });
 
   it('oculta Publicidad cuando la regla legacy No usar Publicidad está activa', () => {
@@ -192,7 +192,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     });
   });
 
-  it('muestra solo Informe P.H. como módulo directo y renderiza RECORD_PH para expedientes de propiedad horizontal', () => {
+  it('muestra solo Informe P.H. como módulo directo y renderiza RECORD_PH para expedientes de propiedad horizontal', async () => {
     render(
       <FunExpedienteFullscreen
         expediente={phExpediente}
@@ -221,10 +221,10 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(screen.queryByRole('button', { name: /arquitectónico/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /estructural/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /acta/i })).not.toBeInTheDocument();
-    expect(screen.getByTestId('module-ph')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-ph')).toBeInTheDocument();
   });
 
-  it('normaliza report=ph como jurídico para expedientes normales aunque description mencione propiedad horizontal', () => {
+  it('normaliza report=ph como jurídico para expedientes normales aunque description mencione propiedad horizontal', async () => {
     render(
       <FunExpedienteFullscreen
         expediente={{
@@ -252,7 +252,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
 
     expect(screen.getByRole('button', { name: /informe jurídico/i })).toHaveAttribute('aria-current', 'page');
     expect(screen.queryByRole('button', { name: /informe p\.h\./i })).not.toBeInTheDocument();
-    expect(screen.getByTestId('module-law')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-law')).toBeInTheDocument();
   });
 
   it('renderiza tres grupos directos de ancho completo, elimina la subnavegación de informes y conserva el cambio de reporte activo', async () => {
@@ -299,15 +299,15 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     ]);
 
     expect(screen.getByRole('button', { name: /informe arquitectónico/i })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByTestId('module-arc')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-arc')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /informe estructural/i }));
     expect(screen.getByRole('button', { name: /informe estructural/i })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByTestId('module-eng')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-eng')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /informe jurídico/i }));
     expect(screen.getByRole('button', { name: /informe jurídico/i })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByTestId('module-law')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-law')).toBeInTheDocument();
   });
 
   it('usa una variante activa más visible y mantiene contraste fuerte en botones inactivos del workspace', () => {
@@ -326,7 +326,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(screen.getByRole('button', { name: /documentos/i })).toHaveClass('text-slate-900', 'bg-white/80');
   });
 
-  it('renderiza la aprobación PH legacy al abrir Expedición P.H.', () => {
+  it('renderiza la aprobación PH legacy al abrir Expedición P.H.', async () => {
     render(
       <FunExpedienteFullscreen
         expediente={phExpediente}
@@ -340,7 +340,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
 
     expect(screen.getByRole('button', { name: /expedici[oó]n p\.h\./i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^expedici[oó]n$/i })).not.toBeInTheDocument();
-    expect(screen.getByTestId('module-ph')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-ph')).toBeInTheDocument();
     expect(screen.queryByTestId('module-expedition')).not.toBeInTheDocument();
   });
 
@@ -381,7 +381,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     });
 
     expect(screen.queryByRole('button', { name: /expedici[oó]n p\.h\./i })).not.toBeInTheDocument();
-    expect(screen.getByTestId('module-expedition')).toBeInTheDocument();
+    expect(await screen.findByTestId('module-expedition')).toBeInTheDocument();
     expect(screen.queryByTestId('module-ph')).not.toBeInTheDocument();
   });
 });
