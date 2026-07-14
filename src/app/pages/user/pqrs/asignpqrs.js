@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import PQRS_Service from '../../../services/pqrs_main.service';
 import USERS_Service from '../../../services/users.service'
@@ -21,27 +21,33 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
     const [users_list, setUsersList] = useState([]);
     const [asign, setAsign] = useState(false);
     const [worker, setWorker] = useState(false);
+    const retrieveRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrieveItem(currentId);
     }, []);
 
     const retrieveItem = (id) => {
+        const requestId = ++retrieveRequestIdRef.current;
         PQRS_Service.get(id)
             .then(response => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 setCurrentItem(response.data);
                 setLoad(true);
             })
             .catch(e => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                 setLoad(false);
             });
         USERS_Service.getAll()
             .then(response => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 setUsersList(response.data);
             })
             .catch(e => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                 setLoad(false);
