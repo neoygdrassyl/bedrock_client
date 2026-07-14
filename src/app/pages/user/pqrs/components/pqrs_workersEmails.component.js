@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import USERS_Service from '../../../../services/users.service';
@@ -14,17 +14,21 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
     const [emailList, setEmailList] = useState('');
     const [emailBody, setEmailBody] = useState('');
     const [selectedEmailType, setSelectedEmailType] = useState(String(email_types?.[0] ?? 0));
+    const retrieveRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrieveUsers();
     }, []);
     const retrieveUsers = () => {
+        const requestId = ++retrieveRequestIdRef.current;
         USERS_Service.getAll()
             .then(response => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 setUsersList(response.data);
                 setLoad(true);
             })
             .catch(e => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este ítem, intentelo nuevamente." });
                 setLoad(false);

@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState, } from 'react';
+import { Suspense, useEffect, useState, useRef, } from 'react';
 import { Button } from '@/components/ui/button';
 import Zone_Use_Service from "../../../services/zone_use.service"
 import { SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
@@ -11,6 +11,7 @@ export default function ZONE_USE_COMPONENT(props) {
 
     const [load, setLoad] = useState(0);
     const [item, setItem] = useState(null);
+    const loadRequestIdRef = useRef(0);
 
     useEffect(() => {
         if (load == 0 || refresh == 1) {
@@ -22,12 +23,15 @@ export default function ZONE_USE_COMPONENT(props) {
 
     // ************************** APIS ************************ //
     function loadData() {
+        const requestId = ++loadRequestIdRef.current;
         Zone_Use_Service.get(id)
             .then(response => {
+                if (requestId !== loadRequestIdRef.current) return;
                 setItem(response.data)
                 setLoad(1)
             })
             .catch(e => {
+                if (requestId !== loadRequestIdRef.current) return;
                 console.error(e);
                 swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
