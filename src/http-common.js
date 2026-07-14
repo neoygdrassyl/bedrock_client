@@ -20,19 +20,22 @@ http.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: handle 401 expired token
+// Response interceptor: handle 401 (session dead). Every 401 in this API
+// means "must re-authenticate" EXCEPT the login endpoint itself, which
+// returns 401 for wrong credentials — that's a form-validation error, not a
+// dead session, and must stay on the login page so the user sees it.
+// Previously only `expired: true` triggered logout, so an invalid/malformed
+// token (e.g. after a secret rotation) or the "no autenticado" defense-in-depth
+// checks in chat/bookmark controllers left the app silently failing forever
+// on every background poll instead of logging out.
 http.interceptors.response.use(
   (response) => response,
   (error) => {
     if (!error?.config?.skipDovelaErrorCapture) {
       captureDovelaHttpError(error);
     }
-    if (
-      error.response &&
-      error.response.status === 401 &&
-      error.response.data &&
-      error.response.data.expired === true
-    ) {
+    const isLoginRequest = (error?.config?.url || '').replace(/^\/+/, '') === 'login';
+    if (error.response && error.response.status === 401 && !isLoginRequest) {
       localStorage.removeItem("dovela_token");
       localStorage.removeItem("dovela_user");
       window.user = null;

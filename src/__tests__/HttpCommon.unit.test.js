@@ -118,7 +118,12 @@ describe('http-common', () => {
     expect(window.user).toEqual({ id: 1 });
   });
 
-  it('response interceptor no limpia sesion en 401 sin expired=true', async () => {
+  it('response interceptor limpia sesion en 401 sin expired=true (token invalido/faltante)', async () => {
+    // El backend (auth.middleware.js verifyToken) emite 401 en 3 formas —
+    // token faltante, token invalido, token expirado — y solo la ultima
+    // traia `expired: true`. Las otras dos significan lo mismo (sesion
+    // muerta) pero antes no disparaban el logout, dejando la app fallando
+    // en silencio en cada poll de fondo (H-08/H-14).
     const { mockResponseUse } = await buildHttpModule();
     const onRejected = mockResponseUse.mock.calls[0][1];
 
@@ -126,9 +131,34 @@ describe('http-common', () => {
     localStorage.setItem('dovela_user', '{"id":1}');
 
     const error = {
+      config: { url: '/fun/1' },
       response: {
         status: 401,
-        data: { expired: false },
+        data: { message: 'Token inválido.' },
+      },
+    };
+
+    await expect(onRejected(error)).rejects.toBe(error);
+    expect(localStorage.getItem('dovela_token')).toBeNull();
+    expect(localStorage.getItem('dovela_user')).toBeNull();
+    expect(window.user).toBeNull();
+  });
+
+  it('response interceptor no limpia sesion en 401 del propio login (credenciales invalidas)', async () => {
+    // POST /login tambien responde 401 cuando el usuario/clave no coinciden
+    // (users.controller.js) — eso es un error de formulario, no una sesion
+    // muerta; no debe forzar un redirect fuera de la pantalla de login.
+    const { mockResponseUse } = await buildHttpModule();
+    const onRejected = mockResponseUse.mock.calls[0][1];
+
+    localStorage.setItem('dovela_token', 'abc123');
+    localStorage.setItem('dovela_user', '{"id":1}');
+
+    const error = {
+      config: { url: '/login' },
+      response: {
+        status: 401,
+        data: { message: 'Credenciales inválidas.' },
       },
     };
 
