@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SubmitService from '../../../services/submit.service';
 import { dateParser } from '../../../components/customClasses/typeParse';
 import Collapsible from '../../../components/Collapsible';
@@ -10,13 +10,16 @@ function SUBMIT_SINGLE_VIEW({ translation, swaMsg, globals, id_related, setVRLis
     const [load, setLoad] = useState(false);
     const [curatedList, setCuratedListState] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
+    const retrieveRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrieveItem();
-    }, []);
+    }, [id_related]);
 
     function retrieveItem() {
+        const requestId = ++retrieveRequestIdRef.current;
         SubmitService.getIdRelated(id_related).then(response => {
+            if (requestId !== retrieveRequestIdRef.current) return;
             setCuratedList(response.data)
         })
     }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import PQRS_Service from '../../../services/pqrs_main.service';
 import PQRS_COMPONENT_INFO from './components/pqrs_gen.component';
@@ -14,18 +14,22 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
     const [attachs, setAttachs] = useState(0);
+    const retrieveRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrieveItem(currentId);
     }, []);
 
     const retrieveItem = (id) => {
+        const requestId = ++retrieveRequestIdRef.current;
         PQRS_Service.get(id)
             .then(response => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 setCurrentItem(response.data);
                 setLoad(true);
             })
             .catch(e => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este ítem, inténtelo nuevamente." });
                 setLoad(false);

@@ -74,6 +74,19 @@ const E2E_FUN_RECORDS = [
     clock_payment: '2026-03-12',
     owner: 'Propietario Expedicion',
   },
+  {
+    id: 3,
+    id_sistem: 3,
+    id_public: '68001-1-26-0003',
+    version: 1,
+    state: 5,
+    type: 'ii',
+    date: '2026-03-14',
+    rules: '0;0',
+    clock_payment: '2026-03-14',
+    owner: 'Propietario Subdivision',
+    description: 'Subdivision con envio QGIS',
+  },
 ];
 
 const E2E_PH_PROFESSIONAL = {
@@ -155,6 +168,23 @@ const E2E_FUN_DETAILS = {
     fun_rs: [],
     fun_law: null,
     record_review: null,
+  },
+  3: {
+    ...E2E_FUN_RECORDS[2],
+    fun_1s: [{ id: 13, tramite: 'ii', tipo: 'C', m_urb: '0', m_sub: '0', m_lic: 'ii', usos: 'VIVIENDA', area: '900', description: 'Subdivision de lote E2E' }],
+    fun_2: { id: 23, direccion: 'Diagonal 5 # 6-7', direccion_ant: '', matricula: '300-003', catastral: '003', catastral_2: '', suelo: 'URBANO', lote_pla: 'SI', barrio: 'Aranjuez', vereda: '', comuna: '3', sector: 'C', corregimiento: '', lote: '3', estrato: '2', manzana: 'C' },
+    fun_51s: [],
+    fun_52s: [],
+    fun_53s: [],
+    fun_clocks: [
+      { id: 8, fun_id: 3, state: 0, date_start: '2026-03-14', version: '1', description: 'Radicacion' },
+      { id: 9, fun_id: 3, state: 5, date_start: '2026-03-16', version: '1', description: 'Legal y debida forma' },
+    ],
+    fun_6s: [],
+    fun_rs: [],
+    fun_law: null,
+    record_review: null,
+    rules: '0;0',
   },
 };
 
