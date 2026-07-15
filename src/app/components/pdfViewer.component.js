@@ -5,7 +5,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
 import http from '../../http-common';
-import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
 

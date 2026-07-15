@@ -1,1357 +1,961 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
-  AlertTriangle,
-  BookOpen,
+  AlertCircle,
+  CornerDownRight,
   FileText,
-  FolderTree,
-  Info,
-  Layers,
+  GitBranch,
+  Layers3,
+  Link2,
+  Library,
+  ListChecks,
+  LoaderCircle,
   Plus,
-  PowerOff,
-  Trash2,
   RefreshCw,
-  Scale,
-  Tags,
-  ZoomIn,
-  ZoomOut,
+  Search,
+  Settings2,
+  X,
 } from 'lucide-react';
-import {
-  DovelaBadge,
-  DovelaButton,
-  DovelaCard,
-  DovelaField,
-  DovelaInlineAlert,
-  DovelaInput,
-  DovelaPageHeader,
-} from '@/components/dovela-ui';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import LegalConfigService from '../../../services/legal_config.service.js';
+import LegalConfigService from '@/app/services/legal_config.service';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import './LegalConfigInitialPage.css';
 
-const EMPTY_DATA = {
-  actuationTypes: [],
-  documentCodes: [],
-  documents: [],
-  labels: [],
-  texts: [],
-  readContracts: [],
-  assertions: [],
-  rules: {},
+const empty = {
+  actuations: [], typologies: [], labels: [], documents: [], documentLabels: [],
+  actuationTypologies: [], actuationLabels: [], directDocuments: [], legacyActuationTypes: [],
+  conditions: [], conditionFields: [], conditionDocuments: [], actuationConditions: [],
 };
 
-const ACTUATIONS_PANE = 'Actuaciones';
-const PANES = [ACTUATIONS_PANE, 'Documentos', 'Resolución'];
-
-const NODE_TYPE_LABELS = {
-  group: 'Grupo',
-  actuation: 'Actuación',
-  sub_actuation: 'Subactuación',
-  modality: 'Modalidad',
-  sub_modality: 'Submodalidad',
+const emptyDocumentForm = {
+  name: '', code: '', typology_id: '', label_ids: [], parent_document_id: '',
 };
 
-const RELATION_META = {
-  document: {
-    title: 'Asociar documento',
-    label: 'Documento disponible',
-    empty: 'No hay documentos disponibles',
-    typeLabel: 'Documento',
-  },
-  text: {
-    title: 'Asociar texto jurídico',
-    label: 'Texto jurídico disponible',
-    empty: 'No hay textos jurídicos disponibles',
-    typeLabel: 'Texto jurídico',
-  },
-  typology: {
-    title: 'Asociar tipología',
-    label: 'Tipología disponible',
-    empty: 'No hay tipologías disponibles',
-    typeLabel: 'Tipología',
-  },
-  label: {
-    title: 'Asociar etiqueta',
-    label: 'Etiqueta disponible',
-    empty: 'No hay etiquetas disponibles',
-    typeLabel: 'Etiqueta',
-  },
-};
+const errorMessage = (error) => (
+  error?.response?.data?.message || error?.message || 'No fue posible guardar el cambio.'
+);
 
-function responseData(response, fallback) {
-  return response?.data ?? fallback;
-}
+const byParent = (rows, parentId = null) => (
+  rows.filter((row) => (row.parent_document_id || null) === parentId)
+);
 
-function getNodeTypeLabel(type) {
-  return NODE_TYPE_LABELS[type] || 'Actuación';
-}
+function CatalogueSelect({ label, values, value, onChange, onCreate, multiple = false, creatable = true, disabled = false }) {
+  const [text, setText] = useState('');
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const instanceId = useId().replace(/:/g, '');
+  const labelId = `catalogue-label-${instanceId}`;
+  const listId = `catalogue-list-${instanceId}`;
+  const selectedItem = multiple ? null : values.find((item) => item.id === value);
+  const matches = values.filter((item) => (
+    item.is_active
+    && (!multiple || !(value || []).includes(item.id))
+    && item.name.toLowerCase().includes(text.toLowerCase())
+  ));
 
-function getItemName(item, fallback = 'Elemento disponible') {
-  return item?.name || item?.title || item?.display_name || item?.slug || fallback;
-}
-
-function slugify(text = '') {
-  return text
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function extractErrorMessage(error, fallback) {
-  return error?.response?.data?.message || error?.message || fallback;
-}
-
-
-function getMetadata(row) {
-  if (!row?.metadata) return {};
-  if (typeof row.metadata === 'string') {
-    try { return JSON.parse(row.metadata) || {}; } catch { return {}; }
+  function select(id) {
+    onChange(multiple ? [...new Set([...(value || []), id])] : id);
+    setText('');
+    setOpen(false);
+    setActive(-1);
   }
-  return row.metadata || {};
-}
 
-function parseJsonArray(value) {
-  if (Array.isArray(value)) return value;
-  if (typeof value !== 'string' || !value.trim()) return [];
-  try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
+  async function create() {
+    if (creatable && text.trim()) {
+      const created = await onCreate(text.trim());
+      if (created) select(created.id);
+    }
   }
-}
 
-function parseJsonObject(value) {
-  if (value && typeof value === 'object' && !Array.isArray(value)) return value;
-  if (typeof value !== 'string' || !value.trim()) return {};
-  try {
-    const parsed = JSON.parse(value);
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-  } catch {
-    return {};
+  function keyDown(event) {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setOpen(true);
+      setActive((index) => (index < 0 ? 0 : Math.min(index + 1, Math.max(matches.length - 1, 0))));
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setOpen(true);
+      setActive((index) => Math.max(index - 1, 0));
+    }
+
+    if (event.key === 'Escape') {
+      setOpen(false);
+      setText('');
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (open && matches[active]) select(matches[active].id);
+      else if (creatable) create();
+    }
   }
-}
 
-function normalizeDocumentDefinition(definition, documentCodes) {
-  const catalogCode = documentCodes.find((item) => item.id === definition.document_code_id)?.code;
-  return {
-    ...definition,
-    code: definition.code || catalogCode || '',
-    label_ids: parseJsonArray(definition.label_ids),
-    validation_config: parseJsonObject(definition.validation_config),
-    metadata: parseJsonObject(definition.metadata),
-  };
-}
-
-function normalizeTypologyPayload(payload = {}) {
-  return {
-    code: String(payload.code || '').trim().toUpperCase(),
-    name: String(payload.name || '').trim(),
-    description: payload.description?.trim() || null,
-    metadata: parseJsonObject(payload.metadata),
-    is_active: payload.is_active !== false,
-    sort_order: Number(payload.sort_order || 0),
-  };
-}
-
-function normalizeLabelPayload(payload = {}) {
-  const name = String(payload.name || '').trim();
-  return {
-    name,
-    slug: slugify(payload.slug || name),
-    description: payload.description?.trim() || null,
-    label_scope: payload.label_scope || 'document',
-    document_code_id: payload.document_code_id || null,
-    default_rule_config: parseJsonObject(payload.default_rule_config),
-    validation_config: parseJsonObject(payload.validation_config),
-    metadata: parseJsonObject(payload.metadata),
-    is_active: payload.is_active !== false,
-    sort_order: Number(payload.sort_order || 0),
-  };
-}
-
-function getRuleConditionSummary(rule) {
-  const conditions = rule?.config?.conditions || {};
-  const active = Object.entries(conditions)
-    .filter(([, value]) => Array.isArray(value) && value.length)
-    .map(([key, value]) => `${key}: ${value.join(', ')}`);
-  return active.length ? active.join(' · ') : 'Sin condición adicional';
-}
-
-
-function InfoTooltip({ label, children }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button type="button" className="legal-config-help-trigger" aria-label={label}>
-          <Info aria-hidden="true" />
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="top" align="start" className="legal-config-tooltip-content">
-        {children}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-function CompactTitle({ title, help, kicker }) {
-  return (
-    <div className="legal-config-compact-title">
-      {kicker && <span className="legal-config-kicker">{kicker}</span>}
-      <div className="legal-config-compact-title__row">
-        <h3>{title}</h3>
-        {help && <InfoTooltip label={`Ayuda: ${title}`}>{help}</InfoTooltip>}
+    <label className="catalogue-select">
+      <span id={labelId}>{label}</span>
+      <div className="catalogue-select__control">
+        {multiple && (value || []).map((id) => {
+          const item = values.find((candidate) => candidate.id === id);
+          return item && (
+            <button
+              type="button"
+              key={id}
+              aria-label={`Quitar ${item.name}`}
+              onClick={() => onChange(value.filter((candidate) => candidate !== id))}
+              disabled={disabled}
+            >
+              {item.name} ×
+            </button>
+          );
+        })}
+        <input
+          value={multiple || open ? text : (selectedItem?.name || text)}
+          onChange={(event) => {
+            setText(event.target.value);
+            setOpen(true);
+            setActive(0);
+          }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => {
+            setOpen(false);
+            setText('');
+            setActive(-1);
+          }}
+          onKeyDown={keyDown}
+          placeholder={creatable ? `Buscar o crear ${label.toLowerCase()}` : `Buscar ${label.toLowerCase()}`}
+           role="combobox"
+           aria-labelledby={labelId}
+          aria-expanded={open}
+          aria-controls={listId}
+          aria-activedescendant={open && matches[active] ? `${listId}-${matches[active].id}` : undefined}
+          aria-autocomplete="list"
+          disabled={disabled}
+        />
       </div>
-    </div>
-  );
-}
-
-const GRAPH_NODE = { width: 220, height: 68, gapX: 60, gapY: 36 };
-const GRAPH_COLUMN_STEP = GRAPH_NODE.width + GRAPH_NODE.gapX;
-const GRAPH_ROW_STEP = GRAPH_NODE.height + GRAPH_NODE.gapY;
-
-function buildGraphRows(actuations = []) {
-  const byParent = new Map();
-  const byId = new Map();
-
-  actuations.forEach((item) => {
-    byId.set(item.id, item);
-    const parentKey = item.parent_id || '__root__';
-    if (!byParent.has(parentKey)) byParent.set(parentKey, []);
-    byParent.get(parentKey).push(item);
-  });
-
-  byParent.forEach((items) => {
-    items.sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0) || getItemName(a).localeCompare(getItemName(b)));
-  });
-
-  const rows = [];
-  const visit = (parentId = '__root__', depth = 0) => {
-    (byParent.get(parentId) || []).forEach((item) => {
-      rows.push({ ...item, depth, row: rows.length });
-      visit(item.id, depth + 1);
-    });
-  };
-
-  visit('__root__');
-
-  const positioned = rows.map((item) => ({
-    ...item,
-    x: 32 + item.depth * GRAPH_COLUMN_STEP,
-    y: 34 + item.row * GRAPH_ROW_STEP,
-  }));
-
-  return {
-    nodes: positioned,
-    byId,
-    byPositionId: new Map(positioned.map((item) => [item.id, item])),
-    width: Math.max(860, 360 + (Math.max(0, ...positioned.map((item) => item.depth)) + 1) * GRAPH_COLUMN_STEP),
-    height: Math.max(420, 120 + positioned.length * GRAPH_ROW_STEP),
-  };
-}
-
-function resolveRuleItems(rules = [], catalog = [], idKey, targetType) {
-  return rules
-    .filter((rule) => rule.is_active !== false)
-    .map((rule) => {
-      const item = catalog.find((entry) => entry.id === rule[idKey]);
-      if (!item) return null;
-      return {
-        key: rule.id || `${rule[idKey]}-${rule.actuation_type_id}`,
-        ruleId: rule.id,
-        ruleType: targetType,
-        required: rule.is_required !== false,
-        inherits: rule.applies_to_descendants !== false,
-        inclusionMode: rule.inclusion_mode || 'include',
-        priority: Number(rule.priority || 0),
-        ...item,
-      };
-    })
-    .filter(Boolean);
-}
-
-/** Deriva, desde los datos reales del backend (`data.rules`), las relaciones
- * directas y por etiqueta de una actuación — fuente única para los modales de
- * gobierno visual. */
-function getActuationRelations(actuationId, data) {
-  if (!actuationId) return { documents: [], texts: [] };
-  const rules = data.rules || {};
-
-  const directDocuments = (rules.actuation_documents || []).filter((rule) => rule.actuation_type_id === actuationId);
-  const labelDocuments = (rules.actuation_documents_by_labels || []).filter((rule) => rule.actuation_type_id === actuationId);
-  const directTexts = (rules.actuation_texts || []).filter((rule) => rule.actuation_type_id === actuationId);
-  const labelTexts = (rules.actuation_texts_by_labels || []).filter((rule) => rule.actuation_type_id === actuationId);
-
-  return {
-    documents: [
-      ...resolveRuleItems(directDocuments, data.documents, 'document_id', 'actuation_documents').map((entry) => ({ ...entry, via: 'Documento directo' })),
-      ...resolveRuleItems(labelDocuments, data.labels, 'label_id', 'actuation_documents_by_labels').map((entry) => ({ ...entry, via: 'Etiqueta documental' })),
-    ],
-    texts: [
-      ...resolveRuleItems(directTexts, data.texts, 'text_id', 'actuation_texts').map((entry) => ({ ...entry, via: 'Texto directo' })),
-      ...resolveRuleItems(labelTexts, data.labels, 'label_id', 'actuation_texts_by_labels').map((entry) => ({ ...entry, via: 'Etiqueta de resolución' })),
-    ],
-  };
-}
-
-function DovelaDataTable({ ariaLabel, columns, rows, emptyMessage }) {
-  return (
-    <div className="dovela-data-table-wrap">
-      <table className="dovela-data-table" aria-label={ariaLabel}>
-        <thead>
-          <tr>
-            {columns.map((column) => <th key={column.key}>{column.header}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length ? rows.map((row) => (
-            <tr key={row.key}>
-              {columns.map((column) => <td key={column.key}>{column.render ? column.render(row) : row[column.key]}</td>)}
-            </tr>
-          )) : (
-            <tr>
-              <td colSpan={columns.length} className="dovela-data-table__empty">{emptyMessage}</td>
-            </tr>
+      {open && (
+        <div id={listId} className="catalogue-select__menu" role="listbox">
+          {matches.map((item, index) => (
+            <button
+              type="button"
+              role="option"
+              aria-selected={multiple ? value?.includes(item.id) : value === item.id}
+              id={`${listId}-${item.id}`}
+              className={index === active ? 'is-active' : ''}
+              key={item.id}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => select(item.id)} disabled={disabled}
+            >
+              {item.name}
+            </button>
+          ))}
+          {creatable && text && !matches.some((item) => item.name.toLowerCase() === text.toLowerCase()) && (
+              <button type="button" role="option" onMouseDown={(event) => event.preventDefault()} onClick={create} disabled={disabled}>
+              Crear “{text}”
+            </button>
           )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function CreateTypeModal({ open, actuations, defaultParentId, onClose, onCreate }) {
-  const [form, setForm] = useState({ name: '', parentId: defaultParentId || actuations[0]?.id || '', nodeType: 'actuation' });
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (open) {
-      setForm({ name: '', parentId: defaultParentId || actuations[0]?.id || '', nodeType: 'actuation' });
-      setError('');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, defaultParentId]);
-
-  function update(field, value) {
-    setForm((current) => ({ ...current, [field]: value }));
-  }
-
-  async function submit(event) {
-    event.preventDefault();
-    if (!form.name.trim()) return;
-    setSubmitting(true);
-    setError('');
-    try {
-      await onCreate({
-        name: form.name.trim(),
-        slug: slugify(form.name),
-        parent_id: form.parentId || null,
-        node_type: form.nodeType,
-      });
-      onClose();
-    } catch (submitError) {
-      setError(extractErrorMessage(submitError, 'No fue posible crear el tipo de actuación.'));
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Crear tipo de actuación</DialogTitle>
-          <DialogDescription>Agrega un nodo nuevo al árbol jerárquico de actuaciones.</DialogDescription>
-        </DialogHeader>
-        <form className="legal-config-modal-form" onSubmit={submit}>
-          {error && <DovelaInlineAlert tone="danger">{error}</DovelaInlineAlert>}
-
-          <DovelaField label="Nombre del tipo">
-            <DovelaInput
-              value={form.name}
-              onChange={(event) => update('name', event.target.value)}
-              placeholder="Ej. Nueva modalidad"
-              autoFocus
-            />
-          </DovelaField>
-
-          <DovelaField label="Depende de">
-            <select
-              id="create-type-parent"
-              className="legal-config-native-select"
-              value={form.parentId}
-              onChange={(event) => update('parentId', event.target.value)}
-            >
-              <option value="">Sin actuación padre (raíz)</option>
-              {actuations.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-            </select>
-          </DovelaField>
-
-          <DovelaField label="Clasificación">
-            <select
-              id="create-type-node-type"
-              className="legal-config-native-select"
-              value={form.nodeType}
-              onChange={(event) => update('nodeType', event.target.value)}
-            >
-              {Object.entries(NODE_TYPE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select>
-          </DovelaField>
-
-          <DialogFooter>
-            <DovelaButton type="button" tone="neutral" onClick={onClose} disabled={submitting}>Cancelar</DovelaButton>
-            <DovelaButton type="submit" tone="primary" loading={submitting}>Agregar al árbol</DovelaButton>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function RelationModal({ open, relationType, items, onClose, onSave }) {
-  const meta = RELATION_META[relationType];
-  const [selectedId, setSelectedId] = useState(items[0]?.id || '');
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const selectedItem = items.find((item) => item.id === selectedId);
-
-  useEffect(() => {
-    if (open) {
-      setSelectedId(items[0]?.id || '');
-      setError('');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, relationType]);
-
-  async function submit(event) {
-    event.preventDefault();
-    if (!selectedItem) return;
-    setSubmitting(true);
-    setError('');
-    try {
-      await onSave(relationType, selectedItem);
-      onClose();
-    } catch (submitError) {
-      setError(extractErrorMessage(submitError, 'No fue posible guardar la relación.'));
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{meta.title}</DialogTitle>
-          <DialogDescription>Selecciona un elemento disponible para relacionarlo con la actuación actual.</DialogDescription>
-        </DialogHeader>
-        <form className="legal-config-modal-form" onSubmit={submit}>
-          {error && <DovelaInlineAlert tone="danger">{error}</DovelaInlineAlert>}
-
-          <DovelaField label={meta.label}>
-            <select
-              id="relation-item"
-              className="legal-config-native-select"
-              value={selectedId}
-              onChange={(event) => setSelectedId(event.target.value)}
-              disabled={!items.length}
-            >
-              {items.length
-                ? items.map((item) => <option key={item.id} value={item.id}>{getItemName(item)}</option>)
-                : <option value="">{meta.empty}</option>}
-            </select>
-          </DovelaField>
-
-          <DialogFooter>
-            <DovelaButton type="button" tone="neutral" onClick={onClose} disabled={submitting}>Cancelar</DovelaButton>
-            <DovelaButton type="submit" tone="primary" loading={submitting} disabled={!selectedItem}>Guardar relación</DovelaButton>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-
-function ActuationInfoGrid({ node, parent }) {
-  const items = [
-    { label: 'Tipo', value: getNodeTypeLabel(node?.node_type) },
-    { label: 'Actuación padre', value: parent?.name || 'Raíz' },
-    { label: 'Estado', value: node?.is_active === false ? 'Desactivada' : 'Activa' },
-    { label: 'Uso en selección', value: node?.is_selectable === false ? 'Agrupador' : 'Seleccionable' },
-  ];
-
-  return (
-    <dl className="legal-config-node-info-grid">
-      {items.map((item) => (
-        <div key={item.label}>
-          <dt>{item.label}</dt>
-          <dd>{item.value}</dd>
         </div>
-      ))}
-    </dl>
+      )}
+    </label>
   );
 }
 
-function DeactivateActuationModal({ open, node, data, onClose, onConfirm }) {
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const relations = useMemo(() => getActuationRelations(node?.id, data), [node, data]);
-  const parent = data.actuationTypes.find((item) => item.id === node?.parent_id);
-  const children = useMemo(
-    () => data.actuationTypes.filter((item) => item.parent_id === node?.id),
-    [data.actuationTypes, node?.id],
-  );
-  const relationCount = relations.documents.length + relations.texts.length;
+function CatalogueManagerDialog({ open, onOpenChange, tab, onTabChange, values, onCreate, onToggleActive, saving }) {
+  const [name, setName] = useState('');
+  const isTypology = tab === 'typologies';
+  const catalogueLabel = isTypology ? 'tipología' : 'etiqueta';
+  const title = isTypology ? 'Tipologías' : 'Etiquetas';
 
-  useEffect(() => {
-    if (open) setError('');
-  }, [open, node?.id]);
-
-  async function submit() {
-    if (!node) return;
-    setSubmitting(true);
-    setError('');
-    try {
-      await onConfirm(node);
-      onClose();
-    } catch (submitError) {
-      setError(extractErrorMessage(submitError, 'No fue posible desactivar la actuación.'));
-    } finally {
-      setSubmitting(false);
-    }
+  async function submit(event) {
+    event.preventDefault();
+    const created = await onCreate(tab, name.trim());
+    if (created) setName('');
   }
 
   return (
-    <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Desactivar actuación</DialogTitle>
-          <DialogDescription>
-            La actuación dejará de aparecer como activa. Sus relaciones no se eliminan; se conservan para trazabilidad salvo que se quiten desde las tablas.
-          </DialogDescription>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="legal-config-catalogue-dialog"
+        aria-label="Tipologías y etiquetas"
+        aria-describedby={undefined}
+      >
+        <DialogHeader className="legal-config-catalogue-dialog__header">
+          <DialogTitle><Settings2 size={18} aria-hidden="true" /> Tipologías y etiquetas</DialogTitle>
         </DialogHeader>
 
-        {error && <DovelaInlineAlert tone="danger">{error}</DovelaInlineAlert>}
-        <DovelaInlineAlert tone="warning" icon={AlertTriangle} title={node?.name || 'Actuación seleccionada'}>
-          <div className="legal-config-deactivate-summary">
-            <span><strong>{children.length}</strong> hijas directas</span>
-            <span><strong>{relationCount}</strong> relaciones directas</span>
-          </div>
-          <p>Esta acción desactiva solo la actuación. Si necesitas retirar documentos, etiquetas o textos, hazlo en “Gestionar relaciones”.</p>
-        </DovelaInlineAlert>
+        <div className="legal-config-catalogue-tabs" role="tablist" aria-label="Catálogos documentales">
+          {['typologies', 'labels'].map((catalogue) => {
+            const selectedTab = catalogue === tab;
+            return (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={selectedTab}
+                className={selectedTab ? 'is-active' : ''}
+                onClick={() => onTabChange(catalogue)}
+                key={catalogue}
+              >
+                {catalogue === 'typologies' ? 'Tipologías' : 'Etiquetas'}
+                <span>{catalogue === 'typologies' ? values.typologies.length : values.labels.length}</span>
+              </button>
+            );
+          })}
+        </div>
 
-        <DialogFooter>
-          <DovelaButton type="button" tone="neutral" onClick={onClose} disabled={submitting}>Cancelar</DovelaButton>
-          <DovelaButton type="button" tone="danger" leadingIcon={PowerOff} loading={submitting} onClick={submit}>Desactivar actuación</DovelaButton>
+        <form className="legal-config-catalogue-create" onSubmit={submit}>
+          <label htmlFor="catalogue-new-name">Nuevo nombre</label>
+          <div>
+            <input
+              id="catalogue-new-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder={`Ej. ${isTypology ? 'Planos' : 'Obligatorio'}`}
+              disabled={saving}
+            />
+            <button className="legal-config-button legal-config-button--primary" type="submit" disabled={!name.trim() || saving}>
+              {saving ? 'Guardando…' : `Crear ${catalogueLabel}`}
+            </button>
+          </div>
+        </form>
+
+        <div className="legal-config-catalogue-list" role="list" aria-label={`Listado de ${title.toLowerCase()}`}>
+          {values[tab].map((item) => (
+            <div className={`legal-config-catalogue-row${item.is_active ? '' : ' is-inactive'}`} role="listitem" key={item.id}>
+              <span className="legal-config-catalogue-row__name"><strong>{item.name}</strong></span>
+              <span className="legal-config-catalogue-row__status">{item.is_active ? 'Activa' : 'Inactiva'}</span>
+              <button
+                type="button"
+                className="legal-config-button legal-config-button--compact"
+                onClick={() => onToggleActive(tab, item)}
+                disabled={saving}
+                aria-label={`${item.is_active ? 'Desactivar' : 'Activar'} ${item.name}`}
+              >
+                {item.is_active ? 'Desactivar' : 'Activar'}
+              </button>
+            </div>
+          ))}
+          {!values[tab].length && <div className="legal-config-catalogue-empty">No hay {title.toLowerCase()} registradas.</div>}
+        </div>
+
+        <DialogFooter className="legal-config-catalogue-dialog__footer">
+          <button type="button" className="legal-config-button" onClick={() => onOpenChange(false)}>Cerrar</button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
-function ActuationDetailModal({ open, node, data, onClose, onOpenRelation, onDeactivateActuation, onDeleteRelation }) {
-  const [tab, setTab] = useState('documents');
-  const [relationBusyId, setRelationBusyId] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (open) {
-      setTab('documents');
-      setError('');
-      setRelationBusyId('');
-    }
-  }, [open, node?.id]);
-
-  const relations = useMemo(() => getActuationRelations(node?.id, data), [node, data]);
-  const parent = data.actuationTypes.find((item) => item.id === node?.parent_id);
-
-  async function removeRelation(row) {
-    if (!row?.ruleId) return;
-    setRelationBusyId(row.ruleId);
-    setError('');
-    try {
-      await onDeleteRelation(row.ruleType, row.ruleId);
-    } catch (deleteError) {
-      setError(extractErrorMessage(deleteError, 'No fue posible quitar la relación.'));
-    } finally {
-      setRelationBusyId('');
-    }
-  }
-
-  const relationColumns = [
-    { key: 'name', header: 'Elemento', render: (row) => <strong>{getItemName(row)}</strong> },
-    { key: 'via', header: 'Relación', render: (row) => <DovelaBadge tone="info">{row.via}</DovelaBadge> },
-    { key: 'required', header: 'Obligatorio', render: (row) => (row.required ? 'Sí' : 'No') },
-    { key: 'inherits', header: 'Hereda', render: (row) => (row.inherits ? 'Sí' : 'No') },
-    {
-      key: 'actions',
-      header: 'Acciones',
-      render: (row) => (
-        <DovelaButton
-          type="button"
-          tone="neutral"
-          size="sm"
-          leadingIcon={Trash2}
-          loading={relationBusyId === row.ruleId}
-          disabled={!row.ruleId || Boolean(relationBusyId)}
-          aria-label={`Quitar ${getItemName(row)}`}
-          onClick={() => removeRelation(row)}
-        >
-          Quitar
-        </DovelaButton>
-      ),
-    },
-  ];
-
-  return (
-    <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}>
-      <DialogContent className="legal-config-detail-dialog">
-        <DialogHeader>
-          <DialogTitle>{node?.name || 'Actuación'}</DialogTitle>
-          <DialogDescription>Gobierna la actuación seleccionada y consulta sus relaciones sin saturar el gráfico principal.</DialogDescription>
-        </DialogHeader>
-
-        <ActuationInfoGrid node={node} parent={parent} />
-
-        {error && <DovelaInlineAlert tone="danger">{error}</DovelaInlineAlert>}
-
-        <div className="legal-config-node-actions">
-          <DovelaButton type="button" tone="primary" leadingIcon={Plus} onClick={() => onOpenRelation('create')}>Crear hija</DovelaButton>
-          <DovelaButton type="button" tone="neutral" leadingIcon={FileText} onClick={() => onOpenRelation('document')}>Asociar documento</DovelaButton>
-          <DovelaButton type="button" tone="neutral" leadingIcon={BookOpen} onClick={() => onOpenRelation('text')}>Asociar texto jurídico</DovelaButton>
-          <DovelaButton type="button" tone="neutral" leadingIcon={Tags} onClick={() => onOpenRelation('label')}>Asociar etiqueta</DovelaButton>
-          <DovelaButton type="button" tone="danger" leadingIcon={PowerOff} onClick={() => onDeactivateActuation(node)}>Desactivar actuación</DovelaButton>
-        </div>
-
-
-
-        <nav className="legal-config-preview-tabs" aria-label="Relaciones de la actuación">
-          <DovelaButton type="button" tone={tab === 'documents' ? 'primary' : 'neutral'} onClick={() => setTab('documents')} aria-pressed={tab === 'documents'}>
-            Documentos relacionados
-          </DovelaButton>
-          <DovelaButton type="button" tone={tab === 'resolution' ? 'primary' : 'neutral'} onClick={() => setTab('resolution')} aria-pressed={tab === 'resolution'}>
-            Resolución relacionada
-          </DovelaButton>
-        </nav>
-
-        {tab === 'documents' ? (
-          <DovelaDataTable
-            ariaLabel="Relaciones documentales"
-            columns={relationColumns}
-            rows={relations.documents}
-            emptyMessage="Esta actuación todavía no tiene documentos ni etiquetas documentales relacionadas."
-          />
-        ) : (
-          <DovelaDataTable
-            ariaLabel="Relaciones de resolución"
-            columns={relationColumns}
-            rows={relations.texts}
-            emptyMessage="Esta actuación todavía no tiene textos ni etiquetas de resolución relacionadas."
-          />
-        )}
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function ActuationGraph({ nodes, selectedNode, selectedId, onNodeClick, onDeactivateSelected, zoom, setZoom }) {
-  const layout = useMemo(() => buildGraphRows(nodes), [nodes]);
-  const { width: nodeWidth, height: nodeHeight } = GRAPH_NODE;
-
-  return (
-    <DovelaCard as="section" className="actuation-graph-card">
-      <header className="actuation-graph-card__header">
-        <div>
-          <h3>Mapa jerárquico de actuaciones</h3>
-          <span>Selecciona un nodo para gobernar su estructura y sus reglas</span>
-        </div>
-        <div className="actuation-graph-toolbar">
-          <DovelaButton
-            tone="danger"
-            size="sm"
-            leadingIcon={PowerOff}
-            aria-label="Desactivar actuación seleccionada"
-            title="Desactivar actuación seleccionada"
-            disabled={!selectedNode}
-            onClick={() => onDeactivateSelected(selectedNode)}
-          />
-          <div className="actuation-graph-controls" aria-label="Controles del gráfico">
-            <DovelaButton
-              tone="neutral"
-              size="sm"
-              leadingIcon={ZoomOut}
-              aria-label="Alejar"
-              onClick={() => setZoom((current) => Math.max(0.75, Number((current - 0.1).toFixed(2))))}
-            />
-          <strong>{Math.round(zoom * 100)}%</strong>
-          <DovelaButton
-              tone="neutral"
-              size="sm"
-              leadingIcon={ZoomIn}
-              aria-label="Acercar"
-              onClick={() => setZoom((current) => Math.min(1.35, Number((current + 0.1).toFixed(2))))}
-            />
-          </div>
-        </div>
-      </header>
-
-      <div className="actuation-graph-canvas" data-testid="actuation-graph-canvas">
-        <div
-          className="actuation-graph-stage"
-          style={{ width: layout.width, height: layout.height, transform: `scale(${zoom})` }}
-        >
-          <svg className="actuation-graph-lines" width={layout.width} height={layout.height} aria-hidden="true">
-            {layout.nodes.map((node) => {
-              const parent = node.parent_id ? layout.byPositionId.get(node.parent_id) : null;
-              if (!parent) return null;
-              const startX = parent.x + nodeWidth;
-              const startY = parent.y + nodeHeight / 2;
-              const endX = node.x;
-              const endY = node.y + nodeHeight / 2;
-              const midX = startX + Math.max(34, (endX - startX) / 2);
-              return <path key={`${parent.id}-${node.id}`} d={`M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`} />;
-            })}
-          </svg>
-
-          {layout.nodes.map((node) => {
-            const isSelected = selectedId === node.id;
-            return (
-              <button
-                key={node.id}
-                type="button"
-                className={`actuation-graph-node${isSelected ? ' is-selected' : ''}`}
-                style={{ left: node.x, top: node.y, width: nodeWidth, minHeight: nodeHeight }}
-                onClick={() => onNodeClick(node)}
-              >
-                <strong>{node.name}</strong>
-                <span>{getNodeTypeLabel(node.node_type)}</span>
-                {isSelected && <em>Seleccionada</em>}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </DovelaCard>
-  );
-}
-
-function ActionPanel({ selectedNode, data, typologies, onOpen, onOpenDetail, onSelectNode }) {
-  const relations = useMemo(() => getActuationRelations(selectedNode?.id, data), [selectedNode, data]);
-  const children = useMemo(
-    () => data.actuationTypes.filter((item) => item.parent_id === selectedNode?.id),
-    [data.actuationTypes, selectedNode?.id],
-  );
-  const parent = data.actuationTypes.find((item) => item.id === selectedNode?.parent_id);
-  const relatedTypologies = selectedNode?.document_typologies || [];
-  const hasRelations = relations.documents.length + relations.texts.length + relatedTypologies.length > 0;
-
-  return (
-    <DovelaCard as="aside" className="legal-config-action-panel">
-      <div className="legal-config-inspector-kicker">Inspector de actuación</div>
-
-      <DovelaCard tone="subtle" className="legal-config-selected-card">
-        <div className="legal-config-selected-card__head">
-          <span>{selectedNode ? getNodeTypeLabel(selectedNode.node_type) : 'Sin selección'}</span>
-          {selectedNode && <DovelaBadge tone="outline">{selectedNode.is_selectable === false ? 'Agrupador' : 'Seleccionable'}</DovelaBadge>}
-        </div>
-        <strong>{selectedNode?.name || 'Selecciona una actuación'}</strong>
-        <small>{selectedNode ? `Padre: ${parent?.name || 'Raíz'}` : 'El mapa es el punto de partida.'}</small>
-      </DovelaCard>
-
-      <div className="legal-config-inspector-metrics" aria-label="Resumen de impacto de la actuación">
-        <div><strong>{children.length}</strong><span>Hijas</span></div>
-        <div><strong>{relations.documents.length}</strong><span>Documentos</span></div>
-        <div><strong>{relations.texts.length}</strong><span>Resolución</span></div>
-        <div><strong>{relatedTypologies.length}</strong><span>Tipologías</span></div>
-      </div>
-
-      <DovelaInlineAlert tone={hasRelations ? 'success' : 'info'}>
-        {selectedNode
-          ? hasRelations
-            ? 'Esta actuación ya tiene reglas asociadas. Revisa el detalle para decidir si heredan o aplican directamente.'
-            : 'Esta actuación no tiene relaciones directas: crea hijas o agrega documentos, tipologías o textos según el modelo.'
-          : 'Selecciona una actuación para ver su impacto y acciones.'}
-      </DovelaInlineAlert>
-
-      <div className="legal-config-action-stack" aria-label="Acciones de gobierno de actuación">
-        <DovelaButton tone="primary" fullWidth leadingIcon={Plus} onClick={() => onOpen('create')}>
-          Crear hija / tipo
-        </DovelaButton>
-        <DovelaButton tone="neutral" fullWidth leadingIcon={FileText} disabled={!selectedNode} onClick={() => onOpenDetail(selectedNode)}>
-          Gestionar relaciones
-        </DovelaButton>
-        <div className="legal-config-action-grid">
-          <DovelaButton tone="neutral" size="sm" leadingIcon={FileText} disabled={!selectedNode} onClick={() => onOpen('document')}>Documento</DovelaButton>
-          <DovelaButton tone="neutral" size="sm" leadingIcon={BookOpen} disabled={!selectedNode} onClick={() => onOpen('text')}>Texto</DovelaButton>
-          <DovelaButton tone="neutral" size="sm" leadingIcon={Layers} disabled={!selectedNode} onClick={() => onOpen('typology')}>Tipología</DovelaButton><DovelaButton tone="neutral" size="sm" leadingIcon={Tags} disabled={!selectedNode} onClick={() => onOpen('label')}>Etiqueta</DovelaButton>
-        </div>
-      </div>
-
-      {children.length > 0 && (
-        <div className="legal-config-child-list">
-          <span>Hijas directas</span>
-          {children.slice(0, 5).map((child) => (
-            <button key={child.id} type="button" onClick={() => onSelectNode(child)}>
-              <strong>{child.name}</strong>
-              <small>{getNodeTypeLabel(child.node_type)}</small>
-            </button>
-          ))}
-        </div>
-      )}
-    </DovelaCard>
-  );
-}
-
-function LabelPicker({ labels, value, onChange, onCreate }) {
-  const [query, setQuery] = useState('');
-  const [open, setOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const normalizedQuery = query.trim().toLocaleLowerCase();
-  const documentLabels = labels.filter((label) => ['document', 'mixed'].includes(label.label_scope || 'mixed'));
-  const available = documentLabels.filter((label) => label.is_active !== false);
-  const matches = available.filter((label) => label.name.toLocaleLowerCase().includes(normalizedQuery));
-  const selected = value.map((id) => documentLabels.find((label) => label.id === id) || { id, name: `Etiqueta no disponible (${id})`, is_active: false, missing: true });
-  function removeLast() {
-    if (!query && value.length) onChange(value.slice(0, -1));
-  }
-  function select(label) {
-    if (!value.includes(label.id) && label.is_active !== false) onChange([...value, label.id]);
-    setQuery('');
-    setOpen(false);
-  }
-  const canCreate = Boolean(normalizedQuery) && !available.some((label) => label.name.toLocaleLowerCase() === normalizedQuery);
-  const optionCount = matches.length + (canCreate ? 1 : 0);
-  const optionId = activeIndex >= 0 && activeIndex < matches.length ? `document-label-option-${matches[activeIndex].id}` : activeIndex === matches.length && canCreate ? 'document-label-create-option' : undefined;
-  return <div className="legal-config-label-picker">
-    <label htmlFor="document-label-picker">Etiquetas</label>
-    <div className="legal-config-label-picker__chips" aria-live="polite">
-      {selected.map((label) => <span key={label.id} className={`legal-config-label-chip${label.is_active === false ? ' is-inactive' : ''}`}>{label.name}{label.is_active === false && <small>Inactiva</small>}<button type="button" aria-label={`Quitar ${label.name}`} onClick={() => onChange(value.filter((id) => id !== label.id))}>×</button></span>)}
-    </div>
-    <input id="document-label-picker" className="legal-config-native-select" value={query} placeholder="Buscar o crear etiqueta" role="combobox" aria-label="Buscar etiquetas documentales" aria-autocomplete="list" aria-expanded={open} aria-controls="document-label-options" aria-activedescendant={open ? optionId : undefined} onFocus={() => setOpen(true)} onChange={(event) => { setQuery(event.target.value); setOpen(true); setActiveIndex(-1); }} onKeyDown={(event) => { if (event.key === 'Backspace' && !query) removeLast(); if (event.key === 'Escape') { setOpen(false); setActiveIndex(-1); } if (event.key === 'ArrowDown') { event.preventDefault(); setOpen(true); setActiveIndex((current) => optionCount ? Math.min(current + 1, optionCount - 1) : -1); } if (event.key === 'ArrowUp') { event.preventDefault(); setOpen(true); setActiveIndex((current) => optionCount ? Math.max(current - 1, 0) : -1); } if (event.key === 'Enter' && activeIndex >= 0) { event.preventDefault(); if (activeIndex < matches.length) select(matches[activeIndex]); else if (canCreate) onCreate(query.trim()); } }} />
-    {open && <div id="document-label-options" role="listbox" className="legal-config-label-options">
-      {matches.map((label, index) => <button id={`document-label-option-${label.id}`} key={label.id} type="button" role="option" aria-selected={index === activeIndex} className={index === activeIndex ? 'is-active' : ''} onMouseMove={() => setActiveIndex(index)} onClick={() => select(label)}>{label.name}</button>)}
-      {canCreate && <button id="document-label-create-option" type="button" role="option" aria-selected={activeIndex === matches.length} className={activeIndex === matches.length ? 'is-active' : ''} onMouseMove={() => setActiveIndex(matches.length)} onClick={() => onCreate(query.trim())}>Crear etiqueta “{query.trim()}”</button>}
-      {!matches.length && !normalizedQuery && <span>No hay etiquetas activas disponibles.</span>}
-    </div>}
-  </div>;
-}
-
-function CreateLabelModal({ name, open, onClose, onCreate }) {
-  const [error, setError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [draftName, setDraftName] = useState('');
-  useEffect(() => { if (open) { setError(''); setDraftName(name); } }, [open, name]);
-  async function submit(event) {
-    event.preventDefault();
-    if (!draftName.trim()) return;
-    setSubmitting(true);
-    setError('');
-    try {
-      await onCreate({ name: draftName.trim(), slug: slugify(draftName), label_scope: 'document' });
-      onClose();
-    } catch (err) {
-      setError(extractErrorMessage(err, 'No fue posible crear la etiqueta. Corrige el nombre e intenta nuevamente.'));
-    } finally { setSubmitting(false); }
-  }
-  const preview = draftName.trim() || 'Nueva etiqueta';
-  return <Dialog open={open} onOpenChange={(next) => { if (!next && !submitting) onClose(); }}><DialogContent className="legal-config-creation-dialog"><DialogHeader className="legal-config-creation-hero"><span className="legal-config-creation-eyebrow">Catálogo documental</span><DialogTitle>Crear etiqueta</DialogTitle><DialogDescription>Clasifica documentos sin alterar su tipología ni su código.</DialogDescription></DialogHeader><form className="legal-config-modal-form legal-config-creation-form" onSubmit={submit}>{error && <DovelaInlineAlert tone="danger">{error}</DovelaInlineAlert>}<DovelaField label="Nombre de la etiqueta" required><DovelaInput aria-label="Nombre de la etiqueta" value={draftName} onChange={(event) => setDraftName(event.target.value)} placeholder="Ej. Control técnico" autoFocus required /><small className="legal-config-field-help">Use un nombre corto que facilite filtrar y agrupar documentos.</small></DovelaField><section className="legal-config-creation-preview" aria-label="Vista previa de la etiqueta"><span>Vista previa</span><div><DovelaBadge tone="outline">{preview}</DovelaBadge><small>Disponible para documentos</small></div></section><DialogFooter><DovelaButton type="button" tone="neutral" onClick={onClose} disabled={submitting}>Cancelar</DovelaButton><DovelaButton type="submit" tone="primary" loading={submitting} disabled={!draftName.trim()}>Crear etiqueta</DovelaButton></DialogFooter></form></DialogContent></Dialog>;
-}
-function LabelManagerModal({ open, labels, documents, onClose, onUpdate, onCreate }) {
-  const [query, setQuery] = useState(''); const [draft, setDraft] = useState(null); const [busy, setBusy] = useState(false); const [error, setError] = useState('');
-  const visible = labels.filter((item) => item.name.toLowerCase().includes(query.toLowerCase()));
-  async function save() { if (!draft?.name?.trim()) return; setBusy(true); setError(''); try { if (draft.id) await onUpdate(draft, { name: draft.name.trim(), slug: slugify(draft.name) }); else await onCreate({ name: draft.name.trim(), slug: slugify(draft.name), label_scope: 'document' }); setDraft(null); } catch (err) { setError(extractErrorMessage(err, 'No fue posible guardar la etiqueta.')); } finally { setBusy(false); } }
-  async function deactivate(item) { if (!window.confirm(`¿Desactivar la etiqueta “${item.name}”? Sus vínculos históricos se conservan.`)) return; setBusy(true); setError(''); try { await onUpdate(item, { is_active: false }); } catch (err) { setError(extractErrorMessage(err, 'No fue posible desactivar la etiqueta.')); } finally { setBusy(false); } }
-  return <Dialog open={open} onOpenChange={(next) => { if (!next && !busy) onClose(); }}><DialogContent className="legal-config-detail-dialog legal-config-manager-dialog"><DialogHeader><DialogTitle>Gestionar etiquetas</DialogTitle><DialogDescription>Crea, edita o desactiva etiquetas sin abrir ventanas encima de esta.</DialogDescription></DialogHeader>{error && <DovelaInlineAlert tone="danger">{error}</DovelaInlineAlert>}<div className="legal-config-manager-toolbar"><DovelaInput value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar etiqueta" aria-label="Buscar etiqueta"/><DovelaButton tone="primary" size="sm" onClick={() => { setError(''); setDraft({ name: '' }); }}>Nueva etiqueta</DovelaButton></div>{draft && <section className="legal-config-manager-editor"><DovelaInput autoFocus value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} placeholder="Nombre de la etiqueta" aria-label="Nombre de la etiqueta"/><div><DovelaButton size="sm" tone="neutral" onClick={() => setDraft(null)}>Cancelar</DovelaButton><DovelaButton size="sm" tone="primary" loading={busy} onClick={save}>{draft.id ? 'Guardar' : 'Crear'}</DovelaButton></div></section>}<DovelaDataTable ariaLabel="Etiquetas documentales" emptyMessage="No hay etiquetas." rows={visible.map((item) => ({ ...item, key: item.id }))} columns={[{ key:'name', header:'Etiqueta', render:(item)=><strong>{item.name}</strong> }, { key:'documents', header:'En documentos', render:(item)=>documents.filter((doc)=>(doc.label_ids||[]).includes(item.id)).length }, { key:'is_active', header:'Estado', render:(item)=>item.is_active===false?'Desactivada':'Activa' }, { key:'actions', header:'Acciones', render:(item)=><div className="legal-config-definition-row-actions"><DovelaButton tone="neutral" size="sm" disabled={busy} onClick={()=>setDraft(item)}>Editar</DovelaButton><DovelaButton tone="danger" size="sm" disabled={busy||item.is_active===false} onClick={()=>deactivate(item)}>Desactivar</DovelaButton></div> }]} /><DialogFooter><DovelaButton tone="neutral" onClick={onClose} disabled={busy}>Cerrar</DovelaButton></DialogFooter></DialogContent></Dialog>;
-}
-
-function DocumentDefinitionModal({ open, mode: initialMode = 'standalone', parent, typologies, definition, labels, createdLabel, onClose, onCreate, onUpdate, onRequestCreateLabel, onCreatedLabelApplied }) {
-  const [form, setForm] = useState({ name: '', description: '', labelIds: [], isRecord: false, supportNote: '', code: '', typologyId: '', suffix: '' });
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+function ConditionDialog({ open, onOpenChange, fields, documents, actuation, onSave, saving }) {
+  const [name, setName] = useState('');
+  const [sourceKey, setSourceKey] = useState('');
+  const [expectedValue, setExpectedValue] = useState('');
+  const [effect, setEffect] = useState('include');
+  const [documentIds, setDocumentIds] = useState([]);
+  const selectedField = fields.find((field) => field.key === sourceKey);
 
   useEffect(() => {
     if (!open) return;
-    const validationConfig = definition?.validation_config || {};
-    setForm({
-      name: definition?.name || '',
-      description: definition?.description || '',
-      labelIds: definition?.label_ids || [],
-      isRecord: Boolean(definition?.is_record),
-      supportNote: validationConfig.expected_support_note || '',
-      code: definition?.code || '',
-      typologyId: definition?.typology_id || '',
-      suffix: definition?.code_suffix || '',
-    });
-    setError('');
-    setFieldErrors({});
-  }, [open, initialMode, parent?.id, definition?.id]);
+    const firstField = fields[0];
+    setName('');
+    setSourceKey(firstField?.key || '');
+    setExpectedValue(firstField?.values?.[0]?.value || '');
+    setEffect('include');
+    setDocumentIds([]);
+  }, [fields, open]);
 
-  useEffect(() => {
-    if (createdLabel?.id) {
-      setForm((current) => current.labelIds.includes(createdLabel.id) ? current : { ...current, labelIds: [...current.labelIds, createdLabel.id] });
-      onCreatedLabelApplied();
-    }
-  }, [createdLabel?.id, onCreatedLabelApplied]);
-
-  function update(field, value) {
-    setForm((current) => ({ ...current, [field]: value }));
-    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+  function changeField(nextKey) {
+    const nextField = fields.find((field) => field.key === nextKey);
+    setSourceKey(nextKey);
+    setExpectedValue(nextField?.values?.[0]?.value || '');
   }
 
   async function submit(event) {
     event.preventDefault();
-    if (!form.name.trim()) return;
-    setSubmitting(true);
-    setError('');
-    try {
-      const payload = {
-        name: form.name.trim(),
-        slug: slugify(form.name),
-        description: form.description.trim() || null,
-        label_ids: form.labelIds,
-        is_record: form.isRecord,
-        validation_config: { expected_support_note: form.supportNote.trim() || null },
-        metadata: { ...(definition?.metadata || {}), source: 'legal-config-documentos-ui' },
-      };
-      if (!definition) {
-        payload.mode = initialMode;
-        if (initialMode === 'variant') {
-          payload.parent_definition_id = parent?.id;
-          payload.code_suffix = form.suffix.trim();
-        } else {
-          payload.code = form.code.trim().toUpperCase();
-          payload.typology_id = form.typologyId || null;
-        }
-      }
-      if (definition) await onUpdate(definition, payload);
-      else await onCreate(payload);
-      onClose();
-    } catch (submitError) {
-      setError(extractErrorMessage(submitError, 'No fue posible guardar el documento. Corrige los campos marcados e intenta nuevamente.'));
-      const errors = submitError?.response?.data?.errors || [];
-      setFieldErrors(Object.fromEntries(errors.map((item) => [item.field, item.message || item.code || 'Valor inválido'])));
-    } finally {
-      setSubmitting(false);
-    }
+    const saved = await onSave({
+      name: name.trim(),
+      code: name.trim(),
+      source_key: sourceKey,
+      operator: selectedField?.operator || 'includes_any',
+      expected_values: [expectedValue],
+      effect,
+      document_ids: documentIds,
+      actuation_ids: [actuation.id],
+    });
+    if (saved) onOpenChange(false);
   }
 
-  const isVariant = (initialMode === 'variant' && !definition) || Boolean(definition?.parent_definition_id);
-  const title = definition ? 'Editar documento' : isVariant ? 'Nueva variante' : 'Nuevo documento';
+  const canSave = Boolean(name.trim() && sourceKey && expectedValue && documentIds.length && actuation && !saving);
+
   return (
-    <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}>
-      <DialogContent className="legal-config-document-code-dialog">
-        <DialogHeader>
-          <DialogTitle className="legal-config-dialog-title-row">{title}</DialogTitle>
-          <DialogDescription>{definition ? `${definition.code} · el código no se modifica.` : isVariant ? 'Crea una variante a partir del documento seleccionado.' : 'Registra el documento y luego clasifícalo, si corresponde.'}</DialogDescription>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="legal-config-condition-dialog" aria-label="Nueva condición" aria-describedby={undefined}>
+        <DialogHeader className="legal-config-condition-dialog__header">
+          <DialogTitle><ListChecks size={18} aria-hidden="true" /> Nueva condición</DialogTitle>
+          <span>{actuation?.name}</span>
         </DialogHeader>
-        <form className="legal-config-modal-form" onSubmit={submit}>
-          {error && <div aria-live="assertive"><DovelaInlineAlert tone="danger">{error}</DovelaInlineAlert></div>}
-          {definition && <DovelaField label="Código inmutable"><DovelaInput value={definition.code || ''} readOnly /></DovelaField>}
-          {isVariant && <><DovelaField label="Documento padre"><DovelaInput value={parent?.code || ''} readOnly /></DovelaField><DovelaField label="Sufijo numérico" required><DovelaInput value={form.suffix} onChange={(event) => update('suffix', event.target.value)} aria-label="Sufijo numérico" inputMode="numeric" required autoFocus />{fieldErrors.code_suffix && <small role="alert">{fieldErrors.code_suffix}</small>}</DovelaField></>}
-          {!definition && !isVariant && <DovelaField label="Código del documento" required><DovelaInput value={form.code} onChange={(event) => update('code', event.target.value)} aria-label="Código del documento" aria-invalid={Boolean(fieldErrors.code)} required autoFocus />{fieldErrors.code && <small role="alert">{fieldErrors.code}</small>}</DovelaField>}
-          <DovelaField label="Nombre del documento" required><DovelaInput aria-label="Nombre del documento" value={form.name} onChange={(event) => update('name', event.target.value)} placeholder="Ej. Plano topográfico firmado" required={!definition} /></DovelaField>
-          {!isVariant && <DovelaField label="Tipología del documento"><select className="legal-config-native-select" value={form.typologyId} onChange={(event) => update('typologyId', event.target.value)} aria-label="Tipología del documento" disabled={Boolean(definition)}><option value="">Sin tipología</option>{typologies.filter((item) => item.is_active !== false).map((item) => <option key={item.id} value={item.id}>{item.code} · {item.name}</option>)}</select>{fieldErrors.typology_id && <small role="alert">{fieldErrors.typology_id}</small>}</DovelaField>}
-          <LabelPicker labels={labels} value={form.labelIds} onChange={(labelIds) => update('labelIds', labelIds)} onCreate={onRequestCreateLabel} />
-          <DovelaField label="Descripción de validación"><textarea className="legal-config-textarea" value={form.description} onChange={(event) => update('description', event.target.value)} placeholder="Qué debe contener o cómo se reconoce este documento." rows={3} /></DovelaField>
-          <DovelaField label="Nota de soporte esperado"><DovelaInput value={form.supportNote} onChange={(event) => update('supportNote', event.target.value)} placeholder="Ej. PDF firmado, plano legible, certificado vigente" /></DovelaField>
-          <div className="legal-config-definition-switches"><label><input type="checkbox" checked={form.isRecord} onChange={(event) => update('isRecord', event.target.checked)} /> Es expediente/registro</label></div>
-          <DialogFooter><DovelaButton type="button" tone="neutral" onClick={onClose} disabled={submitting}>Cancelar</DovelaButton><DovelaButton type="submit" tone="primary" loading={submitting} disabled={submitting || (isVariant && !parent?.code)}>{definition ? 'Guardar cambios' : isVariant ? 'Crear variante' : 'Crear documento'}</DovelaButton></DialogFooter>
+        <form className="condition-form" onSubmit={submit}>
+          <label>
+            Nombre de la condición
+            <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ej. El predio es BIC" disabled={saving} autoFocus />
+          </label>
+          <div className="condition-form__rule">
+            <label>
+              Dato del FUN
+              <select value={sourceKey} onChange={(event) => changeField(event.target.value)} disabled={saving}>
+                {fields.map((field) => <option key={field.key} value={field.key}>{field.label}</option>)}
+              </select>
+            </label>
+            <label>
+              Valor
+              <select value={expectedValue} onChange={(event) => setExpectedValue(event.target.value)} disabled={saving}>
+                {(selectedField?.values || []).map((value) => <option key={value.value} value={value.value}>{value.label}</option>)}
+              </select>
+            </label>
+            <label>
+              Resultado
+              <select value={effect} onChange={(event) => setEffect(event.target.value)} disabled={saving}>
+                <option value="include">Añadir documentos</option>
+                <option value="exclude">No incluir documentos</option>
+              </select>
+            </label>
+          </div>
+          <CatalogueSelect label="Documentos" values={documents} value={documentIds} multiple creatable={false} onChange={setDocumentIds} disabled={saving} />
+          <DialogFooter className="legal-config-condition-dialog__footer">
+            <button type="button" className="legal-config-button" onClick={() => onOpenChange(false)} disabled={saving}>Cancelar</button>
+            <button type="submit" className="legal-config-button legal-config-button--primary" disabled={!canSave}>{saving ? 'Creando…' : 'Crear condición'}</button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
   );
 }
-function TypologyManagerModal({ open, typologies, onClose, onCreate, onUpdate }) {
-  const [query, setQuery] = useState(''); const [draft, setDraft] = useState(null); const [busy, setBusy] = useState(false); const [error, setError] = useState('');
-  const visible = typologies.filter((item) => `${item.code} ${item.name}`.toLowerCase().includes(query.toLowerCase()));
-  async function save() { if (!draft?.code?.trim() || !draft?.name?.trim()) return; setBusy(true); setError(''); try { if (draft.id) await onUpdate(draft, { name:draft.name.trim(), description:draft.description?.trim()||null }); else await onCreate({ code:draft.code.trim().toUpperCase(), name:draft.name.trim(), description:draft.description?.trim()||null }); setDraft(null); } catch(err) { setError(extractErrorMessage(err,'No fue posible guardar la tipología.')); } finally { setBusy(false); } }
-  async function deactivate(item) { if(!window.confirm(`¿Desactivar “${item.name}”?`)) return; setBusy(true); try { await onUpdate(item,{is_active:false}); } catch(err) { setError(extractErrorMessage(err,'No fue posible desactivar la tipología.')); } finally { setBusy(false); } }
-  return <Dialog open={open} onOpenChange={(next)=>{if(!next&&!busy)onClose();}}><DialogContent className="legal-config-detail-dialog legal-config-manager-dialog"><DialogHeader><DialogTitle>Gestionar tipologías</DialogTitle><DialogDescription>Administra el catálogo en esta única ventana.</DialogDescription></DialogHeader>{error&&<DovelaInlineAlert tone="danger">{error}</DovelaInlineAlert>}<div className="legal-config-manager-toolbar"><DovelaInput value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Buscar tipología" aria-label="Buscar tipología"/><DovelaButton tone="primary" size="sm" onClick={()=>{setError('');setDraft({code:'',name:'',description:''});}}>Nueva tipología</DovelaButton></div>{draft&&<section className="legal-config-manager-editor"><DovelaInput autoFocus value={draft.code} disabled={Boolean(draft.id)} onChange={(e)=>setDraft({...draft,code:e.target.value})} placeholder="Prefijo" aria-label="Prefijo"/><DovelaInput value={draft.name} onChange={(e)=>setDraft({...draft,name:e.target.value})} placeholder="Nombre" aria-label="Nombre de tipología"/><div><DovelaButton size="sm" tone="neutral" onClick={()=>setDraft(null)}>Cancelar</DovelaButton><DovelaButton size="sm" tone="primary" loading={busy} onClick={save}>{draft.id?'Guardar':'Crear'}</DovelaButton></div></section>}<DovelaDataTable ariaLabel="Tipologías documentales" emptyMessage="No hay tipologías." rows={visible.map((item)=>({...item,key:item.id}))} columns={[{key:'code',header:'Prefijo'},{key:'name',header:'Tipología',render:(item)=><strong>{item.name}</strong>},{key:'is_active',header:'Estado',render:(item)=>item.is_active===false?'Desactivada':'Activa'},{key:'actions',header:'Acciones',render:(item)=><div className="legal-config-definition-row-actions"><DovelaButton tone="neutral" size="sm" disabled={busy} onClick={()=>setDraft(item)}>Editar</DovelaButton><DovelaButton tone="danger" size="sm" disabled={busy||item.is_active===false} onClick={()=>deactivate(item)}>Desactivar</DovelaButton></div> }]} /><DialogFooter><DovelaButton tone="neutral" onClick={onClose} disabled={busy}>Cerrar</DovelaButton></DialogFooter></DialogContent></Dialog>;
-}
 
-function DocumentsPane({ data, typologies, onCreateDefinition, onCreateVariant, onEdit, onDeactivate, onManageTypologies, onManageLabels }) {
-  const [documentSearch, setDocumentSearch] = useState('');
-  const [expanded, setExpanded] = useState([]);
-  const documents = (data.documents || []).filter((item) => item.is_active !== false);
-  const query = documentSearch.trim().toLowerCase();
-  const visibleDocuments = documents.filter((item) => !query || [item.code, item.name, item.description].filter(Boolean).join(' ').toLowerCase().includes(query));
-  const roots = visibleDocuments.filter((item) => !item.parent_definition_id);
-  const typologyById = new Map(typologies.map((item) => [item.id, item]));
-  const labelById = new Map((data.labels || []).map((item) => [item.id, item]));
-  const variantsFor = (document) => documents.filter((item) => item.parent_definition_id === document.id);
-  return <main className="legal-config-documents-layout legal-config-documents-layout--definitions" data-testid="legal-config-documents-pane"><DovelaCard as="section" className="legal-config-document-catalog"><header className="legal-config-document-catalog__header"><CompactTitle title="Documentos" help="Cada documento puede tener una tipología y una o varias etiquetas, de forma independiente." /><DovelaButton tone="primary" leadingIcon={Plus} onClick={() => onCreateDefinition('standalone')}>Nuevo documento</DovelaButton></header><div className="legal-config-document-toolbar"><DovelaInput value={documentSearch} onChange={(event) => setDocumentSearch(event.target.value)} placeholder="Buscar por código o nombre" aria-label="Buscar documentos" /><DovelaBadge tone="outline">{documents.length} activas</DovelaBadge></div><div className="legal-config-document-table-wrap"><table className="legal-config-document-table" aria-label="Documentos activos"><thead><tr><th>Código</th><th>Documento</th><th>Tipología</th><th>Etiquetas</th><th>Estado</th><th>Variantes</th><th>Acciones</th></tr></thead><tbody>{roots.length ? roots.flatMap((document) => {
-    const variants = variantsFor(document);
-    const isExpanded = expanded.includes(document.id);
-    const context = document.typology_id ? typologyById.get(document.typology_id)?.name || 'Tipología no disponible' : 'Sin tipología';
-    const row = <tr key={document.id}><td><strong>{document.code}</strong></td><td className="legal-config-document-table__name"><strong title={document.name}>{document.name}</strong></td><td>{context}</td><td className="legal-config-document-table__labels">{(document.label_ids || []).map((id, index) => <span key={id}>{index ? ' · ' : ''}{labelById.get(id)?.name || 'Etiqueta histórica'}</span>)}</td><td><span className="legal-config-document-table__status">Activa</span></td><td>{variants.length ? <DovelaButton tone="neutral" size="sm" aria-expanded={isExpanded} aria-label={`${isExpanded ? 'Ocultar' : 'Ver'} variantes de ${document.name}`} onClick={() => setExpanded((current) => current.includes(document.id) ? current.filter((id) => id !== document.id) : [...current, document.id])}>{variants.length} {variants.length === 1 ? 'variante' : 'variantes'}</DovelaButton> : <span className="legal-config-no-variants">—</span>}</td><td><span className="legal-config-definition-row-actions"><DovelaButton tone="neutral" size="sm" onClick={() => onEdit(document)}>Editar</DovelaButton><DovelaButton tone="neutral" size="sm" onClick={() => onCreateVariant(document)} aria-label={`Agregar variante a ${document.name}`}>Agregar variante</DovelaButton><DovelaButton tone="danger" size="sm" onClick={() => onDeactivate(document)}>Desactivar</DovelaButton></span></td></tr>;
-    const variantRows = isExpanded ? [<tr key={`${document.id}-variants`} className="legal-config-variants-list-row"><td colSpan={7}><ul className="legal-config-variants-list" aria-label={`Variantes de ${document.name}`}>{variants.map((variant) => <li key={variant.id}><code>{variant.code}</code><div><strong>{variant.name}</strong><small>Variante de {document.code}</small></div><span className="legal-config-definition-row-actions"><DovelaButton tone="neutral" size="sm" onClick={() => onEdit(variant)}>Editar variante</DovelaButton><DovelaButton tone="danger" size="sm" onClick={() => onDeactivate(variant)}>Desactivar variante</DovelaButton></span></li>)}</ul></td></tr>] : [];
-    return [row, ...variantRows];
-  }) : <tr><td colSpan={7} className="dovela-data-table__empty">No hay documentos activos. Crea el primer documento para comenzar.</td></tr>}</tbody></table></div></DovelaCard><DovelaCard as="aside" className="legal-config-document-inspector"><CompactTitle title="Catálogos" kicker="Documentos" /><DovelaInlineAlert tone="info">Tipología y etiquetas son campos independientes de cada documento.</DovelaInlineAlert><div className="legal-config-document-action-stack"><DovelaButton tone="neutral" fullWidth leadingIcon={Layers} onClick={onManageTypologies}>Gestionar tipologías</DovelaButton><DovelaButton tone="neutral" fullWidth leadingIcon={Tags} onClick={onManageLabels}>Gestionar etiquetas</DovelaButton></div></DovelaCard></main>;
-}
-export default function LegalConfigInitialPage() {
-  const [data, setData] = useState(EMPTY_DATA);
-  const [activePane, setActivePane] = useState(ACTUATIONS_PANE);
-  const [selectedActuationId, setSelectedActuationId] = useState('');
-  const [modal, setModal] = useState(null);
-  const [detailNode, setDetailNode] = useState(null);
-  const [deactivateCandidate, setDeactivateCandidate] = useState(null);
-  const [definitionCode, setDefinitionCode] = useState(null);
-  const [editingDefinition, setEditingDefinition] = useState(null);
-  const [labelNameToCreate, setLabelNameToCreate] = useState('');
-  const [createdLabel, setCreatedLabel] = useState(null);
-  const [labelsManagerOpen, setLabelsManagerOpen] = useState(false);
-  const [typologiesManagerOpen, setTypologiesManagerOpen] = useState(false);
-  const [documentMode, setDocumentMode] = useState('standalone');
-  const [documentParent, setDocumentParent] = useState(null);
-  const [documentDeactivateCandidate, setDocumentDeactivateCandidate] = useState(null);
-  const [documentDeactivateError, setDocumentDeactivateError] = useState('');
-  const [typologies, setTypologies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [zoom, setZoom] = useState(1);
-  const loadRequestIdRef = useRef(0);
-
-  const allActuations = data.actuationTypes;
-  const selectedNode = useMemo(() => allActuations.find((item) => item.id === selectedActuationId) || allActuations[0] || null, [allActuations, selectedActuationId]);
-  const relationItemsByType = { document: data.documents, text: data.texts, typology: typologies, label: data.labels };
-  const activeRelationType = relationItemsByType[modal] ? modal : 'document';
-
-
-  async function loadData() {
-    const requestId = ++loadRequestIdRef.current;
-    setLoading(true);
-    setErrorMessage('');
-    try {
-      const responses = await Promise.allSettled([
-        LegalConfigService.listActuationTypes({ is_active: true }),
-        LegalConfigService.listDocumentDefinitions({ is_active: true }),
-        LegalConfigService.listDocumentCodes({ is_active: true }),
-        LegalConfigService.listConfigurationLabels(),
-        LegalConfigService.listLegalTexts({ is_active: true }),
-        LegalConfigService.listReadContracts({ is_active: true }),
-        LegalConfigService.listAssertions({ is_active: true }),
-        LegalConfigService.listRules(),
-        LegalConfigService.listDocumentTypologies({ is_active: true }),
-      ]);
-      const [actuations, documents, labels, texts, contracts, assertions, rules, nextTypologies] = responses.map((result) => result.status === 'fulfilled' ? result.value : null);
-      const failures = responses.filter((result) => result.status === 'rejected');
-      if (!documents) throw failures[0]?.reason || new Error('No fue posible cargar el catálogo documental.');
-
-      // Una respuesta puede resolver fuera de orden si se dispara un loadData()
-      // nuevo (crear tipo, relacionar, "Actualizar") antes de que termine uno
-      // anterior. Si ya no somos la llamada más reciente, no pisamos el estado.
-      if (requestId !== loadRequestIdRef.current) return true;
-
-      const nextDocumentCodes = responseData(documentCodes, []);
-      const nextData = {
-        actuationTypes: responseData(actuations, []),
-        documentCodes: nextDocumentCodes,
-        documents: responseData(documents, []).map((definition) => normalizeDocumentDefinition(definition, nextDocumentCodes)),
-        labels: responseData(labels, []),
-        texts: responseData(texts, []),
-        readContracts: responseData(contracts, []),
-        assertions: responseData(assertions, []),
-        rules: responseData(rules, {}),
-      };
-      setData(nextData);
-      setTypologies(responseData(nextTypologies, []));
-      setSelectedActuationId((current) => current || nextData.actuationTypes[0]?.id || '');
-      return true;
-    } catch (error) {
-      if (requestId !== loadRequestIdRef.current) return true;
-      setErrorMessage(extractErrorMessage(error, 'No fue posible cargar la configuración.'));
-      return false;
-    } finally {
-      if (requestId === loadRequestIdRef.current) setLoading(false);
-    }
-  }
+function SeriesDialog({ open, onOpenChange, actuations, onSave, saving }) {
+  const [codes, setCodes] = useState({});
+  const roots = actuations.filter((item) => !item.parent_id);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!open) return;
+    setCodes(Object.fromEntries(actuations.map((item) => [item.id, item.code || ''])));
+  }, [actuations, open]);
 
-  async function createType(payload) {
-    const response = await LegalConfigService.createActuationType(payload);
-    const refreshed = await loadData();
-    const createdId = response?.data?.id;
-    if (createdId) setSelectedActuationId(createdId);
-    if (!refreshed) throw new Error('El tipo se creó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
+  const changes = actuations.filter((item) => (codes[item.id] || '').trim() !== (item.code || ''));
 
-
-  async function createDocumentDefinition(payload) {
-    const response = await LegalConfigService.createDocumentDefinition(payload);
-    const refreshed = await loadData();
-    if (!refreshed) throw new Error('La definición se creó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-    return response;
-  }
-
-  async function proposeDocumentCode(payload) {
-    return LegalConfigService.proposeDocumentCode(payload);
-  }
-
-  async function createDocumentTypology(payload) {
-    await LegalConfigService.createDocumentTypology(normalizeTypologyPayload(payload));
-    if (!await loadData()) throw new Error('La tipología se creó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
-
-  async function updateDocumentTypology(typology, payload) {
-    await LegalConfigService.updateDocumentTypology(typology.id, payload);
-    if (!await loadData()) throw new Error('La tipología se actualizó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
-
-  async function createConfigurationLabel(payload) {
-    const response = await LegalConfigService.createConfigurationLabel(normalizeLabelPayload(payload));
-    const label = response?.data;
-    if (label) setData((current) => ({ ...current, labels: [...current.labels, label] }));
-    return label;
-  }
-
-  async function createQuickLabel(name) {
-    const label = await createConfigurationLabel({ name: name.trim(), slug: slugify(name), label_scope: 'document' });
-    if (label) setCreatedLabel(label);
-    return label;
-  }
-
-  async function updateConfigurationLabel(label, payload) {
-    await LegalConfigService.updateConfigurationLabel(label.id, payload);
-    const refreshed = await loadData();
-    if (!refreshed) throw new Error('La etiqueta se actualizó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
-
-  function openDefinitionModal(mode = 'standalone', parent = null) {
-    setDocumentMode(mode);
-    setDocumentParent(parent);
-    setDefinitionCode(null);
-    setModal('document-definition');
-  }
-
-  function editDocumentDefinitionFromTable(definition) {
-    setEditingDefinition(definition);
-    setDocumentMode(definition.parent_definition_id ? 'variant' : definition.typology_id ? 'typology' : 'standalone');
-    setDocumentParent(data.documents.find((item) => item.id === definition.parent_definition_id) || null);
-    setModal('document-definition');
-  }
-
-
-  async function deactivateDocumentDefinition(definition) {
-    if (!definition?.id) return;
-    const variants = data.documents.filter((item) => item.parent_definition_id === definition.id && item.is_active !== false);
-    if (variants.length) throw new Error('Desactiva primero las variantes activas de este documento.');
-    await LegalConfigService.updateDocumentDefinition(definition.id, { is_active: false });
-    const refreshed = await loadData();
-    if (!refreshed) throw new Error('La definición se desactivó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
-
-
-  async function updateDocumentDefinition(definition, payload) {
-    await LegalConfigService.updateDocumentDefinition(definition.id, payload);
-    const refreshed = await loadData();
-    if (!refreshed) throw new Error('La definición se actualizó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
-
-
-  async function replaceDocumentDefinition(previous, next) {
-    if (!previous?.id || !next?.id) return;
-    await LegalConfigService.updateDocumentDefinition(previous.id, {
-      is_active: false,
-      metadata: {
-        ...(previous.metadata || {}),
-        lifecycle: { status: 'replaced', replaced_by_definition_id: next.id, replaced_at: new Date().toISOString() },
-      },
-    });
-    const refreshed = await loadData();
-    if (!refreshed) throw new Error('La definición se reemplazó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
-
-  async function saveRelation(type, item) {
-    if (!selectedNode || !item) return;
-    const basePayload = { actuation_type_id: selectedNode.id };
-    if (type === 'document') {
-      await LegalConfigService.createActuationDocumentRule({ ...basePayload, document_id: item.id });
-    } else if (type === 'text') {
-      await LegalConfigService.createActuationTextRule({ ...basePayload, text_id: item.id });
-    } else if (type === 'typology') {
-      const typologyIds = Array.from(new Set([...(selectedNode.document_typologies || []).map((typology) => typology.id), item.id]));
-      await LegalConfigService.updateActuationType(selectedNode.id, {
-        name: selectedNode.name, slug: selectedNode.slug || slugify(selectedNode.name), description: selectedNode.description || null,
-        parent_id: selectedNode.parent_id || null, node_type: selectedNode.node_type || 'actuation',
-        is_selectable: selectedNode.is_selectable !== false, is_active: selectedNode.is_active !== false,
-        sort_order: Number(selectedNode.sort_order || 0), incompatible_actuation_type_ids: selectedNode.incompatible_actuation_type_ids || [],
-        metadata: getMetadata(selectedNode), typology_ids: typologyIds,
-      });
-    } else if (type === 'label') {
-      if (item.label_scope === 'text') {
-        await LegalConfigService.createActuationTextsByLabelRule({ ...basePayload, label_id: item.id });
-      } else {
-        await LegalConfigService.createActuationDocumentsByLabelRule({ ...basePayload, label_id: item.id });
-      }
-    }
-  }
-
-  async function addRelation(type, item) {
-    await saveRelation(type, item);
-    const refreshed = await loadData();
-    if (!refreshed) throw new Error('La relación se guardó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
-
-  async function deactivateActuation(node) {
-    const payload = {
-      name: node.name,
-      slug: node.slug || slugify(node.name),
-      description: node.description || null,
-      parent_id: node.parent_id || null,
-      node_type: node.node_type || 'actuation',
-      is_selectable: node.is_selectable !== false,
-      is_active: false,
-      sort_order: Number(node.sort_order || 0),
-      incompatible_actuation_type_ids: node.incompatible_actuation_type_ids || [],
-      metadata: node.metadata || {},
-    };
-    await LegalConfigService.updateActuationType(node.id, payload);
-    const refreshed = await loadData();
-    if (!refreshed) throw new Error('La actuación se desactivó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-    setSelectedActuationId((current) => (current === node.id ? '' : current));
-  }
-
-  async function deleteRelation(ruleType, ruleId) {
-    await LegalConfigService.deleteRule(ruleType, ruleId);
-    const refreshed = await loadData();
-    if (!refreshed) throw new Error('La relación se quitó, pero no fue posible actualizar la vista. Usa "Actualizar".');
-  }
-
-
-  function handleNodeClick(node) {
-    setSelectedActuationId(node.id);
-  }
-
-  function openDetail(node = selectedNode) {
-    if (!node) return;
-    setSelectedActuationId(node.id);
-    setDetailNode(node);
+  async function submit(event) {
+    event.preventDefault();
+    const saved = await onSave(changes.map((item) => ({ ...item, code: codes[item.id].trim() })));
+    if (saved) onOpenChange(false);
   }
 
   return (
-    <TooltipProvider delayDuration={180}>
-    <section className="legal-config-page legal-config-page--simple" data-testid="legal-config-page">
-      <DovelaPageHeader
-        eyebrow="Configuración aislada"
-        title="Configuración de actuaciones"
-        actions={
-          <DovelaButton tone="neutral" leadingIcon={RefreshCw} loading={loading} onClick={loadData}>
-            Actualizar
-          </DovelaButton>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="legal-config-series-dialog" aria-label="Series y subseries" aria-describedby={undefined}>
+        <DialogHeader className="legal-config-series-dialog__header">
+          <DialogTitle><Library size={18} aria-hidden="true" /> Series y subseries</DialogTitle>
+        </DialogHeader>
+        <form className="series-form" onSubmit={submit}>
+          <div className="series-form__list">
+            {roots.map((series) => {
+              const subseries = actuations.filter((item) => item.parent_id === series.id);
+              return (
+                <section className="series-form__group" key={series.id}>
+                  <label className="series-form__row">
+                    <span><small>Serie documental</small><strong>{series.name}</strong></span>
+                    <input
+                      aria-label={`Código de serie para ${series.name}`}
+                      value={codes[series.id] || ''}
+                      onChange={(event) => setCodes((current) => ({ ...current, [series.id]: event.target.value }))}
+                      disabled={saving}
+                      required
+                    />
+                  </label>
+                  {subseries.map((item) => (
+                    <label className="series-form__row is-subseries" key={item.id}>
+                      <span><small>Subserie</small><strong>{item.name}</strong></span>
+                      <input
+                        aria-label={`Código de subserie para ${item.name}`}
+                        value={codes[item.id] || ''}
+                        onChange={(event) => setCodes((current) => ({ ...current, [item.id]: event.target.value }))}
+                        disabled={saving}
+                        required
+                      />
+                    </label>
+                  ))}
+                </section>
+              );
+            })}
+          </div>
+          <DialogFooter className="legal-config-series-dialog__footer">
+            <button type="button" className="legal-config-button" onClick={() => onOpenChange(false)} disabled={saving}>Cancelar</button>
+            <button type="submit" className="legal-config-button legal-config-button--primary" disabled={!changes.length || saving}>{saving ? 'Guardando…' : 'Guardar series'}</button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default function LegalConfigInitialPage() {
+  const [data, setData] = useState(empty);
+  const [selected, setSelected] = useState('');
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [mappingError, setMappingError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [documentForm, setDocumentForm] = useState(emptyDocumentForm);
+  const [relationsSaving, setRelationsSaving] = useState(false);
+  const [documentSaving, setDocumentSaving] = useState(false);
+  const [mappingSaving, setMappingSaving] = useState(false);
+  const [showActuationForm, setShowActuationForm] = useState(false);
+  const [actuationName, setActuationName] = useState('');
+  const [actuationQuery, setActuationQuery] = useState('');
+  const [actuationSaving, setActuationSaving] = useState(false);
+  const [catalogueModalOpen, setCatalogueModalOpen] = useState(false);
+  const [catalogueTab, setCatalogueTab] = useState('typologies');
+  const [catalogueSaving, setCatalogueSaving] = useState(false);
+  const [conditionModalOpen, setConditionModalOpen] = useState(false);
+  const [conditionSaving, setConditionSaving] = useState(false);
+  const [seriesModalOpen, setSeriesModalOpen] = useState(false);
+  const [seriesSaving, setSeriesSaving] = useState(false);
+  const savingRelations = useRef(Promise.resolve());
+  const relationSavePending = useRef(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await LegalConfigService.workspace();
+      const nextData = { ...empty, ...(response.data || {}) };
+      setData(nextData);
+      setSelected((current) => {
+        if (nextData.actuations.some((item) => item.id === current && item.is_active !== false)) return current;
+        return nextData.actuations.find((item) => item.is_active !== false)?.id || nextData.actuations[0]?.id || '';
+      });
+    } catch (loadError) {
+      setError(errorMessage(loadError));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function createCatalogue(catalogue, name) {
+    try {
+      const response = await LegalConfigService.create(catalogue, { name, code: name });
+      await load();
+      setError('');
+      return response.data;
+    } catch (createError) {
+      setNotice('');
+      setError(errorMessage(createError));
+      return null;
+    }
+  }
+
+  async function createManagedCatalogue(catalogue, name) {
+    if (!name || catalogueSaving) return null;
+    setCatalogueSaving(true);
+    try {
+      return await createCatalogue(catalogue, name);
+    } finally { setCatalogueSaving(false); }
+  }
+
+  async function toggleCatalogue(catalogue, item) {
+    if (catalogueSaving) return null;
+    setCatalogueSaving(true);
+    try {
+      const response = await LegalConfigService.update(catalogue, item.id, { is_active: !item.is_active });
+      setData((current) => ({
+        ...current,
+        [catalogue]: current[catalogue].map((candidate) => candidate.id === item.id ? response.data : candidate),
+      }));
+      setError('');
+      setNotice(`${catalogue === 'typologies' ? 'Tipología' : 'Etiqueta'} ${item.is_active ? 'desactivada' : 'activada'}.`);
+      return response.data;
+    } catch (saveError) {
+      setNotice('');
+      setError(errorMessage(saveError));
+      return null;
+    } finally { setCatalogueSaving(false); }
+  }
+
+  async function saveDocument(event) {
+    event.preventDefault();
+    if (documentSaving) return;
+    setDocumentSaving(true);
+    try {
+      const payload = {
+        ...documentForm,
+        typology_id: documentForm.typology_id || null,
+        label_ids: documentForm.label_ids || [],
+        ...(documentForm.parent_document_id ? { variant_code: documentForm.code } : {}),
+      };
+      await LegalConfigService.create('documents', payload);
+      setDocumentForm(emptyDocumentForm);
+      setError('');
+      setNotice('Documento guardado.');
+      await load();
+    } catch (saveError) {
+      setNotice('');
+      setError(errorMessage(saveError));
+    } finally { setDocumentSaving(false); }
+  }
+
+  async function saveActuation(event) {
+    event.preventDefault();
+    const name = actuationName.trim();
+    if (!name || actuationSaving) return;
+    setActuationSaving(true);
+    const created = await createCatalogue('actuations', name);
+    if (created) {
+      setSelected(created.id);
+      setActuationName('');
+      setShowActuationForm(false);
+      setNotice('Actuación creada. Ya puedes configurar sus asociaciones.');
+    }
+    setActuationSaving(false);
+  }
+
+  async function createCondition(payload) {
+    if (conditionSaving) return null;
+    setConditionSaving(true);
+    try {
+      const response = await LegalConfigService.create('conditions', payload);
+      await load();
+      setError('');
+      setNotice('Condición creada.');
+      return response.data;
+    } catch (createError) {
+      setNotice('');
+      setError(errorMessage(createError));
+      return null;
+    } finally { setConditionSaving(false); }
+  }
+
+  async function saveSeries(changes) {
+    if (!changes.length || seriesSaving) return false;
+    setSeriesSaving(true);
+    try {
+      await Promise.all(changes.map((item) => LegalConfigService.update('actuations', item.id, {
+        name: item.name,
+        code: item.code,
+        is_active: item.is_active,
+        sort_order: item.sort_order || 0,
+      })));
+      await load();
+      setError('');
+      setNotice('Series y subseries guardadas.');
+      return true;
+    } catch (saveError) {
+      setNotice('');
+      setError(errorMessage(saveError));
+      return false;
+    } finally { setSeriesSaving(false); }
+  }
+
+  const actuationRelations = useMemo(() => ({
+    typology_ids: data.actuationTypologies
+      .filter((row) => row.actuation_id === selected)
+      .map((row) => row.typology_id),
+    label_ids: data.actuationLabels
+      .filter((row) => row.actuation_id === selected)
+      .map((row) => row.label_id),
+    document_ids: data.directDocuments
+      .filter((row) => row.actuation_id === selected)
+      .map((row) => row.document_id),
+    condition_ids: data.actuationConditions
+      .filter((row) => row.actuation_id === selected)
+      .map((row) => row.condition_id),
+  }), [data, selected]);
+
+  const selectedActuation = data.actuations.find((item) => item.id === selected);
+  const selectedParentDocument = data.documents.find((item) => item.id === documentForm.parent_document_id);
+  const canSaveDocument = Boolean(
+    documentForm.name.trim()
+    && documentForm.code.trim()
+    && !loading
+    && !documentSaving
+  );
+  const visibleActuations = useMemo(() => {
+    const query = actuationQuery.trim().toLocaleLowerCase('es');
+    if (!query) return data.actuations;
+    const visibleIds = new Set();
+    data.actuations.forEach((item) => {
+      const searchable = `${item.name || ''}`.toLocaleLowerCase('es');
+      if (!searchable.includes(query)) return;
+      visibleIds.add(item.id);
+      if (item.parent_id) visibleIds.add(item.parent_id);
+      else data.actuations.forEach((candidate) => {
+        if (candidate.parent_id === item.id) visibleIds.add(candidate.id);
+      });
+    });
+    return data.actuations.filter((item) => visibleIds.has(item.id));
+  }, [actuationQuery, data.actuations]);
+
+  function selectParentDocument(parent_document_id) {
+    const parent = data.documents.find((item) => item.id === parent_document_id);
+    if (!parent) {
+      setDocumentForm((current) => ({ ...current, parent_document_id: '' }));
+      return;
+    }
+    const label_ids = data.documentLabels
+      .filter((row) => row.document_id === parent.id)
+      .map((row) => row.label_id);
+    setDocumentForm((current) => ({
+      ...current,
+      parent_document_id,
+      typology_id: parent.typology_id || '',
+      label_ids,
+    }));
+  }
+
+  function saveRelations(key, relationIds) {
+    if (relationSavePending.current || !selectedActuation) return;
+    const actuationId = selected;
+    const revision = selectedActuation.revision;
+    const payload = { ...actuationRelations, [key]: relationIds, revision };
+
+    relationSavePending.current = true;
+    setRelationsSaving(true);
+    savingRelations.current = savingRelations.current
+      .catch(() => undefined)
+      .then(async () => {
+        const response = await LegalConfigService.saveAssociations(actuationId, payload);
+
+        setData((current) => ({
+          ...current,
+          actuations: current.actuations.map((item) => (
+            item.id === actuationId ? { ...item, revision: response.data.revision } : item
+          )),
+          actuationTypologies: current.actuationTypologies
+            .filter((row) => row.actuation_id !== actuationId)
+            .concat(payload.typology_ids.map((typology_id) => ({ actuation_id: actuationId, typology_id }))),
+          actuationLabels: current.actuationLabels
+            .filter((row) => row.actuation_id !== actuationId)
+            .concat(payload.label_ids.map((label_id) => ({ actuation_id: actuationId, label_id }))),
+          directDocuments: current.directDocuments
+            .filter((row) => row.actuation_id !== actuationId)
+            .concat(payload.document_ids.map((document_id) => ({ actuation_id: actuationId, document_id }))),
+          actuationConditions: current.actuationConditions
+            .filter((row) => row.actuation_id !== actuationId)
+            .concat(payload.condition_ids.map((condition_id) => ({ actuation_id: actuationId, condition_id }))),
+        }));
+        setError('');
+        setNotice('Asociaciones guardadas.');
+      })
+      .catch(async (saveError) => {
+        setNotice('');
+        if (saveError?.response?.status === 409) {
+          await load();
+          setError('La configuración se actualizó y el cambio de asociación no se guardó. Revisa los datos actuales antes de intentarlo de nuevo.');
+          return;
         }
+        setError(errorMessage(saveError));
+      }).finally(() => { relationSavePending.current = false; setRelationsSaving(false); });
+  }
+
+  async function saveLegacyActuationType(event) {
+    if (mappingSaving) return;
+    setMappingSaving(true);
+    const legacy_actuation_type_id = event.target.value || null;
+    try {
+      const response = await LegalConfigService.update('actuations', selected, { legacy_actuation_type_id, revision: selectedActuation?.revision });
+      setData((current) => ({ ...current, actuations: current.actuations.map((item) => item.id === selected ? response.data : item) }));
+      setMappingError('');
+      setError('');
+      setNotice('Vínculo con actuación heredada guardado.');
+    } catch (saveError) {
+      setNotice('');
+      const stale = saveError?.response?.status === 409;
+      if (stale) await load();
+      const message = stale
+        ? 'La configuración se actualizó y el vínculo heredado no se guardó. Revisa los datos actuales antes de intentarlo de nuevo.'
+        : errorMessage(saveError);
+      setError(message);
+      setMappingError(message);
+    } finally { setMappingSaving(false); }
+  }
+
+  return (
+    <main className="legal-config-workspace" aria-labelledby="legal-config-title">
+      <header className="legal-config-header">
+        <div className="legal-config-header__copy">
+          <p className="legal-config-eyebrow">Matriz de configuración</p>
+          <h2 id="legal-config-title">Documentos y actuaciones</h2>
+        </div>
+        <div className="legal-config-header__actions">
+          <div className="legal-config-metrics" aria-label="Resumen del catálogo">
+            <span><strong>{data.actuations.length}</strong> actuaciones</span>
+            <span><strong>{data.documents.length}</strong> documentos</span>
+            <span><strong>{data.typologies.length}</strong> tipologías</span>
+            <span><strong>{data.conditions.length}</strong> condiciones</span>
+          </div>
+          <button className="legal-config-button legal-config-button--secondary" type="button" onClick={load} disabled={loading}>
+            <RefreshCw className={loading ? 'is-spinning' : ''} size={16} aria-hidden="true" /> Actualizar
+          </button>
+        </div>
+      </header>
+
+      <div className="legal-config-feedback" aria-live="polite">
+        {error && <p className="legal-config-error" role="alert"><AlertCircle size={16} aria-hidden="true" />{error}</p>}
+        {notice && <p className="legal-config-notice" role="status">{notice}</p>}
+        {loading && <p className="legal-config-loading" role="status"><LoaderCircle className="is-spinning" size={16} aria-hidden="true" />Cargando configuración…</p>}
+      </div>
+
+      <div className="legal-config-grid">
+        <section className="legal-config-panel legal-config-actuations" aria-labelledby="legal-config-actuations-title">
+          <div className="panel-title">
+            <div className="panel-title__copy">
+              <span className="panel-title__icon"><GitBranch size={17} aria-hidden="true" /></span>
+              <h3 id="legal-config-actuations-title">Actuaciones</h3>
+            </div>
+            <div className="panel-title__actions">
+              <button className="legal-config-button legal-config-button--compact" type="button" onClick={() => setSeriesModalOpen(true)} disabled={loading || seriesSaving}>
+                <Library size={14} aria-hidden="true" /> Series y subseries
+              </button>
+              <button
+                className="legal-config-button legal-config-button--compact"
+                type="button"
+                onClick={() => setShowActuationForm((current) => !current)}
+                aria-expanded={showActuationForm}
+                disabled={loading || actuationSaving}
+              >
+                {showActuationForm ? <X size={15} aria-hidden="true" /> : <Plus size={15} aria-hidden="true" />}
+                {showActuationForm ? 'Cancelar' : 'Nueva actuación'}
+              </button>
+            </div>
+          </div>
+
+          {showActuationForm && (
+            <form className="actuation-create-form" onSubmit={saveActuation}>
+              <label htmlFor="new-actuation-name">Nombre de la actuación</label>
+              <div>
+                <input
+                  id="new-actuation-name"
+                  autoFocus
+                  required
+                  value={actuationName}
+                  onChange={(event) => setActuationName(event.target.value)}
+                  disabled={actuationSaving}
+                  placeholder="Ej. Reconocimiento"
+                />
+                <button className="legal-config-button legal-config-button--primary" type="submit" disabled={!actuationName.trim() || actuationSaving}>
+                  {actuationSaving ? 'Creando…' : 'Crear actuación'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          <div className="actuation-search">
+            <Search size={15} aria-hidden="true" />
+            <input
+              type="search"
+              aria-label="Buscar actuación"
+              value={actuationQuery}
+              onChange={(event) => setActuationQuery(event.target.value)}
+              placeholder="Buscar por nombre"
+              disabled={loading}
+            />
+            {actuationQuery && (
+              <button type="button" aria-label="Limpiar búsqueda" onClick={() => setActuationQuery('')}>
+                <X size={14} aria-hidden="true" />
+              </button>
+            )}
+          </div>
+
+          <div className="actuation-list">
+            {visibleActuations.map((item) => (
+              <button
+                type="button"
+                className={`${item.id === selected ? 'selected' : ''}${item.parent_id ? ' is-child' : ''}`.trim()}
+                key={item.id}
+                onClick={() => setSelected(item.id)}
+                disabled={loading || relationSavePending.current || mappingSaving}
+                aria-pressed={item.id === selected}
+                aria-label={item.name}
+              >
+                <span className="actuation-list__name">
+                  {item.parent_id && <CornerDownRight size={13} aria-hidden="true" />}
+                  {item.name}
+                </span>
+                {!item.is_active && <span className="actuation-list__meta">Inactiva</span>}
+              </button>
+            ))}
+            {!loading && data.actuations.length > 0 && visibleActuations.length === 0 && (
+              <div className="legal-config-empty-state legal-config-empty-state--compact">
+                <Search size={22} aria-hidden="true" />
+                <strong>Sin coincidencias</strong>
+                <p>Prueba con otro nombre de actuación.</p>
+                <button type="button" onClick={() => setActuationQuery('')}>Limpiar búsqueda</button>
+              </div>
+            )}
+            {!loading && data.actuations.length === 0 && (
+              <div className="legal-config-empty-state">
+                <GitBranch size={22} aria-hidden="true" />
+                <strong>Aún no hay actuaciones</strong>
+                <p>Crea una actuación para empezar a relacionar tipologías, etiquetas y documentos.</p>
+                {!showActuationForm && <button type="button" onClick={() => setShowActuationForm(true)}>Crear la primera actuación</button>}
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="legal-config-panel legal-config-documents" aria-labelledby="legal-config-documents-title">
+          <div className="panel-title">
+            <div className="panel-title__copy">
+              <span className="panel-title__icon"><FileText size={17} aria-hidden="true" /></span>
+              <h3 id="legal-config-documents-title">Catálogo documental</h3>
+            </div>
+            <div className="panel-title__actions">
+              <span className="legal-config-count">{data.documents.length}</span>
+              <button className="legal-config-button legal-config-button--compact" type="button" onClick={() => setCatalogueModalOpen(true)} disabled={loading}>
+                <Settings2 size={14} aria-hidden="true" /> Gestionar catálogos
+              </button>
+            </div>
+          </div>
+          <form onSubmit={saveDocument} className="document-form">
+            <label>
+              Nombre
+              <input required disabled={loading || documentSaving} value={documentForm.name} placeholder="Ej. Certificado de tradición" onChange={(event) => setDocumentForm({ ...documentForm, name: event.target.value })} />
+            </label>
+            <label>
+              Código
+              <input required disabled={loading || documentSaving} value={documentForm.code} placeholder="Ej. DOC-101" onChange={(event) => setDocumentForm({ ...documentForm, code: event.target.value })} />
+            </label>
+             <CatalogueSelect label="Tipología" values={data.typologies} value={documentForm.typology_id} onChange={(typology_id) => setDocumentForm({ ...documentForm, typology_id })} creatable={false} disabled={loading || documentSaving || Boolean(selectedParentDocument)} />
+             <CatalogueSelect label="Etiquetas" values={data.labels} value={documentForm.label_ids} multiple onChange={(label_ids) => setDocumentForm({ ...documentForm, label_ids })} creatable={false} disabled={loading || documentSaving || Boolean(selectedParentDocument)} />
+            <label>
+              Variante de
+               <select disabled={loading || documentSaving} value={documentForm.parent_document_id} onChange={(event) => selectParentDocument(event.target.value)}>
+                <option value="">Documento principal</option>
+                {byParent(data.documents).map((document) => <option key={document.id} value={document.id}>{document.name}</option>)}
+              </select>
+            </label>
+            {selectedParentDocument && (
+              <div className="document-form__variant-preview" aria-label="Vista previa de variante">
+                <span><small>Documento base</small><strong>{selectedParentDocument.name}</strong></span>
+                <CornerDownRight size={16} aria-hidden="true" />
+                <span><small>Código resultante</small><code>{selectedParentDocument.code}-{documentForm.code || '…'}</code></span>
+              </div>
+            )}
+             <button className="legal-config-button legal-config-button--primary document-form__submit" type="submit" disabled={!canSaveDocument}>{documentSaving ? 'Guardando documento…' : 'Guardar documento'}</button>
+            {documentSaving && <p className="document-form__status" aria-live="polite">Guardando documento…</p>}
+          </form>
+          <div className="document-tree">
+            {byParent(data.documents).map((document) => {
+              const variants = byParent(data.documents, document.id);
+              return (
+                <article className="document-tree__item" key={document.id}>
+                  <div className="document-tree__primary">
+                    <span className="document-tree__icon"><FileText size={16} aria-hidden="true" /></span>
+                    <span><strong>{document.name}</strong><small>{document.code}</small></span>
+                    {variants.length > 0 && <span className="document-tree__variant-count">{variants.length} {variants.length === 1 ? 'variante' : 'variantes'}</span>}
+                  </div>
+                  {variants.map((variant) => (
+                    <div className="variant" key={variant.id}>
+                      <GitBranch size={13} aria-hidden="true" />
+                      <span><small>Variante</small><strong>{variant.name}</strong><code>{variant.code}</code></span>
+                    </div>
+                  ))}
+                </article>
+              );
+            })}
+            {!loading && data.documents.length === 0 && (
+              <div className="legal-config-empty-state legal-config-empty-state--compact">
+                <FileText size={22} aria-hidden="true" />
+                <strong>Aún no hay documentos</strong>
+                <p>Completa el formulario para construir el catálogo documental.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <aside className="legal-config-panel legal-config-associations" aria-labelledby="legal-config-associations-title">
+          <div className="panel-title">
+            <div className="panel-title__copy">
+              <span className="panel-title__icon"><Link2 size={17} aria-hidden="true" /></span>
+              <h3 id="legal-config-associations-title">Asociaciones</h3>
+            </div>
+            <button className="legal-config-button legal-config-button--compact" type="button" onClick={() => setConditionModalOpen(true)} disabled={loading || !selectedActuation || conditionSaving}>
+              <Plus size={14} aria-hidden="true" /> Nueva condición
+            </button>
+          </div>
+          {selectedActuation ? (
+            <div className="association-editor">
+              <div className="association-editor__context">
+                <Layers3 size={16} aria-hidden="true" />
+                <span><small>Configurando</small><strong>{selectedActuation.name}</strong></span>
+              </div>
+              <label className="catalogue-bridge-field">
+                <span>Actuación heredada para generación</span>
+                 <select value={selectedActuation.legacy_actuation_type_id || ''} onChange={saveLegacyActuationType} disabled={loading || mappingSaving || relationsSaving} aria-label="Actuación heredada para generación" aria-describedby={`legacy-actuation-help${mappingError ? ' legacy-actuation-error' : ''}`}>
+                  <option value="">Sin vínculo: conservar generación heredada</option>
+                  {data.legacyActuationTypes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                </select>
+                <small id="legacy-actuation-help">El catálogo suma documentos solo para esta actuación; no se vincula por nombre ni hereda de actuaciones padre.</small>
+                {mappingError && <small id="legacy-actuation-error">{mappingError}</small>}
+                {mappingSaving && <small aria-live="polite">Guardando vínculo…</small>}
+              </label>
+              {relationsSaving && <p aria-live="polite">Guardando asociaciones…</p>}
+               <CatalogueSelect label="Tipologías" values={data.typologies} value={actuationRelations.typology_ids} multiple creatable={false} onChange={(ids) => saveRelations('typology_ids', ids)} disabled={loading || relationsSaving || mappingSaving} />
+               <CatalogueSelect label="Etiquetas" values={data.labels} value={actuationRelations.label_ids} multiple creatable={false} onChange={(ids) => saveRelations('label_ids', ids)} disabled={loading || relationsSaving || mappingSaving} />
+               <CatalogueSelect label="Documentos directos" values={byParent(data.documents)} value={actuationRelations.document_ids} multiple creatable={false} onChange={(ids) => saveRelations('document_ids', ids)} disabled={loading || relationsSaving || mappingSaving} />
+               <div className="condition-associations">
+                 <CatalogueSelect label="Condiciones" values={data.conditions} value={actuationRelations.condition_ids} multiple creatable={false} onChange={(ids) => saveRelations('condition_ids', ids)} disabled={loading || relationsSaving || mappingSaving} />
+                 {actuationRelations.condition_ids.map((conditionId) => {
+                   const condition = data.conditions.find((item) => item.id === conditionId);
+                   const field = data.conditionFields.find((item) => item.key === condition?.source_key);
+                   const values = (condition?.expected_values || []).map((expected) => field?.values?.find((item) => item.value === expected)?.label || expected);
+                   const documentCount = data.conditionDocuments.filter((item) => item.condition_id === conditionId).length;
+                   if (!condition) return null;
+                   return (
+                     <div className="condition-associations__row" key={condition.id}>
+                       <span><strong>{condition.name}</strong><small>{field?.label || condition.source_key}: {values.join(', ')}</small></span>
+                       <span>{condition.effect === 'exclude' ? 'Excluye' : 'Añade'} {documentCount}</span>
+                     </div>
+                   );
+                 })}
+               </div>
+            </div>
+          ) : (
+            <div className="legal-config-empty-state">
+              <Link2 size={22} aria-hidden="true" />
+              <strong>Sin actuación seleccionada</strong>
+              <p>Selecciona una actuación para asociar catálogos y documentos.</p>
+            </div>
+          )}
+        </aside>
+      </div>
+      <CatalogueManagerDialog
+        open={catalogueModalOpen}
+        onOpenChange={setCatalogueModalOpen}
+        tab={catalogueTab}
+        onTabChange={setCatalogueTab}
+        values={{ typologies: data.typologies, labels: data.labels }}
+        onCreate={createManagedCatalogue}
+        onToggleActive={toggleCatalogue}
+        saving={catalogueSaving}
       />
-
-      <nav className="legal-config-pane-nav" aria-label="Ventanas de configuración">
-        {PANES.map((pane) => (
-          <DovelaButton
-            key={pane}
-            tone={activePane === pane ? 'primary' : 'neutral'}
-            className={activePane === pane ? 'is-active' : ''}
-            onClick={() => setActivePane(pane)}
-            aria-pressed={activePane === pane}
-          >
-            {pane}
-          </DovelaButton>
-        ))}
-      </nav>
-
-      {errorMessage && (
-        <DovelaInlineAlert tone="danger" icon={AlertTriangle}>
-          {errorMessage}
-        </DovelaInlineAlert>
-      )}
-
-      {activePane === 'Resolución' && (
-        <DovelaInlineAlert tone="info" icon={Scale} title={activePane}>
-          Ventana reservada para la siguiente fase.
-        </DovelaInlineAlert>
-      )}
-
-      {activePane === ACTUATIONS_PANE && (
-        <main className="legal-config-actuation-layout">
-          <ActuationGraph nodes={allActuations} selectedNode={selectedNode} selectedId={selectedNode?.id || ''} onNodeClick={handleNodeClick} onDeactivateSelected={setDeactivateCandidate} zoom={zoom} setZoom={setZoom} />
-          <ActionPanel
-            selectedNode={selectedNode}
-            data={data}
-            typologies={typologies}
-            onOpen={setModal}
-            onOpenDetail={openDetail}
-            onSelectNode={handleNodeClick}
-          />
-        </main>
-      )}
-
-      {activePane === 'Documentos' && (
-        <DocumentsPane
-          data={data}
-          typologies={typologies}
-          onCreateDefinition={(mode) => openDefinitionModal(mode)}
-          onCreateVariant={(parent) => openDefinitionModal('variant', parent)}
-          onEdit={editDocumentDefinitionFromTable}
-          onDeactivate={(definition) => { setDocumentDeactivateError(''); setDocumentDeactivateCandidate(definition); }}
-          onManageTypologies={() => setTypologiesManagerOpen(true)}
-          onManageLabels={() => setLabelsManagerOpen(true)}
+      <SeriesDialog
+        open={seriesModalOpen}
+        onOpenChange={setSeriesModalOpen}
+        actuations={data.actuations}
+        onSave={saveSeries}
+        saving={seriesSaving}
+      />
+      {selectedActuation && (
+        <ConditionDialog
+          open={conditionModalOpen}
+          onOpenChange={setConditionModalOpen}
+          fields={data.conditionFields}
+          documents={byParent(data.documents)}
+          actuation={selectedActuation}
+          onSave={createCondition}
+          saving={conditionSaving}
         />
       )}
-
-      <CreateTypeModal
-        open={modal === 'create'}
-        actuations={allActuations}
-        defaultParentId={selectedNode?.id || ''}
-        onClose={() => setModal(null)}
-        onCreate={createType}
-      />
-      <DocumentDefinitionModal
-        open={modal === 'document-definition'}
-        mode={documentMode}
-        parent={documentParent}
-        typologies={typologies}
-        definition={editingDefinition}
-        labels={data.labels}
-        createdLabel={createdLabel}
-        onClose={() => { setModal(null); setEditingDefinition(null); setCreatedLabel(null); setDocumentParent(null); }}
-        onCreate={createDocumentDefinition}
-        onUpdate={updateDocumentDefinition}
-        onProposeCode={proposeDocumentCode}
-        onRequestCreateLabel={(name) => createQuickLabel(name)}
-        onCreatedLabelApplied={() => setCreatedLabel(null)}
-      />
-      <CreateLabelModal open={Boolean(labelNameToCreate)} name={labelNameToCreate} onClose={() => setLabelNameToCreate('')} onCreate={async (payload) => { const label = await createConfigurationLabel(payload); setCreatedLabel(label); }} />
-      <LabelManagerModal open={labelsManagerOpen} labels={data.labels} documents={data.documents} onClose={() => setLabelsManagerOpen(false)} onUpdate={updateConfigurationLabel} />
-      <TypologyManagerModal open={typologiesManagerOpen} typologies={typologies} onClose={() => setTypologiesManagerOpen(false)} onCreate={createDocumentTypology} onUpdate={updateDocumentTypology} />
-      <Dialog open={Boolean(documentDeactivateCandidate)} onOpenChange={(next) => { if (!next) setDocumentDeactivateCandidate(null); }}><DialogContent><DialogHeader><DialogTitle>Desactivar definición</DialogTitle><DialogDescription>La definición dejará de estar activa, pero se conserva para trazabilidad.</DialogDescription></DialogHeader>{documentDeactivateError && <div aria-live="assertive"><DovelaInlineAlert tone="danger">{documentDeactivateError}</DovelaInlineAlert></div>}<DialogFooter><DovelaButton tone="neutral" onClick={() => setDocumentDeactivateCandidate(null)}>Cancelar</DovelaButton><DovelaButton tone="danger" onClick={async () => { try { await deactivateDocumentDefinition(documentDeactivateCandidate); setDocumentDeactivateCandidate(null); } catch (error) { setDocumentDeactivateError(extractErrorMessage(error, 'No fue posible desactivar la definición. Intenta nuevamente.')); } }}>Desactivar definición</DovelaButton></DialogFooter></DialogContent></Dialog>
-      <RelationModal
-        open={['document', 'text', 'typology', 'label'].includes(modal)}
-        relationType={activeRelationType}
-        items={relationItemsByType[activeRelationType]}
-        onClose={() => setModal(null)}
-        onSave={addRelation}
-      />
-      <ActuationDetailModal
-        open={Boolean(detailNode)}
-        node={detailNode}
-        data={data}
-        onClose={() => setDetailNode(null)}
-        onOpenRelation={setModal}
-        onDeactivateActuation={setDeactivateCandidate}
-        onDeleteRelation={deleteRelation}
-      />
-      <DeactivateActuationModal
-        open={Boolean(deactivateCandidate)}
-        node={deactivateCandidate}
-        data={data}
-        onClose={() => setDeactivateCandidate(null)}
-        onConfirm={deactivateActuation}
-      />
-    </section>
-    </TooltipProvider>
+    </main>
   );
 }

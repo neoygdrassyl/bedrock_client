@@ -14,10 +14,6 @@ vi.mock('pdfjs-dist/build/pdf.worker.min.js?url', () => ({
     default: '/assets/pdf.worker.legacy.js',
 }));
 
-vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
-    default: '/assets/pdf.worker.modern.mjs',
-}));
-
 vi.mock('../../http-common', () => ({
     default: {
         get: mocks.httpGet,
@@ -83,7 +79,7 @@ describe('PDF_VIEWER', () => {
         expect(mocks.documentFiles[0]).toEqual({ data: new Uint8Array(pdfBytes) });
     });
 
-    it('usa el worker moderno compatible con react-pdf y muestra errores reales de pdfjs', async () => {
+    it('usa el worker instalado compatible con react-pdf y muestra errores reales de pdfjs', async () => {
         const pdfBytes = new Uint8Array([37, 80, 68, 70, 45, 49, 46, 51]).buffer;
         mocks.httpGet.mockResolvedValue({
             data: pdfBytes,
@@ -96,7 +92,7 @@ describe('PDF_VIEWER', () => {
 
         await waitFor(() => expect(screen.getByTestId('mock-pdf-document')).toBeInTheDocument());
 
-        expect(mocks.workerOptions.workerSrc).toBe('/assets/pdf.worker.modern.mjs');
+        expect(mocks.workerOptions.workerSrc).toBe('/assets/pdf.worker.legacy.js');
         expect(mocks.documentProps[0].onLoadError).toEqual(expect.any(Function));
 
         act(() => {
