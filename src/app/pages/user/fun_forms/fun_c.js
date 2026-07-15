@@ -17,7 +17,6 @@ import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
 import dayjs from 'dayjs';
 import submitService from '../../../services/submit.service';
-import { GEM_CODE_LIST } from '../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
 import ObservationPanel from '../../../components/ObservationPanel';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
@@ -201,33 +200,11 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             return _CHILD;
         }
         // DATA CONVERTER
-        let _FIND_IN_VRDOCS = (code) => {
-            if(!code) return false;
-            let FOUND_CODE = VRDocs.find(vr => code.includes(vr.code));
-            return FOUND_CODE;
-        }
-        let BUILD_LIST = (concat) => {
-            const _FUN_1 = _GET_CHILD_1();
-            let list = GEM_CODE_LIST(_FUN_1, concat)
-            return list
-        }
         let _ALLOW_REVIEW = () => {
             let FUN_R = _GET_FUN_R();
             if (!FUN_R) return false;
             let CHECK = FUN_R.checked ? FUN_R.checked.split(',') : [];
-            let REVIEWS = FUN_R.review ? FUN_R.review.split(',') : [];
-            let R_CODES = FUN_R.code ? FUN_R.code.split(',') : [];
-            let CODES = BUILD_LIST(true);
-            let _ALLOW = CODES.every((c, i) => {
-                let R = REVIEWS.find((r) => { return r.includes(c); })
-                let r_i = R_CODES.findIndex(r => r.includes(c));
-                if (CHECK[r_i] == 2) return true;
-                let vr = _FIND_IN_VRDOCS(R);
-                let cond2 = CHECK[r_i] == 1 || CHECK[r_i] == 2 || vr;
-                return cond2;
-               
-            })
-            return _ALLOW;
+            return CHECK.length > 0 && CHECK.every((value) => value == 1 || value == 2);
             
             
             //let FUN_R = _GET_FUN_R();
