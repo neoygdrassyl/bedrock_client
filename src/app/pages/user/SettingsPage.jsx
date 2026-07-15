@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bell, Bug, Check, FileText, LayoutDashboard, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Bell, Bug, Check, FileText, LayoutDashboard, ListChecks, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
 import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
 import DocumentRequirementsConfigPanel from './document_requirements/DocumentRequirementsConfigPanel.jsx';
 import DocumentRequirementsExplorerPage from './document_requirements/DocumentRequirementsExplorerPage.jsx';
 import LegalConfigInitialPage from './legal_config/LegalConfigInitialPage.jsx';
+import DocumentReviewChecksPage from './legal_config/DocumentReviewChecksPage.jsx';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
 import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
 import {
@@ -35,6 +36,11 @@ const NAV_ITEMS = [
     key: 'configuracion-actuaciones',
     label: 'Actuaciones y documentos',
     icon: FileText,
+  },
+  {
+    key: 'revision-documentos',
+    label: 'Revisión de documentos',
+    icon: ListChecks,
   },
   {
     key: 'personalizacion',
@@ -96,7 +102,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className={`settings-shell${activeKey === 'configuracion-actuaciones' ? ' settings-shell--wide' : ''}`}>
+    <div className={`settings-shell${['configuracion-actuaciones', 'revision-documentos'].includes(activeKey) ? ' settings-shell--wide' : ''}`}>
       <header className="settings-shell__header">
         <div className="settings-shell__title">
           <SettingsIcon size={20} className="settings-shell__title-icon" />
@@ -132,6 +138,7 @@ export default function SettingsPage() {
           {activeKey === 'alarmas' && <AlarmsV2ConfigPanel />}
           {activeKey === 'requisitos-documentales' && <DocumentRequirementsExplorerPage />}
           {activeKey === 'configuracion-actuaciones' && <LegalConfigInitialPage />}
+          {activeKey === 'revision-documentos' && <DocumentReviewChecksPage />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
           {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
           {activeKey === 'errorReports' && canManageErrorReports && (
