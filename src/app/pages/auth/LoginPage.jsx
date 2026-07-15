@@ -111,7 +111,7 @@ export default function LoginPage({ signin }) {
     }
 
     recaptchaRef.current
-      .execute()
+      .executeAsync()
       .then(() => {
         performLogin();
       })

@@ -24,37 +24,31 @@ const NAV_ITEMS = [
   {
     key: 'alarmas',
     label: 'Alarmas',
-    description: 'Umbrales por fase, actor y nivel',
     icon: Bell,
   },
   {
     key: 'requisitos-documentales',
     label: 'Requisitos documentales',
-    description: 'Consulta requisitos por actuación y entiende por qué aplican',
     icon: FileText,
   },
   {
     key: 'configuracion-actuaciones',
-    label: 'Actuaciones y textos',
-    description: 'Configura reglas, documentos y fundamentos',
+    label: 'Actuaciones y documentos',
     icon: FileText,
   },
   {
     key: 'personalizacion',
     label: 'Personalización',
-    description: 'Panel principal, colores y densidad visual',
     icon: LayoutDashboard,
   },
   {
     key: 'cuenta',
     label: 'Cuenta',
-    description: 'Información del usuario actual',
     icon: UserCircle2,
   },
   {
     key: 'misReportes',
     label: 'Mis reportes',
-    description: 'Estado de reportes enviados',
     icon: FileText,
   },
 ];
@@ -81,7 +75,6 @@ export default function SettingsPage() {
         {
           key: 'errorReports',
           label: canSeeTechnicalReports ? 'Reportes técnicos' : 'Gestión de reportes',
-          description: canSeeTechnicalReports ? 'JSON seguro para desarrollo' : 'Estados y notas visibles',
           icon: Bug,
         },
       ]
@@ -107,21 +100,18 @@ export default function SettingsPage() {
       <header className="settings-shell__header">
         <div className="settings-shell__title">
           <SettingsIcon size={20} className="settings-shell__title-icon" />
-          <div>
-            <h1>Configuración</h1>
-            <p>Ajustes globales de la curaduría.</p>
-          </div>
+          <h1>Configuración</h1>
         </div>
       </header>
 
       <div className="settings-shell__body">
         <aside className="settings-nav" aria-label="Secciones de configuración">
-          <ul className="settings-nav__list">
+          <div className="settings-nav__list">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeKey === item.key;
               return (
-                <li key={item.key}>
+                <div key={item.key}>
                   <button
                     type="button"
                     className={`settings-nav__item${isActive ? ' is-active' : ''}`}
@@ -130,18 +120,15 @@ export default function SettingsPage() {
                     data-testid={`settings-nav-${item.key}`}
                   >
                     <Icon size={18} className="settings-nav__icon" />
-                    <span className="settings-nav__text">
-                      <span className="settings-nav__label">{item.label}</span>
-                      <span className="settings-nav__desc">{item.description}</span>
-                    </span>
+                    <span className="settings-nav__label">{item.label}</span>
                   </button>
-                </li>
+                </div>
               );
             })}
-          </ul>
+          </div>
         </aside>
 
-        <main className="settings-panel" role="main">
+        <div className="settings-panel">
           {activeKey === 'alarmas' && <AlarmsV2ConfigPanel />}
           {activeKey === 'requisitos-documentales' && <DocumentRequirementsExplorerPage />}
           {activeKey === 'configuracion-actuaciones' && <LegalConfigInitialPage />}
@@ -153,7 +140,7 @@ export default function SettingsPage() {
           {activeKey === 'cuenta' && (
             <AccountPanel fullName={fullName} roleDesc={roleDesc} lastLogin={lastLogin} />
           )}
-        </main>
+        </div>
       </div>
     </div>
   );
