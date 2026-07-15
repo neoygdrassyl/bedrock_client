@@ -6,6 +6,7 @@ import FUN_SERVICE from '../../../../services/fun.service';
 import Codes from '../../../../components/jsons/fun6DocsList.json';
 import { SERIES_DOCS, _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { normalizeDocumentControlPages } from './documentControlPages';
 
 function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
@@ -57,7 +58,6 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
         str = _GET_SUBSERIE_STR(_CHILD);
         document.getElementById('fun_doc_control_3').value = str;
     }, []);
-        let sumPages = 0;
         const _SERIES_DOCS = SERIES_DOCS
         // DATA GETTERS
     
@@ -166,7 +166,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                                         <div className="col-1 text-center"><label className="fw-bold">N° Orden</label></div>
                                         <div className="col text-center"><label className="fw-bold">Nombre Tipologia Documental</label></div>
                                         <div className="col-1 text-center"><label className="fw-bold">Codigo Tipologia</label></div>
-                                        <div className="col-2 text-center"><label className="fw-bold"># (Folios / Cantidad)</label></div>
+                                        <div className="col-2 text-center"><label className="fw-bold">Rango de folios</label></div>
                                         <div className="col-2 text-center"><label className="fw-bold">Estado</label></div>
                                     </div>
                                 </li>
@@ -206,26 +206,6 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                     </>)
                     DOCS_COUNT += _LIST_2[ITEM].length;
                 }
-                _RETURN_COMPONENT.push(<>
-                    <li className="list-group-item">
-                        <div className="row">
-                            <div className="col-1 text-center">
-
-                            </div>
-                            <div className="col">
-                                <label className='fw-bold'>TOTAL NUMERO DE FOLIOS</label>
-                            </div>
-                            <div className="col-1 text-center">
-
-                            </div>
-                            <div className="col-2 text-center">
-                                <label>{sumPages}</label>
-                            </div>
-                            <div className="col-2 text-center">
-
-                            </div>
-                        </div>
-                    </li></>)
                 return <>
                     {_RETURN_COMPONENT}
                 </>
@@ -236,8 +216,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
 
             for (var i = 0; i < array.length; i++) {
                 let cId = Number(array[i].i);
-                let currentPages = _GET_FUNR_CHECK_CONTROL_PAGES(cId);
-                sumPages += Number(currentPages);
+                let currentPages = normalizeDocumentControlPages(_GET_FUNR_CHECK_CONTROL_PAGES(cId));
                 let docName = Codes[array[i].n];
                 let docCode = array[i].n;
                 _COMPONENT.push(<>
@@ -253,7 +232,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                                 <label className="fw-bold" name="code_doc">{docCode}</label>
                             </div>
                             <div className="col-2 text-center">
-                                <input type="number" step="1" min="0" className="form-control" name="pages_doc" id={"pages_doc_" + cId}
+                                <input type="text" inputMode="text" className="form-control" name="pages_doc" id={"pages_doc_" + cId}
                                     defaultValue={currentPages} />
                             </div>
                             <div className="col-2 text-center">
@@ -289,7 +268,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
             checks = document.getElementsByName('pages_doc');
             var check_control_pages = [];
             for (var i = 0; i < checks.length; i++) {
-                let element = document.getElementById('pages_doc_' + i).value
+                let element = normalizeDocumentControlPages(document.getElementById('pages_doc_' + i).value)
                 check_control_pages.push(element);
             }
             formData.set('check_control_pages', check_control_pages.join(','));
@@ -365,7 +344,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
             dom = document.getElementsByName('pages_doc');
             var pages_doc = [];
             for (var i = 0; i < dom.length; i++) {
-                pages_doc.push(dom[i].value);
+                pages_doc.push(normalizeDocumentControlPages(dom[i].value));
             }
 
             dom = document.getElementsByName('code_doc');
