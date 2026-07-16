@@ -368,7 +368,7 @@ describe('LegalConfigInitialPage', () => {
     render(<LegalConfigInitialPage />);
 
     await screen.findByText(/Plano variante/);
-    expect(screen.getByText('1 variante')).toBeInTheDocument();
+    expect(screen.getByText(/1 variante/)).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Nombre'), { target: { value: 'Plano de sótano' } });
     fireEvent.change(screen.getByLabelText('Variante de'), { target: { value: 'd' } });
     fireEvent.change(screen.getByLabelText('Código'), { target: { value: 'SOT' } });
@@ -456,4 +456,48 @@ describe('LegalConfigInitialPage', () => {
     expect(screen.queryByRole('button', { name: 'Licencia' })).not.toBeInTheDocument();
   });
 
+  it('uses the shared DataTable standard for the document catalogue and controlled catalogues', async () => {
+    service.workspace.mockResolvedValue({ data: workspace });
+    render(<LegalConfigInitialPage />);
+
+    expect(await screen.findByRole('columnheader', { name: 'Código' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Documento' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Tipología' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Etiquetas' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Estado' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Gestionar catálogos' }));
+    const dialog = screen.getByRole('dialog', { name: 'Tipologías y etiquetas' });
+    expect(within(dialog).getByRole('columnheader', { name: 'Nombre' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('columnheader', { name: 'Estado' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('columnheader', { name: 'Acciones' })).toBeInTheDocument();
+  });
+
+  it('marks the controlled catalogue and condition names as required form fields', async () => {
+    service.workspace.mockResolvedValue({ data: workspace });
+    render(<LegalConfigInitialPage />);
+
+    await screen.findByText(/Plano variante/);
+    fireEvent.click(screen.getByRole('button', { name: 'Gestionar catálogos' }));
+    const catalogueDialog = screen.getByRole('dialog', { name: 'Tipologías y etiquetas' });
+    expect(within(catalogueDialog).getByLabelText('Nuevo nombre')).toBeRequired();
+    fireEvent.click(within(catalogueDialog).getByRole('button', { name: 'Close' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Nueva condición' }));
+    expect(within(screen.getByRole('dialog', { name: 'Nueva condición' })).getByLabelText('Nombre de la condición')).toBeRequired();
+  });
+
+  it('keeps the parent context when searching a document variant', async () => {
+    service.workspace.mockResolvedValue({ data: workspace });
+    render(<LegalConfigInitialPage />);
+
+    await screen.findAllByText('Plano principal');
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar documentos' }), { target: { value: 'variante' } });
+
+    await waitFor(() => {
+      const table = screen.getByRole('table');
+      expect(within(table).getByText('Plano principal')).toBeInTheDocument();
+      expect(within(table).getByText(/Plano variante/)).toBeInTheDocument();
+    });
+  });
 });
