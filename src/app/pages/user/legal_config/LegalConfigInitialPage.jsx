@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import LegalConfigService from '@/app/services/legal_config.service';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DataTable } from '@/components/data-table';
+import DataTableBridge from '@/components/data-table-bridge';
 import './LegalConfigInitialPage.css';
 
 const empty = {
@@ -206,6 +208,7 @@ function CatalogueManagerDialog({ open, onOpenChange, tab, onTabChange, values, 
           <div>
             <input
               id="catalogue-new-name"
+              required
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder={`Ej. ${isTypology ? 'Planos' : 'Obligatorio'}`}
@@ -217,24 +220,44 @@ function CatalogueManagerDialog({ open, onOpenChange, tab, onTabChange, values, 
           </div>
         </form>
 
-        <div className="legal-config-catalogue-list" role="list" aria-label={`Listado de ${title.toLowerCase()}`}>
-          {values[tab].map((item) => (
-            <div className={`legal-config-catalogue-row${item.is_active ? '' : ' is-inactive'}`} role="listitem" key={item.id}>
-              <span className="legal-config-catalogue-row__name"><strong>{item.name}</strong></span>
-              <span className="legal-config-catalogue-row__status">{item.is_active ? 'Activa' : 'Inactiva'}</span>
-              <button
-                type="button"
-                className="legal-config-button legal-config-button--compact"
-                onClick={() => onToggleActive(tab, item)}
-                disabled={saving}
-                aria-label={`${item.is_active ? 'Desactivar' : 'Activar'} ${item.name}`}
-              >
-                {item.is_active ? 'Desactivar' : 'Activar'}
-              </button>
-            </div>
-          ))}
-          {!values[tab].length && <div className="legal-config-catalogue-empty">No hay {title.toLowerCase()} registradas.</div>}
-        </div>
+        <DataTable
+          className="legal-config-catalogue-table"
+          columns={[
+            { accessorKey: 'name', header: 'Nombre' },
+            {
+              id: 'status',
+              header: 'Estado',
+              accessorFn: (item) => item.is_active ? 'Activa' : 'Inactiva',
+              cell: ({ row }) => row.original.is_active ? 'Activa' : 'Inactiva',
+            },
+            {
+              id: 'actions',
+              header: 'Acciones',
+              enableSorting: false,
+              cell: ({ row }) => {
+                const item = row.original;
+                return (
+                  <button
+                    type="button"
+                    className="legal-config-button legal-config-button--compact"
+                    onClick={() => onToggleActive(tab, item)}
+                    disabled={saving}
+                    aria-label={`${item.is_active ? 'Desactivar' : 'Activar'} ${item.name}`}
+                  >
+                    {item.is_active ? 'Desactivar' : 'Activar'}
+                  </button>
+                );
+              },
+            },
+          ]}
+          data={values[tab]}
+          searchable
+          searchPlaceholder={`Buscar ${title.toLowerCase()}`}
+          pagination
+          pageSize={8}
+          compact
+          emptyMessage={`No hay ${title.toLowerCase()} registradas.`}
+        />
 
         <DialogFooter className="legal-config-catalogue-dialog__footer">
           <button type="button" className="legal-config-button" onClick={() => onOpenChange(false)}>Cerrar</button>
@@ -295,7 +318,7 @@ function ConditionDialog({ open, onOpenChange, fields, documents, actuation, onS
         <form className="condition-form" onSubmit={submit}>
           <label>
             Nombre de la condición
-            <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ej. El predio es BIC" disabled={saving} autoFocus />
+            <input required value={name} onChange={(event) => setName(event.target.value)} placeholder="Ej. El predio es BIC" disabled={saving} autoFocus />
           </label>
           <div className="condition-form__rule">
             <label>
@@ -408,6 +431,7 @@ export default function LegalConfigInitialPage() {
   const [showActuationForm, setShowActuationForm] = useState(false);
   const [actuationName, setActuationName] = useState('');
   const [actuationQuery, setActuationQuery] = useState('');
+  const [documentQuery, setDocumentQuery] = useState('');
   const [actuationSaving, setActuationSaving] = useState(false);
   const [catalogueModalOpen, setCatalogueModalOpen] = useState(false);
   const [catalogueTab, setCatalogueTab] = useState('typologies');
@@ -593,6 +617,70 @@ export default function LegalConfigInitialPage() {
     });
     return data.actuations.filter((item) => visibleIds.has(item.id));
   }, [actuationQuery, data.actuations]);
+
+  const documentGroups = useMemo(() => {
+    const query = documentQuery.trim().toLocaleLowerCase('es');
+    const labelNames = (document) => data.documentLabels
+      .filter((row) => row.document_id === document.id)
+      .map((row) => data.labels.find((item) => item.id === row.label_id)?.name)
+      .filter(Boolean);
+    const matches = (document) => [
+      document.code,
+      document.name,
+      data.typologies.find((item) => item.id === document.typology_id)?.name,
+      ...labelNames(document),
+    ].filter(Boolean).join(' ').toLocaleLowerCase('es').includes(query);
+
+    return byParent(data.documents)
+      .map((parent) => ({
+        ...parent,
+        variants: byParent(data.documents, parent.id),
+      }))
+      .filter((parent) => !query || matches(parent) || parent.variants.some(matches));
+  }, [data.documentLabels, data.documents, data.labels, data.typologies, documentQuery]);
+
+  const documentTableColumns = useMemo(() => [
+    { name: 'Código', selector: (document) => document.code, sortable: true, width: '120px' },
+    {
+      name: 'Documento',
+      selector: (document) => document.name,
+      sortable: true,
+      cell: (document) => (
+        <span className="legal-config-document-name">
+          <span><strong>{document.name}</strong>{document.variants.length > 0 && <small>{document.variants.length} {document.variants.length === 1 ? 'variante' : 'variantes'} · {document.variants.map((item) => item.name).join(' · ')}</small>}</span>
+        </span>
+      ),
+    },
+    {
+      name: 'Tipología',
+      selector: (document) => data.typologies.find((item) => item.id === document.typology_id)?.name || 'Sin tipología',
+      sortable: true,
+    },
+    {
+      name: 'Etiquetas',
+      selector: (document) => data.documentLabels
+        .filter((row) => row.document_id === document.id)
+        .map((row) => data.labels.find((item) => item.id === row.label_id)?.name)
+        .filter(Boolean)
+        .join(', ') || 'Sin etiquetas',
+      sortable: true,
+    },
+    {
+      name: 'Estado',
+      selector: (document) => document.is_active === false ? 'Inactivo' : 'Activo',
+      sortable: true,
+      width: '110px',
+    },
+  ], [data.documentLabels, data.labels, data.typologies]);
+
+  function DocumentVariants({ data: parent }) {
+    const variants = parent.variants.filter((variant) => !documentQuery.trim() || `${variant.code} ${variant.name}`.toLocaleLowerCase('es').includes(documentQuery.trim().toLocaleLowerCase('es')));
+    return (
+      <div className="legal-config-document-variants" aria-label={`Variantes de ${parent.name}`}>
+        {variants.map((variant) => <span key={variant.id}><CornerDownRight size={14} aria-hidden="true" /><code>{variant.code}</code><strong>{variant.name}</strong></span>)}
+      </div>
+    );
+  }
 
   function selectParentDocument(parent_document_id) {
     const parent = data.documents.find((item) => item.id === parent_document_id);
@@ -843,33 +931,33 @@ export default function LegalConfigInitialPage() {
              <button className="legal-config-button legal-config-button--primary document-form__submit" type="submit" disabled={!canSaveDocument}>{documentSaving ? 'Guardando documento…' : 'Guardar documento'}</button>
             {documentSaving && <p className="document-form__status" aria-live="polite">Guardando documento…</p>}
           </form>
-          <div className="document-tree">
-            {byParent(data.documents).map((document) => {
-              const variants = byParent(data.documents, document.id);
-              return (
-                <article className="document-tree__item" key={document.id}>
-                  <div className="document-tree__primary">
-                    <span className="document-tree__icon"><FileText size={16} aria-hidden="true" /></span>
-                    <span><strong>{document.name}</strong><small>{document.code}</small></span>
-                    {variants.length > 0 && <span className="document-tree__variant-count">{variants.length} {variants.length === 1 ? 'variante' : 'variantes'}</span>}
-                  </div>
-                  {variants.map((variant) => (
-                    <div className="variant" key={variant.id}>
-                      <GitBranch size={13} aria-hidden="true" />
-                      <span><small>Variante</small><strong>{variant.name}</strong><code>{variant.code}</code></span>
-                    </div>
-                  ))}
-                </article>
-              );
-            })}
-            {!loading && data.documents.length === 0 && (
-              <div className="legal-config-empty-state legal-config-empty-state--compact">
-                <FileText size={22} aria-hidden="true" />
-                <strong>Aún no hay documentos</strong>
-                <p>Completa el formulario para construir el catálogo documental.</p>
-              </div>
-            )}
-          </div>
+          <label className="document-catalogue-search">
+            <Search size={15} aria-hidden="true" />
+            <span className="sr-only">Buscar documentos</span>
+            <input
+              type="search"
+              aria-label="Buscar documentos"
+              value={documentQuery}
+              onChange={(event) => setDocumentQuery(event.target.value)}
+              placeholder="Buscar por código, documento o tipología"
+              disabled={loading}
+            />
+          </label>
+          <DataTableBridge
+            className="legal-config-document-table"
+            columns={documentTableColumns}
+            data={documentGroups}
+            pagination
+            paginationPerPage={10}
+            paginationRowsPerPageOptions={[10, 20, 50]}
+            dense
+            highlightOnHover
+            expandableRows
+            expandableRowsComponent={DocumentVariants}
+            expandableRowDisabled={(document) => !document.variants.length}
+            progressPending={loading}
+            noDataComponent="Aún no hay documentos"
+          />
         </section>
 
         <aside className="legal-config-panel legal-config-associations" aria-labelledby="legal-config-associations-title">
