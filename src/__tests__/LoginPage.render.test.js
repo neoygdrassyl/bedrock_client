@@ -101,6 +101,7 @@ function renderLogin() {
 
 describe('LoginPage (redesigned)', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = 'test-site-key';
   });
 
@@ -143,6 +144,18 @@ describe('LoginPage (redesigned)', () => {
     renderLogin();
     expect(screen.getByTestId('recaptcha-mock')).toHaveAttribute('data-sitekey', 'test-site-key');
     expect(screen.getByTestId('recaptcha-mock')).toHaveAttribute('data-size', 'invisible');
+  });
+
+  it('submits directly on localhost even when recaptcha is configured', async () => {
+    renderLogin();
+
+    fireEvent.change(screen.getByLabelText(/correo/i), { target: { value: 'ada@example.com' } });
+    fireEvent.change(screen.getByLabelText(/contraseña/i), { target: { value: 'secret123' } });
+    fireEvent.click(screen.getByRole('button', { name: /iniciar sesión/i }));
+
+    await waitFor(() => {
+      expect(CustomsDataService.appLoginCompatible).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('does not mount recaptcha when the site key is missing', () => {

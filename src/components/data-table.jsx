@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import {
   flexRender,
   getCoreRowModel,
@@ -30,8 +30,10 @@ import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
  * @param {any[]} props.data
  * @param {boolean} [props.searchable=false]
  * @param {string} [props.searchPlaceholder="Buscar..."]
+ * @param {string} [props.searchLabel="Buscar registros"]
  * @param {boolean} [props.pagination=false]
  * @param {number} [props.pageSize=20]
+ * @param {number[]} [props.pageSizeOptions]
  * @param {boolean} [props.sortable=true]
  * @param {boolean} [props.loading=false]
  * @param {string} [props.emptyMessage="No hay registros"]
@@ -43,8 +45,10 @@ export function DataTable({
   data,
   searchable = false,
   searchPlaceholder = 'Buscar...',
+  searchLabel = 'Buscar registros',
   pagination = false,
   pageSize = 20,
+  pageSizeOptions,
   sortable = true,
   loading = false,
   emptyMessage = 'No hay registros',
@@ -53,6 +57,10 @@ export function DataTable({
 }) {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const pageSizeId = useId();
+  const resolvedPageSizeOptions = Array.isArray(pageSizeOptions) && pageSizeOptions.length
+    ? [...new Set([pageSize, ...pageSizeOptions])].sort((left, right) => left - right)
+    : [];
 
   const table = useReactTable({
     data,
@@ -83,6 +91,7 @@ export function DataTable({
       {searchable && (
         <div className="flex items-center">
           <Input
+            aria-label={searchLabel}
             placeholder={searchPlaceholder}
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
@@ -96,29 +105,34 @@ export function DataTable({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      compact && 'py-2 px-3 text-xs',
-                      header.column.getCanSort() && sortable && 'cursor-pointer select-none'
-                    )}
-                    onClick={
-                      header.column.getCanSort() && sortable
-                        ? header.column.getToggleSortingHandler()
-                        : undefined
-                    }
-                  >
-                    <div className="flex items-center gap-1">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getCanSort() && sortable && (
-                        <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
+                {headerGroup.headers.map((header) => {
+                  const canSort = header.column.getCanSort() && sortable;
+                  const sorted = header.column.getIsSorted();
+                  const content = header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext());
+
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={cn(compact && 'py-2 px-3 text-xs')}
+                      aria-sort={sorted === 'asc' ? 'ascending' : (sorted === 'desc' ? 'descending' : undefined)}
+                    >
+                      {canSort ? (
+                        <button
+                          type="button"
+                          className="flex w-full items-center gap-1 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {content}
+                          <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-1">{content}</div>
                       )}
-                    </div>
-                  </TableHead>
-                ))}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -155,17 +169,33 @@ export function DataTable({
       </div>
 
       {pagination && !loading && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Página {table.getState().pagination.pageIndex + 1} de{' '}
-            {table.getPageCount() || 1}
-            {' · '}
-            {table.getFilteredRowModel().rows.length} registros
-          </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {resolvedPageSizeOptions.length > 0 && (
+              <label htmlFor={pageSizeId} className="flex items-center gap-2 text-sm text-muted-foreground">
+                Filas por página
+                <select
+                  id={pageSizeId}
+                  className="h-8 rounded-md border border-border bg-background px-2 text-sm text-foreground"
+                  value={table.getState().pagination.pageSize}
+                  onChange={(event) => table.setPageSize(Number(event.target.value))}
+                >
+                  {resolvedPageSizeOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </label>
+            )}
+            <p className="text-sm text-muted-foreground">
+              Página {table.getState().pagination.pageIndex + 1} de{' '}
+              {table.getPageCount() || 1}
+              {' · '}
+              {table.getFilteredRowModel().rows.length} registros
+            </p>
+          </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
+              aria-label="Página anterior"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
@@ -174,6 +204,7 @@ export function DataTable({
             <Button
               variant="outline"
               size="sm"
+              aria-label="Página siguiente"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
