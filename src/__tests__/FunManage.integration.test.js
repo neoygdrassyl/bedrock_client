@@ -177,9 +177,9 @@ vi.mock('sweetalert2', () => ({
 }));
 
 vi.mock('@/components/legacy-modal', () => ({
-  LegacyModal: ({ children, isOpen, ariaHideApp, ...props }) => {
+  LegacyModal: ({ children, isOpen }) => {
     if (!isOpen) return null;
-    return <div data-testid="mock-modal" {...props}>{children}</div>;
+    return <div data-testid="mock-modal">{children}</div>;
   },
 }));
 
