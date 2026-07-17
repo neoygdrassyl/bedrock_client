@@ -350,12 +350,13 @@ describe('LegalConfigInitialPage', () => {
     expect(screen.queryByText('Define cómo se resuelve la matriz.')).not.toBeInTheDocument();
   });
 
-  it('hides technical acronyms from the main actuation and catalogue views', async () => {
+  it('shows the actuation code badge in the main list but hides technical acronyms from catalogue views', async () => {
     service.workspace.mockResolvedValue({ data: workspace });
     render(<LegalConfigInitialPage />);
 
     await screen.findByText(/Plano variante/);
-    expect(screen.queryByText('LIC')).not.toBeInTheDocument();
+    const actuationItem = screen.getByRole('button', { name: 'Licencia' });
+    expect(within(actuationItem).getByText('LIC')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Gestionar catálogos' }));
     const dialog = screen.getByRole('dialog', { name: 'Tipologías y etiquetas' });
     expect(within(dialog).queryByText('PLA')).not.toBeInTheDocument();
@@ -397,13 +398,65 @@ describe('LegalConfigInitialPage', () => {
     expect(within(dialog).getByText('Licencia de construcción')).toBeInTheDocument();
 
     fireEvent.change(within(dialog).getByLabelText('Código de serie para Licencias urbanísticas'), { target: { value: '200' } });
-    fireEvent.change(within(dialog).getByLabelText('Código de subserie para Licencia de construcción'), { target: { value: '200-01' } });
+    fireEvent.change(within(dialog).getByLabelText('Código de subserie para Licencia de construcción'), { target: { value: '-01' } });
     fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar series' }));
 
     await waitFor(() => {
       expect(service.update).toHaveBeenCalledWith('actuations', 'a', expect.objectContaining({ code: '200' }));
       expect(service.update).toHaveBeenCalledWith('actuations', 'child', expect.objectContaining({ code: '200-01' }));
     });
+  });
+
+  it('creates a subserie inline from the series modal with its composed code', async () => {
+    const seriesWorkspace = {
+      ...workspace,
+      actuations: [{ ...workspace.actuations[0], name: 'Licencias urbanísticas', code: '100' }],
+    };
+    service.workspace.mockResolvedValue({ data: seriesWorkspace });
+    service.create.mockResolvedValue({ data: { id: 'new-child' } });
+    render(<LegalConfigInitialPage />);
+
+    await screen.findByText(/Plano variante/);
+    fireEvent.click(screen.getByRole('button', { name: 'Series y subseries' }));
+    const dialog = screen.getByRole('dialog', { name: 'Series y subseries' });
+
+    fireEvent.change(within(dialog).getByLabelText('Nombre de subserie nueva para Licencias urbanísticas'), { target: { value: 'Licencia de intervención' } });
+    fireEvent.change(within(dialog).getByLabelText('Código de subserie nueva para Licencias urbanísticas'), { target: { value: '-02' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Agregar subserie' }));
+
+    await waitFor(() => expect(service.create).toHaveBeenCalledWith('actuations', { name: 'Licencia de intervención', code: '100-02', parent_id: 'a' }));
+  });
+
+  it('persists series before subseries so a subserie is not validated against a stale parent code', async () => {
+    const seriesWorkspace = {
+      ...workspace,
+      actuations: [
+        { ...workspace.actuations[0], name: 'Licencias urbanísticas', code: '100' },
+        { id: 'child', name: 'Licencia de construcción', code: '100-01', parent_id: 'a', is_active: true, revision: 0 },
+      ],
+    };
+    service.workspace.mockResolvedValue({ data: seriesWorkspace });
+    let resolveRootUpdate;
+    service.update.mockImplementation((_catalogue, id) => (
+      id === 'a'
+        ? new Promise((resolve) => { resolveRootUpdate = resolve; })
+        : Promise.resolve({ data: {} })
+    ));
+    render(<LegalConfigInitialPage />);
+
+    await screen.findByText(/Plano variante/);
+    fireEvent.click(screen.getByRole('button', { name: 'Series y subseries' }));
+    const dialog = screen.getByRole('dialog', { name: 'Series y subseries' });
+
+    fireEvent.change(within(dialog).getByLabelText('Código de serie para Licencias urbanísticas'), { target: { value: '200' } });
+    fireEvent.change(within(dialog).getByLabelText('Código de subserie para Licencia de construcción'), { target: { value: '-01' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar series' }));
+
+    await waitFor(() => expect(service.update).toHaveBeenCalledWith('actuations', 'a', expect.objectContaining({ code: '200' })));
+    expect(service.update).not.toHaveBeenCalledWith('actuations', 'child', expect.anything());
+
+    resolveRootUpdate({ data: {} });
+    await waitFor(() => expect(service.update).toHaveBeenCalledWith('actuations', 'child', expect.objectContaining({ code: '200-01' })));
   });
 
   it('creates a compact condition under the selected actuation and links its document', async () => {

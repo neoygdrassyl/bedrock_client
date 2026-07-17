@@ -70,6 +70,12 @@ test-output-full.log
 ai/
 scripts/
 
+# Local agent and visual-inspection artifacts
+.atl/
+.codegraph/
+.setting/
+/public/__hermes_visual_login.html
+
 .env.development
 .env.production
 /.sisyphus

@@ -20,6 +20,7 @@ export default function LoginPage({ signin }) {
   const recaptchaRef = React.useRef(null);
   const credentialsRef = React.useRef({ email: '', password: '' });
   const recaptchaSiteKey = import.meta.env.VITE_GOOGLE_CAPTCHA_HTML?.trim();
+  const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
   const from = { pathname: '/dashboard' };
 
@@ -105,7 +106,7 @@ export default function LoginPage({ signin }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!recaptchaSiteKey || !recaptchaRef.current) {
+    if (isLocalhost || !recaptchaSiteKey || !recaptchaRef.current) {
       performLogin();
       return;
     }

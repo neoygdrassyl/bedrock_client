@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bell, Bug, Check, FileText, LayoutDashboard, ListChecks, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Bell, Bug, Check, FileText, LayoutDashboard, Library, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
 import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
-import DocumentRequirementsConfigPanel from './document_requirements/DocumentRequirementsConfigPanel.jsx';
-import DocumentRequirementsExplorerPage from './document_requirements/DocumentRequirementsExplorerPage.jsx';
-import LegalConfigInitialPage from './legal_config/LegalConfigInitialPage.jsx';
-import DocumentReviewChecksPage from './legal_config/DocumentReviewChecksPage.jsx';
+import DocumentCatalogWorkspacePage, {
+  normalizeDocumentCatalogSection,
+} from './legal_config/DocumentCatalogWorkspacePage.jsx';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
 import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
 import {
@@ -28,19 +27,9 @@ const NAV_ITEMS = [
     icon: Bell,
   },
   {
-    key: 'requisitos-documentales',
-    label: 'Requisitos documentales',
-    icon: FileText,
-  },
-  {
-    key: 'configuracion-actuaciones',
-    label: 'Actuaciones y documentos',
-    icon: FileText,
-  },
-  {
-    key: 'revision-documentos',
-    label: 'Revisión de documentos',
-    icon: ListChecks,
+    key: 'catalogo-documental',
+    label: 'Catálogo documental',
+    icon: Library,
   },
   {
     key: 'personalizacion',
@@ -59,6 +48,11 @@ const NAV_ITEMS = [
   },
 ];
 
+const LEGACY_DOCUMENT_CATALOG_TABS = Object.freeze({
+  'configuracion-actuaciones': 'actuaciones',
+  'revision-documentos': 'evaluacion-documentos',
+});
+
 function formatLastLogin(value) {
   if (!value) return 'No disponible';
   const date = new Date(value);
@@ -71,7 +65,6 @@ function formatLastLogin(value) {
 
 export default function SettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [active, setActive] = useState(searchParams.get('tab') || 'alarmas');
   const user = DataService.getUserData();
   const canSeeTechnicalReports = isDeveloperUser(user);
   const canManageErrorReports = isErrorReportManagerUser(user) || canSeeTechnicalReports;
@@ -85,24 +78,28 @@ export default function SettingsPage() {
         },
       ]
     : NAV_ITEMS;
-  const activeKey = navItems.some((item) => item.key === active) ? active : 'alarmas';
+  const requestedTab = searchParams.get('tab') || 'alarmas';
+  const legacyDocumentCatalogSection = LEGACY_DOCUMENT_CATALOG_TABS[requestedTab];
+  const requestedActiveKey = legacyDocumentCatalogSection ? 'catalogo-documental' : requestedTab;
+  const activeKey = navItems.some((item) => item.key === requestedActiveKey) ? requestedActiveKey : 'alarmas';
+  const documentCatalogSection = legacyDocumentCatalogSection
+    || normalizeDocumentCatalogSection(searchParams.get('section'));
   const fullName = [user?.name, user?.surname].filter(Boolean).join(' ') || 'No disponible';
   const roleDesc = user?.roleDesc || 'No disponible';
   const lastLogin = formatLastLogin(user?.lastLoginAt || user?.lastLogin);
 
-  useEffect(() => {
-    const requestedTab = searchParams.get('tab');
-    if (requestedTab) setActive(requestedTab);
-  }, [searchParams]);
-
   const selectTab = (key) => {
-    setActive(key);
     if (key === 'alarmas') setSearchParams({});
+    else if (key === 'catalogo-documental') setSearchParams({ tab: key, section: documentCatalogSection });
     else setSearchParams({ tab: key });
   };
 
+  const selectDocumentCatalogSection = (section) => {
+    setSearchParams({ tab: 'catalogo-documental', section: normalizeDocumentCatalogSection(section) });
+  };
+
   return (
-    <div className={`settings-shell${['configuracion-actuaciones', 'revision-documentos'].includes(activeKey) ? ' settings-shell--wide' : ''}`}>
+    <div className={`settings-shell${activeKey === 'catalogo-documental' ? ' settings-shell--wide' : ''}`}>
       <header className="settings-shell__header">
         <div className="settings-shell__title">
           <SettingsIcon size={20} className="settings-shell__title-icon" />
@@ -136,9 +133,12 @@ export default function SettingsPage() {
 
         <div className="settings-panel">
           {activeKey === 'alarmas' && <AlarmsV2ConfigPanel />}
-          {activeKey === 'requisitos-documentales' && <DocumentRequirementsExplorerPage />}
-          {activeKey === 'configuracion-actuaciones' && <LegalConfigInitialPage />}
-          {activeKey === 'revision-documentos' && <DocumentReviewChecksPage />}
+          {activeKey === 'catalogo-documental' && (
+            <DocumentCatalogWorkspacePage
+              activeSection={documentCatalogSection}
+              onSectionChange={selectDocumentCatalogSection}
+            />
+          )}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
           {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
           {activeKey === 'errorReports' && canManageErrorReports && (

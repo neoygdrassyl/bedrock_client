@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
+  ChevronRight,
   CornerDownRight,
   FileText,
   GitBranch,
@@ -9,6 +10,7 @@ import {
   Library,
   ListChecks,
   LoaderCircle,
+  Pencil,
   Plus,
   RefreshCw,
   Search,
@@ -16,19 +18,19 @@ import {
   X,
 } from 'lucide-react';
 import LegalConfigService from '@/app/services/legal_config.service';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DataTable } from '@/components/data-table';
-import DataTableBridge from '@/components/data-table-bridge';
 import './LegalConfigInitialPage.css';
 
 const empty = {
   actuations: [], typologies: [], labels: [], documents: [], documentLabels: [],
-  actuationTypologies: [], actuationLabels: [], directDocuments: [], legacyActuationTypes: [],
+  actuationTypologies: [], actuationLabels: [], directDocuments: [],
   conditions: [], conditionFields: [], conditionDocuments: [], actuationConditions: [],
 };
 
 const emptyDocumentForm = {
-  name: '', code: '', typology_id: '', label_ids: [], parent_document_id: '',
+  name: '', code: '', description: '', typology_id: '', label_ids: [], parent_document_id: '',
+  is_active: true, sort_order: 0,
 };
 
 const errorMessage = (error) => (
@@ -38,6 +40,20 @@ const errorMessage = (error) => (
 const byParent = (rows, parentId = null) => (
   rows.filter((row) => (row.parent_document_id || null) === parentId)
 );
+
+const documentFormFrom = (document, documentLabels) => ({
+  ...emptyDocumentForm,
+  name: document?.name || '',
+  code: document?.code || '',
+  description: document?.description || '',
+  typology_id: document?.typology_id || '',
+  label_ids: documentLabels
+    .filter((row) => row.document_id === document?.id)
+    .map((row) => row.label_id),
+  parent_document_id: document?.parent_document_id || '',
+  is_active: document?.is_active !== false,
+  sort_order: Number(document?.sort_order || 0),
+});
 
 function CatalogueSelect({ label, values, value, onChange, onCreate, multiple = false, creatable = true, disabled = false }) {
   const [text, setText] = useState('');
@@ -267,6 +283,231 @@ function CatalogueManagerDialog({ open, onOpenChange, tab, onTabChange, values, 
   );
 }
 
+function DocumentEditorDialog({
+  open,
+  onOpenChange,
+  document,
+  documents,
+  typologies,
+  labels,
+  documentLabels,
+  onSave,
+  saving,
+}) {
+  const [form, setForm] = useState(emptyDocumentForm);
+  const [submitError, setSubmitError] = useState('');
+  const instanceId = useId().replace(/:/g, '');
+  const editing = Boolean(document);
+  const selectedParent = documents.find((item) => item.id === form.parent_document_id);
+  const isVariant = Boolean(form.parent_document_id);
+  const inheritedTypology = typologies.find((item) => item.id === form.typology_id)?.name || 'Sin tipología';
+  const inheritedLabels = form.label_ids
+    .map((id) => labels.find((item) => item.id === id)?.name)
+    .filter(Boolean);
+  const parentOptions = byParent(documents).filter((item) => item.is_active !== false);
+  const canSave = Boolean(form.name.trim() && form.code.trim() && !saving);
+
+  useEffect(() => {
+    if (!open) return;
+    setForm(document ? documentFormFrom(document, documentLabels) : emptyDocumentForm);
+    setSubmitError('');
+  }, [document, documentLabels, open]);
+
+  function setField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function selectParent(parentId) {
+    const parent = documents.find((item) => item.id === parentId);
+    if (!parent) {
+      setForm((current) => ({
+        ...current,
+        parent_document_id: '',
+        typology_id: '',
+        label_ids: [],
+      }));
+      return;
+    }
+
+    setForm((current) => ({
+      ...current,
+      parent_document_id: parentId,
+      typology_id: parent.typology_id || '',
+      label_ids: documentLabels
+        .filter((row) => row.document_id === parent.id)
+        .map((row) => row.label_id),
+    }));
+  }
+
+  async function submit(event) {
+    event.preventDefault();
+    if (!canSave) return;
+    setSubmitError('');
+    const result = await onSave(form, document);
+    if (result?.ok) onOpenChange(false);
+    else setSubmitError(result?.message || 'No fue posible guardar el documento.');
+  }
+
+  function changeOpen(nextOpen) {
+    if (saving) return;
+    if (!nextOpen) setSubmitError('');
+    onOpenChange(nextOpen);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={changeOpen}>
+      <DialogContent className="legal-config-document-dialog" aria-describedby={`${instanceId}-dialog-description`}>
+        <DialogHeader className="legal-config-document-dialog__header">
+          <DialogTitle>
+            {editing ? <Pencil size={18} aria-hidden="true" /> : <Plus size={18} aria-hidden="true" />}
+            {editing ? 'Editar documento' : 'Nuevo documento'}
+          </DialogTitle>
+          <DialogDescription id={`${instanceId}-dialog-description`}>
+            {editing
+              ? 'Actualiza los datos administrables. El código y la relación con el documento principal permanecen estables.'
+              : 'Registra un documento principal o una variante dentro del catálogo documental.'}
+          </DialogDescription>
+        </DialogHeader>
+
+        <form className="document-editor" onSubmit={submit}>
+          {submitError && <p className="document-editor__error" role="alert">{submitError}</p>}
+
+          <div className="document-editor__grid">
+            <label className="document-editor__field document-editor__field--full" htmlFor={`${instanceId}-name`}>
+              <span>Nombre <b aria-hidden="true">*</b></span>
+              <input
+                id={`${instanceId}-name`}
+                required
+                autoFocus
+                value={form.name}
+                onChange={(event) => setField('name', event.target.value)}
+                placeholder="Ej. Certificado de tradición"
+                disabled={saving}
+              />
+            </label>
+
+            <label className="document-editor__field" htmlFor={`${instanceId}-code`}>
+              <span>{!editing && isVariant ? 'Sufijo del código' : 'Código'} <b aria-hidden="true">*</b></span>
+              <input
+                id={`${instanceId}-code`}
+                required
+                value={form.code}
+                onChange={(event) => setField('code', event.target.value)}
+                placeholder={!editing && isVariant ? 'Ej. ANEXO' : 'Ej. DOC-101'}
+                readOnly={editing}
+                aria-readonly={editing}
+                disabled={saving}
+              />
+              {editing && <small>Identificador estable; no se modifica después de crear el documento.</small>}
+            </label>
+
+            {editing ? (
+              <div className="document-editor__static-field" aria-label="Tipo de documento">
+                <span>{isVariant ? 'Variante de' : 'Tipo de documento'}</span>
+                <strong>{isVariant ? (selectedParent?.name || 'Documento principal no disponible') : 'Documento principal'}</strong>
+              </div>
+            ) : (
+              <label className="document-editor__field" htmlFor={`${instanceId}-parent`}>
+                <span>Variante de</span>
+                <select
+                  id={`${instanceId}-parent`}
+                  value={form.parent_document_id}
+                  onChange={(event) => selectParent(event.target.value)}
+                  disabled={saving}
+                >
+                  <option value="">Documento principal</option>
+                  {parentOptions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                </select>
+                <small>Selecciona un documento principal solo si este registro es una variante.</small>
+              </label>
+            )}
+
+            {!editing && selectedParent && (
+              <div className="document-editor__variant-preview" aria-label="Vista previa de la variante">
+                <span><small>Documento principal</small><strong>{selectedParent.name}</strong></span>
+                <CornerDownRight size={16} aria-hidden="true" />
+                <span><small>Código resultante</small><code>{selectedParent.code}-{form.code || '…'}</code></span>
+              </div>
+            )}
+
+            <label className="document-editor__field document-editor__field--full" htmlFor={`${instanceId}-description`}>
+              <span>Descripción</span>
+              <textarea
+                id={`${instanceId}-description`}
+                value={form.description}
+                onChange={(event) => setField('description', event.target.value)}
+                placeholder="Describe el propósito o alcance del documento"
+                disabled={saving}
+              />
+            </label>
+
+            {isVariant ? (
+              <div className="document-editor__inherited" aria-label="Clasificación heredada del documento principal">
+                <span><small>Tipología heredada</small><strong>{inheritedTypology}</strong></span>
+                <span><small>Etiquetas heredadas</small><strong>{inheritedLabels.join(', ') || 'Sin etiquetas'}</strong></span>
+              </div>
+            ) : (
+              <>
+                <CatalogueSelect
+                  label="Tipología"
+                  values={typologies}
+                  value={form.typology_id}
+                  onChange={(typologyId) => setField('typology_id', typologyId)}
+                  creatable={false}
+                  disabled={saving}
+                />
+                <CatalogueSelect
+                  label="Etiquetas"
+                  values={labels}
+                  value={form.label_ids}
+                  multiple
+                  onChange={(labelIds) => setField('label_ids', labelIds)}
+                  creatable={false}
+                  disabled={saving}
+                />
+              </>
+            )}
+
+            <label className="document-editor__field" htmlFor={`${instanceId}-status`}>
+              <span>Estado</span>
+              <select
+                id={`${instanceId}-status`}
+                value={form.is_active ? 'active' : 'inactive'}
+                onChange={(event) => setField('is_active', event.target.value === 'active')}
+                disabled={saving}
+              >
+                <option value="active">Activo</option>
+                <option value="inactive">Inactivo</option>
+              </select>
+            </label>
+
+            <label className="document-editor__field" htmlFor={`${instanceId}-order`}>
+              <span>Orden</span>
+              <input
+                id={`${instanceId}-order`}
+                type="number"
+                min="0"
+                step="1"
+                value={form.sort_order}
+                onChange={(event) => setField('sort_order', Number(event.target.value || 0))}
+                disabled={saving}
+              />
+              <small>Los valores menores aparecen primero.</small>
+            </label>
+          </div>
+
+          <DialogFooter className="document-editor__footer">
+            <button type="button" className="legal-config-button" onClick={() => changeOpen(false)} disabled={saving}>Cancelar</button>
+            <button type="submit" className="legal-config-button legal-config-button--primary" disabled={!canSave}>
+              {saving ? 'Guardando…' : (editing ? 'Guardar cambios' : 'Crear documento')}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function ConditionDialog({ open, onOpenChange, fields, documents, actuation, onSave, saving }) {
   const [name, setName] = useState('');
   const [sourceKey, setSourceKey] = useState('');
@@ -352,21 +593,78 @@ function ConditionDialog({ open, onOpenChange, fields, documents, actuation, onS
   );
 }
 
-function SeriesDialog({ open, onOpenChange, actuations, onSave, saving }) {
+function SeriesDialog({ open, onOpenChange, actuations, onSave, onReload, saving }) {
   const [codes, setCodes] = useState({});
+  const [newSubserie, setNewSubserie] = useState({});
+  const [subserieSavingId, setSubserieSavingId] = useState('');
+  const [subserieError, setSubserieError] = useState('');
   const roots = actuations.filter((item) => !item.parent_id);
+  const wasOpen = useRef(false);
 
   useEffect(() => {
-    if (!open) return;
-    setCodes(Object.fromEntries(actuations.map((item) => [item.id, item.code || ''])));
+    if (!open) { wasOpen.current = false; return; }
+    const justOpened = !wasOpen.current;
+    wasOpen.current = true;
+    const rootCodes = Object.fromEntries(roots.map((item) => [item.id, item.code || '']));
+    // Solo se inicializa por completo al abrir; mientras sigue abierto, un reload de fondo (p. ej. tras
+    // crear una subserie) únicamente agrega códigos para filas nuevas, sin pisar ediciones en curso.
+    setCodes((current) => {
+      const next = justOpened ? {} : { ...current };
+      actuations.forEach((item) => {
+        if (!justOpened && next[item.id] !== undefined) return;
+        if (!item.parent_id) { next[item.id] = item.code || ''; return; }
+        const parentCode = rootCodes[item.parent_id] || '';
+        const existing = item.code || '';
+        next[item.id] = parentCode && existing.startsWith(parentCode) && existing.length > parentCode.length
+          ? existing.slice(parentCode.length)
+          : '';
+      });
+      return next;
+    });
+    if (justOpened) { setNewSubserie({}); setSubserieError(''); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actuations, open]);
 
-  const changes = actuations.filter((item) => (codes[item.id] || '').trim() !== (item.code || ''));
+  function composedCode(item) {
+    if (!item.parent_id) return codes[item.id] || '';
+    return `${codes[item.parent_id] || ''}${codes[item.id] || ''}`;
+  }
+
+  const changes = actuations.filter((item) => {
+    if (item.parent_id && !(codes[item.id] || '').trim()) return false;
+    return composedCode(item).trim() !== (item.code || '');
+  });
 
   async function submit(event) {
     event.preventDefault();
-    const saved = await onSave(changes.map((item) => ({ ...item, code: codes[item.id].trim() })));
+    const saved = await onSave(changes.map((item) => ({ ...item, code: composedCode(item).trim() })));
     if (saved) onOpenChange(false);
+  }
+
+  async function createSubserie(seriesId, name, suffix) {
+    const series = actuations.find((item) => item.id === seriesId);
+    const payload = { name: name.trim(), code: `${series.code}${suffix.trim()}`, parent_id: seriesId };
+    return LegalConfigService.create('actuations', payload);
+  }
+
+  function updateDraft(seriesId, field, value) {
+    setNewSubserie((current) => ({ ...current, [seriesId]: { ...(current[seriesId] || { name: '', suffix: '' }), [field]: value } }));
+  }
+
+  async function submitSubserie(seriesId) {
+    const draft = newSubserie[seriesId] || { name: '', suffix: '' };
+    if (!draft.name.trim() || !draft.suffix.trim() || subserieSavingId) return;
+    setSubserieSavingId(seriesId);
+    setSubserieError('');
+    try {
+      await createSubserie(seriesId, draft.name, draft.suffix);
+      setNewSubserie((current) => ({ ...current, [seriesId]: { name: '', suffix: '' } }));
+      await onReload();
+    } catch (createError) {
+      setSubserieError(errorMessage(createError));
+    } finally {
+      setSubserieSavingId('');
+    }
   }
 
   return (
@@ -375,10 +673,14 @@ function SeriesDialog({ open, onOpenChange, actuations, onSave, saving }) {
         <DialogHeader className="legal-config-series-dialog__header">
           <DialogTitle><Library size={18} aria-hidden="true" /> Series y subseries</DialogTitle>
         </DialogHeader>
+        {subserieError && <p className="series-form__error" role="alert">{subserieError}</p>}
         <form className="series-form" onSubmit={submit}>
           <div className="series-form__list">
             {roots.map((series) => {
               const subseries = actuations.filter((item) => item.parent_id === series.id);
+              const draft = newSubserie[series.id] || { name: '', suffix: '' };
+              const seriesCode = codes[series.id] || '';
+              const canCreateSubserie = Boolean(draft.name.trim() && draft.suffix.trim()) && !saving && subserieSavingId !== series.id;
               return (
                 <section className="series-form__group" key={series.id}>
                   <label className="series-form__row">
@@ -391,18 +693,55 @@ function SeriesDialog({ open, onOpenChange, actuations, onSave, saving }) {
                       required
                     />
                   </label>
-                  {subseries.map((item) => (
-                    <label className="series-form__row is-subseries" key={item.id}>
-                      <span><small>Subserie</small><strong>{item.name}</strong></span>
+                  {subseries.map((item) => {
+                    const hintId = `series-form-hint-${item.id}`;
+                    return (
+                      <label className="series-form__row is-subseries" key={item.id}>
+                        <span><small>Subserie</small><strong>{item.name}</strong></span>
+                        <span className="series-form__code-field">
+                          <span className="series-form__code-prefix" aria-hidden="true">{seriesCode || '—'}</span>
+                          <input
+                            aria-label={`Código de subserie para ${item.name}`}
+                            aria-describedby={hintId}
+                            value={codes[item.id] || ''}
+                            onChange={(event) => setCodes((current) => ({ ...current, [item.id]: event.target.value }))}
+                            disabled={saving}
+                          />
+                        </span>
+                        <small id={hintId} className="series-form__code-hint">Código resultante: {composedCode(item).trim() || '—'}</small>
+                      </label>
+                    );
+                  })}
+                  <div className="series-form__create-subserie">
+                    <label>
+                      <span>Nueva subserie</span>
                       <input
-                        aria-label={`Código de subserie para ${item.name}`}
-                        value={codes[item.id] || ''}
-                        onChange={(event) => setCodes((current) => ({ ...current, [item.id]: event.target.value }))}
-                        disabled={saving}
-                        required
+                        aria-label={`Nombre de subserie nueva para ${series.name}`}
+                        value={draft.name}
+                        onChange={(event) => updateDraft(series.id, 'name', event.target.value)}
+                        placeholder="Nombre de la subserie"
+                        disabled={saving || subserieSavingId === series.id}
                       />
                     </label>
-                  ))}
+                    <span className="series-form__code-field">
+                      <span className="series-form__code-prefix" aria-hidden="true">{seriesCode || '—'}</span>
+                      <input
+                        aria-label={`Código de subserie nueva para ${series.name}`}
+                        value={draft.suffix}
+                        onChange={(event) => updateDraft(series.id, 'suffix', event.target.value)}
+                        placeholder="-01"
+                        disabled={saving || subserieSavingId === series.id}
+                      />
+                    </span>
+                    <button
+                      type="button"
+                      className="legal-config-button legal-config-button--compact"
+                      onClick={() => submitSubserie(series.id)}
+                      disabled={!canCreateSubserie}
+                    >
+                      {subserieSavingId === series.id ? 'Agregando…' : 'Agregar subserie'}
+                    </button>
+                  </div>
                 </section>
               );
             })}
@@ -417,21 +756,30 @@ function SeriesDialog({ open, onOpenChange, actuations, onSave, saving }) {
   );
 }
 
-export default function LegalConfigInitialPage() {
+export default function LegalConfigInitialPage({ section = 'all' }) {
+  const activeSection = ['documents', 'actuations'].includes(section) ? section : 'all';
+  const showActuations = activeSection !== 'documents';
+  const showDocuments = activeSection !== 'actuations';
+  const workspaceTitle = activeSection === 'documents'
+    ? 'Catálogo documental'
+    : (activeSection === 'actuations' ? 'Actuaciones' : 'Documentos y actuaciones');
+  const workspaceEyebrow = activeSection === 'documents' ? 'Configuración documental' : 'Matriz de configuración';
   const [data, setData] = useState(empty);
   const [selected, setSelected] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-  const [mappingError, setMappingError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [documentForm, setDocumentForm] = useState(emptyDocumentForm);
   const [relationsSaving, setRelationsSaving] = useState(false);
   const [documentSaving, setDocumentSaving] = useState(false);
-  const [mappingSaving, setMappingSaving] = useState(false);
+  const [documentModalOpen, setDocumentModalOpen] = useState(false);
+  const [editingDocumentId, setEditingDocumentId] = useState('');
+  const documentModalTriggerRef = useRef(null);
+  const newDocumentButtonRef = useRef(null);
+
   const [showActuationForm, setShowActuationForm] = useState(false);
   const [actuationName, setActuationName] = useState('');
   const [actuationQuery, setActuationQuery] = useState('');
-  const [documentQuery, setDocumentQuery] = useState('');
+  const [expandedSeries, setExpandedSeries] = useState({});
   const [actuationSaving, setActuationSaving] = useState(false);
   const [catalogueModalOpen, setCatalogueModalOpen] = useState(false);
   const [catalogueTab, setCatalogueTab] = useState('typologies');
@@ -505,25 +853,45 @@ export default function LegalConfigInitialPage() {
     } finally { setCatalogueSaving(false); }
   }
 
-  async function saveDocument(event) {
-    event.preventDefault();
-    if (documentSaving) return;
+  async function saveDocument(form, document) {
+    if (documentSaving) return { ok: false, message: 'Ya hay un documento guardándose.' };
     setDocumentSaving(true);
     try {
-      const payload = {
-        ...documentForm,
-        typology_id: documentForm.typology_id || null,
-        label_ids: documentForm.label_ids || [],
-        ...(documentForm.parent_document_id ? { variant_code: documentForm.code } : {}),
+      const commonPayload = {
+        name: form.name.trim(),
+        description: form.description.trim() || null,
+        is_active: form.is_active !== false,
+        sort_order: Number(form.sort_order || 0),
       };
-      await LegalConfigService.create('documents', payload);
-      setDocumentForm(emptyDocumentForm);
+
+      if (document) {
+        await LegalConfigService.update('documents', document.id, {
+          ...commonPayload,
+          ...(!document.parent_document_id ? {
+            typology_id: form.typology_id || null,
+            label_ids: form.label_ids || [],
+          } : {}),
+        });
+      } else {
+        await LegalConfigService.create('documents', {
+          ...commonPayload,
+          code: form.code.trim(),
+          typology_id: form.typology_id || null,
+          label_ids: form.label_ids || [],
+          parent_document_id: form.parent_document_id || null,
+          ...(form.parent_document_id ? { variant_code: form.code.trim() } : {}),
+        });
+      }
+
       setError('');
-      setNotice('Documento guardado.');
+      setNotice(document ? 'Documento actualizado.' : 'Documento creado.');
       await load();
+      return { ok: true };
     } catch (saveError) {
+      const message = errorMessage(saveError);
       setNotice('');
-      setError(errorMessage(saveError));
+      setError(message);
+      return { ok: false, message };
     } finally { setDocumentSaving(false); }
   }
 
@@ -562,12 +930,16 @@ export default function LegalConfigInitialPage() {
     if (!changes.length || seriesSaving) return false;
     setSeriesSaving(true);
     try {
-      await Promise.all(changes.map((item) => LegalConfigService.update('actuations', item.id, {
-        name: item.name,
-        code: item.code,
-        is_active: item.is_active,
-        sort_order: item.sort_order || 0,
-      })));
+      const roots = changes.filter((item) => !item.parent_id);
+      const subseries = changes.filter((item) => item.parent_id);
+      for (const item of [...roots, ...subseries]) {
+        await LegalConfigService.update('actuations', item.id, {
+          name: item.name,
+          code: item.code,
+          is_active: item.is_active,
+          sort_order: item.sort_order || 0,
+        });
+      }
       await load();
       setError('');
       setNotice('Series y subseries guardadas.');
@@ -595,13 +967,29 @@ export default function LegalConfigInitialPage() {
   }), [data, selected]);
 
   const selectedActuation = data.actuations.find((item) => item.id === selected);
-  const selectedParentDocument = data.documents.find((item) => item.id === documentForm.parent_document_id);
-  const canSaveDocument = Boolean(
-    documentForm.name.trim()
-    && documentForm.code.trim()
-    && !loading
-    && !documentSaving
-  );
+  const editingDocument = data.documents.find((item) => item.id === editingDocumentId);
+  const openNewDocument = useCallback((event) => {
+    documentModalTriggerRef.current = event?.currentTarget || newDocumentButtonRef.current;
+    setEditingDocumentId('');
+    setDocumentModalOpen(true);
+  }, []);
+  const openDocumentEditor = useCallback((documentId, event) => {
+    documentModalTriggerRef.current = event?.currentTarget || newDocumentButtonRef.current;
+    setEditingDocumentId(documentId);
+    setDocumentModalOpen(true);
+  }, []);
+  const changeDocumentModalOpen = useCallback((nextOpen) => {
+    setDocumentModalOpen(nextOpen);
+    if (!nextOpen) {
+      setEditingDocumentId('');
+      window.requestAnimationFrame(() => {
+        const trigger = documentModalTriggerRef.current;
+        const focusTarget = trigger?.isConnected ? trigger : newDocumentButtonRef.current;
+        focusTarget?.focus();
+      });
+    }
+  }, []);
+
   const visibleActuations = useMemo(() => {
     const query = actuationQuery.trim().toLocaleLowerCase('es');
     if (!query) return data.actuations;
@@ -618,86 +1006,112 @@ export default function LegalConfigInitialPage() {
     return data.actuations.filter((item) => visibleIds.has(item.id));
   }, [actuationQuery, data.actuations]);
 
-  const documentGroups = useMemo(() => {
-    const query = documentQuery.trim().toLocaleLowerCase('es');
-    const labelNames = (document) => data.documentLabels
+  const documentRows = useMemo(() => {
+    const decorate = (document) => {
+      const parent = data.documents.find((item) => item.id === document.parent_document_id);
+      const labelNames = data.documentLabels
       .filter((row) => row.document_id === document.id)
       .map((row) => data.labels.find((item) => item.id === row.label_id)?.name)
       .filter(Boolean);
-    const matches = (document) => [
-      document.code,
-      document.name,
-      data.typologies.find((item) => item.id === document.typology_id)?.name,
-      ...labelNames(document),
-    ].filter(Boolean).join(' ').toLocaleLowerCase('es').includes(query);
+      return {
+        ...document,
+        parent_name: parent?.name || '',
+        typology_name: data.typologies.find((item) => item.id === document.typology_id)?.name || '',
+        label_names: labelNames,
+        variant_count: byParent(data.documents, document.id).length,
+      };
+    };
 
-    return byParent(data.documents)
-      .map((parent) => ({
-        ...parent,
-        variants: byParent(data.documents, parent.id),
-      }))
-      .filter((parent) => !query || matches(parent) || parent.variants.some(matches));
-  }, [data.documentLabels, data.documents, data.labels, data.typologies, documentQuery]);
+    const grouped = [];
+    const included = new Set();
+    byParent(data.documents).forEach((parent) => {
+      grouped.push(decorate(parent));
+      included.add(parent.id);
+      byParent(data.documents, parent.id).forEach((variant) => {
+        grouped.push(decorate(variant));
+        included.add(variant.id);
+      });
+    });
+    data.documents.filter((item) => !included.has(item.id)).forEach((item) => grouped.push(decorate(item)));
+    return grouped;
+  }, [data.documentLabels, data.documents, data.labels, data.typologies]);
 
   const documentTableColumns = useMemo(() => [
-    { name: 'Código', selector: (document) => document.code, sortable: true, width: '120px' },
     {
-      name: 'Documento',
-      selector: (document) => document.name,
-      sortable: true,
-      cell: (document) => (
-        <span className="legal-config-document-name">
-          <span><strong>{document.name}</strong>{document.variants.length > 0 && <small>{document.variants.length} {document.variants.length === 1 ? 'variante' : 'variantes'} · {document.variants.map((item) => item.name).join(' · ')}</small>}</span>
+      accessorKey: 'code',
+      header: 'Código',
+      cell: ({ row }) => <code className="document-table__code">{row.original.code}</code>,
+    },
+    {
+      id: 'document',
+      header: 'Documento',
+      accessorFn: (document) => `${document.name} ${document.parent_name} ${document.parent_document_id ? 'variante' : 'principal'}`,
+      cell: ({ row }) => {
+        const document = row.original;
+        return (
+          <div className={`document-table__name${document.parent_document_id ? ' is-variant' : ''}`}>
+            <span>
+              {document.parent_document_id && <CornerDownRight size={14} aria-hidden="true" />}
+              <strong>{document.name}</strong>
+            </span>
+            <small>
+              {document.parent_document_id
+                ? `Variante de ${document.parent_name || 'documento principal'}`
+                : (document.variant_count
+                  ? `${document.variant_count} ${document.variant_count === 1 ? 'variante' : 'variantes'}`
+                  : 'Documento principal')}
+            </small>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'typology',
+      header: 'Tipología',
+      accessorFn: (document) => document.typology_name || 'Sin tipología',
+      cell: ({ row }) => <span className={!row.original.typology_name ? 'document-table__muted' : ''}>{row.original.typology_name || 'Sin tipología'}</span>,
+    },
+    {
+      id: 'labels',
+      header: 'Etiquetas',
+      accessorFn: (document) => document.label_names.join(' ') || 'Sin etiquetas',
+      cell: ({ row }) => {
+        const names = row.original.label_names;
+        if (!names.length) return <span className="document-table__muted">Sin etiquetas</span>;
+        return (
+          <span className="document-table__labels" title={names.join(', ')}>
+            {names.slice(0, 2).map((name) => <span key={name}>{name}</span>)}
+            {names.length > 2 && <span>+{names.length - 2}</span>}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'status',
+      header: 'Estado',
+      accessorFn: (document) => document.is_active === false ? 'Inactivo' : 'Activo',
+      cell: ({ row }) => (
+        <span className={`document-table__status${row.original.is_active === false ? ' is-inactive' : ''}`}>
+          {row.original.is_active === false ? 'Inactivo' : 'Activo'}
         </span>
       ),
     },
     {
-      name: 'Tipología',
-      selector: (document) => data.typologies.find((item) => item.id === document.typology_id)?.name || 'Sin tipología',
-      sortable: true,
+      id: 'actions',
+      header: 'Acciones',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <button
+          type="button"
+          className="legal-config-button legal-config-button--compact document-table__edit"
+          onClick={(event) => openDocumentEditor(row.original.id, event)}
+          aria-label={`Editar ${row.original.name}`}
+        >
+          <Pencil size={14} aria-hidden="true" /> Editar
+        </button>
+      ),
     },
-    {
-      name: 'Etiquetas',
-      selector: (document) => data.documentLabels
-        .filter((row) => row.document_id === document.id)
-        .map((row) => data.labels.find((item) => item.id === row.label_id)?.name)
-        .filter(Boolean)
-        .join(', ') || 'Sin etiquetas',
-      sortable: true,
-    },
-    {
-      name: 'Estado',
-      selector: (document) => document.is_active === false ? 'Inactivo' : 'Activo',
-      sortable: true,
-      width: '110px',
-    },
-  ], [data.documentLabels, data.labels, data.typologies]);
-
-  function DocumentVariants({ data: parent }) {
-    const variants = parent.variants.filter((variant) => !documentQuery.trim() || `${variant.code} ${variant.name}`.toLocaleLowerCase('es').includes(documentQuery.trim().toLocaleLowerCase('es')));
-    return (
-      <div className="legal-config-document-variants" aria-label={`Variantes de ${parent.name}`}>
-        {variants.map((variant) => <span key={variant.id}><CornerDownRight size={14} aria-hidden="true" /><code>{variant.code}</code><strong>{variant.name}</strong></span>)}
-      </div>
-    );
-  }
-
-  function selectParentDocument(parent_document_id) {
-    const parent = data.documents.find((item) => item.id === parent_document_id);
-    if (!parent) {
-      setDocumentForm((current) => ({ ...current, parent_document_id: '' }));
-      return;
-    }
-    const label_ids = data.documentLabels
-      .filter((row) => row.document_id === parent.id)
-      .map((row) => row.label_id);
-    setDocumentForm((current) => ({
-      ...current,
-      parent_document_id,
-      typology_id: parent.typology_id || '',
-      label_ids,
-    }));
-  }
+  ], [openDocumentEditor]);
 
   function saveRelations(key, relationIds) {
     if (relationSavePending.current || !selectedActuation) return;
@@ -744,41 +1158,42 @@ export default function LegalConfigInitialPage() {
       }).finally(() => { relationSavePending.current = false; setRelationsSaving(false); });
   }
 
-  async function saveLegacyActuationType(event) {
-    if (mappingSaving) return;
-    setMappingSaving(true);
-    const legacy_actuation_type_id = event.target.value || null;
-    try {
-      const response = await LegalConfigService.update('actuations', selected, { legacy_actuation_type_id, revision: selectedActuation?.revision });
-      setData((current) => ({ ...current, actuations: current.actuations.map((item) => item.id === selected ? response.data : item) }));
-      setMappingError('');
-      setError('');
-      setNotice('Vínculo con actuación heredada guardado.');
-    } catch (saveError) {
-      setNotice('');
-      const stale = saveError?.response?.status === 409;
-      if (stale) await load();
-      const message = stale
-        ? 'La configuración se actualizó y el vínculo heredado no se guardó. Revisa los datos actuales antes de intentarlo de nuevo.'
-        : errorMessage(saveError);
-      setError(message);
-      setMappingError(message);
-    } finally { setMappingSaving(false); }
+  function renderActuationItem(item, isChild = false) {
+    const isSelected = item.id === selected;
+    return (
+      <button
+        type="button"
+        className={`actuation-list__item${isSelected ? ' selected' : ''}${isChild ? ' is-child' : ''}`}
+        key={item.id}
+        onClick={() => setSelected(item.id)}
+        disabled={loading || relationSavePending.current}
+        aria-pressed={isSelected}
+        aria-label={item.name}
+      >
+        {isChild && <CornerDownRight size={13} className="actuation-list__child-icon" aria-hidden="true" />}
+        <span className="actuation-list__body">
+          <span className="actuation-list__name">{item.name}</span>
+          <span className="actuation-list__code">{item.code || '—'}</span>
+        </span>
+        {!item.is_active && <span className="actuation-list__inactive">Inactiva</span>}
+      </button>
+    );
   }
+
 
   return (
     <main className="legal-config-workspace" aria-labelledby="legal-config-title">
       <header className="legal-config-header">
         <div className="legal-config-header__copy">
-          <p className="legal-config-eyebrow">Matriz de configuración</p>
-          <h2 id="legal-config-title">Documentos y actuaciones</h2>
+          <p className="legal-config-eyebrow">{workspaceEyebrow}</p>
+          <h2 id="legal-config-title">{workspaceTitle}</h2>
         </div>
         <div className="legal-config-header__actions">
           <div className="legal-config-metrics" aria-label="Resumen del catálogo">
-            <span><strong>{data.actuations.length}</strong> actuaciones</span>
-            <span><strong>{data.documents.length}</strong> documentos</span>
-            <span><strong>{data.typologies.length}</strong> tipologías</span>
-            <span><strong>{data.conditions.length}</strong> condiciones</span>
+            {showActuations && <span><strong>{data.actuations.length}</strong> actuaciones</span>}
+            {showDocuments && <span><strong>{data.documents.length}</strong> documentos</span>}
+            {showDocuments && <span><strong>{data.typologies.length}</strong> tipologías</span>}
+            {showActuations && <span><strong>{data.conditions.length}</strong> condiciones</span>}
           </div>
           <button className="legal-config-button legal-config-button--secondary" type="button" onClick={load} disabled={loading}>
             <RefreshCw className={loading ? 'is-spinning' : ''} size={16} aria-hidden="true" /> Actualizar
@@ -792,8 +1207,9 @@ export default function LegalConfigInitialPage() {
         {loading && <p className="legal-config-loading" role="status"><LoaderCircle className="is-spinning" size={16} aria-hidden="true" />Cargando configuración…</p>}
       </div>
 
-      <div className="legal-config-grid">
-        <section className="legal-config-panel legal-config-actuations" aria-labelledby="legal-config-actuations-title">
+      <div className={`legal-config-grid legal-config-grid--${activeSection}`}>
+        {showActuations && (
+          <section className="legal-config-panel legal-config-actuations" aria-labelledby="legal-config-actuations-title">
           <div className="panel-title">
             <div className="panel-title__copy">
               <span className="panel-title__icon"><GitBranch size={17} aria-hidden="true" /></span>
@@ -854,23 +1270,31 @@ export default function LegalConfigInitialPage() {
           </div>
 
           <div className="actuation-list">
-            {visibleActuations.map((item) => (
-              <button
-                type="button"
-                className={`${item.id === selected ? 'selected' : ''}${item.parent_id ? ' is-child' : ''}`.trim()}
-                key={item.id}
-                onClick={() => setSelected(item.id)}
-                disabled={loading || relationSavePending.current || mappingSaving}
-                aria-pressed={item.id === selected}
-                aria-label={item.name}
-              >
-                <span className="actuation-list__name">
-                  {item.parent_id && <CornerDownRight size={13} aria-hidden="true" />}
-                  {item.name}
-                </span>
-                {!item.is_active && <span className="actuation-list__meta">Inactiva</span>}
-              </button>
-            ))}
+            {visibleActuations.filter((item) => !item.parent_id).map((series) => {
+              const children = visibleActuations.filter((item) => item.parent_id === series.id);
+              const hasChildren = children.length > 0;
+              const isOpen = hasChildren && (Boolean(actuationQuery.trim()) || expandedSeries[series.id] !== false);
+              return (
+                <div className="actuation-list__group" key={series.id}>
+                  <div className="actuation-list__row">
+                    {hasChildren ? (
+                      <button
+                        type="button"
+                        className="actuation-list__disclosure"
+                        aria-expanded={isOpen}
+                        aria-label={`${isOpen ? 'Ocultar' : 'Mostrar'} subseries de ${series.name}`}
+                        onClick={() => setExpandedSeries((current) => ({ ...current, [series.id]: !isOpen }))}
+                        disabled={loading}
+                      >
+                        <ChevronRight size={14} aria-hidden="true" />
+                      </button>
+                    ) : <span className="actuation-list__disclosure-spacer" aria-hidden="true" />}
+                    {renderActuationItem(series)}
+                  </div>
+                  {isOpen && children.map((item) => renderActuationItem(item, true))}
+                </div>
+              );
+            })}
             {!loading && data.actuations.length > 0 && visibleActuations.length === 0 && (
               <div className="legal-config-empty-state legal-config-empty-state--compact">
                 <Search size={22} aria-hidden="true" />
@@ -888,79 +1312,50 @@ export default function LegalConfigInitialPage() {
               </div>
             )}
           </div>
-        </section>
+          </section>
+        )}
 
-        <section className="legal-config-panel legal-config-documents" aria-labelledby="legal-config-documents-title">
+        {showDocuments && (
+          <section className="legal-config-panel legal-config-documents" aria-labelledby="legal-config-documents-title">
           <div className="panel-title">
             <div className="panel-title__copy">
               <span className="panel-title__icon"><FileText size={17} aria-hidden="true" /></span>
-              <h3 id="legal-config-documents-title">Catálogo documental</h3>
+              <span className="panel-title__heading">
+                <h3 id="legal-config-documents-title">Documentos</h3>
+                <small>Administra documentos principales y sus variantes.</small>
+              </span>
             </div>
             <div className="panel-title__actions">
               <span className="legal-config-count">{data.documents.length}</span>
-              <button className="legal-config-button legal-config-button--compact" type="button" onClick={() => setCatalogueModalOpen(true)} disabled={loading}>
+              <button className="legal-config-button" type="button" onClick={() => setCatalogueModalOpen(true)} disabled={loading}>
                 <Settings2 size={14} aria-hidden="true" /> Gestionar catálogos
+              </button>
+              <button ref={newDocumentButtonRef} className="legal-config-button legal-config-button--primary" type="button" onClick={openNewDocument} disabled={loading || documentSaving}>
+                <Plus size={15} aria-hidden="true" /> Nuevo documento
               </button>
             </div>
           </div>
-          <form onSubmit={saveDocument} className="document-form">
-            <label>
-              Nombre
-              <input required disabled={loading || documentSaving} value={documentForm.name} placeholder="Ej. Certificado de tradición" onChange={(event) => setDocumentForm({ ...documentForm, name: event.target.value })} />
-            </label>
-            <label>
-              Código
-              <input required disabled={loading || documentSaving} value={documentForm.code} placeholder="Ej. DOC-101" onChange={(event) => setDocumentForm({ ...documentForm, code: event.target.value })} />
-            </label>
-             <CatalogueSelect label="Tipología" values={data.typologies} value={documentForm.typology_id} onChange={(typology_id) => setDocumentForm({ ...documentForm, typology_id })} creatable={false} disabled={loading || documentSaving || Boolean(selectedParentDocument)} />
-             <CatalogueSelect label="Etiquetas" values={data.labels} value={documentForm.label_ids} multiple onChange={(label_ids) => setDocumentForm({ ...documentForm, label_ids })} creatable={false} disabled={loading || documentSaving || Boolean(selectedParentDocument)} />
-            <label>
-              Variante de
-               <select disabled={loading || documentSaving} value={documentForm.parent_document_id} onChange={(event) => selectParentDocument(event.target.value)}>
-                <option value="">Documento principal</option>
-                {byParent(data.documents).map((document) => <option key={document.id} value={document.id}>{document.name}</option>)}
-              </select>
-            </label>
-            {selectedParentDocument && (
-              <div className="document-form__variant-preview" aria-label="Vista previa de variante">
-                <span><small>Documento base</small><strong>{selectedParentDocument.name}</strong></span>
-                <CornerDownRight size={16} aria-hidden="true" />
-                <span><small>Código resultante</small><code>{selectedParentDocument.code}-{documentForm.code || '…'}</code></span>
-              </div>
-            )}
-             <button className="legal-config-button legal-config-button--primary document-form__submit" type="submit" disabled={!canSaveDocument}>{documentSaving ? 'Guardando documento…' : 'Guardar documento'}</button>
-            {documentSaving && <p className="document-form__status" aria-live="polite">Guardando documento…</p>}
-          </form>
-          <label className="document-catalogue-search">
-            <Search size={15} aria-hidden="true" />
-            <span className="sr-only">Buscar documentos</span>
-            <input
-              type="search"
-              aria-label="Buscar documentos"
-              value={documentQuery}
-              onChange={(event) => setDocumentQuery(event.target.value)}
-              placeholder="Buscar por código, documento o tipología"
-              disabled={loading}
+          <div className="document-catalogue-content">
+            <DataTable
+              className="legal-config-document-table"
+              columns={documentTableColumns}
+              data={documentRows}
+              searchable
+              searchLabel="Buscar documentos"
+              searchPlaceholder="Buscar por código, documento, tipología o etiqueta"
+              pagination
+              pageSize={10}
+              pageSizeOptions={[10, 20, 50]}
+              compact
+              loading={loading}
+              emptyMessage="Aún no hay documentos. Crea el primero para iniciar el catálogo."
             />
-          </label>
-          <DataTableBridge
-            className="legal-config-document-table"
-            columns={documentTableColumns}
-            data={documentGroups}
-            pagination
-            paginationPerPage={10}
-            paginationRowsPerPageOptions={[10, 20, 50]}
-            dense
-            highlightOnHover
-            expandableRows
-            expandableRowsComponent={DocumentVariants}
-            expandableRowDisabled={(document) => !document.variants.length}
-            progressPending={loading}
-            noDataComponent="Aún no hay documentos"
-          />
-        </section>
+          </div>
+          </section>
+        )}
 
-        <aside className="legal-config-panel legal-config-associations" aria-labelledby="legal-config-associations-title">
+        {showActuations && (
+          <aside className="legal-config-panel legal-config-associations" aria-labelledby="legal-config-associations-title">
           <div className="panel-title">
             <div className="panel-title__copy">
               <span className="panel-title__icon"><Link2 size={17} aria-hidden="true" /></span>
@@ -976,22 +1371,12 @@ export default function LegalConfigInitialPage() {
                 <Layers3 size={16} aria-hidden="true" />
                 <span><small>Configurando</small><strong>{selectedActuation.name}</strong></span>
               </div>
-              <label className="catalogue-bridge-field">
-                <span>Actuación heredada para generación</span>
-                 <select value={selectedActuation.legacy_actuation_type_id || ''} onChange={saveLegacyActuationType} disabled={loading || mappingSaving || relationsSaving} aria-label="Actuación heredada para generación" aria-describedby={`legacy-actuation-help${mappingError ? ' legacy-actuation-error' : ''}`}>
-                  <option value="">Sin vínculo: conservar generación heredada</option>
-                  {data.legacyActuationTypes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-                </select>
-                <small id="legacy-actuation-help">El catálogo suma documentos solo para esta actuación; no se vincula por nombre ni hereda de actuaciones padre.</small>
-                {mappingError && <small id="legacy-actuation-error">{mappingError}</small>}
-                {mappingSaving && <small aria-live="polite">Guardando vínculo…</small>}
-              </label>
               {relationsSaving && <p aria-live="polite">Guardando asociaciones…</p>}
-               <CatalogueSelect label="Tipologías" values={data.typologies} value={actuationRelations.typology_ids} multiple creatable={false} onChange={(ids) => saveRelations('typology_ids', ids)} disabled={loading || relationsSaving || mappingSaving} />
-               <CatalogueSelect label="Etiquetas" values={data.labels} value={actuationRelations.label_ids} multiple creatable={false} onChange={(ids) => saveRelations('label_ids', ids)} disabled={loading || relationsSaving || mappingSaving} />
-               <CatalogueSelect label="Documentos directos" values={byParent(data.documents)} value={actuationRelations.document_ids} multiple creatable={false} onChange={(ids) => saveRelations('document_ids', ids)} disabled={loading || relationsSaving || mappingSaving} />
+               <CatalogueSelect label="Tipologías" values={data.typologies} value={actuationRelations.typology_ids} multiple creatable={false} onChange={(ids) => saveRelations('typology_ids', ids)} disabled={loading || relationsSaving} />
+               <CatalogueSelect label="Etiquetas" values={data.labels} value={actuationRelations.label_ids} multiple creatable={false} onChange={(ids) => saveRelations('label_ids', ids)} disabled={loading || relationsSaving} />
+               <CatalogueSelect label="Documentos directos" values={byParent(data.documents)} value={actuationRelations.document_ids} multiple creatable={false} onChange={(ids) => saveRelations('document_ids', ids)} disabled={loading || relationsSaving} />
                <div className="condition-associations">
-                 <CatalogueSelect label="Condiciones" values={data.conditions} value={actuationRelations.condition_ids} multiple creatable={false} onChange={(ids) => saveRelations('condition_ids', ids)} disabled={loading || relationsSaving || mappingSaving} />
+                 <CatalogueSelect label="Condiciones" values={data.conditions} value={actuationRelations.condition_ids} multiple creatable={false} onChange={(ids) => saveRelations('condition_ids', ids)} disabled={loading || relationsSaving} />
                  {actuationRelations.condition_ids.map((conditionId) => {
                    const condition = data.conditions.find((item) => item.id === conditionId);
                    const field = data.conditionFields.find((item) => item.key === condition?.source_key);
@@ -1014,26 +1399,45 @@ export default function LegalConfigInitialPage() {
               <p>Selecciona una actuación para asociar catálogos y documentos.</p>
             </div>
           )}
-        </aside>
+          </aside>
+        )}
       </div>
-      <CatalogueManagerDialog
-        open={catalogueModalOpen}
-        onOpenChange={setCatalogueModalOpen}
-        tab={catalogueTab}
-        onTabChange={setCatalogueTab}
-        values={{ typologies: data.typologies, labels: data.labels }}
-        onCreate={createManagedCatalogue}
-        onToggleActive={toggleCatalogue}
-        saving={catalogueSaving}
-      />
-      <SeriesDialog
-        open={seriesModalOpen}
-        onOpenChange={setSeriesModalOpen}
-        actuations={data.actuations}
-        onSave={saveSeries}
-        saving={seriesSaving}
-      />
-      {selectedActuation && (
+      {showDocuments && (
+        <DocumentEditorDialog
+          open={documentModalOpen}
+          onOpenChange={changeDocumentModalOpen}
+          document={editingDocument}
+          documents={data.documents}
+          typologies={data.typologies}
+          labels={data.labels}
+          documentLabels={data.documentLabels}
+          onSave={saveDocument}
+          saving={documentSaving}
+        />
+      )}
+      {showDocuments && (
+        <CatalogueManagerDialog
+          open={catalogueModalOpen}
+          onOpenChange={setCatalogueModalOpen}
+          tab={catalogueTab}
+          onTabChange={setCatalogueTab}
+          values={{ typologies: data.typologies, labels: data.labels }}
+          onCreate={createManagedCatalogue}
+          onToggleActive={toggleCatalogue}
+          saving={catalogueSaving}
+        />
+      )}
+      {showActuations && (
+        <SeriesDialog
+          open={seriesModalOpen}
+          onOpenChange={setSeriesModalOpen}
+          actuations={data.actuations}
+          onSave={saveSeries}
+          onReload={load}
+          saving={seriesSaving}
+        />
+      )}
+      {showActuations && selectedActuation && (
         <ConditionDialog
           open={conditionModalOpen}
           onOpenChange={setConditionModalOpen}
