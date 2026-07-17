@@ -160,7 +160,7 @@ export default function ARCHIVE(props) {
                     if(!id_public.includes(nomens)) color = 'violet'; 
                     if(id_public.includes(nomens)) id_public =id_public.substr(-7);
                     if(isPH) id_public = json.exp_id || json.id_public;
-                    return <Tag color={color}>{id_public}</Tag>
+                    return <Tag key={it.id || `${id_public}-${it.folder || '0'}`} color={color}>{id_public}</Tag>
                 })}
             </TagGroup>
         },
