@@ -89,9 +89,9 @@ vi.mock('sweetalert2', () => ({
 }));
 
 vi.mock('@/components/legacy-modal', () => ({
-  LegacyModal: ({ children, isOpen, ariaHideApp, ...props }) => {
+  LegacyModal: ({ children, isOpen }) => {
     if (!isOpen) return null;
-    return <div data-testid="mock-modal" {...props}>{children}</div>;
+    return <div data-testid="mock-modal">{children}</div>;
   },
 }));
 
@@ -343,6 +343,55 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     expect(screen.getByText('Fecha Radicación')).toBeInTheDocument();
     expect(screen.getByText('Documento')).toBeInTheDocument();
     expect(screen.getByText('Acción')).toBeInTheDocument();
+  });
+
+  test('14. Muestra error recuperable y reintento cuando falla la carga inicial', async () => {
+    const SubmitService = (await import('../app/services/submit.service')).default;
+    SubmitService.getAll.mockClear();
+    SubmitService.getAll.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce({ data: [] });
+
+    await act(async () => {
+      renderSubmit();
+    });
+
+    expect(await screen.findByText('No se pudo cargar la ventanilla.')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /reintentar/i }));
+    });
+
+    await waitFor(() => expect(SubmitService.getAll).toHaveBeenCalledTimes(2));
+    await waitFor(() => {
+      expect(screen.queryByText('No se pudo cargar la ventanilla.')).not.toBeInTheDocument();
+    });
+  });
+
+  test('14b. Mantiene las entradas visibles cuando falla una actualización', async () => {
+    const SubmitService = (await import('../app/services/submit.service')).default;
+    SubmitService.getAll.mockClear();
+    SubmitService.getAll
+      .mockResolvedValueOnce({
+        data: [{
+          id: 1, id_public: 'VR25-0001', id_related: 'CUB1-2024-0001',
+          type: 'TEST', date: '2024-01-01', time: '09:00', sub_doc: true,
+          sub_lists: [],
+        }],
+      })
+      .mockRejectedValueOnce(new Error('network down'));
+
+    await act(async () => {
+      renderSubmit();
+    });
+
+    expect(await screen.findByText('VR25-0001')).toBeInTheDocument();
+
+    // An empty query routes the Consultar click through refreshList() -> retrievePublish().
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /consultar/i }));
+    });
+
+    expect(await screen.findByText('No se pudo cargar la ventanilla.')).toBeInTheDocument();
+    expect(screen.getByText('VR25-0001')).toBeInTheDocument();
   });
 
   test('14. Campos CSV tienen valores por defecto', async () => {
