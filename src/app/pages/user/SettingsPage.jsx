@@ -99,7 +99,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className={`settings-shell${activeKey === 'catalogo-documental' ? ' settings-shell--wide' : ''}`}>
+    <div className="settings-shell settings-shell--wide">
       <header className="settings-shell__header">
         <div className="settings-shell__title">
           <SettingsIcon size={20} className="settings-shell__title-icon" />

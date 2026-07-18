@@ -5,8 +5,6 @@ import {
   CornerDownRight,
   FileText,
   GitBranch,
-  Layers3,
-  Link2,
   Library,
   ListChecks,
   LoaderCircle,
@@ -20,12 +18,16 @@ import {
 import LegalConfigService from '@/app/services/legal_config.service';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DataTable } from '@/components/data-table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import ActuationAssociationsWorkspace from './ActuationAssociationsWorkspace.jsx';
+import SeriesManagementDialog from './SeriesManagementDialog.jsx';
 import './LegalConfigInitialPage.css';
 
 const empty = {
-  actuations: [], typologies: [], labels: [], documents: [], documentLabels: [],
+  actuations: [], typologies: [], labels: [], documents: [], documentLabels: [], labelTypologies: [],
   actuationTypologies: [], actuationLabels: [], directDocuments: [],
   conditions: [], conditionFields: [], conditionDocuments: [], actuationConditions: [],
+  documentScope: { section: '', subsection: '' },
 };
 
 const emptyDocumentForm = {
@@ -41,19 +43,29 @@ const byParent = (rows, parentId = null) => (
   rows.filter((row) => (row.parent_document_id || null) === parentId)
 );
 
-const documentFormFrom = (document, documentLabels) => ({
+const visualTone = (value) => {
+  const hash = [...String(value || '')].reduce((total, character) => total + character.charCodeAt(0), 0);
+  return (hash % 5) + 1;
+};
+
+const documentFormFrom = (document, documentLabels, documents) => {
+  const classificationSource = document?.parent_document_id
+    ? documents.find((item) => item.id === document.parent_document_id) || document
+    : document;
+  return ({
   ...emptyDocumentForm,
   name: document?.name || '',
   code: document?.code || '',
   description: document?.description || '',
-  typology_id: document?.typology_id || '',
+  typology_id: classificationSource?.typology_id || '',
   label_ids: documentLabels
-    .filter((row) => row.document_id === document?.id)
+    .filter((row) => row.document_id === classificationSource?.id)
     .map((row) => row.label_id),
   parent_document_id: document?.parent_document_id || '',
   is_active: document?.is_active !== false,
   sort_order: Number(document?.sort_order || 0),
-});
+  });
+};
 
 function CatalogueSelect({ label, values, value, onChange, onCreate, multiple = false, creatable = true, disabled = false }) {
   const [text, setText] = useState('');
@@ -177,11 +189,24 @@ function CatalogueSelect({ label, values, value, onChange, onCreate, multiple = 
   );
 }
 
-function CatalogueManagerDialog({ open, onOpenChange, tab, onTabChange, values, onCreate, onToggleActive, saving }) {
+function CatalogueManagerDialog({ open, onOpenChange, tab, onTabChange, values, typologies, labelTypologies, onCreate, onToggleActive, onSaveLabelTypologies, saving }) {
   const [name, setName] = useState('');
+  const [selectedLabelId, setSelectedLabelId] = useState('');
+  const [selectedTypologyIds, setSelectedTypologyIds] = useState([]);
   const isTypology = tab === 'typologies';
   const catalogueLabel = isTypology ? 'tipología' : 'etiqueta';
   const title = isTypology ? 'Tipologías' : 'Etiquetas';
+  const activeLabels = useMemo(
+    () => values.labels.filter((item) => item.is_active !== false),
+    [values.labels],
+  );
+
+  useEffect(() => {
+    if (!open || tab !== 'labels') return;
+    const nextLabelId = activeLabels.some((item) => item.id === selectedLabelId) ? selectedLabelId : activeLabels[0]?.id || '';
+    setSelectedLabelId(nextLabelId);
+    setSelectedTypologyIds(labelTypologies.filter((item) => item.label_id === nextLabelId).map((item) => item.typology_id));
+  }, [activeLabels, labelTypologies, open, selectedLabelId, tab]);
 
   async function submit(event) {
     event.preventDefault();
@@ -235,6 +260,47 @@ function CatalogueManagerDialog({ open, onOpenChange, tab, onTabChange, values, 
             </button>
           </div>
         </form>
+
+        {!isTypology && (
+          <section className="legal-config-label-typologies" aria-label="Tipologías contenidas por la etiqueta">
+            <div>
+              <strong>Tipologías contenidas</strong>
+              <small>La etiqueta agrupa tipologías; sigue existiendo aunque aún no esté asociada a una actuación.</small>
+            </div>
+            <label>
+              <span>Etiqueta</span>
+              <select
+                aria-label="Etiqueta a configurar"
+                value={selectedLabelId}
+                onChange={(event) => {
+                  const labelId = event.target.value;
+                  setSelectedLabelId(labelId);
+                  setSelectedTypologyIds(labelTypologies.filter((item) => item.label_id === labelId).map((item) => item.typology_id));
+                }}
+                disabled={saving || !activeLabels.length}
+              >
+                {activeLabels.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+              </select>
+            </label>
+            <CatalogueSelect
+              label="Tipologías de la etiqueta"
+              values={typologies}
+              value={selectedTypologyIds}
+              onChange={setSelectedTypologyIds}
+              multiple
+              creatable={false}
+              disabled={saving || !selectedLabelId}
+            />
+            <button
+              type="button"
+              className="legal-config-button legal-config-button--primary"
+              onClick={() => onSaveLabelTypologies(selectedLabelId, selectedTypologyIds)}
+              disabled={saving || !selectedLabelId}
+            >
+              Guardar tipologías
+            </button>
+          </section>
+        )}
 
         <DataTable
           className="legal-config-catalogue-table"
@@ -296,6 +362,7 @@ function DocumentEditorDialog({
 }) {
   const [form, setForm] = useState(emptyDocumentForm);
   const [submitError, setSubmitError] = useState('');
+
   const instanceId = useId().replace(/:/g, '');
   const editing = Boolean(document);
   const selectedParent = documents.find((item) => item.id === form.parent_document_id);
@@ -309,9 +376,9 @@ function DocumentEditorDialog({
 
   useEffect(() => {
     if (!open) return;
-    setForm(document ? documentFormFrom(document, documentLabels) : emptyDocumentForm);
+    setForm(document ? documentFormFrom(document, documentLabels, documents) : emptyDocumentForm);
     setSubmitError('');
-  }, [document, documentLabels, open]);
+  }, [document, documentLabels, documents, open]);
 
   function setField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -353,6 +420,7 @@ function DocumentEditorDialog({
     if (!nextOpen) setSubmitError('');
     onOpenChange(nextOpen);
   }
+
 
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
@@ -441,6 +509,7 @@ function DocumentEditorDialog({
               />
             </label>
 
+
             {isVariant ? (
               <div className="document-editor__inherited" aria-label="Clasificación heredada del documento principal">
                 <span><small>Tipología heredada</small><strong>{inheritedTypology}</strong></span>
@@ -501,6 +570,86 @@ function DocumentEditorDialog({
             <button type="submit" className="legal-config-button legal-config-button--primary" disabled={!canSave}>
               {saving ? 'Guardando…' : (editing ? 'Guardar cambios' : 'Crear documento')}
             </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ActuationEditorDialog({ open, onOpenChange, actuations, onSave, saving }) {
+  const [form, setForm] = useState({ name: '', parent_id: '', suffix: '' });
+  const [submitError, setSubmitError] = useState('');
+  const instanceId = useId().replace(/:/g, '');
+  const parents = actuations.filter((item) => !item.parent_id && item.is_active !== false);
+  const parent = parents.find((item) => item.id === form.parent_id);
+  const isModality = Boolean(parent);
+  const canSave = Boolean(form.name.trim() && (!isModality || form.suffix.trim()) && !saving);
+
+  useEffect(() => {
+    if (!open) return;
+    setForm({ name: '', parent_id: '', suffix: '' });
+    setSubmitError('');
+  }, [open]);
+
+  function setField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function submit(event) {
+    event.preventDefault();
+    if (!canSave) return;
+    setSubmitError('');
+    const result = await onSave({
+      name: form.name.trim(),
+      parent_id: form.parent_id || null,
+      code: parent ? `${parent.code}${form.suffix.trim()}` : form.name.trim(),
+    });
+    if (result?.ok) onOpenChange(false);
+    else setSubmitError(result?.message || 'No fue posible guardar la actuación.');
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="legal-config-actuation-dialog" aria-describedby={`${instanceId}-description`}>
+        <DialogHeader className="legal-config-document-dialog__header">
+          <DialogTitle><GitBranch size={18} aria-hidden="true" /> Nueva actuación o modalidad</DialogTitle>
+          <DialogDescription id={`${instanceId}-description`}>
+            Una modalidad se crea como hija de una actuación principal. Sus asociaciones conservan el comportamiento actual.
+          </DialogDescription>
+        </DialogHeader>
+        <form className="actuation-editor" onSubmit={submit}>
+          {submitError && <p className="document-editor__error" role="alert">{submitError}</p>}
+          <label htmlFor={`${instanceId}-name`}>
+            <span>Nombre <b aria-hidden="true">*</b></span>
+            <input id={`${instanceId}-name`} required autoFocus value={form.name} onChange={(event) => setField('name', event.target.value)} placeholder="Ej. Reconocimiento" disabled={saving} />
+          </label>
+          <label htmlFor={`${instanceId}-parent`}>
+            <span>Tipo</span>
+            <select
+              id={`${instanceId}-parent`}
+              value={form.parent_id}
+              onChange={(event) => setForm((current) => ({ ...current, parent_id: event.target.value, suffix: '' }))}
+              disabled={saving}
+            >
+              <option value="">Actuación principal</option>
+              {parents.map((item) => <option key={item.id} value={item.id}>Modalidad de {item.name}</option>)}
+            </select>
+            <small>Selecciona una actuación principal para crear una modalidad.</small>
+          </label>
+          {isModality && (
+            <label className="actuation-editor__suffix" htmlFor={`${instanceId}-suffix`}>
+              <span>Sufijo del código <b aria-hidden="true">*</b></span>
+              <span>
+                <code>{parent.code}</code>
+                <input id={`${instanceId}-suffix`} required value={form.suffix} onChange={(event) => setField('suffix', event.target.value)} placeholder="_01" disabled={saving} />
+              </span>
+              <small>Código resultante: <code>{`${parent.code}${form.suffix || '…'}`}</code></small>
+            </label>
+          )}
+          <DialogFooter className="document-editor__footer">
+            <button type="button" className="legal-config-button" onClick={() => onOpenChange(false)} disabled={saving}>Cancelar</button>
+            <button type="submit" className="legal-config-button legal-config-button--primary" disabled={!canSave}>{saving ? 'Creando…' : (isModality ? 'Crear modalidad' : 'Crear actuación')}</button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -593,169 +742,6 @@ function ConditionDialog({ open, onOpenChange, fields, documents, actuation, onS
   );
 }
 
-function SeriesDialog({ open, onOpenChange, actuations, onSave, onReload, saving }) {
-  const [codes, setCodes] = useState({});
-  const [newSubserie, setNewSubserie] = useState({});
-  const [subserieSavingId, setSubserieSavingId] = useState('');
-  const [subserieError, setSubserieError] = useState('');
-  const roots = actuations.filter((item) => !item.parent_id);
-  const wasOpen = useRef(false);
-
-  useEffect(() => {
-    if (!open) { wasOpen.current = false; return; }
-    const justOpened = !wasOpen.current;
-    wasOpen.current = true;
-    const rootCodes = Object.fromEntries(roots.map((item) => [item.id, item.code || '']));
-    // Solo se inicializa por completo al abrir; mientras sigue abierto, un reload de fondo (p. ej. tras
-    // crear una subserie) únicamente agrega códigos para filas nuevas, sin pisar ediciones en curso.
-    setCodes((current) => {
-      const next = justOpened ? {} : { ...current };
-      actuations.forEach((item) => {
-        if (!justOpened && next[item.id] !== undefined) return;
-        if (!item.parent_id) { next[item.id] = item.code || ''; return; }
-        const parentCode = rootCodes[item.parent_id] || '';
-        const existing = item.code || '';
-        next[item.id] = parentCode && existing.startsWith(parentCode) && existing.length > parentCode.length
-          ? existing.slice(parentCode.length)
-          : '';
-      });
-      return next;
-    });
-    if (justOpened) { setNewSubserie({}); setSubserieError(''); }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actuations, open]);
-
-  function composedCode(item) {
-    if (!item.parent_id) return codes[item.id] || '';
-    return `${codes[item.parent_id] || ''}${codes[item.id] || ''}`;
-  }
-
-  const changes = actuations.filter((item) => {
-    if (item.parent_id && !(codes[item.id] || '').trim()) return false;
-    return composedCode(item).trim() !== (item.code || '');
-  });
-
-  async function submit(event) {
-    event.preventDefault();
-    const saved = await onSave(changes.map((item) => ({ ...item, code: composedCode(item).trim() })));
-    if (saved) onOpenChange(false);
-  }
-
-  async function createSubserie(seriesId, name, suffix) {
-    const series = actuations.find((item) => item.id === seriesId);
-    const payload = { name: name.trim(), code: `${series.code}${suffix.trim()}`, parent_id: seriesId };
-    return LegalConfigService.create('actuations', payload);
-  }
-
-  function updateDraft(seriesId, field, value) {
-    setNewSubserie((current) => ({ ...current, [seriesId]: { ...(current[seriesId] || { name: '', suffix: '' }), [field]: value } }));
-  }
-
-  async function submitSubserie(seriesId) {
-    const draft = newSubserie[seriesId] || { name: '', suffix: '' };
-    if (!draft.name.trim() || !draft.suffix.trim() || subserieSavingId) return;
-    setSubserieSavingId(seriesId);
-    setSubserieError('');
-    try {
-      await createSubserie(seriesId, draft.name, draft.suffix);
-      setNewSubserie((current) => ({ ...current, [seriesId]: { name: '', suffix: '' } }));
-      await onReload();
-    } catch (createError) {
-      setSubserieError(errorMessage(createError));
-    } finally {
-      setSubserieSavingId('');
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="legal-config-series-dialog" aria-label="Series y subseries" aria-describedby={undefined}>
-        <DialogHeader className="legal-config-series-dialog__header">
-          <DialogTitle><Library size={18} aria-hidden="true" /> Series y subseries</DialogTitle>
-        </DialogHeader>
-        {subserieError && <p className="series-form__error" role="alert">{subserieError}</p>}
-        <form className="series-form" onSubmit={submit}>
-          <div className="series-form__list">
-            {roots.map((series) => {
-              const subseries = actuations.filter((item) => item.parent_id === series.id);
-              const draft = newSubserie[series.id] || { name: '', suffix: '' };
-              const seriesCode = codes[series.id] || '';
-              const canCreateSubserie = Boolean(draft.name.trim() && draft.suffix.trim()) && !saving && subserieSavingId !== series.id;
-              return (
-                <section className="series-form__group" key={series.id}>
-                  <label className="series-form__row">
-                    <span><small>Serie documental</small><strong>{series.name}</strong></span>
-                    <input
-                      aria-label={`Código de serie para ${series.name}`}
-                      value={codes[series.id] || ''}
-                      onChange={(event) => setCodes((current) => ({ ...current, [series.id]: event.target.value }))}
-                      disabled={saving}
-                      required
-                    />
-                  </label>
-                  {subseries.map((item) => {
-                    const hintId = `series-form-hint-${item.id}`;
-                    return (
-                      <label className="series-form__row is-subseries" key={item.id}>
-                        <span><small>Subserie</small><strong>{item.name}</strong></span>
-                        <span className="series-form__code-field">
-                          <span className="series-form__code-prefix" aria-hidden="true">{seriesCode || '—'}</span>
-                          <input
-                            aria-label={`Código de subserie para ${item.name}`}
-                            aria-describedby={hintId}
-                            value={codes[item.id] || ''}
-                            onChange={(event) => setCodes((current) => ({ ...current, [item.id]: event.target.value }))}
-                            disabled={saving}
-                          />
-                        </span>
-                        <small id={hintId} className="series-form__code-hint">Código resultante: {composedCode(item).trim() || '—'}</small>
-                      </label>
-                    );
-                  })}
-                  <div className="series-form__create-subserie">
-                    <label>
-                      <span>Nueva subserie</span>
-                      <input
-                        aria-label={`Nombre de subserie nueva para ${series.name}`}
-                        value={draft.name}
-                        onChange={(event) => updateDraft(series.id, 'name', event.target.value)}
-                        placeholder="Nombre de la subserie"
-                        disabled={saving || subserieSavingId === series.id}
-                      />
-                    </label>
-                    <span className="series-form__code-field">
-                      <span className="series-form__code-prefix" aria-hidden="true">{seriesCode || '—'}</span>
-                      <input
-                        aria-label={`Código de subserie nueva para ${series.name}`}
-                        value={draft.suffix}
-                        onChange={(event) => updateDraft(series.id, 'suffix', event.target.value)}
-                        placeholder="-01"
-                        disabled={saving || subserieSavingId === series.id}
-                      />
-                    </span>
-                    <button
-                      type="button"
-                      className="legal-config-button legal-config-button--compact"
-                      onClick={() => submitSubserie(series.id)}
-                      disabled={!canCreateSubserie}
-                    >
-                      {subserieSavingId === series.id ? 'Agregando…' : 'Agregar subserie'}
-                    </button>
-                  </div>
-                </section>
-              );
-            })}
-          </div>
-          <DialogFooter className="legal-config-series-dialog__footer">
-            <button type="button" className="legal-config-button" onClick={() => onOpenChange(false)} disabled={saving}>Cancelar</button>
-            <button type="submit" className="legal-config-button legal-config-button--primary" disabled={!changes.length || saving}>{saving ? 'Guardando…' : 'Guardar series'}</button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 export default function LegalConfigInitialPage({ section = 'all' }) {
   const activeSection = ['documents', 'actuations'].includes(section) ? section : 'all';
   const showActuations = activeSection !== 'documents';
@@ -771,16 +757,17 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
   const [loading, setLoading] = useState(true);
   const [relationsSaving, setRelationsSaving] = useState(false);
   const [documentSaving, setDocumentSaving] = useState(false);
+
   const [documentModalOpen, setDocumentModalOpen] = useState(false);
   const [editingDocumentId, setEditingDocumentId] = useState('');
   const documentModalTriggerRef = useRef(null);
   const newDocumentButtonRef = useRef(null);
 
-  const [showActuationForm, setShowActuationForm] = useState(false);
-  const [actuationName, setActuationName] = useState('');
+  const [actuationModalOpen, setActuationModalOpen] = useState(false);
   const [actuationQuery, setActuationQuery] = useState('');
   const [expandedSeries, setExpandedSeries] = useState({});
   const [actuationSaving, setActuationSaving] = useState(false);
+  const actuationModalTriggerRef = useRef(null);
   const [catalogueModalOpen, setCatalogueModalOpen] = useState(false);
   const [catalogueTab, setCatalogueTab] = useState('typologies');
   const [catalogueSaving, setCatalogueSaving] = useState(false);
@@ -788,6 +775,7 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
   const [conditionSaving, setConditionSaving] = useState(false);
   const [seriesModalOpen, setSeriesModalOpen] = useState(false);
   const [seriesSaving, setSeriesSaving] = useState(false);
+  const seriesModalTriggerRef = useRef(null);
   const savingRelations = useRef(Promise.resolve());
   const relationSavePending = useRef(false);
 
@@ -831,6 +819,22 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
     setCatalogueSaving(true);
     try {
       return await createCatalogue(catalogue, name);
+    } finally { setCatalogueSaving(false); }
+  }
+
+  async function saveLabelTypologies(labelId, typologyIds) {
+    if (!labelId || catalogueSaving) return null;
+    setCatalogueSaving(true);
+    try {
+      await LegalConfigService.update('labels', labelId, { typology_ids: typologyIds });
+      await load();
+      setError('');
+      setNotice('Tipologías de la etiqueta actualizadas.');
+      return true;
+    } catch (saveError) {
+      setNotice('');
+      setError(errorMessage(saveError));
+      return null;
     } finally { setCatalogueSaving(false); }
   }
 
@@ -895,19 +899,22 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
     } finally { setDocumentSaving(false); }
   }
 
-  async function saveActuation(event) {
-    event.preventDefault();
-    const name = actuationName.trim();
-    if (!name || actuationSaving) return;
+  async function saveActuation(payload) {
+    if (!payload?.name || actuationSaving) return { ok: false, message: 'El nombre de la actuación es obligatorio.' };
     setActuationSaving(true);
-    const created = await createCatalogue('actuations', name);
-    if (created) {
-      setSelected(created.id);
-      setActuationName('');
-      setShowActuationForm(false);
-      setNotice('Actuación creada. Ya puedes configurar sus asociaciones.');
-    }
-    setActuationSaving(false);
+    try {
+      const response = await LegalConfigService.create('actuations', payload);
+      setSelected(response.data.id);
+      await load();
+      setError('');
+      setNotice(payload.parent_id ? 'Modalidad creada.' : 'Actuación creada. Ya puedes configurar sus asociaciones.');
+      return { ok: true };
+    } catch (saveError) {
+      const message = errorMessage(saveError);
+      setNotice('');
+      setError(message);
+      return { ok: false, message };
+    } finally { setActuationSaving(false); }
   }
 
   async function createCondition(payload) {
@@ -943,11 +950,12 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
       await load();
       setError('');
       setNotice('Series y subseries guardadas.');
-      return true;
+      return { ok: true };
     } catch (saveError) {
+      const message = errorMessage(saveError);
       setNotice('');
-      setError(errorMessage(saveError));
-      return false;
+      setError(message);
+      return { ok: false, message };
     } finally { setSeriesSaving(false); }
   }
 
@@ -990,12 +998,24 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
     }
   }, []);
 
+  const changeSeriesModalOpen = useCallback((nextOpen) => {
+    setSeriesModalOpen(nextOpen);
+    if (!nextOpen) {
+      window.requestAnimationFrame(() => seriesModalTriggerRef.current?.focus());
+    }
+  }, []);
+
+  const changeActuationModalOpen = useCallback((nextOpen) => {
+    setActuationModalOpen(nextOpen);
+    if (!nextOpen) window.requestAnimationFrame(() => actuationModalTriggerRef.current?.focus());
+  }, []);
+
   const visibleActuations = useMemo(() => {
     const query = actuationQuery.trim().toLocaleLowerCase('es');
     if (!query) return data.actuations;
     const visibleIds = new Set();
     data.actuations.forEach((item) => {
-      const searchable = `${item.name || ''}`.toLocaleLowerCase('es');
+      const searchable = `${item.name || ''} ${item.code || ''}`.toLocaleLowerCase('es');
       if (!searchable.includes(query)) return;
       visibleIds.add(item.id);
       if (item.parent_id) visibleIds.add(item.parent_id);
@@ -1006,17 +1026,38 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
     return data.actuations.filter((item) => visibleIds.has(item.id));
   }, [actuationQuery, data.actuations]);
 
+  const actuationAssociationCounts = useMemo(() => {
+    const counts = new Map();
+    [
+      data.actuationTypologies,
+      data.actuationLabels,
+      data.directDocuments,
+      data.actuationConditions,
+    ].forEach((links) => {
+      links.forEach((link) => {
+        counts.set(link.actuation_id, (counts.get(link.actuation_id) || 0) + 1);
+      });
+    });
+    return counts;
+  }, [data.actuationConditions, data.actuationLabels, data.actuationTypologies, data.directDocuments]);
+
+  const actuationHierarchyStats = useMemo(() => ({
+    series: data.actuations.filter((item) => !item.parent_id).length,
+    subseries: data.actuations.filter((item) => item.parent_id).length,
+  }), [data.actuations]);
+
   const documentRows = useMemo(() => {
     const decorate = (document) => {
       const parent = data.documents.find((item) => item.id === document.parent_document_id);
+      const classificationSource = parent || document;
       const labelNames = data.documentLabels
-      .filter((row) => row.document_id === document.id)
+      .filter((row) => row.document_id === classificationSource.id)
       .map((row) => data.labels.find((item) => item.id === row.label_id)?.name)
       .filter(Boolean);
       return {
         ...document,
         parent_name: parent?.name || '',
-        typology_name: data.typologies.find((item) => item.id === document.typology_id)?.name || '',
+        typology_name: data.typologies.find((item) => item.id === classificationSource.typology_id)?.name || '',
         label_names: labelNames,
         variant_count: byParent(data.documents, document.id).length,
       };
@@ -1069,7 +1110,11 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
       id: 'typology',
       header: 'Tipología',
       accessorFn: (document) => document.typology_name || 'Sin tipología',
-      cell: ({ row }) => <span className={!row.original.typology_name ? 'document-table__muted' : ''}>{row.original.typology_name || 'Sin tipología'}</span>,
+      cell: ({ row }) => row.original.typology_name ? (
+        <span className={`document-table__typology document-table__tone--${visualTone(row.original.typology_name)}`}>
+          {row.original.typology_name}
+        </span>
+      ) : <span className="document-table__muted">Sin tipología</span>,
     },
     {
       id: 'labels',
@@ -1078,11 +1123,27 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
       cell: ({ row }) => {
         const names = row.original.label_names;
         if (!names.length) return <span className="document-table__muted">Sin etiquetas</span>;
-        return (
-          <span className="document-table__labels" title={names.join(', ')}>
-            {names.slice(0, 2).map((name) => <span key={name}>{name}</span>)}
-            {names.length > 2 && <span>+{names.length - 2}</span>}
+        const badges = (
+          <span className="document-table__labels">
+            {names.slice(0, names.length > 1 ? 1 : 2).map((name) => (
+              <span className={`document-table__tone--${visualTone(name)}`} key={name}>{name}</span>
+            ))}
+            {names.length > 1 && <span className="document-table__labels-more">+{names.length - 1}</span>}
           </span>
+        );
+        if (names.length === 1) return badges;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="document-table__labels-trigger" tabIndex={0} aria-label={`${names.length} etiquetas. Ver lista completa`}>
+                {badges}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="document-table__labels-tooltip">
+              <strong>Etiquetas asociadas</strong>
+              <ul>{names.map((name) => <li key={name}>{name}</li>)}</ul>
+            </TooltipContent>
+          </Tooltip>
         );
       },
     },
@@ -1144,6 +1205,7 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
             .filter((row) => row.actuation_id !== actuationId)
             .concat(payload.condition_ids.map((condition_id) => ({ actuation_id: actuationId, condition_id }))),
         }));
+        await load();
         setError('');
         setNotice('Asociaciones guardadas.');
       })
@@ -1160,6 +1222,7 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
 
   function renderActuationItem(item, isChild = false) {
     const isSelected = item.id === selected;
+    const associationCount = actuationAssociationCounts.get(item.id) || 0;
     return (
       <button
         type="button"
@@ -1168,22 +1231,29 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
         onClick={() => setSelected(item.id)}
         disabled={loading || relationSavePending.current}
         aria-pressed={isSelected}
-        aria-label={item.name}
+        aria-label={`${item.name}${item.code ? `, código ${item.code}` : ''}, ${associationCount} ${associationCount === 1 ? 'asociación' : 'asociaciones'}`}
       >
         {isChild && <CornerDownRight size={13} className="actuation-list__child-icon" aria-hidden="true" />}
         <span className="actuation-list__body">
-          <span className="actuation-list__name">{item.name}</span>
-          <span className="actuation-list__code">{item.code || '—'}</span>
+          <span className="actuation-list__name" title={item.name}>{item.name}</span>
+          {!item.is_active && <span className="actuation-list__inactive">Inactiva</span>}
         </span>
-        {!item.is_active && <span className="actuation-list__inactive">Inactiva</span>}
+        <span className="actuation-list__meta">
+          <code title={`Código: ${item.code || 'sin código'}`}>{item.code || '—'}</code>
+          <span title={`${associationCount} ${associationCount === 1 ? 'asociación' : 'asociaciones'}`}>{associationCount}</span>
+        </span>
       </button>
     );
   }
 
 
   return (
-    <main className="legal-config-workspace" aria-labelledby="legal-config-title">
-      <header className="legal-config-header">
+    <main
+      className="legal-config-workspace"
+      aria-labelledby={activeSection === 'actuations' ? undefined : 'legal-config-title'}
+      aria-label={activeSection === 'actuations' ? workspaceTitle : undefined}
+    >
+      {activeSection !== 'actuations' && <header className="legal-config-header">
         <div className="legal-config-header__copy">
           <p className="legal-config-eyebrow">{workspaceEyebrow}</p>
           <h2 id="legal-config-title">{workspaceTitle}</h2>
@@ -1199,7 +1269,7 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
             <RefreshCw className={loading ? 'is-spinning' : ''} size={16} aria-hidden="true" /> Actualizar
           </button>
         </div>
-      </header>
+      </header>}
 
       <div className="legal-config-feedback" aria-live="polite">
         {error && <p className="legal-config-error" role="alert"><AlertCircle size={16} aria-hidden="true" />{error}</p>}
@@ -1210,47 +1280,31 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
       <div className={`legal-config-grid legal-config-grid--${activeSection}`}>
         {showActuations && (
           <section className="legal-config-panel legal-config-actuations" aria-labelledby="legal-config-actuations-title">
-          <div className="panel-title">
-            <div className="panel-title__copy">
-              <span className="panel-title__icon"><GitBranch size={17} aria-hidden="true" /></span>
+          <header className="actuation-panel-header">
+            <div className="actuation-panel-header__heading">
+              <span className="actuation-panel-header__icon"><GitBranch size={17} aria-hidden="true" /></span>
               <h3 id="legal-config-actuations-title">Actuaciones</h3>
+              <span className="actuation-panel-header__metric"><strong>{actuationHierarchyStats.series}</strong> series</span>
+              <span className="actuation-panel-header__metric"><strong>{actuationHierarchyStats.subseries}</strong> subseries</span>
             </div>
-            <div className="panel-title__actions">
-              <button className="legal-config-button legal-config-button--compact" type="button" onClick={() => setSeriesModalOpen(true)} disabled={loading || seriesSaving}>
-                <Library size={14} aria-hidden="true" /> Series y subseries
+            <div className="actuation-panel-header__actions">
+              <button ref={seriesModalTriggerRef} className="legal-config-button" type="button" onClick={() => changeSeriesModalOpen(true)} disabled={loading || seriesSaving}>
+                <Library size={15} aria-hidden="true" /> Gestionar series
               </button>
               <button
-                className="legal-config-button legal-config-button--compact"
+                className="legal-config-button"
                 type="button"
-                onClick={() => setShowActuationForm((current) => !current)}
-                aria-expanded={showActuationForm}
+                ref={actuationModalTriggerRef}
+                onClick={() => changeActuationModalOpen(true)}
+                aria-label="Nueva actuación o modalidad"
+                title="Nueva actuación o modalidad"
                 disabled={loading || actuationSaving}
               >
-                {showActuationForm ? <X size={15} aria-hidden="true" /> : <Plus size={15} aria-hidden="true" />}
-                {showActuationForm ? 'Cancelar' : 'Nueva actuación'}
+                <Plus size={15} aria-hidden="true" />
+                <span>Nueva actuación</span>
               </button>
             </div>
-          </div>
-
-          {showActuationForm && (
-            <form className="actuation-create-form" onSubmit={saveActuation}>
-              <label htmlFor="new-actuation-name">Nombre de la actuación</label>
-              <div>
-                <input
-                  id="new-actuation-name"
-                  autoFocus
-                  required
-                  value={actuationName}
-                  onChange={(event) => setActuationName(event.target.value)}
-                  disabled={actuationSaving}
-                  placeholder="Ej. Reconocimiento"
-                />
-                <button className="legal-config-button legal-config-button--primary" type="submit" disabled={!actuationName.trim() || actuationSaving}>
-                  {actuationSaving ? 'Creando…' : 'Crear actuación'}
-                </button>
-              </div>
-            </form>
-          )}
+          </header>
 
           <div className="actuation-search">
             <Search size={15} aria-hidden="true" />
@@ -1259,7 +1313,7 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
               aria-label="Buscar actuación"
               value={actuationQuery}
               onChange={(event) => setActuationQuery(event.target.value)}
-              placeholder="Buscar por nombre"
+              placeholder="Buscar por nombre o código"
               disabled={loading}
             />
             {actuationQuery && (
@@ -1269,14 +1323,21 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
             )}
           </div>
 
-          <div className="actuation-list">
+          <div className="actuation-list__legend" aria-hidden="true">
+            <span />
+            <span>Serie / subserie</span>
+            <span>Código</span>
+            <span>Asoc.</span>
+          </div>
+
+          <nav className="actuation-list" aria-label="Series y subseries de actuaciones">
             {visibleActuations.filter((item) => !item.parent_id).map((series) => {
               const children = visibleActuations.filter((item) => item.parent_id === series.id);
               const hasChildren = children.length > 0;
               const isOpen = hasChildren && (Boolean(actuationQuery.trim()) || expandedSeries[series.id] !== false);
               return (
                 <div className="actuation-list__group" key={series.id}>
-                  <div className="actuation-list__row">
+                  <div className={`actuation-list__row${series.id === selected ? ' is-selected' : ''}`}>
                     {hasChildren ? (
                       <button
                         type="button"
@@ -1288,10 +1349,14 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
                       >
                         <ChevronRight size={14} aria-hidden="true" />
                       </button>
-                    ) : <span className="actuation-list__disclosure-spacer" aria-hidden="true" />}
+                    ) : <span className="actuation-list__disclosure-spacer" aria-hidden="true"><span /></span>}
                     {renderActuationItem(series)}
                   </div>
-                  {isOpen && children.map((item) => renderActuationItem(item, true))}
+                  {isOpen && (
+                    <div className="actuation-list__children" role="group" aria-label={`Subseries de ${series.name}`}>
+                      {children.map((item) => renderActuationItem(item, true))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -1308,10 +1373,10 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
                 <GitBranch size={22} aria-hidden="true" />
                 <strong>Aún no hay actuaciones</strong>
                 <p>Crea una actuación para empezar a relacionar tipologías, etiquetas y documentos.</p>
-                {!showActuationForm && <button type="button" onClick={() => setShowActuationForm(true)}>Crear la primera actuación</button>}
+                <button type="button" onClick={() => changeActuationModalOpen(true)}>Crear la primera actuación</button>
               </div>
             )}
-          </div>
+          </nav>
           </section>
         )}
 
@@ -1336,70 +1401,38 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
             </div>
           </div>
           <div className="document-catalogue-content">
-            <DataTable
-              className="legal-config-document-table"
-              columns={documentTableColumns}
-              data={documentRows}
-              searchable
-              searchLabel="Buscar documentos"
-              searchPlaceholder="Buscar por código, documento, tipología o etiqueta"
-              pagination
-              pageSize={10}
-              pageSizeOptions={[10, 20, 50]}
-              compact
-              loading={loading}
-              emptyMessage="Aún no hay documentos. Crea el primero para iniciar el catálogo."
-            />
+            <TooltipProvider delayDuration={180}>
+              <DataTable
+                className="legal-config-document-table"
+                columns={documentTableColumns}
+                data={documentRows}
+                searchable
+                searchLabel="Buscar documentos"
+                searchPlaceholder="Buscar por código, documento, tipología o etiqueta"
+                pagination
+                pageSize={10}
+                pageSizeOptions={[10, 20, 50]}
+                compact
+                loading={loading}
+                emptyMessage="Aún no hay documentos. Crea el primero para iniciar el catálogo."
+              />
+            </TooltipProvider>
           </div>
           </section>
         )}
 
         {showActuations && (
-          <aside className="legal-config-panel legal-config-associations" aria-labelledby="legal-config-associations-title">
-          <div className="panel-title">
-            <div className="panel-title__copy">
-              <span className="panel-title__icon"><Link2 size={17} aria-hidden="true" /></span>
-              <h3 id="legal-config-associations-title">Asociaciones</h3>
-            </div>
-            <button className="legal-config-button legal-config-button--compact" type="button" onClick={() => setConditionModalOpen(true)} disabled={loading || !selectedActuation || conditionSaving}>
-              <Plus size={14} aria-hidden="true" /> Nueva condición
-            </button>
-          </div>
-          {selectedActuation ? (
-            <div className="association-editor">
-              <div className="association-editor__context">
-                <Layers3 size={16} aria-hidden="true" />
-                <span><small>Configurando</small><strong>{selectedActuation.name}</strong></span>
-              </div>
-              {relationsSaving && <p aria-live="polite">Guardando asociaciones…</p>}
-               <CatalogueSelect label="Tipologías" values={data.typologies} value={actuationRelations.typology_ids} multiple creatable={false} onChange={(ids) => saveRelations('typology_ids', ids)} disabled={loading || relationsSaving} />
-               <CatalogueSelect label="Etiquetas" values={data.labels} value={actuationRelations.label_ids} multiple creatable={false} onChange={(ids) => saveRelations('label_ids', ids)} disabled={loading || relationsSaving} />
-               <CatalogueSelect label="Documentos directos" values={byParent(data.documents)} value={actuationRelations.document_ids} multiple creatable={false} onChange={(ids) => saveRelations('document_ids', ids)} disabled={loading || relationsSaving} />
-               <div className="condition-associations">
-                 <CatalogueSelect label="Condiciones" values={data.conditions} value={actuationRelations.condition_ids} multiple creatable={false} onChange={(ids) => saveRelations('condition_ids', ids)} disabled={loading || relationsSaving} />
-                 {actuationRelations.condition_ids.map((conditionId) => {
-                   const condition = data.conditions.find((item) => item.id === conditionId);
-                   const field = data.conditionFields.find((item) => item.key === condition?.source_key);
-                   const values = (condition?.expected_values || []).map((expected) => field?.values?.find((item) => item.value === expected)?.label || expected);
-                   const documentCount = data.conditionDocuments.filter((item) => item.condition_id === conditionId).length;
-                   if (!condition) return null;
-                   return (
-                     <div className="condition-associations__row" key={condition.id}>
-                       <span><strong>{condition.name}</strong><small>{field?.label || condition.source_key}: {values.join(', ')}</small></span>
-                       <span>{condition.effect === 'exclude' ? 'Excluye' : 'Añade'} {documentCount}</span>
-                     </div>
-                   );
-                 })}
-               </div>
-            </div>
-          ) : (
-            <div className="legal-config-empty-state">
-              <Link2 size={22} aria-hidden="true" />
-              <strong>Sin actuación seleccionada</strong>
-              <p>Selecciona una actuación para asociar catálogos y documentos.</p>
-            </div>
-          )}
-          </aside>
+          <ActuationAssociationsWorkspace
+            actuation={selectedActuation}
+            data={data}
+            relations={actuationRelations}
+            loading={loading}
+            saving={relationsSaving}
+            conditionSaving={conditionSaving}
+            onChange={saveRelations}
+            onCreateCondition={() => setConditionModalOpen(true)}
+            onRefresh={load}
+          />
         )}
       </div>
       {showDocuments && (
@@ -1422,16 +1455,29 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
           tab={catalogueTab}
           onTabChange={setCatalogueTab}
           values={{ typologies: data.typologies, labels: data.labels }}
+          typologies={data.typologies}
+          labelTypologies={data.labelTypologies}
           onCreate={createManagedCatalogue}
           onToggleActive={toggleCatalogue}
+          onSaveLabelTypologies={saveLabelTypologies}
           saving={catalogueSaving}
         />
       )}
       {showActuations && (
-        <SeriesDialog
-          open={seriesModalOpen}
-          onOpenChange={setSeriesModalOpen}
+        <ActuationEditorDialog
+          open={actuationModalOpen}
+          onOpenChange={changeActuationModalOpen}
           actuations={data.actuations}
+          onSave={saveActuation}
+          saving={actuationSaving}
+        />
+      )}
+      {showActuations && (
+        <SeriesManagementDialog
+          open={seriesModalOpen}
+          onOpenChange={changeSeriesModalOpen}
+          actuations={data.actuations}
+          documentScope={data.documentScope}
           onSave={saveSeries}
           onReload={load}
           saving={seriesSaving}

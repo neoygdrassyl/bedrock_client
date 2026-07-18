@@ -100,9 +100,9 @@ export function DataTable({
         </div>
       )}
 
-      <div className="rounded-md border border-border">
+      <div className="overflow-x-auto rounded-md border border-border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/55">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -115,13 +115,13 @@ export function DataTable({
                   return (
                     <TableHead
                       key={header.id}
-                      className={cn(compact && 'py-2 px-3 text-xs')}
+                      className={cn('h-11 px-4 text-xs font-semibold uppercase tracking-[0.025em] text-foreground/85', compact && 'py-2 px-3 text-xs')}
                       aria-sort={sorted === 'asc' ? 'ascending' : (sorted === 'desc' ? 'descending' : undefined)}
                     >
                       {canSort ? (
                         <button
                           type="button"
-                          className="flex w-full items-center gap-1 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          className="flex w-full items-center gap-1 rounded-sm text-left text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                           onClick={header.column.getToggleSortingHandler()}
                         >
                           {content}
@@ -169,10 +169,9 @@ export function DataTable({
       </div>
 
       {pagination && !loading && (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3">
-            {resolvedPageSizeOptions.length > 0 && (
-              <label htmlFor={pageSizeId} className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 max-sm:grid-cols-1">
+          {resolvedPageSizeOptions.length > 0 ? (
+            <label htmlFor={pageSizeId} className="flex shrink-0 items-center gap-2 whitespace-nowrap text-sm text-muted-foreground">
                 Filas por página
                 <select
                   id={pageSizeId}
@@ -182,16 +181,12 @@ export function DataTable({
                 >
                   {resolvedPageSizeOptions.map((option) => <option key={option} value={option}>{option}</option>)}
                 </select>
-              </label>
-            )}
-            <p className="text-sm text-muted-foreground">
-              Página {table.getState().pagination.pageIndex + 1} de{' '}
-              {table.getPageCount() || 1}
-              {' · '}
-              {table.getFilteredRowModel().rows.length} registros
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+            </label>
+          ) : <span aria-hidden="true" />}
+          <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-center text-sm text-muted-foreground max-sm:text-left">
+            Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1} · {table.getFilteredRowModel().rows.length} registros
+          </p>
+          <div className="flex items-center justify-end gap-2 max-sm:justify-start">
             <Button
               variant="outline"
               size="sm"
