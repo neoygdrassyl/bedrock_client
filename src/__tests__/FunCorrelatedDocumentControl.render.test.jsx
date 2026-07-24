@@ -6,10 +6,19 @@ import userEvent from '@testing-library/user-event';
 import FunCorrelatedDocumentControl from '../app/pages/user/fun_forms/components/FunCorrelatedDocumentControl';
 import FUN_CHECKLIST_N from '../app/pages/user/fun_forms/components/fun_checklist_n';
 import FUNService from '../app/services/fun.service';
+import checklistService from '../app/services/checklist.service';
 
 vi.mock('../app/services/fun.service', () => ({
   default: {
     getUnifiedDocumentEntries: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+}));
+
+vi.mock('../app/services/checklist.service', () => ({
+  default: {
+    getIntelligentChecklist: vi.fn(() => Promise.resolve({ data: { requirements: [], vrs: [], links: [] } })),
+    updateRequirementEvaluation: vi.fn(() => Promise.resolve({ data: {} })),
+    linkDocumentToRequirement: vi.fn(() => Promise.resolve({ data: {} })),
   },
 }));
 
@@ -281,9 +290,22 @@ describe('FUN_CHECKLIST_N correlated document integration', () => {
   beforeEach(() => {
     FUNService.getUnifiedDocumentEntries.mockReset();
     FUNService.getUnifiedDocumentEntries.mockResolvedValue({ data: [] });
+    checklistService.getIntelligentChecklist.mockReset();
+    checklistService.getIntelligentChecklist.mockResolvedValue({ data: { requirements: [], vrs: [], links: [] } });
   });
 
-  it('renders correlated control after section 6.8 and before the save action with legacy checklist values', async () => {
+  it('renders the intelligent checklist backed by checklistService.getIntelligentChecklist for applicable requirements', async () => {
+    checklistService.getIntelligentChecklist.mockResolvedValue({
+      data: {
+        requirements: [
+          { code: '511', label: 'Formulario Único Nacional', evaluation: 'SI' },
+          { code: '6891', label: 'Concepto de norma urbanística y uso del suelo', evaluation: 'NA' },
+        ],
+        vrs: [],
+        links: [],
+      },
+    });
+
     render(
       <FUN_CHECKLIST_N
         currentItem={{
@@ -308,17 +330,34 @@ describe('FUN_CHECKLIST_N correlated document integration', () => {
       />,
     );
 
-    const legacySection680 = screen.getByText(/6\.8 DOCUMENTOS PARA OTRAS ACTUACIONES/i);
-    const correlatedTitle = await screen.findByRole('heading', { name: /Control documental correlacionado/i });
-    const saveButton = screen.getByRole('button', { name: /GUARDAR CAMBIOS/i });
+    expect(await screen.findByRole('heading', { name: /Lista general de chequeo de documentos/i })).toBeInTheDocument();
+    expect(checklistService.getIntelligentChecklist).toHaveBeenCalledWith('FUN-10', 1);
 
-    expect(legacySection680.compareDocumentPosition(correlatedTitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(correlatedTitle.compareDocumentPosition(saveButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(screen.getByRole('row', { name: /680.*Checklist: SI/i })).toBeInTheDocument();
-    expect(screen.getByRole('row', { name: /6891.*Checklist: N\/A/i })).toBeInTheDocument();
+    // Section 6.8 is still rendered because '6891' (unconditionally applicable) belongs to it.
+    expect(screen.getByText(/6\.8 DOCUMENTOS PARA OTRAS ACTUACIONES/i)).toBeInTheDocument();
+
+    const row511 = screen.getByRole('row', { name: /511.*Formulario Único Nacional/i });
+    expect(within(row511).getByRole('combobox', { name: /evaluación del requisito/i })).toHaveValue('SI');
+
+    const row6891 = screen.getByRole('row', { name: /6891.*Concepto de norma urbanística/i });
+    expect(within(row6891).getByRole('combobox', { name: /evaluación del requisito/i })).toHaveValue('NA');
+
+    // '680' depends on the trámite matching "ajuste.*cota"; trámite 'A' does not match, so it stays hidden.
+    expect(screen.queryByRole('row', { name: /^680\b/i })).not.toBeInTheDocument();
   });
 
-  it('renders correlated control when FUN 1 data is missing', async () => {
+  it('renders only unconditionally applicable requirements when FUN 1 data is missing', async () => {
+    checklistService.getIntelligentChecklist.mockResolvedValue({
+      data: {
+        requirements: [
+          { code: '511', label: 'Formulario Único Nacional', evaluation: 'NA' },
+          { code: '6891', label: 'Concepto de norma urbanística y uso del suelo', evaluation: 'NA' },
+        ],
+        vrs: [],
+        links: [],
+      },
+    });
+
     render(
       <FUN_CHECKLIST_N
         currentItem={{
@@ -342,7 +381,13 @@ describe('FUN_CHECKLIST_N correlated document integration', () => {
       />,
     );
 
-    expect(await screen.findByRole('heading', { name: /Control documental correlacionado/i })).toBeInTheDocument();
-    expect(screen.getByRole('row', { name: /621.*No aplica.*Checklist: sin_definir/i })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /Lista general de chequeo de documentos/i })).toBeInTheDocument();
+
+    const row6891 = screen.getByRole('row', { name: /6891.*Concepto de norma urbanística/i });
+    expect(within(row6891).getByRole('combobox', { name: /evaluación del requisito/i })).toBeDisabled();
+
+    // Codes gated on `fun_1s` (e.g. '621') throw when `fun_1s` is missing, so isRequirementApplicable
+    // catches the error and treats them as not applicable — they must not render.
+    expect(screen.queryByRole('row', { name: /^621\b/i })).not.toBeInTheDocument();
   });
 });

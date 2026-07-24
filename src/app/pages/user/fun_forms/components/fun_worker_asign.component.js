@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import { dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
+import { shouldUseStructuralReport } from '../utils/expedienteDomainRules.js';
 import FunService from '../../../../services/fun.service';
 import { Icon } from '@/components/icon';
 
@@ -244,7 +245,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
                 > <Icon name="building" size={16} />
                 </button>
-            if (type == 'eng') return <button
+            if (type == 'eng' && shouldUseStructuralReport(item, item.version)) return <button
                     onClick={() => openModal(item, 'record_eng')}
                     size="sm" className="px-2 bg-warning text-warning-foreground hover:bg-warning/90"
                 > <Icon name="cogs" size={16} />

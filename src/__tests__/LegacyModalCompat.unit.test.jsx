@@ -16,6 +16,19 @@ describe('LegacyModal compatibility', () => {
     expect(document.body.querySelector('.ReactModal__Content')).not.toBeNull();
   });
 
+  it('does not leak react-modal-only props like contentLabel to DOM attributes', () => {
+    const onRequestClose = vi.fn();
+    render(
+      <LegacyModal isOpen onRequestClose={onRequestClose} contentLabel="Demo modal">
+        <div>Modal body</div>
+      </LegacyModal>,
+    );
+
+    const overlay = document.body.querySelector('.ReactModal__Overlay');
+    expect(overlay).not.toBeNull();
+    expect(overlay).not.toHaveAttribute('contentLabel');
+  });
+
   it('applies overlayClassName to the overlay element for react-modal compatibility', () => {
     const onRequestClose = vi.fn();
     render(

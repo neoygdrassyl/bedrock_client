@@ -19,6 +19,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     const [modal, setModal] = useState(false);
     const [newModal, setNewModal] = useState(false);
     const [list, setList] = useState([]);
+    const [loadError, setLoadError] = useState(null);
 
     const submitModalStyles = {
         content: {
@@ -48,12 +49,21 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     }, []);
 
     function retrievePublish() {
+        // A refresh over already-loaded data must not blank the list or drop to the skeleton.
+        const hasLoadedData = isLoaded && list.length > 0;
+        if (!hasLoadedData) setIsLoaded(false);
+        setLoadError(null);
         SubmitService.getAll()
             .then(response => {
                 asignList(response.data);
             })
             .catch(e => {
                 console.log(e);
+                if (!hasLoadedData) {
+                    setList([]);
+                    setIsLoaded(true);
+                }
+                setLoadError('No se pudo cargar la ventanilla.');
             });
     }
 
@@ -83,6 +93,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
 
     function asignList(_LIST) {
         setList(_LIST);
+        setLoadError(null);
         setIsLoaded(true);
     }
 
@@ -365,7 +376,27 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 </div>
                 <div>
                     <h3 className="text-sm font-semibold text-center mb-2">Lista de entradas</h3>
-                    {isLoaded ? (
+                    {isLoaded && loadError && list.length > 0 && (
+                        <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-center space-y-3 mb-3">
+                            <p className="text-sm font-semibold text-destructive">{loadError}</p>
+                            <Button variant="outline" size="sm" onClick={() => retrievePublish()}>
+                                <Icon name="RefreshCw" size={14} /> Reintentar
+                            </Button>
+                        </div>
+                    )}
+                    {!isLoaded ? (
+                        <div className="p-8 text-center text-muted-foreground text-sm">Cargando información...</div>
+                    ) : loadError && list.length === 0 ? (
+                        <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-center space-y-3">
+                            <div>
+                                <p className="text-sm font-semibold text-destructive">{loadError}</p>
+                                <p className="text-xs text-muted-foreground mt-1">La lista de entradas no se pudo actualizar.</p>
+                            </div>
+                            <Button variant="outline" size="sm" onClick={() => retrievePublish()}>
+                                <Icon name="RefreshCw" size={14} /> Reintentar
+                            </Button>
+                        </div>
+                    ) : (
                         <DataTable
                             paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                             noDataComponent="No hay información"
@@ -382,8 +413,6 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                             defaultSortFieldId={1}
                             defaultSortAsc={false}
                         />
-                    ) : (
-                        <div className="p-8 text-center text-muted-foreground text-sm">Cargando información...</div>
                     )}
                 </div>
 

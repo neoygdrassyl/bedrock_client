@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol.js';
 import { useProcessPhases } from './useProcessPhases';
@@ -30,15 +30,39 @@ export const FUN_0_TYPE_LABELS = { 'i': 'Tipo I', 'ii': 'Tipo II', 'iii': 'Tipo 
 const STEPS_TO_CHECK = ['-50', '-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
 export const NEGATIVE_PROCESS_TITLE = { '-1': 'INCOMPLETO', '-2': 'FALTA VALLA INFORMATIVA', '-3': 'NO CUMPLE ACTA CORRECCIONES', '-4': 'NO PAGA EXPENSAS', '-5': 'VOLUNTARIO', '-6': 'NEGADA' };
 
-export const useScheduleConfig = (expedienteId) => {
+// Una config de backend valida trae siempre un objeto `times`. Filas viejas
+// (escritas entre 2025-12-10 y 2026-01-23 por un bug de doble-wrapping ya
+// corregido) pueden traer basura como { scheduleConfig: "<json-string>" };
+// esas se ignoran y el hook cae de vuelta a localStorage.
+const isValidBackendSchedule = (value) =>
+  Boolean(value && typeof value === 'object' && value.times && typeof value.times === 'object');
+
+export const useScheduleConfig = (expedienteId, backendScheduleConfig) => {
     const storageKey = expedienteId ? `curaduria_programacion_${expedienteId}` : null;
     const [scheduleConfig, setScheduleConfig] = useState(() => {
+      if (isValidBackendSchedule(backendScheduleConfig)) return backendScheduleConfig;
       if (!storageKey) return null;
       try {
         const stored = localStorage.getItem(storageKey);
         return stored ? JSON.parse(stored) : null;
       } catch { return null; }
     });
+
+    // El backend es la fuente de verdad cuando trae un valor válido: lo
+    // adoptamos y lo espejamos a localStorage (write-through cache) para que
+    // hasSchedule/lecturas offline sigan consistentes.
+    useEffect(() => {
+      if (!isValidBackendSchedule(backendScheduleConfig)) return;
+      setScheduleConfig(backendScheduleConfig);
+      if (storageKey) {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(backendScheduleConfig));
+        } catch (error) {
+          console.warn('Error al sincronizar config de programación desde backend:', error);
+        }
+      }
+    }, [backendScheduleConfig, storageKey]);
+
     const saveScheduleConfig = (config) => {
       if (!storageKey) return;
       try {

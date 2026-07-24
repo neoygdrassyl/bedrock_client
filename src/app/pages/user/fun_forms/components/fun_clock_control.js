@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { isEmptyEntity } from '../../../../utils/isEmptyEntity';
 import { dateParser_dateDiff, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 
 import Icon from '@/components/icon';
@@ -197,7 +198,7 @@ function FUN_CLOCK_CONTROL({ currentItem }) {
             </Fragment>)
 
             // SIGN
-            if (currentItem.fun_law) {
+            if (!isEmptyEntity(currentItem.fun_law)) {
                 if (currentItem.fun_law.sign) {
                     let _sign = currentItem.fun_law.sign.split(',')
                     if (_sign[1]) _COMPONENT.push(<Fragment key="sign-event">

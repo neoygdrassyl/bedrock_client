@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { Link } from 'react-router-dom';
@@ -45,6 +45,7 @@ export default function ZONE_USE(props) {
     const [dataOg, setDataOg] = useState([]);
     const [selectedId, setSelectedId] = useState(false);
     const [selectedIdPublic, setSelectedIdPublic] = useState("");
+    const loadRequestIdRef = useRef(0);
 
     useEffect(() => {
         if (load == 0) loadData();
@@ -52,13 +53,16 @@ export default function ZONE_USE(props) {
 
     // ************************** APIS ************************ //
     function loadData() {
+        const requestId = ++loadRequestIdRef.current;
         Zone_Use_Service.getAll()
             .then(response => {
+                if (requestId !== loadRequestIdRef.current) return;
                 setData(response.data)
                 setDataOg(response.data)
                 setLoad(1)
             })
             .catch(e => {
+                if (requestId !== loadRequestIdRef.current) return;
                 console.error(e);
                 swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });

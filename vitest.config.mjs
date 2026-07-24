@@ -44,6 +44,7 @@ export default defineConfig({
   },
 
   test: {
+    forbidOnly: true,
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/__tests__/setup.js'],
