@@ -13,5 +13,7 @@ class LegalConfigService {
   update(catalogue, id, payload) { return http.put(`/${ROUTE}/workspace/${catalogue}/${encodeURIComponent(id)}`, payload, JSON_REQUEST); }
   saveAssociations(id, payload) { return http.put(`/${ROUTE}/workspace/actuations/${encodeURIComponent(id)}/associations`, payload, JSON_REQUEST); }
   effectiveDocuments(id) { return http.get(`/${ROUTE}/workspace/actuations/${encodeURIComponent(id)}/effective-documents`); }
+  evaluationConfig(id) { return http.get(`/${ROUTE}/workspace/actuations/${encodeURIComponent(id)}/evaluation-config`); }
+  updateEvaluationConfig(id, payload) { return http.put(`/${ROUTE}/workspace/actuations/${encodeURIComponent(id)}/evaluation-config`, payload, JSON_REQUEST); }
 }
 export default new LegalConfigService();
