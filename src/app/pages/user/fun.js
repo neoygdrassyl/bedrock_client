@@ -43,6 +43,7 @@ import RECORD_REVIEW from './records/record_review';
 import EXPEDITION from './expeditions/expedition.page';
 import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
 import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
+import { shouldUseStructuralReport } from './fun_forms/utils/expedienteDomainRules';
 import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
@@ -55,6 +56,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         (prev, next) => ({ ...prev, ...next }),
         {
             error: null,
+            loadError: null,
             isLoaded: false,
             isLoadedSearch: false,
             currentItem: null,
@@ -146,12 +148,32 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             });
     }
     function retrievePublish() {
+        // A refresh over already-loaded data must not blank the lists or drop to the skeleton.
+        const hasLoadedData = state.isLoaded && (state.list_complete.length > 0 || state.items.length > 0);
+        setState(hasLoadedData ? { loadError: null, error: null } : { isLoaded: false, loadError: null, error: null });
         FUNService.getAll_fun()
             .then(response => {
                 asignList(response.data);
             })
             .catch(e => {
                 console.log(e);
+                if (hasLoadedData) {
+                    setState({ error: e, loadError: 'No se pudo cargar las solicitudes.' });
+                    return;
+                }
+                setState({
+                    error: e,
+                    loadError: 'No se pudo cargar las solicitudes.',
+                    isLoaded: true,
+                    items: [],
+                    list_started: [],
+                    list_incomplete: [],
+                    list_legal: [],
+                    list_profesional: [],
+                    list_expedition: [],
+                    list_archive: [],
+                    list_complete: [],
+                });
             });
     }
     function retrievSingle(id) {
@@ -255,6 +277,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             list_profesional: profesonal,
             list_archive: archive,
             list_complete: _LIST,
+            loadError: null,
+            error: null,
             isLoaded: true,
         });
     }
@@ -1141,6 +1165,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             let rules = row.rules ? row.rules.split(';') : [];
             const canEdit = row.state != 101 && row.state <= 200;
             const isPH = regexChecker_isPh(row, true);
+            const showStructuralReport = shouldUseStructuralReport(row, row.version, { isPropertyHorizontal: isPH });
             const canAssign = window.user.id == 1 || window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 6;
             const stopRowClick = (event) => {
                 event?.stopPropagation?.();
@@ -1216,7 +1241,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                     <Icon name="Building" size={14} className="text-warning" />
                                                     Inf. Arquitectónico
                                                 </DropdownMenuItem>
-                                                {rules[1] != 1 && (
+                                                {showStructuralReport && (
                                                     <DropdownMenuItem onClick={(event) => runMenuAction(event, () => openFullscreenWorkspace(row, 'record_eng'))}>
                                                         <Icon name="Cog" size={14} className="text-warning" />
                                                         Inf. Estructural
@@ -1472,6 +1497,18 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 <FUN_WORKER_ASIGN translation={translation} globals={globals}
                     type={"eng"}
                     openModal={openModal} />
+
+                {state.loadError && (
+                    <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                        <div>
+                            <p className="text-sm font-semibold text-destructive">{state.loadError}</p>
+                            <p className="text-xs text-muted-foreground mt-1">La lista principal de licencias no se pudo actualizar.</p>
+                        </div>
+                        <Button variant="outline" size="sm" onClick={() => retrievePublish()}>
+                            <Icon name="RefreshCw" size={14} /> Reintentar
+                        </Button>
+                    </div>
+                )}
 
                 {/* ── Search results ─────────────────────────────── */}
                 {state.hasSearchResult && (

@@ -67,7 +67,7 @@ export default function EXP_CLOCKS(props) {
   const topScrollRef = useRef(null);
   const contentRef = useRef(null); // Ref para el contenido que define el ancho
 
-  const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
+  const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id, currentItem?.schedule_config);
 
   useEffect(() => {
     setPendingDateEdits({});

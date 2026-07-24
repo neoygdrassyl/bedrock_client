@@ -23,7 +23,7 @@ export function DovelaBadge({
       data-dovela-ui="badge"
       data-tone={tone}
       className={cn(
-        'gap-1.5 rounded-[var(--badge-radius)] px-[var(--badge-padding-x)] py-[var(--badge-padding-y)] text-[length:var(--badge-font-size)] font-semibold shadow-none',
+        'gap-1 rounded-[var(--badge-radius)] px-[var(--badge-padding-x)] py-[var(--badge-padding-y)] text-[length:var(--badge-font-size)] font-medium leading-none shadow-none',
         TONE_CLASSES[tone] || TONE_CLASSES.neutral,
         className
       )}

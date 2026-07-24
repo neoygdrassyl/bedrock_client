@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
+import { isEmptyEntity } from '../../../utils/isEmptyEntity';
 
 import dayjs from 'dayjs';
 
@@ -611,7 +612,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             sign.push(document.getElementById("alert_sign_select").value);
             sign.push(document.getElementById("alert_sign_date").value);
             formData.set('sign', sign.join());
-            if (currentItem.fun_law) {
+            if (!isEmptyEntity(currentItem.fun_law)) {
                 let law_id = currentItem.fun_law.id;
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
                 FUNService.update_sign(law_id, formData)

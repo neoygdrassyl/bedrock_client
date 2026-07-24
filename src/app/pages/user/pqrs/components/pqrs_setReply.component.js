@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import { Icon } from '@/components/icon';
@@ -10,15 +10,19 @@ import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function PQRS_SET_REPLY({ translation, swaMsg, globals, hardReset, currentItem, currentId, refreshList, retrieveItem: parentRetrieveItem, closeModal }) {
     const [currentItemData, setCurrentItemData] = useState(null);
     const [load, setLoad] = useState(false);
+    const fetchRequestIdRef = useRef(0);
 
     useEffect(() => {
         const fetchItem = (id) => {
+            const requestId = ++fetchRequestIdRef.current;
             PQRS_Service.get(id)
                 .then(response => {
+                    if (requestId !== fetchRequestIdRef.current) return;
                     setCurrentItemData(response.data);
                     setLoad(true);
                 })
                 .catch(e => {
+                    if (requestId !== fetchRequestIdRef.current) return;
                     console.log(e);
                     swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                     setLoad(false);

@@ -8,6 +8,14 @@ export const SEVERITY_BY_STATUS = {
   SUSPENDIDO: 'paused',
 };
 
+export const OPERATIONAL_STATE_BY_FUN_STATUS = {
+  VENCIDO: 'vencido',
+  ALERTA_VENCIMIENTO: 'proximo_a_vencer',
+  PRONTO_A_VENCER: 'proximo_a_vencer',
+  EN_TERMINO: 'en_revision',
+  SUSPENDIDO: 'bloqueado',
+};
+
 export const SEVERITY_COLORS = {
   expired: { bg: 'bg-red-600', text: 'text-white', ring: 'ring-red-500', badge: 'bg-red-100 text-red-800' },
   critical: { bg: 'bg-orange-500', text: 'text-white', ring: 'ring-orange-400', badge: 'bg-orange-100 text-orange-800' },
@@ -18,6 +26,10 @@ export const SEVERITY_COLORS = {
 
 export function severityFromStatus(status) {
   return SEVERITY_BY_STATUS[status] || 'ok';
+}
+
+export function operationalStateFromFunStatus(status) {
+  return OPERATIONAL_STATE_BY_FUN_STATUS[status] || 'en_revision';
 }
 
 export function severityFromPercent(percentUsed, thresholds) {

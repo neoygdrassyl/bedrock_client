@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from "react-router-dom";
 import Markdown from 'markdown-to-jsx';
 import { useLocation } from "react-router-dom"
@@ -17,22 +17,27 @@ export default function GUIDE_USER(props) {
     var [indexArray, setIndex] = useState([]);
     var [mdIndex, setMdIndex] = useState(null);
     var [load, setLoad] = useState(0);
+    const changeContentRequestIdRef = useRef(0);
 
     useEffect(() => {
         // DONT QUESTION THIS, THIS IS HOW MD WORKSs
         if (load == 0) {
+            let ignore = false;
             window.scrollTo({ top: 0 });
             setIndex(IndexList)
-            fetch(indexMd).then((response) => response.text()).then((text) => setMdIndex(text))
-            fetch(guide_00).then((response) => response.text()).then((text) => setMd00(text))
-            fetch(guide_01).then((response) => response.text()).then((text) => setMd01(text))
+            fetch(indexMd).then((response) => response.text()).then((text) => { if (!ignore) setMdIndex(text); })
+            fetch(guide_00).then((response) => response.text()).then((text) => { if (!ignore) setMd00(text); })
+            fetch(guide_01).then((response) => response.text()).then((text) => { if (!ignore) setMd01(text); })
             setLoad(1)
+            return () => { ignore = true; };
         }
     }, [load]);
 
     // ***************************  DATA CONVERTER *********************** //
     let CHANGE_CONTENT = (md, ref) => {
+        const requestId = ++changeContentRequestIdRef.current;
         fetch(md).then((response) => response.text()).then((text) => {
+            if (requestId !== changeContentRequestIdRef.current) return;
             setMd01(text);
         })
     }
