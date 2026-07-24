@@ -25,6 +25,24 @@ export const CLOCK_COLUMN_WIDTHS = {
 
 const px = (value) => `${value}px`;
 
+const isEpochSentinel = (value) => {
+    if (value === 0 || value === 1 || value === '0' || value === '1') return true;
+    return value instanceof Date && value.getTime() <= 1;
+};
+
+export const formatClockDate = (value) => {
+    if (!value || isEpochSentinel(value)) return '- -';
+    const parsed = dayjs(value);
+    return parsed.isValid() ? parsed.format('DD/MM/YYYY') : '- -';
+};
+
+export const getClockRowAlarmInfo = ({ state, isCompleted, hasAdministrativeAct }) => {
+    if (state !== 504) return null;
+    if (isCompleted) return { text: 'A tiempo', color: '#2f9e44', icon: 'Check' };
+    if (hasAdministrativeAct) return { text: 'Vencida', color: '#e03131', icon: 'XCircle' };
+    return { text: 'Pendiente', color: '#f08c00', icon: 'Hourglass' };
+};
+
 export const getClockTableWidth = (visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY) => {
     let width = CLOCK_COLUMN_WIDTHS.EVENT
         + CLOCK_COLUMN_WIDTHS.DATE
@@ -172,7 +190,7 @@ export const ClockRow = memo((props) => {
     }, [localDateValue, clock?.date_start, value, i, onSave]);
 
     // Formateador textual MODIFICADO para usar formato de fecha corta (L)
-    const formatDate = (dateStr) => dateStr ? dayjs(dateStr).format('DD/MM/YYYY') : '- -';
+    const formatDate = formatClockDate;
 
     // =====================================================
     // CÁLCULO DE ICONOS Y ESTADOS (SEMÁFORO)
@@ -218,10 +236,11 @@ export const ClockRow = memo((props) => {
                 limitDate = sumarDiasHabiles(thisSusp.start.date_start, daysToAdd);
                 tooltip = `Suspensión: Máximo ${availableForThis} días hábiles (Inclusivo)`;
             }
-        } 
+        }
 
         else if (value.state === 504){
-            limitDate = 1;
+            // State 504 is binary and has no fixed legal deadline.
+            limitDate = null;
         }
         // --- Lógica Especial para Prórroga (401) ---
         else if (value.state === 401) {
@@ -326,35 +345,22 @@ export const ClockRow = memo((props) => {
     // CÁLCULO DE ALARMA (USANDO LÍMITES LEGALES)
     // =====================================================
     const getAlarmInfo = () => {
+        const isCompleted = !!clock?.date_start;
+        const state = value.state;
+
+        if (state === 504) {
+            const actoAdministrativo = getClock(70);
+            return getClockRowAlarmInfo({
+                state,
+                isCompleted,
+                hasAdministrativeAct: !!actoAdministrativo?.date_start,
+            });
+        }
+
         if (!legalData || !legalData.limitDate) return null;
         const { limitDate } = legalData;
         const limitMoment = dayjs(limitDate);
-        const isCompleted = !!clock?.date_start;
         const today = dayjs(systemDate);
-        const state = value.state;
-
-
-        if (state===504){
-            const actoAdministrativo = getClock(70);
-            let text = '';
-            let color = '';
-            let icon = null;
-
-            if (isCompleted) {
-                text = `A tiempo`;
-                color = '#2f9e44';
-                icon = 'Check';
-            } else if (!isCompleted && actoAdministrativo?.date_start) {
-                text = 'Vencida';
-                color = '#e03131';
-                icon = 'XCircle';
-            } else {
-                text = 'Pendiente';
-                color = '#f08c00';
-                icon = 'Hourglass';
-            }
-            return { text, color, icon };
-        }
 
         if (state === 34 && getClock(35)?.date_start){
             let text = '';

@@ -34,12 +34,17 @@ class DocumentRequirementService {
     return http.post(`/${ROUTE}/config/publish`);
   }
 
+  getExplorer(status = 'published') {
+    return http.get(`/${ROUTE}/explorer?status=${encodeURIComponent(status)}`);
+  }
+
   previewRequirements(payload = {}, options = {}) {
     const status = getPreviewStatus(payload, options);
+    const requestConfig = options.signal ? { signal: options.signal } : undefined;
     return http.post(`/${ROUTE}/preview${buildStatusQuery(status)}`, {
       ...payload,
       configStatus: status,
-    });
+    }, requestConfig);
   }
 }
 
