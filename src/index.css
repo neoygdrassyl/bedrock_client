@@ -42,9 +42,9 @@
     --button-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
 
     --badge-radius: 999px;
-    --badge-padding-x: 0.7rem;
-    --badge-padding-y: 0.3rem;
-    --badge-font-size: 0.75rem;
+    --badge-padding-x: 0.48rem;
+    --badge-padding-y: 0.18rem;
+    --badge-font-size: 0.7rem;
 
     --operational-review-bg: 214 100% 97%;
     --operational-review-border: 214 84% 72%;

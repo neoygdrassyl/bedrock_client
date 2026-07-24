@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DataTable } from '@/components/data-table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ActuationAssociationsWorkspace from './ActuationAssociationsWorkspace.jsx';
+import DocumentEvaluationWorkspace from './DocumentEvaluationWorkspace.jsx';
 import SeriesManagementDialog from './SeriesManagementDialog.jsx';
 import './LegalConfigInitialPage.css';
 
@@ -581,10 +582,11 @@ function ActuationEditorDialog({ open, onOpenChange, actuations, onSave, saving 
   const [form, setForm] = useState({ name: '', parent_id: '', suffix: '' });
   const [submitError, setSubmitError] = useState('');
   const instanceId = useId().replace(/:/g, '');
-  const parents = actuations.filter((item) => !item.parent_id && item.is_active !== false);
+  const parents = actuations.filter((item) => item.is_active !== false && ['category', 'actuation'].includes(item.node_kind || 'actuation'));
   const parent = parents.find((item) => item.id === form.parent_id);
-  const isModality = Boolean(parent);
-  const canSave = Boolean(form.name.trim() && (!isModality || form.suffix.trim()) && !saving);
+  const nodeKind = parent ? ((parent.node_kind || 'actuation') === 'category' ? 'actuation' : 'modality') : 'category';
+  const nodeLabel = nodeKind === 'category' ? 'Categoría' : (nodeKind === 'actuation' ? 'Actuación' : 'Modalidad');
+  const canSave = Boolean(form.name.trim() && (!parent || form.suffix.trim()) && !saving);
 
   useEffect(() => {
     if (!open) return;
@@ -603,53 +605,46 @@ function ActuationEditorDialog({ open, onOpenChange, actuations, onSave, saving 
     const result = await onSave({
       name: form.name.trim(),
       parent_id: form.parent_id || null,
+      node_kind: nodeKind,
       code: parent ? `${parent.code}${form.suffix.trim()}` : form.name.trim(),
     });
     if (result?.ok) onOpenChange(false);
-    else setSubmitError(result?.message || 'No fue posible guardar la actuación.');
+    else setSubmitError(result?.message || 'No fue posible guardar el nodo documental.');
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="legal-config-actuation-dialog" aria-describedby={`${instanceId}-description`}>
         <DialogHeader className="legal-config-document-dialog__header">
-          <DialogTitle><GitBranch size={18} aria-hidden="true" /> Nueva actuación o modalidad</DialogTitle>
+          <DialogTitle><GitBranch size={18} aria-hidden="true" /> Nueva categoría, actuación o modalidad</DialogTitle>
           <DialogDescription id={`${instanceId}-description`}>
-            Una modalidad se crea como hija de una actuación principal. Sus asociaciones conservan el comportamiento actual.
+            El árbol se organiza como Categoría → Actuación → Modalidad. El nodo hijo conserva las asociaciones de su padre.
           </DialogDescription>
         </DialogHeader>
         <form className="actuation-editor" onSubmit={submit}>
           {submitError && <p className="document-editor__error" role="alert">{submitError}</p>}
           <label htmlFor={`${instanceId}-name`}>
             <span>Nombre <b aria-hidden="true">*</b></span>
-            <input id={`${instanceId}-name`} required autoFocus value={form.name} onChange={(event) => setField('name', event.target.value)} placeholder="Ej. Reconocimiento" disabled={saving} />
+            <input id={`${instanceId}-name`} required autoFocus value={form.name} onChange={(event) => setField('name', event.target.value)} placeholder="Ej. Licencias urbanísticas" disabled={saving} />
           </label>
           <label htmlFor={`${instanceId}-parent`}>
-            <span>Tipo</span>
-            <select
-              id={`${instanceId}-parent`}
-              value={form.parent_id}
-              onChange={(event) => setForm((current) => ({ ...current, parent_id: event.target.value, suffix: '' }))}
-              disabled={saving}
-            >
-              <option value="">Actuación principal</option>
-              {parents.map((item) => <option key={item.id} value={item.id}>Modalidad de {item.name}</option>)}
+            <span>Ubicación en el árbol</span>
+            <select id={`${instanceId}-parent`} value={form.parent_id} onChange={(event) => setForm((current) => ({ ...current, parent_id: event.target.value, suffix: '' }))} disabled={saving}>
+              <option value="">Nueva categoría</option>
+              {parents.map((item) => <option key={item.id} value={item.id}>{(item.node_kind || 'actuation') === 'category' ? `Actuación dentro de ${item.name}` : `Modalidad dentro de ${item.name}`}</option>)}
             </select>
-            <small>Selecciona una actuación principal para crear una modalidad.</small>
+            <small>Se creará como <strong>{nodeLabel}</strong>{parent ? ` dentro de ${parent.name}.` : '.'}</small>
           </label>
-          {isModality && (
+          {parent && (
             <label className="actuation-editor__suffix" htmlFor={`${instanceId}-suffix`}>
               <span>Sufijo del código <b aria-hidden="true">*</b></span>
-              <span>
-                <code>{parent.code}</code>
-                <input id={`${instanceId}-suffix`} required value={form.suffix} onChange={(event) => setField('suffix', event.target.value)} placeholder="_01" disabled={saving} />
-              </span>
+              <span><code>{parent.code}</code><input id={`${instanceId}-suffix`} required value={form.suffix} onChange={(event) => setField('suffix', event.target.value)} placeholder="_01" disabled={saving} /></span>
               <small>Código resultante: <code>{`${parent.code}${form.suffix || '…'}`}</code></small>
             </label>
           )}
           <DialogFooter className="document-editor__footer">
             <button type="button" className="legal-config-button" onClick={() => onOpenChange(false)} disabled={saving}>Cancelar</button>
-            <button type="submit" className="legal-config-button legal-config-button--primary" disabled={!canSave}>{saving ? 'Creando…' : (isModality ? 'Crear modalidad' : 'Crear actuación')}</button>
+            <button type="submit" className="legal-config-button legal-config-button--primary" disabled={!canSave}>{saving ? 'Creando…' : `Crear ${nodeLabel.toLowerCase()}`}</button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -757,6 +752,10 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
   const [loading, setLoading] = useState(true);
   const [relationsSaving, setRelationsSaving] = useState(false);
   const [documentSaving, setDocumentSaving] = useState(false);
+  const [evaluation, setEvaluation] = useState(null);
+  const [evaluationLoading, setEvaluationLoading] = useState(false);
+  const [evaluationSaving, setEvaluationSaving] = useState(false);
+  const [evaluationError, setEvaluationError] = useState('');
 
   const [documentModalOpen, setDocumentModalOpen] = useState(false);
   const [editingDocumentId, setEditingDocumentId] = useState('');
@@ -800,6 +799,49 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
   useEffect(() => {
     load();
   }, [load]);
+
+  const loadEvaluation = useCallback(async () => {
+    if (!selected) {
+      setEvaluation(null);
+      setEvaluationError('');
+      return;
+    }
+    setEvaluationLoading(true);
+    setEvaluationError('');
+    try {
+      const response = await LegalConfigService.evaluationConfig(selected);
+      setEvaluation(response?.data || null);
+    } catch (loadError) {
+      setEvaluation(null);
+      setEvaluationError(loadError?.response?.status === 404
+        ? 'La evaluación contextual aún no está disponible en el servicio. Puedes preparar la configuración y volver a intentar cargarla.'
+        : `No fue posible cargar la evaluación contextual. ${errorMessage(loadError)}`);
+    } finally {
+      setEvaluationLoading(false);
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    loadEvaluation();
+  }, [loadEvaluation]);
+
+  const saveEvaluation = useCallback(async (config) => {
+    if (!selected || evaluationSaving) return { ok: false };
+    setEvaluationSaving(true);
+    setEvaluationError('');
+    try {
+      const response = await LegalConfigService.updateEvaluationConfig(selected, { evaluation_config: config });
+      setEvaluation(response?.data || ((current) => ({ ...current, own_config: config })));
+      return { ok: true };
+    } catch (saveError) {
+      setEvaluationError(saveError?.response?.status === 404
+        ? 'La evaluación contextual aún no está disponible para guardar. El resto de la configuración sigue operativo.'
+        : `No fue posible guardar la evaluación contextual. ${errorMessage(saveError)}`);
+      return { ok: false };
+    } finally {
+      setEvaluationSaving(false);
+    }
+  }, [evaluationSaving, selected]);
 
   async function createCatalogue(catalogue, name) {
     try {
@@ -907,7 +949,8 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
       setSelected(response.data.id);
       await load();
       setError('');
-      setNotice(payload.parent_id ? 'Modalidad creada.' : 'Actuación creada. Ya puedes configurar sus asociaciones.');
+      const createdLabel = payload.node_kind === 'category' ? 'Categoría' : (payload.node_kind === 'modality' ? 'Modalidad' : 'Actuación');
+      setNotice(`${createdLabel} creada. Ya puedes configurar sus asociaciones y evaluación.`);
       return { ok: true };
     } catch (saveError) {
       const message = errorMessage(saveError);
@@ -1435,6 +1478,20 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
           />
         )}
       </div>
+      {showActuations && (
+        <DocumentEvaluationWorkspace
+          actuation={selectedActuation}
+          actuations={data.actuations}
+          documents={data.documents}
+          typologies={data.typologies}
+          evaluation={evaluation}
+          loading={evaluationLoading}
+          saving={evaluationSaving}
+          error={evaluationError}
+          onLoad={loadEvaluation}
+          onSave={saveEvaluation}
+        />
+      )}
       {showDocuments && (
         <DocumentEditorDialog
           open={documentModalOpen}
