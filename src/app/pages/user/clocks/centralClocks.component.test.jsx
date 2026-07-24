@@ -1,5 +1,11 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import EXP_CLOCKS from './centralClocks.component';
+
+const clockTestState = vi.hoisted(() => ({
+  clocksToShow: [],
+  createClock: vi.fn(() => Promise.resolve({ data: 'OK' })),
+  updateClock: vi.fn(() => Promise.resolve({ data: 'OK' })),
+}));
 
 const mockNotificationAlarms = vi.hoisted(() => [
   {
@@ -22,24 +28,29 @@ vi.mock('./hooks/useClocksManager', () => ({
     clearScheduleConfig: vi.fn(),
     hasSchedule: false,
   })),
-  useClocksManager: vi.fn(() => ({
-    canAddSuspension: false,
-    canAddExtension: false,
-    isDesisted: false,
-    processPhases: [],
-    curaduriaDetails: {},
-    suspensionPreActa: {},
-    suspensionPostActa: {},
-    extension: {},
-    getClock: vi.fn(() => null),
-    getClockVersion: vi.fn(() => null),
-    availableSuspensionTypes: [],
-    totalSuspensionDays: 0,
-  })),
+  useClocksManager: vi.fn((_currentItem, clocksData) => {
+    const getClock = (state) => clocksData.find(clock => String(clock.state) === String(state)) || null;
+    const communicationDate = getClock(504)?.date_start || 'Pendiente';
+
+    return {
+      canAddSuspension: false,
+      canAddExtension: false,
+      isDesisted: false,
+      processPhases: [{ id: 'phase-neighbors', endDate: communicationDate }],
+      curaduriaDetails: {},
+      suspensionPreActa: {},
+      suspensionPostActa: {},
+      extension: {},
+      getClock,
+      getClockVersion: vi.fn(() => null),
+      availableSuspensionTypes: [],
+      totalSuspensionDays: 0,
+    };
+  }),
 }));
 
 vi.mock('./config/clocks.definitions', () => ({
-  generateClocks: vi.fn(() => []),
+  generateClocks: vi.fn(() => clockTestState.clocksToShow),
 }));
 
 vi.mock('./hooks/useAlarms', () => ({
@@ -58,11 +69,16 @@ vi.mock('./components/ClockRow', () => ({
   DEFAULT_CLOCK_COLUMN_VISIBILITY: {},
   getClockTableWidth: vi.fn(() => 320),
   ClockTableHeader: () => <div data-testid="clock-table-header" />,
-  ClockRow: () => <div data-testid="clock-row" />,
+  ClockRow: ({ value, clock, onSave }) => (
+    <div data-testid="clock-row">
+      <span data-testid="clock-row-date">{clock?.date_start || 'Pendiente'}</span>
+      <button type="button" onClick={() => onSave(value, 0, '2026-07-31')}>Guardar fecha de vecino</button>
+    </div>
+  ),
 }));
 
 vi.mock('./components/SidebarInfo', () => ({
-  SidebarInfo: () => <aside data-testid="sidebar-info" />,
+  SidebarInfo: ({ manager }) => <aside data-testid="sidebar-info">{manager.processPhases[0]?.endDate}</aside>,
 }));
 
 vi.mock('./components/HolidayCalendar', () => ({
@@ -82,7 +98,7 @@ vi.mock('./components/ToolsMenu', () => ({
 }));
 
 vi.mock('./components/gantt/GanttModal', () => ({
-  GanttModal: () => <div data-testid="gantt-modal" />,
+  GanttModal: ({ phases }) => <div data-testid="gantt-modal">{phases[0]?.endDate}</div>,
 }));
 
 vi.mock('../shared/processClosure.helpers', () => ({
@@ -103,6 +119,8 @@ vi.mock('@/components/ui/checkbox', () => ({
 
 vi.mock('../../../services/fun.service', () => ({
   default: {
+    create_clock: clockTestState.createClock,
+    update_clock: clockTestState.updateClock,
     update: vi.fn(() => Promise.resolve({ data: 'OK' })),
     update_sign: vi.fn(() => Promise.resolve({ data: 'OK' })),
   },
@@ -156,5 +174,21 @@ describe('EXP_CLOCKS alarm widget', () => {
     fireEvent.click(showButton);
 
     expect(screen.getByTestId('alarms-widget')).toHaveTextContent('Alertas (1)');
+  });
+
+  it('updates the row, phase detail and Gantt immediately after saving', async () => {
+    clockTestState.clocksToShow = [{ state: 504, name: 'Comunicación a vecinos' }];
+    const requestUpdate = vi.fn(() => new Promise(() => {}));
+
+    render(<EXP_CLOCKS {...baseProps} requestUpdate={requestUpdate} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar fecha de vecino' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('clock-row-date')).toHaveTextContent('2026-07-31');
+    });
+    expect(screen.getByTestId('sidebar-info')).toHaveTextContent('2026-07-31');
+    expect(screen.getByTestId('gantt-modal')).toHaveTextContent('2026-07-31');
+    expect(requestUpdate).toHaveBeenCalledWith(1);
   });
 });

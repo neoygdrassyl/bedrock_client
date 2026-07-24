@@ -64,14 +64,16 @@ function CLOCKS_CONTROL(props) {
 
     const requestUpdate = (id) => {
         if (props.requestUpdate) {
-            props.requestUpdate(id);
+            return props.requestUpdate(id);
         }
+        return Promise.resolve();
     }
     
     const requestRefresh = () => {
         if (props.requestRefresh) {
-            props.requestRefresh();
+            return props.requestRefresh();
         }
+        return Promise.resolve();
     }
 
     const handleTabChange = (tabName) => {
