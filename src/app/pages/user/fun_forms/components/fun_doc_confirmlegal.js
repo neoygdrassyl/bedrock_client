@@ -9,6 +9,7 @@ import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 export function extractConfirmLegalProcessData(items) {
     const match = Array.isArray(items)
@@ -585,7 +586,8 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                     .then(response => {
                         if (response.data === 'OK') {
                             swalClose();
-                            window.open(import.meta.env.VITE_API_URL + "/pdf/confirm/" + "Confirmacion_" + currentItem.id_public + ".pdf");
+                            const filename = `Confirmacion_${currentItem.id_public}.pdf`;
+                            return downloadProtectedPdf(`/pdf/confirm/${encodeURIComponent(filename)}`, filename);
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }

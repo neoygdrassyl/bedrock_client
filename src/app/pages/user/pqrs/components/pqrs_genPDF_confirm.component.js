@@ -6,6 +6,7 @@ import { cities } from '../../../../components/jsons/vars';
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
         var formData = new FormData();
 
@@ -195,7 +196,8 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_Confirmacion_" + currentItem.id_publico + ".pdf");
+                        const filename = "Oficio_Confirmacion_" + currentItem.id_publico + ".pdf";
+                        return downloadProtectedPdf(`/pdf/reply/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

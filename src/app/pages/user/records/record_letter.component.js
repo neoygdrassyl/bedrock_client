@@ -9,6 +9,7 @@ import RecordReviewService from '../../../services/record_review.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentVersion, edit, requestUpdate }) {
@@ -254,7 +255,8 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/confirmact/" + "Carta_Alerta_Acta_Observaciones_" + currentItem.id_public + ".pdf");
+                        const filename = `Carta_Alerta_Acta_Observaciones_${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/confirmact/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

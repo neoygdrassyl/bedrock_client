@@ -21,6 +21,8 @@ import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
 function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, refreshList: propRefreshList, NAVIGATION }) {
     const [attachs, setAttachs] = useState(0);
     const [attachsForEmails, setAttachsForEmails] = useState(0);
@@ -170,7 +172,7 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2 mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><Icon name="cloud-download-alt" size={16} /></a>
+                        <button type="button" className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2 mx-1" onClick={() => downloadProtectedFileWithFeedback(buildProtectedFilePath('pqrs', row.name), row.name)}><Icon name="cloud-download-alt" size={16} /></button>
                         <Button variant="destructive" size="sm" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },

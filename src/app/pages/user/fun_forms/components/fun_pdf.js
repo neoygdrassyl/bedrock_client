@@ -7,6 +7,8 @@ import { dateParser, getJSONFull } from '../../../../components/customClasses/ty
 import dayjs from 'dayjs';
 import { cities, domains, states } from '../../../../components/jsons/vars';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
@@ -159,7 +161,9 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         else if (Number(model) >= 2022 && Number(model) <= 2025) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
         else if (Number(model) >= 2026) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2026";
         //if (model == '2023') formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        var formPdfBytes = formPdfResponse.data;
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
         var _child = null;
@@ -532,7 +536,9 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             for (var j = 0; j < GREATER_NUMBER; j++) {
 
                 var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
-                var Buffer_2pg = await fetch(PdfUrl_2pg).then((res) => res.arrayBuffer())
+                var Response_2pg = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(PdfUrl_2pg) || PdfUrl_2pg)
+                if (!Response_2pg) return;
+                var Buffer_2pg = Response_2pg.data
                 var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
                 let page = PdfDoc_2pg.getPage(0);
                 // ---------------------------
@@ -1096,7 +1102,9 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             for (var j = 0; j < GREATER_NUMBER; j++) {
 
                 var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
-                var Buffer_2pg = await fetch(PdfUrl_2pg).then((res) => res.arrayBuffer())
+                var Response_2pg = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(PdfUrl_2pg) || PdfUrl_2pg)
+                if (!Response_2pg) return;
+                var Buffer_2pg = Response_2pg.data
                 var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
                 let page = PdfDoc_2pg.getPage(0);
                 // ---------------------------
@@ -1781,7 +1789,9 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             for (var j = 0; j < GREATER_NUMBER; j++) {
 
                 var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
-                var Buffer_2pg = await fetch(PdfUrl_2pg).then((res) => res.arrayBuffer())
+                var Response_2pg = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(PdfUrl_2pg) || PdfUrl_2pg)
+                if (!Response_2pg) return;
+                var Buffer_2pg = Response_2pg.data
                 var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
                 let page = PdfDoc_2pg.getPage(0);
                 // ---------------------------

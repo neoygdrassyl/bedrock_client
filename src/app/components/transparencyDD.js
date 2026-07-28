@@ -15,6 +15,8 @@ import {
 // Translations Services
 import { useTranslation } from "react-i18next";
 import "../translation/i18n";
+import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 export default function TransparencyDD() {
     const { t } = useTranslation();
@@ -80,7 +82,7 @@ function TDD_2() {
                 <Link to={'/liquidator'}><li><MDBDropdownItem><h6 className="text-wrap">Liquidador</h6></MDBDropdownItem></li></Link>
                 </ul>
                 <Link to={'/faq'}><li><MDBDropdownItem><h6 className="text-wrap">Preguntas y respuestas frecuentes</h6></MDBDropdownItem></li></Link>
-                <a href={import.meta.env.VITE_API_URL + '/files/docs/glosario.docx'} target="_blank" download="Glosario"><li><h6 className="text-wrap">Glosario</h6></li></a>
+                <li><button type="button" className="border-0 bg-transparent p-0 text-start" onClick={() => downloadProtectedFileWithFeedback(buildProtectedFilePath('docs', 'glosario.docx'), 'Glosario.docx')}><h6 className="text-wrap">Glosario</h6></button></li>
                 <Link to={'/kids'}><li><MDBDropdownItem><h6 className="text-wrap">Información para niños, niñas y adolescentes</h6></MDBDropdownItem></li></Link>
             </ul>
         </Collapsible>

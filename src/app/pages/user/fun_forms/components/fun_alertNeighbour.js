@@ -9,6 +9,7 @@ import SubmitService from '../../../../services/submit.service'
 import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 const normalizeNeighbourField = (value) => String(value ?? '');
 
@@ -339,7 +340,8 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
+                        const filename = `Confirmacion_Vecino_${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/nconfirm/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
@@ -384,7 +386,8 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
+                        const filename = `Confirmacion_Vecino_${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/nconfirm/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }

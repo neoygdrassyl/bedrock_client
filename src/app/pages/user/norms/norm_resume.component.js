@@ -6,6 +6,7 @@ import { ELEMENTS } from './norm.vars'
 import UU from "../../../components/jsons/UU.json"
 import FICHA_NORM_JSON from "../../../components/jsons/FICHA_NORM_1.json"
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 const default_Item = {
     id: false,
@@ -106,7 +107,8 @@ export default function NORM_RESUME(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     swalClose();
-                    window.open(import.meta.env.VITE_API_URL + "/pdf/norm/" + "NORMA URBANA " + (item_general.id_out ?? item_general.id_in ?? '') + ".pdf");
+                    const filename = "NORMA URBANA " + (item_general.id_out ?? item_general.id_in ?? '') + ".pdf";
+                    return downloadProtectedPdf(`/pdf/norm/${encodeURIComponent(filename)}`, filename);
                 } else {
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }

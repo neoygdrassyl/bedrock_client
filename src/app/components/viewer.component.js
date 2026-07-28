@@ -6,6 +6,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { MDBBtn } from './ui';
 import { Icon } from '@/components/icon';
+import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
 import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
@@ -46,35 +47,36 @@ export default function VIEWER(props) {
     const [numPages, setPages] = useState(1);
     const [pageNumber, setPage] = useState(1);
     const [file, setFile] = useState(null);
-    const [urlFile, setFileUrl] = useState(null);
     const [fimage, setImage] = useState(null);
-    const [urlImg, setImgUrl] = useState(null);
     const [modalViwewer, setModalV] = useState(false);
     const [pagesComponent, setPagesC] = useState([]);
 
     useEffect(() => {
+        let active = true;
+        let objectUrl = '';
         if (modalViwewer) {
+            setLoaddata(0);
             API(...params)
                 .then(response => {
-                    setFileUrl(null);
                     setFile(null);
+                    setImage(null);
 
                     let data = response.data;
                     let type = { type: response.headers['content-type'] }
                     let docType = getDocType(response.headers['content-type']);
 
                     const blob = new Blob([data], type);
-                    const urlBlob = window.URL.createObjectURL(blob);
+                    objectUrl = window.URL.createObjectURL(blob);
+                    if (!active) {
+                        window.URL.revokeObjectURL(objectUrl);
+                        return;
+                    }
 
                     if (docType == 'pdf') {
-                        let url = response.config.baseURL + response.config.url;
-                        setFileUrl(url);
-                        setFile(urlBlob);
+                        setFile(objectUrl);
                     }
                     if (docType == 'img') {
-                        let url = response.config.baseURL + response.config.url;
-                        setImgUrl(url)
-                        setImage(urlBlob)
+                        setImage(objectUrl)
                     }
                     setLoaddata(1);
                 })
@@ -86,7 +88,11 @@ export default function VIEWER(props) {
                 });
         }
         
-    }, [loadData, modalViwewer, scale]);
+        return () => {
+            active = false;
+            if (objectUrl) window.URL.revokeObjectURL(objectUrl);
+        };
+    }, [modalViwewer]);
 
     function getDocExt(_filename) {
         if (!_filename) return false;
@@ -142,7 +148,11 @@ export default function VIEWER(props) {
 
                 <div className='row my-1'>
                     <div className='col-3'>
-                        <select className="form-select" defaultValue={scale} onChange={(e) => setScale(e.target.value)}>
+                        <select className="form-select" defaultValue={scale} onChange={(e) => {
+                            const nextScale = Number(e.target.value);
+                            setScale(nextScale);
+                            setPagesComponent(numPages, nextScale);
+                        }}>
                             <option value={0.75}>Zoom x0.75</option>
                             <option value={1}>Zoom x1</option>
                             <option value={1.5}>Zoom x1.5</option>
@@ -158,9 +168,9 @@ export default function VIEWER(props) {
                         </div>
                     ) : null}
 
-                    {loadData === 1 && (urlFile || file) ? (
+                    {loadData === 1 && file ? (
                         <div style={{ paddingLeft: `calc((100vw - ${795 * scale}px)/2)`, paddingRight: `calc((100vw - ${795 * scale}px)/2)` }}>
-                            <Document file={urlFile || file} onLoadSuccess={onDocumentLoadSuccess}>
+                            <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
                                 {pagesComponent.map(page => page)}
                             </Document>
                         </div>
@@ -173,12 +183,12 @@ export default function VIEWER(props) {
                     ) : null}
 
                     <div className="w-100">
-                        <img src={urlImg || fimage} hidden={!urlImg || !fimage} id={'viewer_img'} alt="Image" height={100 * scale + '%'} width={100 * scale + '%'} />
+                        {fimage ? <ProtectedDocumentPreview source={fimage} kind="img" id="viewer_img" alt="Image" height={100 * scale + '%'} width={100 * scale + '%'} /> : null}
                     </div>
                 </div>
                 <hr />
                 <div className="text-end py-2">
-                    <a className="btn btn-sm btn-danger me-2" href={urlImg || urlFile} target='_blank'><Icon name="cloud-download-alt" size={16} /> DESCARGA</a>
+                    <a className="btn btn-sm btn-danger me-2" href={fimage || file || undefined} download="documento"><Icon name="cloud-download-alt" size={16} /> DESCARGA</a>
                     <MDBBtn className="btn btn-sm btn-info" onClick={() => setModalV(!modalViwewer)}><Icon name="times-circle" size={16} /> CERRAR</MDBBtn>
                 </div>
             </Modal>

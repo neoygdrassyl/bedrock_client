@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUN_SERVICE from '../../../../services/fun.service'
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion, isEdit }) {
 
@@ -186,7 +187,8 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/stickerarvhive/" + "STICKER DE ARCHIVO - " + currentItem.id_public + ".pdf");
+                        const filename = `STICKER DE ARCHIVO - ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/stickerarvhive/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }

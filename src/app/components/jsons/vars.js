@@ -14,7 +14,9 @@ const info = {
         name: 'CURADURIA URBANA 1',
         dir: 'LUIS CARLOS PARRA SALAZAR',
         title: 'ARQUITECTO',
-        job: 'CURADOR URBANO UNO DE BUCARAMANGA',
+        job: 'CURADOR URBANO UNO DE BUCARAMANGA (P)',
+        signature_job: 'Curador Urbano Uno de Bucaramanga (P)',
+        call: 'Nombramiento Decreto municipal 0114 de 3 de junio de 2026\nDiligencia de posesión N° 0119 de 9 de junio de 2026',
         titles: 'ARQ.',
         city: 'Bucaramanga',
         state: 'Santander',
@@ -97,7 +99,7 @@ const info = {
         },
         exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
         res_extras : {
-            art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
+            art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - POT del Municipio de Piedecuesta,"
         },
         other_entities: false,
         codeDictionary: false,
@@ -136,7 +138,7 @@ const info = {
         },
         exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
         res_extras : {
-            art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
+            art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - POT del Municipio de Piedecuesta,"
         },
         other_entities: false,
         codeDictionary: false,
@@ -218,4 +220,3 @@ export const zones = <>
 
 export const nomens = info[GLOBAL_ID].nomen
 export const infoCud = info[GLOBAL_ID]
-

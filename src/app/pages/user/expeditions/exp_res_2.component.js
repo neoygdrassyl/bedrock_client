@@ -5,9 +5,9 @@ import { ActDesistEngineTemp } from "../../../utils/ActDesistEngineTemp";
 import { ExecEngineTemp } from "../../../utils/ExecEngineTemp";
 import { TemplateEngine } from "../../../utils/TemplateEngine";
 import JoditEditor from "jodit-pro-react";
-import { saveAs } from "file-saver";
 import { swalClose, swalError, swalProgressPDF, swalUpdateProgress } from '@/app/utils/swalAdapter';
 import { Icon } from '@/components/icon';
+import { downloadProtectedPdf } from '../../../utils/pdfDownload';
 export default function EXP_RES_2(props) {
   const { data, swaMsg, currentItem, currentModel} = props;
 
@@ -95,7 +95,6 @@ export default function EXP_RES_2(props) {
   }), []);
 
   const handleDownloadPDFv2 = async () => {
-    let progressInterval = null;
     try {
       if (!isTemplateReady) {
         swalError({ title: swaMsg.generic_eror_title, text: 'La plantilla todavía no ha terminado de cargar.', icon: 'warning' });
@@ -116,59 +115,24 @@ export default function EXP_RES_2(props) {
       await new Promise(r => setTimeout(r, 150));
       swalUpdateProgress(15, 'Enviando al servidor...');
 
-      // ── Fase 2: simular generación en servidor (15 → 80 %) ─────────
-      let currentPct = 15;
-      progressInterval = setInterval(() => {
-        if (currentPct < 80) {
-          currentPct += 1;
-          swalUpdateProgress(currentPct, 'Generando PDF en el servidor...');
-        }
-      }, 280); // ~18 s para llegar al 80 %
-
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/pdf-generate/generate-pdf`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ html: content, margins }),
-        }
-      );
-
-      if (!response.ok) throw new Error('Error generando el PDF');
-
-      // ── Fase 3: descarga real del blob (80 → 100 %) ─────────────────
-      clearInterval(progressInterval);
-      progressInterval = null;
-      swalUpdateProgress(82, 'Descargando archivo...');
-
-      const contentLength = response.headers.get('Content-Length');
-      const total = contentLength ? parseInt(contentLength, 10) : null;
-      let loaded = 0;
-      const chunks = [];
-
-      const reader = response.body.getReader();
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        loaded += value.length;
-        if (total) {
-          // Mapear descarga al rango 82–98 %
-          const dlPct = 82 + Math.round((loaded / total) * 16);
-          swalUpdateProgress(Math.min(dlPct, 98), 'Descargando archivo...');
-        }
-      }
+      swalUpdateProgress(35, 'Generando PDF en el servidor...');
+      const filename = `${nameFile} ${currentItem.id_public}.pdf`;
+      await downloadProtectedPdf('/pdf-generate/generate-pdf', filename, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        data: { html: content, margins },
+        onDownloadProgress: ({ loaded, total }) => {
+          const progress = total ? 80 + Math.round((loaded / total) * 18) : 82;
+          swalUpdateProgress(Math.min(progress, 98), 'Descargando archivo...');
+        },
+      });
 
       swalUpdateProgress(100, 'Listo. Guardando archivo...');
       await new Promise(r => setTimeout(r, 350));
 
-      const blob = new Blob(chunks, { type: 'application/pdf' });
-      saveAs(blob, nameFile + ' ' + currentItem.id_public + '.pdf');
-
       swalClose();
     } catch (err) {
-      if (progressInterval) clearInterval(progressInterval);
-      swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+      swalError({ title: swaMsg.generic_eror_title, text: err.message || swaMsg.generic_error_text, icon: 'warning' });
       console.error('Error descargando PDF v2:', err);
     }
   };

@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { Icon } from '@/components/icon';
 import '../../../../styles/docs-expediente.css';
 import { richTextToPlainText } from '../../../utils/richTextBlockNote';
+import { downloadProtectedPdf } from '../../../utils/pdfDownload';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -2125,7 +2126,7 @@ export default function EXP_RES(props) {
         let parcon_7 = parcon[2] || `Que las Áreas de Cesión Tipo A, efectivamente fueron consignadas, según paz y salvo N° 0000-000 expedido por la Oficina Asesora de Planeación de Piedecuesta y consignación bancaria realizada el xxxxxxxx (xxx) de marzo de dos mil veintidós (2022) en el Banco de xxxxxxxxx en cuenta a nombre del Municipio de Piedecuesta.`
         let parcon_8 = parcon[3] || `Que el Área Metropolitana de Bucaramanga –AMB- expidió la Resolución N° 000000 del xxxxx (x) de xxxx de dos mil veintidós (2022) “Por la cual se efectúa la liquidación de Áreas de Cesión Tipo C”, correspondientes al tres por ciento (3%) del área neta urbanizable, es decir, equivalente a 00,0000 m2 de la Licencia de Parcelación con fundamento en el Avalúo xxxxxxxxxxxxxx N° 0000-2022 del xxxxxx (xx) de xxxxxxx de dos mil veintidós (2022), elaborado por la Corporación Lonja Inmobiliaria xxxxxxx y el Plano del proyecto con su respectivo cuadro de áreas.`
         let parcon_9 = parcon[4] || `Que el valor de la compensación en dinero de las Áreas de Cesión Tipo C fue consignado por parte del titular de la licencia según paz y salvo de la Subdirectora Administrativa y Financiera del Área Metropolitana de Bucaramanga –AMB-, expedido el xxxxxx (xx) de xxxxxxx de dos mil veintidós (2022).`
-        let parcon_10 = parcon[5] || `Que, de conformidad con lo anterior, las áreas de cesión han sido compensadas en dinero por el titular de la Licencia al Municipio de Piedecuesta y al Área Metropolitana de Bucaramanga, según lo establecido en los actos administrativos emitidos por dichas entidades, en concordancia con el P.B.O.T. de Piedecuesta, los artículos 2.2.6.1.4.5; 2.2.6.1.4.6 y 2.2.6.1.4.7 del Decreto 1077 de 2015 y demás normas aplicables.`
+        let parcon_10 = parcon[5] || `Que, de conformidad con lo anterior, las áreas de cesión han sido compensadas en dinero por el titular de la Licencia al Municipio de Piedecuesta y al Área Metropolitana de Bucaramanga, según lo establecido en los actos administrativos emitidos por dichas entidades, en concordancia con el POT de Piedecuesta, los artículos 2.2.6.1.4.5; 2.2.6.1.4.6 y 2.2.6.1.4.7 del Decreto 1077 de 2015 y demás normas aplicables.`
         let parcon_11 = parcon[6] || `Que la ELECTRIFICADORA DE SANTANDER S.A. E.S.P., expidió Oficio mediante el cual otorga la disponibilidad / factibilidad del servicio de energía.`
         let parcon_12 = parcon[7] || `Que la EMPRESA PIEDECUESTA DE SERVICIOS PÚBLICOS E.S.P., certificó el xxxxxx (xx) de xxxxxxx de dos mil veintidós (2022) que el predio con número catastral 68547-00-00-0000-0000-000 puede acceder al servicio de acueducto para xxxxxxxxxxxxxxxxxxx, por lo tanto cuenta con disponibilidad del servicio de acueducto y aseo.`
         let parcon_13 = parcon[8] || `Que el titular de la licencia presentó memoria técnica del sistema de tratamiento a implementar en la recolección de aguas servidas y disposición final de la red sanitaria para la edificación. `
@@ -2255,7 +2256,7 @@ export default function EXP_RES(props) {
 
         let parcon = reso.sub ? reso.sub.split('&&') : [];
 
-        let parcon_6 = parcon[0] || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso principal xxxxxxxxxxxxx como uso compatible de acuerdo a lo establecido por Acuerdo N° 028 de 2003 PBOT.`
+        let parcon_6 = parcon[0] || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso principal xxxxxxxxxxxxx como uso compatible de acuerdo a lo establecido por Acuerdo N° 028 de 2003 POT.`
 
         return <>
             <div className="row mb-1">
@@ -3017,7 +3018,7 @@ export default function EXP_RES(props) {
 
     let _MODEL_REC_RURAL = () => {
         var reso = _GET_EXPEDITION_JSON('reso');
-        let dv = reso.primero_5 || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso ___________________ de acuerdo a lo establecido por Acuerdo N° 028 de 2003 PBOT. `
+        let dv = reso.primero_5 || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso ___________________ de acuerdo a lo establecido por Acuerdo N° 028 de 2003 POT. `
         
         return <>
             <div className="row mb-1">
@@ -3793,7 +3794,8 @@ export default function EXP_RES(props) {
                         swalClose();
                     } else {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
+                        const filename = `Resolucion ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdocres/${encodeURIComponent(filename)}`, filename);
                     }
                 } else {
                     console.warn('⚠️ Status no es OK:', response.data);

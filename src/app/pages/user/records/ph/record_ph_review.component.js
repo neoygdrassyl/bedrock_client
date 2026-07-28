@@ -19,6 +19,8 @@ import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/a
 import usePHSave from './hooks/usePHSave';
 import { savePHStep } from './utils/phSaveStep';
 import ObservationPanel from '../../../../components/ObservationPanel';
+import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -53,7 +55,9 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
     async function CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        var formPdfBytes = formPdfResponse.data;
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
         const currentItem = _currentItem;
@@ -800,7 +804,8 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
             if (result.ok) {
                 swalClose();
-                window.open(import.meta.env.VITE_API_URL + "/pdf/recordph/" + "Informe Revision Propiedad Horizontal " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
+                const filename = `Informe Revision Propiedad Horizontal ${currentRecord.id_public ?? currentItem.id_public}.pdf`;
+                return downloadProtectedPdf(`/pdf/recordph/${encodeURIComponent(filename)}`, filename);
             }
         }
 
@@ -1193,7 +1198,8 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
             if (result.ok) {
                 swalClose();
-                window.open(import.meta.env.VITE_API_URL + "/pdf/recordphnot/" + "CITACIÓN PARA NOTIFICACIÓN " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
+                const filename = `CITACIÓN PARA NOTIFICACIÓN ${currentRecord.id_public ?? currentItem.id_public}.pdf`;
+                return downloadProtectedPdf(`/pdf/recordphnot/${encodeURIComponent(filename)}`, filename);
             }
         }
 

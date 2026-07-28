@@ -12,6 +12,8 @@ import publishService from '../../services/publish.service';
 
 import dayjs from 'dayjs';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 
 function Publish({ translation, swaMsg, breadCrums }) {
@@ -298,8 +300,11 @@ function Publish({ translation, swaMsg, breadCrums }) {
             <Button variant="destructive" size="sm" className="m-0 px-2" onClick={() => handleDelete(row)}><Icon name="trash" size={16} /></Button>
           </div>
           <div className='px-0'></div>
-          <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-1" target="_blank"
-            href={import.meta.env.VITE_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><Icon name="cloud-download-alt" size={16} /> Descargar</a></>
+          <button type="button" className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-1"
+            onClick={() => {
+              const filename = 'publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path;
+              return downloadProtectedFileWithFeedback(buildProtectedFilePath('publish', _PARSE_URL(row.type), filename), filename);
+            }}><Icon name="cloud-download-alt" size={16} /> Descargar</button></>
         ,
       },
     ]

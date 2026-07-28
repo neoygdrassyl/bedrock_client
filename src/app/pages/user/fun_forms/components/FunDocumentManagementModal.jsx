@@ -4,9 +4,10 @@ import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
+import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedFile, toProtectedApiPath } from '@/app/utils/pdfDownload';
 
-import PDF_VIEWER from '../../../../components/pdfViewer.component';
 import FUN_SERVICE from '../../../../services/fun.service';
 
 const MODAL_STYLES = {
@@ -67,6 +68,18 @@ function getHistoryStateLabel(value) {
     return Number(value) === 0 ? 'EN ARCHIVO' : 'FUERA DE ARCHIVO';
 }
 
+function downloadDocument(source, filename) {
+    if (!source) return Promise.resolve();
+    const protectedPath = toProtectedApiPath(source);
+    if (protectedPath) return downloadProtectedFile(protectedPath, filename);
+    const link = document.createElement('a');
+    link.href = source;
+    link.download = filename;
+    link.rel = 'noopener noreferrer';
+    link.click();
+    return Promise.resolve();
+}
+
 function FunDocumentManagementModal({
     open,
     onClose,
@@ -85,7 +98,7 @@ function FunDocumentManagementModal({
 
     const previewPath = useMemo(() => getPreviewPath(documentItem), [documentItem]);
     const previewUrl = useMemo(
-        () => (previewPath ? `${import.meta.env.VITE_API_URL}/files/${previewPath}` : ''),
+        () => (previewPath ? `/files/${previewPath}` : ''),
         [previewPath]
     );
     const documentExtension = useMemo(() => getDocumentExtension(documentItem), [documentItem]);
@@ -271,7 +284,9 @@ function FunDocumentManagementModal({
             return;
         }
 
-        window.open(previewUrl, '_blank', 'noopener,noreferrer');
+        downloadDocument(previewUrl, documentItem?.filename || 'documento').catch((error) => {
+            swalError({ title: 'ERROR AL DESCARGAR', text: error?.message || 'No fue posible descargar el documento.' });
+        });
     };
 
     const renderPreview = ({ fullscreen = false } = {}) => {
@@ -283,22 +298,20 @@ function FunDocumentManagementModal({
 
         if (documentExtension === 'pdf') {
             return <div className="rounded-xl border border-border bg-background p-3">
-                <PDF_VIEWER
+                <ProtectedDocumentPreview
                     key={`${previewPath}-${fullscreen ? 'fullscreen' : 'inline'}`}
-                    url={previewPath}
-                    apipath="/files/"
-                    defaultScale={fullscreen ? 1.2 : 1.1}
-                    maxPageWidth={fullscreen ? 1600 : 920}
-                    viewportClassName={fullscreen ? 'h-[calc(100vh-14rem)] bg-muted/10' : 'max-h-[min(60vh,48rem)] bg-muted/10'}
-                    pageWrapperClassName={fullscreen ? 'px-4 py-4' : 'px-2 py-3'}
+                    source={previewUrl}
+                    title={documentItem?.description || 'Documento digitalizado'}
+                    className={fullscreen ? 'h-[calc(100vh-14rem)] w-full bg-muted/10' : 'h-[min(60vh,48rem)] min-h-[24rem] w-full bg-muted/10'}
                 />
             </div>;
         }
 
         if (isPreviewableImage(documentExtension)) {
             return <div className={`flex items-center justify-center rounded-xl border border-border bg-muted/20 p-3 ${fullscreen ? 'h-[calc(100vh-14rem)]' : 'min-h-[24rem] max-h-[min(60vh,48rem)] overflow-auto'}`}>
-                <img
-                    src={previewUrl}
+                <ProtectedDocumentPreview
+                    source={previewUrl}
+                    kind="img"
                     alt={documentItem?.description || 'Documento digitalizado'}
                     className={`rounded-lg object-contain ${fullscreen ? 'max-h-full max-w-full' : 'max-h-[min(56vh,44rem)] w-full'}`}
                 />
