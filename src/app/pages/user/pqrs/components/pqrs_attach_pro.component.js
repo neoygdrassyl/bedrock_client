@@ -1,4 +1,6 @@
 import { Icon } from '@/components/icon';
+import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, currentItem }) {
 
@@ -18,7 +20,7 @@ function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, curre
                     </div>
                 </div>
                 </div>)
-            for (var i = 0; i < currentItem.pqrs_attaches.length; i++) {
+            for (let i = 0; i < currentItem.pqrs_attaches.length; i++) {
                 if (currentItem.pqrs_attaches[i].class == 1) {
                     _COMPONENT.push(
                     <div key={currentItem.pqrs_attaches[i].id ?? currentItem.pqrs_attaches[i].name ?? `attach-pro-${i}`} className='justify-content-center'>
@@ -31,8 +33,8 @@ function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, curre
                         </div>
                         <div className="col-2">
                             <label >
-                                <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + currentItem.pqrs_attaches[i].name}>
-                                    <Icon name="cloud-download-alt" size={16} /></a></label>
+                                <button type="button" className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2" onClick={() => downloadProtectedFileWithFeedback(buildProtectedFilePath('pqrs', currentItem.pqrs_attaches[i].name), currentItem.pqrs_attaches[i].name)}>
+                                    <Icon name="cloud-download-alt" size={16} /></button></label>
                         </div>
                     </div></div>)
                 }

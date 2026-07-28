@@ -8,6 +8,7 @@ import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
 import dayjs from 'dayjs';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
         // DATA GETERS
@@ -496,7 +497,8 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/planing/" + "Informe Planeacion " + _GET_CHILD_LAW().report_cub + ".pdf");
+                        const filename = `Informe Planeacion ${_GET_CHILD_LAW().report_cub}.pdf`;
+                        return downloadProtectedPdf(`/pdf/planing/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }

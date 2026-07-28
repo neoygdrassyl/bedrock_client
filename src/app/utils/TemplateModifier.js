@@ -760,7 +760,7 @@ export class TemplateModifier {
 
         this.setText("document-issued", `Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this._DATA.reso.reso_date)}`);
         this.setText("signature-name", `${this.data.curaduriaInfo.title.toUpperCase()} ${this.data.curaduriaInfo.master.toUpperCase()}`);
-        this.setText("signature-job", this.data.curaduriaInfo.job);
+         this.setText("signature-job", this.data.curaduriaInfo.signature_job || this.data.curaduriaInfo.job);
 
 
         return this.tempDiv.innerHTML;

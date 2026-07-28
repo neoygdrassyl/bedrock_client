@@ -8,6 +8,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import { cities } from '../../../components/jsons/vars';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshList, refreshItem }) {
         var formData = new FormData();
@@ -122,7 +123,8 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/nomenclaure/" + "Nomenclature " + currentItem.id_public + ".pdf");
+                        const filename = "Nomenclature " + currentItem.id_public + ".pdf";
+                        return downloadProtectedPdf(`/pdf/nomenclaure/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

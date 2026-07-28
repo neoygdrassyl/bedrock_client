@@ -11,6 +11,7 @@ import SubmitService from '../../../../services/submit.service'
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { buildMissingDocumentsSuggestionText, summarizeLegalFormRequirements } from '../../shared/expediente-documental.utils';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, requestUpdate, swaMsg }) {
         const [vrsRelated, setVrsRelated] = useState([]);
@@ -388,7 +389,8 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/confirminc/" + "Carta_Incompleto_" + currentItem.id_public + ".pdf");
+                        const filename = `Carta_Incompleto_${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/confirminc/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }

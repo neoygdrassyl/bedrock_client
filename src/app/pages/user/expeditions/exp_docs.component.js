@@ -17,6 +17,7 @@ import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { richTextToPlainText } from '../../../utils/richTextBlockNote';
+import { downloadProtectedPdf } from '../../../utils/pdfDownload';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 var writtenNumber = require('written-number');
@@ -1912,7 +1913,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc1/" + "Acto de tramite de licencia " + currentItem.id_public + ".pdf");
+                        const filename = `Acto de tramite de licencia ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdoc1/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -1969,7 +1971,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc2/" + "Liquidacion de Expensas " + currentItem.id_public + ".pdf");
+                        const filename = `Liquidacion de Expensas ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdoc2/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2033,7 +2036,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc3/" + "Impuestos Minicipales " + currentItem.id_public + ".pdf");
+                        const filename = `Impuestos Minicipales ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdoc3/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2071,7 +2075,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc4/" + "Estampilla PRO-UIS " + currentItem.id_public + ".pdf");
+                        const filename = `Estampilla PRO-UIS ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdoc4/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2127,7 +2132,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc5/" + "Deber Urbanistico " + currentItem.id_public + ".pdf");
+                        const filename = `Deber Urbanistico ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdoc5/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2190,7 +2196,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc6/" + "Impuestos Delineación Urbana " + currentItem.id_public + ".pdf");
+                        const filename = `Impuestos Delineación Urbana ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdoc6/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2249,7 +2256,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc7/" + "Liquidación Expensas " + currentItem.id_public + ".pdf");
+                        const filename = `Liquidación Expensas ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdoc7/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2287,7 +2295,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdocfinalnot/" + "Citacio para Notificacion Resolucsion " + currentItem.id_public + ".pdf");
+                        const filename = `Citacio para Notificacion Resolucsion ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdocfinalnot/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2405,7 +2414,8 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf");
+                        const filename = `Ejecutoria ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/expdoceje/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

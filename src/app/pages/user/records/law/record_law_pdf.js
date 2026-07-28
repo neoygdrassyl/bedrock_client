@@ -5,6 +5,8 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleLAWhCheck } from '../../../../components/customClasses/pdfCheckHandler';
+import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -96,7 +98,9 @@ function RECORD_LAW_PDF(props) {
         if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
         if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra2022";
 
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        var formPdfBytes = formPdfResponse.data;
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
         const _item = props.currentItem;
@@ -223,7 +227,8 @@ function RECORD_LAW_PDF(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     swalClose();
-                    window.open(import.meta.env.VITE_API_URL + "/pdf/recordlaw/" + "INFORME JURIDICO " + currentItem.id_public + ".pdf");
+                    const filename = `INFORME JURIDICO ${currentItem.id_public}.pdf`;
+                    return downloadProtectedPdf(`/pdf/recordlaw/${encodeURIComponent(filename)}`, filename);
                 } else {
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }

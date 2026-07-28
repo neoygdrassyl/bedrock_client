@@ -31,6 +31,8 @@ import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { buildProtectedFilePath, downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 export default function PQRS_MANAGE_COMPONENT(props) {
     const { currentId, globals, swaMsg, translation, retrieveItem, translation_form, retrievePublish, worker } = props;
@@ -605,7 +607,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     swalClose();
-                    window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
+                    const filename = "Oficio_" + currentItem.id_reply + ".pdf";
+                    return downloadProtectedPdf(`/pdf/reply/${encodeURIComponent(filename)}`, filename);
                 } else {
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
@@ -787,7 +790,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2 mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><Icon name="cloud-download-alt" size={16} /></a>
+                    <button type="button" className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2 mx-1" onClick={() => downloadProtectedFileWithFeedback(buildProtectedFilePath('pqrs', row.name), row.name)}><Icon name="cloud-download-alt" size={16} /></button>
                     <Button variant="destructive" size="sm" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></Button>
                 </>,
             },

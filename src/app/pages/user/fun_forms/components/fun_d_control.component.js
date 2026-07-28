@@ -7,6 +7,7 @@ import Codes from '../../../../components/jsons/fun6DocsList.json';
 import { SERIES_DOCS, _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { normalizeDocumentControlPages } from './documentControlPages';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
@@ -381,7 +382,8 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/controlcheck/" + "Hoja de control serie documental - " + currentItem.id_public + ".pdf");
+                        const filename = `Hoja de control serie documental - ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/controlcheck/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }

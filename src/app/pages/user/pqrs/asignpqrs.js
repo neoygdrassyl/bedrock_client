@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
@@ -342,7 +343,8 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
+                        const filename = "Oficio_" + currentItem.id_reply + ".pdf";
+                        return downloadProtectedPdf(`/pdf/reply/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

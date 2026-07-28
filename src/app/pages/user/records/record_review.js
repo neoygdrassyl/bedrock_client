@@ -21,6 +21,8 @@ import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
+import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -139,11 +141,16 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
     const [tn, setTn] = useState(undefined);
+    const [actaSimple, setActaSimple] = useState(false);
 
     useEffect(() => {
         setItem_Record();
         retrieveItem(currentId);
     }, []);
+
+    useEffect(() => {
+        setActaSimple(false);
+    }, [currentId]);
 
     useEffect(() => {
         if (!currentItem?.id_public || !currentRecord) return;
@@ -242,19 +249,25 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         const mergedPdf = await PDFDocument.create();
 
         var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        var formPdfBytes = formPdfResponse.data;
         var pdfDocLaw = await PDFDocument.load(formPdfBytes);
         const copiedPagesA = await mergedPdf.copyPages(pdfDocLaw, pdfDocLaw.getPageIndices());
         copiedPagesA.forEach((page) => mergedPdf.addPage(page));
 
         formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
-        formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        formPdfBytes = formPdfResponse.data;
         var pdfDocArc = await PDFDocument.load(formPdfBytes);
         const copiedPagesB = await mergedPdf.copyPages(pdfDocArc, pdfDocArc.getPageIndices());
         copiedPagesB.forEach((page) => mergedPdf.addPage(page));
 
         formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
-        formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        formPdfBytes = formPdfResponse.data;
         var pdfDocEng = await PDFDocument.load(formPdfBytes);
         const copiedPagesC = await mergedPdf.copyPages(pdfDocEng, pdfDocEng.getPageIndices());
         copiedPagesC.forEach((page) => mergedPdf.addPage(page));
@@ -1121,7 +1134,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 <div className="row my-3">
                     <div className="col d-flex justify-content-center">
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_simple" />
+                            <input type="checkbox" className="form-check-input" id="record_rew_simple" checked={actaSimple} onChange={(e) => setActaSimple(e.target.checked)} />
                             <label className="form-check-label" htmlFor="exampleCheck1">Acta simple</label>
                         </div>
                     </div>
@@ -1521,8 +1534,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             formData.set('r_footer', r_footer);
             let r_pagination = document.getElementById("record_rew_pagination").checked;
             formData.set('r_pagination', r_pagination);
-            let r_simple = document.getElementById("record_rew_simple").checked;
-            formData.set('r_simple', r_simple);
+            formData.set('r_simple', actaSimple);
             //let r_notdig = document.getElementById("record_rew_notdig").checked;
             //formData.set('r_notdig', r_notdig);
             //let r_notdig_pro = document.getElementById("record_rew_notdig_pro").value;
@@ -1583,7 +1595,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordrew/" + "ACTA OBSERVACIONES Y CORECCIONES " + currentItem.id_public + ".pdf");
+                        const filename = `ACTA OBSERVACIONES Y CORECCIONES ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/recordrew/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
