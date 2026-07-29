@@ -78,8 +78,8 @@
 .document-evaluation-requirement { display: grid; grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 12rem) 7.2rem auto; align-items: center; gap: 0.45rem; min-height: 2.4rem; padding: 0.38rem 0.65rem; }
 .document-evaluation-requirement.is-variant { padding-left: 1.35rem; background: hsl(var(--muted) / 0.24); }
 .document-evaluation-requirement__name { display: flex; min-width: 0; align-items: center; gap: 0.3rem; }
-.document-evaluation-requirement__name > span { display: flex; min-width: 0; align-items: center; gap: 0.3rem; }
-.document-evaluation-requirement__name input { flex: 0 0 auto; }
+.document-evaluation-requirement__name > span { display: flex; min-width: 0; flex: 1 1 auto; align-items: center; gap: 0.3rem; }
+.document-evaluation-requirement__name input[type="checkbox"] { width: 0.95rem; height: 0.95rem; min-height: 0; margin: 0; flex: 0 0 0.95rem; }
 .document-evaluation-requirement__name strong { overflow: hidden; font-size: 0.74rem; text-overflow: ellipsis; white-space: nowrap; }
 .document-evaluation-requirement__name small { color: hsl(var(--muted-foreground)); font-size: 0.61rem; white-space: nowrap; }
 .document-evaluation-requirement__name code { color: hsl(var(--muted-foreground)); font-size: 0.62rem; }
@@ -99,6 +99,7 @@
 .document-evaluation-document-question > div:first-child { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.65rem 0; }
 .document-evaluation-document-question > div:first-child strong { font-size: 0.74rem; }
 .document-evaluation-document-question > div:first-child label { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: auto; color: hsl(var(--muted-foreground)); font-size: 0.66rem; }
+.document-evaluation-document-question > div:first-child label input[type="checkbox"] { width: 0.95rem; height: 0.95rem; min-height: 0; margin: 0; flex: 0 0 0.95rem; }
 .document-evaluation-document-question small { color: hsl(var(--muted-foreground)); font-size: 0.62rem; }
 .document-evaluation-document-question .document-evaluation-status { margin-left: auto; }
 .document-evaluation-empty { display: grid; min-height: 7.5rem; place-content: center; justify-items: center; gap: 0.3rem; padding: 1rem; color: hsl(var(--muted-foreground)); text-align: center; }
