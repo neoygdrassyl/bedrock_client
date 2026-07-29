@@ -1484,6 +1484,7 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
           actuations={data.actuations}
           documents={data.documents}
           typologies={data.typologies}
+          conditions={data.conditions}
           evaluation={evaluation}
           loading={evaluationLoading}
           saving={evaluationSaving}

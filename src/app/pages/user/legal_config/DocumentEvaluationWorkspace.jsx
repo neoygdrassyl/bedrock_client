@@ -6,13 +6,7 @@ import {
 import { DovelaBadge } from '@/components/dovela-ui/dovela-badge';
 import './DocumentEvaluationWorkspace.css';
 
-const STATUSES = [
-  { value: 'required', label: 'Requerido' },
-  { value: 'complementary', label: 'Complementario' },
-  { value: 'not_applicable', label: 'No aplica' },
-];
-
-const emptyConfig = () => ({ legal_requirements: [], typology_checks: [], document_checks: [] });
+const emptyConfig = () => ({ schemaVersion: 2, typology_policies: [], typology_checks: [], document_checks: [] });
 const asList = (value) => (Array.isArray(value) ? value : []);
 const newId = () => globalThis.crypto?.randomUUID?.() || `evaluation-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const newCheck = () => ({ id: newId(), question: '', required: true });
@@ -20,10 +14,17 @@ const newCheck = () => ({ id: newId(), question: '', required: true });
 function normalizeConfig(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return emptyConfig();
   return {
-    legal_requirements: asList(value.legal_requirements).filter((item) => item?.typology_id && item?.document_id).map((item) => ({
-      typology_id: item.typology_id,
-      document_id: item.document_id,
-      requirement: STATUSES.some((status) => status.value === item.requirement) ? item.requirement : 'required',
+    schemaVersion: 2,
+    typology_policies: asList(value.typology_policies).filter((policy) => policy?.typology_id).map((policy) => ({
+      typology_id: policy.typology_id,
+      fulfillment_mode: policy.fulfillment_mode === 'all' ? 'all' : 'any',
+      units: asList(policy.units).filter((unit) => unit?.document_id).map((unit) => ({
+        document_id: unit.document_id,
+        condition_id: unit.condition_id || null,
+        effect: unit.effect === 'exclude' ? 'exclude' : 'include',
+        legal_requirement: unit.legal_requirement === 'optional' ? 'optional' : 'required',
+        evaluation_mode: unit.evaluation_mode === 'disabled' ? 'disabled' : 'when_present',
+      })),
     })),
     typology_checks: asList(value.typology_checks).filter((item) => item?.id && item?.typology_id).map((item) => ({
       id: item.id,
@@ -42,16 +43,6 @@ function normalizeConfig(value) {
   };
 }
 
-function statusLabel(value) {
-  return STATUSES.find((status) => status.value === value)?.label || 'Requerido';
-}
-
-function statusTone(value) {
-  if (value === 'complementary') return 'warning';
-  if (value === 'not_applicable') return 'neutral';
-  return 'info';
-}
-
 function QuestionEditor({ checks, onChange, label, disabled }) {
   function update(index, patch) {
     onChange(checks.map((check, checkIndex) => checkIndex === index ? { ...check, ...patch } : check));
@@ -62,31 +53,21 @@ function QuestionEditor({ checks, onChange, label, disabled }) {
       <div className="document-evaluation-questions__label">{label}</div>
       {checks.map((check, index) => (
         <div className="document-evaluation-question" key={check.id}>
-          <input
-            value={check.question}
-            onChange={(event) => update(index, { question: event.target.value })}
-            placeholder="Escribe una pregunta de evaluación"
-            disabled={disabled}
-            aria-label={`${label} ${index + 1}`}
-          />
+          <input value={check.question} onChange={(event) => update(index, { question: event.target.value })} placeholder="Escribe una pregunta de evaluación" disabled={disabled} aria-label={`${label} ${index + 1}`} />
           <label className="document-evaluation-question__required" title="Pregunta obligatoria">
             <input type="checkbox" checked={check.required !== false} onChange={(event) => update(index, { required: event.target.checked })} disabled={disabled} />
             <span>Oblig.</span>
           </label>
-          <button type="button" onClick={() => onChange(checks.filter((_, checkIndex) => checkIndex !== index))} disabled={disabled} aria-label={`Eliminar pregunta ${index + 1}`}>
-            <Trash2 size={14} aria-hidden="true" />
-          </button>
+          <button type="button" onClick={() => onChange(checks.filter((_, checkIndex) => checkIndex !== index))} disabled={disabled} aria-label={`Eliminar pregunta ${index + 1}`}><Trash2 size={14} aria-hidden="true" /></button>
         </div>
       ))}
-      <button type="button" className="document-evaluation-add-question" onClick={() => onChange([...checks, newCheck()])} disabled={disabled}>
-        <Plus size={14} aria-hidden="true" /> Agregar pregunta
-      </button>
+      <button type="button" className="document-evaluation-add-question" onClick={() => onChange([...checks, newCheck()])} disabled={disabled}><Plus size={14} aria-hidden="true" /> Agregar pregunta</button>
     </div>
   );
 }
 
 export default function DocumentEvaluationWorkspace({
-  actuation, actuations = [], documents = [], typologies = [], evaluation,
+  actuation, actuations = [], documents = [], typologies = [], conditions = [], evaluation,
   loading = false, saving = false, error = '', onLoad, onSave,
 }) {
   const instanceId = useId().replace(/:/g, '');
@@ -107,13 +88,19 @@ export default function DocumentEvaluationWorkspace({
 
   const primaryDocuments = useMemo(() => documents.filter((item) => !item.parent_document_id && item.is_active !== false), [documents]);
   const scopedDocuments = useMemo(() => primaryDocuments.filter((item) => item.typology_id === selectedTypologyId), [primaryDocuments, selectedTypologyId]);
-  const variantsFor = (documentId) => documents.filter((item) => item.parent_document_id === documentId && item.is_active !== false);
+  const selectableUnits = useMemo(() => scopedDocuments.flatMap((document) => {
+    const variants = documents.filter((item) => item.parent_document_id === document.id && item.is_active !== false);
+    return variants.length ? variants.map((variant) => ({ ...variant, family_name: document.name })) : [document];
+  }), [documents, scopedDocuments]);
+  const activeConditions = useMemo(() => conditions.filter((item) => item.is_active !== false), [conditions]);
   const parent = actuations.find((item) => item.id === actuation?.parent_id);
   const ancestorLayers = asList(evaluation?.ancestor_layers);
   const effective = normalizeConfig(evaluation?.effective_config);
+  const policy = config.typology_policies.find((item) => item.typology_id === selectedTypologyId) || { typology_id: selectedTypologyId, fulfillment_mode: 'any', units: [] };
+  const effectivePolicy = effective.typology_policies.find((item) => item.typology_id === selectedTypologyId);
   const typologyChecks = config.typology_checks.filter((item) => item.typology_id === selectedTypologyId);
-  const ownRuleCount = config.legal_requirements.filter((item) => item.typology_id === selectedTypologyId).length + typologyChecks.length;
-  const effectiveRuleCount = effective.legal_requirements.filter((item) => item.typology_id === selectedTypologyId).length + effective.typology_checks.filter((item) => item.typology_id === selectedTypologyId).length;
+  const ownRuleCount = policy.units.length + typologyChecks.length;
+  const effectiveRuleCount = (effectivePolicy?.units.length || 0) + effective.typology_checks.filter((item) => item.typology_id === selectedTypologyId).length;
   const disabled = loading || saving;
 
   function updateConfig(updater) {
@@ -121,18 +108,29 @@ export default function DocumentEvaluationWorkspace({
     setNotice('');
   }
 
-  function requirementFor(documentId) {
-    return config.legal_requirements.find((item) => item.typology_id === selectedTypologyId && item.document_id === documentId) || { requirement: 'required' };
-  }
-
-  function setRequirement(documentId, requirement) {
+  function setPolicy(nextPolicy) {
     updateConfig((current) => ({
       ...current,
-      legal_requirements: [
-        ...current.legal_requirements.filter((item) => !(item.typology_id === selectedTypologyId && item.document_id === documentId)),
-        { typology_id: selectedTypologyId, document_id: documentId, requirement },
+      typology_policies: [
+        ...current.typology_policies.filter((item) => item.typology_id !== selectedTypologyId),
+        { ...nextPolicy, typology_id: selectedTypologyId },
       ],
     }));
+  }
+
+  function unitRule(documentId) {
+    return policy.units.find((item) => item.document_id === documentId) || null;
+  }
+
+  function toggleUnit(documentId, enabled) {
+    const units = enabled
+      ? [...policy.units, { document_id: documentId, condition_id: null, effect: 'include', legal_requirement: 'required', evaluation_mode: 'when_present' }]
+      : policy.units.filter((item) => item.document_id !== documentId);
+    setPolicy({ ...policy, units });
+  }
+
+  function updateUnit(documentId, patch) {
+    setPolicy({ ...policy, units: policy.units.map((item) => item.document_id === documentId ? { ...item, ...patch } : item) });
   }
 
   function setTypologyChecks(checks) {
@@ -162,7 +160,8 @@ export default function DocumentEvaluationWorkspace({
   async function save() {
     if (!actuation || disabled) return;
     const normalized = {
-      legal_requirements: config.legal_requirements,
+      schemaVersion: 2,
+      typology_policies: config.typology_policies.filter((item) => item.typology_id && item.units.length),
       typology_checks: config.typology_checks.filter((check) => check.question.trim()).map((check) => ({ ...check, question: check.question.trim() })),
       document_checks: config.document_checks.map((item) => ({
         document_id: item.document_id,
@@ -170,21 +169,18 @@ export default function DocumentEvaluationWorkspace({
       })).filter((item) => item.checks.length),
     };
     const result = await onSave?.(normalized);
-    if (result?.ok) setNotice('Configuración de evaluación guardada.');
+    if (result?.ok) setNotice('Configuración de tipologías y evaluación guardada.');
   }
 
-  if (!actuation) {
-    return <section className="document-evaluation-workspace document-evaluation-workspace--empty" aria-label="Evaluación documental"><FileCheck2 size={28} aria-hidden="true" /><strong>Selecciona una actuación</strong><p>Elige una categoría, actuación o modalidad para definir sus requisitos y preguntas.</p></section>;
-  }
+  if (!actuation) return <section className="document-evaluation-workspace document-evaluation-workspace--empty" aria-label="Evaluación documental"><FileCheck2 size={28} aria-hidden="true" /><strong>Selecciona una actuación</strong><p>Elige una categoría, actuación o modalidad para definir sus tipologías y unidades documentales.</p></section>;
 
   return (
     <section className="document-evaluation-workspace" aria-label={`Evaluación documental de ${actuation.name}`} aria-busy={disabled}>
       <header className="document-evaluation-header">
         <div>
-          <p>Configuración contextual</p>
+          <p>Configuración por tipología</p>
           <div className="document-evaluation-breadcrumb" aria-label="Jerarquía de configuración">
-            <span><GitBranch size={13} aria-hidden="true" /> {actuation.node_kind === 'category' ? 'Categoría' : 'Categoría / contexto'}</span>
-            <ChevronRight size={13} aria-hidden="true" />
+            <span><GitBranch size={13} aria-hidden="true" /> {actuation.node_kind === 'category' ? 'Categoría' : 'Categoría / contexto'}</span><ChevronRight size={13} aria-hidden="true" />
             <span>{parent ? `Actuación: ${parent.name}` : `${actuation.node_kind === 'category' ? 'Categoría' : 'Actuación'}: ${actuation.name}`}</span>
             {parent && <><ChevronRight size={13} aria-hidden="true" /><strong>{actuation.node_kind === 'modality' ? `Modalidad: ${actuation.name}` : actuation.name}</strong></>}
           </div>
@@ -201,7 +197,7 @@ export default function DocumentEvaluationWorkspace({
       </div>
 
       <div className="document-evaluation-feedback" aria-live="polite">
-        {loading && <p className="is-loading" role="status"><LoaderCircle className="is-spinning" size={14} /> Cargando reglas de evaluación…</p>}
+        {loading && <p className="is-loading" role="status"><LoaderCircle className="is-spinning" size={14} /> Cargando configuración…</p>}
         {saving && <p className="is-loading" role="status"><LoaderCircle className="is-spinning" size={14} /> Guardando configuración…</p>}
         {error && <p className="is-error" role="alert"><AlertCircle size={14} /> {error}</p>}
         {notice && <p className="is-success" role="status"><Check size={14} /> {notice}</p>}
@@ -214,25 +210,39 @@ export default function DocumentEvaluationWorkspace({
 
       {mode === 'legal' ? (
         <div id={`${instanceId}-legal-panel`} role="tabpanel" aria-labelledby={`${instanceId}-legal-tab`} className="document-evaluation-legal">
-          <section className="document-evaluation-card"><header><span><ShieldCheck size={16} /></span><div><h3>Requisitos legales</h3><p>Define qué unidad documental cumple la tipología en este contexto.</p></div></header>
-            {scopedDocuments.map((document) => <div className="document-evaluation-document-group" key={document.id}>{[document, ...variantsFor(document.id)].map((item) => {
-              const rule = requirementFor(item.id);
-              return <div className={`document-evaluation-requirement${item.parent_document_id ? ' is-variant' : ''}`} key={item.id}><span className="document-evaluation-requirement__name">{item.parent_document_id && <ChevronRight size={13} aria-hidden="true" />}<strong>{item.name}</strong>{item.code && <code>{item.code}</code>}</span><select value={rule.requirement} onChange={(event) => setRequirement(item.id, event.target.value)} disabled={disabled} aria-label={`Exigencia de ${item.name}`}>{STATUSES.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}</select><DovelaBadge tone={statusTone(rule.requirement)} className="document-evaluation-status">{statusLabel(rule.requirement)}</DovelaBadge></div>;
-            })}</div>)}
-            {!scopedDocuments.length && <div className="document-evaluation-empty"><FileText size={22} /><strong>Sin documentos para esta tipología</strong><p>Asocia documentos activos a la tipología para configurar sus requisitos.</p></div>}
+          <section className="document-evaluation-card">
+            <header><span><ShieldCheck size={16} /></span><div><h3>Unidades de la tipología</h3><p>Activa las unidades que pueden cumplir esta tipología y define cuándo aplican.</p></div></header>
+            <div className="document-evaluation-toolbar">
+              <label><span>La tipología se cumple con</span><select value={policy.fulfillment_mode} onChange={(event) => setPolicy({ ...policy, fulfillment_mode: event.target.value })} disabled={disabled}><option value="any">Una unidad obligatoria (O)</option><option value="all">Todas las unidades obligatorias (Y)</option></select></label>
+            </div>
+            {selectableUnits.map((item) => {
+              const rule = unitRule(item.id);
+              return <div className={`document-evaluation-requirement${item.parent_document_id ? ' is-variant' : ''}`} key={item.id}>
+                <label className="document-evaluation-requirement__name"><input type="checkbox" checked={Boolean(rule)} onChange={(event) => toggleUnit(item.id, event.target.checked)} disabled={disabled} /><span>{item.parent_document_id && <ChevronRight size={13} aria-hidden="true" />}<strong>{item.name}</strong>{item.family_name && <small>Variante de {item.family_name}</small>}{item.code && <code>{item.code}</code>}</span></label>
+                {rule ? <>
+                  <select value={rule.condition_id || ''} onChange={(event) => updateUnit(item.id, { condition_id: event.target.value || null })} disabled={disabled} aria-label={`Condición de ${item.name}`}><option value="">Siempre aplica</option>{activeConditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}</select>
+                  <select value={rule.legal_requirement} onChange={(event) => updateUnit(item.id, { legal_requirement: event.target.value })} disabled={disabled} aria-label={`Exigencia de ${item.name}`}><option value="required">Obligatoria</option><option value="optional">Opcional</option></select>
+                  <DovelaBadge tone={rule.legal_requirement === 'required' ? 'info' : 'warning'} className="document-evaluation-status">{rule.condition_id ? 'Condicionada' : 'Directa'}</DovelaBadge>
+                </> : <DovelaBadge tone="neutral" className="document-evaluation-status">Sin configurar</DovelaBadge>}
+              </div>;
+            })}
+            {!selectableUnits.length && <div className="document-evaluation-empty"><FileText size={22} /><strong>Sin unidades para esta tipología</strong><p>Asocia documentos activos a la tipología para configurar sus reglas.</p></div>}
           </section>
         </div>
       ) : (
         <div id={`${instanceId}-evaluation-panel`} role="tabpanel" aria-labelledby={`${instanceId}-evaluation-tab`} className="document-evaluation-evaluation">
-          <section className="document-evaluation-card"><header><span><FileCheck2 size={16} /></span><div><h3>Preguntas de la tipología</h3><p>Se aplican al conjunto documental de la tipología seleccionada.</p></div></header><QuestionEditor checks={typologyChecks} onChange={setTypologyChecks} label="Pregunta de tipología" disabled={disabled} /></section>
-          <section className="document-evaluation-card document-evaluation-card--questions"><header><span><FileText size={16} /></span><div><h3>Preguntas por documento o variante</h3><p>Complementan las preguntas generales cuando la unidad documental lo requiere.</p></div></header>
-            {scopedDocuments.map((document) => [document, ...variantsFor(document.id)].map((item) => <div className="document-evaluation-document-question" key={item.id}><div><strong>{item.name}</strong>{item.parent_document_id && <small>Variante</small>}<DovelaBadge tone={statusTone(requirementFor(item.id).requirement)} className="document-evaluation-status">{statusLabel(requirementFor(item.id).requirement)}</DovelaBadge></div><QuestionEditor checks={checksFor(item.id)} onChange={(checks) => setDocumentChecks(item.id, checks)} label={`Preguntas para ${item.name}`} disabled={disabled} /></div>))}
-            {!scopedDocuments.length && <div className="document-evaluation-empty"><FileText size={22} /><strong>Sin documentos configurables</strong><p>Crea o asocia documentos a esta tipología para añadir preguntas específicas.</p></div>}
+          <section className="document-evaluation-card"><header><span><FileCheck2 size={16} /></span><div><h3>Preguntas de la tipología</h3><p>Se responden una vez para el conjunto documental.</p></div></header><QuestionEditor checks={typologyChecks} onChange={setTypologyChecks} label="Pregunta de tipología" disabled={disabled} /></section>
+          <section className="document-evaluation-card document-evaluation-card--questions"><header><span><FileText size={16} /></span><div><h3>Preguntas por unidad o variante</h3><p>Se aplican a cada unidad presentada. También puedes desactivar su evaluación en este contexto.</p></div></header>
+            {selectableUnits.filter((item) => unitRule(item.id)).map((item) => {
+              const rule = unitRule(item.id);
+              return <div className="document-evaluation-document-question" key={item.id}><div><strong>{item.name}</strong>{item.parent_document_id && <small>Variante</small>}<label><input type="checkbox" checked={rule.evaluation_mode === 'when_present'} onChange={(event) => updateUnit(item.id, { evaluation_mode: event.target.checked ? 'when_present' : 'disabled' })} disabled={disabled} /> Evaluar al presentarse</label></div>{rule.evaluation_mode === 'when_present' && <QuestionEditor checks={checksFor(item.id)} onChange={(checks) => setDocumentChecks(item.id, checks)} label={`Preguntas para ${item.name}`} disabled={disabled} />}</div>;
+            })}
+            {!selectableUnits.some((item) => unitRule(item.id)) && <div className="document-evaluation-empty"><FileText size={22} /><strong>Sin unidades configuradas</strong><p>Activa primero las unidades en Legal y debida forma.</p></div>}
           </section>
         </div>
       )}
 
-      <aside className="document-evaluation-inheritance" aria-label="Herencia de reglas"><header><GitBranch size={16} aria-hidden="true" /><div><h3>Herencia de reglas</h3><p>La configuración efectiva apila categoría, actuación y modalidad.</p></div></header><div className="document-evaluation-inheritance__layers">{ancestorLayers.map((layer) => <div key={layer.id} className="document-evaluation-inheritance__layer"><span>{layer.node_kind === 'modality' ? 'Modalidad' : layer.node_kind === 'category' ? 'Categoría' : 'Actuación'}</span><strong>{layer.name}</strong><small>Heredada</small></div>)}<div className="document-evaluation-inheritance__layer is-own"><span>{actuation.node_kind === 'modality' ? 'Modalidad' : actuation.node_kind === 'category' ? 'Categoría' : 'Actuación'}</span><strong>{actuation.name}</strong><small>Reglas propias</small></div>{!ancestorLayers.length && <p className="document-evaluation-inheritance__empty">No hay capas superiores. Las reglas que definas aquí serán la base de este contexto.</p>}</div></aside>
+      <aside className="document-evaluation-inheritance" aria-label="Herencia de reglas"><header><GitBranch size={16} aria-hidden="true" /><div><h3>Herencia de reglas</h3><p>La modalidad reemplaza la política de la misma tipología definida en niveles superiores.</p></div></header><div className="document-evaluation-inheritance__layers">{ancestorLayers.map((layer) => <div key={layer.id} className="document-evaluation-inheritance__layer"><span>{layer.node_kind === 'modality' ? 'Modalidad' : layer.node_kind === 'category' ? 'Categoría' : 'Actuación'}</span><strong>{layer.name}</strong><small>Heredada</small></div>)}<div className="document-evaluation-inheritance__layer is-own"><span>{actuation.node_kind === 'modality' ? 'Modalidad' : actuation.node_kind === 'category' ? 'Categoría' : 'Actuación'}</span><strong>{actuation.name}</strong><small>Reglas propias</small></div>{!ancestorLayers.length && <p className="document-evaluation-inheritance__empty">No hay capas superiores. Las reglas definidas aquí serán la base.</p>}</div></aside>
     </section>
   );
 }
