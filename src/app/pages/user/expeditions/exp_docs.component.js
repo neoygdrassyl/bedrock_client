@@ -17,7 +17,7 @@ import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { richTextToPlainText } from '../../../utils/richTextBlockNote';
-import { downloadProtectedPdf } from '../../../utils/pdfDownload';
+import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 var writtenNumber = require('written-number');
@@ -1911,10 +1911,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_1(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Acto de tramite de licencia ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdoc1/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdoc1/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -1969,10 +1969,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_2(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Liquidacion de Expensas ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdoc2/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdoc2/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2034,10 +2034,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_3(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Impuestos Minicipales ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdoc3/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdoc3/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2073,10 +2073,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_4(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Estampilla PRO-UIS ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdoc4/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdoc4/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2130,10 +2130,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_5(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Deber Urbanistico ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdoc5/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdoc5/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2194,10 +2194,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_6(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Impuestos Delineación Urbana ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdoc6/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdoc6/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2254,10 +2254,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_7(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Liquidación Expensas ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdoc7/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdoc7/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2293,10 +2293,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_final_not(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Citacio para Notificacion Resolucsion ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdocfinalnot/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdocfinalnot/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
@@ -2412,10 +2412,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             EXPEDITION_SERVICE.gen_doc_eje(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
                         const filename = `Ejecutoria ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdoceje/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdoceje/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

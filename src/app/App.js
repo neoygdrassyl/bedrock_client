@@ -21,6 +21,7 @@ import './translation/i18n';
 // New shell & theme
 import { ThemeProvider } from '@/components/theme-provider';
 import { AppShell } from './layouts/AppShell';
+import BusinessCalendarBootstrap from './layouts/BusinessCalendarBootstrap';
 import { Toaster } from '@/components/ui/sonner';
 import { getRouteRedirects } from './layouts/navigation-config';
 import { ErrorReportInlineTrigger } from './components/DovelaSupportLayer';
@@ -63,6 +64,7 @@ const SETTINGS = lazy(() => import('./pages/user/SettingsPage'));
 const LEGAL_FLOW_GUIDE = lazy(() => import('./pages/user/legal_flow_guide/LegalFlowGuide.page'));
 const SIMULADOR = lazy(() => import('./pages/user/simulador'));
 const DOCUMENTOS_SIMULATOR = lazy(() => import('./pages/user/simulador/documentos/DocumentosSimulatorPage'));
+const BUSINESS_CALENDAR = lazy(() => import('./pages/user/business-calendar/BusinessCalendarPage'));
 
 const loadingFallbackItems = Array.from({ length: 8 }, (_, index) => `route-loading-card-${index + 1}`);
 
@@ -266,6 +268,7 @@ export default function App() {
                       <Route path="/calendario" element={
                         <Appointments translation={schedulingT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
                       } />
+                      <Route path="/calendario-laboral" element={<BUSINESS_CALENDAR />} />
                       <Route path="/archivo" element={
                         <ARCHIVE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
                       } />
@@ -331,14 +334,16 @@ function PrivateLayout() {
   }
 
   return (
-    <AppShell
-      user={auth.user}
-      onLogout={() => auth.signout(() => navigate('/login'))}
-    >
-      <Suspense fallback={<LoadingFallback />}>
-        <Outlet />
-      </Suspense>
-    </AppShell>
+    <BusinessCalendarBootstrap>
+      <AppShell
+        user={auth.user}
+        onLogout={() => auth.signout(() => navigate('/login'))}
+      >
+        <Suspense fallback={<LoadingFallback />}>
+          <Outlet />
+        </Suspense>
+      </AppShell>
+    </BusinessCalendarBootstrap>
   );
 }
 

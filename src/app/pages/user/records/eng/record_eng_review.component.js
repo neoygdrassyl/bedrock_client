@@ -12,7 +12,7 @@ import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/components/icon';
 import ObservationPanel from '../../../../components/ObservationPanel';
-import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -1092,10 +1092,10 @@ function RECORD_ENG_REVIEW(props) {
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_ENG_SERVICE.pdfgen(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.artifactId) {
                         swalClose();
                         const filename = `INFORME ESTRUCTURAL ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/recordeng/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/recordeng/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

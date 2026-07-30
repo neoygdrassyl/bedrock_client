@@ -49,6 +49,7 @@ const NAV_ITEMS = [
 ];
 
 const LEGACY_DOCUMENT_CATALOG_TABS = Object.freeze({
+  'requisitos-documentales': 'documentos',
   'configuracion-actuaciones': 'actuaciones',
   'revision-documentos': 'evaluacion-documentos',
 });

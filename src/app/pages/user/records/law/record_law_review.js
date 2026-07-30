@@ -251,6 +251,7 @@ function RECORD_LAW_EVALUATION(props) {
             if (_RESUME) _RESUME = _RESUME.join('\n\n')
             return <ObservationPanel
                 title="OBSERVACIONES TOTALES"
+                defaultOpen={false}
                 headerId="law-total-observations-trigger"
                 panelId="law-total-observations-panel"
                 textareaProps={{

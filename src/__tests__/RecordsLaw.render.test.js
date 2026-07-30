@@ -228,17 +228,21 @@ describe('RecordsLaw — Render', () => {
     const resumeTextarea = container.querySelector('#law-total-observations-panel textarea[readonly]');
 
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(panel).toHaveAttribute('data-open', 'false');
+    expect(panel).toHaveAttribute('aria-hidden', 'true');
+    expect(panel).not.toHaveClass('op__content--open');
     expect(resumeTextarea).toBeTruthy();
     expect(resumeTextarea).not.toHaveAttribute('name', 's_flaw_values');
-    expect(resumeTextarea).toHaveAccessibleName('OBSERVACIONES TOTALES');
+    expect(resumeTextarea).toHaveAccessibleName('OBSERVACIONES TOTALES toque para ver observaciones');
+    expect(resumeTextarea).toHaveAttribute('tabindex', '-1');
 
     await user.click(trigger);
 
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    expect(panel).toHaveAttribute('data-open', 'true');
+    expect(panel).toHaveAttribute('aria-hidden', 'false');
+    expect(panel).toHaveClass('op__content--open');
     expect(resumeTextarea).not.toBeDisabled();
-    expect(resumeTextarea).toHaveStyle({ backgroundColor: '#2f2d38', color: '#f5f7fb' });
+    expect(resumeTextarea).toHaveClass('op__textarea', 'op__textarea--readonly');
+    expect(resumeTextarea).not.toHaveAttribute('tabindex', '-1');
     expect(resumeTextarea.value).toContain('Observacion documental');
     expect(resumeTextarea.value).toContain('Observacion del formulario');
     expect(resumeTextarea.value).toContain('Observacion de publicidad');
@@ -246,6 +250,8 @@ describe('RecordsLaw — Render', () => {
     await user.click(trigger);
 
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(panel).toHaveAttribute('data-open', 'false');
+    expect(panel).toHaveAttribute('aria-hidden', 'true');
+    expect(panel).not.toHaveClass('op__content--open');
+    expect(resumeTextarea).toHaveAttribute('tabindex', '-1');
   });
 });

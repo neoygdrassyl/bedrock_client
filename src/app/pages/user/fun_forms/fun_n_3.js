@@ -64,13 +64,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             let _alerts_array = _alerts_info;
             _alerts_array = _alerts_array.split(',');
             let _ALERT = [];
-            for (let i = 0; i < _alerts_array.length; i++) {
-                const documentId = _alerts_array[i].split('&')[2];
-                const supportDocument = _FIND_6(documentId);
-                const downloadSupport = () => downloadProtectedFileWithFeedback(
-                    buildProtectedFilePath(supportDocument.path, supportDocument.filename),
-                    supportDocument.filename,
-                );
+            for (var i = 0; i < _alerts_array.length; i++) {
                 if (_alerts_array[i].includes("ALERT_1"))
                     if (_alerts_array[i].split('&')[1]) _ALERT.push(<><label>Periódico el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></>);
                 if (_alerts_array[i].includes("ALERT_2"))
@@ -87,7 +81,13 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             let _alerts_array = _alerts_info;
             _alerts_array = _alerts_array.split(',');
             let _ALERT = [];
-            for (var i = 0; i < _alerts_array.length; i++) {
+            for (let i = 0; i < _alerts_array.length; i++) {
+                const documentId = _alerts_array[i].split('&')[2];
+                const supportDocument = _FIND_6(documentId);
+                const downloadSupport = () => downloadProtectedFileWithFeedback(
+                    buildProtectedFilePath(supportDocument.path, supportDocument.filename),
+                    supportDocument.filename,
+                );
                 if (_alerts_array[i].includes("ALERT_1")) {
                     if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Pediódico:
                         <button type="button" onClick={downloadSupport}>

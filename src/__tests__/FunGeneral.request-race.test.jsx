@@ -94,6 +94,7 @@ vi.mock('../app/components/customClasses/typeParse', () => ({
 }));
 
 vi.mock('@/components/icon', () => ({
+  default: () => <span aria-hidden="true" />,
   Icon: () => <span aria-hidden="true" />,
 }));
 

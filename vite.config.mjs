@@ -161,9 +161,6 @@ export default defineConfig(({ mode }) => {
           // Gantt chart (frappe)
             if (/frappe-gantt/.test(id)) return 'vendor-gantt';
 
-          // PDF viewer (separate from pdf generator)
-            if (/pdf-viewer-reactjs/.test(id)) return 'vendor-pdf-viewer';
-
           // Spreadsheet
             if (/react-spreadsheet/.test(id)) return 'vendor-spreadsheet';
           },

@@ -1,16 +1,68 @@
 import holidaysData from '../components/jsons/holydaysmoment.json';
 
+const officialBusinessCalendarHolidays = new Set(holidaysData.holidays || []);
+const customBusinessCalendarDays = new Map();
+const businessCalendarHolidays = new Set(officialBusinessCalendarHolidays);
+let businessCalendarVersion = 0;
+
+function replaceBusinessCalendarHolidays(holidays, synchronizedYears) {
+    const years = new Set((synchronizedYears || holidays.map(date => date.substring(0, 4))).map(String));
+    removeSetYears(officialBusinessCalendarHolidays, years);
+    holidays.forEach(date => officialBusinessCalendarHolidays.add(date));
+    rebuildYears(years);
+}
+
+function replaceBusinessCalendarCustomDays(entries, synchronizedYears) {
+    const years = new Set((synchronizedYears || entries.map(entry => entry.date.substring(0, 4))).map(String));
+    Array.from(customBusinessCalendarDays.keys()).forEach(date => {
+        if (years.has(date.substring(0, 4))) customBusinessCalendarDays.delete(date);
+    });
+    entries.forEach(entry => customBusinessCalendarDays.set(entry.date, entry));
+    rebuildYears(years);
+}
+
+function addBusinessCalendarCustomDay(entry) {
+    customBusinessCalendarDays.set(entry.date, entry);
+    rebuildYears(new Set([entry.date.substring(0, 4)]));
+}
+
+function removeBusinessCalendarCustomDay(date) {
+    customBusinessCalendarDays.delete(date);
+    rebuildYears(new Set([date.substring(0, 4)]));
+}
+
+function removeSetYears(set, years) {
+    set.forEach(date => {
+        if (years.has(date.substring(0, 4))) set.delete(date);
+    });
+}
+
+function rebuildYears(years) {
+    removeSetYears(businessCalendarHolidays, years);
+    officialBusinessCalendarHolidays.forEach(date => {
+        if (years.has(date.substring(0, 4))) businessCalendarHolidays.add(date);
+    });
+    customBusinessCalendarDays.forEach((_, date) => {
+        if (years.has(date.substring(0, 4))) businessCalendarHolidays.add(date);
+    });
+    businessCalendarVersion++;
+}
+
 class DiasHabilesColombia {
     constructor() {
-        // Cargar festivos desde JSON
-        this.allHolidays = new Set(holidaysData.holidays || []);
+        this.allHolidays = businessCalendarHolidays;
         this.memoizedHolidays = {};
+        this.holidaysVersion = businessCalendarVersion;
     }
 
     /**
      * Obtiene los festivos disponibles para un año dado
      */
     obtenerFestivos(año) {
+        if (this.holidaysVersion !== businessCalendarVersion) {
+            this.memoizedHolidays = {};
+            this.holidaysVersion = businessCalendarVersion;
+        }
         if (this.memoizedHolidays[año]) {
             return this.memoizedHolidays[año];
         }
@@ -238,4 +290,12 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = { procesarFecha, procesarFechaRestar, DiasHabilesColombia };
 }
 
-export {DiasHabilesColombia, procesarFecha, procesarFechaRestar}
+export {
+    addBusinessCalendarCustomDay,
+    DiasHabilesColombia,
+    procesarFecha,
+    procesarFechaRestar,
+    removeBusinessCalendarCustomDay,
+    replaceBusinessCalendarCustomDays,
+    replaceBusinessCalendarHolidays,
+}

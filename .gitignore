@@ -68,7 +68,9 @@ test-output-full.log
 # AI config files
 .github/
 ai/
-scripts/
+/scripts/*
+!/scripts/wait-for-backend.mjs
+!/scripts/wait-for-backend.test.mjs
 
 # Local agent and visual-inspection artifacts
 .atl/

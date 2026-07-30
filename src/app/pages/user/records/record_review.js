@@ -21,7 +21,7 @@ import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
-import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -1593,10 +1593,10 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_REVIEW_SERVICE.pdfgen(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.artifactId) {
                         swalClose();
                         const filename = `ACTA OBSERVACIONES Y CORECCIONES ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/recordrew/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/recordrew/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

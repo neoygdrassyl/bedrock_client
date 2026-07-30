@@ -13,6 +13,7 @@ vi.mock('@/components/ui/button', () => ({
 }));
 
 vi.mock('@/components/icon', () => ({
+  default: ({ name }) => <span data-testid={`icon-${name}`} />,
   Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
 }));
 

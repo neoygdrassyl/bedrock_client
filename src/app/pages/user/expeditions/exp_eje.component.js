@@ -15,7 +15,7 @@ import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components
 import EXP_RES_2 from './exp_res_2.component';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '../../../utils/pdfDownload';
+import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_EJEC(props) {
@@ -680,7 +680,7 @@ export default function EXP_EJEC(props) {
                 } else {
                 swalClose();
                 const filename = `Ejecutoria ${currentItem.id_public}.pdf`;
-                return downloadProtectedPdf(`/pdf/expdoceje/${encodeURIComponent(filename)}`, filename);
+                return downloadGeneratedPdf(response, `/pdf/expdoceje/${encodeURIComponent(filename)}`, filename);
                 }
             } else {
                 swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });

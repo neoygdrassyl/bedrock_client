@@ -19,7 +19,7 @@ import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/a
 import usePHSave from './hooks/usePHSave';
 import { savePHStep } from './utils/phSaveStep';
 import ObservationPanel from '../../../../components/ObservationPanel';
-import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -805,7 +805,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             if (result.ok) {
                 swalClose();
                 const filename = `Informe Revision Propiedad Horizontal ${currentRecord.id_public ?? currentItem.id_public}.pdf`;
-                return downloadProtectedPdf(`/pdf/recordph/${encodeURIComponent(filename)}`, filename);
+                return downloadGeneratedPdf({ data: result.data }, `/pdf/recordph/${encodeURIComponent(filename)}`, filename);
             }
         }
 
@@ -1199,7 +1199,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             if (result.ok) {
                 swalClose();
                 const filename = `CITACIÓN PARA NOTIFICACIÓN ${currentRecord.id_public ?? currentItem.id_public}.pdf`;
-                return downloadProtectedPdf(`/pdf/recordphnot/${encodeURIComponent(filename)}`, filename);
+                return downloadGeneratedPdf({ data: result.data }, null, filename);
             }
         }
 

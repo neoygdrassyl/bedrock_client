@@ -22,6 +22,12 @@ vi.mock('../app/services/checklist.service', () => ({
   },
 }));
 
+vi.mock('../app/components/ProtectedDocument', () => ({
+  ProtectedDocumentPreview: ({ source, title, className }) => (
+    <iframe src={source} title={title} className={className} />
+  ),
+}));
+
 describe('FunCorrelatedDocumentControl', () => {
   beforeEach(() => {
     FUNService.getUnifiedDocumentEntries.mockReset();
