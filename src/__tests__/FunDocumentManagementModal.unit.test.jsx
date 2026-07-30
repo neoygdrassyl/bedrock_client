@@ -13,8 +13,8 @@ vi.mock('@/components/legacy-modal', () => ({
   LegacyModal: ({ isOpen, children, contentLabel }) => (isOpen ? <div aria-label={contentLabel}>{children}</div> : null),
 }));
 
-vi.mock('../app/components/pdfViewer.component', () => ({
-  default: ({ url }) => <div data-testid="document-pdf-viewer">PDF:{url}</div>,
+vi.mock('@/app/components/ProtectedDocument', () => ({
+  ProtectedDocumentPreview: ({ source }) => <div data-testid="document-pdf-viewer">PDF:{source}</div>,
 }));
 
 vi.mock('../app/services/fun.service', () => ({

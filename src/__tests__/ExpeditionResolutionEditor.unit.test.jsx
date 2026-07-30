@@ -67,27 +67,18 @@ vi.mock('../app/utils/swalAdapter', () => ({
   swalUpdateProgress: vi.fn(),
 }));
 
-vi.mock('file-saver', () => ({
-  saveAs: vi.fn(),
+vi.mock('../app/utils/pdfDownload', () => ({
+  downloadProtectedPdf: vi.fn(() => Promise.resolve()),
 }));
 
 import EXP_RES_2 from '../app/pages/user/expeditions/exp_res_2.component';
+import { downloadProtectedPdf } from '../app/utils/pdfDownload';
 
 describe('EXP_RES_2', () => {
   beforeEach(() => {
     joditMockState.lastProps = null;
-    const pdfBytes = new TextEncoder().encode('pdf-content');
-    const stream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(pdfBytes);
-        controller.close();
-      },
-    });
-    global.fetch = vi.fn(() => Promise.resolve({
-      ok: true,
-      headers: { get: () => null },
-      body: stream,
-    }));
+    vi.clearAllMocks();
+    downloadProtectedPdf.mockResolvedValue();
   });
 
   test('renderiza el contenedor del editor PDF con la vista previa editable', async () => {
@@ -160,11 +151,17 @@ describe('EXP_RES_2', () => {
     fireEvent.click(screen.getByRole('button', { name: /descargar pdf/i }));
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(downloadProtectedPdf).toHaveBeenCalledTimes(1);
     });
 
-    const [, request] = global.fetch.mock.calls[0];
-    const payload = JSON.parse(request.body);
+    const [path, filename, request] = downloadProtectedPdf.mock.calls[0];
+    expect(path).toBe('/pdf-generate/generate-pdf');
+    expect(filename).toBe('Resolucion CUB1-2024-0001.pdf');
+    expect(request).toMatchObject({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const payload = request.data;
     expect(payload.html).toContain('Resolución editada desde Jodit');
     expect(payload.html).not.toContain('VALOR_OBSOLETO_REF');
   });

@@ -13,7 +13,7 @@ import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/sw
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: propRefreshList, closeModal, edit }) {
+function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: propRefreshList, closeModal, edit, requestOptions = [] }) {
     const [currentItem, setCurrentItem] = useState(false);
     const [verifyMSG, setVerifyMSG] = useState(null);
     const [vrWarning, setVrWarning] = useState(null);
@@ -22,7 +22,24 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
     const [documentPanel, setDocumentPanel] = useState('physical');
     const [digitalCount, setDigitalCount] = useState(0);
     const [digitalDocuments, setDigitalDocuments] = useState([]);
+    const [requestQuery, setRequestQuery] = useState('');
+    const [isRequestMenuOpen, setIsRequestMenuOpen] = useState(false);
     const refreshRequestIdRef = useRef(0);
+
+    const normalizedRequestQuery = requestQuery.trim().toLowerCase();
+    const requestSuggestions = [...new Set(
+        requestOptions
+            .map(item => item?.id_related)
+            .filter(Boolean),
+    )]
+        .filter(id => id.toLowerCase().includes(normalizedRequestQuery))
+        .slice(0, 8);
+
+    function selectRequest(id) {
+        document.getElementById('submit_2').value = id;
+        setRequestQuery(id);
+        setIsRequestMenuOpen(false);
+    }
 
     useEffect(() => {
         refreshItem();
@@ -269,10 +286,48 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
                     <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
                         <label htmlFor="submit_2" className="mb-1 block font-semibold text-foreground">2. Número de solicitud</label>
-                        <div className="input-group input-group-sm">
-                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
-                            <input type="text" className="form-control form-control-sm" id="submit_2" defaultValue={_CHILD.id_related} />
-                            <Button size="sm" type="button" className="h-[31px] bg-warning px-2 text-[11px] text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
+                        <div className="relative">
+                            <div className="input-group input-group-sm">
+                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
+                                <input
+                                    type="text"
+                                    className="form-control form-control-sm"
+                                    id="submit_2"
+                                    defaultValue={_CHILD.id_related}
+                                    autoComplete="off"
+                                    aria-autocomplete="list"
+                                    aria-controls="submit_2_options"
+                                    aria-expanded={isRequestMenuOpen && requestSuggestions.length > 0}
+                                    onChange={event => {
+                                        setRequestQuery(event.target.value);
+                                        setIsRequestMenuOpen(true);
+                                    }}
+                                    onFocus={() => setIsRequestMenuOpen(true)}
+                                    onBlur={() => setIsRequestMenuOpen(false)}
+                                />
+                                <Button size="sm" type="button" className="h-[31px] bg-warning px-2 text-[11px] text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
+                            </div>
+                            {isRequestMenuOpen && requestSuggestions.length > 0 ? (
+                                <div
+                                    id="submit_2_options"
+                                    role="listbox"
+                                    className="absolute left-[31px] top-full z-[60] mt-1 max-h-52 min-w-[250px] overflow-y-auto rounded-md border border-border bg-popover py-1 text-popover-foreground shadow-lg"
+                                >
+                                    {requestSuggestions.map(id => (
+                                        <button
+                                            key={id}
+                                            type="button"
+                                            role="option"
+                                            aria-selected={requestQuery === id}
+                                            className="block w-full cursor-pointer whitespace-nowrap px-3 py-2 text-left text-xs text-popover-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+                                            onMouseDown={event => event.preventDefault()}
+                                            onClick={() => selectRequest(id)}
+                                        >
+                                            {id}
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : null}
                         </div>
                         {verifyMSG ? <div className="mt-1 text-[11px] leading-snug">{verifyMSG}</div> : null}
                     </div>

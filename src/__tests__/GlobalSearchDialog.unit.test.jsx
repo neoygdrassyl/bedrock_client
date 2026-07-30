@@ -73,8 +73,8 @@ describe('GlobalSearchDialog', () => {
     await user.click(screen.getByRole('button', { name: /^buscar$/i }));
 
     expect(getSearchMock).toHaveBeenCalledWith('1', '68001-1-26-0001');
-    expect(getFunByPublicMock).toHaveBeenCalledWith('68001-1-26-0001');
-    expect(getSummaryByIdPublicMock).toHaveBeenCalledWith('68001-1-26-0001');
+    expect(getFunByPublicMock).toHaveBeenCalledWith('68001-1-26-0001', { skipDovelaErrorCapture: true });
+    expect(getSummaryByIdPublicMock).toHaveBeenCalledWith('68001-1-26-0001', { skipDovelaErrorCapture: true });
 
     const radicado = await screen.findByText('68001-1-26-0001');
     expect(radicado.closest('a')).toHaveAttribute('href', '/funmanage/expediente/68001-1-26-0001');
@@ -99,5 +99,22 @@ describe('GlobalSearchDialog', () => {
 
     expect(getSearchMock).toHaveBeenCalledWith('5', '123456789');
     expect(getFunByPublicMock).not.toHaveBeenCalled();
+  });
+
+  it('no convierte una búsqueda parcial por radicado en un lookup exacto fallido', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <GlobalSearchDialog open onOpenChange={vi.fn()} />
+      </MemoryRouter>
+    );
+
+    await user.type(screen.getByLabelText(/criterio de búsqueda de expedientes/i), '0003');
+    await user.click(screen.getByRole('button', { name: /^buscar$/i }));
+
+    expect(getSearchMock).toHaveBeenCalledWith('1', '0003');
+    expect(getFunByPublicMock).not.toHaveBeenCalled();
+    expect(await screen.findByText('68001-1-26-0001')).toBeInTheDocument();
   });
 });

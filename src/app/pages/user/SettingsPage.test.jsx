@@ -5,18 +5,23 @@ import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('../../services/data.service.js', () => ({ default: { getUserData: () => ({}) } }));
 vi.mock('./AlarmsV2ConfigPanel.jsx', () => ({ default: () => <div /> }));
-vi.mock('./document_requirements/DocumentRequirementsConfigPanel.jsx', () => ({ default: () => <div /> }));
-vi.mock('./document_requirements/DocumentRequirementsExplorerPage.jsx', () => ({ default: () => <div /> }));
-vi.mock('./legal_config/LegalConfigInitialPage.jsx', () => ({ default: () => <div /> }));
-vi.mock('./legal_config/DocumentReviewChecksPage.jsx', () => ({ default: () => <div data-testid="document-review-page" /> }));
+vi.mock('./legal_config/DocumentCatalogWorkspacePage.jsx', () => ({
+  default: ({ activeSection }) => (
+    <div data-testid="document-catalog-workspace" data-active-section={activeSection} />
+  ),
+  normalizeDocumentCatalogSection: (section) => (
+    ['documentos', 'actuaciones', 'evaluacion-documentos'].includes(section) ? section : 'documentos'
+  ),
+}));
 vi.mock('./ErrorReportsPanel.jsx', () => ({ default: () => <div /> }));
 import SettingsPage from './SettingsPage.jsx';
 
 describe('SettingsPage navigation', () => {
   it('keeps the configuration navigation compact and without repeated descriptions', () => {
     render(<MemoryRouter><SettingsPage /></MemoryRouter>);
-    expect(screen.getByText('Actuaciones y documentos')).toBeInTheDocument();
-    expect(screen.getByText('Revisión de documentos')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Catálogo documental' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Actuaciones y documentos' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Revisión de documentos' })).not.toBeInTheDocument();
     expect(screen.queryByText('Configura catálogos, asociaciones y documentos')).not.toBeInTheDocument();
     expect(screen.queryByText('Umbrales por fase, actor y nivel')).not.toBeInTheDocument();
     expect(screen.queryByText('Ajustes globales de la curaduría.')).not.toBeInTheDocument();
@@ -29,9 +34,9 @@ describe('SettingsPage navigation', () => {
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
   });
 
-  it('opens document checks as an independent settings view', () => {
+  it('maps the legacy document-review link to the consolidated catalog section', () => {
     render(<MemoryRouter initialEntries={['/?tab=revision-documentos']}><SettingsPage /></MemoryRouter>);
-    expect(screen.getByRole('button', { name: 'Revisión de documentos' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByTestId('document-review-page')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Catálogo documental' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByTestId('document-catalog-workspace')).toHaveAttribute('data-active-section', 'evaluacion-documentos');
   });
 });

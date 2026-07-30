@@ -1056,15 +1056,35 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
   const visibleActuations = useMemo(() => {
     const query = actuationQuery.trim().toLocaleLowerCase('es');
     if (!query) return data.actuations;
+    const byId = new Map(data.actuations.map((item) => [item.id, item]));
+    const childrenByParent = new Map();
+    data.actuations.forEach((item) => {
+      if (!item.parent_id) return;
+      childrenByParent.set(item.parent_id, [...(childrenByParent.get(item.parent_id) || []), item]);
+    });
     const visibleIds = new Set();
+
+    const includeAncestors = (item) => {
+      let parent = byId.get(item.parent_id);
+      while (parent) {
+        visibleIds.add(parent.id);
+        parent = byId.get(parent.parent_id);
+      }
+    };
+
+    const includeDescendants = (item) => {
+      (childrenByParent.get(item.id) || []).forEach((child) => {
+        visibleIds.add(child.id);
+        includeDescendants(child);
+      });
+    };
+
     data.actuations.forEach((item) => {
       const searchable = `${item.name || ''} ${item.code || ''}`.toLocaleLowerCase('es');
       if (!searchable.includes(query)) return;
       visibleIds.add(item.id);
-      if (item.parent_id) visibleIds.add(item.parent_id);
-      else data.actuations.forEach((candidate) => {
-        if (candidate.parent_id === item.id) visibleIds.add(candidate.id);
-      });
+      includeAncestors(item);
+      includeDescendants(item);
     });
     return data.actuations.filter((item) => visibleIds.has(item.id));
   }, [actuationQuery, data.actuations]);
@@ -1100,6 +1120,9 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
       return {
         ...document,
         parent_name: parent?.name || '',
+        variant_search: byParent(data.documents, document.id)
+          .map((variant) => `${variant.name || ''} ${variant.code || ''} variante`)
+          .join(' '),
         typology_name: data.typologies.find((item) => item.id === classificationSource.typology_id)?.name || '',
         label_names: labelNames,
         variant_count: byParent(data.documents, document.id).length,
@@ -1129,7 +1152,7 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
     {
       id: 'document',
       header: 'Documento',
-      accessorFn: (document) => `${document.name} ${document.parent_name} ${document.parent_document_id ? 'variante' : 'principal'}`,
+      accessorFn: (document) => `${document.name} ${document.parent_name} ${document.variant_search} ${document.parent_document_id ? 'variante' : 'principal'}`,
       cell: ({ row }) => {
         const document = row.original;
         return (
@@ -1289,6 +1312,37 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
     );
   }
 
+  function renderActuationBranch(item, depth = 0) {
+    const children = visibleActuations.filter((candidate) => candidate.parent_id === item.id);
+    const hasChildren = children.length > 0;
+    const isOpen = hasChildren && (Boolean(actuationQuery.trim()) || expandedSeries[item.id] !== false);
+
+    return (
+      <div className="actuation-list__group" key={item.id}>
+        <div className={`actuation-list__row${item.id === selected ? ' is-selected' : ''}`}>
+          {hasChildren ? (
+            <button
+              type="button"
+              className="actuation-list__disclosure"
+              aria-expanded={isOpen}
+              aria-label={`${isOpen ? 'Ocultar' : 'Mostrar'} niveles dependientes de ${item.name}`}
+              onClick={() => setExpandedSeries((current) => ({ ...current, [item.id]: !isOpen }))}
+              disabled={loading}
+            >
+              <ChevronRight size={14} aria-hidden="true" />
+            </button>
+          ) : <span className="actuation-list__disclosure-spacer" aria-hidden="true"><span /></span>}
+          {renderActuationItem(item, depth > 0)}
+        </div>
+        {isOpen && (
+          <div className="actuation-list__children" role="group" aria-label={`Niveles dependientes de ${item.name}`}>
+            {children.map((child) => renderActuationBranch(child, depth + 1))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
 
   return (
     <main
@@ -1374,35 +1428,7 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
           </div>
 
           <nav className="actuation-list" aria-label="Series y subseries de actuaciones">
-            {visibleActuations.filter((item) => !item.parent_id).map((series) => {
-              const children = visibleActuations.filter((item) => item.parent_id === series.id);
-              const hasChildren = children.length > 0;
-              const isOpen = hasChildren && (Boolean(actuationQuery.trim()) || expandedSeries[series.id] !== false);
-              return (
-                <div className="actuation-list__group" key={series.id}>
-                  <div className={`actuation-list__row${series.id === selected ? ' is-selected' : ''}`}>
-                    {hasChildren ? (
-                      <button
-                        type="button"
-                        className="actuation-list__disclosure"
-                        aria-expanded={isOpen}
-                        aria-label={`${isOpen ? 'Ocultar' : 'Mostrar'} subseries de ${series.name}`}
-                        onClick={() => setExpandedSeries((current) => ({ ...current, [series.id]: !isOpen }))}
-                        disabled={loading}
-                      >
-                        <ChevronRight size={14} aria-hidden="true" />
-                      </button>
-                    ) : <span className="actuation-list__disclosure-spacer" aria-hidden="true"><span /></span>}
-                    {renderActuationItem(series)}
-                  </div>
-                  {isOpen && (
-                    <div className="actuation-list__children" role="group" aria-label={`Subseries de ${series.name}`}>
-                      {children.map((item) => renderActuationItem(item, true))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {visibleActuations.filter((item) => !item.parent_id).map((item) => renderActuationBranch(item))}
             {!loading && data.actuations.length > 0 && visibleActuations.length === 0 && (
               <div className="legal-config-empty-state legal-config-empty-state--compact">
                 <Search size={22} aria-hidden="true" />

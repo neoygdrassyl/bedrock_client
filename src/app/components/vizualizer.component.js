@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { MDBTooltip } from './ui';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
-import PDF_VIEWER from './pdfViewer.component';
 import FUNService from '../services/fun.service'
 import { Icon } from '@/components/icon';
+import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
+import { downloadProtectedFile, toProtectedApiPath } from '@/app/utils/pdfDownload';
 
 function _isValidFileUrl(str) {
     if (!str || typeof str !== 'string') return false;
@@ -16,63 +17,29 @@ function _isValidFileUrl(str) {
 
 function addInlinePreview(url) {
     if (!url) return '';
+    if (!toProtectedApiPath(url)) return url;
     const separator = url.includes('?') ? '&' : '?';
     return url.includes('inline=1') ? url : `${url}${separator}inline=1`;
 }
 
-function getApiBaseUrl() {
-    return String(import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
-}
-
-function normalizeApiFileUrl(value) {
-    if (!value || typeof value !== 'string') return '';
-
-    const apiBaseUrl = getApiBaseUrl();
-    if (apiBaseUrl && value.startsWith(apiBaseUrl)) {
-        return value.slice(apiBaseUrl.length) || '/';
+function downloadDocument(source, filename) {
+    if (!source) return Promise.resolve();
+    const protectedPath = toProtectedApiPath(source);
+    if (protectedPath) {
+        return downloadProtectedFile(toProtectedApiPath(source) || source, filename);
     }
 
-    if (value.startsWith('/api/')) {
-        return value.replace(/^\/api/, '');
-    }
-
-    return value;
-}
-
-function buildViewerRequest(value, fallbackApipath, fallbackUrl) {
-    const normalizedValue = normalizeApiFileUrl(value);
-
-    if (normalizedValue.startsWith('/files/')) {
-        return {
-            apipath: '/files/',
-            url: normalizedValue.replace(/^\/files\//, ''),
-        };
-    }
-
-    return {
-        apipath: fallbackApipath || '',
-        url: fallbackUrl || '',
-    };
-}
-
-function buildBrowserUrl(value, fallbackApipath, fallbackUrl) {
-    const normalizedValue = normalizeApiFileUrl(value);
-    const apiBaseUrl = getApiBaseUrl();
-
-    if (normalizedValue.startsWith('/')) {
-        return `${apiBaseUrl}${normalizedValue}`;
-    }
-
-    if (normalizedValue) {
-        return normalizedValue;
-    }
-
-    return `${apiBaseUrl}${fallbackApipath || ''}${fallbackUrl || ''}`;
+    const link = document.createElement('a');
+    link.href = source;
+    link.download = filename;
+    link.rel = 'noopener noreferrer';
+    link.click();
+    return Promise.resolve();
 }
 
 function VIZUALIZER({ url, id, apipath, previewUrl, downloadUrl, icon, color, iconWrapper, iconStyle }) {
     const [modal, setModal] = useState(false);
-    const [localURL, setLocalURL] = useState('');
+    const [activeSource, setActiveSource] = useState('');
     const [loadError, setLoadError] = useState(null);
 
     const toggle = () => {
@@ -117,29 +84,33 @@ function VIZUALIZER({ url, id, apipath, previewUrl, downloadUrl, icon, color, ic
         }
         const re = /(?:\.([^.]+))?$/;
         const ext = re.exec(URL.split('?')[0])[1];
-        if (ext === "pdf" || ext === "PDF" ) {
+        if (["pdf", "png", "jpg", "jpeg"].includes(String(ext || '').toLowerCase())) {
             setLoadError(null);
+            setActiveSource(URL);
             setModal(true);
-        } else if (ext === "png" || ext === "jpg" || ext === "jpeg") {
-            const img = '<img src="' + URL + '">';
-            const popup = window.open();
-            popup.document.write(img);
         }
         else{
-            _DOWNLOAD();
+            _DOWNLOAD(URL);
         }
     }
 
-    let _DOWNLOAD = () => {
-        window.open(buildBrowserUrl(downloadUrl, apipath, url), '_blank');
+    let _DOWNLOAD = (source = downloadUrl || activeSource || `${apipath || ''}${url || ''}`) => {
+        const filename = String(source).split('?')[0].split('/').pop() || 'documento';
+        downloadDocument(source, filename).catch((error) => {
+            setLoadError({
+                message: error?.message || 'No se pudo descargar el documento.',
+                status: error?.response?.status,
+                reason: 'download_error',
+            });
+            setModal(true);
+        });
     }
     let _LOAD_BY_ID = () => {
         setLoadError(null);
         FUNService.getFun6(id)
         .then(response => {
             const fileUrl = response.data.path + '/' + response.data.filename;
-            setLocalURL(fileUrl);
-            _OPEN_WINDOW(addInlinePreview(import.meta.env.VITE_API_URL + apipath + fileUrl))
+            _OPEN_WINDOW(addInlinePreview(`${apipath || ''}${fileUrl}`))
         })
         .catch(e => {
             let message = 'No se pudo cargar la información del documento.';
@@ -162,10 +133,8 @@ function VIZUALIZER({ url, id, apipath, previewUrl, downloadUrl, icon, color, ic
         });
     }
 
-    const rawPreviewUrl = previewUrl || `${apipath || ''}${url || ''}`;
-    const previewFullUrl = addInlinePreview(buildBrowserUrl(rawPreviewUrl, apipath, url));
-    const viewerRequest = buildViewerRequest(addInlinePreview(rawPreviewUrl), apipath, url);
-    const isValidUrl = _isValidFileUrl(previewFullUrl);
+    const previewSource = addInlinePreview(previewUrl || `${apipath || ''}${url || ''}`);
+    const isValidUrl = _isValidFileUrl(previewSource);
 
     let aWrapper = iconWrapper ?? "btn btn-sm btn-light m-0 p-2 shadow-none"
 
@@ -181,9 +150,9 @@ function VIZUALIZER({ url, id, apipath, previewUrl, downloadUrl, icon, color, ic
     return (<>
 
         {icon
-            ? <button type="button"  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(previewFullUrl)}><Icon name={icon} size={20} style={{...iconStyle, color: color }} /></button>
+            ? <button type="button"  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(previewSource)}><Icon name={icon} size={20} style={{...iconStyle, color: color }} /></button>
             : <MDBTooltip tag="span" title='Visualizar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button type="button" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(previewFullUrl)}>
+                <button type="button" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(previewSource)}>
                     <Icon name="search" size={16} /></button> </MDBTooltip>
         }
 
@@ -204,8 +173,10 @@ function VIZUALIZER({ url, id, apipath, previewUrl, downloadUrl, icon, color, ic
                     {loadError.status ? <p className="mt-2 mb-0 text-xs text-muted-foreground">HTTP {loadError.status}</p> : null}
                 </div>
             ) : (
-                <PDF_VIEWER
-                    url={viewerRequest.url || url || localURL} apipath={viewerRequest.apipath || apipath || ''}
+                <ProtectedDocumentPreview
+                    source={activeSource || previewSource}
+                    title="Vista previa del documento"
+                    className="min-h-[65vh] w-full border-0"
                 />
             )}
             <hr />

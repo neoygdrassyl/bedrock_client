@@ -9,7 +9,7 @@ import RecordReviewService from '../../../services/record_review.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { downloadGeneratedPdf } from '@/app/utils/pdfDownload';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentVersion, edit, requestUpdate }) {
@@ -253,13 +253,9 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RecordReviewService.gen_doc_incomplete_act(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
-                        swalClose();
-                        const filename = `Carta_Alerta_Acta_Observaciones_${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/confirmact/${encodeURIComponent(filename)}`, filename);
-                    } else {
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    }
+                    swalClose();
+                    const filename = `Carta_Alerta_Acta_Observaciones_${currentItem.id_public}.pdf`;
+                    return downloadGeneratedPdf(response, null, filename);
                 })
                 .catch(e => {
                     console.log(e);

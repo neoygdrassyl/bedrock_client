@@ -20,7 +20,7 @@ class UserslDataService {
     return http.get(`/${route}/getall/clocks`);
   }
   getSearch(field, string) {
-    return http.get(`/${route}/getsearch/${field}&${string}`);
+    return http.get(`/${route}/getsearch/${encodeURIComponent(field)}&${encodeURIComponent(string)}`);
   }
   getclock(id, state) {
     return http.get(`/${route}/getclock/${id}&${state}`);
@@ -52,11 +52,21 @@ class UserslDataService {
   get_fun1(id_public) {
     return http.get(`/${route}/get/fun1/${id_public}`);
   }
-  get_fun_IdPublic(id_public) {
-    return dedupeGet(`${route}:get_fun_IdPublic:${id_public}`, () => http.get(`/${route}/get/idpublic/${id_public}`));
+  get_fun_IdPublic(id_public, config) {
+    const captureMode = config?.skipDovelaErrorCapture ? 'silent' : 'default';
+    return dedupeGet(`${route}:get_fun_IdPublic:${id_public}:${captureMode}`, () => (
+      config
+        ? http.get(`/${route}/get/idpublic/${id_public}`, config)
+        : http.get(`/${route}/get/idpublic/${id_public}`)
+    ));
   }
-  getSummaryByIdPublic(id_public) {
-    return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}`, () => http.get(`/${route}/get/summary/${id_public}`));
+  getSummaryByIdPublic(id_public, config) {
+    const captureMode = config?.skipDovelaErrorCapture ? 'silent' : 'default';
+    return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}:${captureMode}`, () => (
+      config
+        ? http.get(`/${route}/get/summary/${id_public}`, config)
+        : http.get(`/${route}/get/summary/${id_public}`)
+    ));
   }
   loadMacro(date_start, date_end) {
     return http.get(`/${route}/loadMacro/${date_start}&${date_end}`);

@@ -42,6 +42,19 @@ vi.mock('../../../utils/developerAccess.js', () => ({
   isErrorReportManagerUser: () => false,
 }));
 
+vi.mock('../AlarmsV2ConfigPanel.jsx', () => ({
+  default: () => <div data-testid="alarms-panel" />,
+}));
+
+vi.mock('../legal_config/DocumentCatalogWorkspacePage.jsx', () => ({
+  default: ({ activeSection }) => (
+    <div data-testid="document-catalog-workspace" data-active-section={activeSection} />
+  ),
+  normalizeDocumentCatalogSection: (section) => (
+    ['documentos', 'actuaciones', 'evaluacion-documentos'].includes(section) ? section : 'documentos'
+  ),
+}));
+
 import DocumentRequirementsConfigPanel from './DocumentRequirementsConfigPanel.jsx';
 import SettingsPage from '../SettingsPage.jsx';
 
@@ -193,14 +206,15 @@ describe('DocumentRequirementsConfigPanel', () => {
     expect(screen.getByTestId('document-requirements-panel')).toBeInTheDocument();
   });
 
-  it('abre el panel desde /configuracion?tab=requisitos-documentales y marca el tab activo', async () => {
+  it('conserva el deep link legado de requisitos dentro del catálogo documental consolidado', () => {
     render(
       <MemoryRouter initialEntries={['/configuracion?tab=requisitos-documentales']}>
         <SettingsPage />
       </MemoryRouter>
     );
 
-    expect(await screen.findByTestId('doc-explorer-page')).toBeInTheDocument();
-    expect(screen.getByTestId('settings-nav-requisitos-documentales')).toHaveClass('is-active');
+    expect(screen.getByRole('button', { name: 'Catálogo documental' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByTestId('document-catalog-workspace')).toHaveAttribute('data-active-section', 'documentos');
+    expect(screen.queryByTestId('alarms-panel')).not.toBeInTheDocument();
   });
 });

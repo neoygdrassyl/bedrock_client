@@ -71,7 +71,10 @@ function getHistoryStateLabel(value) {
 function downloadDocument(source, filename) {
     if (!source) return Promise.resolve();
     const protectedPath = toProtectedApiPath(source);
-    if (protectedPath) return downloadProtectedFile(protectedPath, filename);
+    if (protectedPath) {
+        return downloadProtectedFile(toProtectedApiPath(source) || source, filename);
+    }
+
     const link = document.createElement('a');
     link.href = source;
     link.download = filename;

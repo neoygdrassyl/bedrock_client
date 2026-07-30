@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import { Icon } from '@/components/icon';
 import '../../../../styles/docs-expediente.css';
 import { richTextToPlainText } from '../../../utils/richTextBlockNote';
-import { downloadProtectedPdf } from '../../../utils/pdfDownload';
+import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -3123,7 +3123,7 @@ export default function EXP_RES(props) {
                     <div className="input-group">
                         <input type="text" className="form-control" id="expedition_doc_res_id"
                             defaultValue={currentRecord.id_public} />
-                        <Button size="sm" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</Button>
+                        <Button type="button" size="sm" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</Button>
                     </div>
                 </div>
                 <div className="col">
@@ -3155,7 +3155,7 @@ export default function EXP_RES(props) {
             {canSave ?
                 <div className="row text-center">
                     <div className="col">
-                        <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                        <Button type="submit" size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                 </div>
                 : ''}
@@ -3349,11 +3349,11 @@ export default function EXP_RES(props) {
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
                     <div className="d-flex flex-wrap justify-content-center gap-3">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_res()}>
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_res()}>
                             <Icon name="file-pdf" size={16} /> GENERAR PDF
                         </Button>
                         {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
-                            <Button variant="outline" size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
+                            <Button type="button" variant="outline" size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
                                 <Icon name="edit" size={16} /> EDITAR PDF
                             </Button>
                         )}
@@ -3795,7 +3795,7 @@ export default function EXP_RES(props) {
                     } else {
                         swalClose();
                         const filename = `Resolucion ${currentItem.id_public}.pdf`;
-                        return downloadProtectedPdf(`/pdf/expdocres/${encodeURIComponent(filename)}`, filename);
+                        return downloadGeneratedPdf(response, `/pdf/expdocres/${encodeURIComponent(filename)}`, filename);
                     }
                 } else {
                     console.warn('⚠️ Status no es OK:', response.data);
@@ -3833,6 +3833,7 @@ export default function EXP_RES(props) {
     }
     let save_exp_res = (e) => {
         e.preventDefault();
+        formData = new FormData();
 
         var _CHILD_1 = _GET_CHILD_1();
 

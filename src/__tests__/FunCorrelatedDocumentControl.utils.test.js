@@ -154,6 +154,7 @@ describe('correlatedDocumentControl.utils', () => {
     });
 
     it('builds renderable preview and download URLs for legacy digital evidence with path and filename', () => {
+        const apiBaseUrl = String(import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
         const rows = buildCorrelatedRequirementRows({
             codes: ['511'],
             labels,
@@ -179,8 +180,8 @@ describe('correlatedDocumentControl.utils', () => {
         expect(rows[0].evidence[0]).toMatchObject({
             vr: 'VR-LEGACY',
             canPreview: true,
-            previewUrl: 'http://localhost/dovela-backend/public/files/fun/2026/91/formulario.pdf?inline=1',
-            downloadUrl: 'http://localhost/dovela-backend/public/files/fun/2026/91/formulario.pdf',
+            previewUrl: `${apiBaseUrl}/files/fun/2026/91/formulario.pdf?inline=1`,
+            downloadUrl: `${apiBaseUrl}/files/fun/2026/91/formulario.pdf`,
         });
     });
 });
