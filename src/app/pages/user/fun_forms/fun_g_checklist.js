@@ -5,15 +5,20 @@ import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { swalError, swalLoading, swalSuccess } from '../../../utils/swalAdapter';
+import {
+    findVersion,
+    isLegacyChecklistGroupVisible,
+    isLegacyChecklistSectionVisible,
+    normalizeLegacyReview,
+} from './utils/legalReviewEligibility';
 
 const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, readOnly = false }) => {
 
         const [isSaving, setIsSaving] = useState(false);
         const [checkedOverrides, setCheckedOverrides] = useState({});
+        const currentApplication = findVersion(currentItem.fun_1s, currentVersion);
 
         let _SET_CHILD = () => {
-            var _CHILD = currentItem.fun_1s;
-            var _CURRENT_VERSION = currentVersion - 1;
             var _CHILD_VARS = {
                 item_1: "",
                 item_2: "",
@@ -21,28 +26,17 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 item_4: "",
                 item_5: "",
             }
-            if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ?? '';
-                    _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ?? '';
-                    _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ?? '';
-                    _CHILD_VARS.item_4 = _CHILD[_CURRENT_VERSION].m_sub ?? '';
-                    _CHILD_VARS.item_5 = _CHILD[_CURRENT_VERSION].m_lic ?? '';
-                }
+            if (currentApplication) {
+                _CHILD_VARS.item_1 = currentApplication.tipo ?? '';
+                _CHILD_VARS.item_2 = currentApplication.tramite ?? '';
+                _CHILD_VARS.item_3 = currentApplication.m_urb ?? '';
+                _CHILD_VARS.item_4 = currentApplication.m_sub ?? '';
+                _CHILD_VARS.item_5 = currentApplication.m_lic ?? '';
             }
             return _CHILD_VARS;
         }
         let _SET_CHILD_REVIEW = () => {
-            var _CHILD = currentItem.fun_rs;
-            var _CURRENT_VERSION = currentVersion - 1;
-            if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD = _CHILD[_CURRENT_VERSION]
-                } else {
-                    _CHILD = false
-                }
-            }
-            return _CHILD;
+            return normalizeLegacyReview(findVersion(currentItem.fun_rs, currentVersion)) || false;
         }
         let _CHECK_INDEXVALUE = (_CODE, _VALUE) => {
             if (checkedOverrides[_CODE] != null) {
@@ -105,7 +99,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     formData.set('version', currentVersion);
                     await FUN_SERVICE.create_funr(formData);
                 }
-                await requestUpdate?.(currentItem.id, false);
+                await requestUpdate?.(currentItem.id, true);
                 swalSuccess({ title: swaMsg?.publish_success_title || 'Guardado', text: swaMsg?.publish_success_text || 'Lista de chequeo actualizada.' });
             } catch (error) {
                 setCheckedOverrides((current) => {
@@ -124,6 +118,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let _SET_610 = () => {
+            if (!isLegacyChecklistSectionVisible('6.1', currentApplication)) return null;
 
             return <>
                 <div className="row">
@@ -277,8 +272,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let _SET_620 = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_1.includes("A")) {
+            if (isLegacyChecklistSectionVisible('6.2', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-9">
@@ -301,8 +295,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
             }
         }
         let _SET_620A = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_3.includes("A")) {
+            if (isLegacyChecklistGroupVisible('A', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-12">
@@ -389,8 +382,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
             }
         }
         let _SET_620B = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_3.includes("B")) {
+            if (isLegacyChecklistGroupVisible('B', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-12">
@@ -496,8 +488,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
             }
         }
         let _SET_620C = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_3.includes("C")) {
+            if (isLegacyChecklistGroupVisible('C', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-12">
@@ -585,8 +576,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let _SET_630 = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_1.includes("B")) {
+            if (isLegacyChecklistSectionVisible('6.3', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-9">
@@ -755,8 +745,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let _SET_640 = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_1.includes("C")) {
+            if (isLegacyChecklistSectionVisible('6.4', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-9">
@@ -844,8 +833,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let _SET_650 = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_1.includes("F")) {
+            if (isLegacyChecklistSectionVisible('6.5', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-9">
@@ -923,8 +911,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let _SET_660 = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_1.includes("D")) {
+            if (isLegacyChecklistSectionVisible('6.6', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-9">
@@ -1165,6 +1152,25 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 <div className="row">
                     <div className="col-9">
                         <ul>
+                            <label>(660f) El proyecto constructivo genera 5 o más unidades de vivienda para transferir a terceros.</label>
+                        </ul>
+                    </div>
+                    <div className="col-1">
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="1"
+                            checked={_CHECK_INDEXVALUE('660f', 1)} />
+                    </div>
+                    <div className="col-1">
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="0"
+                            checked={_CHECK_INDEXVALUE('660f', 0)} />
+                    </div>
+                    <div className="col-1">
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="2"
+                            checked={_CHECK_INDEXVALUE('660f', 2)} />
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-9">
+                        <ul>
                             <label>(6611) Memoria de los cálculos y plano estructurales, firmados por el revisor independiente de los diseños estructurales.</label>
                         </ul>
                     </div>
@@ -1347,8 +1353,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let _SET_670 = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_1.includes("E")) {
+            if (isLegacyChecklistSectionVisible('6.7', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-9">
@@ -1412,8 +1417,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let _SET_680 = () => {
-            const _CHILD_VARS = _SET_CHILD();
-            if (_CHILD_VARS.item_1.includes("G")) {
+            if (isLegacyChecklistSectionVisible('6.8', currentApplication)) {
                 return <>
                     <div className="row">
                         <div className="col-9">
@@ -1727,6 +1731,11 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 <legend className="my-2 px-3 Collapsible" id="fung_c3">
                     <label className="app-p lead text-center fw-normal">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
                 </legend>
+                {!currentApplication && (
+                    <div className="note note-danger">
+                        No hay información de la solicitud para la versión {currentVersion}.
+                    </div>
+                )}
                 {_SET_610()}
                 {_SET_620()}
                 {_SET_630()}

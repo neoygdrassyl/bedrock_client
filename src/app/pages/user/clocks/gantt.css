@@ -110,12 +110,13 @@
   scrollbar-gutter: stable both-edges;
 }
 .gantt-chart-column::-webkit-scrollbar { height: 8px; }
-.gantt-chart-column::-webkit-scrollbar-track { background: #f1f1f1; }
+.gantt-chart-column::-webkit-scrollbar-track { background: hsl(var(--scrollbar-track)); }
 .gantt-chart-column::-webkit-scrollbar-thumb {
-  background: #bdbdbd;
+  background: hsl(var(--scrollbar-thumb));
   border-radius: 4px;
 }
-.gantt-chart-column::-webkit-scrollbar-thumb:hover { background: #9e9e9e; }
+.gantt-chart-column::-webkit-scrollbar-thumb:hover { background: hsl(var(--scrollbar-thumb-hover)); }
+.gantt-chart-column::-webkit-scrollbar-thumb:active { background: hsl(var(--scrollbar-thumb-active)); }
 
 .gantt-header-timeline { 
   position: relative; 
@@ -184,12 +185,13 @@
   scrollbar-gutter: stable both-edges;
 }
 .gantt-body-scroll-wrapper::-webkit-scrollbar { height: 8px; width: 8px; }
-.gantt-body-scroll-wrapper::-webkit-scrollbar-track { background: #f1f1f1; }
+.gantt-body-scroll-wrapper::-webkit-scrollbar-track { background: hsl(var(--scrollbar-track)); }
 .gantt-body-scroll-wrapper::-webkit-scrollbar-thumb {
-  background: #bdbdbd;
+  background: hsl(var(--scrollbar-thumb));
   border-radius: 4px;
 }
-.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: #9e9e9e; }
+.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: hsl(var(--scrollbar-thumb-hover)); }
+.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb:active { background: hsl(var(--scrollbar-thumb-active)); }
 
 .gantt-body-content { 
   position: relative; 
@@ -808,15 +810,18 @@
   width: 8px;
 }
 .gantt-preview-body::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.03);
+  background: hsl(var(--scrollbar-track));
   border-radius: 6px;
 }
 .gantt-preview-body::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
+  background: hsl(var(--scrollbar-thumb));
   border-radius: 6px;
 }
 .gantt-preview-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.18);
+  background: hsl(var(--scrollbar-thumb-hover));
+}
+.gantt-preview-body::-webkit-scrollbar-thumb:active {
+  background: hsl(var(--scrollbar-thumb-active));
 }
 
 .sidebar-gantt-container { margin-top: 12px; }
@@ -2502,4 +2507,3 @@ input:checked + .gantt-slider:before {
     border: 4px solid transparent;
     border-bottom-color: #343a40; /* Flecha oscura */
 }
-

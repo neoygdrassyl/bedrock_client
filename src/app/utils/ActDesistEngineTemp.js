@@ -110,7 +110,10 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
             tempDiv.querySelector("#act-des-cons-title-2").textContent = data.CON_ORDER[CON_ORDER_i++];
             tempDiv.querySelector("#act-des-cons-body-2").textContent = second_text_cons;
 
-            if (this.data.internal_documents && Object.keys(this.data.internal_documents).length > 0){
+            const hasInternalDocuments = Object.values(this.data.internal_documents || {}).some(doc =>
+                doc?.show !== false && String(doc?.pages ?? "").trim()
+            );
+            if (hasInternalDocuments){
                 this.showDiv("docs-table-internal");
                 this.renderInternalDocsTable(this.data.internal_documents || {});
             }

@@ -1,15 +1,27 @@
 import React, { StrictMode } from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-const { getMock, loadPQRSxFUNMock, getIdRelatedMock } = vi.hoisted(() => ({
+const {
+  getMock,
+  loadPQRSxFUNMock,
+  getIdRelatedMock,
+  updateCMock,
+  updateFunMock,
+  updateClockMock,
+  createClockMock,
+} = vi.hoisted(() => ({
   getMock: vi.fn(),
   loadPQRSxFUNMock: vi.fn(),
   getIdRelatedMock: vi.fn(),
+  updateCMock: vi.fn(),
+  updateFunMock: vi.fn(),
+  updateClockMock: vi.fn(),
+  createClockMock: vi.fn(),
 }));
 
 vi.mock('@/components/ui/button', () => ({
-  Button: ({ children, ...props }) => <button type="button" {...props}>{children}</button>,
+  Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));
 
 vi.mock('@/components/icon', () => ({
@@ -67,6 +79,10 @@ vi.mock('../app/services/fun.service', () => ({
   default: {
     get: getMock,
     loadPQRSxFUN: loadPQRSxFUNMock,
+    update_c: updateCMock,
+    update: updateFunMock,
+    update_clock: updateClockMock,
+    create_clock: createClockMock,
   },
 }));
 
@@ -110,6 +126,10 @@ describe('FUN_C initial fetch under StrictMode', () => {
     });
     loadPQRSxFUNMock.mockResolvedValue({ data: [] });
     getIdRelatedMock.mockResolvedValue({ data: [] });
+    updateCMock.mockResolvedValue({ data: 'OK' });
+    updateFunMock.mockResolvedValue({ data: 'OK' });
+    updateClockMock.mockResolvedValue({ data: 'OK' });
+    createClockMock.mockResolvedValue({ data: 'OK' });
   });
 
   it('ejecuta la carga inicial una sola vez por currentId aunque StrictMode re-ejecute efectos', async () => {
@@ -136,5 +156,57 @@ describe('FUN_C initial fetch under StrictMode', () => {
 
     expect(loadPQRSxFUNMock).toHaveBeenCalledTimes(1);
     expect(getIdRelatedMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('no persiste LYDF ni crea su reloj cuando la selección guardada quedó bloqueada', async () => {
+    getMock.mockResolvedValue({
+      data: {
+        id: 1417,
+        id_public: '68001-1-25-0130',
+        version: 1,
+        state: 1,
+        fun_1s: [{ version: 1, tipo: '', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
+        fun_cs: [{ id: 80, version: 1, condition: '1', legal_date: '2026-07-31' }],
+        fun_rs: [{ version: 1, code: '511', checked: '0' }],
+        fun_2s: [],
+        fun_3s: [],
+        fun_4s: [],
+        fun_51s: [],
+        fun_52s: [],
+        fun_53s: [],
+        fun_6s: [],
+        fun_laws: [],
+        fun_clocks: [],
+      },
+    });
+
+    const { container } = render(
+      <FUNC
+        currentId={1417}
+        requestUpdate={vi.fn()}
+        swaMsg={{}}
+        translation={{}}
+        globals={{}}
+        currentVersion={1}
+        NAVIGATION={{}}
+        NAVIGATION_VERSION={{}}
+        requesRefresh={vi.fn()}
+        closeModal={vi.fn()}
+      />
+    );
+
+    await waitFor(() => expect(container.querySelector('input[name="c_41"][value="1"]')).not.toBeNull());
+    const lydfRadio = container.querySelector('input[name="c_41"][value="1"]');
+    expect(lydfRadio.checked).toBe(false);
+    expect(lydfRadio.disabled).toBe(true);
+
+    fireEvent.submit(container.querySelector('#app-form_c'));
+
+    await waitFor(() => expect(updateCMock).toHaveBeenCalledTimes(1));
+    expect(updateCMock.mock.calls[0][1].get('condition')).toBe('0');
+    await waitFor(() => expect(updateFunMock).toHaveBeenCalledTimes(1));
+    expect(updateFunMock.mock.calls[0][1].get('state')).toBe('1');
+    expect(updateClockMock).not.toHaveBeenCalled();
+    expect(createClockMock).not.toHaveBeenCalled();
   });
 });

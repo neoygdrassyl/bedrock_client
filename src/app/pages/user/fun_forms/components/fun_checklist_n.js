@@ -4,6 +4,7 @@ import checklistService from '@/app/services/checklist.service';
 import { normalizeChecklistResponse } from '../utils/intelligentChecklist.utils';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { fatherValues, dvCheckList } from '../utils/funChecklistRules';
+import { findVersion } from '../utils/legalReviewEligibility';
 import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
@@ -65,12 +66,13 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
         if (typeof checker !== 'function') return false;
 
         try {
-            return Boolean(checker(currentItem));
+            const application = findVersion(currentItem?.fun_1s, currentVersion);
+            return Boolean(application && checker({ ...currentItem, fun_1s: [application] }));
         } catch (error) {
             console.warn('No fue posible evaluar la aplicabilidad del requisito', normalizedCode, error);
             return false;
         }
-    }, [currentItem]);
+    }, [currentItem, currentVersion]);
 
     const handleEvaluationChange = useCallback(async (requirement, evaluation) => {
         if (readOnly || !funIdPublic || !requirement?.code) return;

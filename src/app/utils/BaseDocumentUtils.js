@@ -1122,8 +1122,8 @@ export class BaseDocumentUtils {
     tbody.innerHTML = "";
 
     data.forEach(item => {
-
-      if (!item?.show) return;
+      const pages = String(item?.pages ?? item?.page ?? "").trim();
+      if (item?.show === false || !pages) return;
 
       const tr = document.createElement("tr");
       // Descripción
@@ -1139,7 +1139,7 @@ export class BaseDocumentUtils {
 
       // Folios
       const tdPage = document.createElement("td");
-      tdPage.textContent = item.page || "";
+      tdPage.textContent = pages;
       tdPage.style.textAlign = "center";
       tr.appendChild(tdPage);
 
@@ -1170,7 +1170,8 @@ export class BaseDocumentUtils {
     if (!list || typeof list !== "object") return;
 
     Object.values(list).forEach(doc => {
-      if (!doc?.show) return; // solo filas marcadas para mostrar
+      const pages = String(doc?.pages ?? "").trim();
+      if (doc?.show === false || !pages) return;
 
       const tr = document.createElement("tr");
 
@@ -1192,7 +1193,7 @@ export class BaseDocumentUtils {
 
       // Folios
       const tdPages = document.createElement("td");
-      tdPages.textContent = doc.pages || "";
+      tdPages.textContent = pages;
       tdPages.style.textAlign = "center";
       tr.appendChild(tdPages);
 

@@ -57,6 +57,7 @@ export function RecordReviewWorkspace({
     defaultTab = 'inventory',
     inventoryId,
     documentsId,
+    inventoryExpanded = false,
     className,
 }) {
     const [activeTab, setActiveTab] = useState(defaultTab);
@@ -84,7 +85,13 @@ export function RecordReviewWorkspace({
                 <div className="min-w-0 rounded-xl border border-border/70 bg-background/80 p-3 md:p-4">
                     <div
                         id={inventoryId}
-                        className={cn('h-[32rem] max-h-[62vh] min-w-0 overflow-auto pr-1', activeTab !== DEFAULT_TABS.inventory.key && 'hidden')}
+                        className={cn(
+                            'min-w-0 pr-1',
+                            inventoryExpanded
+                                ? 'h-auto max-h-none overflow-visible'
+                                : 'h-[32rem] max-h-[62vh] overflow-auto',
+                            activeTab !== DEFAULT_TABS.inventory.key && 'hidden'
+                        )}
                         role="tabpanel"
                     >
                         {activeTab === DEFAULT_TABS.inventory.key ? inventoryContent : null}

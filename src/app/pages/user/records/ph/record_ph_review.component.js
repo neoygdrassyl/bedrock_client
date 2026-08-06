@@ -800,6 +800,8 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             const result = await execute(RECORD_PH_SERVICE.gen_doc_ph(formData), {
                 operationName: 'generar PDF',
                 success: false,
+                isSuccessResponse: response => response.data === 'OK'
+                    || (typeof response.data?.artifactId === 'string' && response.data.artifactId.trim() !== ''),
             });
 
             if (result.ok) {

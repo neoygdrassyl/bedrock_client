@@ -23,20 +23,24 @@
 
 /* Scrollbar personalizado para la barra lateral */
 .fun-nav-sidebar::-webkit-scrollbar {
-    width: 6px;
+    width: 12px;
 }
 
 .fun-nav-sidebar::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: hsl(var(--scrollbar-track));
 }
 
 .fun-nav-sidebar::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
+    background: hsl(var(--scrollbar-thumb));
+    border-radius: 9999px;
 }
 
 .fun-nav-sidebar::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: hsl(var(--scrollbar-thumb-hover));
+}
+
+.fun-nav-sidebar::-webkit-scrollbar-thumb:active {
+    background: hsl(var(--scrollbar-thumb-active));
 }
 
 /* Toggle button - centered vertically with better visibility */

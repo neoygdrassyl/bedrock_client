@@ -29,6 +29,10 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221 83% 53%;
+    --scrollbar-track: 220 14% 92%;
+    --scrollbar-thumb: 220 10% 46%;
+    --scrollbar-thumb-hover: 220 12% 34%;
+    --scrollbar-thumb-active: 220 14% 25%;
     --radius: 0.5rem;
     --sidebar: 222.2 47.4% 11.2%;
     --sidebar-foreground: 210 40% 98%;
@@ -105,6 +109,10 @@
     --border: 217.2 25% 25%;
     --input: 217.2 25% 25%;
     --ring: 217.2 91.2% 59.8%;
+    --scrollbar-track: 215 18% 16%;
+    --scrollbar-thumb: 215 12% 54%;
+    --scrollbar-thumb-hover: 215 15% 68%;
+    --scrollbar-thumb-active: 215 18% 78%;
     --sidebar: 222.2 47.4% 11.2%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-accent: 217.2 91.2% 59.8%;
@@ -285,6 +293,33 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+}
+
+* {
+  scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
+  scrollbar-width: auto;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: hsl(var(--scrollbar-track));
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--scrollbar-thumb));
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--scrollbar-thumb-hover));
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background-color: hsl(var(--scrollbar-thumb-active));
 }
 
 input,

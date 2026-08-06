@@ -3,6 +3,7 @@ import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import RichTextEditor from '@/components/rich-text-editor';
 import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
+import ObservationPanel from '../../../../components/ObservationPanel';
 
 
 function RECORD_ENG_DESC(props) {
@@ -103,66 +104,69 @@ function RECORD_ENG_DESC(props) {
             let architectureDescription = values[1] ?? "";
             let structuralDescription = richTextToPlainText(_GET_REVIEW().desc || architectureDescription);
             return <>
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Tipo de Proyecto</label>
-                    </div>
-                </div>
-                <textarea className="input-group" value={formsParser1(_GET_CHILD_1_curated())} disabled readOnly rows="2" style={{ backgroundColor: 'gainsboro' }}></textarea>
-
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Descripción del Proyecto </label>
-                    </div>
-                </div>
-                <textarea className="input-group" value={_GET_CHILD_1().description} disabled readOnly rows="4" style={{ backgroundColor: 'gainsboro' }}></textarea>
-
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Antecedentes</label>
-                    </div>
-                </div>
-                <RichTextEditor
-                    value={values[0] ?? ""}
-                    maxLength={8000}
-                    minHeight={150}
-                    readOnly
-                    placeholder="Antecedentes del proyecto"
+                <ObservationPanel
+                    title="Tipo de Proyecto"
+                    collapsible={false}
+                    textareaProps={{
+                        readOnly: true,
+                        value: formsParser1(_GET_CHILD_1_curated()),
+                    }}
                 />
 
-
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Descripción del proyecto Arquitectónica</label>
-                    </div>
-                </div>
-                <RichTextEditor
-                    value={architectureDescription}
-                    maxLength={8000}
-                    minHeight={150}
-                    readOnly
-                    placeholder="Descripción del proyecto Arquitectónica"
+                <ObservationPanel
+                    title="Descripción del Proyecto"
+                    collapsible={false}
+                    textareaProps={{
+                        readOnly: true,
+                        value: _GET_CHILD_1().description,
+                    }}
                 />
 
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Descripción del proyecto estructural </label>
-                    </div>
-                </div>
-                <textarea className="input-group" id="record_eng_desc" maxLength={4000}
-                    defaultValue={structuralDescription} onBlur={() => save_item()} rows="3"></textarea>
-                <label> (Máximo 4000 Caracteres)</label>
+                <ObservationPanel title="Antecedentes" collapsible={false}>
+                    <RichTextEditor
+                        value={values[0] ?? ""}
+                        maxLength={8000}
+                        minHeight={150}
+                        readOnly
+                        placeholder="Antecedentes del proyecto"
+                    />
+                </ObservationPanel>
+
+                <ObservationPanel title="Descripción del proyecto Arquitectónica" collapsible={false}>
+                    <RichTextEditor
+                        value={architectureDescription}
+                        maxLength={8000}
+                        minHeight={150}
+                        readOnly
+                        placeholder="Descripción del proyecto Arquitectónica"
+                    />
+                </ObservationPanel>
+
+                <ObservationPanel
+                    title="Descripción del proyecto estructural"
+                    collapsible={false}
+                    helperText="(máximo 4000 caracteres)"
+                    textareaProps={{
+                        id: 'record_eng_desc',
+                        maxLength: 4000,
+                        defaultValue: structuralDescription,
+                        onBlur: () => save_item(),
+                    }}
+                />
 
                 {category == '2' ?
                     <>
-                        <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                            <div className='col'>
-                                <label>Revisión general (Para Certificaciones) </label>
-                            </div>
-                        </div>
-                        <textarea className="input-group" id="record_eng_detail_4" maxLength={4000}
-                            defaultValue={_GET_REVIEW().detail_4 ?? ""} onBlur={() => save_item()} rows="5"></textarea>
-                        <label> (Máximo 4000 Caracteres)</label>
+                        <ObservationPanel
+                            title="Revisión general (Para Certificaciones)"
+                            collapsible={false}
+                            helperText="(máximo 4000 caracteres)"
+                            textareaProps={{
+                                id: 'record_eng_detail_4',
+                                maxLength: 4000,
+                                defaultValue: _GET_REVIEW().detail_4 ?? "",
+                                onBlur: () => save_item(),
+                            }}
+                        />
 
                         <div className="row">
                             <div className="col-3">

@@ -117,7 +117,7 @@ export function AppShell({ user, onLogout, children }) {
         />
         </div>
 
-        <ScrollArea className="flex-1 app-shell-main-scroll">
+        <ScrollArea type="always" className="flex-1 app-shell-main-scroll">
           <main id="main-content" className="p-4 md:p-5">
             <LegacyPageWrapper>
               {children}

@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { EditableDataGrid } from '@/components/editable-data-grid';
 
 import Icon from '@/components/icon';
 import DataTable from '@/components/data-table-bridge';
@@ -10,6 +11,7 @@ import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/sw
 import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
+import ObservationPanel from '../../../../components/ObservationPanel';
 
 function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [newParking, setNewParking] = useState(false);
@@ -800,100 +802,46 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                 else return 0;
             }
 
-            return <>
-                <div className="row border">
-                    <div className="col-2 p-1">
-                        <label></label>
-                    </div>
-                    <div className="col-10 p-1">
-                        <div className="row">
-                            <div className="col p-1 text-center">
-                                <label className="fw-bold">D -m- (2.20*4.50)</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label className="fw-bold">D -m- (2.50*5.00)</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label className="fw-bold">D -m- (3.30*5.00)</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label className="fw-bold">D -m- (Totales)</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label className="fw-bold">Carga (3.50*7.00)</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label className="fw-bold">Motos (2.00*7.00)</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label className="fw-bold">Bicicletas (0.50*2.50)</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            const columns = [
+                { id: 'metric', header: '', width: 150 },
+                { id: 'd-220', header: 'D -m- (2.20*4.50)', width: 155, align: 'center' },
+                { id: 'd-250', header: 'D -m- (2.50*5.00)', width: 155, align: 'center' },
+                { id: 'd-330', header: 'D -m- (3.30*5.00)', width: 155, align: 'center' },
+                { id: 'd-total', header: 'D -m- (Totales)', width: 150, align: 'center' },
+                { id: 'loading', header: 'Carga (3.50*7.00)', width: 155, align: 'center' },
+                { id: 'motorcycles', header: 'Motos (2.00*7.00)', width: 155, align: 'center' },
+                { id: 'bicycles', header: 'Bicicletas (0.50*2.50)', width: 175, align: 'center' },
+            ];
+            const rows = [
+                [
+                    { id: 'totals', value: 'Totales', readOnly: true, className: 'font-semibold' },
+                    { value: _TOTALS[0], readOnly: true },
+                    { value: _TOTALS[1], readOnly: true },
+                    { value: _TOTALS[2], readOnly: true },
+                    { value: (_TOTALS[0] + _TOTALS[1] + _TOTALS[2]), readOnly: true },
+                    { value: _TOTALS[3], readOnly: true },
+                    { value: _TOTALS[4], readOnly: true },
+                    { value: _TOTALS[5], readOnly: true },
+                ],
+                [
+                    { id: 'percentages', value: 'Porcentajes', readOnly: true, className: 'font-semibold' },
+                    { value: `${get_percentage(_TOTALS[0]).toFixed(2)}%`, readOnly: true },
+                    { value: `${get_percentage(_TOTALS[1]).toFixed(2)}%`, readOnly: true },
+                    { value: `${get_percentage(_TOTALS[2]).toFixed(2)}%`, readOnly: true },
+                    { value: `${get_percentage(_TOTALS[0] + _TOTALS[1] + _TOTALS[2]).toFixed(2)}%`, readOnly: true },
+                    { value: '', readOnly: true },
+                    { value: '', readOnly: true },
+                    { value: '', readOnly: true },
+                ],
+            ];
 
-                <div className="row border">
-                    <div className="col-2 p-1">
-                        <label className="fw-bold">Totales</label>
-                    </div>
-                    <div className="col-10 p-1">
-                        <div className="row">
-                            <div className="col p-1 text-center">
-                                <label>{_TOTALS[0]}</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{_TOTALS[1]}</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{_TOTALS[2]}</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{(_TOTALS[0] + _TOTALS[1] + _TOTALS[2])}</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{_TOTALS[3]}</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{_TOTALS[4]}</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{_TOTALS[5]}</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="row border">
-                    <div className="col-2 p-1">
-                        <label className="fw-bold">Porcentajes</label>
-                    </div>
-                    <div className="col-10 p-1">
-                        <div className="row">
-                            <div className="col p-1 text-center">
-                                <label>{get_percentage(_TOTALS[0]).toFixed(2)}%</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{get_percentage(_TOTALS[1]).toFixed(2)}%</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{get_percentage(_TOTALS[2]).toFixed(2)}%</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label>{get_percentage(_TOTALS[0] + _TOTALS[1] + _TOTALS[2]).toFixed(2)}%</label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label></label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label></label>
-                            </div>
-                            <div className="col p-1 text-center">
-                                <label></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </>
+            return <EditableDataGrid
+                ariaLabel="Totales y porcentajes de parqueaderos"
+                columns={columns}
+                rows={rows}
+                getRowId={(row) => row[0].id}
+                spreadsheetInteractions={false}
+            />
         }
         let _COMPONENT_3 = () => {
             const _CHECK_ARRAY = check35;
@@ -1005,22 +953,20 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
         }
         let _COMPONENT_CORRECTIONS = () => {
             return <div className="row">
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Observaciones parqueaderos</label>
-                    </div>
+                <div className="col-12">
+                    <ObservationPanel title="Observaciones parqueaderos" collapsible={false}>
+                        <RichTextEditor
+                            value={value35[1]}
+                            hiddenName="s_35_values"
+                            maxLength={2000}
+                            minHeight={170}
+                            placeholder="Registre observaciones de parqueaderos con imágenes si aplica"
+                            uploadFile={uploadRichTextImage}
+                            onBlur={() => save_ra_35()}
+                            onSave={() => save_ra_35(true)}
+                        />
+                    </ObservationPanel>
                 </div>
-
-                <RichTextEditor
-                    value={value35[1]}
-                    hiddenName="s_35_values"
-                    maxLength={2000}
-                    minHeight={170}
-                    placeholder="Registre observaciones de parqueaderos con imágenes si aplica"
-                    uploadFile={uploadRichTextImage}
-                    onBlur={() => save_ra_35()}
-                    onSave={() => save_ra_35(true)}
-                />
             </div>
         }
         // FUNCTIONS AND WORKING ENGINES

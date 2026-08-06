@@ -1,0 +1,86 @@
+.record_arc {
+    --record-arc-heading-font-size: 11.5px;
+    --record-arc-element-font-size: 11px;
+    font-size: var(--record-arc-element-font-size);
+}
+
+.record_arc :is(
+    a,
+    b,
+    button,
+    caption,
+    dd,
+    div,
+    dt,
+    figcaption,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    input,
+    label,
+    legend,
+    li,
+    option,
+    p,
+    select,
+    small,
+    span,
+    strong,
+    sub,
+    sup,
+    td,
+    textarea,
+    th
+):not(
+    [role="grid"],
+    [role="grid"] *,
+    .op__panel,
+    .op__panel *,
+    .op__static-card,
+    .op__static-card *
+) {
+    font-size: var(--record-arc-element-font-size) !important;
+}
+
+.record_arc :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    legend,
+    label,
+    th,
+    caption,
+    dt,
+    strong,
+    b,
+    .fw-bold,
+    .font-semibold,
+    .card-title
+):not(
+    [role="grid"],
+    [role="grid"] *,
+    .op__panel,
+    .op__panel *,
+    .op__static-card,
+    .op__static-card *,
+    button *
+) {
+    font-size: var(--record-arc-heading-font-size) !important;
+}
+
+.record_arc button:not(:where(
+    .op__panel button,
+    .op__static-card button
+)),
+.record_arc button:not(:where(
+    .op__panel button,
+    .op__static-card button
+)) * {
+    font-size: var(--record-arc-element-font-size) !important;
+}
