@@ -7,12 +7,41 @@ import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/
 import submitService from '../../../../services/submit.service';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { Button } from '@/components/ui/button';
+import { EditableDataGrid } from '@/components/editable-data-grid';
+import { Maximize2, Minimize2 } from 'lucide-react';
+
+const MODALITY_ABBREVIATIONS = [
+    [/\bDOCUMENTOS?\b/g, 'DOC'],
+    [/\bADICIONALES\b/g, 'ADIC'],
+    [/\bLICENCIAS?\b/g, 'LIC'],
+    [/\bMODALIDAD\b/g, 'MOD'],
+    [/\bSOLICITUD\b/g, 'SOLIC'],
+    [/\bCONSTRUCCIÓN\b/g, 'CONST'],
+    [/\bURBANIZACIÓN\b/g, 'URB'],
+    [/\bPARCELACIÓN\b/g, 'PARC'],
+    [/\bSUBDIVISIÓN\b/g, 'SUBDIV'],
+    [/\bINTERVENCIÓN\b/g, 'INTERV'],
+    [/\bOCUPACIÓN\b/g, 'OCUP'],
+    [/\bEDIFICACIONES\b/g, 'EDIF'],
+    [/\bMODIFICACIÓN\b/g, 'MODIF'],
+    [/\bDEMOLICIÓN\b/g, 'DEMOL'],
+    [/\bAPROBACIÓN\b/g, 'APROB'],
+    [/\bAUTORIZACIÓN\b/g, 'AUTORIZ'],
+];
+
+const formatCompactModalityLabel = (label) => MODALITY_ABBREVIATIONS.reduce(
+    (formatted, [word, abbreviation]) => formatted.replace(word, abbreviation),
+    String(label ?? '').trim().toLocaleUpperCase('es-CO')
+);
+
+const STATUS_BADGE_LAYOUT_CLASS = 'inline-flex h-6 w-[88px] shrink-0 items-center justify-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none';
 
 function RECORD_LAW_DOCSCHECK(props) {
     const [VRDocs, setVRDocs] = useState([]);
     const [load, setLoad] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const [hideNotApplicable, setHideNotApplicable] = useState(Boolean(props.hideNotApplicableDefault));
+    const [isTableExpanded, setIsTableExpanded] = useState(false);
 
     const {
         translation,
@@ -26,7 +55,20 @@ function RECORD_LAW_DOCSCHECK(props) {
         docsScope,
         showFilters = false,
         title = 'Inventario de Informacion Aportada',
+        compactModalityLabels = false,
+        expandable = false,
+        showAttachmentColumns = true,
+        useEditableGrid = false,
+        expanded,
+        onExpandedChange,
     } = props;
+
+    const tableExpanded = expanded ?? isTableExpanded;
+    const toggleTableExpanded = () => {
+        const nextExpanded = !tableExpanded;
+        setIsTableExpanded(nextExpanded);
+        onExpandedChange?.(nextExpanded);
+    };
 
     useEffect(() => {
         setHideNotApplicable(Boolean(props.hideNotApplicableDefault));
@@ -152,7 +194,7 @@ function RECORD_LAW_DOCSCHECK(props) {
         }
         return <>{_COMPONENT}</>
     }
-    let _GET_VALUE_BADGE = (row) => {
+    let _GET_VALUE_BADGE_STATE = (row) => {
         let bg = {};
 
         if (row.value == -1 || row.value == null) bg = { color: 'dark', text: 'SIN DEFINIR', value: 1 }
@@ -163,6 +205,10 @@ function RECORD_LAW_DOCSCHECK(props) {
         }
         if (row.value == 1) bg = { color: 'success', text: 'APORTO', value: 2 }
         if (row.value == 2) bg = { color: 'warning', text: 'NO APLICA', value: 0 }
+        return bg;
+    }
+    let _GET_VALUE_BADGE = (row) => {
+        const bg = _GET_VALUE_BADGE_STATE(row);
         let editable = _GET_EDIT_POWERS(row);
         const badgeClass = {
             dark: 'border-border bg-muted text-foreground',
@@ -172,11 +218,11 @@ function RECORD_LAW_DOCSCHECK(props) {
         }[bg.color] || 'border-border bg-background text-foreground';
 
         if (editable) {
-            return <button type="button" className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${badgeClass}`}
+            return <button type="button" className={`${STATUS_BADGE_LAYOUT_CLASS} ${badgeClass}`}
                 onClick={() => save_fun_r_2(bg.value, row.code)}>{bg.text}</button>;
         }
 
-        return <span className={`inline-flex rounded-full border px-2 py-1 text-[11px] font-semibold ${badgeClass}`}>{bg.text}</span>;
+        return <span className={`${STATUS_BADGE_LAYOUT_CLASS} ${badgeClass}`}>{bg.text}</span>;
     }
     let _GET_EVA_VAKUE = (row) =>{
         if(row.value == 1) return true;
@@ -284,11 +330,13 @@ function RECORD_LAW_DOCSCHECK(props) {
   
     // FUNCTIONS & APIS
     var formData = new FormData();
-    const columns = [
+    const allColumns = [
         {
             name: 'MODALIDAD',
             minWidth: '240px',
-            cell: row => <span className="text-sm">{row.parent}</span>
+            cell: row => <span className="text-sm">{
+                compactModalityLabels ? formatCompactModalityLabel(row.parent) : row.parent
+            }</span>
         },
         {
             name: 'DOCUMENTO',
@@ -374,9 +422,56 @@ function RECORD_LAW_DOCSCHECK(props) {
             }
         },
     ]
+    const columns = showAttachmentColumns
+        ? allColumns
+        : allColumns.filter(({ name }) => name !== 'ANEXO' && name !== 'VER');
     const allRows = _COMPONENT_TABLE_LIST();
     const visibleRows = hideNotApplicable ? allRows.filter((row) => row.value != 2) : allRows;
     const notApplicableRows = allRows.filter((row) => row.value == 2).length;
+    const editableGridColumns = columns.map((column, index) => ({
+        id: column.name,
+        header: column.name,
+        align: column.center ? 'center' : column.right ? 'right' : 'left',
+        sticky: index < 2,
+        width: {
+            MODALIDAD: 260,
+            DOCUMENTO: 420,
+            CODIGO: 90,
+            ESTATUS: 120,
+            EVALUACION: 160,
+            ANEXO: 180,
+            VER: 90,
+        }[column.name] || 140,
+    }));
+    const editableGridRows = visibleRows.map((row, rowIndex) => {
+        const restricted = !_GET_EDIT_POWERS(row);
+        const rowToneClass = restricted
+            ? 'bg-slate-200/80 text-foreground/70 group-hover:bg-slate-200/80 dark:bg-slate-800/90 dark:group-hover:bg-slate-800/90'
+            : rowIndex % 2 === 1
+                ? 'bg-muted/20 group-hover:bg-muted/40'
+                : '';
+
+        return columns.map((column) => {
+            const value = {
+                MODALIDAD: compactModalityLabels ? formatCompactModalityLabel(row.parent) : row.parent,
+                DOCUMENTO: row.name ?? FUN6JSON[row.code],
+                CODIGO: row.code,
+                ESTATUS: _GET_VALUE_BADGE_STATE(row).text,
+                EVALUACION: _GET_EVA_VAKUE(row) ? (_GET_REVIEW(row.code) == 1 ? 'CUMPLE' : 'NO CUMPLE') : '',
+                ANEXO: _GET_ID6(row.doc) || _GET_ID6_NAME(row.doc) || '',
+                VER: 'Soporte documental',
+            }[column.name] ?? '';
+
+            return {
+                id: row.code,
+                name: column.name.toLowerCase(),
+                value,
+                content: column.cell ? column.cell(row) : value,
+                readOnly: true,
+                className: `h-auto min-h-10 whitespace-normal px-2 py-2 text-sm leading-5 ${rowToneClass}`,
+            };
+        });
+    });
     let save_fun_r = () => {
         let _reivews = document.getElementsByName('r_l_g2_doc_review');
         let _id6s = document.getElementsByName('r_l_g2_doc_id6');
@@ -386,10 +481,11 @@ function RECORD_LAW_DOCSCHECK(props) {
         let id6 = [];
         for (var i = 0; i < _codes.length; i++) {
             review.push(`${_codes[i].value}&${_reivews[i].value}`);
-            id6.push(`${_codes[i].value}&${_id6s[i].value}`);
+            if (_id6s[i]) id6.push(`${_codes[i].value}&${_id6s[i].value}`);
         }
         formData.set('review', review.join());
-        formData.set('id6', id6.join());
+        if (id6.length) formData.set('id6', id6.join());
+        else formData.delete('id6');
         manage_fun_r(false);
     }
 
@@ -449,6 +545,20 @@ function RECORD_LAW_DOCSCHECK(props) {
                     <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         <span className="rounded-full border border-border bg-background px-3 py-1.5">Visibles: {visibleRows.length}</span>
                         <span className="rounded-full border border-border bg-background px-3 py-1.5">No aplica: {notApplicableRows}</span>
+                        {expandable ? <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            aria-expanded={tableExpanded}
+                            aria-controls="record-document-inventory-table"
+                            onClick={toggleTableExpanded}
+                        >
+                            {tableExpanded
+                                ? <Minimize2 size={16} aria-hidden="true" />
+                                : <Maximize2 size={16} aria-hidden="true" />}
+                            {tableExpanded ? 'Comprimir tabla' : 'Ampliar tabla'}
+                        </Button> : null}
                         <Button
                             type="button"
                             variant={hideNotApplicable ? 'default' : 'outline'}
@@ -461,29 +571,39 @@ function RECORD_LAW_DOCSCHECK(props) {
                 </div>
             </div> : null}
 
-            <DataTable
-                conditionalRowStyles={conditionalRowStyles}
+            <div id="record-document-inventory-table">
+                {useEditableGrid ? <EditableDataGrid
+                    ariaLabel={title}
+                    columns={editableGridColumns}
+                    rows={editableGridRows}
+                    getRowId={(row, rowIndex) => row?.[0]?.id || `document-${rowIndex}`}
+                    spreadsheetInteractions={false}
+                    scrollable={false}
+                    emptyMessage={load ? 'NO HAY ARCHIVOS DEFINIDOS' : 'CARGANDO...'}
+                /> : <DataTable
+                    conditionalRowStyles={conditionalRowStyles}
 
-                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                noDataComponent="NO HAY ARCHIVOS DEFINIDOS"
-                striped="true"
-                columns={columns}
-                dense
+                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                    noDataComponent="NO HAY ARCHIVOS DEFINIDOS"
+                    striped="true"
+                    columns={columns}
+                    dense
 
-                load={load}
-                progressPending={!load}
-                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                    load={load}
+                    progressPending={!load}
+                    progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
 
-                fixedHeader
-                fixedHeaderScrollHeight={showFilters ? '360px' : '500px'}
+                    fixedHeader={!tableExpanded}
+                    fixedHeaderScrollHeight={showFilters ? '360px' : '500px'}
 
-                data={visibleRows}
-                highlightOnHover
+                    data={visibleRows}
+                    highlightOnHover
 
-                className="data-table-component"
-                noHeader
-                onRowClicked={(e) => setSelectedRow(e.id)}
-            />
+                    className="data-table-component"
+                    noHeader
+                    onRowClicked={(e) => setSelectedRow(e.id)}
+                />}
+            </div>
         </div >
     );
 }

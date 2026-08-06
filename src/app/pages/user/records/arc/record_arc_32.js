@@ -1,4 +1,5 @@
 import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _IDENTIFY_SERIES, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
+import { EditableDataGrid } from '@/components/editable-data-grid';
 
 function RECORD_ARC_32({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR }) {
 
@@ -55,9 +56,10 @@ function RECORD_ARC_32({ translation, swaMsg, globals, currentItem, currentVersi
         let _COMPONENT = () => {
             let _CHILD = _GET_CHILD_1();
 
-            return <>
-                <textarea className="input-group" defaultValue={formsParser1(_CHILD)} disabled></textarea>
-            </>
+            return <dl className="record-arc-request-type mt-2 mb-0 rounded-md border border-border bg-slate-50 px-3 py-2 dark:bg-slate-800/40">
+                <dt className="mb-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">Tipo de trámite</dt>
+                <dd className="mb-0 text-[11px] font-medium text-foreground">{formsParser1(_CHILD)}</dd>
+            </dl>
         }
         let _COMPONENT_SERIES = () => {
             let _CHILD = _GET_CHILD_1();
@@ -65,36 +67,47 @@ function RECORD_ARC_32({ translation, swaMsg, globals, currentItem, currentVersi
             let _SUBSERIE = _GET_SUBSERIE_COD(_CHILD);
             let _SERIE_STR = _GET_SERIE_STR(_CHILD)
             let _SUBSERIE_STR = _GET_SUBSERIE_STR(_CHILD);
-            return <>
-                <div className="row my-2">
-                    <div className="col-3">
-                        <label className="fw-bold ms-4">Serie Documental:</label>
-                    </div>
-                    <div className="col-2">
-                        <label className='fw-bold'>{_SERIE}</label>
-                    </div>
-                    <div className="col">
-                        <label className='fw-bold'>{_SERIE_STR[0] ?? <label className='text-danger'>No se encuentra Serie</label>}</label>
-                    </div>
-                </div>
+            const columns = [
+                { id: 'documental-type', header: 'Tipo documental', width: 210 },
+                { id: 'code', header: 'Código', width: 130, align: 'center' },
+                { id: 'description', header: 'Descripción' },
+            ];
+            const rows = [
+                [
+                    { id: 'serie', value: 'Serie Documental:', readOnly: true, className: 'font-semibold' },
+                    { value: _SERIE, readOnly: true },
+                    {
+                        value: _SERIE_STR[0] ?? 'No se encuentra Serie',
+                        content: _SERIE_STR[0] ?? <label className='text-danger'>No se encuentra Serie</label>,
+                        readOnly: true,
+                        className: 'font-semibold',
+                    },
+                ],
+                [
+                    { id: 'subserie', value: 'Subserie Documental:', readOnly: true, className: 'font-semibold' },
+                    { value: _SUBSERIE.length == 1 ? _SUBSERIE[0] : '', readOnly: true },
+                    {
+                        value: _SUBSERIE_STR[0] ?? 'No se encuentra Subserie',
+                        content: _SUBSERIE_STR[0] ?? <label className='text-danger'>No se encuentra Subserie</label>,
+                        readOnly: true,
+                        className: 'font-semibold',
+                    },
+                ],
+            ];
 
-                <div className="row my-2">
-                    <div className="col-3">
-                        <label className="fw-bold ms-4">Subserie Documental:</label>
-                    </div>
-                    <div className="col-2">
-                        <label className='fw-bold'>{_SUBSERIE.length == 1 ? _SUBSERIE[0] : ''}</label>
-                    </div>
-                    <div className="col">
-                        <label className='fw-bold'>{_SUBSERIE_STR[0] ?? <label className='text-danger'>No se encuentra Subserie</label>}</label>
-                    </div>
-                </div>
-            </>
+            return <EditableDataGrid
+                ariaLabel="Serie y subserie documental"
+                columns={columns}
+                rows={rows}
+                getRowId={(row) => row[0].id}
+                spreadsheetInteractions={false}
+                fillWidth
+            />
         }
 
 
         return (
-            <div className="record_arc_31 container">
+            <div className="record_arc_31 w-full">
                 {_COMPONENT_SERIES()}
                 {_COMPONENT()}
         

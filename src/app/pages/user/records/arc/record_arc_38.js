@@ -375,21 +375,20 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
 
             return <>
                 <div className="row">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Observaciones finales del Proyecto</label>
-                        </div>
+                    <div className="col-12">
+                        <ObservationPanel title="Observaciones finales del Proyecto" collapsible={false}>
+                            <RichTextEditor
+                                value={_CHILD.detail}
+                                hiddenId="r_a_38_1"
+                                maxLength={8000}
+                                minHeight={180}
+                                placeholder="Registre observaciones finales, conclusiones e imágenes de soporte"
+                                uploadFile={uploadRichTextImage}
+                                onBlur={() => save_ra_38(false)}
+                                onSave={() => save_ra_38(true)}
+                            />
+                        </ObservationPanel>
                     </div>
-                    <RichTextEditor
-                        value={_CHILD.detail}
-                        hiddenId="r_a_38_1"
-                        maxLength={8000}
-                        minHeight={180}
-                        placeholder="Registre observaciones finales, conclusiones e imágenes de soporte"
-                        uploadFile={uploadRichTextImage}
-                        onBlur={() => save_ra_38(false)}
-                        onSave={() => save_ra_38(true)}
-                    />
                 </div>
             </>
         }

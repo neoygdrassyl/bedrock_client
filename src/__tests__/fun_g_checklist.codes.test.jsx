@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
+import { getVisibleLegalReviewEntries } from '../app/pages/user/fun_forms/utils/legalReviewEligibility';
 
 vi.mock('@/components/data-table-bridge', () => ({
   default: () => <div data-testid="data-table" />,
@@ -29,6 +30,62 @@ vi.mock('../app/utils/swalAdapter', () => ({
 }));
 
 describe('FUNG_CHECKLIST section 6.6', () => {
+  test('mantiene paridad entre los radios visibles y la elegibilidad LYDF', async () => {
+    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const currentItem = {
+      id: 1417,
+      id_public: '68001-1-25-0130',
+      fun_1s: [{ version: 1, tipo: 'D,F', tramite: '', m_urb: '', m_sub: '', m_lic: 'D,F,g' }],
+      fun_rs: [],
+      fun_6s: [],
+    };
+
+    const { container } = render(
+      <FUNG_CHECKLIST
+        translation={{}}
+        swaMsg={{}}
+        globals={{}}
+        currentItem={currentItem}
+        currentVersion={1}
+        requestUpdate={vi.fn()}
+      />,
+    );
+
+    const renderedCodes = [...new Set(
+      [...container.querySelectorAll('input[type="radio"][name]')].map(input => input.name),
+    )];
+    const eligibleCodes = getVisibleLegalReviewEntries(currentItem, 1).map(entry => entry.storageCode);
+
+    expect(renderedCodes).toEqual(eligibleCodes);
+    expect(renderedCodes).not.toContain('681');
+  });
+
+  test('no renderiza radios cuando falta la solicitud de la versión actual', async () => {
+    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const currentItem = {
+      id: 1417,
+      id_public: '68001-1-25-0130',
+      fun_1s: [{ version: 2, tipo: 'D,F', tramite: '', m_urb: '', m_sub: '', m_lic: 'D,F,g' }],
+      fun_rs: [],
+      fun_6s: [],
+    };
+
+    const { container } = render(
+      <FUNG_CHECKLIST
+        translation={{}}
+        swaMsg={{}}
+        globals={{}}
+        currentItem={currentItem}
+        currentVersion={1}
+        requestUpdate={vi.fn()}
+      />,
+    );
+
+    expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(0);
+    expect(screen.getByText(/No hay información de la solicitud para la versión 1/i)).toBeTruthy();
+    expect(getVisibleLegalReviewEntries(currentItem, 1)).toEqual([]);
+  });
+
   test('usa el código canónico 660a para edificaciones de 2000m2 o más', async () => {
     const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
 
@@ -40,7 +97,7 @@ describe('FUNG_CHECKLIST section 6.6', () => {
         currentItem={{
           id: 1,
           id_public: '68001-1-26-0094',
-          fun_1s: [{ tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
+          fun_1s: [{ version: 1, tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
           fun_rs: [],
           fun_6s: [],
         }}
@@ -58,6 +115,42 @@ describe('FUNG_CHECKLIST section 6.6', () => {
     expect(container.querySelector('input[name="6606"]')).toBeNull();
   });
 
+  test('muestra valores históricos 6607-6614 en sus requisitos actuales', async () => {
+    updateLegacyChecklist.mockClear();
+    updateLegacyChecklist.mockResolvedValue({ data: 'OK' });
+    const user = userEvent.setup();
+    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const historicalCodes = ['6607', '6608', '6609', '6610', '6611', '6612', '6613', '6614'];
+    const historicalValues = ['1', '1', '1', '1', '0', '1', '1', '1'];
+
+    const { container } = render(
+      <FUNG_CHECKLIST
+        translation={{}}
+        swaMsg={{}}
+        globals={{}}
+        currentItem={{
+          id: 1,
+          id_public: '68001-1-20-0001',
+          fun_1s: [{ version: 1, tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
+          fun_rs: [{ id: 45, version: 1, code: historicalCodes.join(','), checked: historicalValues.join(',') }],
+          fun_6s: [],
+        }}
+        currentVersion={1}
+        requestUpdate={vi.fn()}
+      />,
+    );
+
+    expect(container.querySelector('input[name="6611"][value="1"]').checked).toBe(true);
+    expect(container.querySelector('input[name="6615"][value="0"]').checked).toBe(true);
+    expect(container.querySelector('input[name="6611"][value="0"]').checked).toBe(false);
+
+    await user.click(container.querySelector('input[name="6615"][value="1"]'));
+    await waitFor(() => expect(updateLegacyChecklist).toHaveBeenCalledTimes(1));
+    const [, formData] = updateLegacyChecklist.mock.calls[0];
+    expect(formData.get('code')).toBe('6611,6612,6613,6614,6615,6616,6617,6618');
+    expect(formData.get('checked')).toBe('1,1,1,1,1,1,1,1');
+  });
+
   test('agrega un requisito vacío al registro legacy antes de guardarlo', async () => {
     updateLegacyChecklist.mockClear();
     updateLegacyChecklist.mockResolvedValue({ data: 'OK' });
@@ -72,8 +165,8 @@ describe('FUNG_CHECKLIST section 6.6', () => {
         currentItem={{
           id: 1,
           id_public: '68001-1-26-0112',
-          fun_1s: [{ tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
-          fun_rs: [{ id: 45, code: '511', checked: '1' }],
+          fun_1s: [{ version: 1, tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
+          fun_rs: [{ id: 45, version: 1, code: '511', checked: '1' }],
           fun_6s: [],
         }}
         currentVersion={1}
@@ -104,8 +197,8 @@ describe('FUNG_CHECKLIST section 6.6', () => {
         currentItem={{
           id: 1,
           id_public: '68001-1-26-0112',
-          fun_1s: [{ tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
-          fun_rs: [{ id: 45, code: '511', checked: '1' }],
+          fun_1s: [{ version: 1, tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
+          fun_rs: [{ id: 45, version: 1, code: '511', checked: '1' }],
           fun_6s: [],
         }}
         currentVersion={1}
@@ -139,7 +232,7 @@ describe('FUNG_CHECKLIST section 6.6', () => {
         currentItem={{
           id: 1,
           id_public: '68001-1-26-0112',
-          fun_1s: [{ tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
+          fun_1s: [{ version: 1, tipo: 'D', tramite: '', m_urb: '', m_sub: '', m_lic: '' }],
           fun_rs: [],
           fun_6s: [],
         }}

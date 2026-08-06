@@ -875,16 +875,20 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
         }
 
         .diagram-scroll::-webkit-scrollbar-track {
-          background: #e9ecef;
+          background: hsl(var(--scrollbar-track));
         }
 
         .diagram-scroll::-webkit-scrollbar-thumb {
-          background: #adb5bd;
+          background: hsl(var(--scrollbar-thumb));
           border-radius: 4px;
         }
 
         .diagram-scroll::-webkit-scrollbar-thumb:hover {
-          background: #6c757d;
+          background: hsl(var(--scrollbar-thumb-hover));
+        }
+
+        .diagram-scroll::-webkit-scrollbar-thumb:active {
+          background: hsl(var(--scrollbar-thumb-active));
         }
 
         @media (max-width: 768px) {

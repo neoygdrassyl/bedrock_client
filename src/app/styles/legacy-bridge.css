@@ -1147,8 +1147,8 @@
 
 /* Scrollbar styling for content area */
 #main-content :where(*) {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--border)) transparent;
+  scrollbar-width: auto;
+  scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
 }
 
 /* Tooltip override for Bootstrap tooltips */

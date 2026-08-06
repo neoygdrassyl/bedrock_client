@@ -11,6 +11,8 @@ export default function ObservationPanel({
     helperText,
     headerId,
     panelId,
+    collapsible = true,
+    className = '',
 }) {
     const generatedId = useId();
     const contentRef = useRef(null);
@@ -69,8 +71,45 @@ export default function ObservationPanel({
         syncTextareaAndPanelHeight();
     }, [isOpen, children, helperText, textareaProps]);
 
+    const renderTextarea = (isStatic = false) => {
+        const stateClassName = isReadOnly
+            ? (isStatic ? 'op__static-textarea--readonly' : 'op__textarea--readonly')
+            : '';
+        const textareaClassName = [
+            'op__textarea',
+            isStatic ? 'op__static-textarea' : '',
+            stateClassName,
+            textareaProps?.className,
+        ].filter(Boolean).join(' ');
+
+        return <textarea
+            {...textareaProps}
+            ref={setTextareaRef}
+            onInput={handleTextareaInput}
+            aria-labelledby={textareaProps?.['aria-labelledby'] || safeHeaderId}
+            tabIndex={collapsible && !isOpen ? -1 : textareaProps?.tabIndex}
+            className={textareaClassName}
+        />;
+    };
+
+    if (!collapsible) {
+        return (
+            <section className={`op__static-card ${className}`.trim()}>
+                <div id={safeHeaderId} className="op__static-header">
+                    <div className="op__label">
+                        <span className="op__title">{title}</span>
+                    </div>
+                </div>
+                <div className="op__static-body">
+                    {hasTextarea ? renderTextarea(true) : <div className="op__static-editor">{children}</div>}
+                    {helperText ? <div className="op__helper">{helperText}</div> : null}
+                </div>
+            </section>
+        );
+    }
+
     return (
-        <section className="op__panel">
+        <section className={`op__panel ${className}`.trim()}>
             <button
                 id={safeHeaderId}
                 type="button"
@@ -93,16 +132,7 @@ export default function ObservationPanel({
                 aria-hidden={!isOpen}
             >
                 <div className="op__inner">
-                    {hasTextarea ? (
-                        <textarea
-                            {...textareaProps}
-                            ref={setTextareaRef}
-                            onInput={handleTextareaInput}
-                            aria-labelledby={textareaProps?.['aria-labelledby'] || safeHeaderId}
-                            tabIndex={isOpen ? textareaProps?.tabIndex : -1}
-                            className={isReadOnly ? 'op__textarea op__textarea--readonly' : 'op__textarea'}
-                        />
-                    ) : children}
+                    {hasTextarea ? renderTextarea() : children}
                     {helperText ? <div className="op__helper">{helperText}</div> : null}
                 </div>
             </div>

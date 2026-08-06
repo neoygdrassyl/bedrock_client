@@ -1,5 +1,6 @@
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
+import { EditableDataGrid } from '@/components/editable-data-grid';
 
 function FUN_REPORT_DATA({ translation, swaMsg, globals, currentItem }) {
 
@@ -53,67 +54,54 @@ function FUN_REPORT_DATA({ translation, swaMsg, globals, currentItem }) {
         // COMPONENTS JSX
         let _COMPONENT = () => {
             var _CHILD = _GET_LAW_REPORT_DATA();
-            return <>
-                <div className="row">
-                    <div className="col-9 p-1">
-                        <label>CUB1 notifico reconocimiento a la –SPM-</label>
-                    </div>
-                    <div className="col-3 p-1">
-                    <label className="fw-bold">{_GET_NOTIFY(_CHILD[0])}</label>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-9 p-1">
-                        <label>Identificación del oficio</label>
-                    </div>
-                    <div className="col-3 p-1">
-                    <label className="fw-bold">{_GET_CHILD_LAW().report_cub}</label>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-9 p-1">
-                        <label>Fecha de Radicación ante la SPM</label>
-                    </div>
-                    <div className="col-3 p-1">
-                    <label className="fw-bold">{dateParser(_CHILD[2])}</label>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-9 p-1">
-                        <label>Respuesta SPM radicación</label>
-                    </div>
-                    <div className="col-3 p-1">
-                    <label className="fw-bold">{_CHILD[3]}</label>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-9 p-1">
-                        <label>Fecha Limite (Fecha radicacion mas 10 dias hábiles)</label>
-                    </div>
-                    <div className="col-3 p-1">
-                    <label className="fw-bold">{dateParser_finalDate(_CHILD[2], 10)}</label>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-9 p-1">
-                        <label>Oficio de Planeacion</label>
-                    </div>
-                    <div className="col-3 p-1">
-                    <label className="fw-bold">{_CHILD[5]}</label>
-                    </div>
-                </div>
-               <div className="row">
-                    <div className="col-9 p-1">
-                        <label>Reporte de Planeacion</label>
-                    </div>
-                    <div className="col-3 p-1">
-                    {_CHILD[6] > 0
-                            ? <VIZUALIZER url={ _FIND_6(_CHILD[6]).path + "/" + _FIND_6(_CHILD[6]).filename}
-                            apipath={'/files/'} />
-                            : <label className="fw-bold">SIN DOCUMENTO</label>}
-                    </div>
-                </div>
-            </>
+            const columns = [
+                { id: 'field', header: 'Dato SPM', width: 480 },
+                { id: 'value', header: 'Valor', width: 280 },
+            ];
+            const rows = [
+                [
+                    { id: 'notification', value: 'CUB1 notifico reconocimiento a la –SPM-', readOnly: true },
+                    { value: _CHILD[0] == 0 ? 'SIN NOTIFICAR' : _CHILD[0] == 1 ? 'NOTIFICADO' : '', content: _GET_NOTIFY(_CHILD[0]), readOnly: true },
+                ],
+                [
+                    { id: 'office-id', value: 'Identificación del oficio', readOnly: true },
+                    { value: _GET_CHILD_LAW().report_cub, readOnly: true },
+                ],
+                [
+                    { id: 'filing-date', value: 'Fecha de Radicación ante la SPM', readOnly: true },
+                    { value: dateParser(_CHILD[2]), readOnly: true },
+                ],
+                [
+                    { id: 'filing-response', value: 'Respuesta SPM radicación', readOnly: true },
+                    { value: _CHILD[3], readOnly: true },
+                ],
+                [
+                    { id: 'deadline', value: 'Fecha Limite (Fecha radicacion mas 10 dias hábiles)', readOnly: true },
+                    { value: dateParser_finalDate(_CHILD[2], 10), readOnly: true },
+                ],
+                [
+                    { id: 'planning-office', value: 'Oficio de Planeacion', readOnly: true },
+                    { value: _CHILD[5], readOnly: true },
+                ],
+                [
+                    { id: 'planning-report', value: 'Reporte de Planeacion', readOnly: true },
+                    {
+                        value: _CHILD[6] > 0 ? 'Reporte de Planeacion' : 'SIN DOCUMENTO',
+                        content: _CHILD[6] > 0
+                            ? <VIZUALIZER url={_FIND_6(_CHILD[6]).path + "/" + _FIND_6(_CHILD[6]).filename} apipath={'/files/'} />
+                            : <label className="fw-bold">SIN DOCUMENTO</label>,
+                        readOnly: true,
+                    },
+                ],
+            ];
+
+            return <EditableDataGrid
+                ariaLabel="Datos SPM"
+                columns={columns}
+                rows={rows}
+                getRowId={(row) => row[0].id}
+                spreadsheetInteractions={false}
+            />
         }
         return (
             <div className="fun_report_data container">

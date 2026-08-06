@@ -231,7 +231,7 @@ const _CODE_LIST_61 = {
     codes: ['511', '512', '513', '516', '517', '518', '519']
 };
 const _CODE_LIST_62 = {
-    parent: '6.2 DOCUNENTOS ADICIONALES EN LICENCIA DE URBANIZACIÓN',
+    parent: '6.2 DOCUMENTOS ADICIONALES EN LICENCIA DE URBANIZACIÓN',
     children: [
         {
             parent: 'A. Modalidad Desarrollo',
@@ -242,23 +242,23 @@ const _CODE_LIST_62 = {
             codes: ['623', '601b', '602b', '624', '625']
         },
         {
-            parent: 'C. Modalidad Recuperacion',
+            parent: 'C. Modalidad Recuperación',
             codes: ['626', '627', '601c', '602c']
         }
     ]
 };
 const _CODE_LIST_63 = {
-    parent: '6.3 DOCUMENTOS ADICIONALES EN LA LICENCIA DE PARCELACION',
+    parent: '6.3 DOCUMENTOS ADICIONALES EN LA LICENCIA DE PARCELACIÓN',
     codes: ['631', '632', '633',],
     children: [
         {
-            parent: 'Documentos adicionales en licencia de parcaleación para saneamiento',
+            parent: 'Documentos adicionales en licencia de parcelación para saneamiento',
             codes: ['634', '635', '636',]
         },
     ]
 };
 const _CODE_LIST_64 = {
-    parent: '6.4 DOCUMENTOS ADICIONALES EN LA LICENCIA DE SUBDIVISION',
+    parent: '6.4 DOCUMENTOS ADICIONALES EN LA LICENCIA DE SUBDIVISIÓN',
     children: [
         {
             parent: 'A. Modalidad Subdivisión Urbana y Rural',
@@ -271,7 +271,7 @@ const _CODE_LIST_64 = {
     ]
 };
 const _CODE_LIST_65 = {
-    parent: '6.5 DOCUMENTOS RECONOCIMIENTO DE EDIFICACIONES',
+    parent: '6.5 DOCUMENTOS PARA RECONOCIMIENTO DE EDIFICACIONES',
     codes: ['651', '652', '653']
 };
 const _CODE_LIST_66 = {
@@ -279,7 +279,7 @@ const _CODE_LIST_66 = {
     codes: ['6601', '6602', '6603', '6604', '6605',],
     children: [
         {
-            parent: 'Revisión indepenciente de los diseños estructurales',
+            parent: 'Revisión independiente de los diseños estructurales',
             codes: ['660a', '660b', '660c', '660d', '660e', '660f', '6607', '6608',]
         },
         {
@@ -291,7 +291,7 @@ const _CODE_LIST_66 = {
             codes: ['6610',]
         },
         {
-            parent: 'Reforzamiento Estructural para Edificaciones en riesgo por daños en la estructura',
+            parent: 'Reforzamiento estructural para edificaciones en riesgo por daños en la estructura',
             codes: ['6611',]
         },
         {
@@ -299,15 +299,15 @@ const _CODE_LIST_66 = {
             codes: ['6612', '6613',]
         },
         {
-            parent: 'Trámite presentado ante autoridad distinta a la que otorgo la licencia inicial',
+            parent: 'Trámite presentado ante autoridad distinta a la que otorgó la licencia inicial',
             codes: ['6614',]
         },
         {
-            parent: 'Modalidad de Modificacion y Adecuacion',
+            parent: 'Modalidad de modificación y adecuación',
             codes: ['6615',]
         },
         {
-            parent: 'Modalidad de Demolicion y Cerramiento',
+            parent: 'Modalidad de demolición y cerramiento',
             codes: ['6616', '6617', '6618', '6619']
         },
 

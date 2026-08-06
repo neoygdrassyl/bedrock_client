@@ -20,6 +20,11 @@ import submitService from '../../../services/submit.service';
 import { Icon } from '@/components/icon';
 import ObservationPanel from '../../../components/ObservationPanel';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import {
+    evaluateLegalReviewEligibility,
+    findVersion,
+    resolveLegalReviewCondition,
+} from './utils/legalReviewEligibility';
 
 function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation, globals, currentVersion, NAVIGATION, NAVIGATION_VERSION, requesRefresh, closeModal }) {
     const [pqrsxfun, setPqrsxfun] = useState(false);
@@ -74,7 +79,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
     }
 
     function retrieveItem(id) {
-        FUN_SERVICE.get(id)
+        return FUN_SERVICE.get(id)
             .then(response => {
                 setCurrentItem(response.data);
                 setLoad(true);
@@ -84,12 +89,13 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             .catch(e => {
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                throw e;
             });
     }
 
     function requestUpdate(id, isGlobal) {
-        if (isGlobal) retrieveItem(id);
-        else propRequestUpdate(id);
+        if (isGlobal) return retrieveItem(id);
+        return propRequestUpdate(id);
     }
 
     useEffect(() => {
@@ -98,7 +104,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
         }
 
         initialLoadRef.current = currentId;
-        retrieveItem(currentId);
+        void retrieveItem(currentId).catch(() => {});
     }, [currentId]);
 
         // DATA GETTERS
@@ -138,8 +144,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             return _CHILD_VARS;
         }
         let _SET_CHILD_C = () => {
-            var _CHILD = currentItem.fun_cs;
-            var _CURRENT_VERSION = currentItem.version - 1;
+            var _CHILD = findVersion(currentItem.fun_cs, currentVersion);
             var _CHILD_VARS = {
                 item_c0: "",
                 item_c1: "",
@@ -152,17 +157,15 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                 item_c8: "",
             }
             if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_c0 = _CHILD[_CURRENT_VERSION].id;
-                    _CHILD_VARS.item_c1 = _CHILD[_CURRENT_VERSION].worker;
-                    _CHILD_VARS.item_c2 = _CHILD[_CURRENT_VERSION].date;
-                    _CHILD_VARS.item_c3 = _CHILD[_CURRENT_VERSION].condition;
-                    _CHILD_VARS.item_c4 = _CHILD[_CURRENT_VERSION].details;
-                    _CHILD_VARS.item_c5 = _CHILD[_CURRENT_VERSION].reciever_name;
-                    _CHILD_VARS.item_c6 = _CHILD[_CURRENT_VERSION].reciever_date;
-                    _CHILD_VARS.item_c7 = _CHILD[_CURRENT_VERSION].reciever_id;
-                    _CHILD_VARS.item_c8 = _CHILD[_CURRENT_VERSION].reciever_actor;
-                }
+                _CHILD_VARS.item_c0 = _CHILD.id;
+                _CHILD_VARS.item_c1 = _CHILD.worker;
+                _CHILD_VARS.item_c2 = _CHILD.date;
+                _CHILD_VARS.item_c3 = _CHILD.condition;
+                _CHILD_VARS.item_c4 = _CHILD.details;
+                _CHILD_VARS.item_c5 = _CHILD.reciever_name;
+                _CHILD_VARS.item_c6 = _CHILD.reciever_date;
+                _CHILD_VARS.item_c7 = _CHILD.reciever_id;
+                _CHILD_VARS.item_c8 = _CHILD.reciever_actor;
             }
 
             return _CHILD_VARS;
@@ -200,19 +203,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             return _CHILD;
         }
         // DATA CONVERTER
-        let _ALLOW_REVIEW = () => {
-            let FUN_R = _GET_FUN_R();
-            if (!FUN_R) return false;
-            let CHECK = FUN_R.checked ? FUN_R.checked.split(',') : [];
-            return CHECK.length > 0 && CHECK.every((value) => value == 1 || value == 2);
-            
-            
-            //let FUN_R = _GET_FUN_R();
-            //if (!FUN_R) return false;
-            //let CHECK = FUN_R.checked ? FUN_R.checked.split(',') : [];
-            
-            //return CHECK.every(c => c == 1 || c == 2);
-        }
+        let _ALLOW_REVIEW = () => evaluateLegalReviewEligibility(currentItem, currentVersion);
         let _REGEX_IDNUMBER = (e) => {
             let regex = /^[0-9]+$/i;
             let test = regex.test(e.target.value);
@@ -241,19 +232,10 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
         }
 
         function _SET_MISSING_FUN_R() {
-            let _FUN_R = _GET_CHILD_REVIEW();
-            let fun_r = _FUN_R ? _FUN_R.code ? _FUN_R.code.split(',') : [] : [];
-            let fun_rc = _FUN_R ? _FUN_R.checked ? _FUN_R.checked.split(',') : [] : [];
-            let dooc_sting = '';
-            let _i = 1;
-
-            fun_rc.map((rew, i) => {
-                if (rew == 0) {
-                    let str = DCO_LIS[fun_r[i]];
-                    dooc_sting += `${_i}. ${str}.\n`;
-                    _i++;
-                }
-            })
+            const { blockers } = _ALLOW_REVIEW();
+            const dooc_sting = blockers
+                .map(({ descriptionCode }, index) => `${index + 1}. ${DCO_LIS[descriptionCode] || 'Requisito pendiente'}.`)
+                .join('\n');
 
             let text_area_html = document.getElementById('c_46');
             text_area_html.value = dooc_sting;
@@ -372,8 +354,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
         }
 
         let _SET_CHILD_C_C = () => {
-            var _CHILD = currentItem.fun_cs;
-            var _CURRENT_VERSION = currentVersion - 1;
+            var _CHILD = findVersion(currentItem.fun_cs, currentVersion);
             var _CHILD_VARS = {
                 item_c0: "",
                 item_c1: "",
@@ -387,20 +368,19 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                 item_c9: "",
             }
             if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_c0 = _CHILD[_CURRENT_VERSION].id;
-                    _CHILD_VARS.item_c1 = _CHILD[_CURRENT_VERSION].worker;
-                    _CHILD_VARS.item_c2 = _CHILD[_CURRENT_VERSION].date;
-                    _CHILD_VARS.item_c3 = _CHILD[_CURRENT_VERSION].condition;
-                    _CHILD_VARS.item_c4 = _CHILD[_CURRENT_VERSION].details;
-                    _CHILD_VARS.item_c5 = _CHILD[_CURRENT_VERSION].reciever_name;
-                    _CHILD_VARS.item_c6 = _CHILD[_CURRENT_VERSION].reciever_date;
-                    _CHILD_VARS.item_c7 = _CHILD[_CURRENT_VERSION].reciever_id;
-                    _CHILD_VARS.item_c8 = _CHILD[_CURRENT_VERSION].reciever_actor;
-                    _CHILD_VARS.item_c9 = _CHILD[_CURRENT_VERSION].legal_date;
-                }
+                _CHILD_VARS.item_c0 = _CHILD.id;
+                _CHILD_VARS.item_c1 = _CHILD.worker;
+                _CHILD_VARS.item_c2 = _CHILD.date;
+                _CHILD_VARS.item_c3 = _CHILD.condition;
+                _CHILD_VARS.item_c4 = _CHILD.details;
+                _CHILD_VARS.item_c5 = _CHILD.reciever_name;
+                _CHILD_VARS.item_c6 = _CHILD.reciever_date;
+                _CHILD_VARS.item_c7 = _CHILD.reciever_id;
+                _CHILD_VARS.item_c8 = _CHILD.reciever_actor;
+                _CHILD_VARS.item_c9 = _CHILD.legal_date;
             }
-            const ALLOW_REVIEW = _ALLOW_REVIEW();
+            const REVIEW_ELIGIBILITY = _ALLOW_REVIEW();
+            const ALLOW_REVIEW = REVIEW_ELIGIBILITY.allowed;
             const LAST_VR_DATE = _FIND_LAST_VRDOCS();
             const LYDF_DATE = _CHILD_VARS.item_c9 || null;
 
@@ -433,8 +413,8 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         <div className="col-6">
                             <label>Estado de la radicación</label>
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" value="1" name="c_41" required disabled={!ALLOW_REVIEW}
-                                    defaultChecked={_CHILD_VARS.item_c3 == '1' ? true : false} />
+                                <input key={`lydf-${ALLOW_REVIEW}`} className="form-check-input" type="radio" value="1" name="c_41" required disabled={!ALLOW_REVIEW}
+                                    defaultChecked={ALLOW_REVIEW && _CHILD_VARS.item_c3 == '1'} />
                                 <label className="form-check-label" htmlFor="flexCheckDefault">
                                     RADICACIÓN EN LEGAL Y DEBIDA FORMA
                                 </label>
@@ -448,7 +428,12 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                             </div>
                             {!ALLOW_REVIEW ? <div className='note note-danger'>
                                 <h3 className="text-justify text-dark">ADVERTENCIA</h3>
-                                NO ES POSIBLE DECLARAR EN "LYDF" POR QUE FALTAN DOCUMENTOS POR APORTAR EN EL PUNTO 6
+                                <div>NO ES POSIBLE DECLARAR EN "LYDF" PORQUE HAY REQUISITOS PENDIENTES:</div>
+                                <ul className="mb-0">
+                                    {REVIEW_ELIGIBILITY.blockers.map(({ displayCode, storageCode, descriptionCode }) => (
+                                        <li key={`${displayCode}-${storageCode}`}>({displayCode}) {DCO_LIS[descriptionCode] || 'Requisito pendiente'}</li>
+                                    ))}
+                                </ul>
                             </div> : ''}
                         </div>
                         <div className="col-6">
@@ -544,7 +529,10 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                 if (radios[i].checked == true) {
                     condition = radios[i].value
                 }
-            } formData.set('condition', condition);
+            }
+            const eligibility = _ALLOW_REVIEW();
+            condition = resolveLegalReviewCondition(condition, eligibility);
+            formData.set('condition', condition);
 
             radios = document.getElementsByName("c_42");
             for (var i = 0; i < radios.length; i++) {
@@ -568,7 +556,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             manage_c(true);
             save_review(condition);
             save_clock(date, -1);
-            save_clock(legal_date, 5);
+            if (condition == 1) save_clock(legal_date, 5);
         }
         let manage_c = (useMySwal) => {
             let _CHILD = _SET_CHILD_C();

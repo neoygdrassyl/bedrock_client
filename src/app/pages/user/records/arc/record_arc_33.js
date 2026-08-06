@@ -17,6 +17,7 @@ import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 import { splitValue } from '../../shared/expediente-documental.utils';
+import ObservationPanel from '../../../../components/ObservationPanel';
 
 function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [new_area, setNewArea] = useState(false);
@@ -424,22 +425,21 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
         let _COMPONENT_CORRECTIONS = () => {
             let values = _GET_STEP_TYPE('s33', 'value');
             return <div className="row">
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Observaciones generales</label>
-                    </div>
+                <div className="col-12">
+                    <ObservationPanel title="Observaciones generales" collapsible={false}>
+                        <RichTextEditor
+                            value={values[2]}
+                            hiddenName="s_33_values"
+                            maxLength={2000}
+                            minHeight={170}
+                            placeholder="Registre observaciones generales con imágenes de apoyo si aplica"
+                            uploadFile={uploadRichTextImage}
+                            onBlur={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(false, 'det') }}
+                            onSave={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(true, 'det') }}
+                        />
+                        <label>{_SAVING_STATE(dynamicState.det)}</label>
+                    </ObservationPanel>
                 </div>
-                <RichTextEditor
-                    value={values[2]}
-                    hiddenName="s_33_values"
-                    maxLength={2000}
-                    minHeight={170}
-                    placeholder="Registre observaciones generales con imágenes de apoyo si aplica"
-                    uploadFile={uploadRichTextImage}
-                    onBlur={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(false, 'det') }}
-                    onSave={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(true, 'det') }}
-                />
-                <label>{_SAVING_STATE(dynamicState.det)}</label>
             </div>
         }
         let _COMPONENT_5_GEO = () => {

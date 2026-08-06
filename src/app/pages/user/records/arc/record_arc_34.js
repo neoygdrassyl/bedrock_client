@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { EditableDataGrid } from '@/components/editable-data-grid';
 
 import DataTable from '@/components/data-table-bridge';
 
@@ -14,6 +15,7 @@ import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/sw
 import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
+import ObservationPanel from '../../../../components/ObservationPanel';
 
 function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [newGen, setNewGen] = useState(false);
@@ -914,190 +916,105 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             sovm = sovm == Infinity ? 0 : sovm;
             soom = soom == Infinity ? 0 : soom;
 
-            return <div className='my-2 border border-dark px-3'>
-                <div className="row text-center">
-                    <div className="col-3 px-0 pe-1 border">
-                        <h5 className='mb-0'>Altura Máxima / Mínima de Pisos</h5>
-                    </div>
-                    < div className="col px-0 pe-1 border">
-                        <h5 className='mb-0'>Vivienda</h5>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <h5 className=' mb-0'>Otros</h5>
-                    </div>
-                </div>
-                <div className="row text-center">
-                    <div className="col-3 px-0 pe-1 border">
-                        <h5 className='mb-0'>Tipo</h5>
-                    </div>
-                    < div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='mb-0'>Mínimo</h5>
-                        </div>
-                        <div className='row'>
-                            <h5 className='col mb-0'>Norma</h5>
-                            <h5 className='col mb-0'>Proyecto</h5>
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className=' mb-0'>Máximo</h5>
-                        </div>
-                        <div className='row'>
-                            <h5 className='col mb-0'>Norma</h5>
-                            <h5 className='col mb-0'>Proyecto</h5>
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='mb-0'>Mínimo</h5>
-                        </div>
-                        <div className='row'>
-                            <h5 className='col mb-0'>Norma</h5>
-                            <h5 className='col mb-0'>Proyecto</h5>
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className=' mb-0'>Máximo</h5>
-                        </div>
-                        <div className='row'>
-                            <h5 className='col mb-0'>Norma</h5>
-                            <h5 className='col mb-0'>Proyecto</h5>
-                        </div>
-                    </div>
-                </div>
-                <div className="row text-center">
-                    <div className="col-3 px-0 pe-1 border">
-                        <h5 className='mb-0'>Pisos</h5>
-                    </div>
-                    < div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'> 2.40</h5>
-                            <h5 className='col mb-0  fw-normal'><label className={pvmi < 2.4 ? 'text-danger' : ''}>{pvmi}</label></h5>
+            const columns = [
+                { id: 'type', header: 'Altura Máxima / Mínima de Pisos · Tipo', width: 220 },
+                { id: 'housing-min-rule', header: 'Vivienda · Mínimo · Norma', width: 160, align: 'center' },
+                { id: 'housing-min-project', header: 'Vivienda · Mínimo · Proyecto', width: 170, align: 'center' },
+                { id: 'housing-max-rule', header: 'Vivienda · Máximo · Norma', width: 160, align: 'center' },
+                { id: 'housing-max-project', header: 'Vivienda · Máximo · Proyecto', width: 170, align: 'center' },
+                { id: 'other-min-rule', header: 'Otros · Mínimo · Norma', width: 150, align: 'center' },
+                { id: 'other-min-project', header: 'Otros · Mínimo · Proyecto', width: 160, align: 'center' },
+                { id: 'other-max-rule', header: 'Otros · Máximo · Norma', width: 150, align: 'center' },
+                { id: 'other-max-project', header: 'Otros · Máximo · Proyecto', width: 160, align: 'center' },
+            ];
+            const rows = [
+                [
+                    { id: 'floors', value: 'Pisos', readOnly: true, className: 'font-semibold' },
+                    { value: '2.40', readOnly: true },
+                    { value: pvmi, readOnly: true, className: pvmi < 2.4 ? 'text-danger' : '' },
+                    { value: '3.60', readOnly: true },
+                    { value: pvma, readOnly: true, className: pvma > 3.6 ? 'text-danger' : '' },
+                    { value: '2.40', readOnly: true },
+                    { value: pomi, readOnly: true, className: pomi < 2.4 ? 'text-danger' : '' },
+                    { value: '4.50', readOnly: true },
+                    { value: poma, readOnly: true, className: poma > 4.5 ? 'text-danger' : '' },
+                ],
+                [
+                    { id: 'semi-basement', value: 'Semisótano', readOnly: true, className: 'font-semibold' },
+                    { value: '2.40', readOnly: true },
+                    { value: sevm, readOnly: true, className: sevm < 2.4 ? 'text-danger' : '' },
+                    { value: '-', readOnly: true },
+                    { value: '-', readOnly: true },
+                    { value: '2.40', readOnly: true },
+                    { value: seom, readOnly: true, className: seom < 2.4 ? 'text-danger' : '' },
+                    { value: '-', readOnly: true },
+                    { value: '-', readOnly: true },
+                ],
+                [
+                    { id: 'basements', value: 'Sótanos', readOnly: true, className: 'font-semibold' },
+                    { value: '2.40', readOnly: true },
+                    { value: sovm, readOnly: true, className: sovm < 2.4 ? 'text-danger' : '' },
+                    { value: '-', readOnly: true },
+                    { value: '-', readOnly: true },
+                    { value: '2.40', readOnly: true },
+                    { value: soom, readOnly: true, className: soom < 2.4 ? 'text-danger' : '' },
+                    { value: '-', readOnly: true },
+                    { value: '-', readOnly: true },
+                ],
+            ];
 
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'>3.60</h5>
-                            <h5 className='col mb-0  fw-normal'><label className={pvma > 3.6 ? 'text-danger' : ''}>{pvma}</label></h5>
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'>2.40</h5>
-                            <h5 className='col mb-0  fw-normal'><label className={pomi < 2.4 ? 'text-danger' : ''}>{pomi}</label></h5>
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'>4.50</h5>
-                            <h5 className='col mb-0  fw-normal'><label className={poma > 4.5 ? 'text-danger' : ''}>{poma}</label></h5>
-                        </div>
-                    </div>
-                </div>
-                <div className="row text-center">
-                    <div className="col-3 px-0 pe-1 border">
-                        <h5 className='mb-0'>Semisótano</h5>
-                    </div>
-                    < div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'> 2.40</h5>
-                            <h5 className='col mb-0  fw-normal'><label className={sevm < 2.4 ? 'text-danger' : ''}>{sevm}</label></h5>
-
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'> - </h5>
-                            <h5 className='col mb-0  fw-normal'> - </h5>
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'>2.40</h5>
-                            <h5 className='col mb-0  fw-normal'><label className={seom < 2.4 ? 'text-danger' : ''}>{seom}</label></h5>
-
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'> - </h5>
-                            <h5 className='col mb-0  fw-normal'> - </h5>
-                        </div>
-                    </div>
-                </div>
-                <div className="row text-center">
-                    <div className="col-3 px-0 pe-1 border">
-                        <h5 className='mb-0'>Sótanos</h5>
-                    </div>
-                    < div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'> 2.40</h5>
-                            <h5 className='col mb-0  fw-normal'><label className={sovm < 2.4 ? 'text-danger' : ''}>{sovm}</label></h5>
-
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'> - </h5>
-                            <h5 className='col mb-0  fw-normal'> - </h5>
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'>2.40</h5>
-                            <h5 className='col mb-0  fw-normal'><label className={soom < 2.4 ? 'text-danger' : ''}>{soom}</label></h5>
-
-                        </div>
-                    </div>
-                    <div className="col px-0 pe-1 border">
-                        <div className='row'>
-                            <h5 className='col mb-0  fw-normal'> - </h5>
-                            <h5 className='col mb-0  fw-normal'> - </h5>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            return <EditableDataGrid
+                ariaLabel="Altura Máxima / Mínima de Pisos"
+                columns={columns}
+                rows={rows}
+                getRowId={(row) => row[0].id}
+                spreadsheetInteractions={false}
+            />
         }
         let _COMPONENT_INDEX_CALC_2 = () => {
             var values = _GET_MFHF()
             let maxfloor = values[0];
             let heighFloor = values[1];
             let height = values[2];
-            return <>
-                <div className='my-2 border border-dark px-3 py-1'>
-                    <div className="row text-center">
-                        <div className="col-3 px-0 pe-1 border">
-                            <h5 className='mb-0'>Número de Pisos</h5>
-                        </div>
-                        < div className="col px-0 pe-1 border">
-                            <h5 className='mb-0 fw-normal'>En Cuadro de áreas: <label className={maxfloor != heighFloor ? 'text-danger' : ''}>{maxfloor}</label></h5>
-                        </div>
-                        <div className="col px-0 pe-1 border">
-                            <h5 className=' mb-0 fw-normal'>Segun altura util: <label className={maxfloor != heighFloor ? 'text-danger' : ''}>{heighFloor}</label></h5>
-                        </div>
-                    </div>
-                    <div className="row text-center">
-                        <div className="col-3 px-0 pe-1 border">
-                            <h5 className='mb-0'>Número de Pisos Maximo</h5>
-                        </div>
-                        < div className="col px-0 pe-1 border">
-                            <h5 className='mb-0 fw-normal'>Altura :  <label className="fw-bold">{height}m</label></h5>
-                        </div>
-                        < div className="col px-0 pe-1 border">
-                            <h5 className='mb-0 fw-normal'>2.4m :  <label className="fw-bold">{Math.trunc(height / 2.4)}</label></h5>
-                        </div>
-                        <div className="col px-0 pe-1 border">
-                            <h5 className=' mb-0 fw-normal'>3.6m :  <label className="fw-bold">{Math.trunc(height / 3.6)}</label></h5>
-                        </div>
-                        <div className="col px-0 pe-1 border">
-                            <h5 className=' mb-0 fw-normal'>4.6m : <label className="fw-bold">{Math.trunc(height / 4.6)}</label></h5>
-                        </div>
-                    </div>
-                </div>
-            </>
+            const columns = [
+                { id: 'indicator', header: 'Indicador', width: 220 },
+                { id: 'value-1', header: 'Valor 1', width: 210, align: 'center' },
+                { id: 'value-2', header: 'Valor 2', width: 210, align: 'center' },
+                { id: 'value-3', header: 'Valor 3', width: 210, align: 'center' },
+                { id: 'value-4', header: 'Valor 4', width: 210, align: 'center' },
+            ];
+            const rows = [
+                [
+                    { id: 'floor-count', value: 'Número de Pisos', readOnly: true, className: 'font-semibold' },
+                    {
+                        value: `En Cuadro de áreas: ${maxfloor}`,
+                        content: <>En Cuadro de áreas: <label className={maxfloor != heighFloor ? 'text-danger' : ''}>{maxfloor}</label></>,
+                        readOnly: true,
+                    },
+                    {
+                        value: `Segun altura util: ${heighFloor}`,
+                        content: <>Segun altura util: <label className={maxfloor != heighFloor ? 'text-danger' : ''}>{heighFloor}</label></>,
+                        readOnly: true,
+                    },
+                    { value: '', readOnly: true },
+                    { value: '', readOnly: true },
+                ],
+                [
+                    { id: 'maximum-floor-count', value: 'Número de Pisos Maximo', readOnly: true, className: 'font-semibold' },
+                    { value: `Altura : ${height}m`, content: <>Altura : <label className="fw-bold">{height}m</label></>, readOnly: true },
+                    { value: `2.4m : ${Math.trunc(height / 2.4)}`, content: <>2.4m : <label className="fw-bold">{Math.trunc(height / 2.4)}</label></>, readOnly: true },
+                    { value: `3.6m : ${Math.trunc(height / 3.6)}`, content: <>3.6m : <label className="fw-bold">{Math.trunc(height / 3.6)}</label></>, readOnly: true },
+                    { value: `4.6m : ${Math.trunc(height / 4.6)}`, content: <>4.6m : <label className="fw-bold">{Math.trunc(height / 4.6)}</label></>, readOnly: true },
+                ],
+            ];
+
+            return <EditableDataGrid
+                ariaLabel="Resumen número de pisos"
+                columns={columns}
+                rows={rows}
+                getRowId={(row) => row[0].id}
+                spreadsheetInteractions={false}
+            />
         }
         let _COMPONENT_K_TIPOLOGY = () => {
             const vt = _GET_STEP_TYPE('s_34_te', 'value');
@@ -1494,21 +1411,20 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
         }
         let _COMPONENT_CORRECTIONS = () => {
             return <div className="row">
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Observaciones análisis de determinantes de predio</label>
-                    </div>
+                <div className="col-12">
+                    <ObservationPanel title="Observaciones análisis de determinantes de predio" collapsible={false}>
+                        <RichTextEditor
+                            value={value34[10]}
+                            hiddenName="s_34_values"
+                            maxLength={2000}
+                            minHeight={170}
+                            placeholder="Registre observaciones, evidencias e imágenes sobre determinantes urbanísticas"
+                            uploadFile={uploadRichTextImage}
+                            onBlur={() => manage_ra_34('a41')}
+                            onSave={() => manage_ra_34('a41')}
+                        />
+                    </ObservationPanel>
                 </div>
-                <RichTextEditor
-                    value={value34[10]}
-                    hiddenName="s_34_values"
-                    maxLength={2000}
-                    minHeight={170}
-                    placeholder="Registre observaciones, evidencias e imágenes sobre determinantes urbanísticas"
-                    uploadFile={uploadRichTextImage}
-                    onBlur={() => manage_ra_34('a41')}
-                    onSave={() => manage_ra_34('a41')}
-                />
             </div>
         }
 

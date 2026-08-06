@@ -1534,9 +1534,10 @@ export default function EXP_CLOCKS(props) {
         .btn-suspension-info i { font-size: 12px; font-weight: bold; }
 
         .exp-scroll::-webkit-scrollbar{ width: 8px; }
-        .exp-scroll::-webkit-scrollbar-track{ background: #f1f1f1; }
-        .exp-scroll::-webkit-scrollbar-thumb{ background: #bdbdbd; border-radius: 4px; }
-        .exp-scroll::-webkit-scrollbar-thumb:hover{ background: #9e9e9e; }
+        .exp-scroll::-webkit-scrollbar-track{ background: hsl(var(--scrollbar-track)); }
+        .exp-scroll::-webkit-scrollbar-thumb{ background: hsl(var(--scrollbar-thumb)); border-radius: 4px; }
+        .exp-scroll::-webkit-scrollbar-thumb:hover{ background: hsl(var(--scrollbar-thumb-hover)); }
+        .exp-scroll::-webkit-scrollbar-thumb:active{ background: hsl(var(--scrollbar-thumb-active)); }
 
         .exp-fullscreen{
           position: fixed; inset: 0;

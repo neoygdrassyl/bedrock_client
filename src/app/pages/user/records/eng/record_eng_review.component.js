@@ -391,16 +391,17 @@ function RECORD_ENG_REVIEW(props) {
         }
         let _COMPONENT_DETAILS_3 = () => {
             let _CHILD = _GET_REVIEW();
-            return <>
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Notas del Ingeniero Revisor</label>
-                    </div>
-                </div>
-                <textarea className="input-group" id="record_eng_docs_desc" maxLength={4000}
-                    defaultValue={_CHILD.detail_3 ?? ""} onBlur={() => save_item_d3()} rows="3"></textarea>
-                <label> (Máximo 4000 Caracteres)</label>
-            </>
+            return <ObservationPanel
+                title="Notas del Ingeniero Revisor"
+                collapsible={false}
+                helperText="(máximo 4000 caracteres)"
+                textareaProps={{
+                    id: 'record_eng_docs_desc',
+                    maxLength: 4000,
+                    defaultValue: _CHILD.detail_3 ?? "",
+                    onBlur: () => save_item_d3(),
+                }}
+            />
         }
         let _COMPONENT_REVIEW = () => {
             let _CHILD = _GET_REVIEW();

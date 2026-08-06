@@ -119,6 +119,7 @@ export default defineConfig(({ mode }) => {
   // Build
     build: {
       outDir: 'build',
+      emptyOutDir: true,
       sourcemap: false,
       rollupOptions: {
         output: {

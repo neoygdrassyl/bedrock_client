@@ -13,6 +13,7 @@ export default function usePHSave(swaMsg) {
       error = true,
       onSuccess,
       onError,
+      isSuccessResponse = response => response.data === 'OK',
     } = options;
 
     if (loading) swalLoading({ title: messages.title_wait, text: messages.text_wait });
@@ -21,7 +22,7 @@ export default function usePHSave(swaMsg) {
     try {
       const response = await operationPromise;
 
-      if (response.data === 'OK') {
+      if (isSuccessResponse(response)) {
         await onSuccess?.(response);
         if (success) {
           swalSuccess({

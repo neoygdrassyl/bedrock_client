@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import ReCAPTCHA from 'react-google-recaptcha';
 import CustomsDataService from '@/app/services/custom.service';
 import DataSerive from '@/app/services/data.service';
 import { infoCud } from '@/app/components/jsons/vars';
@@ -17,10 +16,7 @@ import { swalError } from '@/app/utils/swalAdapter';
 export default function LoginPage({ signin }) {
   useTranslation();
   const navigate = useNavigate();
-  const recaptchaRef = React.useRef(null);
   const credentialsRef = React.useRef({ email: '', password: '' });
-  const recaptchaSiteKey = import.meta.env.VITE_GOOGLE_CAPTCHA_HTML?.trim();
-  const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
   const from = { pathname: '/dashboard' };
 
@@ -105,20 +101,7 @@ export default function LoginPage({ signin }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    if (isLocalhost || !recaptchaSiteKey || !recaptchaRef.current) {
-      performLogin();
-      return;
-    }
-
-    recaptchaRef.current
-      .executeAsync()
-      .then(() => {
-        performLogin();
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    performLogin();
   };
 
   const doLogin = () => {
@@ -233,14 +216,6 @@ export default function LoginPage({ signin }) {
             >
               Iniciar sesión
             </button>
-
-            {recaptchaSiteKey ? (
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                size="invisible"
-                sitekey={recaptchaSiteKey}
-              />
-            ) : null}
           </form>
 
           {/* Footer branding */}

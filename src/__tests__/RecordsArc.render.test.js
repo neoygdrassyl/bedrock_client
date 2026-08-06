@@ -214,6 +214,14 @@ describe('RecordsArc — Render', () => {
     expect(container.firstChild).toBeTruthy();
   });
 
+  test('record_arc_32 presents the request type as a read-only information surface', () => {
+    const { container, getByText } = renderInRouter(RECORD_ARC_32);
+
+    expect(getByText('Tipo de trámite')).toBeInTheDocument();
+    expect(container.querySelector('.record-arc-request-type')).toBeInTheDocument();
+    expect(container.querySelector('textarea')).not.toBeInTheDocument();
+  });
+
   test('record_arc_33 renders without crashing', { timeout: 60000 }, async () => {
     const { container } = renderInRouter(RECORD_ARC_33);
     expect(container).toBeTruthy();

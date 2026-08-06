@@ -4,7 +4,7 @@ const DEFAULT_URL = 'http://127.0.0.1:3001/health/ready';
 
 export async function waitForBackend({
   url = DEFAULT_URL,
-  fetchReady = () => fetch(url),
+  fetchReady = targetUrl => fetch(targetUrl),
   sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)),
   timeoutMs = 120000,
   retryMs = 500,
@@ -16,8 +16,15 @@ export async function waitForBackend({
   while (now() - startedAt < timeoutMs) {
     attempts += 1;
     try {
-      const response = await fetchReady();
+      const response = await fetchReady(url);
       if (response.ok) return { attempts };
+      if (response.status === 404) {
+        const fallbackUrl = new URL('/', url).href;
+        if (fallbackUrl !== url) {
+          const fallbackResponse = await fetchReady(fallbackUrl);
+          if (fallbackResponse.ok) return { attempts };
+        }
+      }
     } catch {
       // Connection failures are expected while the backend container starts.
     }
