@@ -21,6 +21,7 @@ import { useBookmarks } from '../hooks/useBookmarks';
 import { formsParser1, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import RecordsBinnacleStack from '../../records/RecordsBinnacleStack';
 import { isBinnaclePanelDefaultOpen } from '../utils/expedienteWorkspaceRoute';
+import { isSubdivisionExpediente } from '../utils/expedienteDomainRules.js';
 
 const FUNG = React.lazy(() => import('../fun_g'));
 const FUNC = React.lazy(() => import('../fun_c'));
@@ -29,6 +30,7 @@ const FUND = React.lazy(() => import('./fun_docs'));
 const FUN_ALERT = React.lazy(() => import('../fun_alertn'));
 const FUNCLOCK = React.lazy(() => import('../fun_clock'));
 const RECORD_ARC = React.lazy(() => import('../../records/record_arc'));
+const SUBDIVISION_ARCHITECTURE_REPORT = React.lazy(() => import('../../records/record_arc_subdivision/SubdivisionArchitectureReport'));
 const RECORD_LAW = React.lazy(() => import('../../records/record_law'));
 const RECORD_ENG = React.lazy(() => import('../../records/record_eng'));
 const RECORD_REVIEW = React.lazy(() => import('../../records/record_review'));
@@ -1069,7 +1071,7 @@ function BitacoraDialog({ open, onOpenChange, entries, groups, currentPublic }) 
 }
 
 function renderModuleContent(activeSection, moduleProps, options = {}) {
-  const { isPropertyHorizontal = false } = options;
+  const { isPropertyHorizontal = false, isSubdivision = false, expediente } = options;
 
   switch (activeSection) {
     case 'detalles':
@@ -1087,7 +1089,9 @@ function renderModuleContent(activeSection, moduleProps, options = {}) {
     case 'ph':
       return <RECORD_PH {...moduleProps} />;
     case 'arquitectonico':
-      return <RECORD_ARC {...moduleProps} />;
+      return isSubdivision
+        ? <SUBDIVISION_ARCHITECTURE_REPORT {...moduleProps} expediente={expediente} />
+        : <RECORD_ARC {...moduleProps} />;
     case 'estructural':
       return <RECORD_ENG {...moduleProps} />;
     case 'juridico':
@@ -1493,6 +1497,11 @@ export function FunExpedienteFullscreen({
     [currentVersion, summary]
   );
 
+  const isSubdivision = useMemo(
+    () => isSubdivisionExpediente(summary, currentVersion),
+    [currentVersion, summary]
+  );
+
   const visibleSectionIds = useMemo(
     () => visibleSectionGroups.flatMap((group) => group.items.map((item) => item.id)),
     [visibleSectionGroups]
@@ -1534,7 +1543,7 @@ export function FunExpedienteFullscreen({
     return () => window.clearTimeout(timeout);
   }, [activeSection, isPropertyHorizontal]);
 
-  const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal });
+  const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal, isSubdivision, expediente: binnaclePanelItem });
 
   const content = (
     <div
