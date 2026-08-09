@@ -164,7 +164,10 @@ function VIZUALIZER({ url, id, apipath, previewUrl, downloadUrl, icon, color, ic
 
     const rawPreviewUrl = previewUrl || `${apipath || ''}${url || ''}`;
     const previewFullUrl = addInlinePreview(buildBrowserUrl(rawPreviewUrl, apipath, url));
-    const viewerRequest = buildViewerRequest(addInlinePreview(rawPreviewUrl), apipath, url);
+    const idPreviewUrl = `${apipath || ''}${localURL || ''}`;
+    const viewerRequest = id
+        ? buildViewerRequest(addInlinePreview(idPreviewUrl), apipath, localURL)
+        : buildViewerRequest(addInlinePreview(rawPreviewUrl), apipath, url);
     const isValidUrl = _isValidFileUrl(previewFullUrl);
 
     let aWrapper = iconWrapper ?? "btn btn-sm btn-light m-0 p-2 shadow-none"
