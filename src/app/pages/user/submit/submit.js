@@ -20,6 +20,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     const [newModal, setNewModal] = useState(false);
     const [list, setList] = useState([]);
     const [loadError, setLoadError] = useState(null);
+    const [isSearchResult, setIsSearchResult] = useState(false);
 
     const submitModalStyles = {
         content: {
@@ -53,8 +54,9 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
         const hasLoadedData = isLoaded && list.length > 0;
         if (!hasLoadedData) setIsLoaded(false);
         setLoadError(null);
-        SubmitService.getAll()
+        SubmitService.getAll({ summary: true })
             .then(response => {
+                setIsSearchResult(false);
                 asignList(response.data);
             })
             .catch(e => {
@@ -83,6 +85,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     function retrieveSearch(field, string) {
         SubmitService.getSearch(field, string)
             .then(response => {
+                setIsSearchResult(true);
                 asignList(response.data);
                 swalClose();
             })
@@ -208,8 +211,20 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
             }
         };
 
-        let generateCVS = () => {
+        let generateCVS = async () => {
             let _data = list;
+            if (!isSearchResult) {
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+                try {
+                    const response = await SubmitService.getAll();
+                    _data = response.data;
+                    swalClose();
+                } catch (error) {
+                    console.log(error);
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    return;
+                }
+            }
             let limit_1 = document.getElementById('csv_limit_1').value;
             let limit_2 = document.getElementById('csv_limit_2').value;
             let state = [
