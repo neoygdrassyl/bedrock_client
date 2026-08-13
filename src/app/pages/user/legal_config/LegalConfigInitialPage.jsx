@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DataTable } from '@/components/data-table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ActuationAssociationsWorkspace from './ActuationAssociationsWorkspace.jsx';
+import ActuationDocumentPreview from './ActuationDocumentPreview.jsx';
 import DocumentEvaluationWorkspace from './DocumentEvaluationWorkspace.jsx';
 import SeriesManagementDialog from './SeriesManagementDialog.jsx';
 import './LegalConfigInitialPage.css';
@@ -756,6 +757,8 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
   const [evaluationLoading, setEvaluationLoading] = useState(false);
   const [evaluationSaving, setEvaluationSaving] = useState(false);
   const [evaluationError, setEvaluationError] = useState('');
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState('');
 
   const [documentModalOpen, setDocumentModalOpen] = useState(false);
   const [editingDocumentId, setEditingDocumentId] = useState('');
@@ -842,6 +845,21 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
       setEvaluationSaving(false);
     }
   }, [evaluationSaving, selected]);
+
+  const previewDocuments = useCallback(async (context) => {
+    if (!selected || previewLoading) return null;
+    setPreviewLoading(true);
+    setPreviewError('');
+    try {
+      const response = await LegalConfigService.previewDocuments(selected, context);
+      return response?.data || null;
+    } catch (previewRequestError) {
+      setPreviewError(`No fue posible calcular los documentos exigidos. ${errorMessage(previewRequestError)}`);
+      return null;
+    } finally {
+      setPreviewLoading(false);
+    }
+  }, [previewLoading, selected]);
 
   async function createCatalogue(catalogue, name) {
     try {
@@ -1491,6 +1509,17 @@ export default function LegalConfigInitialPage({ section = 'all' }) {
           error={evaluationError}
           onLoad={loadEvaluation}
           onSave={saveEvaluation}
+        />
+      )}
+      {showActuations && (
+        <ActuationDocumentPreview
+          actuation={selectedActuation}
+          fields={data.conditionFields}
+          conditions={data.conditions}
+          conditionIds={actuationRelations.condition_ids}
+          loading={previewLoading}
+          error={previewError}
+          onPreview={previewDocuments}
         />
       )}
       {showDocuments && (
