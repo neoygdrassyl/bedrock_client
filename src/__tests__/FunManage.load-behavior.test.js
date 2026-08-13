@@ -171,11 +171,14 @@ describe('FUN_MANAGE initial load behavior', () => {
 
     expect(await screen.findByTestId('daily-tab')).toBeInTheDocument();
     expect(screen.getByTestId('submit-summary')).toBeInTheDocument();
+    expect(document.querySelector('.Publish > .row.mb-4')).toHaveClass('min-w-0', 'overflow-hidden');
     expect(screen.queryByTestId('submit-docs-tab')).not.toBeInTheDocument();
     expect(screen.queryByTestId('assigns-tab')).not.toBeInTheDocument();
+    expect(funServiceMock.getAll_fun).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('tab', { name: /entrada de documentos/i }));
     expect(await screen.findByTestId('submit-docs-tab')).toBeInTheDocument();
+    expect(funServiceMock.getAll_fun).toHaveBeenCalledTimes(1);
 
     await userEvent.click(screen.getByRole('tab', { name: /carga profesional/i }));
     expect(await screen.findByTestId('assigns-tab')).toBeInTheDocument();
