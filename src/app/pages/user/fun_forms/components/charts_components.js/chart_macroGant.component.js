@@ -583,12 +583,12 @@ function FUN_CHART_MACRO_GRANTT(props) {
 
     return (
         <div>
-            <div className="row text-center my-2">
-                <div className='col'>
+            <div className="row mx-0 align-items-center g-2 text-center my-2">
+                <div className='col-12 col-md'>
                     <label className="fw-bold">TIEMPO DE SOLICITUDES ({totalList()})</label>
                 </div>
-                <div className='col-3 text-end'>
-                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
+                <div className='col-12 col-md-auto d-flex justify-content-center justify-content-md-end'>
+                    <div className="d-flex flex-wrap justify-content-center gap-1" role="group" aria-label="Rango de tiempo">
                         <Button variant={bt_scope != 0 ? "outline" : "default"} size="sm"
                             onClick={() => { setBt_scope(0) }}>OPTIMO</Button>
                         <Button variant={bt_scope != 1 ? "outline" : "default"} size="sm"

@@ -69,6 +69,7 @@ describe('FUN_CHART_MACRO_GRANTT loading behavior', () => {
     });
 
     expect(screen.getByTestId('legacy-macro-gantt-chart')).toBeInTheDocument();
+    expect(screen.getByRole('group')).toHaveClass('d-flex', 'flex-wrap', 'justify-content-center');
 
     const noRadicoVallaSeries = renderedScatterProps.find(props => props.name === 'des2');
     expect(noRadicoVallaSeries).toBeDefined();
