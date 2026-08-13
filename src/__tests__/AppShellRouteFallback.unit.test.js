@@ -19,6 +19,6 @@ describe('AppShell route fallback behavior', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole('button', { name: 'Panel de control' })).not.toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Panel de control' })).not.toHaveAttribute('aria-current', 'page');
   });
 });

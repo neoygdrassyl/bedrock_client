@@ -11,8 +11,11 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/components/theme-provider';
-import { Sun, Moon, LogOut, Search, PanelLeftClose, PanelLeft, ChevronRight, FileText, UserCircle2 } from 'lucide-react';
+import { Sun, Moon, LogOut, Search, ChevronRight, FileText, UserCircle2, AlertTriangle } from 'lucide-react';
 import { Icon } from '@/components/icon';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { requestDovelaErrorReport } from '@/app/utils/errorReporting';
+import { cn } from '@/lib/utils';
 import ChatLauncher from '../pages/user/chat/ChatLauncher';
 import { RUNTIME_FEATURES } from '../config/runtime-features';
 import {
@@ -59,10 +62,14 @@ const MODULE_ICONS = {
  * Top header bar: sidebar toggle + breadcrumb + search + theme toggle + user dropdown.
  * Visual reference: Linear top bar — compact, functional, uncluttered.
  */
-export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar }) {
+export function HeaderBar({ user, onLogout }) {
   const { resolvedTheme, setTheme } = useTheme();
+  const { isMobile, openMobile, state } = useSidebar();
   const location = useLocation();
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const sidebarOpen = isMobile ? openMobile : state === 'expanded';
+  const shortcutModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
 
   const segments = location.pathname.split('/').filter(Boolean);
   const breadcrumb = segments.map((seg, i) => ({
@@ -88,22 +95,18 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
   }, []);
 
   return (
-    <header className="flex items-center h-11 px-2.5 border-b border-border bg-card backdrop-blur-sm gap-1.5 select-none">
+    <header className="flex h-11 min-w-0 items-center gap-1.5 overflow-hidden border-b border-border bg-card px-2.5 backdrop-blur-sm select-none">
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onToggleSidebar}
-              aria-label={sidebarCollapsed ? 'Expandir menú lateral' : 'Ocultar menú lateral'}
-              className="h-7 w-7 p-0 shrink-0"
-            >
-              {sidebarCollapsed ? <PanelLeft className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
-            </Button>
+            <SidebarTrigger
+              aria-label={sidebarOpen ? 'Ocultar menú lateral' : 'Expandir menú lateral'}
+              title={sidebarOpen ? 'Ocultar menú lateral' : 'Expandir menú lateral'}
+              className="h-11 w-11 shrink-0 lg:h-7 lg:w-7"
+            />
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={4} className="text-xs">
-            {sidebarCollapsed ? 'Expandir menú' : 'Ocultar menú'} <kbd className="ml-1 text-[9px] bg-muted/80 px-1 py-0.5 rounded font-mono">⌘B</kbd>
+            {sidebarOpen ? 'Ocultar menú' : 'Expandir menú'} <kbd className="ml-1 text-[9px] bg-muted/80 px-1 py-0.5 rounded font-mono">{shortcutModifier}B</kbd>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -111,12 +114,18 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
       <Separator orientation="vertical" className="h-4 mx-0.5" />
 
       {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-0.5 text-[13px] flex-1 min-w-0">
-        <Link to="/dashboard" className="text-muted-foreground hover:text-foreground no-underline transition-colors text-[13px]">
+      <nav aria-label="Breadcrumb" className="flex min-w-0 flex-1 items-center gap-0.5 overflow-hidden text-[13px]">
+        <Link to="/dashboard" className="hidden shrink-0 rounded-sm text-[13px] text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card xl:inline-flex">
           Inicio
         </Link>
         {breadcrumb.map((crumb, i) => (
-          <span key={crumb.path} className="flex items-center gap-0.5">
+          <span
+            key={crumb.path}
+            className={cn(
+              'min-w-0 items-center gap-0.5',
+              i === breadcrumb.length - 1 ? 'flex' : 'hidden xl:flex',
+            )}
+          >
             <ChevronRight className="h-3 w-3 text-muted-foreground" />
             {i === breadcrumb.length - 1 ? (
               <span className="text-foreground font-medium truncate flex items-center gap-1">
@@ -124,7 +133,7 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
                 {crumb.label}
               </span>
             ) : (
-              <Link to={crumb.path} className="text-muted-foreground hover:text-foreground no-underline transition-colors">
+              <Link to={crumb.path} className="rounded-sm text-muted-foreground hover:text-foreground no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
                 {crumb.label}
               </Link>
             )}
@@ -136,12 +145,12 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
       <button
         type="button"
         onClick={() => setSearchOpen(true)}
-        className="flex h-7 w-7 items-center justify-center rounded-md border border-border bg-muted text-xs text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground md:w-auto md:justify-start md:gap-1.5 md:px-2.5"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-xs text-foreground/70 transition-colors hover:bg-muted/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card lg:h-7 lg:w-auto lg:justify-start lg:gap-1.5 lg:px-2.5"
         aria-label="Buscar expediente"
       >
         <Search className="h-3 w-3" />
-        <span className="hidden md:inline">Expediente...</span>
-        <kbd className="ml-3 hidden rounded border border-border bg-background px-1 py-0.5 font-mono text-[9px] lg:inline">⌘K</kbd>
+        <span className="hidden lg:inline">Expediente...</span>
+        <kbd className="ml-3 hidden rounded border border-border bg-background px-1 py-0.5 font-mono text-[9px] xl:inline">{shortcutModifier}K</kbd>
       </button>
 
       {/* Chat & notifications */}
@@ -158,7 +167,7 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
         size="sm"
         onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
         aria-label={resolvedTheme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-        className="h-7 w-7 p-0 text-muted-foreground"
+        className="h-11 w-11 shrink-0 p-0 text-muted-foreground lg:h-7 lg:w-7"
       >
         {resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
       </Button>
@@ -168,13 +177,13 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
       {/* User menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="gap-1.5 h-7 px-1.5">
+          <Button variant="ghost" size="sm" className="h-11 w-11 shrink-0 gap-1.5 px-2 lg:h-7 lg:w-auto lg:px-1.5">
             <Avatar className="h-5 w-5">
               <AvatarFallback className="text-[9px] bg-primary text-primary-foreground font-medium">
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs font-medium hidden md:inline text-foreground">
+            <span className="hidden text-xs font-medium text-foreground lg:inline">
               {user?.name}
             </span>
           </Button>
@@ -185,20 +194,27 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
             <p className="text-xs text-muted-foreground">{user?.role_short || 'Usuario'}</p>
           </div>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild className="min-h-11 sm:min-h-8">
             <Link to="/configuracion?tab=cuenta">
               <UserCircle2 className="h-4 w-4 mr-2" />
               Mi perfil
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild className="min-h-11 sm:min-h-8">
             <Link to="/configuracion?tab=misReportes">
               <FileText className="h-4 w-4 mr-2" />
               Mis reportes
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => requestDovelaErrorReport({ reportSource: 'header-user-menu' })}
+            className="min-h-11 sm:min-h-8"
+          >
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            Reportar error
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={onLogout} className="text-destructive">
+          <DropdownMenuItem onClick={onLogout} className="min-h-11 text-destructive sm:min-h-8">
             <LogOut className="h-4 w-4 mr-2" />
             Cerrar sesión
           </DropdownMenuItem>
