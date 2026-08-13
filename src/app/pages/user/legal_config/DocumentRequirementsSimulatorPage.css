@@ -1,0 +1,13 @@
+.document-requirements-simulator { display: grid; gap: 0.7rem; max-width: 76rem; }
+.document-requirements-simulator__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.7rem; padding: 0.85rem; border: 1px solid hsl(var(--border)); border-radius: 0.75rem; background: hsl(var(--card)); }
+.document-requirements-simulator__header > div { display: grid; gap: 0.18rem; }
+.document-requirements-simulator__header p { margin: 0; color: hsl(var(--primary)); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+.document-requirements-simulator__header h2 { display: flex; align-items: center; gap: 0.4rem; margin: 0; color: hsl(var(--foreground)); font-size: 1rem; }
+.document-requirements-simulator__header h2 svg { color: hsl(var(--primary)); }
+.document-requirements-simulator__header span { color: hsl(var(--muted-foreground)); font-size: 0.75rem; line-height: 1.35; }
+.document-requirements-simulator__header > button { display: grid; width: 2rem; height: 2rem; flex: 0 0 2rem; place-items: center; border: 1px solid hsl(var(--border)); border-radius: 0.42rem; background: hsl(var(--background)); color: hsl(var(--muted-foreground)); cursor: pointer; }
+.document-requirements-simulator__header > button:disabled { cursor: not-allowed; opacity: 0.55; }
+.document-requirements-simulator__actuation { display: grid; gap: 0.22rem; max-width: 30rem; padding: 0.65rem 0.75rem; border: 1px solid hsl(var(--border)); border-radius: 0.6rem; background: hsl(var(--card)); color: hsl(var(--muted-foreground)); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.035em; text-transform: uppercase; }
+.document-requirements-simulator__actuation select { min-height: 2rem; border: 1px solid hsl(var(--border)); border-radius: 0.38rem; background: hsl(var(--background)); color: hsl(var(--foreground)); font-size: 0.75rem; }
+.document-requirements-simulator__error, .document-requirements-simulator__loading { display: flex; align-items: center; gap: 0.35rem; margin: 0; padding: 0.5rem 0.6rem; border: 1px solid hsl(var(--border)); border-radius: 0.5rem; color: hsl(var(--muted-foreground)); font-size: 0.72rem; }
+.document-requirements-simulator__error { border-color: hsl(var(--destructive) / 0.3); background: hsl(var(--destructive) / 0.07); color: hsl(var(--destructive)); }

@@ -5,6 +5,7 @@ import {
   GitBranch,
   ListChecks,
   Menu,
+  PlaySquare,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -13,12 +14,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import LegalConfigInitialPage from './LegalConfigInitialPage.jsx';
+import DocumentRequirementsSimulatorPage from './DocumentRequirementsSimulatorPage.jsx';
 import DocumentReviewChecksPage from './DocumentReviewChecksPage.jsx';
 import './DocumentCatalogWorkspacePage.css';
 
 export const DOCUMENT_CATALOG_SECTIONS = Object.freeze([
   { key: 'documentos', label: 'Documentos', icon: FileText },
   { key: 'actuaciones', label: 'Actuaciones', icon: GitBranch },
+  { key: 'simulador-requisitos', label: 'Emulador de requisitos', icon: PlaySquare },
   { key: 'evaluacion-documentos', label: 'Evaluación de documentos', icon: ListChecks },
 ]);
 
@@ -90,6 +93,7 @@ export default function DocumentCatalogWorkspacePage({
       <div className="document-catalog-window__content">
         {normalizedSection === 'documentos' && <LegalConfigInitialPage section="documents" />}
         {normalizedSection === 'actuaciones' && <LegalConfigInitialPage section="actuations" />}
+        {normalizedSection === 'simulador-requisitos' && <DocumentRequirementsSimulatorPage />}
         {normalizedSection === 'evaluacion-documentos' && <DocumentReviewChecksPage />}
       </div>
     </section>
