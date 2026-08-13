@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { startTransition, useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -135,14 +135,16 @@ export default function FUN_DAILY_COMPONENT(props) {
     var [selectedBtn, setSbtn] = useState(null)
     var [filter, setFilter] = useState('')
     const [expandedTableSections, setExpandedTableSections] = useState(() => new Set());
+    const forceRefreshRef = useRef(false);
 
     // Track whether this effect instance is still active (React 18 StrictMode cleanup)
     useEffect(() => {
         if (!load) {
             let cancelled = false;
-            FUN_SERVICE.loadMacroRange(id1, id2)
+            FUN_SERVICE.loadMacroRange(id1, id2, { force: forceRefreshRef.current })
                 .then(response => {
                     if (cancelled) return;
+                    forceRefreshRef.current = false;
                     setLoad(true);
                     if (response.data.length > 0) {
                         curateData(response.data);
@@ -883,8 +885,10 @@ export default function FUN_DAILY_COMPONENT(props) {
         //_datac.pay2 = _SET_PRIORITY(_datac.pay2, true);
         //_datac.neg = _SET_PRIORITY(_datac.neg, true);
         //_datac.neg2 = _SET_PRIORITY(_datac.neg2, true);
-        setDatac(_datac)
-        setLoad2(true)
+        startTransition(() => {
+            setDatac(_datac);
+            setLoad2(true);
+        });
         //console.log('end set')
     }
 
@@ -948,6 +952,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
                 <Button size="sm" onClick={() => {
+                    forceRefreshRef.current = true;
                     setData([]);
                     setLoad(false);
 
