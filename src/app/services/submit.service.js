@@ -5,8 +5,8 @@ const route = "submit"
 
 class Submit_Service {
 
-  getAll() {
-    return http.get(`/${route}`);
+  getAll(options = {}) {
+    return http.get(options.summary ? `/${route}/summary` : `/${route}`);
   }
   get(id) {
     return http.get(`/${route}/${id}`);
