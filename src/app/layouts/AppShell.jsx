@@ -8,6 +8,8 @@ import { DovelaSupportLayer } from '../components/DovelaSupportLayer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { useIsCompactSidebar } from '@/hooks/use-mobile';
+import { NavigationPendingProvider } from './navigation-pending-context';
+import { TopProgressBar } from './TopProgressBar';
 
 const SIDEBAR_STORAGE_KEY = 'dovela-sidebar-collapsed';
 
@@ -48,30 +50,33 @@ export function AppShell({ user, onLogout, children }) {
       onOpenChange={handleSidebarOpenChange}
       className="h-screen overflow-hidden bg-background text-foreground"
     >
-      <AppSidebar items={navItems} />
+      <NavigationPendingProvider>
+        <TopProgressBar />
+        <AppSidebar items={navItems} />
 
-      <SidebarInset className="min-h-0 min-w-0">
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="app-shell-header">
-            <HeaderBar
-              user={user}
-              onLogout={onLogout}
-            />
-          </div>
-
-          <ScrollArea className="flex-1 app-shell-main-scroll">
-            <div id="main-content" className="p-4 md:p-5">
-              <LegacyPageWrapper>
-                {children}
-              </LegacyPageWrapper>
+        <SidebarInset className="min-h-0 min-w-0">
+          <div className="flex min-h-0 flex-1 flex-col">
+            <div className="app-shell-header">
+              <HeaderBar
+                user={user}
+                onLogout={onLogout}
+              />
             </div>
-          </ScrollArea>
 
-          <AppFooter />
-        </div>
-      </SidebarInset>
+            <ScrollArea className="flex-1 app-shell-main-scroll">
+              <div id="main-content" className="p-4 md:p-5">
+                <LegacyPageWrapper>
+                  {children}
+                </LegacyPageWrapper>
+              </div>
+            </ScrollArea>
 
-      <DovelaSupportLayer user={user} />
+            <AppFooter />
+          </div>
+        </SidebarInset>
+
+        <DovelaSupportLayer user={user} />
+      </NavigationPendingProvider>
     </SidebarProvider>
   );
 }
