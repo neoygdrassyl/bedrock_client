@@ -19,6 +19,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { preloadNavigationRoute } from './navigation-config';
+import { useNavigationPending } from './navigation-pending-context';
 
 const UTILITY_START_INDEX = 7;
 
@@ -26,11 +27,23 @@ function isRouteActive(pathname, route) {
   return pathname === route || pathname.startsWith(`${route}/`);
 }
 
+function NavItemSpinner({ className }) {
+  return (
+    <span
+      className={`shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent ${className}`}
+      aria-hidden="true"
+    />
+  );
+}
+
 function SidebarNavItem({ item, pathname }) {
   const { isMobile, setOpenMobile } = useSidebar();
+  const { pendingRoute, beginNavigation } = useNavigationPending();
   const isActive = isRouteActive(pathname, item.route)
     || item.children?.some((child) => pathname === child.route);
-  const closeMobileSidebar = () => {
+  const isPending = pendingRoute === item.route;
+  const handleNavigate = (route) => {
+    beginNavigation(route);
     if (isMobile) setOpenMobile(false);
   };
 
@@ -40,11 +53,11 @@ function SidebarNavItem({ item, pathname }) {
         <Link
           to={item.route}
           aria-current={isActive ? 'page' : undefined}
-          onClick={closeMobileSidebar}
+          onClick={() => handleNavigate(item.route)}
           onPointerEnter={() => preloadNavigationRoute(item.route)}
           onFocus={() => preloadNavigationRoute(item.route)}
         >
-          <Icon name={item.icon} size={16} />
+          {isPending ? <NavItemSpinner className="h-4 w-4" /> : <Icon name={item.icon} size={16} />}
           <span>{item.label}</span>
         </Link>
       </SidebarMenuButton>
@@ -53,17 +66,20 @@ function SidebarNavItem({ item, pathname }) {
         <SidebarMenuSub>
           {item.children.map((child) => {
             const childIsActive = pathname === child.route;
+            const childIsPending = pendingRoute === child.route;
             return (
               <SidebarMenuSubItem key={child.id}>
                 <SidebarMenuSubButton asChild isActive={childIsActive}>
                   <Link
                     to={child.route}
                     aria-current={childIsActive ? 'page' : undefined}
-                    onClick={closeMobileSidebar}
+                    onClick={() => handleNavigate(child.route)}
                     onPointerEnter={() => preloadNavigationRoute(child.route)}
                     onFocus={() => preloadNavigationRoute(child.route)}
                   >
-                    {child.icon && <Icon name={child.icon} size={14} />}
+                    {childIsPending
+                      ? <NavItemSpinner className="h-3.5 w-3.5" />
+                      : (child.icon && <Icon name={child.icon} size={14} />)}
                     <span>{child.label}</span>
                   </Link>
                 </SidebarMenuSubButton>
@@ -94,6 +110,7 @@ function SidebarNavGroup({ label, items, pathname }) {
 export function AppSidebar({ items = [] }) {
   const location = useLocation();
   const { isMobile, setOpenMobile } = useSidebar();
+  const { beginNavigation } = useNavigationPending();
   const mainItems = items.slice(0, UTILITY_START_INDEX);
   const utilityItems = items.slice(UTILITY_START_INDEX);
 
@@ -106,7 +123,7 @@ export function AppSidebar({ items = [] }) {
               <SidebarMenuButton asChild size="lg" tooltip={infoCud.name} className="!h-12">
                 <Link
                   to="/dashboard"
-                  onClick={() => { if (isMobile) setOpenMobile(false); }}
+                  onClick={() => { beginNavigation('/dashboard'); if (isMobile) setOpenMobile(false); }}
                   onPointerEnter={() => preloadNavigationRoute('/dashboard')}
                   onFocus={() => preloadNavigationRoute('/dashboard')}
                 >
