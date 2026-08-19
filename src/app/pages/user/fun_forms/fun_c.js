@@ -793,6 +793,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         currentVersion={currentVersion}
                         requestUpdate={requestUpdate}
                         vrDocs={VRDocs}
+                        hideDocumentManagement
                         LegacyChecklistComponent={FUNG_CHECKLIST}
                     />
                     <fieldset className="p-3">
