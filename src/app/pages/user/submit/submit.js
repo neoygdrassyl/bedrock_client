@@ -11,6 +11,16 @@ import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
+// Maps a sortable table column to the column the API accepts in `?sort=`.
+// "Documento" is intentionally absent: it is a boolean derived from a join, not
+// a column the server can order by, so clicking it leaves the order unchanged.
+const SORT_FIELD_BY_COLUMN_NAME = {
+    'Nr. Radicación': 'id_public',
+    'Nr. Licencia / Solicitud': 'id_related',
+    'Tipo': 'type',
+    'Fecha Radicación': 'date',
+};
+
 function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
@@ -21,6 +31,14 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     const [list, setList] = useState([]);
     const [loadError, setLoadError] = useState(null);
     const [isSearchResult, setIsSearchResult] = useState(false);
+    // The full summary is ~21.9k rows / 3.9MB, so the listing pulls one page at
+    // a time. Search results come from a different endpoint and are small, so
+    // that mode falls back to client-side paging (see `paginationServer` below).
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(20);
+    const [totalRows, setTotalRows] = useState(0);
+    // Mirrors the table's initial sort (column 1 = Nr. Radicación, descending).
+    const [sort, setSort] = useState({ field: 'id_public', order: 'desc' });
 
     const submitModalStyles = {
         content: {
@@ -45,19 +63,25 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
         },
     };
 
+    // Bumped to force a refetch of the same page (e.g. after a save), without
+    // duplicating the request when the page number also changed.
+    const [reloadToken, setReloadToken] = useState(0);
+
     useEffect(() => {
         retrievePublish();
-    }, []);
+        // Refetch whenever the server-driven page, size or sort changes.
+    }, [page, pageSize, sort.field, sort.order, reloadToken]);
 
     function retrievePublish() {
         // A refresh over already-loaded data must not blank the list or drop to the skeleton.
         const hasLoadedData = isLoaded && list.length > 0;
         if (!hasLoadedData) setIsLoaded(false);
         setLoadError(null);
-        SubmitService.getAll({ summary: true })
+        SubmitService.getSummaryPage({ page, size: pageSize, sort: sort.field, order: sort.order })
             .then(response => {
                 setIsSearchResult(false);
-                asignList(response.data);
+                setTotalRows(response.data?.total ?? 0);
+                asignList(response.data?.data ?? []);
             })
             .catch(e => {
                 console.log(e);
@@ -70,7 +94,9 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     }
 
     function refreshList(id) {
-        retrievePublish();
+        // Both updates land in one render, so the effect refetches exactly once.
+        setPage(1);
+        setReloadToken(token => token + 1);
         if (id) refreshItem(id);
     }
 
@@ -420,13 +446,28 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                             data={list}
                             highlightOnHover
                             pagination
-                            paginationPerPage={20}
+                            paginationPerPage={pageSize}
                             paginationRowsPerPageOptions={[20, 50, 100]}
                             className="data-table-component"
                             noHeader
                             dense
                             defaultSortFieldId={1}
                             defaultSortAsc={false}
+                            // Search results come from a separate endpoint and are
+                            // already a small set, so only the full listing pages
+                            // and sorts against the server.
+                            paginationServer={!isSearchResult}
+                            paginationTotalRows={isSearchResult ? list.length : totalRows}
+                            paginationPage={page}
+                            onChangePage={(nextPage) => setPage(nextPage)}
+                            onChangeRowsPerPage={(nextSize) => { setPageSize(nextSize); setPage(1); }}
+                            sortServer={!isSearchResult}
+                            onSort={(column, direction) => {
+                                const field = SORT_FIELD_BY_COLUMN_NAME[column?.name];
+                                if (!field) return;
+                                setPage(1);
+                                setSort({ field, order: direction || 'desc' });
+                            }}
                         />
                     )}
                 </div>

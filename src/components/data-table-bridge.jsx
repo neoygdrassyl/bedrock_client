@@ -1,4 +1,4 @@
-import { useState, useMemo, Fragment, useId } from 'react';
+import { useState, useMemo, useEffect, Fragment, useId } from 'react';
 import {
   flexRender,
   getCoreRowModel,
@@ -35,6 +35,21 @@ export function DataTableBridge({
   paginationPerPage = 20,
   paginationRowsPerPageOptions,
   paginationComponentOptions,
+  // Server-side pagination (opt-in, mirrors the react-data-table-component API).
+  // Off by default so the ~98 existing consumers keep paginating client-side.
+  paginationServer = false,
+  paginationTotalRows = 0,
+  // 1-based current page. In server mode the parent owns the page number, so
+  // when it resets (e.g. after re-sorting) the indicator has to follow instead
+  // of keeping the page the user was previously on.
+  paginationPage,
+  onChangePage,
+  onChangeRowsPerPage,
+  // Server-side sorting. Required alongside paginationServer, otherwise a click
+  // on a header would only reorder the page currently in memory and silently
+  // look like it sorted the whole dataset.
+  sortServer = false,
+  onSort,
   noDataComponent = 'No hay registros',
   striped,
   highlightOnHover,
@@ -149,15 +164,78 @@ export function DataTableBridge({
     return cols;
   }, [rdtColumns, expandableRows, expandableRowDisabled]);
 
+  // Follow the parent's page number in server mode. Without this the indicator
+  // desyncs whenever the parent resets the page on its own (sorting, refresh).
+  useEffect(() => {
+    if (!paginationServer || paginationPage == null) return;
+    const nextIndex = Math.max(0, paginationPage - 1);
+    setPaginationState((current) => (
+      current.pageIndex === nextIndex ? current : { ...current, pageIndex: nextIndex }
+    ));
+  }, [paginationServer, paginationPage]);
+
+  // In server mode `data` is already the current page, so TanStack must not
+  // slice it again; it only needs the total page count to drive the controls.
+  const serverPageCount = paginationServer
+    ? Math.max(1, Math.ceil((paginationTotalRows || 0) / (paginationState.pageSize || paginationPerPage)))
+    : undefined;
+
+  // Page/size changes are owned by the parent in server mode: apply them to
+  // local state for the controls, then notify so it can refetch.
+  const handlePaginationChange = (updater) => {
+    const next = typeof updater === 'function' ? updater(paginationState) : updater;
+    setPaginationState(next);
+
+    if (!paginationServer) return;
+    if (next.pageSize !== paginationState.pageSize) {
+      // rdt reports 1-based pages.
+      onChangeRowsPerPage?.(next.pageSize, next.pageIndex + 1);
+      return;
+    }
+    if (next.pageIndex !== paginationState.pageIndex) {
+      onChangePage?.(next.pageIndex + 1, paginationTotalRows);
+    }
+  };
+
+  // Sorting is owned by the parent in server mode: keep local state so the
+  // header arrows still reflect the active column, then notify so it refetches.
+  const handleSortingChange = (updater) => {
+    const next = typeof updater === 'function' ? updater(sorting) : updater;
+    setSorting(next);
+
+    if (!sortServer) return;
+    const [active] = next;
+    if (!active) {
+      onSort?.(null, null);
+      return;
+    }
+    // Report the original rdt column object, as react-data-table-component does.
+    const rdtColumn = rdtColumns.filter(c => !c.omit)
+      .find((col, index) => String(col.id || index + 1) === String(active.id));
+    onSort?.(rdtColumn || null, active.desc ? 'desc' : 'asc');
+  };
+
   const table = useReactTable({
     data,
     columns: tanstackColumns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: handleSortingChange,
+    // In server mode rows arrive already ordered; re-sorting them locally would
+    // only shuffle the current page. Passed unconditionally for the same
+    // option-merging reason as pageCount above.
+    manualSorting: sortServer,
+    ...(sortServer ? {} : { getSortedRowModel: getSortedRowModel() }),
     ...(pagination && {
-      getPaginationRowModel: getPaginationRowModel(),
-      onPaginationChange: setPaginationState,
+      // Client mode keeps the row model that slices locally; server mode swaps
+      // it for manualPagination + an explicit pageCount.
+      // `manualPagination` and `pageCount` are always passed, never omitted:
+      // useReactTable merges options across renders, so leaving a key out keeps
+      // the previous value and the page count would stay stuck on the server
+      // total after switching back to client mode.
+      manualPagination: paginationServer,
+      pageCount: paginationServer ? serverPageCount : undefined,
+      ...(paginationServer ? {} : { getPaginationRowModel: getPaginationRowModel() }),
+      onPaginationChange: handlePaginationChange,
     }),
     ...(expandableRows && {
       getExpandedRowModel: getExpandedRowModel(),
@@ -359,7 +437,9 @@ export function DataTableBridge({
               className="h-7 rounded-md border border-border bg-background px-2 text-xs text-foreground"
               value={String(table.getState().pagination.pageSize)}
               onChange={(event) => {
-                setPaginationState({
+                // Routed through the shared handler so server mode is notified;
+                // it also resets to the first page, as before.
+                handlePaginationChange({
                   pageIndex: 0,
                   pageSize: Number(event.target.value),
                 });
@@ -371,7 +451,9 @@ export function DataTableBridge({
             </select>
           </div>
           <span className="text-muted-foreground text-xs">
-            {table.getFilteredRowModel().rows.length} registros
+            {/* In server mode the row model only holds the current page, so the
+                record count has to come from the server's total. */}
+            {paginationServer ? paginationTotalRows : table.getFilteredRowModel().rows.length} registros
             {' · '}
             Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1}
           </span>
