@@ -109,7 +109,7 @@ function renderActualizar(props = {}) {
   );
 }
 
-describe('FUN_NEWVERSION requirements preview', () => {
+describe('FUN_NEWVERSION version save', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
@@ -124,48 +124,12 @@ describe('FUN_NEWVERSION requirements preview', () => {
     vi.clearAllMocks();
   });
 
-  it('previsualiza requisitos publicados desde valores no guardados del formulario Actualizar', async () => {
-    const { container } = renderActualizar();
-
-    await act(async () => {
-      fireEvent.click(container.querySelector('input[name="f_11"][value="D"]'));
-      fireEvent.click(container.querySelector('input[name="f_12"][value="A"]'));
-      fireEvent.click(container.querySelector('input[name="f_15"][value="A"]'));
-    });
-
-    await act(async () => {
-      vi.advanceTimersByTime(500);
-      await Promise.resolve();
-    });
-
-    expect(previewRequirementsMock).toHaveBeenCalledTimes(1);
-    expect(previewRequirementsMock).toHaveBeenCalledWith({
-      configStatus: 'published',
-      actuacion: expect.objectContaining({
-        tipo: ['D'],
-        tramite: 'A',
-        m_lic: ['A'],
-        area: 'A',
-        vivienda: 'C',
-        cultural: 'B',
-      }),
-    });
-    await act(async () => {
-      await Promise.resolve();
-    });
-    expect(screen.getByText('Publicada')).toBeInTheDocument();
-    expect(screen.getByText('Documento técnico backend')).toBeInTheDocument();
-  });
-
-  it('muestra el badge de snapshot solo cuando el backend lo retorna al guardar', async () => {
-    updateVersionMock.mockResolvedValueOnce({
-      data: {
-        status: 'OK',
-        snapshot: { id: 991 },
-      },
-    });
-
+  it('guarda una nueva version sin romperse al armar el formulario', async () => {
+    // Regression: manage_version still called setSnapshotInfo() after the state
+    // it belonged to was removed with the inline requirement preview, so the
+    // handler threw a ReferenceError and the save never reached the service.
     const { container } = renderActualizar({ requestUpdate: vi.fn() });
+
     await act(async () => {
       fireEvent.click(container.querySelector('input[name="f_11"][value="D"]'));
       fireEvent.click(container.querySelector('input[name="f_12"][value="A"]'));
@@ -175,17 +139,9 @@ describe('FUN_NEWVERSION requirements preview', () => {
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /Actualizar versión/i }));
       await Promise.resolve();
-      await updateVersionMock.mock.results[0].value;
-      await Promise.resolve();
     });
 
     expect(updateVersionMock).toHaveBeenCalledTimes(1);
-    await act(async () => {
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-    expect(screen.getByText('Snapshot actualizado')).toBeInTheDocument();
-    expect(screen.getByText('991')).toBeInTheDocument();
     expect(swalErrorMock).not.toHaveBeenCalled();
   });
 });
