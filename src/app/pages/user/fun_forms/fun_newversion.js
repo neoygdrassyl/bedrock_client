@@ -735,7 +735,6 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
 
             formData.set('fun0Id', fun0Id);
             formData.set('state', currentItem.state);
-            setSnapshotInfo(null);
 
             let value = null;
             let checkbox = null;
