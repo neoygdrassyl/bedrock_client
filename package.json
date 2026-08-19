@@ -90,7 +90,7 @@
     "audit:undefined": "node scripts/audit-undefined-references.mjs",
     "audit:undefined:strict": "node scripts/audit-undefined-references.mjs --strict",
     "audit:react-doctor": "node scripts/react-doctor-audit.mjs --out .sisyphus/evidence/react-doctor/latest",
-    "audit:preflight": "npm run audit:ast && npm run audit:arrays && npm run audit:undefined",
+    "audit:preflight": "npm run audit:ast && npm run audit:arrays && npm run audit:undefined:strict",
     "sync:vscode": "node scripts/sync-vscode-customizations.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
