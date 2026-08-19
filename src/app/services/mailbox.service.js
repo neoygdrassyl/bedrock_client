@@ -7,6 +7,11 @@ class UserslDataService {
     return http.get(`/${route}`);
   }
 
+  /** Row count only — avoids downloading the collection to read `.length`. */
+  count() {
+    return http.get(`/${route}/count`);
+  }
+
   get(id) {
     return http.get(`/${route}/${id}`);
   }
