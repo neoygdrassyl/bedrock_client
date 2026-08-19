@@ -27,6 +27,7 @@ const FUNG = React.lazy(() => import('../fun_g'));
 const FUNC = React.lazy(() => import('../fun_c'));
 const FUNN = React.lazy(() => import('../fun_n'));
 const FUND = React.lazy(() => import('./fun_docs'));
+const FUN_DOCUMENTAL_NEW = React.lazy(() => import('../../expediente_documental/FunDocumentalNew.jsx'));
 const FUN_ALERT = React.lazy(() => import('../fun_alertn'));
 const FUNCLOCK = React.lazy(() => import('../fun_clock'));
 const RECORD_ARC = React.lazy(() => import('../../records/record_arc'));
@@ -43,8 +44,9 @@ const SECTION_GROUPS = [
     tone: 'sky',
     items: [
       { id: 'detalles', label: 'Detalles', icon: 'FolderOpen' },
-      { id: 'documentos', label: 'Documentos', icon: 'Archive' },
       { id: 'actualizar', label: 'Actualizar', icon: 'RefreshCw', requiresEdit: true },
+      { id: 'documentos-new', label: 'Documentos (new)', icon: 'Files' },
+      { id: 'documentos', label: 'Documentos', icon: 'Archive' },
       { id: 'chequeo', label: 'Chequeo', icon: 'CheckSquare' },
       { id: 'publicidad', label: 'Publicidad', icon: 'Megaphone', requiresPublicidad: true },
     ],
@@ -1084,6 +1086,8 @@ function renderModuleContent(activeSection, moduleProps, options = {}) {
       return <FUNC {...moduleProps} closeModal={moduleProps.closeModal} />;
     case 'documentos':
       return <FUND {...moduleProps} />;
+    case 'documentos-new':
+      return <FUN_DOCUMENTAL_NEW {...moduleProps} />;
     case 'publicidad':
       return <FUN_ALERT {...moduleProps} />;
     case 'ph':
@@ -1476,7 +1480,9 @@ export function FunExpedienteFullscreen({
       globals,
       swaMsg,
       currentId,
+      currentPublic,
       currentVersion,
+      canManage: isEditableLegacyExpediente(summary),
       requestUpdate,
       requesRefresh: () => requestUpdate(currentId),
       closeModal: noop,
@@ -1484,7 +1490,7 @@ export function FunExpedienteFullscreen({
       NAVIGATION_VERSION: handleVersionNavigation,
       hideInlineBinnacles: true,
     }),
-    [currentId, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, swaMsg, translation]
+    [currentId, currentPublic, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, summary, swaMsg, translation]
   );
 
   const visibleSectionGroups = useMemo(
