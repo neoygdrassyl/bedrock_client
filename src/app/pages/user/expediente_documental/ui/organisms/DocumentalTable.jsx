@@ -1,4 +1,4 @@
-import { Eye, MoreHorizontal, Scale, Search } from 'lucide-react';
+import { ClipboardCheck, Eye, Pencil, Search } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -10,12 +10,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { DOCUMENT_ORIGIN_STATE } from '../../../shared/expediente-documental.constants';
 import { DOCUMENT_PREVIEW_MEDIUM } from '../../../shared/expediente-documental.utils';
@@ -23,9 +17,8 @@ import { MediumIndicator } from '../atoms/MediumIndicator';
 import { ScanStatusBadge } from '../atoms/ScanStatusBadge';
 import { DocumentNameCell } from '../molecules/DocumentNameCell';
 import { VrCell } from '../molecules/VrCell';
-import { DigitalSeatsCell } from '../molecules/DigitalSeatsCell';
+import { FolioSplitCell } from '../molecules/FolioSplitCell';
 import { ColumnFilterField } from '../molecules/ColumnFilterField';
-import { getDocumentSeatCount } from '../../documentalViewModel';
 
 const SKELETON_ROW_COUNT = 6;
 const COLUMN_COUNT = 7;
@@ -46,8 +39,38 @@ const MEDIUM_TO_ORIGIN_STATE = {
   [DOCUMENT_PREVIEW_MEDIUM.DIGITAL]: DOCUMENT_ORIGIN_STATE.DIGITAL,
 };
 
-function resolveMediumState(row) {
-  return MEDIUM_TO_ORIGIN_STATE[row.medium] || DOCUMENT_ORIGIN_STATE.DIGITAL;
+const MEDIUM_OPTIONS = [
+  { medium: DOCUMENT_PREVIEW_MEDIUM.PHYSICAL, label: 'Físico' },
+  { medium: DOCUMENT_PREVIEW_MEDIUM.DIGITAL, label: 'Digital' },
+];
+
+/**
+ * A group can hold physical and digital entries at once, so the cell shows one
+ * indicator per medium actually present instead of collapsing the row to a
+ * single medium (parity with UnifiedDocumentTable's MediumIconSet).
+ */
+function resolveMediumOptions(row) {
+  const present = MEDIUM_OPTIONS.filter(
+    (option) => row.mediumPresence?.[option.medium] || row.medium === option.medium,
+  );
+
+  return present.length
+    ? present
+    : [{ medium: row.medium, label: row.mediumLabel || 'Sin medio' }];
+}
+
+function resolveMediumLabel(row, options) {
+  return row.mediumLabel || options.map((option) => option.label).join(' y ');
+}
+
+/**
+ * Editing acts on the group's digital entries, so it needs one entry that is
+ * actually editable — a manager alone is not enough. Synthetic legal-form rows
+ * describe a requirement rather than a stored document and are never editable.
+ */
+function canEditRow(row, canManage) {
+  if (!canManage || row.isPreviewRow) return false;
+  return (row.entries || []).some((entry) => entry.canEdit);
 }
 
 export function DocumentalTable({
@@ -127,16 +150,16 @@ export function DocumentalTable({
                   />
                 </div>
               </TableHead>
-              <TableHead className="w-[16%] align-top" title="Folios digitales / asientos documentales">
+              <TableHead className="w-[16%] align-top" title="Folios digitales / folios físicos">
                 <div className="space-y-1">
-                  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Folios digitales / asientos</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Folios digitales / físicos</div>
                   <ColumnFilterField
                     type="text"
                     value={filters.folios || ''}
                     onChange={(value) => onFilterChange?.('folios', value)}
                     placeholder="Número..."
                     inputMode="numeric"
-                    aria-label="Filtrar por folios digitales o asientos"
+                    aria-label="Filtrar por folios digitales o físicos"
                   />
                 </div>
               </TableHead>
@@ -187,12 +210,27 @@ export function DocumentalTable({
                     <VrCell latestVr={row.latestVr} vrValues={[]} />
                   </TableCell>
                   <TableCell className="align-middle">
-                    <div className="flex items-center gap-2">
-                      <MediumIndicator state={resolveMediumState(row)} />
-                      <span className="text-xs font-medium text-foreground">
-                        {row.medium === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL ? 'Físico' : 'Digital'}
-                      </span>
-                    </div>
+                    {(() => {
+                      const mediumOptions = resolveMediumOptions(row);
+                      const mediumLabel = resolveMediumLabel(row, mediumOptions);
+
+                      return (
+                        <div className="flex flex-col gap-1" title={mediumLabel}>
+                          <div className="flex items-center gap-1.5">
+                            {mediumOptions.map((option) => (
+                              <MediumIndicator
+                                key={option.medium}
+                                state={MEDIUM_TO_ORIGIN_STATE[option.medium] || DOCUMENT_ORIGIN_STATE.DIGITAL}
+                                label={option.label}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-[11px] font-medium leading-tight text-muted-foreground">
+                            {mediumLabel}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell className="align-middle">
                     <span className="font-mono text-xs" title="Fecha de la última entrada que define el VR mostrado">
@@ -203,39 +241,47 @@ export function DocumentalTable({
                     <ScanStatusBadge applies={row.scanned?.applies} value={row.scanned?.value} />
                   </TableCell>
                   <TableCell className="align-middle">
-                    <DigitalSeatsCell
+                    <FolioSplitCell
                       digital={row.folios?.digital}
-                      seats={getDocumentSeatCount(row)}
+                      physical={row.folios?.physical}
                     />
                   </TableCell>
                   <TableCell className="align-middle">
-                    <div className="flex justify-center">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            aria-label={`Abrir acciones de ${row.documentName || 'documento'}`}
-                          >
-                            <MoreHorizontal aria-hidden="true" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onSelect={() => onRowAction?.(row, 'history')}>
-                            <Eye aria-hidden="true" />
-                            Ver
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            disabled={!canManage}
-                            onSelect={() => onRowAction?.(row, 'legal-form')}
-                          >
-                            <Scale aria-hidden="true" />
-                            Editar LyF
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                    <div className="flex justify-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title="Consultar entradas históricas"
+                        aria-label="Consultar entradas históricas"
+                        onClick={() => onRowAction?.(row, 'history')}
+                      >
+                        <Eye aria-hidden="true" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title="Editar entradas digitales"
+                        aria-label="Editar entradas digitales"
+                        disabled={!canEditRow(row, canManage)}
+                        onClick={() => onRowAction?.(row, 'edit')}
+                      >
+                        <Pencil aria-hidden="true" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title="Ver evaluación documental"
+                        aria-label="Ver evaluación documental"
+                        onClick={() => onRowAction?.(row, 'evaluation')}
+                      >
+                        <ClipboardCheck aria-hidden="true" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
