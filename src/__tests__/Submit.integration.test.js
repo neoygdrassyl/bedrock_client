@@ -10,7 +10,7 @@
  *   6. Modal de nueva entrada se abre al hacer click
  *   7. Botones de acción en cada fila (Ver detalles, Eliminar)
  *   8. Función de búsqueda mediante CONSULTAR
- *   9. Carga de datos desde SubmitService.getAll()
+ *   9. Carga de datos desde SubmitService.getSummaryPage()
  */
 
 import React from 'react';
@@ -23,6 +23,8 @@ vi.mock('../app/services/submit.service', () => ({
   __esModule: true,
   default: {
     getAll: vi.fn(() => Promise.resolve({ data: [] })),
+    getSummaryPage: vi.fn(() => Promise.resolve({ data: { data: [], total: 0, page: 1, size: 20, totalPages: 0 } })),
+    count: vi.fn(() => Promise.resolve({ data: { count: 0 } })),
     get: vi.fn(() => Promise.resolve({ data: {} })),
     getSearch: vi.fn(() => Promise.resolve({ data: [] })),
     getlastid: vi.fn(() => Promise.resolve({ data: 'VR25-0001' })),
@@ -228,15 +230,15 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     expect(optionValues).toContain('5'); // C.C Persona que Entrega
   });
 
-  test('8. SubmitService.getAll() se llama al montar', async () => {
+  test('8. SubmitService.getSummaryPage() se llama al montar', async () => {
     const SubmitService = (await import('../app/services/submit.service')).default;
-    SubmitService.getAll.mockClear();
+    SubmitService.getSummaryPage.mockClear();
 
     await act(async () => {
       renderSubmit();
     });
 
-    expect(SubmitService.getAll).toHaveBeenCalled();
+    expect(SubmitService.getSummaryPage).toHaveBeenCalled();
   });
 
   test('9. Sección "Lista de entradas" presente', async () => {
@@ -249,7 +251,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
   test('10. Muestra indicador de carga antes de cargar datos', async () => {
     const SubmitService = (await import('../app/services/submit.service')).default;
     // Make the API never resolve (simulating loading)
-    SubmitService.getAll.mockReturnValueOnce(new Promise(() => {}));
+    SubmitService.getSummaryPage.mockReturnValueOnce(new Promise(() => {}));
 
     await act(async () => {
       renderSubmit();
@@ -275,8 +277,8 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
 
   test('12. Renderiza DataTable con datos mock', async () => {
     const SubmitService = (await import('../app/services/submit.service')).default;
-    SubmitService.getAll.mockResolvedValueOnce({
-      data: [
+    SubmitService.getSummaryPage.mockResolvedValueOnce({
+      data: { total: 2, page: 1, size: 20, totalPages: 1, data: [
         {
           id: 1,
           id_public: 'VR25-0001',
@@ -303,7 +305,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
           list_type: 2,
           sub_lists: [],
         },
-      ],
+      ] },
     });
 
     await act(async () => {
@@ -321,14 +323,14 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
 
   test('13. DataTable muestra encabezados de columnas correctos', async () => {
     const SubmitService = (await import('../app/services/submit.service')).default;
-    SubmitService.getAll.mockResolvedValueOnce({
-      data: [
+    SubmitService.getSummaryPage.mockResolvedValueOnce({
+      data: { total: 1, page: 1, size: 20, totalPages: 1, data: [
         {
           id: 1, id_public: 'VR25-0001', id_related: 'CUB1-2024-0001',
           type: 'TEST', date: '2024-01-01', time: '09:00', sub_doc: true,
           sub_lists: [],
         },
-      ],
+      ] },
     });
 
     await act(async () => {
@@ -347,8 +349,10 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
 
   test('14. Muestra error recuperable y reintento cuando falla la carga inicial', async () => {
     const SubmitService = (await import('../app/services/submit.service')).default;
-    SubmitService.getAll.mockClear();
-    SubmitService.getAll.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce({ data: [] });
+    SubmitService.getSummaryPage.mockClear();
+    SubmitService.getSummaryPage
+      .mockRejectedValueOnce(new Error('network down'))
+      .mockResolvedValueOnce({ data: { data: [], total: 0, page: 1, size: 20, totalPages: 0 } });
 
     await act(async () => {
       renderSubmit();
@@ -360,7 +364,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
       fireEvent.click(screen.getByRole('button', { name: /reintentar/i }));
     });
 
-    await waitFor(() => expect(SubmitService.getAll).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(SubmitService.getSummaryPage).toHaveBeenCalledTimes(2));
     await waitFor(() => {
       expect(screen.queryByText('No se pudo cargar la ventanilla.')).not.toBeInTheDocument();
     });
@@ -368,14 +372,14 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
 
   test('14b. Mantiene las entradas visibles cuando falla una actualización', async () => {
     const SubmitService = (await import('../app/services/submit.service')).default;
-    SubmitService.getAll.mockClear();
-    SubmitService.getAll
+    SubmitService.getSummaryPage.mockClear();
+    SubmitService.getSummaryPage
       .mockResolvedValueOnce({
-        data: [{
+        data: { total: 1, page: 1, size: 20, totalPages: 1, data: [{
           id: 1, id_public: 'VR25-0001', id_related: 'CUB1-2024-0001',
           type: 'TEST', date: '2024-01-01', time: '09:00', sub_doc: true,
           sub_lists: [],
-        }],
+        }] },
       })
       .mockRejectedValueOnce(new Error('network down'));
 
