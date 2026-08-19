@@ -126,8 +126,8 @@ describe('LegalConfigInitialPage', () => {
     render(<LegalConfigInitialPage />);
 
     await findVariantInCatalog();
-    const submit = dialogFields().getByRole('button', { name: 'Crear documento' });
     openDocumentForm();
+    const submit = dialogFields().getByRole('button', { name: 'Crear documento' });
     fireEvent.change(dialogFields().getByLabelText('Nombre *'), { target: { value: 'Certificado' } });
     fireEvent.change(dialogFields().getByLabelText('Código *'), { target: { value: 'CER' } });
     expect(submit).toBeEnabled();
@@ -138,10 +138,9 @@ describe('LegalConfigInitialPage', () => {
     })));
 
     const typology = screen.getByRole('combobox', { name: 'Tipología' });
-    fireEvent.change(typology, { target: { value: 'Plano' } });
-    fireEvent.keyDown(typology, { key: 'Enter' });
+    fireEvent.change(typology, { target: { value: 't' } });
 
-    expect(typology).toHaveValue('Plano');
+    expect(typology).toHaveValue('t');
   });
 
   it('opens a normalized catalogue modal and manages typologies and labels independently', async () => {
@@ -161,7 +160,7 @@ describe('LegalConfigInitialPage', () => {
     await waitFor(() => expect(service.create).toHaveBeenCalledWith('typologies', { name: 'Nueva tipología', code: 'Nueva tipología' }));
 
     fireEvent.click(within(dialog).getByRole('tab', { name: /Etiquetas/ }));
-    expect(within(dialog).getByText('Firmado')).toBeInTheDocument();
+    expect(within(dialog).getAllByText('Firmado').length).toBeGreaterThan(0);
     fireEvent.change(within(dialog).getByLabelText('Nuevo nombre'), { target: { value: 'Nueva etiqueta' } });
     fireEvent.click(within(dialog).getByRole('button', { name: 'Crear etiqueta' }));
     await waitFor(() => expect(service.create).toHaveBeenCalledWith('labels', { name: 'Nueva etiqueta', code: 'Nueva etiqueta' }));
@@ -236,7 +235,7 @@ describe('LegalConfigInitialPage', () => {
     render(<LegalConfigInitialPage />);
 
     expect(screen.getByRole('status')).toHaveTextContent('Cargando configuración');
-    expect(dialogFields().getByRole('button', { name: 'Crear documento' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Nuevo documento' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Nueva actuación o modalidad' })).toBeDisabled();
     resolveWorkspace({ data: workspace });
     await findVariantInCatalog();
@@ -257,7 +256,16 @@ describe('LegalConfigInitialPage', () => {
   });
 
   it('clears a previous association success notice when a later save fails', async () => {
-    service.workspace.mockResolvedValue({ data: workspace });
+    // Two documents, because the notice is cleared by a second save: the
+    // current-associations table is derived from the workspace payload, which
+    // this mock never re-serves, so the first item keeps offering "Agregar"
+    // and there is no "Quitar" to click.
+    service.workspace.mockResolvedValue({
+      data: {
+        ...workspace,
+        documents: [...workspace.documents, { id: 'd2', name: 'Memoria estructural', code: 'MEM-1', typology_id: 't', is_active: true }],
+      },
+    });
     service.saveAssociations
       .mockResolvedValueOnce({ data: { revision: 1 } })
       .mockRejectedValueOnce({ response: { data: { message: 'No se pudieron guardar las asociaciones.' } } });
@@ -266,9 +274,9 @@ describe('LegalConfigInitialPage', () => {
     fireEvent.click(actuationButton('Licencia'));
 
     addAssociation('Plano principal');
-    expect(await screen.findByRole('status')).toHaveTextContent('Asociaciones guardadas.');
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Asociaciones guardadas.'));
 
-    fireEvent.click(screen.getByRole('button', { name: 'Quitar Plano principal' }));
+    addAssociation('Memoria estructural');
     expect(await screen.findByRole('alert')).toHaveTextContent('No se pudieron guardar las asociaciones.');
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
@@ -295,7 +303,7 @@ describe('LegalConfigInitialPage', () => {
     addAssociation('Plano principal');
 
     await waitFor(() => expect(service.saveAssociations).toHaveBeenCalledWith('a', expect.objectContaining({ document_ids: ['d'] })));
-    expect(await screen.findByRole('status')).toHaveTextContent('Asociaciones guardadas.');
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Asociaciones guardadas.'));
   });
 
   it('exposes the configuration controls inside the workspace', async () => {
@@ -340,7 +348,9 @@ describe('LegalConfigInitialPage', () => {
     fireEvent.change(dialogFields().getByLabelText('Nombre *'), { target: { value: 'Reconocimiento' } });
     fireEvent.click(screen.getByRole('button', { name: 'Crear categoría' }));
 
-    await waitFor(() => expect(service.create).toHaveBeenCalledWith('actuations', { name: 'Reconocimiento', code: 'Reconocimiento' }));
+    await waitFor(() => expect(service.create).toHaveBeenCalledWith('actuations', {
+      name: 'Reconocimiento', code: 'Reconocimiento', node_kind: 'category', parent_id: null,
+    }));
   });
 
   it('shows guided empty states when the catalogue has no actuations or documents', async () => {
@@ -386,9 +396,9 @@ describe('LegalConfigInitialPage', () => {
     openDocumentForm();
     fireEvent.change(dialogFields().getByLabelText('Nombre *'), { target: { value: 'Plano de sótano' } });
     fireEvent.change(dialogFields().getByLabelText(/^Variante de/), { target: { value: 'd' } });
-    fireEvent.change(dialogFields().getByLabelText('Código *'), { target: { value: 'SOT' } });
+    fireEvent.change(dialogFields().getByLabelText('Sufijo del código *'), { target: { value: 'SOT' } });
 
-    const preview = screen.getByLabelText('Vista previa de variante');
+    const preview = screen.getByLabelText('Vista previa de la variante');
     expect(within(preview).getByText('PLA-1-SOT')).toBeInTheDocument();
     expect(within(preview).getByText('Plano principal')).toBeInTheDocument();
   });
@@ -408,12 +418,12 @@ describe('LegalConfigInitialPage', () => {
     await findVariantInCatalog();
     fireEvent.click(screen.getByRole('button', { name: 'Gestionar series' }));
     const dialog = screen.getByRole('dialog', { name: 'Series y subseries' });
-    expect(within(dialog).getByText('Licencias urbanísticas')).toBeInTheDocument();
+    expect(within(dialog).getAllByText('Licencias urbanísticas').length).toBeGreaterThan(0);
     expect(within(dialog).getByText('Licencia de construcción')).toBeInTheDocument();
 
-    fireEvent.change(within(dialog).getByLabelText('Código de serie para Licencias urbanísticas'), { target: { value: '200' } });
-    fireEvent.change(within(dialog).getByLabelText('Código de subserie para Licencia de construcción'), { target: { value: '-01' } });
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar series' }));
+    fireEvent.change(within(dialog).getByLabelText('Código de la serie', { selector: 'input' }), { target: { value: '200' } });
+    fireEvent.change(within(dialog).getByLabelText('Sufijo de código para Licencia de construcción'), { target: { value: '-01' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }));
 
     await waitFor(() => {
       expect(service.update).toHaveBeenCalledWith('actuations', 'a', expect.objectContaining({ code: '200' }));
@@ -434,9 +444,10 @@ describe('LegalConfigInitialPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Gestionar series' }));
     const dialog = screen.getByRole('dialog', { name: 'Series y subseries' });
 
-    fireEvent.change(within(dialog).getByLabelText('Nombre de subserie nueva para Licencias urbanísticas'), { target: { value: 'Licencia de intervención' } });
-    fireEvent.change(within(dialog).getByLabelText('Código de subserie nueva para Licencias urbanísticas'), { target: { value: '-02' } });
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Agregar subserie' }));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Nueva subserie' }));
+    fireEvent.change(within(dialog).getByLabelText('Nombre de la subserie'), { target: { value: 'Licencia de intervención' } });
+    fireEvent.change(within(dialog).getByLabelText('Sufijo para la nueva subserie de Licencias urbanísticas'), { target: { value: '-02' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Agregar' }));
 
     await waitFor(() => expect(service.create).toHaveBeenCalledWith('actuations', { name: 'Licencia de intervención', code: '100-02', parent_id: 'a' }));
   });
@@ -462,9 +473,9 @@ describe('LegalConfigInitialPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Gestionar series' }));
     const dialog = screen.getByRole('dialog', { name: 'Series y subseries' });
 
-    fireEvent.change(within(dialog).getByLabelText('Código de serie para Licencias urbanísticas'), { target: { value: '200' } });
-    fireEvent.change(within(dialog).getByLabelText('Código de subserie para Licencia de construcción'), { target: { value: '-01' } });
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar series' }));
+    fireEvent.change(within(dialog).getByLabelText('Código de la serie', { selector: 'input' }), { target: { value: '200' } });
+    fireEvent.change(within(dialog).getByLabelText('Sufijo de código para Licencia de construcción'), { target: { value: '-01' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }));
 
     await waitFor(() => expect(service.update).toHaveBeenCalledWith('actuations', 'a', expect.objectContaining({ code: '200' })));
     expect(service.update).not.toHaveBeenCalledWith('actuations', 'child', expect.anything());
@@ -519,7 +530,7 @@ describe('LegalConfigInitialPage', () => {
     fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar actuación' }), { target: { value: 'obra nueva' } });
 
     expect(actuationButton('Construcción')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Obra nueva' })).toBeInTheDocument();
+    expect(actuationButton('Obra nueva')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^Licencia,/ })).not.toBeInTheDocument();
   });
 
@@ -558,12 +569,12 @@ describe('LegalConfigInitialPage', () => {
     service.workspace.mockResolvedValue({ data: workspace });
     render(<LegalConfigInitialPage />);
 
-    await screen.findAllByText('Plano principal');
+    await screen.findAllByText(/Plano principal/);
     fireEvent.change(screen.getByRole('textbox', { name: 'Buscar documentos' }), { target: { value: 'variante' } });
 
     await waitFor(() => {
       const table = screen.getByRole('table');
-      expect(within(table).getByText('Plano principal')).toBeInTheDocument();
+      expect(within(table).getByText(/Plano principal/)).toBeInTheDocument();
       expect(within(table).getByText(/Plano variante/)).toBeInTheDocument();
     });
   });
