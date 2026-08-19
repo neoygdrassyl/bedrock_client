@@ -46,6 +46,58 @@ class DocumentRequirementService {
       configStatus: status,
     }, requestConfig);
   }
+
+  getCentralProfiles() {
+    return http.get(`/${ROUTE}/central/profiles`);
+  }
+
+  getCentralProfile(profileId) {
+    return http.get(`/${ROUTE}/central/profiles/${encodeURIComponent(profileId)}`);
+  }
+
+  syncCentralProfile({ name, sourceUrl, setDefault = false }) {
+    return http.post(`/${ROUTE}/central/profiles/sync`, {
+      name,
+      sourceUrl,
+      setDefault,
+    });
+  }
+
+  setDefaultCentralProfile(profileId) {
+    return http.put(`/${ROUTE}/central/profiles/${encodeURIComponent(profileId)}/default`);
+  }
+
+  getProjectCentralConfiguration(idPublic) {
+    return http.get(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}`);
+  }
+
+  getCentralProject(idPublic) {
+    return this.getProjectCentralConfiguration(idPublic);
+  }
+
+  updateProjectCentralConfiguration(idPublic, { profileId, typologySelections = {} }) {
+    return http.put(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}`, {
+      profileId,
+      typologySelections,
+    });
+  }
+
+  updateCentralProject(idPublic, payload) {
+    return this.updateProjectCentralConfiguration(idPublic, payload);
+  }
+
+  updateProjectLegalForm(idPublic, selection) {
+    const vrIdPublic = typeof selection === 'object' && selection !== null
+      ? selection.vrIdPublic
+      : selection;
+    return http.put(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}/legal-form`, {
+      vrIdPublic,
+    });
+  }
+
+  updateCentralProjectLegalForm(idPublic, selection) {
+    return this.updateProjectLegalForm(idPublic, selection);
+  }
 }
 
 export default new DocumentRequirementService();

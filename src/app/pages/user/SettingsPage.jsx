@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bell, Bug, Check, FileText, LayoutDashboard, Library, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Bell, Bug, Check, Database, FileText, LayoutDashboard, Library, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
 import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
 import DocumentCatalogWorkspacePage, {
   normalizeDocumentCatalogSection,
 } from './legal_config/DocumentCatalogWorkspacePage.jsx';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
+import CentralConfigurationPanel from './document_requirements/CentralConfigurationPanel.jsx';
 import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
 import {
   DASHBOARD_DENSITY_OPTIONS,
@@ -30,6 +31,11 @@ const NAV_ITEMS = [
     key: 'catalogo-documental',
     label: 'Catálogo documental',
     icon: Library,
+  },
+  {
+    key: 'configuracion-documental',
+    label: 'Configuración documental',
+    icon: Database,
   },
   {
     key: 'personalizacion',
@@ -139,6 +145,7 @@ export default function SettingsPage() {
               onSectionChange={selectDocumentCatalogSection}
             />
           )}
+          {activeKey === 'configuracion-documental' && <CentralConfigurationPanel />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
           {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
           {activeKey === 'errorReports' && canManageErrorReports && (
