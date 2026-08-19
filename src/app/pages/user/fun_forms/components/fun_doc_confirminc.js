@@ -5,6 +5,7 @@ import FUNService from '../../../../services/fun.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 import dayjs from 'dayjs';
 import { infoCud } from '../../../../components/jsons/vars';
+import DCO_LIS from '../../../../components/jsons/fun6DocsList.json';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 
 import SubmitService from '../../../../services/submit.service'
