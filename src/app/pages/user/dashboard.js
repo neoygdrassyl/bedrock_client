@@ -175,15 +175,21 @@ function Dashboard() {
 
     async function fetchCounts() {
       try {
+        // Only the FUN list is fetched in full: its rows are filtered by state
+        // and reused for the tracked-expedientes panel below. The other four
+        // are pure counters, so they hit `/count` (a few bytes) instead of
+        // downloading ~24.5MB of rows just to read `.length` off them.
         const results = await Promise.allSettled([
           FUNService.getAll_fun(),
-          PqrsMainService.getAll(),
-          SubmitService.getAll(),
-          MailboxService.getAll(),
-          AppointmentsService.getAll(),
+          PqrsMainService.count(),
+          SubmitService.count(),
+          MailboxService.count(),
+          AppointmentsService.count(),
         ]);
         if (cancelled) return;
-        const len = (r) => r.status === 'fulfilled' && Array.isArray(r.value?.data) ? r.value.data.length : null;
+        const len = (r) => (r.status === 'fulfilled' && Number.isFinite(r.value?.data?.count)
+          ? r.value.data.count
+          : null);
         const funData = results[0].status === 'fulfilled' && Array.isArray(results[0].value?.data)
           ? results[0].value.data
           : null;

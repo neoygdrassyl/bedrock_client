@@ -7,6 +7,11 @@ class PqrsMainDataService {
     return http.get(`/${route}`);
   }
 
+  /** Row count only — avoids downloading ~9.2MB just to read `.length`. */
+  count() {
+    return http.get(`/${route}/count`);
+  }
+
   getAllWorker() {
     return http.get(`/${route}/info/workers`);
   }
