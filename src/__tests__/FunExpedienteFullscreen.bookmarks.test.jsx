@@ -333,8 +333,9 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     });
     expect(within(navGroups[0]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
       'Detalles',
-      'Documentos',
       'Actualizar',
+      'Documentos (new)',
+      'Documentos',
       'Chequeo',
       'Publicidad',
     ]);
@@ -374,7 +375,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
 
     expect(screen.getByRole('button', { name: /detalles/i })).toHaveClass('border-sky-400', 'bg-sky-200/95', 'text-sky-950');
     expect(screen.getByRole('button', { name: /detalles/i })).not.toHaveClass('bg-sky-700', 'text-white');
-    expect(screen.getByRole('button', { name: /documentos/i })).toHaveClass('text-slate-900', 'bg-white/80');
+    expect(screen.getByRole('button', { name: 'Documentos' })).toHaveClass('text-slate-900', 'bg-white/80');
   });
 
   it('renderiza la aprobación PH legacy al abrir Expedición P.H.', async () => {
