@@ -4,15 +4,29 @@ import {
     LEGAL_FORM_FILTER,
     DOCUMENT_PREVIEW_MEDIUM,
     buildDocumentTableRows,
-    decorateDocumentTableRowsWithLegalForm,
     filterDocumentTableRows,
     summarizeLegalFormRequirements,
     getDocumentVrDisplayValue,
     isInternalReportVr,
     INTERNAL_REPORT_VR_FILTER,
 } from '../../shared/expediente-documental.utils';
+import {
+    getDocumentSeatCount,
+    getLatestDocumentVr,
+    matchesDocumentalColumnFilters,
+    mergeDocumentRowsByStableUnit,
+    prepareDocumentEntriesForStableUnits,
+} from '../documentalViewModel';
 
-const DEFAULT_FILTERS = { document: '', vr: '', mediums: [], statuses: [], legalForm: LEGAL_FORM_FILTER.ALL };
+const DEFAULT_FILTERS = {
+    document: '',
+    vr: '',
+    mediums: [],
+    date: '',
+    statuses: [],
+    folios: '',
+    legalForm: LEGAL_FORM_FILTER.ALL,
+};
 const DEFAULT_ENTRY_SHEET = { open: false, mode: 'history', group: null };
 const ENTRIES_FETCH_ERROR_MESSAGE = 'No fue posible consultar el expediente documental unificado.';
 const LEGAL_FORM_FETCH_ERROR_MESSAGE = 'No fue posible consultar Legal y Debida Forma.';
@@ -20,6 +34,8 @@ const LEGAL_FORM_FETCH_ERROR_MESSAGE = 'No fue posible consultar Legal y Debida 
 function areFiltersEqual(filters, other) {
     return filters.document === other.document
         && filters.vr === other.vr
+        && filters.date === other.date
+        && filters.folios === other.folios
         && filters.legalForm === other.legalForm
         && filters.mediums.length === other.mediums.length
         && filters.mediums.every((medium) => other.mediums.includes(medium))
@@ -32,11 +48,11 @@ function getSummary(rows) {
         const nextSummary = {
             ...summary,
             totalGroups: summary.totalGroups + 1,
-            totalEntries: summary.totalEntries + row.entryCount,
+            totalEntries: summary.totalEntries + getDocumentSeatCount(row),
         };
 
-        if (row.mediumPresence?.[DOCUMENT_PREVIEW_MEDIUM.PHYSICAL] || row.medium === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL) nextSummary.physical += 1;
-        if (row.mediumPresence?.[DOCUMENT_PREVIEW_MEDIUM.DIGITAL] || row.medium === DOCUMENT_PREVIEW_MEDIUM.DIGITAL) nextSummary.digital += 1;
+        if (row.medium === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL) nextSummary.physical += 1;
+        if (row.medium === DOCUMENT_PREVIEW_MEDIUM.DIGITAL) nextSummary.digital += 1;
         if (row.scanned?.value) nextSummary.scanned += 1;
 
         return nextSummary;
@@ -49,11 +65,11 @@ function getSummary(rows) {
     });
 }
 
-function getAvailableVrOptions(rows) {
+function getAvailableVrOptions(rows, { includeHistory = false } = {}) {
     const optionsByValue = new Map();
 
     rows.forEach((row) => {
-        const vrValues = [row.latestVr, ...(row.vrValues || [])]
+        const vrValues = [row.latestVr, ...(includeHistory ? (row.vrValues || []) : [])]
             .filter(Boolean)
             .map((value) => String(value).trim())
             .filter(Boolean);
@@ -79,11 +95,17 @@ function getAvailableVrOptions(rows) {
 /**
  * Owns fetch -> derive -> filter -> paginate -> legal-mode -> KPI -> entry-sheet
  * state for the expediente documental unificado view. Pure domain rules
- * (`buildDocumentTableRows`, `decorateDocumentTableRowsWithLegalForm`,
- * `filterDocumentTableRows`) are reused unmodified from
+ * The shared build/filter rules are reused from
  * `../../shared/expediente-documental.utils`.
  */
-export function useExpedienteDocumental({ funId, idRelated, canManage = false, pageSize = 12 } = {}) {
+export function useExpedienteDocumental({
+    funId,
+    idRelated,
+    canManage = false,
+    pageSize = 12,
+    documentMetadata = [],
+    authoritativeVrOptions = [],
+} = {}) {
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -139,15 +161,32 @@ export function useExpedienteDocumental({ funId, idRelated, canManage = false, p
         refresh();
     }, [refresh]);
 
-    const baseRows = useMemo(() => buildDocumentTableRows(entries), [entries]);
-    const rows = useMemo(
-        () => decorateDocumentTableRowsWithLegalForm(baseRows, missingDocumentsResult),
-        [baseRows, missingDocumentsResult],
+    const baseRows = useMemo(
+        () => mergeDocumentRowsByStableUnit(
+            buildDocumentTableRows(prepareDocumentEntriesForStableUnits(
+                entries,
+                documentMetadata,
+                authoritativeVrOptions,
+            )),
+        ),
+        [authoritativeVrOptions, documentMetadata, entries],
     );
-    const filteredRows = useMemo(() => filterDocumentTableRows(rows, filters), [rows, filters]);
+    // Missing requirements belong exclusively to the LyF tab. Documents only
+    // contains stable units backed by real expediente entries.
+    const rows = baseRows;
+    const filteredRows = useMemo(
+        () => filterDocumentTableRows(rows, filters)
+            .filter((row) => matchesDocumentalColumnFilters(row, filters)),
+        [rows, filters],
+    );
     const summary = useMemo(() => getSummary(rows), [rows]);
     const vrOptions = useMemo(() => getAvailableVrOptions(rows), [rows]);
+    const legalVrOptions = useMemo(
+        () => getAvailableVrOptions(rows, { includeHistory: true }),
+        [rows],
+    );
     const legalSummary = useMemo(() => summarizeLegalFormRequirements(missingDocumentsResult), [missingDocumentsResult]);
+    const latestVr = useMemo(() => getLatestDocumentVr(rows), [rows]);
     const legalAvailable = Boolean(legalLoading || legalError || legalSummary.source || legalSummary.totalRequired);
 
     const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
@@ -159,7 +198,9 @@ export function useExpedienteDocumental({ funId, idRelated, canManage = false, p
         filters.document
         || filters.vr
         || filters.mediums.length
+        || filters.date
         || filters.statuses.length
+        || filters.folios
         || filters.legalForm !== LEGAL_FORM_FILTER.ALL,
     );
 
@@ -216,10 +257,13 @@ export function useExpedienteDocumental({ funId, idRelated, canManage = false, p
     }, []);
 
     return {
+        rows,
         visibleRows,
         filteredCount: filteredRows.length,
         summary,
         vrOptions,
+        legalVrOptions,
+        latestVr,
         loading,
         error,
         filters,
@@ -238,6 +282,7 @@ export function useExpedienteDocumental({ funId, idRelated, canManage = false, p
             summary: legalSummary,
             snapshotId: missingDocumentsResult?.snapshotId ?? null,
             configVersionId: missingDocumentsResult?.configVersionId ?? null,
+            result: missingDocumentsResult,
         },
         kpi: {
             toggleMedium,

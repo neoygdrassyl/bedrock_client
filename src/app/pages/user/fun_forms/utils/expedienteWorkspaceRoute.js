@@ -3,6 +3,7 @@ const WORKSPACE_SECTIONS = new Set([
   'tiempos',
   'actualizar',
   'chequeo',
+  'documentos-new',
   'documentos',
   'publicidad',
   'informes',
