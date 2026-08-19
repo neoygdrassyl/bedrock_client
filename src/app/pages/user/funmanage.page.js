@@ -119,6 +119,12 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
         }
         prevUrlParamsRef.current = urlParams;
     }, [urlParams]);
+
+    function LOAD_BY_URL() {
+        // Placeholder — urlParams is not currently passed to this component.
+        // Deep links to a single expediente go through the dedicated
+        // /funmanage/expediente/:radicado route instead. Mirrors fun.js.
+    }
     const retrievePublish = () => {
         if (listRequestRef.current) return listRequestRef.current;
 
