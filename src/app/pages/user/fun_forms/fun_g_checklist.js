@@ -6,7 +6,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { swalError, swalLoading, swalSuccess } from '../../../utils/swalAdapter';
 
-const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, readOnly = false }) => {
+const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, readOnly = false, hideDocumentManagement = false }) => {
 
         const [isSaving, setIsSaving] = useState(false);
         const [checkedOverrides, setCheckedOverrides] = useState({});
@@ -1735,10 +1735,12 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 {_SET_660()}
                 {_SET_670()}
                 {_SET_680()}
-                <legend className="my-2 px-3 Collapsible" id="fung_c4">
-                    <label className="app-p lead text-center fw-normal">7. GESTIÓN DOCUMENTAL</label>
-                </legend>
-                {_CHILD_6_LIST()}
+                {!hideDocumentManagement ? <>
+                    <legend className="my-2 px-3 Collapsible" id="fung_c4">
+                        <label className="app-p lead text-center fw-normal">7. GESTIÓN DOCUMENTAL</label>
+                    </legend>
+                    {_CHILD_6_LIST()}
+                </> : null}
             </div>
         );
 };
