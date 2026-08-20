@@ -5,8 +5,6 @@ import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('../../services/data.service.js', () => ({ default: { getUserData: () => ({}) } }));
 vi.mock('./AlarmsV2ConfigPanel.jsx', () => ({ default: () => <div /> }));
-vi.mock('./document_requirements/DocumentRequirementsConfigPanel.jsx', () => ({ default: () => <div /> }));
-vi.mock('./document_requirements/DocumentRequirementsExplorerPage.jsx', () => ({ default: () => <div /> }));
 vi.mock('./legal_config/LegalConfigInitialPage.jsx', () => ({ default: () => <div /> }));
 vi.mock('./legal_config/DocumentReviewChecksPage.jsx', () => ({ default: () => <div data-testid="document-review-page" /> }));
 vi.mock('./ErrorReportsPanel.jsx', () => ({ default: () => <div /> }));

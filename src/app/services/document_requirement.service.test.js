@@ -17,32 +17,6 @@ describe('documentRequirementService', () => {
     vi.clearAllMocks();
   });
 
-  describe('getExplorer', () => {
-    it('calls GET /document-requirements/explorer with published status', () => {
-      http.get.mockResolvedValue({ data: { readOnly: true, status: 'published' } });
-
-      documentRequirementService.getExplorer('published');
-
-      expect(http.get).toHaveBeenCalledWith('/document-requirements/explorer?status=published');
-    });
-
-    it('calls GET /document-requirements/explorer with draft status', () => {
-      http.get.mockResolvedValue({ data: { readOnly: true, status: 'draft' } });
-
-      documentRequirementService.getExplorer('draft');
-
-      expect(http.get).toHaveBeenCalledWith('/document-requirements/explorer?status=draft');
-    });
-
-    it('defaults to published when no status given', () => {
-      http.get.mockResolvedValue({ data: { readOnly: true, status: 'published' } });
-
-      documentRequirementService.getExplorer();
-
-      expect(http.get).toHaveBeenCalledWith('/document-requirements/explorer?status=published');
-    });
-  });
-
   describe('previewRequirements', () => {
     it('calls POST /document-requirements/preview with status', () => {
       http.post.mockResolvedValue({ data: { requirements: [] } });
@@ -57,16 +31,4 @@ describe('documentRequirementService', () => {
     });
   });
 
-  describe('no mutation methods in explorer flow', () => {
-    it('getExplorer does not call saveDraft or publishConfig methods', () => {
-      expect(documentRequirementService.saveDraft).toBeDefined();
-      expect(documentRequirementService.publishConfig).toBeDefined();
-      // getExplorer just makes GET call — no mutation
-      http.get.mockResolvedValue({ data: {} });
-      documentRequirementService.getExplorer();
-
-      expect(http.put).not.toHaveBeenCalled();
-      expect(http.post).not.toHaveBeenCalled();
-    });
-  });
 });

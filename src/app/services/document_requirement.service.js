@@ -18,26 +18,6 @@ class DocumentRequirementService {
     return http.get(`/${ROUTE}/config${buildStatusQuery(status)}`);
   }
 
-  getPublishedConfig() {
-    return this.getConfig('published');
-  }
-
-  getDraftConfig() {
-    return this.getConfig('draft');
-  }
-
-  saveDraft(configJson) {
-    return http.put(`/${ROUTE}/config/draft`, { configJson });
-  }
-
-  publishConfig() {
-    return http.post(`/${ROUTE}/config/publish`);
-  }
-
-  getExplorer(status = 'published') {
-    return http.get(`/${ROUTE}/explorer?status=${encodeURIComponent(status)}`);
-  }
-
   previewRequirements(payload = {}, options = {}) {
     const status = getPreviewStatus(payload, options);
     const requestConfig = options.signal ? { signal: options.signal } : undefined;
@@ -82,21 +62,13 @@ class DocumentRequirementService {
     });
   }
 
-  updateCentralProject(idPublic, payload) {
-    return this.updateProjectCentralConfiguration(idPublic, payload);
-  }
-
-  updateProjectLegalForm(idPublic, selection) {
+  updateCentralProjectLegalForm(idPublic, selection) {
     const vrIdPublic = typeof selection === 'object' && selection !== null
       ? selection.vrIdPublic
       : selection;
     return http.put(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}/legal-form`, {
       vrIdPublic,
     });
-  }
-
-  updateCentralProjectLegalForm(idPublic, selection) {
-    return this.updateProjectLegalForm(idPublic, selection);
   }
 }
 
