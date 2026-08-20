@@ -57,11 +57,6 @@ function getPreviewConfigStatus() {
   const requestedStatus = params.get('configStatus') || params.get('status');
   if (PREVIEW_STATUSES.has(requestedStatus)) return requestedStatus;
 
-  const referrer = document.referrer || '';
-  if (referrer.includes('/configuracion') && referrer.includes('requisitos-documentales')) {
-    return 'draft';
-  }
-
   return 'published';
 }
 
