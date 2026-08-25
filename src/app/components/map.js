@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { LoadScript, GoogleMap, MarkerF, InfoWindowF } from '@react-google-maps/api';
 
 // ID Project for API Key for Google Maps:  curaduria-1-bucaramanga
-// API Key; AIzaSyAx41SbPzO1qUp7uX3oNCbxQNNJk19E-Mc
+// API key is provided via VITE_GOOGLE_MAPS_KEY (see .env.example)
 // Google Cloud Platform
 // Coordinates 7.123617514589584, -73.11354332976984
 
@@ -18,7 +18,7 @@ function Map() {
 
     return (
         <div style={{ width: '100%' }}>
-            <LoadScript googleMapsApiKey="AIzaSyAx41SbPzO1qUp7uX3oNCbxQNNJk19E-Mc">
+            <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={center}
