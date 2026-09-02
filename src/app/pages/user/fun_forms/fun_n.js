@@ -18,6 +18,7 @@ import FUN_ARCHIVE from './components/fun_archive.component';
 import FUN_ANEX from './fun_anex';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 import { swalError } from '@/app/utils/swalAdapter';
+import ProjectDocumentConfigurationPanel from '../document_requirements/ProjectDocumentConfigurationPanel.jsx';
 
 function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesRefresh, NAVIGATION, NAVIGATION_VERSION }) {
     const [currentItem, setCurrentItem] = useState(null);
@@ -67,6 +68,11 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                     </div>
                     {currentItem != null ? <>
                         <h2 className="text-center">ACTUALIZAR RADICACIÓN</h2>
+
+                        <ProjectDocumentConfigurationPanel
+                            currentPublic={currentItem.id_public}
+                            compact
+                        />
 
                         <fieldset className="p-3">
                             <legend className="my-2 px-3 bg-success" id="fun_0">

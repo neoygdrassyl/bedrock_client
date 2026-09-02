@@ -11,6 +11,16 @@ import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
+// Maps a sortable table column to the column the API accepts in `?sort=`.
+// "Documento" is intentionally absent: it is a boolean derived from a join, not
+// a column the server can order by, so clicking it leaves the order unchanged.
+const SORT_FIELD_BY_COLUMN_NAME = {
+    'Nr. Radicación': 'id_public',
+    'Nr. Licencia / Solicitud': 'id_related',
+    'Tipo': 'type',
+    'Fecha Radicación': 'date',
+};
+
 function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
@@ -19,6 +29,16 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     const [modal, setModal] = useState(false);
     const [newModal, setNewModal] = useState(false);
     const [list, setList] = useState([]);
+    const [loadError, setLoadError] = useState(null);
+    const [isSearchResult, setIsSearchResult] = useState(false);
+    // The full summary is ~21.9k rows / 3.9MB, so the listing pulls one page at
+    // a time. Search results come from a different endpoint and are small, so
+    // that mode falls back to client-side paging (see `paginationServer` below).
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(20);
+    const [totalRows, setTotalRows] = useState(0);
+    // Mirrors the table's initial sort (column 1 = Nr. Radicación, descending).
+    const [sort, setSort] = useState({ field: 'id_public', order: 'desc' });
 
     const submitModalStyles = {
         content: {
@@ -43,22 +63,40 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
         },
     };
 
+    // Bumped to force a refetch of the same page (e.g. after a save), without
+    // duplicating the request when the page number also changed.
+    const [reloadToken, setReloadToken] = useState(0);
+
     useEffect(() => {
         retrievePublish();
-    }, []);
+        // Refetch whenever the server-driven page, size or sort changes.
+    }, [page, pageSize, sort.field, sort.order, reloadToken]);
 
     function retrievePublish() {
-        SubmitService.getAll()
+        // A refresh over already-loaded data must not blank the list or drop to the skeleton.
+        const hasLoadedData = isLoaded && list.length > 0;
+        if (!hasLoadedData) setIsLoaded(false);
+        setLoadError(null);
+        SubmitService.getSummaryPage({ page, size: pageSize, sort: sort.field, order: sort.order })
             .then(response => {
-                asignList(response.data);
+                setIsSearchResult(false);
+                setTotalRows(response.data?.total ?? 0);
+                asignList(response.data?.data ?? []);
             })
             .catch(e => {
                 console.log(e);
+                if (!hasLoadedData) {
+                    setList([]);
+                    setIsLoaded(true);
+                }
+                setLoadError('No se pudo cargar la ventanilla.');
             });
     }
 
     function refreshList(id) {
-        retrievePublish();
+        // Both updates land in one render, so the effect refetches exactly once.
+        setPage(1);
+        setReloadToken(token => token + 1);
         if (id) refreshItem(id);
     }
 
@@ -73,6 +111,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
     function retrieveSearch(field, string) {
         SubmitService.getSearch(field, string)
             .then(response => {
+                setIsSearchResult(true);
                 asignList(response.data);
                 swalClose();
             })
@@ -83,6 +122,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
 
     function asignList(_LIST) {
         setList(_LIST);
+        setLoadError(null);
         setIsLoaded(true);
     }
 
@@ -197,8 +237,20 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
             }
         };
 
-        let generateCVS = () => {
+        let generateCVS = async () => {
             let _data = list;
+            if (!isSearchResult) {
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+                try {
+                    const response = await SubmitService.getAll();
+                    _data = response.data;
+                    swalClose();
+                } catch (error) {
+                    console.log(error);
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    return;
+                }
+            }
             let limit_1 = document.getElementById('csv_limit_1').value;
             let limit_2 = document.getElementById('csv_limit_2').value;
             let state = [
@@ -365,7 +417,27 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 </div>
                 <div>
                     <h3 className="text-sm font-semibold text-center mb-2">Lista de entradas</h3>
-                    {isLoaded ? (
+                    {isLoaded && loadError && list.length > 0 && (
+                        <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-center space-y-3 mb-3">
+                            <p className="text-sm font-semibold text-destructive">{loadError}</p>
+                            <Button variant="outline" size="sm" onClick={() => retrievePublish()}>
+                                <Icon name="RefreshCw" size={14} /> Reintentar
+                            </Button>
+                        </div>
+                    )}
+                    {!isLoaded ? (
+                        <div className="p-8 text-center text-muted-foreground text-sm">Cargando información...</div>
+                    ) : loadError && list.length === 0 ? (
+                        <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-center space-y-3">
+                            <div>
+                                <p className="text-sm font-semibold text-destructive">{loadError}</p>
+                                <p className="text-xs text-muted-foreground mt-1">La lista de entradas no se pudo actualizar.</p>
+                            </div>
+                            <Button variant="outline" size="sm" onClick={() => retrievePublish()}>
+                                <Icon name="RefreshCw" size={14} /> Reintentar
+                            </Button>
+                        </div>
+                    ) : (
                         <DataTable
                             paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                             noDataComponent="No hay información"
@@ -374,16 +446,29 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                             data={list}
                             highlightOnHover
                             pagination
-                            paginationPerPage={20}
+                            paginationPerPage={pageSize}
                             paginationRowsPerPageOptions={[20, 50, 100]}
                             className="data-table-component"
                             noHeader
                             dense
                             defaultSortFieldId={1}
                             defaultSortAsc={false}
+                            // Search results come from a separate endpoint and are
+                            // already a small set, so only the full listing pages
+                            // and sorts against the server.
+                            paginationServer={!isSearchResult}
+                            paginationTotalRows={isSearchResult ? list.length : totalRows}
+                            paginationPage={page}
+                            onChangePage={(nextPage) => setPage(nextPage)}
+                            onChangeRowsPerPage={(nextSize) => { setPageSize(nextSize); setPage(1); }}
+                            sortServer={!isSearchResult}
+                            onSort={(column, direction) => {
+                                const field = SORT_FIELD_BY_COLUMN_NAME[column?.name];
+                                if (!field) return;
+                                setPage(1);
+                                setSort({ field, order: direction || 'desc' });
+                            }}
                         />
-                    ) : (
-                        <div className="p-8 text-center text-muted-foreground text-sm">Cargando información...</div>
                     )}
                 </div>
 

@@ -14,6 +14,7 @@ import MailboxService from '../../services/mailbox.service';
 import AppointmentsService from '../../services/appointments.service';
 import BookmarkService from '../../services/bookmark.service';
 import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from './fun_forms/utils/expedienteWorkspaceRoute';
+import DashboardCriticalAlerts from './components/DashboardCriticalAlerts';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -43,7 +44,7 @@ const ICON_COLORS = {
 };
 
 const DEFAULT_ICON_COLOR = 'bg-muted text-muted-foreground';
-const TRACKED_SKELETON_ROWS = ['tracked-skeleton-1', 'tracked-skeleton-2', 'tracked-skeleton-3'];
+const TRACKED_SKELETON_ROWS = ['tracked-skeleton-1', 'tracked-skeleton-2'];
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -174,15 +175,21 @@ function Dashboard() {
 
     async function fetchCounts() {
       try {
+        // Only the FUN list is fetched in full: its rows are filtered by state
+        // and reused for the tracked-expedientes panel below. The other four
+        // are pure counters, so they hit `/count` (a few bytes) instead of
+        // downloading ~24.5MB of rows just to read `.length` off them.
         const results = await Promise.allSettled([
           FUNService.getAll_fun(),
-          PqrsMainService.getAll(),
-          SubmitService.getAll(),
-          MailboxService.getAll(),
-          AppointmentsService.getAll(),
+          PqrsMainService.count(),
+          SubmitService.count(),
+          MailboxService.count(),
+          AppointmentsService.count(),
         ]);
         if (cancelled) return;
-        const len = (r) => r.status === 'fulfilled' && Array.isArray(r.value?.data) ? r.value.data.length : null;
+        const len = (r) => (r.status === 'fulfilled' && Number.isFinite(r.value?.data?.count)
+          ? r.value.data.count
+          : null);
         const funData = results[0].status === 'fulfilled' && Array.isArray(results[0].value?.data)
           ? results[0].value.data
           : null;
@@ -313,15 +320,15 @@ function Dashboard() {
       {/* Greeting */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between" data-dovela-tour-id="dashboard-hero">
         <div className="flex flex-col gap-0.5">
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          <h1 className="!text-2xl !font-semibold !leading-tight tracking-tight text-foreground">
             {getGreeting()}, {userName}
           </h1>
           <p className="text-xs text-muted-foreground">{getFormattedDate()} · Resumen operativo personal</p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start">
-        <div className="space-y-4 xl:w-full xl:max-w-[58rem] xl:flex-none">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_24rem] xl:items-start 2xl:grid-cols-[minmax(0,1fr)_26rem]">
+        <div className="min-w-0 space-y-4">
           <section className="space-y-2.5" data-dovela-tour-id="dashboard-operations">
             <SectionHeader title="Módulos agrupados" count={dashboardGroups.length} />
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-3" data-dovela-tour-id="dashboard-quick-actions">
@@ -339,7 +346,8 @@ function Dashboard() {
           </section>
         </div>
 
-        <aside className="space-y-4 xl:sticky xl:top-4 xl:ml-auto xl:w-[26rem] xl:flex-none" data-dovela-tour-id="dashboard-tracking">
+        <aside className="min-w-0 space-y-4 xl:sticky xl:top-4" data-dovela-tour-id="dashboard-tracking">
+          <DashboardCriticalAlerts />
           <RecentExpedientesSummary items={recentExpedientes} />
           <TrackedExpedientesSummary
             personal={trackedExpedientes.personal}
@@ -364,7 +372,7 @@ function RecentExpedientesSummary({ items }) {
               <Icon name="History" size={15} />
             </span>
             <div className="min-w-0">
-              <h2 className="truncate text-sm font-semibold text-foreground">Vistos recientemente</h2>
+              <h2 className="truncate !text-sm !font-semibold !leading-5 text-foreground">Vistos recientemente</h2>
             </div>
           </div>
           <Badge variant="secondary" className="rounded-full text-[10px]">
@@ -398,7 +406,7 @@ function RecentExpedientesSummary({ items }) {
 function SectionHeader({ title, count }) {
   return (
     <div className="flex items-center gap-2.5">
-      <h2 className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+      <h2 className="!text-xs !font-semibold !leading-4 uppercase tracking-[0.1em] text-muted-foreground">
         {title}
       </h2>
       {count != null && (
@@ -416,7 +424,7 @@ function GroupedActionCard({ title, description, items, counts, loadingCounts })
     <Card className="border-border shadow-sm">
       <CardContent className="p-3.5">
         <div className="mb-3">
-          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <h3 className="!text-sm !font-semibold !leading-5 text-foreground">{title}</h3>
           <p className="text-xs text-muted-foreground">{description}</p>
         </div>
         <div className="grid grid-cols-1 gap-2">
@@ -432,7 +440,7 @@ function GroupedActionCard({ title, description, items, counts, loadingCounts })
                 key={item.key || item.link}
                 asChild
                 variant="outline"
-                className="h-auto min-h-[3.2rem] justify-start border-border bg-background px-3 py-2.5 shadow-sm"
+                className="h-auto min-h-[3.2rem] justify-start border-border bg-background px-3 py-2.5 shadow-sm hover:!border-primary/40 hover:!bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Link to={item.link} className="flex w-full items-center justify-between gap-3 no-underline">
                   <span className="flex min-w-0 items-center gap-3">
@@ -440,7 +448,7 @@ function GroupedActionCard({ title, description, items, counts, loadingCounts })
                       <Icon name={item.icon} size={15} />
                     </span>
                     <span className="min-w-0 text-left">
-                      <span className="block truncate text-[13px] font-semibold text-foreground">{item.title}</span>
+                      <span className="block line-clamp-2 whitespace-normal text-[13px] font-semibold leading-4 text-foreground">{item.title}</span>
                       <span className="block truncate text-[11px] text-muted-foreground">{item.desc}</span>
                     </span>
                   </span>
@@ -511,7 +519,7 @@ function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyT
               <Icon name={icon} size={15} />
             </span>
             <div className="min-w-0">
-              <h2 className="truncate text-sm font-semibold text-foreground">{title}</h2>
+              <h2 className="truncate !text-sm !font-semibold !leading-5 text-foreground">{title}</h2>
               <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p>
             </div>
           </div>
@@ -520,7 +528,7 @@ function TrackedExpedientesTable({ title, subtitle, icon, items, loading, emptyT
           </Badge>
         </div>
 
-        <div className="divide-y divide-border/50">
+        <div className="min-h-[8.5rem] divide-y divide-border/50">
           {loading ? (
             TRACKED_SKELETON_ROWS.map((key) => (
               <div key={key} className="px-3.5 py-3">

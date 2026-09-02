@@ -1,11 +1,11 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import dayjs from 'dayjs';
 import FUNService from '../../../services/fun.service';
 import { PDFDocument } from 'pdf-lib';
-import VIEWER from '../../../components/viewer.component';
+import VIZUALIZER from '../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -57,6 +57,9 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
     const [modal, setModal] = useState(false)
     const [idDoc, setIdDoc] = useState(false)
+    const [pageCount, setPageCount] = useState(0)
+    const [documentDate, setDocumentDate] = useState(dayjs().format('YYYY-MM-DD'))
+    const fileInputRef = useRef(null)
 
     useEffect(() => {
     }, [currentItem]);
@@ -89,43 +92,36 @@ export default function RECORD_DOCUMENT_VERSION(props) {
     }
     // *******************  DATA CONVERTERS ******************* //
     async function readPDF(file) {
+        setPageCount(0)
         if (file.type == "application/pdf") {
             var path = (window.URL || window.webkitURL).createObjectURL(file);
             const url = path
             const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer())
             const pdfDoc = await PDFDocument.load(existingPdfBytes)
             const pages = pdfDoc.getPages().length
-            document.getElementById('fun6_page').value = pages
+            setPageCount(pages)
         }
     };
+    function encodeFun6FilePath(f6DocInfo) {
+        const cleanPath = String(f6DocInfo?.path || '').replace(/^\/+|\/+$/g, '');
+        const filename = encodeURIComponent(f6DocInfo?.filename || '');
+        return `${cleanPath}/${filename}`;
+    }
     // ******************* COMPONENTS JSX ******************* //
     let FORM_COMPONENT = () => {
-        return <form id="form_fun6" onSubmit={addDocument} enctype="multipart/form-data">
+        return <form id="form_fun6" onSubmit={addDocument} encType="multipart/form-data">
             <div className="row">
                 <div className="col-12">
                     <div className="input-group">
                         <span className="input-group-text bg-primary text-primary-foreground"><Icon name="paperclip" size={16} /></span>
-                        <input type="file" className="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
-                    </div>
-                    <div className="input-group">
-                        <input id={'fun6_description'} className="form-control" value={VERSION_DESC[id6] || 'Documento de Evaluación'} hidden />
+                        <input ref={fileInputRef} type="file" className="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
                     </div>
                 </div>
             </div>
             <div className="row d-flex justify-content-start">
-                <div className="col-3">
-                    <div className="input-group">
-                        <input type="text" className="form-control" id={'fun6_code'} value={id6} hidden />
-                    </div>
-                </div>
-                <div className="col-3">
-                    <div className="input-group">
-                        <input type="number" className="form-control" step="1" min="0" id={'fun6_page'} hidden />
-                    </div>
-                </div>
                 <div className="col">
                     <div className="input-group">
-                        <input type="date" className="form-control" id={'fun6_date'} defaultValue={dayjs().format('YYYY-MM-DD')} hidden />
+                        <input type="date" className="form-control" value={documentDate} onChange={(e) => setDocumentDate(e.target.value)} hidden />
                     </div>
                 </div>
             </div>
@@ -137,10 +133,25 @@ export default function RECORD_DOCUMENT_VERSION(props) {
     }
 
     let BTN_DOWN = <Button size="sm" className="ms-1"><Icon name="download" size={16} /></Button>
-    let BTN_VIEW = (API, params) => <VIEWER API={API} params={params} ></VIEWER>
+    let BTN_VIEW = (f6DocInfo) => {
+        const filePath = encodeFun6FilePath(f6DocInfo);
+        return <VIZUALIZER
+            url={filePath}
+            apipath="/files/"
+            previewUrl={`/api/files/${filePath}?inline=1`}
+            downloadUrl={`/api/files/${filePath}`}
+        />
+    }
     // ******************* APIS ******************* //
     let addDocument = (e) => {
         e.preventDefault();
+        const selectedFile = fileInputRef.current?.files?.[0];
+
+        if (!selectedFile) {
+            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+            return;
+        }
+
         let formData = new FormData();
         formData.set('fun0Id', currentItem.id);
 
@@ -148,18 +159,13 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         let _folder = currentItem.id_public;
 
         // GET DATA OF ATTACHS
-        let files = document.getElementsByName("files_fun6s");
         formData.set('attachs_length', 1);
-        for (var i = 0; i < files.length; i++) {
-            if (files[i].files[0]) {
-                formData.append('file', files[i].files[0], "fun6_" + _creationYear + "_" + _folder + "_" + files[i].files[0].name)
-            }
-        }
+        formData.append('file', selectedFile, "fun6_" + _creationYear + "_" + _folder + "_" + selectedFile.name)
 
-        let desc = document.getElementById("fun6_description").value;
-        let code = document.getElementById("fun6_code").value;
-        let page = document.getElementById("fun6_page").value || 0;
-        let date = document.getElementById("fun6_date").value;
+        let desc = VERSION_DESC[id6] || 'Documento de Evaluación';
+        let code = id6;
+        let page = pageCount || 0;
+        let date = documentDate;
         formData.set('descriptions', desc);
         formData.set('codes', "");
         formData.set('codes2', code);
@@ -184,18 +190,10 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
     }
 
-    function getF6Document(f6DocInfo) {
-        return FUNService.getFun6Doc(f6DocInfo.path, f6DocInfo.filename)
-        .then(response => {
-            return response
-        }).catch(e => {
-            console.log(e);
-        });
-    }
     return (
         <>
             {!_FIND_6_ID_REPLACE(id6) ? <Button variant="destructive" size="sm" className="ms-1" onClick={() => setModal(true)}><Icon name="upload" size={16} /></Button> : null}
-            {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(getF6Document, [_FIND_6_ID_REPLACE(id6)]) : null}
+            {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(_FIND_6_ID_REPLACE(id6)) : null}
 
             <Modal contentLabel="UPLOAD RECORD DOC"
                 isOpen={modal}

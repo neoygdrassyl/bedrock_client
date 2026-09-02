@@ -578,7 +578,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
         var formData = new FormData();
 
-        let save_exp = (e) => {
+        let save_exp = async (e) => {
             if (e) e.preventDefault();
             formData = new FormData();
 
@@ -644,12 +644,11 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
             formData.set('duty', JSONObjectParser(duty));
 
-            createVRxCUB_relation(cub1, cub2)
+            await createVRxCUB_relation(cub1, cub2)
             manage_exp();
-            retrieveItem()
         }
 
-        let createVRxCUB_relation = (cub_selected, cub_selected1) => {
+        let createVRxCUB_relation = async (cub_selected, cub_selected1) => {
             let cub1 = cub_selected;
             let cub2 = cub_selected1;
             let vr1 = document.getElementById("vr_selected").value;
@@ -657,8 +656,9 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
             let date1 = document.getElementById('expedition_1').value;
             let date2 = document.getElementById("vr_selected1") ? document.getElementById('expedition_10').value : null;
+            const relationRequests = [];
 
-            if (cub1) {
+            if (cub1 && vr1) {
                 let formatData1 = new FormData();
                 formatData1.set('vr', vr1);
                 formatData1.set('cub', cub1);
@@ -666,9 +666,9 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                 formatData1.set('process', 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
                 formatData1.set('desc', 'Acta de Viabilidad');
                 formatData1.set('date', date1);
-                sendDataToCreate(formatData1, 1);
+                relationRequests.push(sendDataToCreate(formatData1, 1));
             }
-            if (cub2) {
+            if (cub2 && vr2) {
                 let formatData2 = new FormData();
                 formatData2.set('vr', vr2);
                 formatData2.set('cub', cub2);
@@ -676,8 +676,9 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                 formatData2.set('process', 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
                 formatData2.set('desc', 'Deberes Urbanisticos');
                 formatData2.set('date', date2);
-                sendDataToCreate(formatData2, 2);
+                relationRequests.push(sendDataToCreate(formatData2, 2));
             }
+            await Promise.all(relationRequests);
             /*
             let desc = document.getElementById('geng_type').value;
             formatData.set('desc', desc);
@@ -693,12 +694,9 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
             if ((type === 1 && idCUBxVr1) || (type === 2 && idCUBxVr2)) {
                 const id = type === 1 ? idCUBxVr1 : idCUBxVr2;
 
-                CubXVrDataService.updateCubVr(id, formatData)
+                return CubXVrDataService.updateCubVr(id, formatData)
                     .then((response) => {
-                        if (response.data === 'OK') {
-                            // Refrescar la UI
-                            requestUpdate(currentItem.id, true);
-                        }
+                        return response;
                     })
                     .catch((error) => {
                         console.error(error);
@@ -706,12 +704,9 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
             } else {
                 // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
+                return CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
-                        if (response.data === 'OK') {
-                            // Refrescar la UI
-                            requestUpdate(currentItem.id, true);
-                        }
+                        return response;
                     })
                     .catch((error) => {
                         console.error(error);
@@ -721,13 +716,14 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
         let manage_exp = () => {
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.update(currentRecord.id, formData)
+            return EXPEDITION_SERVICE.update(currentRecord.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 
                         requestUpdateRecord(currentItem.id);
                         requestUpdate(currentItem.id);
+                        retrieveItem();
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         swalError({ title: "ERROR DE DUPLICACION", text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo` });
                     }

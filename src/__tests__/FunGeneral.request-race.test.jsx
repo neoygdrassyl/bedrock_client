@@ -93,9 +93,11 @@ vi.mock('../app/components/customClasses/typeParse', () => ({
   regexChecker_isOA_2: () => false,
 }));
 
-vi.mock('@/components/icon', () => ({
-  Icon: () => <span aria-hidden="true" />,
-}));
+vi.mock('@/components/icon', () => {
+  // The module exports Icon both named and as default; consumers use either.
+  const Icon = () => <span aria-hidden="true" />;
+  return { __esModule: true, Icon, default: Icon };
+});
 
 vi.mock('../app/pages/user/fun_forms/fun_g_checklist', () => ({
   __esModule: true,

@@ -19,14 +19,19 @@ import { useAlarms } from '../hooks/useAlarms';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { formsParser1, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+import RecordsBinnacleStack from '../../records/RecordsBinnacleStack';
+import { isBinnaclePanelDefaultOpen } from '../utils/expedienteWorkspaceRoute';
+import { isSubdivisionExpediente } from '../utils/expedienteDomainRules.js';
 
 const FUNG = React.lazy(() => import('../fun_g'));
 const FUNC = React.lazy(() => import('../fun_c'));
 const FUNN = React.lazy(() => import('../fun_n'));
 const FUND = React.lazy(() => import('./fun_docs'));
+const FUN_DOCUMENTAL_NEW = React.lazy(() => import('../../expediente_documental/FunDocumentalNew.jsx'));
 const FUN_ALERT = React.lazy(() => import('../fun_alertn'));
 const FUNCLOCK = React.lazy(() => import('../fun_clock'));
 const RECORD_ARC = React.lazy(() => import('../../records/record_arc'));
+const SUBDIVISION_ARCHITECTURE_REPORT = React.lazy(() => import('../../records/record_arc_subdivision/SubdivisionArchitectureReport'));
 const RECORD_LAW = React.lazy(() => import('../../records/record_law'));
 const RECORD_ENG = React.lazy(() => import('../../records/record_eng'));
 const RECORD_REVIEW = React.lazy(() => import('../../records/record_review'));
@@ -39,8 +44,9 @@ const SECTION_GROUPS = [
     tone: 'sky',
     items: [
       { id: 'detalles', label: 'Detalles', icon: 'FolderOpen' },
-      { id: 'documentos', label: 'Documentos', icon: 'Archive' },
       { id: 'actualizar', label: 'Actualizar', icon: 'RefreshCw', requiresEdit: true },
+      { id: 'documentos-new', label: 'Documentos (new)', icon: 'Files' },
+      { id: 'documentos', label: 'Documentos', icon: 'Archive' },
       { id: 'chequeo', label: 'Chequeo', icon: 'CheckSquare' },
       { id: 'publicidad', label: 'Publicidad', icon: 'Megaphone', requiresPublicidad: true },
     ],
@@ -712,7 +718,7 @@ function SupportCard({ title, children, action }) {
   );
 }
 
-function PanelToggleButton({ open, onToggle }) {
+function PanelToggleButton({ open, onToggle, docked = false }) {
   return (
     <Button
       type="button"
@@ -720,14 +726,15 @@ function PanelToggleButton({ open, onToggle }) {
       size="icon"
       onClick={onToggle}
       className={cn(
-        'absolute top-4 z-20 h-11 w-11 rounded-full border-border bg-background/95 text-muted-foreground shadow-lg transition-all duration-200 hover:bg-card hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        open ? '-left-5' : '-left-11'
+        'h-10 w-10 rounded-full border-border bg-background/95 text-muted-foreground shadow-lg transition-all duration-150 hover:bg-card hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        docked ? 'static shrink-0' : 'absolute z-20',
+        !docked && (open ? 'left-2 top-3' : '-left-10 top-4')
       )}
-      aria-label={open ? 'Ocultar panel lateral de contexto' : 'Mostrar panel lateral de contexto'}
+      aria-label={open ? 'Ocultar panel de bitácoras' : 'Mostrar panel de bitácoras'}
       aria-expanded={open}
-      title={open ? 'Ocultar contexto' : 'Mostrar contexto'}
+      title={open ? 'Ocultar bitácoras' : 'Mostrar bitácoras'}
     >
-      <Icon name={open ? 'PanelRightClose' : 'PanelRightOpen'} size={17} />
+      <Icon name={open ? 'ChevronRight' : 'ChevronLeft'} size={16} strokeWidth={2.25} aria-hidden="true" />
     </Button>
   );
 }
@@ -1066,7 +1073,7 @@ function BitacoraDialog({ open, onOpenChange, entries, groups, currentPublic }) 
 }
 
 function renderModuleContent(activeSection, moduleProps, options = {}) {
-  const { isPropertyHorizontal = false } = options;
+  const { isPropertyHorizontal = false, isSubdivision = false, expediente } = options;
 
   switch (activeSection) {
     case 'detalles':
@@ -1079,12 +1086,16 @@ function renderModuleContent(activeSection, moduleProps, options = {}) {
       return <FUNC {...moduleProps} closeModal={moduleProps.closeModal} />;
     case 'documentos':
       return <FUND {...moduleProps} />;
+    case 'documentos-new':
+      return <FUN_DOCUMENTAL_NEW {...moduleProps} />;
     case 'publicidad':
       return <FUN_ALERT {...moduleProps} />;
     case 'ph':
       return <RECORD_PH {...moduleProps} />;
     case 'arquitectonico':
-      return <RECORD_ARC {...moduleProps} />;
+      return isSubdivision
+        ? <SUBDIVISION_ARCHITECTURE_REPORT {...moduleProps} expediente={expediente} />
+        : <RECORD_ARC {...moduleProps} />;
     case 'estructural':
       return <RECORD_ENG {...moduleProps} />;
     case 'juridico':
@@ -1135,11 +1146,16 @@ export function FunExpedienteFullscreen({
   onRefresh,
   initialSection = 'detalles',
   initialReport = 'juridico',
-  defaultRightPanelOpen = false,
+  defaultRightPanelOpen,
 }) {
   const initialIsPropertyHorizontal = isPropertyHorizontalExpediente(expediente, getExpedienteVersion(expediente));
+  const normalizedInitialSection = useMemo(
+    () => normalizeInitialSection(initialSection, initialReport, initialIsPropertyHorizontal),
+    [initialIsPropertyHorizontal, initialReport, initialSection]
+  );
+  const resolvedDefaultRightPanelOpen = defaultRightPanelOpen ?? isBinnaclePanelDefaultOpen(normalizedInitialSection);
   const [summary, setSummary] = useState(expediente);
-  const [activeSection, setActiveSection] = useState(() => normalizeInitialSection(initialSection, initialReport, initialIsPropertyHorizontal));
+  const [activeSection, setActiveSection] = useState(normalizedInitialSection);
   const [currentId, setCurrentId] = useState(getExpedienteId(expediente));
   const [currentVersion, setCurrentVersion] = useState(getExpedienteVersion(expediente));
   const [currentPublic, setCurrentPublic] = useState(getExpedienteRadicado(expediente));
@@ -1177,12 +1193,17 @@ export function FunExpedienteFullscreen({
   }, [expediente]);
 
   useEffect(() => {
-    setActiveSection(normalizeInitialSection(initialSection, initialReport, isPropertyHorizontalExpediente(expediente, getExpedienteVersion(expediente))));
-  }, [expediente, initialReport, initialSection]);
+    setActiveSection(normalizedInitialSection);
+  }, [normalizedInitialSection]);
 
   useEffect(() => {
-    setRightPanelOpen(defaultRightPanelOpen);
-  }, [defaultRightPanelOpen]);
+    setRightPanelOpen(resolvedDefaultRightPanelOpen);
+  }, [resolvedDefaultRightPanelOpen]);
+
+  const activateSection = useCallback((nextSection) => {
+    setActiveSection(nextSection);
+    setRightPanelOpen(isBinnaclePanelDefaultOpen(nextSection));
+  }, []);
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -1204,12 +1225,6 @@ export function FunExpedienteFullscreen({
       document.body.style.overflow = overflow;
     };
   }, []);
-
-  useEffect(() => {
-    if (activeSection === 'tiempos') {
-      setRightPanelOpen(false);
-    }
-  }, [activeSection]);
 
   useEffect(() => {
     let ignore = false;
@@ -1321,45 +1336,45 @@ export function FunExpedienteFullscreen({
 
     switch (nextSection) {
       case 'general':
-        setActiveSection('detalles');
+        activateSection('detalles');
         break;
       case 'edit':
-        setActiveSection('actualizar');
+        activateSection('actualizar');
         break;
       case 'check':
-        setActiveSection('chequeo');
+        activateSection('chequeo');
         break;
       case 'clock':
-        setActiveSection('tiempos');
+        activateSection('tiempos');
         break;
       case 'archive':
-        setActiveSection('documentos');
+        activateSection('documentos');
         break;
       case 'alert':
-        setActiveSection('publicidad');
+        activateSection('publicidad');
         break;
       case 'record_law':
-        setActiveSection('juridico');
+        activateSection('juridico');
         break;
       case 'record_arc':
-        setActiveSection('arquitectonico');
+        activateSection('arquitectonico');
         break;
       case 'record_eng':
-        setActiveSection('estructural');
+        activateSection('estructural');
         break;
       case 'record_ph':
-        setActiveSection('ph');
+        activateSection('ph');
         break;
       case 'record_review':
-        setActiveSection('acta');
+        activateSection('acta');
         break;
       case 'expedition':
-        setActiveSection('expedicion');
+        activateSection('expedicion');
         break;
       default:
         break;
     }
-  }, []);
+  }, [activateSection]);
 
   const handleVersionNavigation = useCallback((step) => {
     setCurrentVersion((prev) => {
@@ -1374,14 +1389,14 @@ export function FunExpedienteFullscreen({
   }, []);
 
   const handleSectionChange = useCallback((nextSection) => {
-    setActiveSection(nextSection);
-  }, []);
+    activateSection(nextSection);
+  }, [activateSection]);
 
   const bitacoraEntries = useMemo(() => normalizeBitacoraEntries(summary), [summary]);
   const bitacoraGroups = useMemo(() => getBitacoraGroups(bitacoraEntries), [bitacoraEntries]);
   const legalSummary = useMemo(() => mergeLegalSummary(summary, liveLegalSummary), [liveLegalSummary, summary]);
   const currentPhaseCode = normalizePhaseCode(legalSummary?.fase_actual);
-  const shouldLoadLegalGuide = Boolean(currentPhaseCode && rightPanelOpen && activeSection === 'detalles');
+  const shouldLoadLegalGuide = false;
   const summaryStatus = getSummaryStatusMeta(legalSummary?.status);
   const usedDays = toSafeNumber(legalSummary?.dias_habiles_usados);
   const limitDays = toSafeNumber(legalSummary?.dias_habiles_limite);
@@ -1428,6 +1443,10 @@ export function FunExpedienteFullscreen({
     }),
     [alarms, currentId, currentPublic]
   );
+  const binnaclePanelItem = useMemo(
+    () => ({ ...(summary || {}), id: currentId ?? summary?.id, id_public: currentPublic ?? summary?.id_public, version: currentVersion }),
+    [currentId, currentPublic, currentVersion, summary]
+  );
   const recentActivity = useMemo(
     () => deriveRecentActivity({ summary: legalSummary, alarms: currentAlarms, bitacoraEntries }),
     [bitacoraEntries, currentAlarms, legalSummary]
@@ -1461,14 +1480,17 @@ export function FunExpedienteFullscreen({
       globals,
       swaMsg,
       currentId,
+      currentPublic,
       currentVersion,
+      canManage: isEditableLegacyExpediente(summary),
       requestUpdate,
       requesRefresh: () => requestUpdate(currentId),
       closeModal: noop,
       NAVIGATION: handleLegacyNavigation,
       NAVIGATION_VERSION: handleVersionNavigation,
+      hideInlineBinnacles: true,
     }),
-    [currentId, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, swaMsg, translation]
+    [currentId, currentPublic, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, summary, swaMsg, translation]
   );
 
   const visibleSectionGroups = useMemo(
@@ -1478,6 +1500,11 @@ export function FunExpedienteFullscreen({
 
   const isPropertyHorizontal = useMemo(
     () => isPropertyHorizontalExpediente(summary, currentVersion),
+    [currentVersion, summary]
+  );
+
+  const isSubdivision = useMemo(
+    () => isSubdivisionExpediente(summary, currentVersion),
     [currentVersion, summary]
   );
 
@@ -1522,7 +1549,7 @@ export function FunExpedienteFullscreen({
     return () => window.clearTimeout(timeout);
   }, [activeSection, isPropertyHorizontal]);
 
-  const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal });
+  const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal, isSubdivision, expediente: binnaclePanelItem });
 
   const content = (
     <div
@@ -1695,40 +1722,34 @@ export function FunExpedienteFullscreen({
 
         {/* ── Panel derecho colapsable ─────────────────────────────── */}
         <div className="relative flex shrink-0">
-          <PanelToggleButton
-            open={rightPanelOpen}
-            onToggle={() => setRightPanelOpen(p => !p)}
-          />
+          {!rightPanelOpen && (
+            <PanelToggleButton
+              open={rightPanelOpen}
+              onToggle={() => setRightPanelOpen(p => !p)}
+            />
+          )}
 
           {rightPanelOpen && (
-            <aside className="w-80 shrink-0 overflow-hidden border-l border-border bg-card/50 shadow-xl flex flex-col">
-              <ScrollArea className="flex-1">
-                <div className="space-y-2.5 p-3">
-                  <LegalStatusCard
-                    summary={legalSummary}
-                    legalGuide={legalGuide}
-                    legalGuideLoading={legalGuideLoading}
-                    summaryStatus={summaryStatus}
-                    termMeta={termMeta}
-                    usedDays={usedDays}
-                    limitDays={limitDays}
-                    progressPercent={progressPercent}
-                    remainingDays={remainingDays}
+            <aside aria-label="Bitácoras profesionales" className="w-[26rem] max-w-[38vw] shrink-0 overflow-hidden border-l border-border bg-card/50 shadow-xl flex flex-col">
+              <div className="flex h-14 shrink-0 items-center border-b border-border/60 bg-background/70 px-2">
+                <PanelToggleButton
+                  open={rightPanelOpen}
+                  onToggle={() => setRightPanelOpen(p => !p)}
+                  docked
+                />
+              </div>
+              <ScrollArea className="min-h-0 flex-1">
+                <div className="p-2.5">
+                  <RecordsBinnacleStack
+                    translation={translation}
+                    swaMsg={swaMsg}
+                    globals={globals}
+                    currentItem={binnaclePanelItem}
+                    currentVersion={currentVersion}
+                    activeSection={activeSection}
+                    requestUpdateRecord={requestUpdate}
+                    compact
                   />
-
-                  <BitacoraPreviewCard
-                    entries={bitacoraEntries}
-                    groups={bitacoraGroups}
-                    onOpen={() => setBitacoraDialogOpen(true)}
-                  />
-
-                  <OperationalAlertsCard
-                    alarms={currentAlarms}
-                    onOpen={() => setAlertsDialogOpen(true)}
-                  />
-
-                  <RecentActivityCard events={recentActivity} />
-
                 </div>
               </ScrollArea>
             </aside>

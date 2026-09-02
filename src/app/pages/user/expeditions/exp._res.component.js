@@ -14,6 +14,7 @@ import EXP_RES_2 from './exp_res_2.component';
 import dayjs from "dayjs";
 import { Icon } from '@/components/icon';
 import '../../../../styles/docs-expediente.css';
+import { richTextToPlainText } from '../../../utils/richTextBlockNote';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -407,8 +408,9 @@ export default function EXP_RES(props) {
         const open_3 = reso.open_3 || ``;
         const open_cb = reso.open_cb ? reso.open_cb.split(',') : [0, 0, 0];
 
-        const art_4_1_dv = _GET_STEP_TYPE('s33', 'value')[0] || '';
-        const art_4_2_dv = (_GET_STEP_TYPE('s33', 'value')[1] + (_GET_CHILD_ENG_REW().desc ? '\n' + _GET_CHILD_ENG_REW().desc : '')) || '';
+        const arcS33Values = _GET_STEP_TYPE('s33', 'value');
+        const art_4_1_dv = richTextToPlainText(arcS33Values[0] || '');
+        const art_4_2_dv = [richTextToPlainText(arcS33Values[1]), _GET_CHILD_ENG_REW().desc].filter(Boolean).join('\n');
         const art_4_p_dv = reso.art_4_p ?? '';
 
         //  GET DATA FROM ARCS AND ENGS DOCUMENTS GIVEN
@@ -3516,8 +3518,9 @@ export default function EXP_RES(props) {
         let f53 = _GET_CHILD_53();
         let taxes = _GET_EXPEDITION_JSON('taxes');
 
-        let text_arq = _GET_STEP_TYPE('s33', 'value')[0] || '';
-        let text_eng = (_GET_STEP_TYPE('s33', 'value')[1] + (_GET_CHILD_ENG_REW().desc ? '\n' + _GET_CHILD_ENG_REW().desc : '')) || '';
+        const arcS33Values = _GET_STEP_TYPE('s33', 'value');
+        let text_arq = richTextToPlainText(arcS33Values[0] || '');
+        let text_eng = [richTextToPlainText(arcS33Values[1]), _GET_CHILD_ENG_REW().desc].filter(Boolean).join('\n');
 
         if (model == 'aoi' || model == 'cto') {
             formData.set('clock_payment', _GET_CLOCK_STATE(3, 1).date_start);

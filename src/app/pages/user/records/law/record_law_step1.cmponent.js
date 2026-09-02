@@ -1,5 +1,6 @@
 
 import Record_lawService from '../../../../services/record_law.service';
+import ObservationPanel from '../../../../components/ObservationPanel';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function RECORD_LAW_STEP_1(props) {
@@ -69,20 +70,19 @@ function RECORD_LAW_STEP_1(props) {
         }
         let _COMPONENT_CORRECTIONS = () => {
             let values = _GET_STEP_TYPE('s1', 'value');
-            return <>
-            <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                <div className='col'>
-                    <label>OBSERVACIONES INVENTARIO DE INFORMACIÓN APORTADA</label>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-12">
-                   
-                    <textarea className="input-group" maxLength="4096" name="s_1_values" rows="4"
-                        defaultValue={values[0]} onBlur={() => manage_rl_s1()}></textarea>
-                         <label>(maximo 4000 caracteres)</label>
-                </div>
-            </div></>
+            return <ObservationPanel
+                title="OBSERVACIONES INVENTARIO DE INFORMACIÓN APORTADA"
+                helperText="(maximo 4000 caracteres)"
+                textareaProps={{
+                    className: 'input-group',
+                    maxLength: '4096',
+                    name: 's_1_values',
+                    rows: '4',
+                    defaultValue: values[0],
+                    onBlur: () => manage_rl_s1(),
+                }}
+                className="mt-3"
+            />
         }
         // FUNCTIONS AND WORKING ENGINES
         var formData = new FormData();

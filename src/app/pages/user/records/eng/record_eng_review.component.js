@@ -11,6 +11,7 @@ import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/components/icon';
+import ObservationPanel from '../../../../components/ObservationPanel';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -368,14 +369,19 @@ function RECORD_ENG_REVIEW(props) {
 
             return <div className="row py-2">
                 <div className="col-12">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Observaciones</label>
-                        </div>
-                    </div>
-                    <textarea className="input-group" maxLength="15000" id="record_eng_detail_2" rows="4"
-                        defaultValue={_CHILD.detail_2} onBlur={() => save_item()}></textarea>
-                    <label> (máximo 15000 caracteres)</label>
+                    <ObservationPanel
+                        title="Observaciones"
+                        helperText="(máximo 15000 caracteres)"
+                        className="mt-3"
+                        textareaProps={{
+                            className: 'input-group',
+                            maxLength: '15000',
+                            id: 'record_eng_detail_2',
+                            rows: '4',
+                            defaultValue: _CHILD.detail_2,
+                            onBlur: () => save_item(),
+                        }}
+                    />
                 </div>
             </div>
         }

@@ -8,6 +8,7 @@ import DataTable from '@/components/data-table-bridge';
 import Collapsible from '../../components/Collapsible';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { dateParser } from '../../components/customClasses/typeParse'
+import ObservationPanel from '../../components/ObservationPanel';
 
 
 import dayjs from 'dayjs';
@@ -529,11 +530,16 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td colSpan="2"><label>Observaciones</label></td>
-                                            </tr>
-                                            <tr>
                                                 <td colSpan="2">
-                                                    <textarea rows="3" defaultValue={currentItem.details} id="app_detail" className="form-control"></textarea>
+                                                    <ObservationPanel
+                                                        title="Observaciones"
+                                                        textareaProps={{
+                                                            rows: '3',
+                                                            defaultValue: currentItem.details,
+                                                            id: 'app_detail',
+                                                            className: 'form-control',
+                                                        }}
+                                                    />
                                                 </td>
                                             </tr>
                                         </> : ""}
@@ -544,7 +550,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
 
                         <div className="flex justify-end gap-2 py-3 mt-3 border-t border-border/60">
                             <Button type="submit" size="sm"><Icon name="Save" size={14} /> Guardar Cambios</Button>
-                            <Button variant="outline" size="sm" onClick={() => toggle_edit()}><Icon name="X" size={14} /> Cerrar</Button>
+                            <Button type="button" variant="outline" size="sm" onClick={() => toggle_edit()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </form>
                 </Modal>

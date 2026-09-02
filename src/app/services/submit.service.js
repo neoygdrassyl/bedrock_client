@@ -5,8 +5,23 @@ const route = "submit"
 
 class Submit_Service {
 
-  getAll() {
-    return http.get(`/${route}`);
+  getAll(options = {}) {
+    return http.get(options.summary ? `/${route}/summary` : `/${route}`);
+  }
+  /** Row count only — avoids downloading ~15MB just to read `.length`. */
+  count() {
+    return http.get(`/${route}/count`);
+  }
+  /**
+   * One page of the ventanilla summary. The endpoint only switches to its
+   * paginated envelope ({ data, total, page, size, totalPages }) when `page`
+   * or `size` is present, so `getAll` above keeps returning the bare array.
+   */
+  getSummaryPage({ page = 1, size = 20, sort, order } = {}) {
+    const params = new URLSearchParams({ page: String(page), size: String(size) });
+    if (sort) params.set('sort', sort);
+    if (order) params.set('order', order);
+    return http.get(`/${route}/summary?${params.toString()}`);
   }
   get(id) {
     return http.get(`/${route}/${id}`);

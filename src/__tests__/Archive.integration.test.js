@@ -350,6 +350,60 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
     expect(screen.getByText('Acción')).toBeInTheDocument();
   });
 
+  test('14b. No emite warning de React por keys faltantes en el contenido de las cajas', async () => {
+    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({
+      data: [
+        {
+          id: 1,
+          box: 10,
+          row: 2,
+          column: 3,
+          process_x_archives: [
+            {
+              json: JSON.stringify({
+                id_public: 'CUB1-2024-0001',
+                exp_id: 'RES-001',
+                clocks_start: '2024-01-01',
+                clocks_end: '2024-06-01',
+                'fun_1s.m_lic': '', 'fun_1s.m_sub': '', 'fun_1s.m_urb': '',
+                'fun_1s.tipo': 'TIPO I', 'fun_1s.tramite': 'INICIAL',
+              }),
+              folder: '1',
+              pages: '50',
+            },
+            {
+              json: JSON.stringify({
+                id_public: 'CUB1-2024-0002',
+                exp_id: 'RES-002',
+                clocks_start: '2024-02-01',
+                clocks_end: '2024-07-01',
+                'fun_1s.m_lic': '', 'fun_1s.m_sub': '', 'fun_1s.m_urb': '',
+                'fun_1s.tipo': 'TIPO II', 'fun_1s.tramite': 'MODIFICACION',
+              }),
+              folder: '2',
+              pages: '30',
+            },
+          ],
+        },
+      ],
+    });
+
+    await act(async () => {
+      renderArchive();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/LISTADO DE CAJAS/)).toBeInTheDocument();
+    });
+
+    expect(
+      consoleErrorSpy.mock.calls.some((call) => String(call.join(' ')).includes('Each child in a list should have a unique')),
+    ).toBe(false);
+    consoleErrorSpy.mockRestore();
+  });
+
   test('15. Click en "NUEVA CAJA" abre modal de nueva caja', async () => {
     const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({ data: [] });

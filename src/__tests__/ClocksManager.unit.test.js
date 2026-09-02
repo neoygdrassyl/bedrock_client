@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { renderHook } from '@testing-library/react';
-import { useClocksManager } from '../app/pages/user/clocks/hooks/useClocksManager';
+import { act, renderHook } from '@testing-library/react';
+import { useClocksManager, useScheduleConfig } from '../app/pages/user/clocks/hooks/useClocksManager';
 
 const baseItem = {
   id: 1,
@@ -240,5 +240,51 @@ describe('useClocksManager', () => {
     );
 
     expect(result.current.viaTime).toBe(45);
+  });
+});
+
+describe('useScheduleConfig', () => {
+  const storageKey = 'curaduria_programacion_7';
+
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('usa la config del backend como fuente de verdad cuando trae forma válida', () => {
+    const backendSchedule = { expedienteId: 7, updatedAt: '2026-07-09T00:00:00.000Z', times: { 5: { type: 'days', value: 1 } } };
+
+    const { result } = renderHook(() => useScheduleConfig(7, backendSchedule));
+
+    expect(result.current.scheduleConfig).toEqual(backendSchedule);
+    expect(result.current.hasSchedule).toBe(true);
+    expect(JSON.parse(localStorage.getItem(storageKey))).toEqual(backendSchedule);
+  });
+
+  it('cae a localStorage cuando la config del backend tiene forma inválida (legado doble-wrapping)', () => {
+    localStorage.setItem(storageKey, JSON.stringify({ times: { 9: { type: 'date', value: '2026-08-01' } } }));
+    const legacyBackendGarbage = { scheduleConfig: '{"times":{}}' };
+
+    const { result } = renderHook(() => useScheduleConfig(7, legacyBackendGarbage));
+
+    expect(result.current.scheduleConfig).toEqual({ times: { 9: { type: 'date', value: '2026-08-01' } } });
+  });
+
+  it('mantiene el comportamiento actual (solo localStorage) cuando no hay config de backend', () => {
+    localStorage.setItem(storageKey, JSON.stringify({ times: { 5: { type: 'days', value: 4 } } }));
+
+    const { result } = renderHook(() => useScheduleConfig(7, undefined));
+
+    expect(result.current.scheduleConfig).toEqual({ times: { 5: { type: 'days', value: 4 } } });
+    expect(result.current.hasSchedule).toBe(true);
+  });
+
+  it('saveScheduleConfig y clearScheduleConfig siguen escribiendo en localStorage', () => {
+    const { result } = renderHook(() => useScheduleConfig(7, undefined));
+
+    act(() => result.current.saveScheduleConfig({ times: { 5: { type: 'days', value: 2 } } }));
+    expect(JSON.parse(localStorage.getItem(storageKey))).toEqual({ times: { 5: { type: 'days', value: 2 } } });
+
+    act(() => result.current.clearScheduleConfig());
+    expect(localStorage.getItem(storageKey)).toBeNull();
   });
 });

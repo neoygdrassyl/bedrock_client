@@ -6,6 +6,11 @@ import {
 } from '../app/pages/user/fun_forms/utils/correlatedDocumentControl.utils';
 
 describe('correlatedDocumentControl.utils', () => {
+    // Built the same way the util builds it. Hardcoding the URL coupled this
+    // test to the local .env, which is gitignored: it passed only on machines
+    // whose VITE_API_URL happened to match.
+    const apiBase = String(import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
     const labels = {
         511: 'Formulario Único Nacional',
         6603: 'Proyecto arquitectónico',
@@ -179,8 +184,8 @@ describe('correlatedDocumentControl.utils', () => {
         expect(rows[0].evidence[0]).toMatchObject({
             vr: 'VR-LEGACY',
             canPreview: true,
-            previewUrl: 'http://localhost/dovela-backend/public/files/fun/2026/91/formulario.pdf?inline=1',
-            downloadUrl: 'http://localhost/dovela-backend/public/files/fun/2026/91/formulario.pdf',
+            previewUrl: `${apiBase}/files/fun/2026/91/formulario.pdf?inline=1`,
+            downloadUrl: `${apiBase}/files/fun/2026/91/formulario.pdf`,
         });
     });
 });

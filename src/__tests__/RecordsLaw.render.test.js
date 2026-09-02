@@ -207,7 +207,7 @@ describe('RecordsLaw — Render', () => {
     expect(container.firstChild).toBeTruthy();
   });
 
-  test('record_law_review toggles total observations panel from a collapsed trigger', async () => {
+  test('record_law_review opens the total observations panel when it has content and toggles it', async () => {
     const user = userEvent.setup();
     const recordWithHistoricObservations = {
       ...baseRecord,
@@ -224,16 +224,16 @@ describe('RecordsLaw — Render', () => {
     });
 
     const trigger = screen.getByRole('button', { name: /observaciones totales/i });
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(container.querySelector('textarea[name="s_flaw_values"][readonly]')).toBeNull();
+    const panel = container.querySelector('#law-total-observations-panel');
+    const resumeTextarea = container.querySelector('#law-total-observations-panel textarea[readonly]');
 
-    await user.click(trigger);
-
-    const resumeTextarea = container.querySelector('textarea[name="s_flaw_values"][readonly]');
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(panel).toHaveAttribute('aria-hidden', 'false');
     expect(resumeTextarea).toBeTruthy();
+    expect(resumeTextarea).not.toHaveAttribute('name', 's_flaw_values');
+    // The textarea is labelled by the trigger, whose name carries the hint too.
+    expect(resumeTextarea).toHaveAccessibleName(/OBSERVACIONES TOTALES/);
     expect(resumeTextarea).not.toBeDisabled();
-    expect(resumeTextarea).toHaveStyle({ backgroundColor: '#2f2d38', color: '#f5f7fb' });
     expect(resumeTextarea.value).toContain('Observacion documental');
     expect(resumeTextarea.value).toContain('Observacion del formulario');
     expect(resumeTextarea.value).toContain('Observacion de publicidad');
@@ -241,6 +241,11 @@ describe('RecordsLaw — Render', () => {
     await user.click(trigger);
 
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(container.querySelector('textarea[name="s_flaw_values"][readonly]')).toBeNull();
+    expect(panel).toHaveAttribute('aria-hidden', 'true');
+
+    await user.click(trigger);
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(panel).toHaveAttribute('aria-hidden', 'false');
   });
 });

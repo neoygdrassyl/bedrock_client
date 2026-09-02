@@ -6,6 +6,7 @@ import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import { Icon } from '@/components/icon';
 import { swalConfirm } from '@/app/utils/swalAdapter';
 import usePHSave from './hooks/usePHSave';
+import ObservationPanel from '../../../../components/ObservationPanel';
 
 const INITIAL_FORM = { type: '', check: '', context: '' };
 
@@ -121,10 +122,17 @@ function RECORD_PH_LAW({ translation, swaMsg, globals, currentItem, currentVersi
             </div>
             <div className="row mb-1">
                 <div className="col">
-                    <label>Observaciones / Recomendaciones</label>
-                    <div className="input-group my-1">
-                        <textarea className="form-control" id={"r_ph_l_3" + suffix} rows="3" value={data.context} onChange={handleChange('context')}></textarea>
-                    </div>
+                    <ObservationPanel
+                        title="Observaciones / Recomendaciones"
+                        className="my-1"
+                        textareaProps={{
+                            className: 'form-control',
+                            id: "r_ph_l_3" + suffix,
+                            rows: '3',
+                            value: data.context,
+                            onChange: handleChange('context'),
+                        }}
+                    />
                 </div>
             </div>
         </>

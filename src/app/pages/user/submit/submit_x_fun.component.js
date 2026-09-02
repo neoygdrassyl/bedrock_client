@@ -359,7 +359,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     maxWidth: '100px',
                     cell: row => {
                         const { completed, toSubmit } = processCodes(row)
-                        return <label className>{completed}/{toSubmit.length}</label>
+                        return <label>{completed}/{toSubmit.length}</label>
                     }
                 },
                 {
@@ -368,7 +368,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label className>{formsParser1(row)}</label>
+                    cell: row => <label>{formsParser1(row)}</label>
                 },
                 {
                     name: 'Fecha Límite',
@@ -379,7 +379,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     center: true,
                     minWidth: '100px',
                     maxWidth: '100px',
-                    cell: row => <label className>{dateParser_finalDate(row.clocks_date, 30)}</label>
+                    cell: row => <label>{dateParser_finalDate(row.clocks_date, 30)}</label>
                 },
                 {
                     name: 'Tiempo Restante',

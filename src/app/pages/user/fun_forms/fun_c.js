@@ -17,8 +17,8 @@ import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
 import dayjs from 'dayjs';
 import submitService from '../../../services/submit.service';
-import { GEM_CODE_LIST } from '../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
+import ObservationPanel from '../../../components/ObservationPanel';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation, globals, currentVersion, NAVIGATION, NAVIGATION_VERSION, requesRefresh, closeModal }) {
@@ -200,33 +200,11 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             return _CHILD;
         }
         // DATA CONVERTER
-        let _FIND_IN_VRDOCS = (code) => {
-            if(!code) return false;
-            let FOUND_CODE = VRDocs.find(vr => code.includes(vr.code));
-            return FOUND_CODE;
-        }
-        let BUILD_LIST = (concat) => {
-            const _FUN_1 = _GET_CHILD_1();
-            let list = GEM_CODE_LIST(_FUN_1, concat)
-            return list
-        }
         let _ALLOW_REVIEW = () => {
             let FUN_R = _GET_FUN_R();
             if (!FUN_R) return false;
             let CHECK = FUN_R.checked ? FUN_R.checked.split(',') : [];
-            let REVIEWS = FUN_R.review ? FUN_R.review.split(',') : [];
-            let R_CODES = FUN_R.code ? FUN_R.code.split(',') : [];
-            let CODES = BUILD_LIST(true);
-            let _ALLOW = CODES.every((c, i) => {
-                let R = REVIEWS.find((r) => { return r.includes(c); })
-                let r_i = R_CODES.findIndex(r => r.includes(c));
-                if (CHECK[r_i] == 2) return true;
-                let vr = _FIND_IN_VRDOCS(R);
-                let cond2 = CHECK[r_i] == 1 || CHECK[r_i] == 2 || vr;
-                return cond2;
-               
-            })
-            return _ALLOW;
+            return CHECK.length > 0 && CHECK.every((value) => value == 1 || value == 2);
             
             
             //let FUN_R = _GET_FUN_R();
@@ -522,9 +500,17 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                                 defaultValue={LYDF_DATE} />
                         </div>
                         <div className="col-12">
-                            <label>Observaciones (Max 2000 Caracteres)</label>
-                            <textarea className="form-control mb-3" rows="3" id="c_46" maxLength="2000"
-                                defaultValue={_CHILD_VARS.item_c4}></textarea>
+                            <ObservationPanel
+                                title="Observaciones"
+                                helperText="(Max 2000 Caracteres)"
+                                textareaProps={{
+                                    className: 'form-control mb-3',
+                                    rows: '3',
+                                    id: 'c_46',
+                                    maxLength: '2000',
+                                    defaultValue: _CHILD_VARS.item_c4,
+                                }}
+                            />
                         </div>
                     </div>
                 </fieldset>
@@ -752,7 +738,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                                 <Button size="sm"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</Button>
                             </div>
                             <div className="col">
-                                <Button size="sm" onClick={() => _SET_MISSING_FUN_R()}><Icon name="tasks" size={16} /> CARGAR FALTANTES</Button>
+                                <Button type="button" size="sm" onClick={() => _SET_MISSING_FUN_R()}><Icon name="tasks" size={16} /> CARGAR FALTANTES</Button>
                             </div>
                         </div>
 
@@ -807,6 +793,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         currentVersion={currentVersion}
                         requestUpdate={requestUpdate}
                         vrDocs={VRDocs}
+                        hideDocumentManagement
                         LegacyChecklistComponent={FUNG_CHECKLIST}
                     />
                     <fieldset className="p-3">

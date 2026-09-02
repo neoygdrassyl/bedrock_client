@@ -14,7 +14,7 @@ function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, req
     const [email_users, setEmailUsersState] = useState(false);
 
     const retrieveItem = (id) => {
-        FUN_SERVICE.get(id)
+        return FUN_SERVICE.get(id)
             .then(response => {
                 setCurrentItem(response.data);
                 setLoad(true);
@@ -36,11 +36,11 @@ function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, req
     }
 
     const requestRefresh = () => {
-        requesRefresh();
+        return requesRefresh();
     }
     
     const requestUpdateItem = () => {
-        retrieveItem(currentId);
+        return retrieveItem(currentId);
     }
 
     const setEmailUsersFromItem = (_currentItem) => {

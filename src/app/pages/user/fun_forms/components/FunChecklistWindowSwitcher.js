@@ -13,6 +13,7 @@ function FunChecklistWindowSwitcher({
   currentVersion,
   requestUpdate,
   readOnly,
+  hideDocumentManagement = false,
   vrDocs,
   LegacyChecklistComponent = FUNG_CHECKLIST,
   IntelligentChecklistComponent = FUN_CHECKLIST_N,
@@ -38,6 +39,7 @@ function FunChecklistWindowSwitcher({
     ...sharedProps,
     requestUpdate,
     readOnly,
+    hideDocumentManagement,
     vrDocs,
   };
 
@@ -45,6 +47,7 @@ function FunChecklistWindowSwitcher({
     ...sharedProps,
     requestUpdate,
     readOnly,
+    hideDocumentManagement,
   };
 
   return (

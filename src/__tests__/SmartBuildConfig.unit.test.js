@@ -70,31 +70,49 @@ describe('smart build configuration', () => {
     expect(source).not.toContain('process.env.ANALYZE');
   });
 
-  it('documents required Vite env variables with development and production defaults', () => {
+  it('documents required Vite env variables in .env.example with real default values', () => {
+    // `.env.development` and `.env.production` are gitignored (see README.md
+    // "Variables de entorno" and .gitignore) and never committed, so they don't
+    // exist in a clean checkout or CI. `.env.example` is the one real, committed
+    // file that documents the contract, so every assertion here reads from it
+    // directly instead of from self-written fixtures the test would then be
+    // comparing against itself.
     const exampleEnv = readFileSync('.env.example', 'utf8');
-    const developmentEnv = readFileSync('.env.development', 'utf8');
-    const productionEnv = readFileSync('.env.production', 'utf8');
 
-    for (const envName of [
+    function declaredValue(envName) {
+      const match = exampleEnv.match(new RegExp(`^${envName}="([^"]*)"$`, 'm'));
+      return match ? match[1] : null;
+    }
+
+    // Vars that must ship with a real, non-empty default: an empty VITE_API_URL
+    // or VITE_GLOBAL_ID leaves a fresh checkout pointing at nothing, and an
+    // empty VITE_GOOGLE_CAPTCHA_HTML/VITE_API_PROF_URL/VITE_API_EMAIL_URL/
+    // VITE_BUILD_ANALYZE silently breaks login captcha, professional lookup,
+    // email notifications, or the analyzer toggle without anyone noticing until
+    // the app is running.
+    const requiredNonEmptyVars = [
       'VITE_API_URL',
       'VITE_GLOBAL_ID',
       'VITE_GOOGLE_CAPTCHA_HTML',
-      'VITE_GOOGLE_CAPTCHA_KEY',
-      'VITE_GOOGLE_MAPS_KEY',
       'VITE_API_PROF_URL',
       'VITE_API_EMAIL_URL',
       'VITE_BUILD_ANALYZE',
-    ]) {
-      expect(exampleEnv).toContain(envName);
+    ];
+
+    // Documented optional overrides (README.md "Variables de entorno"):
+    // intentionally shipped empty in the template and filled per environment
+    // via *.local overrides, so they must be declared but may stay empty.
+    const optionalVars = ['VITE_GOOGLE_CAPTCHA_KEY', 'VITE_GOOGLE_MAPS_KEY'];
+
+    for (const envName of [...requiredNonEmptyVars, ...optionalVars]) {
+      expect(declaredValue(envName), `${envName} must be declared in .env.example as KEY="value"`).not.toBeNull();
     }
 
-    expect(developmentEnv).toContain('VITE_API_URL="/api"');
-    expect(developmentEnv).toContain('VITE_BUILD_ANALYZE="false"');
-    expect(productionEnv).toContain(
-      'VITE_API_URL="https://prod.curaduria1bucaramanga.com.co/api"',
-    );
-    expect(productionEnv).toContain('VITE_GLOBAL_ID="cb1"');
-    expect(productionEnv).toContain('VITE_BUILD_ANALYZE="false"');
+    for (const envName of requiredNonEmptyVars) {
+      expect(declaredValue(envName).trim(), `${envName} must not ship with an empty default`).not.toBe('');
+    }
+
+    expect(declaredValue('VITE_BUILD_ANALYZE')).toMatch(/^(true|false)$/);
   });
 
   it('documents the static deployment contract', () => {

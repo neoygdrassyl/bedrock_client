@@ -22,17 +22,8 @@ class RecordArcService {
   create(data) {
     return http.post(`/${route}`, data);
   }
-  create_arc_31(data) {
-    return http.post(`/${route}/create31`, data);
-  }
-  create_arc_33(data) {
-    return http.post(`/${route}/create33`, data);
-  }
   create_arc_33_area(data) {
     return http.post(`/${route}/create33area`, data);
-  }
-  create_arc_34(data) {
-    return http.post(`/${route}/create34`, data);
   }
   create_arc_34_gen(data) {
     return http.post(`/${route}/create34gen`, data);
@@ -40,17 +31,11 @@ class RecordArcService {
   create_arc_34_k(data) {
     return http.post(`/${route}/create34k`, data);
   }
-  create_arc_35(data) {
-    return http.post(`/${route}/create35`, data);
-  }
   create_arc_35_parking(data) {
     return http.post(`/${route}/create35parking`, data);
   }
   create_arc_35_location(data) {
     return http.post(`/${route}/create35location`, data);
-  }
-  create_arc_36(data) {
-    return http.post(`/${route}/create36`, data);
   }
   create_arc_36_info(data) {
     return http.post(`/${route}/create36info`, data);

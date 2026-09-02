@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import PQRS_Service from '../../../services/pqrs_main.service';
 import PQRS_COMPONENT_INFO from './components/pqrs_gen.component';
@@ -12,6 +12,7 @@ import { swalError } from '@/app/utils/swalAdapter';
 function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, closeModal, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
+    const retrieveRequestIdRef = useRef(0);
 
     const clearForm = () => {
         document.getElementById("app-formReply").reset()
@@ -22,12 +23,15 @@ function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, 
     }, []);
 
     const retrieveItem = (id) => {
+        const requestId = ++retrieveRequestIdRef.current;
         PQRS_Service.get(id)
             .then(response => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 setCurrentItem(response.data);
                 setLoad(true);
             })
             .catch(e => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
                 setLoad(false);

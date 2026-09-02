@@ -58,7 +58,7 @@ export default function ChatLauncher() {
       <Button
         variant="ghost"
         size="sm"
-        className="h-7 w-7 p-0 relative text-muted-foreground"
+        className="relative h-11 w-11 shrink-0 p-0 text-muted-foreground lg:h-7 lg:w-7"
         aria-label={unread ? `Chat interno: ${unread} mensajes sin leer` : 'Abrir chat interno'}
         title="Abrir chat interno"
         onClick={() => setOpen(true)}

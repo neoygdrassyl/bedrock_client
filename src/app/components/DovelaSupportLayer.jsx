@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
-  AlertTriangle,
   Bug,
   CheckCircle2,
   LifeBuoy,
@@ -290,11 +288,9 @@ function getVisibleAlertCandidate(node) {
 }
 
 export function DovelaSupportLayer() {
-  const location = useLocation();
   const [reportOpen, setReportOpen] = useState(false);
   const [reportContext, setReportContext] = useState({});
   const [reportSource, setReportSource] = useState('global-floating-report');
-  const showFloatingReportButton = location.pathname === '/dashboard';
 
   const openReportDialog = useCallback((context = {}, source = 'global-floating-report') => {
     const { reportSource: contextReportSource, ...cleanContext } = context || {};
@@ -402,20 +398,6 @@ export function DovelaSupportLayer() {
 
   return (
     <>
-      {showFloatingReportButton ? (
-        <div data-dovela-tour-id="support-actions" className="fixed bottom-8 right-3 z-40 flex max-w-[calc(100vw-1.5rem)] flex-col items-end gap-2 sm:right-5">
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            onClick={() => openReportDialog({}, 'global-floating-report')}
-            className="h-9 px-3 shadow-lg"
-          >
-            <AlertTriangle className="h-4 w-4" />
-            Reportar error
-          </Button>
-        </div>
-      ) : null}
       <ErrorReportDialog
         open={reportOpen}
         onOpenChange={setReportOpen}

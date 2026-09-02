@@ -1,80 +1,9 @@
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
-import RequirementPreviewPanel from './components/RequirementPreviewPanel.jsx';
-import { useRequirementPreview } from './hooks/useRequirementPreview.js';
-
-function normalizeMultiValue(value, mode = 'csv') {
-    if (Array.isArray(value)) return value.map(item => String(item ?? '').trim()).filter(Boolean);
-    if (value == null || value === false) return [];
-    const text = String(value).trim();
-    if (!text) return [];
-    if (text.includes(',')) return text.split(',').map(item => item.trim()).filter(Boolean);
-    if (mode === 'letters' && /^[A-Za-z]+$/.test(text)) return text.split('').filter(Boolean);
-    if (mode === 'usos' && /^[A-D]+$/.test(text)) return text.split('').filter(Boolean);
-    return [text];
-}
-
-function normalizeScalarValue(value) {
-    if (Array.isArray(value)) return value[0] ? String(value[0]).trim() : '';
-    if (value == null || value === false) return '';
-    return String(value).trim();
-}
-
-function getCheckedValues(scope, name) {
-    const root = scope || document;
-    return Array.from(root.querySelectorAll(`input[name="${name}"]`))
-        .filter(input => input.checked)
-        .map(input => input.value)
-        .filter(Boolean);
-}
-
-function getRadioValue(scope, name) {
-    const root = scope || document;
-    const checked = root.querySelector(`input[name="${name}"]:checked`);
-    return checked?.value || '';
-}
-
-function getInputValue(scope, id) {
-    const root = scope || document;
-    return root.querySelector(`#${id}`)?.value?.trim() || '';
-}
-
-function buildPreviewActuacionFromChild(childVars = {}) {
-    return {
-        tipo: normalizeMultiValue(childVars.item_1, 'letters'),
-        tramite: normalizeScalarValue(childVars.item_2),
-        m_urb: normalizeScalarValue(childVars.item_3),
-        m_sub: normalizeScalarValue(childVars.item_4),
-        m_lic: normalizeMultiValue(childVars.item_5, 'letters'),
-        usos: normalizeMultiValue(childVars.item_6, 'usos'),
-        area: normalizeScalarValue(childVars.item_7),
-        vivienda: normalizeScalarValue(childVars.item_8),
-        cultural: normalizeScalarValue(childVars.item_9),
-        regla_1: normalizeScalarValue(childVars.item_101),
-        regla_2: normalizeScalarValue(childVars.item_102),
-    };
-}
-
-function buildPreviewActuacionFromForm(scope, fallback = {}) {
-    const otherTramite = getInputValue(scope, 'f_12_o');
-    const otherUsos = getInputValue(scope, 'f_16_o');
-    const fallbackActuacion = buildPreviewActuacionFromChild(fallback);
-
-    return {
-        ...fallbackActuacion,
-        tipo: getCheckedValues(scope, 'f_11'),
-        tramite: otherTramite || getRadioValue(scope, 'f_12'),
-        m_urb: getRadioValue(scope, 'f_13'),
-        m_sub: getRadioValue(scope, 'f_14'),
-        m_lic: getCheckedValues(scope, 'f_15'),
-        usos: otherUsos ? [otherUsos] : getCheckedValues(scope, 'f_16'),
-    };
-}
 
 function unwrapSavePayload(response) {
     return response?.data?.data ?? response?.data ?? response ?? null;
@@ -322,30 +251,9 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
             return _CHILD_VARS;
         }
 
-        const previewScopeRef = useRef(null);
-        const initialPreviewActuacion = useMemo(() => buildPreviewActuacionFromChild(_SET_CHILD_1()), [currentItem, currentVersion]);
-        const [previewActuacion, setPreviewActuacion] = useState(initialPreviewActuacion);
-        const [snapshotInfo, setSnapshotInfo] = useState(null);
-        const initialPreviewSignatureRef = useRef(JSON.stringify(initialPreviewActuacion));
-        const requirementPreviewState = useRequirementPreview(previewActuacion, { configStatus: 'published', debounceMs: 500 });
-
-        useEffect(() => {
-            const nextSignature = JSON.stringify(initialPreviewActuacion);
-            if (initialPreviewSignatureRef.current === nextSignature) return;
-            initialPreviewSignatureRef.current = nextSignature;
-            setPreviewActuacion(initialPreviewActuacion);
-            setSnapshotInfo(null);
-        }, [initialPreviewActuacion]);
-
-        const handlePreviewFormChange = useCallback(() => {
-            setPreviewActuacion(buildPreviewActuacionFromForm(previewScopeRef.current, _SET_CHILD_1()));
-            setSnapshotInfo(null);
-        }, [currentItem, currentVersion]);
-
         const handleSuccessfulSave = (response) => {
             const payload = unwrapSavePayload(response);
             if (isSuccessfulSavePayload(payload)) {
-                setSnapshotInfo(getSnapshotInfoFromPayload(payload));
                 swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                 requestUpdate(currentItem.id)
             } else {
@@ -827,7 +735,6 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
 
             formData.set('fun0Id', fun0Id);
             formData.set('state', currentItem.state);
-            setSnapshotInfo(null);
 
             let value = null;
             let checkbox = null;
@@ -927,7 +834,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
         return (<>
             {toCreate.fun_1_type
                 ? <>
-                    <div ref={previewScopeRef} onChange={handlePreviewFormChange} className="space-y-3">
+                    <div className="space-y-3">
                         <div className="row mb-3">
                             <div className="col-6">
                                 {_CHILD_11()}
@@ -952,7 +859,6 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                                 {_CHILD_16()}
                             </div>
                         </div>
-                        <RequirementPreviewPanel state={requirementPreviewState} snapshotInfo={snapshotInfo} />
                     </div>
                 </> : ""}
             <div className="row mb-3 text-center">

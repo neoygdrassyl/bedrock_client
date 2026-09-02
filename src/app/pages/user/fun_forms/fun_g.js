@@ -22,6 +22,7 @@ import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.compoentn';
 import FunChecklistWindowSwitcher from './components/FunChecklistWindowSwitcher';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 import FUN_DUPLICATE from './components/fun_duplicate.component';
+import ObservationPanel from '../../../components/ObservationPanel';
 import { swalError } from '@/app/utils/swalAdapter';
 
 const asInputValue = (value) => value ?? '';
@@ -910,9 +911,16 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                             value={asInputValue(_CHILD_VARS.item_c9)} />
                     </div>
                     <div className="col-12">
-                        <label>Observaciones</label>
-                        <textarea className="form-control mb-3" rows="3" id="c_46" disabled
-                            value={asInputValue(_CHILD_VARS.item_c4)}></textarea>
+                        <ObservationPanel
+                            title="Observaciones"
+                            textareaProps={{
+                                className: 'form-control mb-3',
+                                rows: '3',
+                                id: 'c_46',
+                                disabled: true,
+                                value: asInputValue(_CHILD_VARS.item_c4),
+                            }}
+                        />
                     </div>
                 </div>
 

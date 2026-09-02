@@ -12,10 +12,12 @@ const {
   bookmarkServiceMock,
 } = vi.hoisted(() => ({
   funServiceMock: { getAll_fun: vi.fn() },
-  pqrsMainServiceMock: { getAll: vi.fn() },
-  submitServiceMock: { getAll: vi.fn() },
-  mailboxServiceMock: { getAll: vi.fn() },
-  appointmentsServiceMock: { getAll: vi.fn() },
+  // The dashboard reads counters from the lightweight `/count` endpoints; only
+  // the FUN list is still fetched in full because its rows are reused.
+  pqrsMainServiceMock: { count: vi.fn() },
+  submitServiceMock: { count: vi.fn() },
+  mailboxServiceMock: { count: vi.fn() },
+  appointmentsServiceMock: { count: vi.fn() },
   bookmarkServiceMock: { list: vi.fn() },
 }));
 
@@ -36,10 +38,10 @@ describe('Dashboard count failure states', () => {
     vi.clearAllMocks();
 
     funServiceMock.getAll_fun.mockRejectedValue(new Error('FUN down'));
-    pqrsMainServiceMock.getAll.mockRejectedValue(new Error('PQRS down'));
-    submitServiceMock.getAll.mockRejectedValue(new Error('Submit down'));
-    mailboxServiceMock.getAll.mockRejectedValue(new Error('Mailbox down'));
-    appointmentsServiceMock.getAll.mockRejectedValue(new Error('Appointments down'));
+    pqrsMainServiceMock.count.mockRejectedValue(new Error('PQRS down'));
+    submitServiceMock.count.mockRejectedValue(new Error('Submit down'));
+    mailboxServiceMock.count.mockRejectedValue(new Error('Mailbox down'));
+    appointmentsServiceMock.count.mockRejectedValue(new Error('Appointments down'));
     bookmarkServiceMock.list.mockResolvedValue({ data: [] });
   });
 
@@ -58,5 +60,27 @@ describe('Dashboard count failure states', () => {
 
     const card = screen.getByText('Nueva radicación').closest('a');
     expect(within(card).queryByText(/^0$/)).not.toBeInTheDocument();
+  });
+
+  it('renders the number returned by the /count endpoints', async () => {
+    funServiceMock.getAll_fun.mockResolvedValue({ data: [] });
+    // `/count` answers { count: N }, not an array to measure with `.length`.
+    pqrsMainServiceMock.count.mockResolvedValue({ data: { count: 1666 } });
+    submitServiceMock.count.mockResolvedValue({ data: { count: 21984 } });
+    mailboxServiceMock.count.mockResolvedValue({ data: { count: 9 } });
+    appointmentsServiceMock.count.mockResolvedValue({ data: { count: 1005 } });
+
+    const { default: Dashboard } = await import('../app/pages/user/dashboard');
+
+    render(
+      <MemoryRouter>
+        <Dashboard breadCrums={{}} />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('21984')).toBeInTheDocument();
+    });
+    expect(screen.getByText('1666')).toBeInTheDocument();
   });
 });
