@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
 import FunService from '../../../services/fun.service';
@@ -8,6 +8,7 @@ import SUBMIT_ANEX from './submit_anex.component';
 import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
+import ObservationPanel from '../../../components/ObservationPanel';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -21,6 +22,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
     const [documentPanel, setDocumentPanel] = useState('physical');
     const [digitalCount, setDigitalCount] = useState(0);
     const [digitalDocuments, setDigitalDocuments] = useState([]);
+    const refreshRequestIdRef = useRef(0);
 
     useEffect(() => {
         refreshItem();
@@ -28,7 +30,9 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
     function refreshItem() {
         if (currentId) {
+            const requestId = ++refreshRequestIdRef.current;
             SubmitService.get(currentId).then(response => {
+                if (requestId !== refreshRequestIdRef.current) return;
                 let item = response.data;
                 setCurrentItem(item);
             });
@@ -382,8 +386,16 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                     </div>
 
                     <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                        <label htmlFor="submit_9" className="mb-1 block font-semibold text-foreground">9. Observaciones y detalles</label>
-                        <textarea className="form-control form-control-sm" rows="4" maxLength="2000" id="submit_9" defaultValue={_CHILD.details}></textarea>
+                        <ObservationPanel
+                            title="9. Observaciones y detalles"
+                            textareaProps={{
+                                className: 'form-control form-control-sm',
+                                rows: '4',
+                                maxLength: '2000',
+                                id: 'submit_9',
+                                defaultValue: _CHILD.details,
+                            }}
+                        />
                     </div>
                 </div>
 

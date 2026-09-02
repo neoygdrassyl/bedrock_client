@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isEmptyEntity } from '../../../../utils/isEmptyEntity';
 
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import EXP_CLOCKS from '../../clocks/centralClocks.component';
@@ -64,14 +65,16 @@ function CLOCKS_CONTROL(props) {
 
     const requestUpdate = (id) => {
         if (props.requestUpdate) {
-            props.requestUpdate(id);
+            return props.requestUpdate(id);
         }
+        return Promise.resolve();
     }
     
     const requestRefresh = () => {
         if (props.requestRefresh) {
-            props.requestRefresh();
+            return props.requestRefresh();
         }
+        return Promise.resolve();
     }
 
     const handleTabChange = (tabName) => {
@@ -288,7 +291,7 @@ function CLOCKS_CONTROL(props) {
         const _COMPONENT_SECONDARY = () => {
             var secondaryClocks = [];
 
-            if (currentItem.fun_law) {
+            if (!isEmptyEntity(currentItem.fun_law)) {
                 if (currentItem.fun_law.sign) {
                     let _sign = currentItem.fun_law.sign.split(',')
                     if (_sign[1]) secondaryClocks.push({ state: false, version: false, desc: "", name: 'Radicación de Valla', date: _sign[1], icon: <Icon name="sign" size={16} className="text-secondary" />, })

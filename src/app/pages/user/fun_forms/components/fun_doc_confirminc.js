@@ -5,6 +5,7 @@ import FUNService from '../../../../services/fun.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 import dayjs from 'dayjs';
 import { infoCud } from '../../../../components/jsons/vars';
+import DCO_LIS from '../../../../components/jsons/fun6DocsList.json';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 
 import SubmitService from '../../../../services/submit.service'
@@ -544,7 +545,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                         </div>
                         : ''}
                     <div className="col">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
                     </div>
                 </div>
             </form>

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bell, Bug, Check, FileText, LayoutDashboard, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Bell, Bug, Check, Database, FileText, LayoutDashboard, Library, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
 import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
-import DocumentRequirementsConfigPanel from './document_requirements/DocumentRequirementsConfigPanel.jsx';
+import DocumentCatalogWorkspacePage, {
+  normalizeDocumentCatalogSection,
+} from './legal_config/DocumentCatalogWorkspacePage.jsx';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
+import CentralConfigurationPanel from './document_requirements/CentralConfigurationPanel.jsx';
 import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
 import {
   DASHBOARD_DENSITY_OPTIONS,
@@ -22,34 +25,39 @@ const NAV_ITEMS = [
   {
     key: 'alarmas',
     label: 'Alarmas',
-    description: 'Umbrales por fase, actor y nivel',
     icon: Bell,
   },
   {
-    key: 'requisitos-documentales',
-    label: 'Requisitos documentales',
-    description: 'Borrador, publicación y reglas documentales',
-    icon: FileText,
+    key: 'catalogo-documental',
+    label: 'Catálogo documental',
+    icon: Library,
+  },
+  {
+    key: 'configuracion-documental',
+    label: 'Configuración documental',
+    icon: Database,
   },
   {
     key: 'personalizacion',
     label: 'Personalización',
-    description: 'Panel principal, colores y densidad visual',
     icon: LayoutDashboard,
   },
   {
     key: 'cuenta',
     label: 'Cuenta',
-    description: 'Información del usuario actual',
     icon: UserCircle2,
   },
   {
     key: 'misReportes',
     label: 'Mis reportes',
-    description: 'Estado de reportes enviados',
     icon: FileText,
   },
 ];
+
+const LEGACY_DOCUMENT_CATALOG_TABS = Object.freeze({
+  'configuracion-actuaciones': 'actuaciones',
+  'revision-documentos': 'evaluacion-documentos',
+});
 
 function formatLastLogin(value) {
   if (!value) return 'No disponible';
@@ -63,7 +71,6 @@ function formatLastLogin(value) {
 
 export default function SettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [active, setActive] = useState(searchParams.get('tab') || 'alarmas');
   const user = DataService.getUserData();
   const canSeeTechnicalReports = isDeveloperUser(user);
   const canManageErrorReports = isErrorReportManagerUser(user) || canSeeTechnicalReports;
@@ -73,47 +80,47 @@ export default function SettingsPage() {
         {
           key: 'errorReports',
           label: canSeeTechnicalReports ? 'Reportes técnicos' : 'Gestión de reportes',
-          description: canSeeTechnicalReports ? 'JSON seguro para desarrollo' : 'Estados y notas visibles',
           icon: Bug,
         },
       ]
     : NAV_ITEMS;
-  const activeKey = navItems.some((item) => item.key === active) ? active : 'alarmas';
+  const requestedTab = searchParams.get('tab') || 'alarmas';
+  const legacyDocumentCatalogSection = LEGACY_DOCUMENT_CATALOG_TABS[requestedTab];
+  const requestedActiveKey = legacyDocumentCatalogSection ? 'catalogo-documental' : requestedTab;
+  const activeKey = navItems.some((item) => item.key === requestedActiveKey) ? requestedActiveKey : 'alarmas';
+  const documentCatalogSection = legacyDocumentCatalogSection
+    || normalizeDocumentCatalogSection(searchParams.get('section'));
   const fullName = [user?.name, user?.surname].filter(Boolean).join(' ') || 'No disponible';
   const roleDesc = user?.roleDesc || 'No disponible';
   const lastLogin = formatLastLogin(user?.lastLoginAt || user?.lastLogin);
 
-  useEffect(() => {
-    const requestedTab = searchParams.get('tab');
-    if (requestedTab) setActive(requestedTab);
-  }, [searchParams]);
-
   const selectTab = (key) => {
-    setActive(key);
     if (key === 'alarmas') setSearchParams({});
+    else if (key === 'catalogo-documental') setSearchParams({ tab: key, section: documentCatalogSection });
     else setSearchParams({ tab: key });
   };
 
+  const selectDocumentCatalogSection = (section) => {
+    setSearchParams({ tab: 'catalogo-documental', section: normalizeDocumentCatalogSection(section) });
+  };
+
   return (
-    <div className="settings-shell">
+    <div className="settings-shell settings-shell--wide">
       <header className="settings-shell__header">
         <div className="settings-shell__title">
           <SettingsIcon size={20} className="settings-shell__title-icon" />
-          <div>
-            <h1>Configuración</h1>
-            <p>Ajustes globales de la curaduría.</p>
-          </div>
+          <h1>Configuración</h1>
         </div>
       </header>
 
       <div className="settings-shell__body">
         <aside className="settings-nav" aria-label="Secciones de configuración">
-          <ul className="settings-nav__list">
+          <div className="settings-nav__list">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeKey === item.key;
               return (
-                <li key={item.key}>
+                <div key={item.key}>
                   <button
                     type="button"
                     className={`settings-nav__item${isActive ? ' is-active' : ''}`}
@@ -122,20 +129,23 @@ export default function SettingsPage() {
                     data-testid={`settings-nav-${item.key}`}
                   >
                     <Icon size={18} className="settings-nav__icon" />
-                    <span className="settings-nav__text">
-                      <span className="settings-nav__label">{item.label}</span>
-                      <span className="settings-nav__desc">{item.description}</span>
-                    </span>
+                    <span className="settings-nav__label">{item.label}</span>
                   </button>
-                </li>
+                </div>
               );
             })}
-          </ul>
+          </div>
         </aside>
 
-        <main className="settings-panel" role="main">
+        <div className="settings-panel">
           {activeKey === 'alarmas' && <AlarmsV2ConfigPanel />}
-          {activeKey === 'requisitos-documentales' && <DocumentRequirementsConfigPanel />}
+          {activeKey === 'catalogo-documental' && (
+            <DocumentCatalogWorkspacePage
+              activeSection={documentCatalogSection}
+              onSectionChange={selectDocumentCatalogSection}
+            />
+          )}
+          {activeKey === 'configuracion-documental' && <CentralConfigurationPanel />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
           {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
           {activeKey === 'errorReports' && canManageErrorReports && (
@@ -144,7 +154,7 @@ export default function SettingsPage() {
           {activeKey === 'cuenta' && (
             <AccountPanel fullName={fullName} roleDesc={roleDesc} lastLogin={lastLogin} />
           )}
-        </main>
+        </div>
       </div>
     </div>
   );

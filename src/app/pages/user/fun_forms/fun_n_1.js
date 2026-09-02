@@ -1,83 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import RequirementPreviewPanel from './components/RequirementPreviewPanel.jsx';
-import { useRequirementPreview } from './hooks/useRequirementPreview.js';
-
-function normalizeMultiValue(value, mode = 'csv') {
-    if (Array.isArray(value)) return value.map(item => String(item ?? '').trim()).filter(Boolean);
-    if (value == null || value === false) return [];
-    const text = String(value).trim();
-    if (!text) return [];
-    if (text.includes(',')) return text.split(',').map(item => item.trim()).filter(Boolean);
-    if (mode === 'letters' && /^[A-Za-z]+$/.test(text)) return text.split('').filter(Boolean);
-    if (mode === 'usos' && /^[A-D]+$/.test(text)) return text.split('').filter(Boolean);
-    return [text];
-}
-
-function normalizeScalarValue(value) {
-    if (Array.isArray(value)) return value[0] ? String(value[0]).trim() : '';
-    if (value == null || value === false) return '';
-    return String(value).trim();
-}
-
-function getCheckedValues(scope, name) {
-    const root = scope || document;
-    return Array.from(root.querySelectorAll(`input[name="${name}"]`))
-        .filter(input => input.checked)
-        .map(input => input.value)
-        .filter(Boolean);
-}
-
-function getRadioValue(scope, name) {
-    const root = scope || document;
-    const checked = root.querySelector(`input[name="${name}"]:checked`);
-    return checked?.value || '';
-}
-
-function getInputValue(scope, id) {
-    const root = scope || document;
-    return root.querySelector(`#${id}`)?.value?.trim() || '';
-}
-
-function buildPreviewActuacionFromChild(childVars = {}) {
-    return {
-        tipo: normalizeMultiValue(childVars.item_1, 'letters'),
-        tramite: normalizeScalarValue(childVars.item_2),
-        m_urb: normalizeScalarValue(childVars.item_3),
-        m_sub: normalizeScalarValue(childVars.item_4),
-        m_lic: normalizeMultiValue(childVars.item_5, 'letters'),
-        usos: normalizeMultiValue(childVars.item_6, 'usos'),
-        area: normalizeScalarValue(childVars.item_7),
-        vivienda: normalizeScalarValue(childVars.item_8),
-        cultural: normalizeScalarValue(childVars.item_9),
-        regla_1: normalizeScalarValue(childVars.item_101),
-        regla_2: normalizeScalarValue(childVars.item_102),
-    };
-}
-
-function buildPreviewActuacionFromForm(scope, fallback = {}) {
-    const otherTramite = getInputValue(scope, 'f_12_o');
-    const otherUsos = getInputValue(scope, 'f_16_o');
-    const fallbackActuacion = buildPreviewActuacionFromChild(fallback);
-
-    return {
-        ...fallbackActuacion,
-        tipo: getCheckedValues(scope, 'f_11'),
-        tramite: otherTramite || getRadioValue(scope, 'f_12') || fallbackActuacion.tramite,
-        m_urb: getRadioValue(scope, 'f_13') || fallbackActuacion.m_urb,
-        m_sub: getRadioValue(scope, 'f_14') || fallbackActuacion.m_sub,
-        m_lic: getCheckedValues(scope, 'f_15'),
-        usos: otherUsos ? [otherUsos] : getCheckedValues(scope, 'f_16'),
-        area: getRadioValue(scope, 'f_17') || fallbackActuacion.area,
-        vivienda: getRadioValue(scope, 'f_18') || fallbackActuacion.vivienda,
-        cultural: getRadioValue(scope, 'f_19') || fallbackActuacion.cultural,
-        regla_1: getRadioValue(scope, 'f_101') || fallbackActuacion.regla_1,
-        regla_2: getInputValue(scope, 'f_102_o') || getRadioValue(scope, 'f_102') || fallbackActuacion.regla_2,
-    };
-}
 
 const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
     const [dis_m_urb, setDisMUrb] = useState(true);
@@ -130,23 +55,6 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             }
             return _CHILD_VARS;
         }
-
-        const previewScopeRef = useRef(null);
-        const initialPreviewActuacion = useMemo(() => buildPreviewActuacionFromChild(_SET_CHILD_1()), [currentItem, currentVersion]);
-        const [previewActuacion, setPreviewActuacion] = useState(initialPreviewActuacion);
-        const initialPreviewSignatureRef = useRef(JSON.stringify(initialPreviewActuacion));
-        const requirementPreviewState = useRequirementPreview(previewActuacion, { configStatus: 'published', debounceMs: 500 });
-
-        useEffect(() => {
-            const nextSignature = JSON.stringify(initialPreviewActuacion);
-            if (initialPreviewSignatureRef.current === nextSignature) return;
-            initialPreviewSignatureRef.current = nextSignature;
-            setPreviewActuacion(initialPreviewActuacion);
-        }, [initialPreviewActuacion]);
-
-        const handlePreviewFormChange = useCallback(() => {
-            setPreviewActuacion(buildPreviewActuacionFromForm(previewScopeRef.current, _SET_CHILD_1()));
-        }, [currentItem, currentVersion]);
 
         let _CHILD_0 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
@@ -854,7 +762,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         }
         return (<>
             {_CHILD_0()}
-            <fieldset ref={previewScopeRef} onChange={handlePreviewFormChange} className="p-3">
+            <fieldset className="p-3">
                 <legend className="my-2 px-3 Collapsible" id="funn_1">
                     <label className="app-p lead fw-normal">1. Identificación de la Solicitud</label>
                 </legend>
@@ -903,13 +811,12 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         {_CHILD_101()}
                     </div>
                 </div>
-                <RequirementPreviewPanel state={requirementPreviewState} />
                 <div className="row mb-3 text-center">
                     <div className="col-6">
                         <Button size="sm" className="my-3" onClick={() => new_1()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>
                     </div>
                     <div className="col-6">
-                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => { _RESET_FORM_1(); handlePreviewFormChange(); }}><Icon name="eraser" size={16} /> LIMPIAR </Button>
+                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => _RESET_FORM_1()}><Icon name="eraser" size={16} /> LIMPIAR </Button>
                     </div>
                 </div>
             </fieldset>

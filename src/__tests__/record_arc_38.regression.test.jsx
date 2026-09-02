@@ -51,9 +51,11 @@ vi.mock('@/components/ui/button', () => ({
   Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/icon', () => ({
-  Icon: () => <span data-testid="icon" />,
-}));
+vi.mock('@/components/icon', () => {
+  // The module exports Icon both named and as default; consumers use either.
+  const Icon = () => <span data-testid="icon" />;
+  return { __esModule: true, Icon, default: Icon };
+});
 
 vi.mock('../app/pages/user/records/record_docVersion.component', () => ({
   __esModule: true,

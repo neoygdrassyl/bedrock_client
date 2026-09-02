@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
 import { Link } from "react-router-dom";
 import { LegacyPageWrapper } from '@/app/layouts/LegacyPageWrapper';
@@ -29,7 +29,6 @@ import RECORD_REVIEW from './records/record_review';
 import EXPEDITION from './expeditions/expedition.page';
 import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
 
-import FUN_DAILY_COMPONENT from './fun_forms/components/fun_daily.component';
 import FUN_ASIGNS_COMPONENT from './fun_forms/components/fun_asign.component';
 
 // JSONS
@@ -39,6 +38,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
+
+const FUN_DAILY_COMPONENT = lazy(() => import('./fun_forms/components/fun_daily.component'));
+
+function DailyModuleFallback() {
+    return (
+        <div className="space-y-3 rounded-lg border border-border bg-card p-4" role="status" aria-label="Cargando procesos diarios">
+            <div className="h-5 w-48 animate-pulse rounded bg-muted" />
+            <div className="h-24 w-full animate-pulse rounded bg-muted/70" />
+        </div>
+    );
+}
 
 function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const [error, setError] = useState(null);
@@ -93,10 +103,13 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const [mountedTabs, setMountedTabs] = useState({ '4': true });
 
     const prevUrlParamsRef = useRef(urlParams);
+    const listRequestRef = useRef(null);
 
     useEffect(() => {
-        retrievePublish();
-        if (urlParams) LOAD_BY_URL();
+        if (urlParams) {
+            retrievePublish();
+            LOAD_BY_URL();
+        }
     }, []);
 
     useEffect(() => {
@@ -106,14 +119,30 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
         }
         prevUrlParamsRef.current = urlParams;
     }, [urlParams]);
+
+    function LOAD_BY_URL() {
+        // Placeholder — urlParams is not currently passed to this component.
+        // Deep links to a single expediente go through the dedicated
+        // /funmanage/expediente/:radicado route instead. Mirrors fun.js.
+    }
     const retrievePublish = () => {
-        FUNService.getAll_fun()
+        if (listRequestRef.current) return listRequestRef.current;
+
+        const request = FUNService.getAll_fun()
             .then(response => {
                 asignList(response.data);
+                return response;
             })
             .catch(e => {
                 console.log(e);
+                throw e;
+            })
+            .finally(() => {
+                listRequestRef.current = null;
             });
+
+        listRequestRef.current = request;
+        return request;
     }
     const retrievSingle = (id) => {
         swalLoading({
@@ -549,6 +578,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
         const handleFillClick = (state) => {
             setFillActive(prev => (prev === state ? prev : state));
             setMountedTabs(prev => (prev[state] ? prev : { ...prev, [state]: true }));
+            if (state !== '4' && !isLoaded) retrievePublish().catch(() => {});
         };
         let openReport = (event) => {
             event.preventDefault();
@@ -562,13 +592,17 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             }
             setDate_start(date_start);
             setDate_end(date_end)
-            toggle_report()
+            if (isLoaded) {
+                toggle_report();
+            } else {
+                retrievePublish().then(() => toggle_report()).catch(() => {});
+            }
         };
         return (
             <LegacyPageWrapper>
             {showVersionBanner && (
-                <div className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm bg-primary/8 border-b border-primary/20 text-foreground">
-                    <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/20 bg-primary/8 px-4 py-2.5 text-sm text-foreground">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
                         <Icon name="sparkles" size={15} className="text-primary shrink-0" />
                         <span>Hay una versión modernizada disponible.</span>
                         <Link to="/licencias/gestion-nueva" className="font-medium text-primary hover:underline underline-offset-2">
@@ -584,13 +618,13 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     </button>
                 </div>
             )}
-            <div className="Publish container-fluid px-0">
+            <div className="Publish container-fluid w-full min-w-0 max-w-full overflow-x-hidden px-0">
                 <div>
                     <h1 className="text-xl font-bold text-foreground">Gestión de Licencias</h1>
                     <p className="text-sm text-muted-foreground mt-1">Detalle y administración de trámites de licencias urbanísticas</p>
                 </div>
 
-                <div className="row mb-4 mx-0">
+                <div className="row mb-4 mx-0 g-0 min-w-0 overflow-hidden">
                     <div className="col-12 px-0">
                         <h2 className="text-center my-4 text-xl font-semibold tracking-tight">Gestión de Solicitudes</h2>
                         <hr />
@@ -612,15 +646,16 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         type={"eng"}
                         openModal={openModal} />
 
-                    <div className="row">
-                        <h2 className="text-center pb-2">ACCIONES</h2>
-                        <div className="col-md-6">
+                    <div className="col-12 px-0">
+                      <div className="row mx-0 g-3">
+                        <h2 className="col-12 text-center pb-2">ACCIONES</h2>
+                        <div className="col-12 col-md-6">
                             <div className="rounded-lg border bg-card p-4 bg-card mb-3">
                                 <div>
                                     <h4 className="text-center font-semibold mb-3">CARGAR MACROTABLA</h4>
                                     <form onSubmit={loadMacro} id="fun_form_macro_table">
-                                        <div className='row'>
-                                            <div className='col'>
+                                        <div className='row mx-0 g-2'>
+                                            <div className='col-12 col-sm-6'>
                                                 <div className="input-group">
                                                     <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
@@ -629,7 +664,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                         defaultValue={dayjs().subtract(12, 'months').format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
-                                            <div className='col'>
+                                            <div className='col-12 col-sm-6'>
                                                 <div className="input-group">
                                                     <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
@@ -647,13 +682,13 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-12 col-md-6">
                             <div className="rounded-lg border bg-card p-4 bg-card mb-3">
                                 <div>
                                     <h4 className="text-center font-semibold mb-3">REPORTES</h4>
                                     <form onSubmit={openReport} id="fun_form_macro_table">
-                                        <div className='row'>
-                                            <div className='col'>
+                                        <div className='row mx-0 g-2'>
+                                            <div className='col-12 col-sm-6'>
                                                 <div className="input-group">
                                                     <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
@@ -662,7 +697,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                         defaultValue={dayjs().startOf('month').format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
-                                            <div className='col'>
+                                            <div className='col-12 col-sm-6'>
                                                 <div className="input-group">
                                                     <span className="input-group-text bg-primary text-primary-foreground">
                                                         <Icon name="calendar-alt" size={16} />
@@ -679,6 +714,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 </div>
                             </div>
                         </div>
+                      </div>
                     </div>
 
                     <div className="col-12 px-0 min-w-0 flex border-b border-border overflow-x-auto" role="tablist">
@@ -728,11 +764,15 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="col-12 px-0 min-w-0">
                         <TabPane show={fillActive === '4'} className="w-full min-w-0">
-                            {mountedTabs['4'] && <FUN_DAILY_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
-                                NAVIGATION_GEN={navigation}
-                                requestUpdate={requestUpdate}
-                                requesRefresh={retrievePublish}
-                            />}
+                            {mountedTabs['4'] && (
+                                <Suspense fallback={<DailyModuleFallback />}>
+                                    <FUN_DAILY_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
+                                        NAVIGATION_GEN={navigation}
+                                        requestUpdate={requestUpdate}
+                                        requesRefresh={retrievePublish}
+                                    />
+                                </Suspense>
+                            )}
                         </TabPane>
 
                         <TabPane show={fillActive === '2'} className="w-full min-w-0">

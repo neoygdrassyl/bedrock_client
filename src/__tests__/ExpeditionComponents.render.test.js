@@ -14,8 +14,10 @@
 
 import React from 'react';
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { RICH_TEXT_PREFIX, serializeRichTextBlocks } from '../app/utils/richTextBlockNote';
 
 // NOTE: We intentionally do NOT import './helpers/mockExternals' here because it
 // registers a minimal vars mock that conflicts with the full mock required by
@@ -218,6 +220,8 @@ vi.mock('../../app/components/jsons/vars', () => ({
     email: 'test@test.com',
     serials: { start: 'VR', end: 'CUB' },
     m: 1,
+    pot: 'POT TEST',
+    res_extras: { art1p: 'uso permitido de prueba' },
     exp_rules: { 0: 'Expensas fijas', 1: 'Expensas variables' },
   },
   nomens: 'CUB1',
@@ -327,6 +331,23 @@ const minimalCurrentRecord = {
   exp_areas: [],
 };
 
+function createDeferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((promiseResolve, promiseReject) => {
+    resolve = promiseResolve;
+    reject = promiseReject;
+  });
+
+  return { promise, resolve, reject };
+}
+
+async function flushPromises(times = 4) {
+  for (let i = 0; i < times; i += 1) {
+    await Promise.resolve();
+  }
+}
+
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('Expedition Components — Render', () => {
@@ -385,6 +406,63 @@ describe('Expedition Components — Render', () => {
       </MemoryRouter>
     );
     expect(container).toBeTruthy();
+  }, 60000);
+
+  test('exp_1 espera la respuesta OK antes de refrescar datos al guardar cambios', async () => {
+    const { default: EXP_1 } = await import(
+      '../app/pages/user/expeditions/exp_1.component'
+    );
+    const expeditionUpdate = createDeferred();
+    const requestUpdate = vi.fn();
+    const requestUpdateRecord = vi.fn();
+
+    hoisted.expeditionService.update.mockReturnValueOnce(expeditionUpdate.promise);
+
+    render(
+      <MemoryRouter>
+        <EXP_1
+          translation={{}}
+          swaMsg={swaMsg}
+          globals={{ id: '1' }}
+          currentItem={minimalCurrentItem}
+          currentVersion={1}
+          currentRecord={minimalCurrentRecord}
+          currentVersionR={1}
+          requestUpdate={requestUpdate}
+          requestUpdateRecord={requestUpdateRecord}
+        />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(hoisted.cubXVrService.getByFUN).toHaveBeenCalledTimes(1);
+    });
+    hoisted.cubXVrService.getByFUN.mockClear();
+    hoisted.submitService.getIdRelated.mockClear();
+
+    fireEvent.click(screen.getByRole('button', { name: /guardar cambios/i }));
+
+    await waitFor(() => {
+      expect(hoisted.expeditionService.update).toHaveBeenCalledTimes(1);
+    });
+    await flushPromises();
+
+    expect(hoisted.submitService.getIdRelated).not.toHaveBeenCalled();
+    expect(hoisted.cubXVrService.getByFUN).not.toHaveBeenCalled();
+    expect(requestUpdateRecord).not.toHaveBeenCalled();
+    expect(requestUpdate).not.toHaveBeenCalled();
+
+    expeditionUpdate.resolve({ data: 'OK' });
+
+    await waitFor(() => {
+      expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({
+        icon: 'success',
+        title: swaMsg.publish_success_title,
+      }));
+    });
+
+    expect(requestUpdateRecord).toHaveBeenCalledWith(minimalCurrentItem.id);
+    expect(requestUpdate).toHaveBeenCalledWith(minimalCurrentItem.id);
   }, 60000);
 
   // ── exp_2 ───────────────────────────────────────────────────────────────────
@@ -482,6 +560,94 @@ describe('Expedition Components — Render', () => {
       </MemoryRouter>
     );
     expect(container).toBeTruthy();
+  }, 60000);
+
+  test('exp_res muestra texto plano de BlockNote en Artículo 4 de resolución', async () => {
+    const { default: EXP_RES } = await vi.importActual(
+      '../app/pages/user/expeditions/exp._res.component'
+    );
+    const blockNoteAntecedentes = serializeRichTextBlocks([
+      { type: 'paragraph', content: [{ type: 'text', text: 'Antecedente claro para resolución', styles: {} }] },
+    ]);
+    const blockNoteDescripcion = serializeRichTextBlocks([
+      { type: 'paragraph', content: [{ type: 'text', text: 'Descripción clara para resolución', styles: {} }] },
+    ]);
+    const itemWithRichTextArcStep = {
+      ...minimalCurrentItem,
+      record_arc_steps: [
+        {
+          id: 33,
+          id_public: 's33',
+          value: `${blockNoteAntecedentes};${blockNoteDescripcion}`,
+        },
+      ],
+    };
+
+    render(
+      <MemoryRouter>
+        <EXP_RES
+          translation={{}}
+          swaMsg={swaMsg}
+          globals={{ id: '1' }}
+          currentItem={itemWithRichTextArcStep}
+          currentVersion={1}
+          currentRecord={{ ...minimalCurrentRecord, id_public: 'RES-TEST-001', model: 'open' }}
+          currentVersionR={1}
+          recordArc={minimalCurrentItem.record_arc}
+          requestUpdate={vi.fn()}
+          requestUpdateRecord={vi.fn()}
+        />
+      </MemoryRouter>
+    );
+
+    const antecedentes = document.getElementById('expedition_doc_res_art_4_1_dv');
+    const descripcion = document.getElementById('expedition_doc_res_art_4_2_dv');
+
+    expect(antecedentes.value).toBe('Antecedente claro para resolución');
+    expect(descripcion.value).toBe('Descripción clara para resolución');
+    expect(antecedentes.value).not.toContain(RICH_TEXT_PREFIX);
+    expect(descripcion.value).not.toContain(RICH_TEXT_PREFIX);
+  }, 60000);
+
+  test('exp_res no imprime undefined cuando s33 no tiene descripción', async () => {
+    const { default: EXP_RES } = await vi.importActual(
+      '../app/pages/user/expeditions/exp._res.component'
+    );
+    const blockNoteAntecedentes = serializeRichTextBlocks([
+      { type: 'paragraph', content: [{ type: 'text', text: 'Antecedente sin descripción', styles: {} }] },
+    ]);
+    const itemWithoutDescription = {
+      ...minimalCurrentItem,
+      record_arc_steps: [
+        {
+          id: 33,
+          id_public: 's33',
+          value: blockNoteAntecedentes,
+        },
+      ],
+    };
+
+    render(
+      <MemoryRouter>
+        <EXP_RES
+          translation={{}}
+          swaMsg={swaMsg}
+          globals={{ id: '1' }}
+          currentItem={itemWithoutDescription}
+          currentVersion={1}
+          currentRecord={{ ...minimalCurrentRecord, id_public: 'RES-TEST-001', model: 'open' }}
+          currentVersionR={1}
+          recordArc={minimalCurrentItem.record_arc}
+          requestUpdate={vi.fn()}
+          requestUpdateRecord={vi.fn()}
+        />
+      </MemoryRouter>
+    );
+
+    const descripcion = document.getElementById('expedition_doc_res_art_4_2_dv');
+
+    expect(descripcion.value).toBe('');
+    expect(descripcion.value).not.toContain('undefined');
   }, 60000);
 
   // ── exp_lic ─────────────────────────────────────────────────────────────────

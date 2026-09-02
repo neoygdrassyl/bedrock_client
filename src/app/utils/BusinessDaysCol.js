@@ -140,23 +140,31 @@ class DiasHabilesColombia {
             return 0;
         }
 
-        let count = 0;
-        
         if (!include) {
             current.setUTCDate(current.getUTCDate() + 1);
         }
-        
-        while (current <= end) {
-            const fechaStr = current.toISOString().split('T')[0];
-            const festivos = this.obtenerFestivos(current.getUTCFullYear());
-            
-            if (this.esDiaHabil(fechaStr, festivos)) {
-                count++;
-            }
+        if (current > end) return 0;
 
-            current.setUTCDate(current.getUTCDate() + 1);
+        const millisecondsPerDay = 24 * 60 * 60 * 1000;
+        const totalDays = Math.floor((end.getTime() - current.getTime()) / millisecondsPerDay) + 1;
+        let count = Math.floor(totalDays / 7) * 5;
+        const remainingDays = totalDays % 7;
+
+        for (let index = 0; index < remainingDays; index++) {
+            const dayOfWeek = (current.getUTCDay() + index) % 7;
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) count++;
         }
-        
+
+        for (let year = current.getUTCFullYear(); year <= end.getUTCFullYear(); year++) {
+            this.obtenerFestivos(year).forEach(fecha => {
+                const holiday = new Date(fecha + 'T00:00:00Z');
+                const dayOfWeek = holiday.getUTCDay();
+                if (holiday >= current && holiday <= end && dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    count--;
+                }
+            });
+        }
+
         return count;
     }
 

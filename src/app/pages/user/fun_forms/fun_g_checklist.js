@@ -3,10 +3,10 @@ import DataTable from '@/components/data-table-bridge';
 
 import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
-import checklistService from '../../../services/checklist.service';
+import FUN_SERVICE from '../../../services/fun.service';
 import { swalError, swalLoading, swalSuccess } from '../../../utils/swalAdapter';
 
-const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, readOnly = false }) => {
+const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, readOnly = false, hideDocumentManagement = false }) => {
 
         const [isSaving, setIsSaving] = useState(false);
         const [checkedOverrides, setCheckedOverrides] = useState({});
@@ -81,11 +81,30 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
             swalLoading({ title: swaMsg?.title_wait || 'Guardando', text: swaMsg?.text_wait || 'Actualizando lista de chequeo...' });
 
             try {
-                await checklistService.updateRequirementEvaluation(currentItem.id_public, code, {
-                    version: currentVersion,
-                    evaluation,
-                    reason: 'legacy_checklist',
+                const legacyChecklist = _SET_CHILD_REVIEW();
+                const codes = legacyChecklist?.code ? legacyChecklist.code.split(',') : [];
+                const legacyChecked = legacyChecklist?.checked ? legacyChecklist.checked.split(',') : [];
+                Object.keys(checkedOverrides).forEach((overrideCode) => {
+                    if (!codes.includes(overrideCode)) codes.push(overrideCode);
                 });
+                const checked = codes.map((storedCode, index) => checkedOverrides[storedCode] ?? legacyChecked[index] ?? '0');
+                let codeIndex = codes.indexOf(code);
+                if (codeIndex === -1) {
+                    codes.push(code);
+                    codeIndex = codes.length - 1;
+                }
+                checked[codeIndex] = evaluation;
+
+                const formData = new FormData();
+                formData.set('code', codes.join(','));
+                formData.set('checked', checked.join(','));
+                if (legacyChecklist?.id) {
+                    await FUN_SERVICE.update_r(legacyChecklist.id, formData);
+                } else {
+                    formData.set('fun0Id', currentItem.id);
+                    formData.set('version', currentVersion);
+                    await FUN_SERVICE.create_funr(formData);
+                }
                 await requestUpdate?.(currentItem.id, false);
                 swalSuccess({ title: swaMsg?.publish_success_title || 'Guardado', text: swaMsg?.publish_success_text || 'Lista de chequeo actualizada.' });
             } catch (error) {
@@ -1046,96 +1065,96 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(6606) Edificaciones que tengan o superen los 2000m<sup>2</sup> de área construida.</label>
+                            <label>(660a) Edificaciones que tengan o superen los 2000m<sup>2</sup> de área construida.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6606" value="1"
-                            checked={_CHECK_INDEXVALUE('6606', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="1"
+                            checked={_CHECK_INDEXVALUE('660a', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6606" value="0"
-                            checked={_CHECK_INDEXVALUE('6606', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="0"
+                            checked={_CHECK_INDEXVALUE('660a', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6606" value="2"
-                            checked={_CHECK_INDEXVALUE('6606', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="2"
+                            checked={_CHECK_INDEXVALUE('660a', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(6607) Edificaciones que en conjunto superen los 2000m<sup>2</sup> de área construida.</label>
+                            <label>(660b) Edificaciones que en conjunto superen los 2000m<sup>2</sup> de área construida.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6607" value="1"
-                            checked={_CHECK_INDEXVALUE('6607', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="1"
+                            checked={_CHECK_INDEXVALUE('660b', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6607" value="0"
-                            checked={_CHECK_INDEXVALUE('6607', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="0"
+                            checked={_CHECK_INDEXVALUE('660b', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6607" value="2"
-                            checked={_CHECK_INDEXVALUE('6607', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="2"
+                            checked={_CHECK_INDEXVALUE('660b', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(6608) Edificaciones que deban someterse a supervisión técnica independiente.</label>
+                            <label>(660c) Edificaciones que deban someterse a supervisión técnica independiente.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6608" value="1"
-                            checked={_CHECK_INDEXVALUE('6608', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="1"
+                            checked={_CHECK_INDEXVALUE('660c', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6608" value="0"
-                            checked={_CHECK_INDEXVALUE('6608', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="0"
+                            checked={_CHECK_INDEXVALUE('660c', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6608" value="2"
-                            checked={_CHECK_INDEXVALUE('6608', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="2"
+                            checked={_CHECK_INDEXVALUE('660c', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(6609) Edificaciones que tengan menos de 2000m<sup>2</sup> de área construida, que cuenten con la posibilidad de tramitar ampliaciones que alcancen los 2000m<sup>2</sup>.</label>
+                            <label>(660d) Edificaciones que tengan menos de 2000m<sup>2</sup> de área construida, que cuenten con la posibilidad de tramitar ampliaciones que alcancen los 2000m<sup>2</sup>.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6609" value="1"
-                            checked={_CHECK_INDEXVALUE('6609', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="1"
+                            checked={_CHECK_INDEXVALUE('660d', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6609" value="0"
-                            checked={_CHECK_INDEXVALUE('6609', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="0"
+                            checked={_CHECK_INDEXVALUE('660d', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6609" value="2"
-                            checked={_CHECK_INDEXVALUE('6609', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="2"
+                            checked={_CHECK_INDEXVALUE('660d', 2)} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-9">
                         <ul>
-                            <label>(6610) Edificaciones de menos de 2000m<sup>2</sup> de área construida que deban someterse a Supervisión Técnica Independiente.</label>
+                            <label>(660e) Edificaciones de menos de 2000m<sup>2</sup> de área construida que deban someterse a Supervisión Técnica Independiente.</label>
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6610" value="1"
-                            checked={_CHECK_INDEXVALUE('6610', 1)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="1"
+                            checked={_CHECK_INDEXVALUE('660e', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6610" value="0"
-                            checked={_CHECK_INDEXVALUE('6610', 0)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="0"
+                            checked={_CHECK_INDEXVALUE('660e', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6610" value="2"
-                            checked={_CHECK_INDEXVALUE('6610', 2)} />
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="2"
+                            checked={_CHECK_INDEXVALUE('660e', 2)} />
                     </div>
                 </div>
                 <div className="row">
@@ -1716,10 +1735,12 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 {_SET_660()}
                 {_SET_670()}
                 {_SET_680()}
-                <legend className="my-2 px-3 Collapsible" id="fung_c4">
-                    <label className="app-p lead text-center fw-normal">7. GESTIÓN DOCUMENTAL</label>
-                </legend>
-                {_CHILD_6_LIST()}
+                {!hideDocumentManagement ? <>
+                    <legend className="my-2 px-3 Collapsible" id="fung_c4">
+                        <label className="app-p lead text-center fw-normal">7. GESTIÓN DOCUMENTAL</label>
+                    </legend>
+                    {_CHILD_6_LIST()}
+                </> : null}
             </div>
         );
 };

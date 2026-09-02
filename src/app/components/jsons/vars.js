@@ -8,7 +8,7 @@ import IMG2 from '../../img/slider/img2.jpg'
 import IMG3 from '../../img/slider/img3.jpg'
 import AVISO from '../../img/aviso.jpg'
 import COLOMBIA from '../../img/colombian.jpg'
-import { GLOBAL_ID } from './global-id'
+import { GLOBAL_ID, DEFAULT_GLOBAL_ID } from './global-id'
 const info = {
     'cb1': {
         name: 'CURADURIA URBANA 1',
@@ -181,41 +181,43 @@ const info = {
     },
 }
 
-
-
+// Defensive fallback: GLOBAL_ID is validated against a known-id list in
+// global-id.js, but that list can drift from the keys actually present here.
+// Fall back to the default tenant instead of crashing the module at import time.
+const ACTIVE_INFO = info[GLOBAL_ID] || info[DEFAULT_GLOBAL_ID];
 
 export const cities = <>
-    <option>{info[GLOBAL_ID].city}</option>
+    <option>{ACTIVE_INFO.city}</option>
 </>
 
 export const rules_opt = <>
-    {info[GLOBAL_ID].exp_rules.map((value, index) => <option value={index}>{value}</option>)}
+    {ACTIVE_INFO.exp_rules.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
 export const states = <>
-    <option>{info[GLOBAL_ID].state}</option>
+    <option>{ACTIVE_INFO.state}</option>
 </>
 
 export const domains = <>
-    <option>{info[GLOBAL_ID].name}</option>
+    <option>{ACTIVE_INFO.name}</option>
 </>
 
 export const domains_number = <>
-    <option value={info[GLOBAL_ID].nomens}>{info[GLOBAL_ID].name}</option>
+    <option value={ACTIVE_INFO.nomens}>{ACTIVE_INFO.name}</option>
 </>
-export const axisTable = info[GLOBAL_ID].axisTable
-export const axisVar =info[GLOBAL_ID].axisVar
+export const axisTable = ACTIVE_INFO.axisTable
+export const axisVar = ACTIVE_INFO.axisVar
 
 export const axis = <>
     {axisVar.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
-export const zonesTable = info[GLOBAL_ID].zonesTable
-export const zonesVar = info[GLOBAL_ID].zonesVar
+export const zonesTable = ACTIVE_INFO.zonesTable
+export const zonesVar = ACTIVE_INFO.zonesVar
 export const zones = <>
     {zonesVar.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
-export const nomens = info[GLOBAL_ID].nomen
-export const infoCud = info[GLOBAL_ID]
+export const nomens = ACTIVE_INFO.nomen
+export const infoCud = ACTIVE_INFO
 

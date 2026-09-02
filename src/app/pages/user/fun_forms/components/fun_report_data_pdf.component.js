@@ -617,7 +617,7 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                             </Button>
                         </div>
                         <div className="col">
-                            <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()}>
+                            <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()}>
                                 <Icon name="file-pdf" size={16} /> GENERAR PDF
                             </Button>
                         </div>

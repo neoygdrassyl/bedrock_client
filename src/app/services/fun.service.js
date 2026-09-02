@@ -1,5 +1,5 @@
 import http from "../../http-common";
-import { dedupeGet } from "./requestCache";
+import { cachedGet, dedupeGet } from "./requestCache";
 
 const route = "fun"
 
@@ -64,8 +64,12 @@ class UserslDataService {
   loadMacroSingle(date_start, date_end, id) {
     return http.get(`/${route}/loadMacroSingle/${date_start}&${date_end}&${id}`);
   }
-  loadMacroRange(id, id2) {
-    return http.get(`/${route}/loadMacroRange/${id}&${id2}`);
+  loadMacroRange(id, id2, { force = false } = {}) {
+    const key = `${route}:loadMacroRange:${id}:${id2}`;
+    return cachedGet(key, () => http.get(`/${route}/loadMacroRange/${id}&${id2}`), {
+      ttlMs: 30_000,
+      force,
+    });
   }
   loadMacroAsigns(id, id2) {
     return http.get(`/${route}/loadMacroAsigns/${id}&${id2}`);
@@ -122,9 +126,6 @@ class UserslDataService {
     return http.get(`/${route}/getall/incdocs`);
   }
   getAll_VrFun(fun_id, vr_id) {
-    return http.get(`/${route}/documents/vr-digital/${fun_id}&${vr_id}`);
-  }
-  getVrDigitalDocuments(fun_id, vr_id) {
     return http.get(`/${route}/documents/vr-digital/${fun_id}&${vr_id}`);
   }
 

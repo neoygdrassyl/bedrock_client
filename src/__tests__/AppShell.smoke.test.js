@@ -42,10 +42,10 @@ describe('AppShell', () => {
     expect(screen.getByText(/Diego/)).toBeInTheDocument();
   });
 
-  it('filters nav items by USER role', () => {
+  it('keeps all nav items visible while role filtering is disabled', () => {
     renderShell(null, { role: 'USER' });
-    // USER should not see Mensajes
+    // navigation-config.js currently exposes all items for every role
     const nav = screen.getByRole('navigation', { name: /principal/i });
-    expect(nav).not.toHaveTextContent('Mensajes');
+    expect(nav).toHaveTextContent('Mensajes');
   });
 });

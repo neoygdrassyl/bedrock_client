@@ -177,9 +177,9 @@ vi.mock('sweetalert2', () => ({
 }));
 
 vi.mock('@/components/legacy-modal', () => ({
-  LegacyModal: ({ children, isOpen, ariaHideApp, ...props }) => {
+  LegacyModal: ({ children, isOpen }) => {
     if (!isOpen) return null;
-    return <div data-testid="mock-modal" {...props}>{children}</div>;
+    return <div data-testid="mock-modal">{children}</div>;
   },
 }));
 
@@ -330,7 +330,11 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
     expect(screen.getByTestId('fun-asigns-stub')).toBeInTheDocument();
   });
 
-  test('10. FUNService.getAll_fun() se llama al montar', async () => {
+  test('10. FUNService.getAll_fun() no se llama al montar: la lista es diferida', async () => {
+    // e2240166 moved retrievePublish() behind the urlParams guard on purpose:
+    // the default tab is the daily one, which does not need the FUN list, so
+    // the request waits until a tab that needs it mounts. FunManage.load-behavior
+    // covers the on-demand half.
     const FUNService = (await import('../app/services/fun.service')).default;
     FUNService.getAll_fun.mockClear();
 
@@ -338,7 +342,7 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
       renderFunManage();
     });
 
-    expect(FUNService.getAll_fun).toHaveBeenCalled();
+    expect(FUNService.getAll_fun).not.toHaveBeenCalled();
   });
 
   test('11. Campos de fecha REPORTES están presentes', async () => {

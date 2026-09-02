@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 
@@ -14,19 +14,23 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
     const [data_macro, setDataMacro] = useState(null);
     const [_OPEN, set_OPEN] = useState(0);
     const [_CLOSE, set_CLOSE] = useState(0);
+    const retrieveRequestIdRef = useRef(0);
 
     useEffect(() => {
         retrieveMacro();
     }, []);
 
     const retrieveMacro = () => {
+        const requestId = ++retrieveRequestIdRef.current;
         PQRS_Main.getAllMacro(date_start, date_end)
             .then(response => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 setDataMacro(response.data);
                 setLoad(true);
                 _SET_REPORT_VARIABLES(response.data);
             })
             .catch(e => {
+                if (requestId !== retrieveRequestIdRef.current) return;
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });

@@ -7,6 +7,7 @@ import Record_lawService from '../../../../services/record_law.service';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import FUNN53 from '../../fun_forms/fun_n_53'
+import ObservationPanel from '../../../../components/ObservationPanel';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function RECORD_LAW_FUN_53(props) {
@@ -257,20 +258,19 @@ export default function RECORD_LAW_FUN_53(props) {
     }
     let _COMPOENTN_DETAIL = () => {
         let values = _GET_STEP_TYPE('f53', 'value');
-        return <>
-            <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                <div className='col'>
-                    <label>OBSERVACIONES FORMULARIO ÚNICO NACIONAL</label>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-12">
-
-                    <textarea className="input-group" maxLength="4096" name="s_f53_values" rows="3"
-                        defaultValue={values[0]} onBlur={() => manage_rl_f53(false)}></textarea>
-                    <label>(maximo 4000 caracteres)</label>
-                </div>
-            </div></>
+        return <ObservationPanel
+            title="OBSERVACIONES FORMULARIO ÚNICO NACIONAL"
+            helperText="(maximo 4000 caracteres)"
+            textareaProps={{
+                className: 'input-group',
+                maxLength: '4096',
+                name: 's_f53_values',
+                rows: '3',
+                defaultValue: values[0],
+                onBlur: () => manage_rl_f53(false),
+            }}
+            className="mt-3"
+        />
     }
     let _EDIT_BTN = () => {
         return <>

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
 vi.mock('sweetalert2', () => ({
   default: {
@@ -20,7 +21,7 @@ import {
 } from '@/app/utils/swalAdapter';
 import Swal from 'sweetalert2';
 
-const swalThemeCss = readFileSync('/home/diego/dovela/frontend/src/app/styles/swal-theme.css', 'utf8');
+const swalThemeCss = readFileSync(path.resolve(__dirname, '../app/styles/swal-theme.css'), 'utf8');
 
 describe('swalAdapter', () => {
   beforeEach(() => {
@@ -74,6 +75,10 @@ describe('swalAdapter', () => {
 
   it('swal theme does not force hidden popups to replay the show animation', () => {
     expect(swalThemeCss).not.toMatch(/\.swal2-popup:not\(\.swal2-show\)/);
+  });
+
+  it('swal theme keeps dialogs above fullscreen expediente layers', () => {
+    expect(swalThemeCss).toMatch(/\.swal2-container\s*\{[^}]*z-index:\s*30000\s*!important;/s);
   });
 
   it('swalLoading calls Swal.fire with no buttons', async () => {

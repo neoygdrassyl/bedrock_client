@@ -32,6 +32,15 @@ vi.mock('react-router-dom', async () => {
 
 // mdb-react-ui-kit eliminated — components replaced by src/app/components/ui/
 
+// jsdom doesn't implement ResizeObserver — required by Radix ScrollArea
+if (!window.ResizeObserver) {
+  window.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
 // jsdom doesn't implement window.matchMedia — required by ThemeProvider & sonner
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

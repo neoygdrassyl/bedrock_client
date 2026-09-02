@@ -8,6 +8,7 @@ import { getJSONFull, regexChecker_isOA_2, _MANAGE_IDS } from '../../../componen
 import EXP_CALC from './exp_calc.component';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { isEmptyEntity } from '../../../utils/isEmptyEntity';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate }) {
@@ -396,7 +397,7 @@ function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     <label className="app-p lead fw-normal">Control para Entidades Supervisoras {_SAVING_STATE(pym)}</label>
                 </legend>
 
-                {currentItem.record_arc ? <>
+                {!isEmptyEntity(currentItem.record_arc) ? <>
                     {_COMPONENT_GENERAL()}
 
                     {_COMPONENT_CONTROL()}

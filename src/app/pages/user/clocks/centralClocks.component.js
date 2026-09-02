@@ -44,7 +44,7 @@ export default function EXP_CLOCKS(props) {
   const [sidebarHeight, setSidebarHeight] = useState('auto');
 
   const [showTimeTravel, setShowTimeTravel] = useState(false);
-  const [showAlarms, setShowAlarms] = useState(true); // CAMBIO: true por defecto
+  const [showAlarms, setShowAlarms] = useState(false); // Cerrado por defecto; se abre desde el botón flotante.
   const [showCalendar, setShowCalendar] = useState(false);
 
   const [systemDate, setSystemDate] = useState(dayjs().format('YYYY-MM-DD'));
@@ -67,7 +67,7 @@ export default function EXP_CLOCKS(props) {
   const topScrollRef = useRef(null);
   const contentRef = useRef(null); // Ref para el contenido que define el ancho
 
-  const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
+  const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id, currentItem?.schedule_config);
 
   useEffect(() => {
     setPendingDateEdits({});
@@ -367,8 +367,6 @@ export default function EXP_CLOCKS(props) {
     }));
   };
   
-  // SOLUCIÓN: applyLocalClockChange se conserva para cambios que no dependen de una API (como las opciones de fase),
-  // pero ya no se usará para el guardado/borrado de fechas para evitar el conflicto.
   const applyLocalClockChange = (state, changes, version) => {
     setClocksData(prev => {
       const arr = Array.isArray(prev) ? [...prev] : [];
@@ -448,9 +446,6 @@ export default function EXP_CLOCKS(props) {
     formDataClock.set('desc', descBase);
     formDataClock.set('name', value.name);
     
-    // SOLUCIÓN: No llamamos a applyLocalClockChange aquí.
-    // La UI se actualizará cuando las props cambien después de requestUpdate().
-    // Esto evita la condición de carrera y el "parpadeo".
     return manage_clock(false, value.state, value.version, formDataClock, true)
       .then((saved) => {
         if (saved) clearPendingDateEdit(value, i);
@@ -466,7 +461,13 @@ export default function EXP_CLOCKS(props) {
 
     const onOk = () => {
       if (useMySwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-      // SOLUCIÓN: Se mantiene una única llamada a requestUpdate para refrescar las props.
+
+      const localChanges = {};
+      ['date_start', 'desc', 'name'].forEach((field) => {
+        if (formDataClock.has(field)) localChanges[field] = formDataClock.get(field);
+      });
+      applyLocalClockChange(findOne, localChanges, version);
+
       if (triggerUpdate) {
         props.requestUpdate(currentItem.id);
       }

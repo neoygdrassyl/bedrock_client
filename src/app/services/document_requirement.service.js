@@ -18,27 +18,56 @@ class DocumentRequirementService {
     return http.get(`/${ROUTE}/config${buildStatusQuery(status)}`);
   }
 
-  getPublishedConfig() {
-    return this.getConfig('published');
-  }
-
-  getDraftConfig() {
-    return this.getConfig('draft');
-  }
-
-  saveDraft(configJson) {
-    return http.put(`/${ROUTE}/config/draft`, { configJson });
-  }
-
-  publishConfig() {
-    return http.post(`/${ROUTE}/config/publish`);
-  }
-
   previewRequirements(payload = {}, options = {}) {
     const status = getPreviewStatus(payload, options);
+    const requestConfig = options.signal ? { signal: options.signal } : undefined;
     return http.post(`/${ROUTE}/preview${buildStatusQuery(status)}`, {
       ...payload,
       configStatus: status,
+    }, requestConfig);
+  }
+
+  getCentralProfiles() {
+    return http.get(`/${ROUTE}/central/profiles`);
+  }
+
+  getCentralProfile(profileId) {
+    return http.get(`/${ROUTE}/central/profiles/${encodeURIComponent(profileId)}`);
+  }
+
+  syncCentralProfile({ name, sourceUrl, setDefault = false }) {
+    return http.post(`/${ROUTE}/central/profiles/sync`, {
+      name,
+      sourceUrl,
+      setDefault,
+    });
+  }
+
+  setDefaultCentralProfile(profileId) {
+    return http.put(`/${ROUTE}/central/profiles/${encodeURIComponent(profileId)}/default`);
+  }
+
+  getProjectCentralConfiguration(idPublic) {
+    return http.get(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}`);
+  }
+
+  getCentralProject(idPublic) {
+    return this.getProjectCentralConfiguration(idPublic);
+  }
+
+  updateProjectCentralConfiguration(idPublic, { profileId, typologySelections = {} }) {
+    return http.put(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}`, {
+      profileId,
+      typologySelections,
+    });
+  }
+
+  updateCentralProjectLegalForm(idPublic, selection) {
+    const vrIdPublic = typeof selection === 'object' && selection !== null
+      ? selection.vrIdPublic
+      : selection;
+    return http.put(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}/legal-form`, {
+      vrIdPublic,
     });
   }
 }

@@ -44,6 +44,7 @@ export default defineConfig({
   },
 
   test: {
+    forbidOnly: true,
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/__tests__/setup.js'],
@@ -51,7 +52,9 @@ export default defineConfig({
     css: false,
 
     // Exclude Playwright E2E tests — they run via `npx playwright test`
-    exclude: ['e2e/**', 'node_modules/**'],
+    // 'node_modules/**' only matches the top-level one, so vitest picked up
+    // dependency suites nested elsewhere (e.g. .opencode/node_modules/zod).
+    exclude: ['e2e/**', '**/node_modules/**'],
 
     // Transform ESM packages (same as CRA's transformIgnorePatterns)
     deps: {

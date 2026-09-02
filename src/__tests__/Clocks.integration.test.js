@@ -18,6 +18,7 @@ const hoisted = vi.hoisted(() => ({
 
 
 vi.mock('sweetalert2', () => ({
+  __esModule: true,
   default: {
     fire: hoisted.mySwalFire,
     close: vi.fn(),
@@ -212,6 +213,40 @@ describe('CLOCKS — Integración profunda', () => {
 
     expect(screen.getByTestId('clock-table-header')).toBeInTheDocument();
     consoleSpy.mockRestore();
+  });
+
+  it('hidrata scheduleConfig desde currentItem.schedule_config (backend) y lo espeja a localStorage', async () => {
+    // Arrange
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+    const backendSchedule = {
+      expedienteId: 1,
+      updatedAt: '2026-07-09T12:00:00.000Z',
+      times: { 5: { type: 'days', value: 2, originalType: 'days' } },
+    };
+    const props = makeProps({ schedule_config: backendSchedule });
+
+    // Act
+    render(<EXP_CLOCKS {...props} />);
+
+    // Assert: se escribe en localStorage sin haber guardado manualmente antes
+    await waitFor(() => {
+      expect(setItemSpy).toHaveBeenCalledWith(
+        `curaduria_programacion_${props.currentItem.id}`,
+        JSON.stringify(backendSchedule)
+      );
+    });
+    setItemSpy.mockRestore();
+  });
+
+  it('ignora schedule_config con forma inválida (legado del bug de doble-wrapping) y no rompe el render', async () => {
+    // Arrange: forma legado real observada en filas escritas entre 2025-12-10 y 2026-01-23
+    const props = makeProps({ schedule_config: { scheduleConfig: '{"times":{}}' } });
+
+    // Act
+    render(<EXP_CLOCKS {...props} />);
+
+    // Assert: renderiza normalmente, sin adoptar la forma inválida
+    expect(await screen.findByTestId('clock-table-header')).toBeInTheDocument();
   });
 
   it.each([

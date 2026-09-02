@@ -16,6 +16,7 @@ import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { richTextToPlainText } from '../../../utils/richTextBlockNote';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 var writtenNumber = require('written-number');
@@ -1659,8 +1660,9 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
             const reso_pot_dv = reso.pot ?? infoCud.pot;
 
-            const art_4_1_dv = _GET_STEP_TYPE('s33', 'value')[0] || '';
-            const art_4_2_dv = _GET_STEP_TYPE('s33', 'value')[1] || '';
+            const arcS33Values = _GET_STEP_TYPE('s33', 'value');
+            const art_4_1_dv = richTextToPlainText(arcS33Values[0] || '');
+            const art_4_2_dv = richTextToPlainText(arcS33Values[1] || '');
 
             return <>
                 <div className="row">
@@ -2611,7 +2613,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                             <div className="col">
-                                <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_final_not()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                                <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_final_not()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                             </div>
                         </div>
                     </form>
