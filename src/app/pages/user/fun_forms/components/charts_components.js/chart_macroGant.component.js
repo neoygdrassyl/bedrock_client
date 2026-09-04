@@ -103,7 +103,8 @@ function FUN_CHART_MACRO_GRANTT(props) {
     }, [safeItems]);
 
     function setList() {
-        let items = safeItems;
+        // The legacy chart is a pending-management view; clock 99 means the license is final.
+        let items = safeItems.filter(row => row && !row.clock_license);
         let newData = {
             rad: [],
             eva: [],
@@ -475,13 +476,20 @@ function FUN_CHART_MACRO_GRANTT(props) {
         if (active && payload && payload.length > 0) {
             const item = payload[0]?.payload;
             if (item && item.titleHint) {
+                const sourceCodes = Array.isArray(item.group) && item.group.length
+                    ? item.group
+                    : String(item.name || '').split(/\n+/);
+                const projectCodes = [...new Set(sourceCodes.map(code => String(code).trim()).filter(Boolean))];
+                const visibleCodes = projectCodes.slice(0, 6);
+                const remainingCodes = projectCodes.length - visibleCodes.length;
                 return (
-                    <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', fontSize: 'small' }}>
-                        <label className="fw-bold">
-                            {item.titleHint}<br />
-                            {item.name}<br />
-                            {item.x} dia(s)
-                        </label>
+                    <div className="m-2 rounded border border-slate-700 bg-slate-900/95 p-2 text-xs text-white shadow-lg" style={{ width: '220px' }}>
+                        <div className="fw-bold">{item.titleHint}</div>
+                        <div className="mb-1 text-slate-300">{projectCodes.length} {projectCodes.length === 1 ? 'proyecto' : 'proyectos'} · {item.x} día(s)</div>
+                        <ul className="mb-0 list-none p-0">
+                            {visibleCodes.map(code => <li key={code}>{code}</li>)}
+                        </ul>
+                        {remainingCodes > 0 ? <div className="mt-1 text-slate-300">+{remainingCodes} proyectos. Haga clic para verlos.</div> : null}
                     </div>
                 );
             }
@@ -604,9 +612,9 @@ function FUN_CHART_MACRO_GRANTT(props) {
                     <div className="d-flex w-100">
                         <div className="flex-grow-1" style={{ minWidth: 0 }}>
                             <ResponsiveContainer width="100%" height={400}>
-                                <ScatterChart margin={{ left: 36, right: 10, top: 10, bottom: 30 }}>
+                                <ScatterChart margin={{ left: 36, right: 80, top: 10, bottom: 46 }}>
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis type="number" dataKey="x" domain={[0, 200]}
+                                    <XAxis type="number" dataKey="x" domain={[-2, 202]}
                                         allowDataOverflow={true}
                                         ticks={_tickValues}
                                         tickFormatter={v => v}

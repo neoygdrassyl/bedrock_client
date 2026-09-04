@@ -164,5 +164,25 @@ describe('EXP_RES_2', () => {
     const payload = request.data;
     expect(payload.html).toContain('Resolución editada desde Jodit');
     expect(payload.html).not.toContain('VALOR_OBSOLETO_REF');
+    expect(payload.documentType).toBe('open');
+  });
+
+  test('preserva un margen superior explícito de cero para Ejecutoria', async () => {
+    render(
+      <EXP_RES_2
+        data={{ _DATA: { reso: { m_top: 0 } } }}
+        swaMsg={{ text_wait: 'Procesando', generic_eror_title: 'Error', generic_error_text: 'Error genérico' }}
+        currentItem={{ id_public: 'CUB1-2024-0001', fun_clocks: [] }}
+        currentModel="eje_open"
+      />,
+    );
+
+    await screen.findByText(/Ejecutoria editable/i);
+    fireEvent.click(screen.getByRole('button', { name: /descargar pdf/i }));
+
+    await waitFor(() => expect(downloadProtectedPdf).toHaveBeenCalledTimes(1));
+    const payload = downloadProtectedPdf.mock.calls[0][2].data;
+    expect(payload.documentType).toBe('eje_open');
+    expect(payload.margins.top).toBe(0);
   });
 });

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 
@@ -10,7 +10,11 @@ import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 import { toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 
-function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
+const getAdditionalPageCount = (total, capacity) => Math.max(0, Math.ceil(total / capacity) - 1);
+
+function FUN_PDF({ currentItem: liveItem, currentVersion: liveVersion, swaMsg, historySnapshot, onHistoryDownloadComplete }) {
+    const currentItem = historySnapshot || liveItem;
+    const currentVersion = historySnapshot?.version ?? liveVersion;
 
     let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -165,6 +169,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         if (!formPdfResponse) return;
         var formPdfBytes = formPdfResponse.data;
         var pdfDoc = await PDFDocument.load(formPdfBytes);
+        const additionalPageTemplate = await PDFDocument.load(formPdfBytes);
 
         var _child = null;
         var _array = null;
@@ -506,8 +511,8 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             const _items_FUN_3 = _GET_CHILD_3().length;
             const _item_FUN_4 = _GET_CHILD_4();
             const _items_FUN_51 = _GET_CHILD_51().length
-            const pages_fun_3 = Math.trunc(_items_FUN_3 / 8);
-            const pages_fun_51 = Math.trunc(_items_FUN_51 / 4);
+            const pages_fun_3 = getAdditionalPageCount(_items_FUN_3, 8);
+            const pages_fun_51 = getAdditionalPageCount(_items_FUN_51, 4);
 
             var _items_FUN_4_N = 0;
             var _items_FUN_4_S = 0;
@@ -519,29 +524,17 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
                 if (_item_FUN_4[i].coord == 'ORIENTE') _items_FUN_4_E++;
                 if (_item_FUN_4[i].coord == 'OCCIDENTE') _items_FUN_4_W++;
             }
-            const pages_fun_4_n = Math.trunc(_items_FUN_4_N / 4);
-            const pages_fun_4_s = Math.trunc(_items_FUN_4_S / 4);
-            const pages_fun_4_e = Math.trunc(_items_FUN_4_E / 4);
-            const pages_fun_4_w = Math.trunc(_items_FUN_4_W / 4);
-            // IF ANY OF THE pages VARIABLES IS EQUAL OR GREATER THAN 1, MORE PAGES 2 ARE REQUIRED,
-            // THE EXTRA NUMBER  OF PAGES 2 IS EQUAL TO THE GREATER NUMBER AMONGS THE pages VALUES
-            var GREATER_NUMBER = pages_fun_3;
-            if (GREATER_NUMBER < pages_fun_51) GREATER_NUMBER = pages_fun_51;
-            if (GREATER_NUMBER < pages_fun_4_n) GREATER_NUMBER = pages_fun_4_n;
-            if (GREATER_NUMBER < pages_fun_4_s) GREATER_NUMBER = pages_fun_4_s;
-            if (GREATER_NUMBER < pages_fun_4_e) GREATER_NUMBER = pages_fun_4_e;
-            if (GREATER_NUMBER < pages_fun_4_w) GREATER_NUMBER = pages_fun_4_w;
-            //console.log("THE NUMBER OF EXTRA PAGES IS: ", GREATER_NUMBER)
+            const pages_fun_4_n = getAdditionalPageCount(_items_FUN_4_N, 4);
+            const pages_fun_4_s = getAdditionalPageCount(_items_FUN_4_S, 4);
+            const pages_fun_4_e = getAdditionalPageCount(_items_FUN_4_E, 4);
+            const pages_fun_4_w = getAdditionalPageCount(_items_FUN_4_W, 4);
+            const additionalPageCount = Math.max(pages_fun_3, pages_fun_51, pages_fun_4_n, pages_fun_4_s, pages_fun_4_e, pages_fun_4_w);
 
-            for (var j = 0; j < GREATER_NUMBER; j++) {
+            for (var j = 0; j < additionalPageCount; j++) {
 
-                var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
-                var Response_2pg = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(PdfUrl_2pg) || PdfUrl_2pg)
-                if (!Response_2pg) return;
-                var Buffer_2pg = Response_2pg.data
-                var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
-                let page = PdfDoc_2pg.getPage(0);
-                // ---------------------------
+                var [additionalPage] = await pdfDoc.copyPages(additionalPageTemplate, [1]);
+                pdfDoc.addPage(additionalPage);
+                let page = additionalPage;
 
                 if (_child_3.length) {
                     if (_child_3[0]) {
@@ -648,10 +641,6 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
                         _child_51.shift();
                     }
                 }
-                // ---------------------------
-                const pdfBytes_2pg = await PdfDoc_2pg.save();
-                var [copiedPages] = await pdfDoc.copyPages(PdfDoc_2pg, [0]);
-                pdfDoc.addPage(copiedPages);
             }
 
             // ADVANCE TO THE NEXT PAGE
@@ -1072,8 +1061,8 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             const _items_FUN_3 = _GET_CHILD_3().length;
             const _item_FUN_4 = _GET_CHILD_4();
             const _items_FUN_51 = _GET_CHILD_51().length
-            const pages_fun_3 = Math.trunc(_items_FUN_3 / 8);
-            const pages_fun_51 = Math.trunc(_items_FUN_51 / 4);
+            const pages_fun_3 = getAdditionalPageCount(_items_FUN_3, 8);
+            const pages_fun_51 = getAdditionalPageCount(_items_FUN_51, 4);
 
             var _items_FUN_4_N = 0;
             var _items_FUN_4_S = 0;
@@ -1085,29 +1074,19 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
                 if (_item_FUN_4[i].coord == 'ORIENTE') _items_FUN_4_E++;
                 if (_item_FUN_4[i].coord == 'OCCIDENTE') _items_FUN_4_W++;
             }
-            const pages_fun_4_n = Math.trunc(_items_FUN_4_N / 4);
-            const pages_fun_4_s = Math.trunc(_items_FUN_4_S / 4);
-            const pages_fun_4_e = Math.trunc(_items_FUN_4_E / 4);
-            const pages_fun_4_w = Math.trunc(_items_FUN_4_W / 4);
+            const pages_fun_4_n = getAdditionalPageCount(_items_FUN_4_N, 4);
+            const pages_fun_4_s = getAdditionalPageCount(_items_FUN_4_S, 4);
+            const pages_fun_4_e = getAdditionalPageCount(_items_FUN_4_E, 4);
+            const pages_fun_4_w = getAdditionalPageCount(_items_FUN_4_W, 4);
             // IF ANY OF THE pages VARIABLES IS EQUAL OR GREATER THAN 1, MORE PAGES 2 ARE REQUIRED,
             // THE EXTRA NUMBER  OF PAGES 2 IS EQUAL TO THE GREATER NUMBER AMONGS THE pages VALUES
-            var GREATER_NUMBER = pages_fun_3;
-            if (GREATER_NUMBER < pages_fun_51) GREATER_NUMBER = pages_fun_51;
-            if (GREATER_NUMBER < pages_fun_4_n) GREATER_NUMBER = pages_fun_4_n;
-            if (GREATER_NUMBER < pages_fun_4_s) GREATER_NUMBER = pages_fun_4_s;
-            if (GREATER_NUMBER < pages_fun_4_e) GREATER_NUMBER = pages_fun_4_e;
-            if (GREATER_NUMBER < pages_fun_4_w) GREATER_NUMBER = pages_fun_4_w;
-            //console.log("THE NUMBER OF EXTRA PAGES IS: ", GREATER_NUMBER)
+            const additionalPageCount = Math.max(pages_fun_3, pages_fun_51, pages_fun_4_n, pages_fun_4_s, pages_fun_4_e, pages_fun_4_w);
 
-            for (var j = 0; j < GREATER_NUMBER; j++) {
+            for (var j = 0; j < additionalPageCount; j++) {
 
-                var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
-                var Response_2pg = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(PdfUrl_2pg) || PdfUrl_2pg)
-                if (!Response_2pg) return;
-                var Buffer_2pg = Response_2pg.data
-                var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
-                let page = PdfDoc_2pg.getPage(0);
-                // ---------------------------
+                var [additionalPage] = await pdfDoc.copyPages(additionalPageTemplate, [1]);
+                pdfDoc.addPage(additionalPage);
+                let page = additionalPage;
 
                 if (_child_3.length) {
                     if (_child_3[0]) {
@@ -1214,10 +1193,6 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
                         _child_51.shift();
                     }
                 }
-                // ---------------------------
-                const pdfBytes_2pg = await PdfDoc_2pg.save();
-                var [copiedPages] = await pdfDoc.copyPages(PdfDoc_2pg, [0]);
-                pdfDoc.addPage(copiedPages);
             }
 
             // ADVANCE TO THE NEXT PAGE
@@ -1759,8 +1734,8 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             const _items_FUN_3 = _GET_CHILD_3().length;
             const _item_FUN_4 = _GET_CHILD_4();
             const _items_FUN_51 = _GET_CHILD_51().length
-            const pages_fun_3 = Math.trunc(_items_FUN_3 / 8);
-            const pages_fun_51 = Math.trunc(_items_FUN_51 / 4);
+            const pages_fun_3 = getAdditionalPageCount(_items_FUN_3, 8);
+            const pages_fun_51 = getAdditionalPageCount(_items_FUN_51, 4);
 
             var _items_FUN_4_N = 0;
             var _items_FUN_4_S = 0;
@@ -1772,29 +1747,19 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
                 if (_item_FUN_4[i].coord == 'ORIENTE') _items_FUN_4_E++;
                 if (_item_FUN_4[i].coord == 'OCCIDENTE') _items_FUN_4_W++;
             }
-            const pages_fun_4_n = Math.trunc(_items_FUN_4_N / 4);
-            const pages_fun_4_s = Math.trunc(_items_FUN_4_S / 4);
-            const pages_fun_4_e = Math.trunc(_items_FUN_4_E / 4);
-            const pages_fun_4_w = Math.trunc(_items_FUN_4_W / 4);
+            const pages_fun_4_n = getAdditionalPageCount(_items_FUN_4_N, 4);
+            const pages_fun_4_s = getAdditionalPageCount(_items_FUN_4_S, 4);
+            const pages_fun_4_e = getAdditionalPageCount(_items_FUN_4_E, 4);
+            const pages_fun_4_w = getAdditionalPageCount(_items_FUN_4_W, 4);
             // IF ANY OF THE pages VARIABLES IS EQUAL OR GREATER THAN 1, MORE PAGES 2 ARE REQUIRED,
             // THE EXTRA NUMBER  OF PAGES 2 IS EQUAL TO THE GREATER NUMBER AMONGS THE pages VALUES
-            var GREATER_NUMBER = pages_fun_3;
-            if (GREATER_NUMBER < pages_fun_51) GREATER_NUMBER = pages_fun_51;
-            if (GREATER_NUMBER < pages_fun_4_n) GREATER_NUMBER = pages_fun_4_n;
-            if (GREATER_NUMBER < pages_fun_4_s) GREATER_NUMBER = pages_fun_4_s;
-            if (GREATER_NUMBER < pages_fun_4_e) GREATER_NUMBER = pages_fun_4_e;
-            if (GREATER_NUMBER < pages_fun_4_w) GREATER_NUMBER = pages_fun_4_w;
-            //console.log("THE NUMBER OF EXTRA PAGES IS: ", GREATER_NUMBER)
+            const additionalPageCount = Math.max(pages_fun_3, pages_fun_51, pages_fun_4_n, pages_fun_4_s, pages_fun_4_e, pages_fun_4_w);
 
-            for (var j = 0; j < GREATER_NUMBER; j++) {
+            for (var j = 0; j < additionalPageCount; j++) {
 
-                var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
-                var Response_2pg = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(PdfUrl_2pg) || PdfUrl_2pg)
-                if (!Response_2pg) return;
-                var Buffer_2pg = Response_2pg.data
-                var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
-                let page = PdfDoc_2pg.getPage(0);
-                // ---------------------------
+                var [additionalPage] = await pdfDoc.copyPages(additionalPageTemplate, [1]);
+                pdfDoc.addPage(additionalPage);
+                let page = additionalPage;
 
                 if (_child_3.length) {
                     if (_child_3[0]) {
@@ -1901,10 +1866,6 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
                         _child_51.shift();
                     }
                 }
-                // ---------------------------
-                const pdfBytes_2pg = await PdfDoc_2pg.save();
-                var [copiedPages] = await pdfDoc.copyPages(PdfDoc_2pg, [0]);
-                pdfDoc.addPage(copiedPages);
             }
 
             // ADVANCE TO THE NEXT PAGE
@@ -2137,6 +2098,18 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         })
         */
     }, [currentItem, currentVersion, swaMsg]);
+
+        useEffect(() => {
+            if (!historySnapshot) return undefined;
+
+            getPdfForm()
+                .catch((error) => swalError({
+                    title: 'ERROR AL GENERAR PDF',
+                    text: error?.message || 'No fue posible generar el PDF histórico FUN.',
+                }))
+                .finally(() => onHistoryDownloadComplete?.());
+            return undefined;
+        }, [historySnapshot, getPdfForm, onHistoryDownloadComplete]);
 
         let _GET_CLOCK = () => {
             var _CHILD = currentItem.fun_clocks;

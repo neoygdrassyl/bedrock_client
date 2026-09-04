@@ -1061,10 +1061,15 @@ function RECORD_ENG_REVIEW(props) {
 
         // pdf gen
         let CREATE_PDF = () => {
+            const structuralVersion = Number(currentRecord?.version);
+            if (!Number.isInteger(structuralVersion) || structuralVersion < 1) {
+                swalError({ title: swaMsg.generic_eror_title, text: 'No se encontró una versión estructural válida para generar el informe.', icon: 'warning' });
+                return;
+            }
+
             var formData = new FormData();
             formData.set('id', currentItem.id);
-            let version = document.getElementById("record_version").value;
-            formData.set('version', version);
+            formData.set('version', structuralVersion);
             let header = document.getElementById("record_header").value;
             formData.set('header', header);
             let type = document.getElementById("record_version").value;
@@ -1103,7 +1108,7 @@ function RECORD_ENG_REVIEW(props) {
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let _VERSIONS_SELECT = () => {

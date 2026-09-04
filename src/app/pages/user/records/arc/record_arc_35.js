@@ -12,6 +12,7 @@ import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 import ObservationPanel from '../../../../components/ObservationPanel';
+import ExpandableTableSection from './components/ExpandableTableSection';
 
 function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [newParking, setNewParking] = useState(false);
@@ -1316,7 +1317,13 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         </div>
                     </form>
                     : ""}
-                {_COMPONENT_1_LIST()}
+                <ExpandableTableSection
+                    id="record-arc-35-parking-table"
+                    title="Parqueaderos"
+                    itemCount={_GET_CHILD_35_PARKING().length}
+                >
+                    {_COMPONENT_1_LIST()}
+                </ExpandableTableSection>
                 {editParking
                     ? <form id="form_ra_35_parking_edit" onSubmit={edit_ra_35_parking}>
                         <h3 className="my-3 text-center">Actualizar Parqueadero</h3>
@@ -1347,7 +1354,13 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         </div>
                     </form>
                     : ""}
-                {_COMPONENT_2_LIST()}
+                <ExpandableTableSection
+                    id="record-arc-35-location-table"
+                    title="Localización de parqueaderos"
+                    itemCount={_GET_CHILD_35_LOCATION().length}
+                >
+                    {_COMPONENT_2_LIST()}
+                </ExpandableTableSection>
                 {editLocation
                     ? <form id="form_ra_35_location_edit" onSubmit={edit_ra_35_location}>
                         <h3 className="my-3 text-center">Actualizar Localizacion</h3>

@@ -8,6 +8,12 @@ import JoditEditor from "jodit-pro-react";
 import { swalClose, swalError, swalProgressPDF, swalUpdateProgress } from '@/app/utils/swalAdapter';
 import { Icon } from '@/components/icon';
 import { downloadProtectedPdf } from '../../../utils/pdfDownload';
+
+const numericOr = (value, fallback) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 export default function EXP_RES_2(props) {
   const { data, swaMsg, currentItem, currentModel} = props;
 
@@ -15,11 +21,11 @@ export default function EXP_RES_2(props) {
   data.reso_tipo = _DATA.reso?.tipo || _DATA.reso?.type  || "Modalidad no encontrada...";
 
   const margins = {
-    top: parseFloat(_DATA.reso?.m_top) || 7,
-    bottom: parseFloat(_DATA.reso?.m_bot) || 1,
-    left: parseFloat(_DATA.reso?.m_left) || 1,
-    right: parseFloat(_DATA.reso?.m_right) || 1,
-    topHeader: parseFloat(_DATA.reso?.record_header_spacing) || 6,
+    top: numericOr(_DATA.reso?.m_top, 2.5),
+    bottom: numericOr(_DATA.reso?.m_bot, 1),
+    left: numericOr(_DATA.reso?.m_left, 1),
+    right: numericOr(_DATA.reso?.m_right, 1),
+    topHeader: numericOr(_DATA.reso?.record_header_spacing, 6),
     r_pagesn: parseFloat(_DATA.reso?.r_pages) || 1,
     distance_icon_x: parseFloat(_DATA.reso?.distance_icon_x) || 55,
     distance_icon_y: parseFloat(_DATA.reso?.distance_icon_y) || 66,
@@ -120,7 +126,7 @@ export default function EXP_RES_2(props) {
       await downloadProtectedPdf('/pdf-generate/generate-pdf', filename, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        data: { html: content, margins },
+        data: { html: content, margins, documentType: currentModel },
         onDownloadProgress: ({ loaded, total }) => {
           const progress = total ? 80 + Math.round((loaded / total) * 18) : 82;
           swalUpdateProgress(Math.min(progress, 98), 'Descargando archivo...');

@@ -296,8 +296,8 @@ export function EditableDataGrid({
       setSelectedRange({ ...selectedRangeRef.current, endRow: rowIndex, endCol: columnIndex });
       return;
     }
-    activateCell(rowIndex, columnIndex);
-  }, [activateCell]);
+    startEditing(rowIndex, columnIndex);
+  }, [startEditing]);
 
   const handleCellDoubleClick = useCallback((rowIndex, columnIndex) => {
     startEditing(rowIndex, columnIndex);

@@ -17,7 +17,7 @@ function RECORD_ARC_32({ translation, swaMsg, globals, currentItem, currentVersi
                 area: "",
                 vivienda: "",
                 cultural: "",
-                regla_1: "",
+                regla_1: "",    
                 regla_2: "",
             }
             if (_CHILD) {
