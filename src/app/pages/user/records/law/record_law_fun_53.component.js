@@ -323,6 +323,8 @@ export default function RECORD_LAW_FUN_53(props) {
             let element = document.getElementById('s_f53_checks_' + i)
             checks.push(element.value)
         }
+        const existingChecks = _GET_STEP_TYPE('f53', 'check');
+        if (existingChecks.length > checks.length) checks.push(...existingChecks.slice(checks.length));
         formData.set('check', checks.join(';'));
 
         formData.set('version', currentVersionR);

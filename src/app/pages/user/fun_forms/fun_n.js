@@ -12,6 +12,7 @@ import FUN_MODULE_NAV from './components/fun_moduleNav';
 import FUN_VERSION_NAV from './components/fun_versionNav';
 import FUN_0_RECIPE from './components/fun_0_recipe';
 import FUN_PDF from './components/fun_pdf';
+import FunHistoryTable from './components/FunHistoryTable';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import FUN_ARCHIVE from './components/fun_archive.component';
@@ -22,21 +23,48 @@ import { swalError } from '@/app/utils/swalAdapter';
 function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesRefresh, NAVIGATION, NAVIGATION_VERSION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [history, setHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
+    const [historyError, setHistoryError] = useState('');
+    const [historyPdfSnapshot, setHistoryPdfSnapshot] = useState(null);
 
     const requestUpdate = (id) => {
         retrieveItem(id);
         requesRefresh();
+        FUN_SERVICE.captureDailyHistory(id)
+            .then(() => retrieveHistory(id))
+            .catch((e) => {
+                console.error('FUN history capture failed', e);
+                swalError({ title: 'HISTÓRICO SIN ACTUALIZAR', text: 'Los datos fueron guardados, pero no fue posible actualizar el histórico FUN. Intente nuevamente.' });
+            });
     };
     const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
                 setCurrentItem(response.data);
                 retrievePQRSxFUN(response.data.id_public);
+                retrieveHistory(id);
             })
             .catch(e => {
                 console.log(e);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
+    };
+    const retrieveHistory = (id) => {
+        setHistoryLoading(true);
+        setHistoryError('');
+        FUN_SERVICE.getDailyHistory(id)
+            .then((response) => setHistory(Array.isArray(response.data) ? response.data : []))
+            .catch((e) => {
+                console.error('FUN history load failed', e);
+                setHistory([]);
+                setHistoryError('No fue posible cargar el histórico FUN. Intente nuevamente.');
+            })
+            .finally(() => setHistoryLoading(false));
+    };
+    const saveHistoryObservation = async (historyId, observation) => {
+        await FUN_SERVICE.updateDailyHistoryObservation(historyId, observation);
+        retrieveHistory(currentItem.id);
     };
     const retrievePQRSxFUN = (id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
@@ -191,8 +219,23 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
+                            historySnapshot={historyPdfSnapshot}
+                            onHistoryDownloadComplete={setHistoryPdfSnapshot}
                         />
                     </fieldset>
+                    <FunHistoryTable
+                        history={history}
+                        loading={historyLoading}
+                        error={historyError}
+                        onDownload={(entry) => {
+                            if (!entry.snapshot || typeof entry.snapshot !== 'object') {
+                                swalError({ title: 'PDF NO DISPONIBLE', text: 'Esta versión FUN no tiene un snapshot válido para generar el documento.' });
+                                return;
+                            }
+                            setHistoryPdfSnapshot(entry.snapshot);
+                        }}
+                        onSaveObservation={saveHistoryObservation}
+                    />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
                 </fieldset>}

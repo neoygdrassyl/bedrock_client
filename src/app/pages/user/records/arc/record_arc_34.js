@@ -16,6 +16,7 @@ import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 import ObservationPanel from '../../../../components/ObservationPanel';
+import ExpandableTableSection from './components/ExpandableTableSection';
 
 function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [newGen, setNewGen] = useState(false);
@@ -2066,7 +2067,13 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         </div>
                     </form>
                     : ""}
-                {_COMPONENT_1_LIST()}
+                <ExpandableTableSection
+                    id="record-arc-34-urban-rules-table"
+                    title="Normas Urbanas"
+                    itemCount={_GET_CHILD_34_GEN().length}
+                >
+                    {_COMPONENT_1_LIST()}
+                </ExpandableTableSection>
 
                 <hr className="my-3" />
 
@@ -2074,8 +2081,10 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                 {_COMPONENT_BJ()}
 
                 <h3 className="py-3" >Edificabilidad  {_SAVING_STATE(saveStates.edi)}</h3>
-                {_COMPONENT_INDEX_CALC()}
-                {_COMPONENT_INDEX_CALC_2()}
+                <div className="record-arc-height-grid-stack">
+                    {_COMPONENT_INDEX_CALC()}
+                    {_COMPONENT_INDEX_CALC_2()}
+                </div>
                 {_COMPONENT_K_TIPOLOGY()}
 
                 <h3 className="py-3" >Voladizos  {_SAVING_STATE(saveStates.vol)}</h3>

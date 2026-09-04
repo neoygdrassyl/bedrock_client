@@ -53,21 +53,22 @@ function RECORD_ENG_DESC(props) {
             return _CHILD_VARS;
         }
         let _GET_REVIEW = () => {
-            var _CHILD = currentRecord.record_eng_reviews;
-            var _CURRENT_VERSION = currentVersionR - 1;
+            var _CHILD = Array.isArray(currentRecord.record_eng_reviews) ? currentRecord.record_eng_reviews : [];
+            var _CURRENT_VERSION = Number(currentVersionR);
+            var _CURRENT_REVIEW = _CHILD.find((review) => Number(review.version) === _CURRENT_VERSION);
             var _CHILD_VARS = {
-                id: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].id : false,
-                check: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].check : "",
-                check_2: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].check_2 : "",
-                date: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].date : "",
-                desc: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].desc : "",
-                detail: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].detail : "",
-                detail_2: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].detail_2 : "",
-                worker_id: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].worker_id : "",
-                worker_name: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].worker_name : "",
-                version: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].version : "",
-                detail_3: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].detail_3 : "",
-                detail_4: _CHILD[_CURRENT_VERSION] ? _CHILD[_CURRENT_VERSION].detail_4 : "",
+                id: _CURRENT_REVIEW ? _CURRENT_REVIEW.id : false,
+                check: _CURRENT_REVIEW ? _CURRENT_REVIEW.check : "",
+                check_2: _CURRENT_REVIEW ? _CURRENT_REVIEW.check_2 : "",
+                date: _CURRENT_REVIEW ? _CURRENT_REVIEW.date : "",
+                desc: _CURRENT_REVIEW ? _CURRENT_REVIEW.desc : "",
+                detail: _CURRENT_REVIEW ? _CURRENT_REVIEW.detail : "",
+                detail_2: _CURRENT_REVIEW ? _CURRENT_REVIEW.detail_2 : "",
+                worker_id: _CURRENT_REVIEW ? _CURRENT_REVIEW.worker_id : "",
+                worker_name: _CURRENT_REVIEW ? _CURRENT_REVIEW.worker_name : "",
+                version: _CURRENT_REVIEW ? _CURRENT_REVIEW.version : "",
+                detail_3: _CURRENT_REVIEW ? _CURRENT_REVIEW.detail_3 : "",
+                detail_4: _CURRENT_REVIEW ? _CURRENT_REVIEW.detail_4 : "",
             }
             return _CHILD_VARS;
 

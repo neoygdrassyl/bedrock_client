@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 import RichTextEditor from '@/components/rich-text-editor';
 import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
@@ -11,8 +11,11 @@ export default function RECORDS_BINNACLE(props) {
     var [load, setLoad] = useState(0);
     var [tacl, setTacl] = useState(4000 - Number(BINNACLE ? BINNACLE.length : 0));
     const [loadedRecord, setLoadedRecord] = useState(null);
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const textareaRef = useRef(null);
     const useRichTextEditor = AIM === 'Arquitectura';
     const inputId = ['binnable_ta', AIM, idSuffix].filter(Boolean).join('_');
+    const contentId = `${inputId}_content`;
     const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
 
@@ -32,11 +35,19 @@ export default function RECORDS_BINNACLE(props) {
         if(load == 0) loadBinnable();
     }, [load]);
 
+    useEffect(() => {
+        resizePlainTextBinnacle();
+    }, [BINNACLE, useRichTextEditor]);
+
 
     // ******************* JSX  ******************* //
 
     let _COMPONENT = () => {
         const textareaClassName = `input-group op__textarea op__static-textarea ${readOnly ? 'op__static-textarea--readonly' : ''}`.trim();
+        const handlePlainTextChange = (event) => {
+            cal_tacl(inputId);
+            resizePlainTextBinnacle(event.currentTarget);
+        };
 
         return <>
             <div className={`op__static-card ${compact ? 'op__static-card--compact' : ''}`}>
@@ -44,8 +55,12 @@ export default function RECORDS_BINNACLE(props) {
                     <div className="op__label">
                         <span className="op__title">Bitácora - {AIM ?? ''}</span>
                     </div>
+                    <button type="button" className="btn btn-outline-primary op__static-toggle" aria-expanded={!isCollapsed}
+                        aria-controls={contentId} onClick={() => setIsCollapsed((current) => !current)}>
+                        {isCollapsed ? 'Maximizar' : 'Minimizar'}
+                    </button>
                 </div>
-                <div className="op__static-body">
+                <div id={contentId} className="op__static-body" hidden={isCollapsed}>
                     {useRichTextEditor ? <div className="op__static-editor"><RichTextEditor
                         value={BINNACLE}
                         hiddenId={inputId}
@@ -59,12 +74,18 @@ export default function RECORDS_BINNACLE(props) {
                         onBlur={(editorState) => setBinnacle(false, editorState)}
                         onSave={(editorState) => setBinnacle(true, editorState)}
                     /></div>
-                        : <textarea className={textareaClassName} defaultValue={BINNACLE} rows={3}
-                            id={inputId} onChange={() => cal_tacl(inputId)} maxLength="4000" onBlur={() => setBinnacle(false)} readOnly={readOnly}></textarea>}
+                        : <textarea ref={textareaRef} className={textareaClassName} defaultValue={BINNACLE} rows={3}
+                            id={inputId} onChange={handlePlainTextChange} maxLength="4000" onBlur={() => setBinnacle(false)} readOnly={readOnly}></textarea>}
                     {!readOnly ? <div className={`op__helper ${compact ? 'fs-6 mb-0' : ''}`}>{tacl} caracteres restantes</div> : ''}
                 </div>
             </div>
         </>
+    }
+
+    function resizePlainTextBinnacle(textarea = textareaRef.current) {
+        if (useRichTextEditor || !textarea) return;
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
     }
 
     // ******************* APIS ******************* //

@@ -79,10 +79,11 @@ export class BaseDocumentUtils {
     };
 
     const _CHILD = sources[record] || [];
+    const currentVersion = String(this._DATA.version);
 
     for (let i = 0; i < _CHILD.length; i++) {
       if (
-        _CHILD[i].version === this._DATA.version &&
+        String(_CHILD[i].version) === currentVersion &&
         _CHILD[i].id_public === _id_public
       ) {
         return _CHILD[i];
@@ -896,10 +897,11 @@ export class BaseDocumentUtils {
   }
 
 
-  F2_TABLE_MANUAL(text) {
+  F2_TABLE_MANUAL(text, area) {
     const container = this.tempDiv.querySelector("#manualTableContainer");
     container.innerHTML = ""; // Limpiar antes de inyectar
 
+    if (area) text = text.replace(/XXX\s*m2/g, area + " m2");
     const rows = text.trim().split("\n");
     if (rows.length === 0) return;
 
@@ -934,10 +936,10 @@ export class BaseDocumentUtils {
     const table = this.tempDiv.querySelector("#tabla-predios");
     this.showDiv("tabla-f2", "table");
 
-    // Mostrar u ocultar columna "Área predio"
-    const areaCells = this.tempDiv.querySelectorAll(".area-col");
+    // The column is part of the legal document even when no area was recorded.
+    const areaCells = this.tempDiv.querySelectorAll(".area-col-f2");
     areaCells.forEach((cell) => {
-      cell.style.display = area ? "table-cell" : "none";
+      cell.style.display = "table-cell";
     });
 
     if (this.curaduriaInfo.id == "cup1") {
@@ -960,7 +962,7 @@ export class BaseDocumentUtils {
       this.curaduriaInfo.id == "cup1" && useState
         ? "Piedecuesta"
         : this.data.fun_2.barrio;
-    this.tempDiv.querySelector("#area-f2").textContent = area + " m2";
+    this.tempDiv.querySelector("#area-f2").textContent = String(area).trim() ? area + " m2" : "";
   }
 
   TABLE_F51(ROLE, hide = false, ROLE_EXCLUDE = false) {

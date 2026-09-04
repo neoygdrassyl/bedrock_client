@@ -31,6 +31,15 @@ class UserslDataService {
   get(id) {
     return http.get(`/${route}/${id}`);
   }
+  getDailyHistory(id) {
+    return http.get(`/${route}/${id}/history`);
+  }
+  captureDailyHistory(id) {
+    return http.post(`/${route}/${id}/history/capture`);
+  }
+  updateDailyHistoryObservation(historyId, observation) {
+    return http.put(`/${route}/history/${historyId}/observation`, { observation });
+  }
   getFun6(id) {
     return http.get(`/${route}/fun6/${id}`);
   }

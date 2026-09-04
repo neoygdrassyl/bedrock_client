@@ -530,13 +530,12 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             var _CHILD = currentItem.record_eng;
             if (!_CHILD) return false;
             _CHILD = _CHILD.record_eng_reviews;
-            if (!_CHILD.length) return false;
-            let revision = currentItem.record_law.version;
-            revision = Number(revision) - 1;
-            if (!_CHILD[revision]) return false;
+            if (!Array.isArray(_CHILD) || !_CHILD.length) return false;
+            let revision = _CHILD.find((review) => Number(review.version) === Number(currentItem.version));
+            if (!revision) return false;
 
-            let _review = _CHILD[revision].check ?? false;
-            let _date = _CHILD[revision].date ?? false;
+            let _review = revision.check ?? false;
+            let _date = revision.date ?? false;
 
             if (_review !== false && _date !== false) return true
             return false;
@@ -1522,6 +1521,14 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
 
         let creae_pdf = () => {
+            const structuralRequired = String(currentItem.rules || '').split(';')[1] !== '1';
+            if (structuralRequired && !_CHECK_ENG_REPORT()) {
+                return swalError({
+                    title: 'REVISIÓN ESTRUCTURAL INCOMPLETA',
+                    text: `Debe existir una revisión estructural completa para la versión ${currentItem.version} antes de generar el acta.`
+                });
+            }
+
             var formData = new FormData();
             formData.set('id', currentItem.id);
             formData.set('version', currentItem.version);
@@ -1603,7 +1610,11 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    swalError({
+                        title: swaMsg.generic_eror_title,
+                        text: e.response?.data?.message || swaMsg.generic_error_text,
+                        icon: 'warning'
+                    });
                 });
         }
         let CREATE_PDF_CHECK = () => {

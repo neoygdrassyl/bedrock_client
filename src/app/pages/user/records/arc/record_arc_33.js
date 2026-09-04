@@ -1,10 +1,8 @@
 import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
 
 import FUN_SERVICE from '../../../../services/fun.service'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import VIZUALIZER from '../../../../components/vizualizer.component';
 import RECORD_ARC_AREAS from './record_arc_areas.component';
 import EXP_AREAS_RECORD from '../exp_areas_record.component';
 import RECORD_ARC_DESC from './record_arc_desc';
@@ -18,12 +16,64 @@ import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 import { splitValue } from '../../shared/expediente-documental.utils';
 import ObservationPanel from '../../../../components/ObservationPanel';
+import BlueprintTable from './components/BlueprintTable';
+import BlueprintReviewMatrix from './components/BlueprintReviewMatrix';
+import BlueprintChecklistTable from './components/BlueprintChecklistTable';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
+import {
+    BLUEPRINT_DOCUMENT_OPTIONS,
+    getBlueprintDocumentLabel,
+    normalizeBlueprintDocumentState,
+} from './components/blueprintDocumentStatus';
+
+const BLUEPRINT_CATEGORIES = [
+    'Arquitectónicos',
+    'Georreferenciado',
+    'Reloteo',
+    'Parcelación',
+    'Seguridad Humana (J y K)',
+    'Subdivisión',
+    'Topográficos',
+    'Urbanísticos',
+    'Movimiento de tierras',
+];
+
+const BLUEPRINT_CATEGORIES_BY_LICENSE = {
+    A: ['Urbanísticos', 'Topográficos', 'Movimiento de tierras'],
+    B: ['Parcelación', 'Topográficos', 'Movimiento de tierras'],
+    C: ['Reloteo', 'Topográficos', 'Urbanísticos'],
+    D: ['Arquitectónicos', 'Seguridad Humana (J y K)', 'Topográficos'],
+    E: ['Urbanísticos', 'Topográficos'],
+    F: ['Arquitectónicos', 'Seguridad Humana (J y K)', 'Topográficos'],
+    G: BLUEPRINT_CATEGORIES,
+};
+
+function normalizeBlueprintCategory(category) {
+    return category === 'cortes' ? '' : category || '';
+}
+
+function getBlueprintCategories(licenseTypes) {
+    const types = String(licenseTypes || '').match(/[A-G]/g) || [];
+    const allowed = new Set(['Georreferenciado']);
+
+    for (const type of types) {
+        for (const category of BLUEPRINT_CATEGORIES_BY_LICENSE[type] || []) {
+            allowed.add(category);
+        }
+    }
+
+    return BLUEPRINT_CATEGORIES.filter(category => allowed.has(category));
+}
 
 function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [new_area, setNewArea] = useState(false);
     const [new_blueprint, setNewBlueprint] = useState(false);
     const [edit_area, setEditArea] = useState(false);
     const [edit_blueprint, setEditBlueprint] = useState(false);
+    const [blueprintReviewOpen, setBlueprintReviewOpen] = useState(false);
+    const [blueprintReviewSaving, setBlueprintReviewSaving] = useState(false);
+    const [blueprintHistoryOpen, setBlueprintHistoryOpen] = useState(false);
+    const [blueprintHistorySnapshot, setBlueprintHistorySnapshot] = useState(null);
     const [sort, setSort] = useState('asc');
     const [sort2, setSort2] = useState('asc');
     const [fillActive, setFillActive] = useState('tab2');
@@ -36,41 +86,13 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             document.getElementById("r_a_33_blueprint_1_edit").value = _ITEM.id_public;
             document.getElementById("r_a_33_blueprint_2_edit").value = _ITEM.use;
             document.getElementById("r_a_33_blueprint_3_edit").value = _ITEM.scale;
-            //document.getElementById("r_a_33_blueprint_4_edit").value = _ITEM.category
-            document.getElementById("r_a_33_blueprint_5_edit").value = _ITEM.id6_blueprint ? _ITEM.id6_blueprint : 0;
+            document.getElementById("r_a_33_blueprint_6_edit").value = _ITEM.date || '';
+            document.getElementById("r_a_33_blueprint_4_edit").value = normalizeBlueprintCategory(_ITEM.category);
+            document.getElementById("r_a_33_blueprint_5_edit").value = normalizeBlueprintDocumentState(_ITEM.id6_blueprint);
             //document.getElementById("r_a_33_blueprint_6_edit").value = _ITEM.active == 1 ? 1 : 0;
         }
     }, [edit_blueprint]);
         // DATA GETERS
-        let _GET_CHILD_6 = () => {
-            var _CHILD = currentItem.fun_6s;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
-        }
-        let _CHILD_6_SELECT = () => {
-            let _LIST = _GET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
-            }
-            return <>{_COMPONENT}</>
-        }
-        let _FIND_6 = (_ID) => {
-            let _LIST = _GET_CHILD_6();
-            let _CHILD = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                if (_LIST[i].id == _ID) {
-                    _CHILD = _LIST[i];
-                    break;
-                }
-            }
-            return _CHILD;
-        }
-
-
         let _GET_CHILD_33_AREAS = () => {
             var _CHILD = currentRecord.record_arc_33_areas;
             var _LIST = [];
@@ -134,6 +156,15 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             value = JSON.parse(JSON.parse(value));
             return value
         }
+        let _GET_BLUEPRINT_REVIEW_DOCUMENT = () => {
+            const step = LOAD_STEP('s33_blueprint_review');
+            const saved = getJSONFull(step.json) || {};
+            if (saved.schemaVersion === 2 && saved.draft && Array.isArray(saved.snapshots)) return saved;
+            return { schemaVersion: 2, draft: saved, snapshots: [], finalizedVersion: null };
+        }
+        let _GET_BLUEPRINT_REVIEW = () => {
+            return _GET_BLUEPRINT_REVIEW_DOCUMENT().draft;
+        }
         let _SAVING_STATE = (state) => {
             if (!state) return '';
             if (state == 1) return <label className='text-warning fw-bold'><Icon name="save" size={16} /></label>;
@@ -144,6 +175,13 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
 
 
         let _COMPONENT_3 = (edit = '') => {
+            const licenseTypes = currentItem?.fun_1s?.[currentVersion - 1]?.tipo;
+            const availableCategories = getBlueprintCategories(licenseTypes);
+            const selectedCategory = edit ? normalizeBlueprintCategory(edit_blueprint?.category) : '';
+            const legacyCategory = selectedCategory && !availableCategories.includes(selectedCategory)
+                ? selectedCategory
+                : '';
+
             return <>
                 <div className="row">
                     <div className="col-1">
@@ -158,6 +196,24 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                             <input type="text" className="form-control form-control-sm" id={"r_a_33_blueprint_3" + edit} placeholder="Escala" />
                         </div>
                     </div>
+                    <div className="col-2">
+                        <div className="form-group">
+                            <label>Fecha</label>
+                            <input type="date" className="form-control form-control-sm" id={"r_a_33_blueprint_6" + edit} />
+                        </div>
+                    </div>
+                    <div className="col">
+                        <div className="form-group">
+                            <label>Categoría</label>
+                            <select className="form-select form-select-sm" id={"r_a_33_blueprint_4" + edit} defaultValue="">
+                                <option value="" disabled>Seleccione una categoría</option>
+                                {legacyCategory
+                                    ? <option value={legacyCategory}>{legacyCategory} (histórica)</option>
+                                    : null}
+                                {availableCategories.map(category => <option key={category} value={category}>{category}</option>)}
+                            </select>
+                        </div>
+                    </div>
                     <div className="col">
                         <div className="form-group">
                             <label>Contenido documento</label>
@@ -168,9 +224,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         <div className="form-group">
                             <label>Relacionar documento</label>
                             <select className="form-select form-select-sm" id={"r_a_33_blueprint_5" + edit} >
-                                <option value="-1">APORTADO FISICAMENTE</option>
-                                <option value="0">SIN DOCUMENTO</option>
-                                {_CHILD_6_SELECT()}
+                                {BLUEPRINT_DOCUMENT_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
                             </select>
                         </div>
                     </div>
@@ -182,85 +236,25 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
         }
         let _COMPONENT_3_LIST = () => {
             let _LIST = _GET_CHILD_33_AREAS_BLUEPRINTS();
-            const columns = [
-                {
-                    name: 'ID',
-                    center: true,
-                    maxWidth: '40px',
-                    maxWidth: '40px',
-                    cell: row => dynamicState['qedit_bp_' + row.id]
-                        ? <div className="input-group input-group-sm">
-                            <input type="text" className="form-control me-1" id={"r_a_33_blueprint_1_edit_" + row.id} defaultValue={row.id_public} />
-                        </div> : <label>{row.id_public}</label>
-                },
-                {
-                    name: 'Escala',
-                    center: true,
-                    maxWidth: '40px',
-                    maxWidth: '40px',
-                    cell: row => dynamicState['qedit_bp_' + row.id]
-                        ? <div className="input-group input-group-sm">
-                            <input type="text" className="form-control me-1" id={"r_a_33_blueprint_2_edit_" + row.id} defaultValue={row.scale} />
-                        </div> : <label className='text-center'>{row.scale}</label>
-                },
-                {
-                    name: 'Descripción',
-                    center: true,
-                    cell: row => dynamicState['qedit_bp_' + row.id]
-                        ? <div className="input-group input-group-sm">
-                            <input type="text" className="form-control me-1" id={"r_a_33_blueprint_3_edit_" + row.id} defaultValue={row.use} />
-                        </div> : <label className='text-center'>{row.use}</label>
-                },
-                {
-                    name: 'Documento',
-                    center: true,
-                    cell: row => dynamicState['qedit_bp_' + row.id]
-                        ? <div className="input-group input-group-sm">
-                            <select className="form-select" id={"r_a_33_blueprint_5_edit_" + row.id} defaultValue={row.id6_blueprint}>
-                                <option value="-1">APORTADO FISICAMENTE</option>
-                                <option value="0">SIN DOCUMENTO</option>
-                                {_CHILD_6_SELECT()}
-                            </select>
-                        </div> : row.id6_blueprint > 0
-                            ? <VIZUALIZER url={_FIND_6(row.id6_blueprint).path + "/" + _FIND_6(row.id6_blueprint).filename}
-                                apipath={'/files/'} />
-                            : ""
-                },
-                {
-                    name: 'ACCIÓN',
-                    button: true,
-                    center: true,
-                    minWidth: '120px',
-                    cell: row => {
-                        return <>
- <Button variant="outline" size="sm" className="px-2 me-1" onClick={() => setEditBlueprint(row)} ><Icon name="edit" size={16} /></Button>
- <Button variant="destructive" size="sm" className="px-2" onClick={() => delete_33_area(row.id, 'blueprint')} ><Icon name="trash-alt" size={16} /></Button>
-                        </>
-                    },
-                },
-            ]
-            return <DataTable
-                noDataComponent="No hay Items"
-                striped="true"
-                columns={columns}
-                data={[..._LIST].sort((a, b) => {
-                    let custtomSortArray = {
-                        'Georreferenciado / Localizacion': 9,
-                        'Urbanos': 8,
-                        'Parcelacion': 7,
-                        'Arquitectonico': 6,
-                        'Cortes y Fachadas': 5,
-                        'NSR10 Seguridad Humana': 4,
-                        'No estructural': 3,
-                        'Topograficos': 2,
-                        'Otros': 1,
-                    }
-                    return custtomSortArray[b.category] - custtomSortArray[a.category]
-                })}
-                highlightOnHover
-                className="data-table-component"
-                noHeader
-                dense
+            const rows = [..._LIST].sort((a, b) => {
+                    const categoryOrder = {
+                        'Georreferenciado': 9,
+                        'Arquitectónicos': 8,
+                        'Reloteo': 7,
+                        'Parcelación': 6,
+                        'Seguridad Humana (J y K)': 5,
+                        'Subdivisión': 4,
+                        'Topográficos': 3,
+                        'Urbanísticos': 2,
+                        'Movimiento de tierras': 1,
+                    };
+                    return (categoryOrder[b.category] ?? 0) - (categoryOrder[a.category] ?? 0);
+                });
+            return <BlueprintTable
+                rows={rows}
+                renderDocument={row => getBlueprintDocumentLabel(row.id6_blueprint)}
+                onEdit={setEditBlueprint}
+                onDelete={row => delete_33_area(row.id, 'blueprint')}
             />
         }
         let _COMPONENT_AREAS = () => {
@@ -459,51 +453,24 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             const LIST = [
                 { name: 'Arquitectónicos', v: 0, c: 0 },
                 { name: 'Georreferenciado', v: 1, c: 1 },
-                { name: 'Loteo', v: 2, c: 2 },
+                { name: 'Reloteo', v: 2, c: 2 },
                 { name: 'Parcelación', v: 3, c: 3 },
                 { name: 'Seguridad Humana (J y K)', v: 4, c: 4 },
                 { name: 'Subdivisión', v: 5, c: 5 },
                 { name: 'Topográficos', v: 6, c: 6 },
                 { name: 'Urbanístico General', v: 7, c: 7 },
                 { name: 'Urbanísticos', v: 8, c: 8 },
+                { name: 'Movimiento de tierras', v: 10, c: 9 },
                 { name: 'Observaciones adicionales', v: 9, c: false, open: true },
             ]
 
-            return <>
-                <div className="row border text-center fw-bold">
-                    <div className='col-8'><label>PLANO</label></div>
-                    <div className='col'><label>CANT.</label></div>
-                    <div className='col'><label>EVA.</label></div>
-                </div>
-
-                {LIST.map(item => {
-                    return <div key={`blueprint-${item.v}`} className="row border">
-                        {item.open ?
-                            <div className='col-8'>
-                                <input type="text" onBlur={() => manage_ra_33(false)} className="form-control form-control-sm"
-                                    name="blue_prints_values" id={"blue_prints_values_" + item.v} defaultValue={_VALUE_ARRAY[item.v] ?? ''}
-                                    placeholder={item.name} />
-                            </div>
-                            : <div className='col-8'><label className=''>{item.name}</label></div>}
-
-                        {!item.open ?
-                            <div className='col'>
-                                <input type="number" step={1} min="0" onBlur={() => manage_ra_33(false)} className="form-control form-control-sm"
-                                    name="blue_prints_values" id={"blue_prints_values_" + item.v} defaultValue={_VALUE_ARRAY[item.v] ?? 0} />
-                            </div>
-                            : false}
-                        {item.c !== false ?
-                            <div className='col'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item.c])}
-                                name="blue_prints_checks" id={"blue_prints_checks_" + item.c}
-                                defaultValue={_CHECK_ARRAY[item.c] || 2} onChange={() => manage_ra_33(false)} >
-                                <option value="0" className="text-danger">NO CUMPLE</option>
-                                <option value="1" className="text-success">CUMPLE</option>
-                                <option value="2" className="text-warning">NO APLICA</option>
-                            </select> </div>
-                            : false}
-
-                    </div>
-                })}</>
+            return <BlueprintChecklistTable
+                items={LIST}
+                values={_VALUE_ARRAY}
+                checks={_CHECK_ARRAY}
+                getSelectClassName={_GET_SELECT_COLOR_VALUE}
+                onSave={() => manage_ra_33(false)}
+            />
         }
         let _COMPONENT_CONTROL = () => {
             const json = _GET_STEP_TYPE_JSON('arc_control');
@@ -641,22 +608,55 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
 
         // FUNCTIONS AND WORKING ENGINES
         var formData = new FormData();
+        let get_blueprint_form_values = (edit = '') => {
+            const fields = [
+                ['ID', 'r_a_33_blueprint_1'],
+                ['Escala', 'r_a_33_blueprint_3'],
+                ['Fecha', 'r_a_33_blueprint_6'],
+                ['Categoría', 'r_a_33_blueprint_4'],
+                ['Contenido documento', 'r_a_33_blueprint_2'],
+                ['Relacionar documento', 'r_a_33_blueprint_5'],
+            ];
+            const values = {};
+            const missing = [];
+
+            fields.forEach(([label, id]) => {
+                const value = document.getElementById(id + edit).value.trim();
+                values[id] = value;
+                if (!value) missing.push(label);
+            });
+
+            if (missing.length) {
+                swalError({
+                    icon: 'warning',
+                    title: 'COMPLETE LOS DATOS DEL PLANO',
+                    text: `Debe diligenciar todos los campos antes de continuar. Faltan: ${missing.join(', ')}.`,
+                });
+                return false;
+            }
+
+            return values;
+        }
 
         let new_ra_33_blueprint = (e) => {
             e.preventDefault();
+            const blueprint = get_blueprint_form_values();
+            if (!blueprint) return;
             formData = new FormData();
             formData.set('recordArcId', currentRecord.id);
             formData.set('type', "blueprint");
 
-            let id_public = document.getElementById("r_a_33_blueprint_1").value;
+            let id_public = blueprint.r_a_33_blueprint_1;
             formData.set('id_public', id_public);
-            let scale = document.getElementById("r_a_33_blueprint_3").value;
+            let scale = blueprint.r_a_33_blueprint_3;
             formData.set('scale', scale);
-            let use = document.getElementById("r_a_33_blueprint_2").value;
+            let date = blueprint.r_a_33_blueprint_6;
+            formData.set('date', date);
+            let use = blueprint.r_a_33_blueprint_2;
             formData.set('use', use);
-            //let category = document.getElementById("r_a_33_blueprint_4").value;
-            formData.set('category', 'cortes');
-            let id6_blueprint = document.getElementById("r_a_33_blueprint_5").value;
+            let category = blueprint.r_a_33_blueprint_4;
+            formData.set('category', category);
+            let id6_blueprint = blueprint.r_a_33_blueprint_5;
             formData.set('id6_blueprint', id6_blueprint);
             //let active = document.getElementById("r_a_33_blueprint_6").value;
             //formData.set('active', active);
@@ -679,19 +679,23 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
         }
         let edit_ra_33_blueprint = (e) => {
             e.preventDefault();
+            const blueprint = get_blueprint_form_values('_edit');
+            if (!blueprint) return;
             formData = new FormData();
             formData.set('recordArcId', currentRecord.id);
             formData.set('type', "blueprint");
 
-            let id_public = document.getElementById("r_a_33_blueprint_1_edit").value;
+            let id_public = blueprint.r_a_33_blueprint_1;
             formData.set('id_public', id_public);
-            let scale = document.getElementById("r_a_33_blueprint_3_edit").value;
+            let scale = blueprint.r_a_33_blueprint_3;
             formData.set('scale', scale);
-            let use = document.getElementById("r_a_33_blueprint_2_edit").value;
+            let date = blueprint.r_a_33_blueprint_6;
+            formData.set('date', date);
+            let use = blueprint.r_a_33_blueprint_2;
             formData.set('use', use);
-            //let category = document.getElementById("r_a_33_blueprint_4_edit").value;
-            formData.set('category', 'cortes');
-            let id6_blueprint = document.getElementById("r_a_33_blueprint_5_edit").value;
+            let category = blueprint.r_a_33_blueprint_4;
+            formData.set('category', category);
+            let id6_blueprint = blueprint.r_a_33_blueprint_5;
             formData.set('id6_blueprint', id6_blueprint);
             //let pos = document.getElementById("r_a_33_blueprint_6_edit").value;
             //formData.set('pos', 1);
@@ -897,6 +901,73 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                     });
             }
         }
+        let save_blueprint_review = async (review) => {
+            const step = LOAD_STEP('s33_blueprint_review');
+            const document = _GET_BLUEPRINT_REVIEW_DOCUMENT();
+            if (document.finalizedVersion === 2) {
+                swalError({ title: 'REVISIÓN FINALIZADA', text: 'La versión 2 ya fue finalizada y no admite cambios.', icon: 'warning' });
+                return;
+            }
+            const data = new FormData();
+            data.set('json', JSON.stringify({ ...document, draft: review }));
+            data.set('version', currentVersionR);
+            data.set('recordArcId', currentRecord.id);
+            data.set('id_public', 's33_blueprint_review');
+
+            setBlueprintReviewSaving(true);
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            try {
+                const response = step.id
+                    ? await RECORD_ARCSERVICE.update_step(step.id, data)
+                    : await RECORD_ARCSERVICE.create_step(data);
+                if (response.data !== 'OK') throw new Error('No fue posible guardar la evaluación de planos.');
+                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                requestUpdateRecord(currentItem.id);
+                setBlueprintReviewOpen(false);
+            } catch (error) {
+                console.log(error);
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                throw error;
+            } finally {
+                setBlueprintReviewSaving(false);
+            }
+        }
+        let finalize_blueprint_review = async (review) => {
+            const document = _GET_BLUEPRINT_REVIEW_DOCUMENT();
+            const nextVersion = document.snapshots.length + 1;
+            if (nextVersion > 2 || document.finalizedVersion === 2) {
+                swalError({ title: 'REVISIÓN FINALIZADA', text: 'La versión 2 ya fue finalizada y no admite cambios.', icon: 'warning' });
+                return;
+            }
+            const confirmation = await swalConfirm({
+                title: `¿FINALIZAR LA REVISIÓN DE LA VERSIÓN ${nextVersion}?`,
+                text: nextVersion === 1
+                    ? 'Podrá continuar editando la evaluación para registrar una versión corregida.'
+                    : 'No podrá realizar más cambios posteriormente.',
+                confirmButtonText: 'SÍ, FINALIZAR',
+                cancelButtonText: 'NO',
+            });
+            if (!confirmation.isConfirmed) return;
+
+            const data = new FormData();
+            data.set('review', JSON.stringify(review));
+            data.set('version', currentVersionR);
+            data.set('recordArcId', currentRecord.id);
+            setBlueprintReviewSaving(true);
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            try {
+                const response = await RECORD_ARCSERVICE.finalize_blueprint_review(data);
+                if (response.data?.status !== 'OK') throw new Error(response.data?.message || 'No fue posible finalizar la revisión de planos.');
+                swalSuccess({ title: swaMsg.publish_success_title, text: `La versión ${response.data.finalizedVersion} fue guardada en el histórico.`, footer: swaMsg.text_footer });
+                requestUpdateRecord(currentItem.id);
+                setBlueprintReviewOpen(false);
+            } catch (error) {
+                console.log(error);
+                swalError({ title: swaMsg.generic_eror_title, text: error.response?.data?.message || error.message || swaMsg.generic_error_text, icon: 'warning' });
+            } finally {
+                setBlueprintReviewSaving(false);
+            }
+        }
 
         let save_fun_r = () => {
             function replaceAtIndex(_string, _index, _newValue) {
@@ -961,13 +1032,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         requestUpdate={requestUpdate}
                     />
 
-                    <h3 className="my-3">3.3.2 Planos aportados</h3>
-                    {_COMPONENT_BLUEPRINTS()}
-
-                    <h3 className="my-3">3.3.3 Información de Areas</h3>
-                    {_COMPONENT_AREAS()}
-
-                    <h3 className="my-3">3.3.4 Cortes y Fachadas</h3>
+                    <h3 className="my-3">3.3.2 Planos</h3>
 
 
                     <div className="form-check ms-5 mb-3">
@@ -987,6 +1052,33 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         </form>
                         : ""}
                     {_COMPONENT_3_LIST()}
+                    <div className="my-3 text-center">
+                        <Button type="button" size="sm" onClick={() => setBlueprintReviewOpen(true)}><Icon name="clipboard-list" size={16} className="me-1" />EVALUACIÓN</Button>
+                        <Button type="button" size="sm" variant="outline" className="ms-2" onClick={() => { setBlueprintHistorySnapshot(null); setBlueprintHistoryOpen(true); }}><Icon name="history" size={16} className="me-1" />HISTÓRICO</Button>
+                    </div>
+                    <Modal
+                        contentLabel="Evaluación de planos"
+                        isOpen={blueprintReviewOpen}
+                        onRequestClose={() => {}}
+                        shouldCloseOnOverlayClick={false}
+                        ariaHideApp={false}
+                        className="max-w-none !left-[1rem] !right-auto !w-[calc(100vw-2rem)] !max-w-[calc(100vw-2rem)]"
+                    >
+                        <BlueprintReviewMatrix
+                            blueprints={_GET_CHILD_33_AREAS_BLUEPRINTS()}
+                            professionals={currentItem.fun_52s}
+                            savedReview={_GET_BLUEPRINT_REVIEW()}
+                            saving={blueprintReviewSaving}
+                            finalizing={blueprintReviewSaving}
+                            readOnly={_GET_BLUEPRINT_REVIEW_DOCUMENT().finalizedVersion === 2}
+                            onSave={save_blueprint_review}
+                            onFinalize={finalize_blueprint_review}
+                            onClose={() => setBlueprintReviewOpen(false)}
+                        />
+                    </Modal>
+                    <Modal contentLabel="Histórico de revisiones de planos" isOpen={blueprintHistoryOpen} onRequestClose={() => setBlueprintHistoryOpen(false)} ariaHideApp={false} className="!left-1/2 !top-1/2 !w-[calc(100vw-2rem)] !max-w-3xl !-translate-x-1/2 !-translate-y-1/2" style={{ content: { top: '50%', left: '50%', right: 'auto', bottom: 'auto', width: 'calc(100vw - 2rem)', maxWidth: '48rem', maxHeight: 'calc(100dvh - 2rem)' } }}>
+                        {blueprintHistorySnapshot ? <div className="space-y-3"><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistorySnapshot(null)}><Icon name="arrow-left" size={14} className="me-1" />VOLVER AL HISTÓRICO</Button><BlueprintReviewMatrix blueprints={blueprintHistorySnapshot.blueprints || []} professionals={currentItem.fun_52s} savedReview={blueprintHistorySnapshot.review || {}} readOnly onClose={() => setBlueprintHistoryOpen(false)} /></div> : <div className="space-y-3"><div className="flex items-center justify-between gap-3"><div><h3 className="mb-1 text-base font-semibold">Histórico de revisiones</h3><p className="mb-0 text-sm text-muted-foreground">Las versiones finalizadas no pueden modificarse.</p></div><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistoryOpen(false)}><Icon name="times-circle" size={14} /></Button></div>{_GET_BLUEPRINT_REVIEW_DOCUMENT().snapshots.length ? _GET_BLUEPRINT_REVIEW_DOCUMENT().snapshots.map(snapshot => <div key={snapshot.number} className="flex items-center justify-between gap-3 rounded-md border border-border p-3"><div><strong>Versión {snapshot.number}</strong><p className="mb-0 text-xs text-muted-foreground">Finalizada: {new Date(snapshot.finalizedAt).toLocaleString()}</p></div><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistorySnapshot(snapshot)}>VER RESULTADO</Button></div>) : <p className="mb-0 rounded-md border border-border p-3 text-sm text-muted-foreground">Aún no hay versiones finalizadas.</p>}<div className="flex justify-end"><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistoryOpen(false)}>Cerrar</Button></div></div>}
+                    </Modal>
                     {edit_blueprint
                         ? <form id="form_ra_33_blueprint_edit" onSubmit={edit_ra_33_blueprint}>
                             <h3 className="my-3 text-center">Actualizar Plano</h3>
@@ -998,6 +1090,12 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                             </div>
                         </form>
                         : ""}
+
+                    <h3 className="my-3">3.3.3 Planos aportados</h3>
+                    {_COMPONENT_BLUEPRINTS()}
+
+                    <h3 className="my-3">3.3.4 Información de Areas</h3>
+                    {_COMPONENT_AREAS()}
 
                     {/**
                      * 

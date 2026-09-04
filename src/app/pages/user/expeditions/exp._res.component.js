@@ -8,7 +8,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
 
-import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints } from '../../../components/customClasses/typeParse';
+import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints, getJSONFull } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
 import dayjs from "dayjs";
@@ -420,13 +420,14 @@ export default function EXP_RES(props) {
         const LIST = [
             { name: 'Arquitectónicos', v: 0, c: 0 },
             { name: 'Georreferenciado', v: 1, c: 1 },
-            { name: 'de Loteo', v: 2, c: 2 },
+            { name: 'de Reloteo', v: 2, c: 2 },
             { name: 'de Parcelación', v: 3, c: 3 },
             { name: 'de Seguridad Humana', v: 4, c: 4 },
             { name: 'de Subdivisión', v: 5, c: 5 },
             { name: 'Topográficos', v: 6, c: 6 },
             { name: 'Urbanístico General', v: 7, c: 7 },
             { name: 'Urbanísticos', v: 8, c: 8 },
+            { name: 'de Movimiento de tierras', v: 10, c: 9 },
         ];
 
         const eng_name = _GET_STEP_TYPE('s430o', 'value', 'eng');
@@ -469,6 +470,11 @@ export default function EXP_RES(props) {
 
         const art_9_dv = reso.art_9 || 'A juicio del curador, ordénese la publicación de la parte resolutiva de la licencia en un periódico de amplia circulación en el municipio.';
 
+        const step34 = (currentItem.record_arc_steps || []).find((step) => step.id_public == 's34' && step.version == currentVersionR) || LOAD_STEP('s34', 'arc');
+        const propertyArea = getJSONFull(step34.json) || {};
+        const propertyAreaText = propertyArea.m2 ? propertyArea.m2 + ' m2' : '';
+        const replacePropertyAreaPlaceholder = (text) => propertyAreaText ? text.replace(/XXX\s*m2/g, propertyAreaText) : text;
+
         let tb_text = () => {
             let text = `# |  Número predial | Matricula inmobiliaria | Dirección | Barrio | Área predio\n`;
             let f2 = _GET_CHILD_2();
@@ -498,14 +504,14 @@ export default function EXP_RES(props) {
                     let mat = f2.item_22.split('/')[i] || '';
                     let dir = f2.item_211.split('/')[i] || '';
 
-                    text += `${i + 1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | XXX m2\n`;
+                    text += `${i + 1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | ${propertyAreaText}\n`;
                 }
             }
 
             return text;
         }
         const art_1_cb_tb = reso.art_1_cb_tb ?? false;
-        const art_1_txt_tb = reso.art_1_txt_tb || tb_text();
+        const art_1_txt_tb = replacePropertyAreaPlaceholder(reso.art_1_txt_tb || tb_text());
         const art_1_cb = reso.art_1_cb ? reso.art_1_cb.split(',') : [1];
         const art_1_txt = reso.art_1_txt ? reso.art_1_txt : `Parágrafo. El área del predio fue tomada del cálculo de los linderos consignados en el certificado de libertad y tradición y/o títulos de propiedad; los trámites concernientes a la inscripción, aclaración y/o corrección de área y linderos del predio con fines registrales, deberá adelantarlos ante el Área Metropolitana de Bucaramanga (gestor catastral), mediante los procedimientos establecidos en la resolución conjunta IGAC No. 1101 SNR No. 11344 del 31 de Diciembre de 2020. Por lo anterior, se sugiere antes de radicar cualquier otra actuación, realizar la inscripción del área conforme a lo antes indicado, para asegurar un trámite notarial y registral exitoso.`;
         const primero = reso.primero ? reso.primero : '';

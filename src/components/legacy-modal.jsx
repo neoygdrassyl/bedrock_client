@@ -76,6 +76,11 @@ export function LegacyModal({
   ...rest
 }) {
   const portalNodeRef = useRef(null);
+  const onRequestCloseRef = useRef(onRequestClose);
+
+  useEffect(() => {
+    onRequestCloseRef.current = onRequestClose;
+  }, [onRequestClose]);
 
   if (typeof document !== 'undefined' && portalNodeRef.current === null) {
     portalNodeRef.current = document.createElement('div');
@@ -85,11 +90,11 @@ export function LegacyModal({
   // ESC key handler
   const handleKeyDown = useCallback(
     (e) => {
-      if (e.key === 'Escape' && onRequestClose) {
-        onRequestClose(e);
+      if (e.key === 'Escape' && onRequestCloseRef.current) {
+        onRequestCloseRef.current(e);
       }
     },
-    [onRequestClose],
+    [],
   );
 
   useEffect(() => {
@@ -126,6 +131,9 @@ export function LegacyModal({
 
   const contentStyle = style?.content ?? {};
   const overlayStyle = style?.overlay ?? {};
+  const usesHorizontalInsets = contentStyle.left !== undefined
+    && contentStyle.right !== undefined
+    && contentStyle.width === undefined;
   const stackBase = getModalStackBase();
 
   return createPortal(
@@ -156,7 +164,7 @@ export function LegacyModal({
           right: '5%',
           bottom: '2%',
           padding: '1rem 1.25rem',
-          width: 'min(1400px, 90vw)',
+          width: usesHorizontalInsets ? 'auto' : 'min(1400px, 90vw)',
           maxWidth: '1400px',
           maxHeight: 'calc(100dvh - 4%)',
           boxSizing: 'border-box',

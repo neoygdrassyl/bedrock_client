@@ -7,10 +7,14 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
+function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, initialEdit }) {
     const [isNew, setIsNew] = useState(false);
     const [edit, setEdit] = useState(false);
     const [legal, setLegal] = useState(false);
+
+    useEffect(() => {
+        if (initialEdit?.id) setEdit(initialEdit);
+    }, [initialEdit]);
 
     useEffect(() => {
         if (edit !== false) {

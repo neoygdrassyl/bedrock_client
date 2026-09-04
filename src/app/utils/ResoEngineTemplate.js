@@ -315,12 +315,12 @@ export class ResoEngineTemplate extends BaseDocumentUtils {
         let ACONF = this.LOAD_STEP('s34', 'arc');
         let ac_json = ACONF ? ACONF.json ? ACONF.json : {} : {};
         ac_json = this.getJSON_Simple(ac_json);
-        let area = ac_json.m2;
+        let area = ac_json && ac_json.m2 !== undefined && ac_json.m2 !== null ? ac_json.m2 : '';
 
         //doc.on('pageAdded', () => { return false });
         if (_DATA.reso.art_1_cb_tb == 'true') {
-            this.F2_TABLE_MANUAL(_DATA.reso.art_1_txt_tb);
-        } else this.TABLE_F2();
+            this.F2_TABLE_MANUAL(_DATA.reso.art_1_txt_tb, area);
+        } else this.TABLE_F2(false, area);
       
         // Pronombre y cargo
         this.setText('resolutive-pronoun-job', `${cur.pronoum || ''} ${cur.job || ''}`);

@@ -121,6 +121,14 @@
     border-radius: 6px 6px 0 0;
 }
 
+.op__static-toggle {
+    flex-shrink: 0;
+    min-height: 2rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 11px;
+    line-height: 1;
+}
+
 .op__static-card--compact .op__static-header {
     padding: 0.5rem 0.75rem;
 }
