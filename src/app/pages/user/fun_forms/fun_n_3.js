@@ -9,6 +9,7 @@ import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
 import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
     const [isNew, setIsNew] = useState(false);
@@ -399,9 +400,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 Collapsible" id="funn_3">
-                    <label className="app-p lead text-center fw-normal">3. Información de Vecinos Colindantes</label>
-                </legend>
+                <FunUpdateSectionLegend id="funn_3" step="3">Información de Vecinos Colindantes</FunUpdateSectionLegend>
                 <div className="form-check ms-5">
                     <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label className="form-check-label" htmlFor="flexCheckDefault">

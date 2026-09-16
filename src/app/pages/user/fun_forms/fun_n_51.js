@@ -6,6 +6,7 @@ import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, initialEdit }) {
     const [isNew, setIsNew] = useState(false);
@@ -685,9 +686,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 Collapsible" id="funn_51">
-                    <label className="app-p lead text-center fw-normal">5.1 Titular(es) de la Licencia</label>
-                </legend>
+                <FunUpdateSectionLegend id="funn_51" step="5.1">Titular(es) de la Licencia</FunUpdateSectionLegend>
                 <div className="form-check ms-5">
                     <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label className="form-check-label" htmlFor="flexCheckDefault">

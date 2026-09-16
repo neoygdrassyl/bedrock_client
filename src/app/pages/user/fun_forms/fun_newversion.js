@@ -952,7 +952,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                                 {_CHILD_16()}
                             </div>
                         </div>
-                        <RequirementPreviewPanel state={requirementPreviewState} snapshotInfo={snapshotInfo} />
+                        {/* Preview documental oculto en el submódulo Actualizar. */}
                     </div>
                 </> : ""}
             <div className="row mb-3 text-center">

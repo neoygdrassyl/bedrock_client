@@ -526,19 +526,17 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             if (_review !== false && _date !== false) return true
             return false;
         }
-        let _CHECK_ENG_REPORT = () => {
-            var _CHILD = currentItem.record_eng;
+        let _CHECK_ENG_REPORT = (item = currentItem) => {
+            var _CHILD = item?.record_eng;
             if (!_CHILD) return false;
             _CHILD = _CHILD.record_eng_reviews;
             if (!Array.isArray(_CHILD) || !_CHILD.length) return false;
-            let revision = _CHILD.find((review) => Number(review.version) === Number(currentItem.version));
-            if (!revision) return false;
-
-            let _review = revision.check ?? false;
-            let _date = revision.date ?? false;
-
-            if (_review !== false && _date !== false) return true
-            return false;
+            return _CHILD.some((review) => (
+                Number(review.version) === Number(item?.version)
+                && review.check !== null
+                && review.check !== undefined
+                && Boolean(String(review.date ?? '').trim())
+            ));
         }
         let _CHECK_ARC_REPORT = () => {
             var _CHILD = currentItem.record_arc;
@@ -610,6 +608,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
         let _CHANGE_VALUES_ENG = (_reviews, i) => {
             document.getElementById('record_pdf_worker_name_eng').value = _reviews[i].worker;
+            document.getElementById('record_pdf_check_eng').value = _reviews[i].check == 1 ? 'VIABLE' : 'NO VIABLE';
             document.getElementById('record_pdf_date_eng').value = _reviews[i].date;
 
             document.getElementById('record_pdf_check_1_v_eng').value = _reviews[i].check == 1 ? 'VIABLE' : 'NO VIABLE';
@@ -1087,7 +1086,11 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             <input className='form-control' id={"record_pdf_worker_name_eng"} disabled defaultValue={reviews_eng[0].worker} />
                         </div>
                     </div>
-                    <div className="col"></div>
+                    <div className="col">
+                        <div className="input-group input-group-sm">
+                            <input className='form-control' id={"record_pdf_check_eng"} disabled defaultValue={reviews_eng[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
+                        </div>
+                    </div>
                     <div className="col">
                         <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_date_eng"} disabled defaultValue={reviews_eng[0].date} />
@@ -1520,13 +1523,25 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 });
         }
 
-        let creae_pdf = () => {
+        let creae_pdf = async () => {
             const structuralRequired = String(currentItem.rules || '').split(';')[1] !== '1';
-            if (structuralRequired && !_CHECK_ENG_REPORT()) {
-                return swalError({
-                    title: 'REVISIÓN ESTRUCTURAL INCOMPLETA',
-                    text: `Debe existir una revisión estructural completa para la versión ${currentItem.version} antes de generar el acta.`
-                });
+            if (structuralRequired) {
+                try {
+                    const response = await FUN_SERVICE.get(currentItem.id);
+                    if (!_CHECK_ENG_REPORT(response.data)) {
+                        return swalError({
+                            title: 'REVISIÓN ESTRUCTURAL INCOMPLETA',
+                            text: `Debe existir una revisión estructural completa para la versión ${currentItem.version} antes de generar el acta.`
+                        });
+                    }
+                } catch (e) {
+                    console.log(e);
+                    return swalError({
+                        title: 'ERROR AL VALIDAR REVISIÓN ESTRUCTURAL',
+                        text: 'No fue posible validar la revisión estructural. Inténtelo nuevamente.',
+                        icon: 'warning',
+                    });
+                }
             }
 
             var formData = new FormData();

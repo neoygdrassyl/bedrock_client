@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { render, act } from '@testing-library/react';
+import { render, act, fireEvent, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // ─── External mocks (react-i18next, swal, rsuite, react-modal, vars, etc.) ──
@@ -48,6 +48,8 @@ vi.mock('../app/services/fun.service', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: {} })),
+    getIdentificationChangeLog: vi.fn(() => Promise.resolve({ data: [] })),
+    getIdentificationReceiptStatus: vi.fn(() => Promise.resolve({ data: { status: 'SIN DEFINIR' } })),
     create_fun1: vi.fn(() => Promise.resolve({ data: 'OK' })),
     update_1: vi.fn(() => Promise.resolve({ data: 'OK' })),
     create_fun2: vi.fn(() => Promise.resolve({ data: 'OK' })),
@@ -221,6 +223,77 @@ describe('FunForms — Render (fun_n_1 through fun_n_4)', () => {
       ));
     });
     expect(container).toBeTruthy();
+  }, 60000);
+
+  test('fun_n_2 muestra la comparación R/A de la información del predio', async () => {
+    const props = {
+      ...baseProps,
+      currentItem: {
+        ...minimalCurrentItem,
+        fun_2: {
+          id: 20,
+          direccion: 'Calle 2 # 3-4',
+          direccion_ant: 'Calle 1 # 2-3',
+          matricula: '300-12345',
+          matricula_anterior: '300-12344',
+          catastral: '68001010100010001',
+          catastral_2: '680010101000100010000000000001',
+          anex2: {
+            informacion_predio: {
+              radicacion: {
+                values: {
+                  direccion_ant: 'Calle 1 # 2-3',
+                  direccion: 'Calle 2 # 3-4',
+                  matricula_anterior: '300-12344',
+                  matricula: '300-12345',
+                  catastral: '68001010100010001',
+                  catastral_2: '680010101000100010000000000001',
+                },
+              },
+              actualizar: { values: {} },
+            },
+          },
+        },
+      },
+    };
+
+    await act(async () => {
+      render(<MemoryRouter><FUNN2 {...props} /></MemoryRouter>);
+    });
+
+    const comparisonTable = screen.getByRole('table', { name: 'Comparación de información del predio' });
+    expect(comparisonTable).toBeInTheDocument();
+    expect(screen.getAllByRole('table')).toHaveLength(1);
+    screen.getAllByText('R').forEach(header => expect(header).not.toHaveClass('[writing-mode:vertical-rl]'));
+    const valueInput = screen.getByLabelText('Valor de Dirección actual');
+    const radicacion = screen.getByLabelText('Estado de Radicación de Dirección actual');
+    const actualizar = screen.getByLabelText('Estado de Actualizar de Dirección actual');
+    expect(valueInput).toHaveValue('Calle 2 # 3-4');
+    expect(radicacion).toBeChecked();
+    expect(actualizar).not.toBeChecked();
+    fireEvent.change(valueInput, { target: { value: 'Carrera 10 # 20-30' } });
+    expect(actualizar).toBeChecked();
+  }, 60000);
+
+  test('fun_n_2 habilita R y bloquea A en la primera radicación', async () => {
+    await act(async () => {
+      render(<MemoryRouter><FUNN2 {...baseProps} /></MemoryRouter>);
+    });
+
+    expect(screen.getByLabelText('Valor de Dirección actual')).toBeEnabled();
+    expect(screen.getByLabelText('Estado de Radicación de Dirección actual')).toBeChecked();
+    expect(screen.getByLabelText('Estado de Actualizar de Dirección actual')).not.toBeChecked();
+  }, 60000);
+
+  test('fun_n_2 informa metadatos comparativos malformados', async () => {
+    await act(async () => {
+      render(<MemoryRouter><FUNN2 {...baseProps} currentItem={{
+        ...minimalCurrentItem,
+        fun_2: { id: 20, direccion: 'Calle 1', anex2: '{' },
+      }} /></MemoryRouter>);
+    });
+
+    expect(screen.getByRole('alert')).toHaveTextContent('No fue posible cargar la comparación de Radicación.');
   }, 60000);
 
   test('fun_n_3 renders without crashing', async () => {

@@ -13,6 +13,7 @@ import {
   _FUN_9_PARSER,
 } from '../../../../components/customClasses/funCustomArrays';
 import RecordLawService from '../../../../services/record_law.service';
+import FUNService from '../../../../services/fun.service';
 import MatrixInformationTable from './MatrixInformationTable';
 
 const STEP_ID = 's23';
@@ -98,6 +99,7 @@ export default function IdentificationRequestDataGrid({ currentItem, currentVers
   const [controls, setControls] = useState({ verification: [], evaluation: [] });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [identificationStatus, setIdentificationStatus] = useState({ loading: false, error: '', items: null });
 
   useEffect(() => {
     const verification = serializedValues(step?.value);
@@ -107,6 +109,29 @@ export default function IdentificationRequestDataGrid({ currentItem, currentVers
       evaluation: allRows.map((_, index) => normalizeEvaluation(evaluation[index + 1])),
     });
   }, [allRows, step?.check, step?.value]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!currentItem?.id || !currentVersion) {
+      setIdentificationStatus({ loading: false, error: 'No fue posible identificar la versión FUN activa.', items: null });
+      return () => { cancelled = true; };
+    }
+
+    setIdentificationStatus({ loading: true, error: '', items: null });
+    FUNService.getIdentificationUpdateStatus(currentItem.id, currentVersion)
+      .then(response => {
+        const items = response?.data?.items;
+        if (!items || typeof items !== 'object' || Array.isArray(items)) {
+          throw new Error('La API devolvió un estado de identificación inválido.');
+        }
+        if (!cancelled) setIdentificationStatus({ loading: false, error: '', items });
+      })
+      .catch(() => {
+        if (!cancelled) setIdentificationStatus({ loading: false, error: 'No fue posible cargar la verificación y el origen de Identificación.', items: null });
+      });
+
+    return () => { cancelled = true; };
+  }, [currentItem?.id, currentItem?.fun_1s, currentVersion]);
 
   const canPersist = Boolean(currentRecord?.id && currentVersionR !== undefined && currentVersionR !== null);
 
@@ -152,8 +177,15 @@ export default function IdentificationRequestDataGrid({ currentItem, currentVers
       <h3 className="mb-1 text-sm font-semibold">1. Identificación de la solicitud</h3>
       <p className="mb-0 text-xs text-muted-foreground">Información consolidada para consulta y verificación.</p>
     </div>
-    {error ? <p className="mb-2 text-xs text-destructive" role="alert">{error}</p> : null}
+    {error || identificationStatus.error ? <p className="mb-2 text-xs text-destructive" role="alert">{error || identificationStatus.error}</p> : null}
     {!canPersist ? <p className="mb-2 text-xs text-muted-foreground" role="status">La verificación estará disponible cuando se cargue el informe jurídico.</p> : null}
-    {rows.length === 0 ? <p className="px-3 py-2 text-xs text-muted-foreground">No hay información diligenciada para verificar.</p> : <MatrixInformationTable section={{ id: 'identification', title: 'Identificación de la solicitud', fields: rows }} reviewState={{ status: 'ready', identification: controls }} mode="interactive" disabled={!canPersist || saving} onReviewChange={saveControl} />}
+    {identificationStatus.loading ? <p className="px-3 py-2 text-xs text-muted-foreground" role="status">Cargando verificación y origen de Identificación...</p> : null}
+    {!identificationStatus.loading && !identificationStatus.error && rows.length === 0 ? <p className="px-3 py-2 text-xs text-muted-foreground">No hay información diligenciada para verificar.</p> : null}
+    {!identificationStatus.loading && !identificationStatus.error && rows.length > 0 ? <MatrixInformationTable section={{ id: 'identification', title: 'Identificación de la solicitud', fields: rows }} reviewState={{ status: 'ready', identification: {
+      verification: allRows.map(row => identificationStatus.items?.[row.field]?.verification || DEFAULT_VERIFICATION),
+      origin: allRows.map(row => identificationStatus.items?.[row.field]?.origin || 'N/A'),
+      verificationReadOnly: true,
+      evaluation: controls.evaluation,
+    } }} mode="interactive" disabled={!canPersist || saving} onReviewChange={saveControl} /> : null}
   </section>;
 }

@@ -1,12 +1,19 @@
 import axios from "axios";
 import { captureDovelaHttpError } from "@/app/utils/errorReporting";
 
+const configuredApiBaseUrl = String(import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const apiBaseUrl = configuredApiBaseUrl || (import.meta.env.DEV ? 'http://localhost:3001/api' : '');
+
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: apiBaseUrl,
   headers: {
     "Content-type": 'multipart/form-data;boundary=----WebKitFormBoundaryyrV7KO0BoCBuDbT'
   }
 });
+
+if (!apiBaseUrl) {
+  http.interceptors.request.use(() => Promise.reject(new Error('VITE_API_URL must be configured outside local development.')));
+}
 
 async function parseBinaryJson(data) {
   try {

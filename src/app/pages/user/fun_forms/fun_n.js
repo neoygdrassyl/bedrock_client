@@ -20,6 +20,8 @@ import FUN_ANEX from './fun_anex';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 import { swalError } from '@/app/utils/swalAdapter';
 
+const SHOW_FUN_HISTORY_TABLE = true;
+
 function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesRefresh, NAVIGATION, NAVIGATION_VERSION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [pqrsxfun, setPqrsxfun] = useState(false);
@@ -223,7 +225,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             onHistoryDownloadComplete={setHistoryPdfSnapshot}
                         />
                     </fieldset>
-                    <FunHistoryTable
+                    {SHOW_FUN_HISTORY_TABLE && <FunHistoryTable
                         history={history}
                         loading={historyLoading}
                         error={historyError}
@@ -235,7 +237,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             setHistoryPdfSnapshot(entry.snapshot);
                         }}
                         onSaveObservation={saveHistoryObservation}
-                    />
+                    />}
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
                 </fieldset>}

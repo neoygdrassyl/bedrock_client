@@ -31,6 +31,21 @@ class UserslDataService {
   get(id) {
     return http.get(`/${route}/${id}`);
   }
+  getIdentificationUpdateStatus(id, version) {
+    return http.get(`/${route}/${id}/identification-update-status`, { params: { version } });
+  }
+  getIdentificationChangeLog(id, version) {
+    return http.get(`/${route}/${id}/identification-change-log`, { params: { version } });
+  }
+  getIdentificationReceiptStatus(id, version) {
+    return http.get(`/${route}/${id}/identification-receipt-status`, { params: { version } });
+  }
+  updateIdentificationChangeLog(id, data) {
+    return http.put(`/${route}/identification-change-log/${id}`, data);
+  }
+  deleteIdentificationChangeLog(id) {
+    return http.delete(`/${route}/identification-change-log/${id}`);
+  }
   getDailyHistory(id) {
     return http.get(`/${route}/${id}/history`);
   }
@@ -193,6 +208,9 @@ class UserslDataService {
   create_fun4(data) {
     return http.post(`/${route}/fun4`, data);
   }
+  create_fun4Technical(data) {
+    return http.post(`/${route}/fun4technical`, data);
+  }
   create_fun51(data) {
     return http.post(`/${route}/fun51`, data);
   }
@@ -308,6 +326,9 @@ class UserslDataService {
   }
   delete_4(id) {
     return http.delete(`/${route}/fun4d/${id}`);
+  }
+  delete_4Technical(id) {
+    return http.delete(`/${route}/fun4technicald/${id}`);
   }
   delete_51(id) {
     return http.delete(`/${route}/fun51d/${id}`);
