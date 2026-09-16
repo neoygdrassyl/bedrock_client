@@ -41,16 +41,17 @@ import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 import { buildFunInformationViewModel } from './law/funInformationViewModel';
 
-// Preserve the original Información Jurídica tables while the replacements remain under review.
-const SHOW_NEW_FUN_1_TABLE = false;
-const SHOW_LEGACY_FUN_2_TABLE = true;
-const SHOW_NEW_FUN_2_TABLE = false;
-const SHOW_LEGACY_FUN_51_TABLES = true;
-const SHOW_NEW_FUN_51_TABLE = false;
-const SHOW_LEGACY_FUN_52_TABLES = true;
-const SHOW_NEW_FUN_52_TABLE = false;
-const SHOW_LEGACY_FUN_53_TABLE = true;
-const SHOW_NEW_FUN_53_TABLE = false;
+// Render the replacement legal-information tables while their legacy versions remain available in code.
+const SHOW_LEGACY_FUN_1_TABLE = false;
+const SHOW_NEW_FUN_1_TABLE = true;
+const SHOW_LEGACY_FUN_2_TABLE = false;
+const SHOW_NEW_FUN_2_TABLE = true;
+const SHOW_LEGACY_FUN_51_TABLES = false;
+const SHOW_NEW_FUN_51_TABLE = true;
+const SHOW_LEGACY_FUN_52_TABLES = false;
+const SHOW_NEW_FUN_52_TABLE = true;
+const SHOW_LEGACY_FUN_53_TABLE = false;
+const SHOW_NEW_FUN_53_TABLE = true;
 
 // RECORDS
 
@@ -409,7 +410,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     requestUpdateRecord={requestUpdateRecord}
                                 />
 
-                                <RECORD_LAW_FUN_1
+                                {SHOW_LEGACY_FUN_1_TABLE ? <RECORD_LAW_FUN_1
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
@@ -418,7 +419,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     requestUpdate={requestUpdate}
                                     requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
-                                />
+                                /> : null}
 
                                  {SHOW_NEW_FUN_1_TABLE ? <IdentificationRequestDataGrid
                                     currentItem={currentItem}

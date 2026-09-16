@@ -1,7 +1,98 @@
+import { useEffect, useMemo, useState } from 'react';
 import FUNService from '../../../services/fun.service'
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
+import MatrixInformationTable from '../records/law/MatrixInformationTable';
+
+const PROPERTY_FIELDS = [
+    { key: 'direccion_ant', item: '2.1 Dirección o Nomenclatura', label: 'Dirección anterior', multiline: true },
+    { key: 'direccion', item: '2.1 Dirección o Nomenclatura', label: 'Dirección actual', multiline: true },
+    { key: 'matricula_anterior', item: '2.2 Matrícula Inmobiliaria', label: 'Matrícula anterior' },
+    { key: 'matricula', item: '2.2 Matrícula Inmobiliaria', label: 'Matrícula actual' },
+    { key: 'catastral', item: '2.3 Identificación Catastral', label: 'Identificación catastral anterior' },
+    { key: 'catastral_2', item: '2.3 Identificación Catastral', label: 'Identificación catastral actual' },
+];
+
+const PROPERTY_FIELD_KEYS = PROPERTY_FIELDS.map(field => field.key);
+const PROPERTY_CHOICE_FIELDS = [
+    {
+        key: 'suelo',
+        title: '2.4 Clasificación del Suelo',
+        options: [
+            { value: 'A', label: 'A. Urbano' },
+            { value: 'B', label: 'B. Rural' },
+            { value: 'C', label: 'C. De Expansión' },
+        ],
+    },
+    {
+        key: 'lote_pla',
+        title: '2.5 Planimetría del Lote',
+        options: [
+            { value: 'A', label: 'A. Plano del Lote' },
+            { value: 'B', label: 'B. Plano Topográfico' },
+        ],
+        otherLabel: 'Otro, ¿cuál?',
+    },
+];
+
+const PROPERTY_CHOICE_KEYS = PROPERTY_CHOICE_FIELDS.map(field => field.key);
+const PROPERTY_GENERAL_FIELDS = [
+    { key: 'barrio', label: 'a. Barrio o urbanización', group: 'Predio urbano' },
+    { key: 'comuna', label: 'b. Comuna', group: 'Predio urbano' },
+    { key: 'estrato', label: 'c. Estrato', group: 'Predio urbano' },
+    { key: 'manzana', label: 'd. Manzana', group: 'Predio urbano' },
+    { key: 'vereda', label: 'e. Vereda', group: 'Predio rural' },
+    { key: 'sector', label: 'f. Sector', group: 'Predio rural' },
+    { key: 'corregimiento', label: 'g. Corregimiento', group: 'Predio rural' },
+    { key: 'lote', label: 'h. Lote', group: 'Predio rural' },
+];
+const PROPERTY_GENERAL_KEYS = PROPERTY_GENERAL_FIELDS.map(field => field.key);
+const FUN_2_COMPARISON_KEYS = [...PROPERTY_FIELD_KEYS, ...PROPERTY_CHOICE_KEYS, ...PROPERTY_GENERAL_KEYS];
+
+function propertyValues(property) {
+    return FUN_2_COMPARISON_KEYS.reduce((values, key) => ({ ...values, [key]: property?.[key] == null ? '' : String(property[key]) }), {});
+}
+
+function propertyMetadata(value) {
+    if (!value) return { data: {}, error: '' };
+    if (typeof value === 'object' && !Array.isArray(value)) return validatePropertyMetadata(value);
+    try {
+        const parsed = JSON.parse(value);
+        return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+            ? validatePropertyMetadata(parsed)
+            : { data: {}, error: 'No fue posible cargar la comparación de Radicación.' };
+    } catch {
+        return { data: {}, error: 'No fue posible cargar la comparación de Radicación.' };
+    }
+}
+
+function validatePropertyMetadata(metadata) {
+    const comparison = metadata.informacion_predio;
+    if (!comparison) return { data: metadata, error: '' };
+    if (typeof comparison !== 'object' || Array.isArray(comparison)) {
+        return { data: {}, error: 'La comparación de Radicación contiene una estructura no válida.' };
+    }
+
+    const hasInvalidValue = ['radicacion', 'actualizar'].some(phase => {
+        const phaseData = comparison[phase];
+        const values = phaseData?.values;
+        return phaseData != null && (
+            typeof phaseData !== 'object'
+            || Array.isArray(phaseData)
+            || (values != null && (
+            typeof values !== 'object'
+            || Array.isArray(values)
+            || FUN_2_COMPARISON_KEYS.some(key => values[key] != null && typeof values[key] === 'object')
+            ))
+        );
+    });
+
+    return hasInvalidValue
+        ? { data: {}, error: 'La comparación de Radicación contiene valores no válidos.' }
+        : { data: metadata, error: '' };
+}
 
 const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
@@ -14,60 +105,63 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             return item;
         }
 
-        let _GET_RADIO_VALUE = (name) => {
-            const radios = document.getElementsByName(name);
-            for (var i = 0; i < radios.length; i++) {
-                if (radios[i].checked == true) return radios[i].value;
-            }
-            return '';
-        }
+        const currentFun2 = _GET_EXISTING_FUN_2();
+        const isInitialRadicacion = !currentFun2;
+        const currentPropertyValues = useMemo(() => propertyValues(currentFun2), [currentFun2]);
+        const metadataState = useMemo(() => propertyMetadata(currentFun2?.anex2), [currentFun2?.anex2]);
+        const metadata = metadataState.data;
+        const initialRadicacionValues = useMemo(() => propertyValues({
+            ...currentPropertyValues,
+            ...(metadata.informacion_predio?.radicacion?.values || {}),
+        }), [currentPropertyValues, metadata]);
+        const initialActualizarValues = useMemo(() => propertyValues(metadata.informacion_predio?.actualizar?.values), [metadata]);
+        const [radicacionValues, setRadicacionValues] = useState(initialRadicacionValues);
+        const [actualizarValues, setActualizarValues] = useState(initialActualizarValues);
 
-        let _SET_CHILD_2 = () => {
-            var _CHILD = _GET_EXISTING_FUN_2();
-            var _CHILD_VARS = {
-                item_20: "",
-                item_211: "",
-                item_212: "",
-                item_22: "",
-                item_23: "",
-                item_232: "",
-                item_24: "",
-                item_25: "",
-                item_261: "",
-                item_262: "",
-                item_263: "",
-                item_264: "",
-                item_265: "",
-                item_266: "",
-                item_267: "",
-                item_268: "",
-            }
-            if (_CHILD) {
-                _CHILD_VARS.item_20 = _CHILD.id ?? "";
-                _CHILD_VARS.item_211 = _CHILD.direccion ?? "";
-                _CHILD_VARS.item_212 = _CHILD.direccion_ant ?? "";
-                _CHILD_VARS.item_22 = _CHILD.matricula ?? "";
-                _CHILD_VARS.item_23 = _CHILD.catastral ?? "";
-                _CHILD_VARS.item_232 = _CHILD.catastral_2 ?? "";
-                _CHILD_VARS.item_24 = _CHILD.suelo ?? ""; // PARSER
-                _CHILD_VARS.item_25 = _CHILD.lote_pla ?? "";// PARSER
+        useEffect(() => {
+            setRadicacionValues(initialRadicacionValues);
+            setActualizarValues(initialActualizarValues);
+        }, [initialRadicacionValues, initialActualizarValues]);
 
-                _CHILD_VARS.item_261 = _CHILD.barrio ?? "";
-                _CHILD_VARS.item_262 = _CHILD.vereda ?? "";
-                _CHILD_VARS.item_263 = _CHILD.comuna ?? "";
-                _CHILD_VARS.item_264 = _CHILD.sector ?? "";
-                _CHILD_VARS.item_265 = _CHILD.corregimiento ?? "";
-                _CHILD_VARS.item_266 = _CHILD.lote ?? "";
-                _CHILD_VARS.item_267 = _CHILD.estrato ?? "";
-                _CHILD_VARS.item_268 = _CHILD.manzana ?? "";
-            }
-            return _CHILD_VARS;
-        }
-        let _CHILD_20 = () => {
-            let _CHILD_VARS = _SET_CHILD_2();
+        const comparisonRows = useMemo(() => PROPERTY_FIELDS.map(field => {
+            const radicacion = radicacionValues[field.key] ?? '';
+            const actualizar = actualizarValues[field.key] ?? '';
+            const updated = !isInitialRadicacion && actualizar.trim() !== '' && actualizar.trim() !== radicacion.trim();
+            return {
+                ...field,
+                value: updated ? actualizar : radicacion,
+                updated,
+                radicacionMarked: true,
+                canEdit: true,
+            };
+        }), [actualizarValues, isInitialRadicacion, radicacionValues]);
+        const generalComparisonRows = useMemo(() => PROPERTY_GENERAL_FIELDS.map(field => {
+            const radicacion = radicacionValues[field.key] ?? '';
+            const actualizar = actualizarValues[field.key] ?? '';
+            const updated = !isInitialRadicacion && actualizar.trim() !== '' && actualizar.trim() !== radicacion.trim();
+            return {
+                ...field,
+                value: updated ? actualizar : radicacion,
+                updated,
+                radicacionMarked: true,
+                canEdit: true,
+            };
+        }), [actualizarValues, isInitialRadicacion, radicacionValues]);
 
-            return <input type="hidden" id="f_20_id" defaultValue={_CHILD_VARS.item_20} />
-        }
+        const handleComparisonChange = (key, value) => {
+            if (isInitialRadicacion) setRadicacionValues(current => ({ ...current, [key]: value }));
+            else setActualizarValues(current => ({ ...current, [key]: value }));
+        };
+        const handleChoiceChange = (key, value) => {
+            if (isInitialRadicacion) {
+                setRadicacionValues(current => ({ ...current, [key]: value }));
+                return;
+            }
+            setActualizarValues(current => ({
+                ...current,
+                [key]: value === (radicacionValues[key] ?? '') ? '' : value,
+            }));
+        };
         // DATA COMVERTERS
         let _REGEX_PREDIAL = (e) => {
             let regex = /^[0-9]+$/i;
@@ -111,228 +205,64 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             }
         }
         // COMPONENT JSX
+        const choiceComparisonRows = useMemo(() => PROPERTY_CHOICE_FIELDS.map(field => {
+            const radicacionValue = radicacionValues[field.key] ?? '';
+            const actualizarValue = actualizarValues[field.key] ?? '';
+            const optionValues = field.options.map(option => option.value);
+            return {
+                ...field,
+                optionValues,
+                radicacionValue,
+                actualizarValue,
+                otherValue: field.otherLabel && !optionValues.includes(actualizarValue) && actualizarValue !== ''
+                    ? actualizarValue
+                    : field.otherLabel && !optionValues.includes(radicacionValue) ? radicacionValue : '',
+            };
+        }), [actualizarValues, radicacionValues]);
         let _CHILD_2_COMPONENT = () => {
-            let _CHILD_VARS = _SET_CHILD_2();
-
             return <>
-                <div className="row mb-3">
-                    <div className="col-6">
-                        <label>2.1 Dirección o Nomenclatura actual</label>
-                        <textarea className="form-control mb-3" rows="3" id="f_211"
-                            defaultValue={_CHILD_VARS.item_211}></textarea>
-                    </div>
-                    <div className="col-6">
-                        <label>2.1 Dirección(es) Anterior(es)</label>
-                        <textarea className="form-control mb-3" rows="3" id="f_212"
-                            defaultValue={_CHILD_VARS.item_212}></textarea>
-                    </div>
+                <div className="mb-3">
+                    <MatrixInformationTable mode="comparison" comparisonRows={comparisonRows} onReviewChange={handleComparisonChange} />
                 </div>
-                <div className="row mb-3">
-                    <div className="col-6">
-                        <label >2.2 No. Matrícula Inmobiliaria</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="file-alt" size={16} />
-                            </span>
-                            <input type="text" className="form-control" id="f_22"
-                                defaultValue={_CHILD_VARS.item_22} />
-                        </div>
-                    </div>
-                    <div className="col-6">
-                        <label>2.3.1 Identificación Catastral (Viejo)</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="file-alt" size={16} />
-                            </span>
-                            <input type="text" className="form-control" placeholder="No. Catastral" id="f_23"
-                                defaultValue={_CHILD_VARS.item_23} />
-                        </div>
-                        <label>2.3.2 Identificación Catastral (Nuevo, 30 dígitos)</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="file-alt" size={16} />
-                            </span>
-                            <input type="text" className="form-control" placeholder="No. Catastral nuevo" id="f_232"
-                                defaultValue={_CHILD_VARS.item_232} />
-                        </div>
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <div className="col-6">
-                        <label>2.4 Clasificación del Suelo</label>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="A" name="f_24"
-                                defaultChecked={_CHILD_VARS.item_24 == 'A' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckDefault">
-                                A. Urbano
-                            </label>
-                        </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="B" name="f_24"
-                                defaultChecked={_CHILD_VARS.item_24 == 'B' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckChecked">
-                                B. Rural
-                            </label>
-                        </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="C" name="f_24"
-                                defaultChecked={_CHILD_VARS.item_24 == 'C' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckChecked">
-                                C. De Expansión
-                            </label>
-                        </div>
-                    </div>
-                    <div className="col-6">
-                        <label>2.5 Planimetría del Lote</label>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="A" name="f_25"
-                                defaultChecked={_CHILD_VARS.item_25 == 'A' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckDefault">
-                                A. Plano del Lote
-                            </label>
-                        </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="B" name="f_25"
-                                defaultChecked={_CHILD_VARS.item_25 == 'B' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckChecked">
-                                B. Plano Topográfico
-                            </label>
-                        </div>
-                        <div className="input-group my-3">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="question-circle" size={16} />
-                            </span>
-                            <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
-                                id="f_25_o" defaultValue={_CHILD_VARS.item_25 != 'A' && _CHILD_VARS.item_25 != 'B' ? _CHILD_VARS.item_25 : ""} />
-                        </div>
-
-                    </div>
-                </div>
-
-                <label>2.6 Información General</label>
-                <div className="row mb-3">
-                    <div className="col-6">
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Barrio o Urbanzación
-                            </span>
-                            <input type="text" className="form-control" id="f_261" defaultValue={_CHILD_VARS.item_261} />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Comuna
-                            </span>
-                            <input type="text" className="form-control" id="f_263" defaultValue={_CHILD_VARS.item_263} />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Estrato
-                            </span>
-                            <input type="number" min="1" max="6" step="1" className="form-control" id="f_267" defaultValue={_CHILD_VARS.item_267} />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Manzana No.
-                            </span>
-                            <input type="text" className="form-control" id="f_268" defaultValue={_CHILD_VARS.item_268} />
-                        </div>
-                    </div>
-                    <div className="col-6">
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Vereda
-                            </span>
-                            <input type="text" className="form-control" id="f_262" defaultValue={_CHILD_VARS.item_262} />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Sector
-                            </span>
-                            <input type="text" className="form-control" id="f_264" defaultValue={_CHILD_VARS.item_264} />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Corregimiento
-                            </span>
-                            <input type="text" className="form-control" id="f_265" defaultValue={_CHILD_VARS.item_265} />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Lote No.
-                            </span>
-                            <input type="text" className="form-control" id="f_266" defaultValue={_CHILD_VARS.item_266} />
-                        </div>
-                    </div>
+                <div className="mb-3">
+                    <MatrixInformationTable
+                        mode="property-details-comparison"
+                        choiceRows={choiceComparisonRows}
+                        generalRows={generalComparisonRows}
+                        isInitialRadicacion={isInitialRadicacion}
+                        onReviewChange={handleComparisonChange}
+                        onChoiceChange={handleChoiceChange}
+                    />
                 </div>
             </>
         }
         let _RESET_FORM_2 = () => {
-            let _array = []
-            _array = document.getElementsByName("f_24");
-            for (var i = 0; i < _array.length; i++) {
-                _array[i].checked = false;
-            }
-            _array = [];
-
-            _array = document.getElementsByName("f_25");
-            for (var i = 0; i < _array.length; i++) {
-                _array[i].checked = false;
-            }
-            document.getElementById('f_25_o').value = "";
+            const clearChoices = current => PROPERTY_CHOICE_KEYS.reduce((values, key) => ({ ...values, [key]: '' }), { ...current });
+            if (isInitialRadicacion) setRadicacionValues(clearChoices);
+            else setActualizarValues(clearChoices);
         }
 
         let new_2 = () => {
+            if (metadataState.error) {
+                swalError({ title: swaMsg.generic_eror_title, text: metadataState.error });
+                return;
+            }
             formData = new FormData();
             let fun0Id = currentItem.id;
             formData.set('fun0Id', fun0Id);
-            const currentFun2 = _GET_EXISTING_FUN_2();
-            let fun2Id = currentFun2?.id ?? document.getElementById("f_20_id").value;
+            let fun2Id = currentFun2?.id;
+            const effectivePropertyValues = FUN_2_COMPARISON_KEYS.reduce((values, key) => {
+                const radicacion = radicacionValues[key] ?? '';
+                const actualizar = actualizarValues[key] ?? '';
+                values[key] = !isInitialRadicacion && actualizar.trim() !== '' && actualizar.trim() !== radicacion.trim()
+                    ? actualizar
+                    : radicacion;
+                return values;
+            }, {});
 
-            let direccion = document.getElementById("f_211").value;
-            formData.set('direccion', direccion);
-            let direccion_ant = document.getElementById("f_212").value;
-            formData.set('direccion_ant', direccion_ant);
-            let matricula = document.getElementById("f_22").value;
-            formData.set('matricula', matricula);
-            let catastral = document.getElementById("f_23").value;
-            formData.set('catastral', catastral);
-            let catastral_2 = document.getElementById("f_232").value;
-            formData.set('catastral_2', catastral_2);
-            // ----------------------
-            let barrio = document.getElementById("f_261").value;
-            formData.set('barrio', barrio);
-            let comuna = document.getElementById("f_263").value;
-            formData.set('comuna', comuna);
-            let estrato = document.getElementById("f_267").value;
-            formData.set('estrato', estrato);
-            let manzana = document.getElementById("f_268").value;
-            formData.set('manzana', manzana);
-            let vereda = document.getElementById("f_262").value;
-            formData.set('vereda', vereda);
-            let sector = document.getElementById("f_264").value;
-            formData.set('sector', sector);
-            let corregimiento = document.getElementById("f_265").value;
-            formData.set('corregimiento', corregimiento);
-            let lote = document.getElementById("f_266").value;
-            formData.set('lote', lote);
-            // ----------------------
-
-            let otherOption = null;
-            let suelo = '';
-            let lote_pla = '';
-
-            suelo = _GET_RADIO_VALUE("f_24");
-            formData.set('suelo', suelo);
-
-            otherOption = document.getElementById("f_25_o");
-            if (otherOption.value) {
-                lote_pla = otherOption.value
-            } else {
-                lote_pla = _GET_RADIO_VALUE("f_25");
-            }
-            formData.set('lote_pla', lote_pla);
-            otherOption = null;
-
+            FUN_2_COMPARISON_KEYS.forEach(key => formData.set(key, effectivePropertyValues[key]));
+            formData.set('informacion_predio_radicacion', JSON.stringify({ values: radicacionValues }));
+            formData.set('informacion_predio_actualizar', JSON.stringify({ values: actualizarValues }));
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (!fun2Id) {
                 FUNService.create_fun2(formData)
@@ -349,7 +279,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
             } else {
-                FUNService.update_2(currentItem.fun_2.id, formData)
+                FUNService.update_2(fun2Id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
@@ -366,11 +296,9 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         }
 
         return (<>
-            {_CHILD_20()}
             <fieldset className="p-3">
-                <legend className="my-2 px-3 Collapsible" id="funn_2">
-                    <label className="app-p lead text-center fw-normal">2. Información del Predio</label>
-                </legend>
+                <FunUpdateSectionLegend id="funn_2" step="2">Información del Predio</FunUpdateSectionLegend>
+                {metadataState.error ? <p className="text-danger" role="alert">{metadataState.error}</p> : null}
                 {_CHILD_2_COMPONENT()}
                 <div className="row mb-3 text-center">
                     <div className="col-6">

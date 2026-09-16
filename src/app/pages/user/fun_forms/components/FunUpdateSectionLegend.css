@@ -1,0 +1,38 @@
+.fun-update-section-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 3rem;
+  margin: 0.5rem 0 1rem;
+  padding: 0.5rem 1rem 0.5rem 0.875rem;
+  border: 1px solid hsl(var(--primary) / 0.2);
+  border-left: 3px solid hsl(var(--primary));
+  border-radius: calc(var(--radius) + 0.25rem);
+  background: hsl(var(--primary) / 0.09);
+  color: hsl(var(--foreground));
+  line-height: 1.35;
+}
+
+.fun-update-section-legend__step {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: hsl(var(--primary) / 0.12);
+  color: hsl(var(--primary));
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.fun-update-section-legend__label {
+  min-width: 0;
+  color: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}

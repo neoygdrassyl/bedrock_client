@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
@@ -381,9 +382,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
         return (<>
             {_CHILD_530()}
             <fieldset className="p-3">
-                <legend className="my-2 px-3 Collapsible" id="funn_53">
-                    <label className="app-p lead text-center fw-normal">5.3 Responsable de la Solicitud</label>
-                </legend>
+                <FunUpdateSectionLegend id="funn_53" step="5.3">Responsable de la Solicitud</FunUpdateSectionLegend>
                 <form id="form_fun_53_manage" onSubmit={new_53}>
                     {_CHILD_53_COMPONENT()}
                     <div className="row mb-3 text-center">

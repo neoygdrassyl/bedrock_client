@@ -8,6 +8,7 @@ import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../..
 import VIZUALIZER from '../../../components/vizualizer.component';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 import profesionalsService from '../../../services/profesionals.service';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 import dayjs from 'dayjs';
@@ -1051,9 +1052,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 Collapsible" id="funn_52">
-                    <label className="app-p lead text-center fw-normal">5.2 Profesionales Responsables</label>
-                </legend>
+                <FunUpdateSectionLegend id="funn_52" step="5.2">Profesionales Responsables</FunUpdateSectionLegend>
 
                 <div className="form-check ms-5">
                     <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
