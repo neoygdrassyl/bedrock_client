@@ -123,6 +123,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                         </fieldset>
 
                         <FUNN1
+                            key={`fun1-${currentItem.id}-${currentVersion}`}
                             translation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
