@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import FUNService from '../../../services/fun.service'
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
+import PropertyChangeLogTable from './components/PropertyChangeLogTable.jsx';
 import MatrixInformationTable from '../records/law/MatrixInformationTable';
 
 const PROPERTY_FIELDS = [
@@ -50,6 +51,14 @@ const PROPERTY_GENERAL_FIELDS = [
 ];
 const PROPERTY_GENERAL_KEYS = PROPERTY_GENERAL_FIELDS.map(field => field.key);
 const FUN_2_COMPARISON_KEYS = [...PROPERTY_FIELD_KEYS, ...PROPERTY_CHOICE_KEYS, ...PROPERTY_GENERAL_KEYS];
+const PROPERTY_CHANGE_TARGET_IDS = {
+    direccion_ant: '2.1 Dirección anterior', direccion: '2.1 Dirección actual',
+    matricula_anterior: '2.2 Matrícula anterior', matricula: '2.2 Matrícula actual',
+    catastral: '2.3 Identificación catastral anterior', catastral_2: '2.3 Identificación catastral actual',
+    suelo: '2.4 Clasificación del suelo', lote_pla: '2.5 Planimetría del lote',
+    barrio: '2.6 Barrio o urbanización', comuna: '2.6 Comuna', estrato: '2.6 Estrato', manzana: '2.6 Manzana',
+    vereda: '2.6 Vereda', sector: '2.6 Sector', corregimiento: '2.6 Corregimiento', lote: '2.6 Lote',
+};
 
 function propertyValues(property) {
     return FUN_2_COMPARISON_KEYS.reduce((values, key) => ({ ...values, [key]: property?.[key] == null ? '' : String(property[key]) }), {});
@@ -117,11 +126,50 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         const initialActualizarValues = useMemo(() => propertyValues(metadata.informacion_predio?.actualizar?.values), [metadata]);
         const [radicacionValues, setRadicacionValues] = useState(initialRadicacionValues);
         const [actualizarValues, setActualizarValues] = useState(initialActualizarValues);
+        const [touchedPropertyKeys, setTouchedPropertyKeys] = useState(new Set());
+        const [changeLogEntries, setChangeLogEntries] = useState([]);
+        const [changeLogDraftDetails, setChangeLogDraftDetails] = useState({});
+        const [changeLogReceiptStatus, setChangeLogReceiptStatus] = useState('SIN DEFINIR');
+         const [changeLogLoading, setChangeLogLoading] = useState(false);
+         const [changeLogError, setChangeLogError] = useState('');
+         const [deletingChangeLogEntryId, setDeletingChangeLogEntryId] = useState(null);
+         const requestResponsibleName = useMemo(() => {
+             const responsibles = Array.isArray(currentItem.fun_53s) ? currentItem.fun_53s : [];
+             const responsible = responsibles.find(item => Number(item.version) === Number(currentVersion));
+             return [responsible?.name, responsible?.surname].filter(Boolean).join(' ').trim();
+         }, [currentItem.fun_53s, currentVersion]);
 
         useEffect(() => {
             setRadicacionValues(initialRadicacionValues);
             setActualizarValues(initialActualizarValues);
+            setTouchedPropertyKeys(new Set());
         }, [initialRadicacionValues, initialActualizarValues]);
+
+        useEffect(() => {
+            if (isInitialRadicacion || !currentItem.id || !currentVersion) {
+                setChangeLogEntries([]);
+                setChangeLogReceiptStatus('SIN DEFINIR');
+                return;
+            }
+
+            let cancelled = false;
+            setChangeLogLoading(true);
+            setChangeLogError('');
+            FUNService.getPropertyChangeLog(currentItem.id, currentVersion)
+                .then(({ data }) => {
+                    if (cancelled) return;
+                    setChangeLogEntries(Array.isArray(data?.entries) ? data.entries : []);
+                    setChangeLogReceiptStatus(data?.receiptStatus || 'SIN DEFINIR');
+                })
+                .catch(() => {
+                    if (!cancelled) setChangeLogError('No fue posible cargar la bitácora de cambios.');
+                })
+                .finally(() => {
+                    if (!cancelled) setChangeLogLoading(false);
+                });
+
+            return () => { cancelled = true; };
+        }, [currentItem.id, currentVersion, isInitialRadicacion]);
 
         const comparisonRows = useMemo(() => PROPERTY_FIELDS.map(field => {
             const radicacion = radicacionValues[field.key] ?? '';
@@ -150,7 +198,10 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         const handleComparisonChange = (key, value) => {
             if (isInitialRadicacion) setRadicacionValues(current => ({ ...current, [key]: value }));
-            else setActualizarValues(current => ({ ...current, [key]: value }));
+            else {
+                setActualizarValues(current => ({ ...current, [key]: value }));
+                setTouchedPropertyKeys(current => new Set(current).add(key));
+            }
         };
         const handleChoiceChange = (key, value) => {
             if (isInitialRadicacion) {
@@ -161,7 +212,65 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 ...current,
                 [key]: value === (radicacionValues[key] ?? '') ? '' : value,
             }));
+            setTouchedPropertyKeys(current => new Set(current).add(key));
         };
+        const propertyChangeDrafts = useMemo(() => {
+            if (isInitialRadicacion) return [];
+            return FUN_2_COMPARISON_KEYS.reduce((drafts, key) => {
+                if (!touchedPropertyKeys.has(key)) return drafts;
+                const previousValue = currentPropertyValues[key] ?? '';
+                const radicacionValue = radicacionValues[key] ?? '';
+                const actualizarValue = actualizarValues[key] ?? '';
+                const nextValue = actualizarValue.trim() !== '' && actualizarValue.trim() !== radicacionValue.trim()
+                    ? actualizarValue
+                    : radicacionValue;
+                if (previousValue === nextValue) return drafts;
+                drafts.push({
+                    targetKey: key,
+                    targetId: PROPERTY_CHANGE_TARGET_IDS[key],
+                    previousValue,
+                    nextValue,
+                    ...(changeLogDraftDetails[key] || {}),
+                    receiptStatus: changeLogReceiptStatus,
+                    detectedAt: new Date().toISOString(),
+                });
+                return drafts;
+            }, []);
+        }, [actualizarValues, changeLogDraftDetails, changeLogReceiptStatus, currentPropertyValues, isInitialRadicacion, radicacionValues, touchedPropertyKeys]);
+        const handleDraftChange = useCallback((targetKey, field, value) => {
+            setChangeLogDraftDetails(current => ({
+                ...current,
+                [targetKey]: { ...current[targetKey], [field]: value },
+            }));
+        }, []);
+        const handlePersistedInputChange = useCallback((id, field, value) => {
+            setChangeLogEntries(current => current.map(entry => entry.id === id ? { ...entry, [field]: value } : entry));
+        }, []);
+        const handlePersistedChange = useCallback((id, field, value) => {
+            setChangeLogError('');
+            FUNService.updatePropertyChangeLog(id, { [field]: value })
+                .then(({ data }) => setChangeLogEntries(current => current.map(entry => entry.id === id ? data : entry)))
+                .catch(() => setChangeLogError('No fue posible guardar el campo de la bitácora.'));
+        }, []);
+        const handleDeleteChangeLogEntry = useCallback(async (id) => {
+            const confirmation = await swalConfirm({
+                title: '¿Eliminar cambio?',
+                text: 'Esta acción eliminará permanentemente el registro de la bitácora.',
+                confirmButtonText: 'Eliminar',
+            });
+            if (!confirmation.isConfirmed) return;
+
+            setDeletingChangeLogEntryId(id);
+            setChangeLogError('');
+            try {
+                await FUNService.deletePropertyChangeLog(id);
+                setChangeLogEntries(current => current.filter(entry => entry.id !== id));
+            } catch {
+                setChangeLogError('No fue posible eliminar el cambio de la bitácora.');
+            } finally {
+                setDeletingChangeLogEntryId(null);
+            }
+        }, []);
         // DATA COMVERTERS
         let _REGEX_PREDIAL = (e) => {
             let regex = /^[0-9]+$/i;
@@ -263,6 +372,10 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             FUN_2_COMPARISON_KEYS.forEach(key => formData.set(key, effectivePropertyValues[key]));
             formData.set('informacion_predio_radicacion', JSON.stringify({ values: radicacionValues }));
             formData.set('informacion_predio_actualizar', JSON.stringify({ values: actualizarValues }));
+            if (propertyChangeDrafts.length) {
+                formData.set('funVersion', currentVersion);
+                formData.set('property_change_entries', JSON.stringify(propertyChangeDrafts));
+            }
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (!fun2Id) {
                 FUNService.create_fun2(formData)
@@ -300,6 +413,18 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <FunUpdateSectionLegend id="funn_2" step="2">Información del Predio</FunUpdateSectionLegend>
                 {metadataState.error ? <p className="text-danger" role="alert">{metadataState.error}</p> : null}
                 {_CHILD_2_COMPONENT()}
+                <PropertyChangeLogTable
+                    entries={changeLogEntries}
+                    drafts={propertyChangeDrafts}
+                     loading={changeLogLoading}
+                     error={changeLogError}
+                     requestResponsibleName={requestResponsibleName}
+                     deletingEntryId={deletingChangeLogEntryId}
+                    onDraftChange={handleDraftChange}
+                    onPersistedInputChange={handlePersistedInputChange}
+                    onPersistedChange={handlePersistedChange}
+                    onDelete={handleDeleteChangeLogEntry}
+                />
                 <div className="row mb-3 text-center">
                     <div className="col-6">
                         <Button size="sm" className="my-3" onClick={() => new_2()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>

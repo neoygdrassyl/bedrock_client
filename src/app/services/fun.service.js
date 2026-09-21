@@ -40,11 +40,22 @@ class UserslDataService {
   getIdentificationReceiptStatus(id, version) {
     return http.get(`/${route}/${id}/identification-receipt-status`, { params: { version } });
   }
+  getPropertyChangeLog(id, version) {
+    return dedupeGet(`${route}:property-change-log:${id}:${version}`, () => (
+      http.get(`/${route}/${id}/property-change-log`, { params: { version } })
+    ));
+  }
   updateIdentificationChangeLog(id, data) {
     return http.put(`/${route}/identification-change-log/${id}`, data);
   }
   deleteIdentificationChangeLog(id) {
     return http.delete(`/${route}/identification-change-log/${id}`);
+  }
+  updatePropertyChangeLog(id, data) {
+    return http.put(`/${route}/property-change-log/${id}`, data);
+  }
+  deletePropertyChangeLog(id) {
+    return http.delete(`/${route}/property-change-log/${id}`);
   }
   getDailyHistory(id) {
     return http.get(`/${route}/${id}/history`);

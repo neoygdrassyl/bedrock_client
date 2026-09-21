@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { render, act, fireEvent, screen } from '@testing-library/react';
+import { render, act, fireEvent, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // ─── External mocks (react-i18next, swal, rsuite, react-modal, vars, etc.) ──
@@ -50,6 +50,7 @@ vi.mock('../app/services/fun.service', () => ({
     get: vi.fn(() => Promise.resolve({ data: {} })),
     getIdentificationChangeLog: vi.fn(() => Promise.resolve({ data: [] })),
     getIdentificationReceiptStatus: vi.fn(() => Promise.resolve({ data: { status: 'SIN DEFINIR' } })),
+    getPropertyChangeLog: vi.fn(() => Promise.resolve({ data: { entries: [], receiptStatus: 'SIN DEFINIR' } })),
     create_fun1: vi.fn(() => Promise.resolve({ data: 'OK' })),
     update_1: vi.fn(() => Promise.resolve({ data: 'OK' })),
     create_fun2: vi.fn(() => Promise.resolve({ data: 'OK' })),
@@ -58,7 +59,9 @@ vi.mock('../app/services/fun.service', () => ({
     update_3: vi.fn(() => Promise.resolve({ data: 'OK' })),
     delete_3: vi.fn(() => Promise.resolve({ data: 'OK' })),
     create_fun4: vi.fn(() => Promise.resolve({ data: 'OK' })),
+    create_fun4Technical: vi.fn(() => Promise.resolve({ data: 'OK' })),
     delete_4: vi.fn(() => Promise.resolve({ data: 'OK' })),
+    delete_4Technical: vi.fn(() => Promise.resolve({ data: 'OK' })),
   },
 }));
 
@@ -72,8 +75,27 @@ vi.mock('../app/components/ui', () => ({
 
 vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
-  default: ({ data, columns, noDataComponent }) =>
-    React.createElement('div', { 'data-testid': 'datatable-stub' }, noDataComponent),
+  default: ({ data, columns, noDataComponent }) => React.createElement(
+    'div',
+    { 'data-testid': 'datatable-stub' },
+    React.createElement(
+      'div',
+      null,
+      React.createElement('div', null, columns.map(column => React.createElement('span', { key: column.name }, column.name)),
+    ),
+    ),
+    React.createElement(
+      'div',
+      null,
+      data.length
+        ? data.map(row => React.createElement(
+          'div',
+          { key: row.rowKey ?? row.id },
+          columns.map(column => React.createElement('span', { key: column.name }, column.cell ? column.cell(row) : column.selector(row))),
+        ))
+        : React.createElement('div', null, noDataComponent),
+    ),
+  ),
 }));
 
 vi.mock('../app/components/vizualizer.component', () => ({
@@ -95,6 +117,7 @@ import FUNN1 from '../app/pages/user/fun_forms/fun_n_1';
 import FUNN2 from '../app/pages/user/fun_forms/fun_n_2';
 import FUNN3 from '../app/pages/user/fun_forms/fun_n_3';
 import FUNN4 from '../app/pages/user/fun_forms/fun_n_4';
+import FUNService from '../app/services/fun.service';
 
 // ─── Minimal props shared by all fun_n_* components ─────────────────────────
 
@@ -223,6 +246,35 @@ describe('FunForms — Render (fun_n_1 through fun_n_4)', () => {
       ));
     });
     expect(container).toBeTruthy();
+  }, 60000);
+
+  test('fun_n_2 muestra el responsable de la solicitud en la bitácora de Predio', async () => {
+    FUNService.getPropertyChangeLog.mockResolvedValueOnce({
+      data: {
+        entries: [{
+          id: 21,
+          targetId: '2.1 Dirección actual',
+          responsibleName: 'Usuario que guardó el cambio',
+          category: 'MODIFICACION',
+        }],
+        receiptStatus: 'SIN DEFINIR',
+      },
+    });
+    const props = {
+      ...baseProps,
+      currentItem: {
+        ...minimalCurrentItem,
+        fun_2: { id: 20, direccion: 'Calle 1' },
+        fun_53s: [{ version: 1, name: 'María', surname: 'Pérez' }],
+      },
+    };
+
+    await act(async () => {
+      render(<MemoryRouter><FUNN2 {...props} /></MemoryRouter>);
+    });
+
+    expect(await screen.findByText('María Pérez')).toBeInTheDocument();
+    expect(screen.queryByText('Usuario que guardó el cambio')).not.toBeInTheDocument();
   }, 60000);
 
   test('fun_n_2 muestra la comparación R/A de la información del predio', async () => {
@@ -363,5 +415,61 @@ describe('FunForms — Render (fun_n_1 through fun_n_4)', () => {
       ));
     });
     expect(container).toBeTruthy();
+  }, 60000);
+
+  test('fun_n_4 mantiene la tabla solo con linderos tradicionales y deja el formulario técnico después', async () => {
+    await act(async () => {
+      render(<MemoryRouter><FUNN4 {...baseProps} currentItem={{
+        ...minimalCurrentItem,
+        fun_4s: [{ id: 1, coord: 'TRADICIONAL VISIBLE', longitud: '10', colinda: 'Predio tradicional' }],
+        fun_4_technicals: [{ id: 2, coord: 'TÉCNICO NO VISIBLE', longitud: '20', colinda: 'Predio técnico' }],
+      }} /></MemoryRouter>);
+    });
+
+    const table = screen.getAllByTestId('datatable-stub')[0];
+    const technicalBox = screen.getByRole('region', { name: 'Linderos Técnicos' });
+
+    expect(within(table).queryByText('TIPO')).not.toBeInTheDocument();
+    expect(within(table).getByText('TRADICIONAL VISIBLE')).toBeInTheDocument();
+    expect(within(table).queryByText('TÉCNICO NO VISIBLE')).not.toBeInTheDocument();
+    expect(table.compareDocumentPosition(technicalBox) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  }, 60000);
+
+  test('fun_n_4 renders manual technical point fields and shows their labels in its own table', async () => {
+    await act(async () => {
+      render(<MemoryRouter><FUNN4 {...baseProps} currentItem={{
+        ...minimalCurrentItem,
+        fun_4s: [{ id: 1, coord: 'TRADICIONAL VISIBLE', longitud: '10', colinda: 'Predio tradicional' }],
+        fun_4_technicals: [{
+          id: 2,
+          lindero: 'NORTE',
+          puntoInicialEtiqueta: 'P01',
+          puntoInicialX: '100.25',
+          puntoInicialY: '200.50',
+          puntoFinalEtiqueta: 'P02',
+          puntoFinalX: '101.25',
+          puntoFinalY: '201.50',
+          distancia: '1.414',
+          rumbo: 'N 45 E',
+          colindante: 'Predio técnico',
+        }],
+      }} /></MemoryRouter>);
+    });
+
+    const tables = screen.getAllByTestId('datatable-stub');
+    const technicalBox = screen.getByRole('region', { name: 'Linderos Técnicos' });
+
+    expect(screen.getByLabelText('Punto inicial X')).toBeInTheDocument();
+    expect(screen.getByLabelText('Punto inicial Y')).toBeInTheDocument();
+    expect(screen.getByLabelText('Punto final X')).toBeInTheDocument();
+    expect(screen.getByLabelText('Punto final Y')).toBeInTheDocument();
+    expect(screen.getByLabelText('Etiqueta punto inicial')).toBeInTheDocument();
+    expect(screen.getByLabelText('Etiqueta punto final')).toBeInTheDocument();
+    expect(within(tables[0]).getByText('TRADICIONAL VISIBLE')).toBeInTheDocument();
+    expect(within(tables[0]).queryByText('P01')).not.toBeInTheDocument();
+    expect(within(tables[1]).getByText('P01 (100.25, 200.50)')).toBeInTheDocument();
+    expect(within(tables[1]).getByText('P02 (101.25, 201.50)')).toBeInTheDocument();
+    expect(within(tables[1]).getByText('N 45 E')).toBeInTheDocument();
+    expect(tables[0].compareDocumentPosition(technicalBox) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   }, 60000);
 });

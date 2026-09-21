@@ -49,6 +49,12 @@ const FUN_1_CHANGE_TARGET_IDS = {
     tipo: '1.1', tramite: '1.2', m_urb: '1.3', m_sub: '1.4', m_lic: '1.5', usos: '1.6', area: '1.7', vivienda: '1.8', cultural: '1.9', regla_1: '1.10.1', regla_2: '1.10.2',
 };
 
+export function getFun1ForVersion(entries, targetVersion) {
+    const version = Number(targetVersion);
+    if (!Number.isInteger(version) || version < 1 || !Array.isArray(entries)) return null;
+    return entries.find((entry) => Number(entry?.version) === version) || null;
+}
+
 function getDiligenciadoPor(anex2) {
     let metadata = anex2;
     if (typeof metadata === 'string') {
@@ -227,7 +233,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
     const [dis_m_urb, setDisMUrb] = useState(true);
     const [dis_m_sub, setDisMSub] = useState(true);
     const [dis_m_lic, setDisMLic] = useState(true);
-    const currentFun1 = Array.isArray(currentItem.fun_1s) ? currentItem.fun_1s[currentVersion - 1] : null;
+    const currentFun1 = getFun1ForVersion(currentItem.fun_1s, currentVersion);
     const isInitialRadicacion = currentFun1 == null;
     const [changeLogEntries, setChangeLogEntries] = useState([]);
     const [changeLogDraftDetails, setChangeLogDraftDetails] = useState({});
@@ -242,19 +248,17 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
     }, [currentItem.fun_53s, currentVersion]);
 
     useEffect(() => {
-        let _CHILD = currentItem.fun_1s ? currentItem.fun_1s[0] : {};
-        if (_CHILD && _CHILD.tipo) {
-            if (_CHILD.tipo.includes('A')) setDisMUrb(false);
-            if (_CHILD.tipo.includes('C')) setDisMSub(false);
-            if (_CHILD.tipo.includes('D')) setDisMLic(false);
+        if (currentFun1?.tipo) {
+            if (currentFun1.tipo.includes('A')) setDisMUrb(false);
+            if (currentFun1.tipo.includes('C')) setDisMSub(false);
+            if (currentFun1.tipo.includes('D')) setDisMLic(false);
         }
-    }, []);
+    }, [currentFun1]);
 
         var formData = new FormData();
 
         let _SET_CHILD_1 = () => {
-            var _CHILD = currentItem.fun_1s;
-            var _CURRENT_VERSION = currentVersion - 1;
+            const _CHILD = currentFun1;
             var _CHILD_VARS = {
                 item_0: "",
                 item_1: "",
@@ -271,21 +275,20 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 item_diligenciado_por: getDiligenciadoPor(),
             }
             if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
-                    _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "";
-                    _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ? _CHILD[_CURRENT_VERSION].tramite : "";
-                    _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "";
-                    _CHILD_VARS.item_4 = _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "";
-                    _CHILD_VARS.item_5 = _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "";
-                    _CHILD_VARS.item_6 = _CHILD[_CURRENT_VERSION].usos ? _CHILD[_CURRENT_VERSION].usos : "";
-                    _CHILD_VARS.item_7 = _CHILD[_CURRENT_VERSION].area ? _CHILD[_CURRENT_VERSION].area : "";
-                    _CHILD_VARS.item_8 = _CHILD[_CURRENT_VERSION].vivienda ? _CHILD[_CURRENT_VERSION].vivienda : "";
-                    _CHILD_VARS.item_9 = _CHILD[_CURRENT_VERSION].cultural ? _CHILD[_CURRENT_VERSION].cultural : "";
-                    _CHILD_VARS.item_101 = _CHILD[_CURRENT_VERSION].regla_1 ? _CHILD[_CURRENT_VERSION].regla_1 : "";
-                    _CHILD_VARS.item_102 = _CHILD[_CURRENT_VERSION].regla_2 ? _CHILD[_CURRENT_VERSION].regla_2 : "";
-                    _CHILD_VARS.item_diligenciado_por = getDiligenciadoPor(_CHILD[_CURRENT_VERSION].anex2);
-                    const identification = getIdentificationMetadata(_CHILD[_CURRENT_VERSION].anex2);
+                    _CHILD_VARS.item_0 = _CHILD.id;
+                    _CHILD_VARS.item_1 = _CHILD.tipo ? _CHILD.tipo : "";
+                    _CHILD_VARS.item_2 = _CHILD.tramite ? _CHILD.tramite : "";
+                    _CHILD_VARS.item_3 = _CHILD.m_urb ? _CHILD.m_urb : "";
+                    _CHILD_VARS.item_4 = _CHILD.m_sub ? _CHILD.m_sub : "";
+                    _CHILD_VARS.item_5 = _CHILD.m_lic ? _CHILD.m_lic : "";
+                    _CHILD_VARS.item_6 = _CHILD.usos ? _CHILD.usos : "";
+                    _CHILD_VARS.item_7 = _CHILD.area ? _CHILD.area : "";
+                    _CHILD_VARS.item_8 = _CHILD.vivienda ? _CHILD.vivienda : "";
+                    _CHILD_VARS.item_9 = _CHILD.cultural ? _CHILD.cultural : "";
+                    _CHILD_VARS.item_101 = _CHILD.regla_1 ? _CHILD.regla_1 : "";
+                    _CHILD_VARS.item_102 = _CHILD.regla_2 ? _CHILD.regla_2 : "";
+                    _CHILD_VARS.item_diligenciado_por = getDiligenciadoPor(_CHILD.anex2);
+                    const identification = getIdentificationMetadata(_CHILD.anex2);
                     if (identification?.radicacion) {
                         const actualizar = identification.actualizar?.values || {};
                         _CHILD_VARS.item_1 = actualizar.tipo || "";
@@ -300,7 +303,6 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         _CHILD_VARS.item_101 = actualizar.regla_1 || "";
                         _CHILD_VARS.item_102 = actualizar.regla_2 || "";
                     }
-                }
             }
             return _CHILD_VARS;
         }
@@ -312,8 +314,8 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         const initialPreviewSignatureRef = useRef(JSON.stringify(initialPreviewActuacion));
         const initialDiligenciadoPor = useMemo(() => _SET_CHILD_1().item_diligenciado_por, [currentItem, currentVersion]);
         const [diligenciadoPor, setDiligenciadoPor] = useState(initialDiligenciadoPor);
-        const initialActualizarDiligenciadoPor = useMemo(() => getActualizarDiligenciadoPor(currentItem.fun_1s?.[currentVersion - 1]?.anex2), [currentItem, currentVersion]);
-        const initialActualizarDiligenciadoPorKeys = useMemo(() => getActualizarDiligenciadoPorKeys(currentItem.fun_1s?.[currentVersion - 1]?.anex2), [currentItem, currentVersion]);
+        const initialActualizarDiligenciadoPor = useMemo(() => getActualizarDiligenciadoPor(currentFun1?.anex2), [currentFun1]);
+        const initialActualizarDiligenciadoPorKeys = useMemo(() => getActualizarDiligenciadoPorKeys(currentFun1?.anex2), [currentFun1]);
         const [actualizarDiligenciadoPor, setActualizarDiligenciadoPor] = useState(initialActualizarDiligenciadoPor);
         const [actualizarDiligenciadoPorKeys, setActualizarDiligenciadoPorKeys] = useState(initialActualizarDiligenciadoPorKeys);
         const requirementPreviewState = useRequirementPreview(previewActuacion, { configStatus: 'published', debounceMs: 500 });
@@ -425,11 +427,6 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             }
         }, []);
 
-        let _CHILD_0 = () => {
-            let _CHILD_VARS = _SET_CHILD_1();
-
-            return <input type="hidden" id="f_10" defaultValue={_CHILD_VARS.item_0} />
-        }
         let _DILIGENCIADO_POR = (key, visible = true) => {
             if (!visible) return null;
             const effectiveValue = getEffectiveDiligenciadoPor(
@@ -1129,7 +1126,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         let new_1 = () => {
             formData = new FormData();
-            let fun1Id = document.getElementById("f_10").value;
+            const fun1Id = currentFun1?.id;
             let version = currentVersion;
             let fun0Id = currentItem.id;
             formData.set('version', version);
@@ -1263,10 +1260,13 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
             const radicacionDiligenciadoPor = Object.fromEntries(FUN_1_DILIGENCIADO_POR_KEYS.map(key => [key, diligenciadoPor[key] || DILIGENCIADO_POR_DEFAULT]));
 
+            if (currentFun1 && !fun1Id) {
+                swalError({ title: swaMsg.generic_eror_title, text: 'No fue posible identificar la versión FUN que se debe actualizar.' });
+                return;
+            }
+
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
-            const fun1s = Array.isArray(currentItem.fun_1s) ? currentItem.fun_1s : [];
-            const currentFun1 = fun1s[currentVersion - 1];
             const actualizacion = Object.fromEntries(FUN_1_DILIGENCIADO_POR_KEYS.map(key => [key, formData.get(key) || '']));
 
             if (currentFun1 == null) {
@@ -1315,7 +1315,6 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         }
         return (<>
-            {_CHILD_0()}
             <fieldset ref={previewScopeRef} onChange={handlePreviewFormChange} className="p-3 funn1-form">
                 <FunUpdateSectionLegend id="funn_1" step="1">Identificación de la Solicitud</FunUpdateSectionLegend>
                 <div className="funn1-card-grid">

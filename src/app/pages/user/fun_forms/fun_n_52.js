@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import HTMLDatalist from '../../../components/HTMLDatalist';
 import FUNService from '../../../services/fun.service'
@@ -86,11 +86,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
         // DATA CONVERTERS
         let _CHILD_6_SELECT = () => {
             let _LIST = _GET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
-            }
-            return <>{_COMPONENT}</>
+            return _LIST.map((item, index) => (
+                <option key={`fun6-${item.id ?? index}`} value={item.id}>{item.description}</option>
+            ));
         }
         let _FIND_6 = (_ID) => {
             let _LIST = _GET_CHILD_6();
@@ -107,41 +105,41 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
+            _COMPONENT.push(<Fragment key="document-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
                     icon={'IdCard'} color={'DeepSkyBlue'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[1] > 0
+            _COMPONENT.push(<Fragment key="document-1">{_array[1] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'DarkOrchid'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[2] > 0
+            _COMPONENT.push(<Fragment key="document-2">{_array[2] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'GoldenRod'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[3] > 0
+            _COMPONENT.push(<Fragment key="document-3">{_array[3] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'LimeGreen'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[4] > 0
+            _COMPONENT.push(<Fragment key="document-4">{_array[4] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'tomato'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[5] > 0
+            _COMPONENT.push(<Fragment key="document-5">{_array[5] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[5]).path + "/" + _FIND_6(_array[5]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'gray'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
             return <>{_COMPONENT}</>
         }

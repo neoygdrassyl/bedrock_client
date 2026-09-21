@@ -1,11 +1,20 @@
 import FUNService from '../../../services/fun.service'
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
+        const [isFormOpen, setIsFormOpen] = useState(false);
+        const [isSaving, setIsSaving] = useState(false);
+        const responsables = Array.isArray(currentItem.fun_53s) ? currentItem.fun_53s : [];
+        const responsable = responsables.find((item) => Number(item.version) === Number(currentVersion));
+        const hasEffectiveResponsable = Boolean(responsable && [
+            'name', 'surname', 'id_number', 'role', 'email', 'address', 'number',
+        ].some((field) => String(responsable[field] ?? '').trim() !== ''));
 
         var formData = new FormData();
 
@@ -27,8 +36,6 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
             return _LIST;
         }
         let _SET_CHILD_53 = () => {
-            var _CHILD = currentItem.fun_53s;
-            var _CURRENT_VERSION = currentItem.version - 1;
             var _CHILD_VARS = {
                 item_530: "",
                 item_5311: "",
@@ -40,18 +47,16 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                 item_536: "",
                 docs: "",
             }
-            if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_530 = _CHILD[_CURRENT_VERSION].id;
-                    _CHILD_VARS.item_5311 = _CHILD[_CURRENT_VERSION].name;
-                    _CHILD_VARS.item_5312 = _CHILD[_CURRENT_VERSION].surname;
-                    _CHILD_VARS.item_532 = _CHILD[_CURRENT_VERSION].id_number;
-                    _CHILD_VARS.item_533 = _CHILD[_CURRENT_VERSION].role;
-                    _CHILD_VARS.item_534 = _CHILD[_CURRENT_VERSION].number;
-                    _CHILD_VARS.item_535 = _CHILD[_CURRENT_VERSION].email;
-                    _CHILD_VARS.item_536 = _CHILD[_CURRENT_VERSION].address;
-                    _CHILD_VARS.docs = _CHILD[_CURRENT_VERSION].docs;
-                }
+            if (responsable) {
+                _CHILD_VARS.item_530 = responsable.id;
+                _CHILD_VARS.item_5311 = responsable.name;
+                _CHILD_VARS.item_5312 = responsable.surname;
+                _CHILD_VARS.item_532 = responsable.id_number;
+                _CHILD_VARS.item_533 = responsable.role;
+                _CHILD_VARS.item_534 = responsable.number;
+                _CHILD_VARS.item_535 = responsable.email;
+                _CHILD_VARS.item_536 = responsable.address;
+                _CHILD_VARS.docs = responsable.docs;
             }
             return _CHILD_VARS;
         }
@@ -72,11 +77,9 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
         // DATA CONVERTERS
         let _CHILD_6_SELECT = () => {
             let _LIST = _GET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
-            }
-            return <>{_COMPONENT}</>
+            return _LIST.map((item, index) => (
+                <option key={`fun6-${item.id ?? index}`} value={item.id}>{item.description}</option>
+            ));
         }
         let _FIND_6 = (_ID) => {
             let _LIST = _GET_CHILD_6();
@@ -303,24 +306,104 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                 document.getElementById('f_535').value = copyObject.email;
             }
 
-            return <select className='form-select' onChange={(e) => setCopy(e.target.value)}>
-                <option disabled selected>Copiar...</option>
-                {/* FIX: Added key prop to map */}
+            return <select className='form-select' defaultValue="" onChange={(e) => setCopy(e.target.value)}>
+                <option value="" disabled>Copiar...</option>
                 {copyList.map((value, index) => <option key={value.index || index} value={value.index}>{value.name} {value.surname}</option>)}
             </select>
 
         }
+        let _CHILD_53_LIST = () => {
+            if (!hasEffectiveResponsable) return null;
+
+            const columns_53 = [
+                {
+                    name: 'NOMBRE',
+                    selector: row => `${row.name || ''} ${row.surname || ''}`.trim(),
+                    sortable: true,
+                    center: true,
+                    minWidth: '180px',
+                    cell: row => <span className="text-sm">{row.name} {row.surname}</span>,
+                },
+                {
+                    name: 'IDENTIFICACIÓN',
+                    selector: row => row.id_number,
+                    sortable: true,
+                    center: true,
+                    cell: row => <span className="text-sm">{row.id_number}</span>,
+                },
+                {
+                    name: 'CALIDAD',
+                    selector: row => row.role,
+                    center: true,
+                    cell: row => <span className="text-sm">{row.role}</span>,
+                },
+                {
+                    name: 'TELÉFONO',
+                    selector: row => row.number,
+                    center: true,
+                    cell: row => <span className="text-sm">{row.number}</span>,
+                },
+                {
+                    name: 'CORREO',
+                    selector: row => row.email,
+                    center: true,
+                    minWidth: '180px',
+                    cell: row => <span className="text-sm">{row.email}</span>,
+                },
+                {
+                    name: 'DIRECCIÓN',
+                    selector: row => row.address,
+                    center: true,
+                    minWidth: '220px',
+                    cell: row => <span className="text-sm">{row.address}</span>,
+                },
+                {
+                    name: 'DOCUMENTOS',
+                    selector: row => row.docs,
+                    center: true,
+                    cell: row => <span className="text-sm">{row.docs || 'SIN DOCUMENTOS'}</span>,
+                },
+                {
+                    name: 'ACCIÓN',
+                    button: true,
+                    center: true,
+                    cell: () => <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        title="Modificar responsable"
+                        aria-label="Modificar responsable"
+                        onClick={() => setIsFormOpen(true)}
+                    >
+                        <Icon name="edit" size={16} />
+                    </Button>,
+                },
+            ];
+
+            return <DataTable
+                noDataComponent="No hay responsable registrado"
+                striped
+                columns={columns_53}
+                data={[responsable]}
+                highlightOnHover
+                className="data-table-component"
+                noHeader
+            />;
+        }
         // FUNCTIONS AND APIS
         let manage_53 = () => {
-            var _CHILD = _SET_CHILD_53();
+            if (isSaving) return;
+
+            setIsSaving(true);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
-            if (_CHILD.item_530) {
-                FUNService.update_53(_CHILD.item_530, formData)
+            if (responsable?.id) {
+                FUNService.update_53(responsable.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            setIsFormOpen(false);
                             requestUpdate(currentItem.id)
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -329,12 +412,14 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     .catch(e => {
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
+                    })
+                    .finally(() => setIsSaving(false));
             } else {
                 FUNService.create_fun53(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            setIsFormOpen(false);
                             requestUpdate(currentItem.id)
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -343,7 +428,8 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     .catch(e => {
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
+                    })
+                    .finally(() => setIsSaving(false));
             }
         }
 
@@ -383,14 +469,17 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
             {_CHILD_530()}
             <fieldset className="p-3">
                 <FunUpdateSectionLegend id="funn_53" step="5.3">Responsable de la Solicitud</FunUpdateSectionLegend>
-                <form id="form_fun_53_manage" onSubmit={new_53}>
+                {hasEffectiveResponsable ? _CHILD_53_LIST() : !isFormOpen && <Button type="button" size="sm" className="my-3" onClick={() => setIsFormOpen(true)}>
+                    <Icon name="user" size={16} /> REGISTRAR RESPONSABLE
+                </Button>}
+                {isFormOpen && <form id="form_fun_53_manage" onSubmit={new_53}>
                     {_CHILD_53_COMPONENT()}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> ACTUALIZAR ITEM </Button>
+                            <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> ACTUALIZAR ITEM </Button>
                         </div>
                     </div>
-                </form>
+                </form>}
             </fieldset>
         </>);
 };

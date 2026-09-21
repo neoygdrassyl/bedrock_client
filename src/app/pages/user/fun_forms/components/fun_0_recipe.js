@@ -44,11 +44,9 @@ function FUN_0_RECIPE(props) {
         }
         let _CHILD_6_SELECT = () => {
             let _LIST = _SET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
-            }
-            return <>{_COMPONENT}</>
+            return _LIST.map((item, index) => (
+                <option key={`fun6-${item.id ?? index}`} value={item.id}>{item.description}</option>
+            ));
         }
 
         let _GET_CHILD_CLOCK = () => {
@@ -165,8 +163,8 @@ function FUN_0_RECIPE(props) {
                             <option value="0">Sin modelo</option>
                             <option value={2021}>Res. 463 / 17</option>
                             <option value={2022}>Res. 1026 / 21 (2022)</option>
-                            <option value={2023} selected>Res. 1026 / 21 (2023-2025)</option>
-                            <option value={2026} selected>Res. 1051 / 25 (2026)</option>
+                            <option value={2023}>Res. 1026 / 21 (2023-2025)</option>
+                            <option value={2026}>Res. 1051 / 25 (2026)</option>
                         </select>
                     </div>
                 </div>
