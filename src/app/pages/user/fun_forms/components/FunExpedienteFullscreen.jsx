@@ -1085,7 +1085,7 @@ function renderModuleContent(activeSection, moduleProps, options = {}) {
     case 'chequeo':
       return <FUNC {...moduleProps} closeModal={moduleProps.closeModal} />;
     case 'documentos':
-      return <FUND {...moduleProps} />;
+      return <FUN_DOCUMENTAL_NEW {...moduleProps} traditionalContent={<FUND {...moduleProps} />} />;
     case 'documentos-new':
       return <FUN_DOCUMENTAL_NEW {...moduleProps} />;
     case 'publicidad':

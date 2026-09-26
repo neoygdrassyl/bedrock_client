@@ -47,7 +47,7 @@ export function matchesDocumentalColumnFilters(row = {}, filters = {}) {
   }
 
   if (folioFilter) {
-    const folioValue = [row?.folios?.digital ?? 0, getDocumentSeatCount(row)]
+    const folioValue = [row?.folios?.digital ?? 0, row?.folios?.physical ?? 0]
       .map(normalizeText)
       .join(' / ')
       .toLocaleLowerCase('es');
@@ -385,8 +385,8 @@ export function mergeDocumentRowsByStableUnit(rows = []) {
         vrValues: Array.from(new Set([row.latestVr, ...(row.vrValues || [])].filter(Boolean))),
         receptionMediumLabels: [...(row.receptionMediumLabels || [])],
         mediumPresence: {
-          physical: row.medium === 'physical',
-          digital: row.medium === 'digital',
+          physical: Boolean(row.mediumPresence?.physical || row.medium === 'physical'),
+          digital: Boolean(row.mediumPresence?.digital || row.medium === 'digital'),
         },
         folios: {
           ...(row.folios || {}),
@@ -432,8 +432,8 @@ export function mergeDocumentRowsByStableUnit(rows = []) {
       medium: latestRow.medium,
       mediumLabel: latestRow.mediumLabel,
       mediumPresence: {
-        physical: latestRow.medium === 'physical',
-        digital: latestRow.medium === 'digital',
+        physical: Boolean(latestRow.mediumPresence?.physical || latestRow.medium === 'physical'),
+        digital: Boolean(latestRow.mediumPresence?.digital || latestRow.medium === 'digital'),
       },
       originPresence: { ...(latestRow.originPresence || {}) },
       scanned: { ...(latestRow.scanned || {}) },

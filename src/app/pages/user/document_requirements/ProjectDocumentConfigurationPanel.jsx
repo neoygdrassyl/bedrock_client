@@ -103,7 +103,7 @@ function formatProfileOption(profile) {
   const defaultLabel = profile?.isDefault ?? profile?.is_default ? ' · predeterminada' : '';
   return {
     value: getProfileId(profile),
-    label: `${profile?.name || `Configuración ${getProfileId(profile)}`}${version === undefined || version === null ? '' : ` · release ${version}`}${defaultLabel}`,
+    label: `${profile?.name || `Configuración ${getProfileId(profile)}`}${version === undefined || version === null ? '' : ` · versión ${version}`}${defaultLabel}`,
     disabled: profile?.enabled === false,
   };
 }
@@ -286,7 +286,7 @@ export function ProjectDocumentConfigurationPanel({
 
   const handleSave = async () => {
     if (!currentPublic || !profileId) {
-      setError('Selecciona un snapshot antes de guardar la configuración del proyecto.');
+      setError('Selecciona una versión de configuración antes de guardar el expediente.');
       return;
     }
 
@@ -303,7 +303,7 @@ export function ProjectDocumentConfigurationPanel({
       setContext(payload);
       setProfileId(selectedProfileId(payload));
       setTypologySelections(selectedTypologyValues(payload));
-      setNotice('Configuración documental guardada para este proyecto.');
+      setNotice('Configuración documental guardada para este expediente.');
       onConfigurationChangeRef.current?.(payload);
     } catch (requestError) {
       setError(getErrorMessage(requestError, 'No fue posible guardar la configuración documental del proyecto.'));
@@ -314,8 +314,8 @@ export function ProjectDocumentConfigurationPanel({
 
   return (
     <DovelaSectionPanel
-      title="Configuración documental del proyecto"
-      description="El snapshot conserva el contrato Central usado por este expediente; las subtipologías determinan sus requisitos documentales."
+      title="Configuración documental del expediente"
+      description="Asocia este expediente a una versión publicada en Dovela Central. Las subtipologías determinan sus documentos aplicables."
       tone={compact ? 'subtle' : 'default'}
       className={compact ? 'shadow-none' : undefined}
       actions={activeProfile ? (
@@ -348,9 +348,9 @@ export function ProjectDocumentConfigurationPanel({
 
           {profiles.length ? (
             <DovelaField
-              label="Snapshot de configuración"
+              label="Versión de configuración"
               required
-              helperText="Cambiar de snapshot limpia las subtipologías seleccionadas para evitar heredar opciones incompatibles."
+              helperText="Cambiar la versión reinicia las subtipologías seleccionadas para evitar opciones incompatibles."
             >
               <DovelaSelect
                 value={profileId}
@@ -361,14 +361,14 @@ export function ProjectDocumentConfigurationPanel({
               />
             </DovelaField>
           ) : (
-            <DovelaInlineAlert tone="warning" title="No hay snapshots disponibles">
-              Importa una configuración desde Configuración → Configuración documental antes de asignarla a este proyecto.
+            <DovelaInlineAlert tone="warning" title="No hay versiones disponibles">
+              Sincroniza una versión publicada desde Dovela Central antes de asociarla a este expediente.
             </DovelaInlineAlert>
           )}
 
           {profileSelectionChanged ? (
-            <DovelaInlineAlert tone="info" title="Snapshot pendiente de asignación">
-              Guarda el snapshot para cargar sus subtipologías. Las opciones de la configuración anterior no se aplicarán a la nueva versión.
+            <DovelaInlineAlert tone="info" title="Versión pendiente de asignación">
+              Guarda la versión para cargar sus subtipologías. Las opciones de la configuración anterior no se aplicarán a la nueva versión.
             </DovelaInlineAlert>
           ) : null}
 
@@ -407,7 +407,7 @@ export function ProjectDocumentConfigurationPanel({
               disabled={!profiles.length || !profileId}
               onClick={handleSave}
             >
-              {profileSelectionChanged ? 'Guardar snapshot y cargar subtipologías' : 'Guardar configuración del proyecto'}
+              {profileSelectionChanged ? 'Guardar versión y cargar subtipologías' : 'Guardar configuración del proyecto'}
             </DovelaButton>
           </div>
         </div>

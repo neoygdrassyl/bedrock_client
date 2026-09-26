@@ -10,6 +10,9 @@ import { formsParser1 } from '../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
 import ObservationPanel from '../../../components/ObservationPanel';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { useDocumentaryOrigin } from '../expediente_documental/hooks/useDocumentaryOrigin';
+import { DocumentaryOriginStatus, PublishedDocumentCatalogue } from '../expediente_documental/ui/organisms/DocumentaryOriginStatus';
+import { CanonicalDocumentaryWorkspace } from '../expediente_documental/ui/organisms/CanonicalDocumentaryWorkspace';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -23,6 +26,10 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
     const [digitalCount, setDigitalCount] = useState(0);
     const [digitalDocuments, setDigitalDocuments] = useState([]);
     const refreshRequestIdRef = useRef(0);
+    const source = useDocumentaryOrigin({ submitId: currentItem?.id });
+    // Historical Central bindings keep their existing intake until an explicit transition.
+    const usesExistingIntake = ['traditional', 'unlinked', 'central-linked'].includes(source.origin?.mode);
+    const canEditExistingSubmit = !currentItem ? !currentId : usesExistingIntake;
 
     useEffect(() => {
         refreshItem();
@@ -35,6 +42,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 if (requestId !== refreshRequestIdRef.current) return;
                 let item = response.data;
                 setCurrentItem(item);
+                source.refresh();
             });
         }
     }
@@ -412,6 +420,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
         let save_submit = (e) => {
             e.preventDefault();
+            if (!canEditExistingSubmit) return;
             formData = new FormData();
 
             let type = document.getElementById("submit_4").value;
@@ -530,20 +539,20 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
             <div className="grid h-full min-h-0 grid-cols-1 gap-2 xl:grid-cols-[minmax(390px,0.36fr)_minmax(0,0.64fr)]">
                 <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
                     <form id="form_manage_submit" onSubmit={save_submit} onKeyDown={handleFormKeyDown} className="flex min-h-0 flex-1 flex-col">
-                        <div className="min-h-0 flex-1 overflow-y-auto p-2">
+                        <fieldset disabled={!canEditExistingSubmit} className="min-h-0 flex-1 overflow-y-auto p-2">
                             <div className="space-y-3">
                                 {COMPONENT_NEW()}
                             </div>
-                        </div>
+                        </fieldset>
 
                         <div className="sticky bottom-0 z-10 shrink-0 space-y-2 border-t border-border/60 bg-card/95 px-3 py-2 backdrop-blur">
                             <div className="flex justify-end">
-                                {renderPrimarySubmitAction()}
+                                {canEditExistingSubmit ? renderPrimarySubmitAction() : <p className="text-xs text-muted-foreground">La recepción documental se gestiona desde el expediente y su publicación.</p>}
                             </div>
                         </div>
                     </form>
 
-                    {currentItem ? <div className="shrink-0 border-t border-border/60 bg-card px-2 py-2">
+                    {currentItem && usesExistingIntake ? <div className="shrink-0 border-t border-border/60 bg-card px-2 py-2">
                         <SUBMIT_ANEX
                             swaMsg={swaMsg}
                             currentItem={currentItem}
@@ -558,8 +567,11 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 <section className="flex min-h-0 flex-col overflow-hidden">
                     {currentItem
                         ? <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
-                                <div className="min-h-0 flex-1 overflow-hidden p-1.5">
-                                    <SUBMIT_LIST
+                                <div className="min-h-0 flex-1 overflow-y-auto p-1.5">
+                                    <DocumentaryOriginStatus {...source} />
+                                    {source.origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${source.origin.project.fun0Id}:${source.origin.publication.configurationId}`} origin={source.origin} fixedSubmitId={currentItem.id} canManage onOriginChange={source.refresh} /> : null}
+                                    {source.origin?.mode === 'central-linked' ? <details><summary className="cursor-pointer py-2 text-sm">Catálogo de Central asignado al expediente</summary><PublishedDocumentCatalogue origin={source.origin} /></details> : null}
+                                    {usesExistingIntake ? <SUBMIT_LIST
                                         translation={translation}
                                         swaMsg={swaMsg}
                                         globals={globals}
@@ -577,7 +589,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                             variant="digital"
                                             onDigitalCountChange={handleDigitalDocumentsChange}
                                         />}
-                                    />
+                                    /> : null}
                                 </div>
                             </section>
                         : <div className="flex min-h-64 flex-1 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 p-6 text-center">
@@ -590,4 +602,6 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
         );
 }
 
-export default SUBMIT_MANAGE;
+export default function SubmitManage(props) {
+    return <SUBMIT_MANAGE key={props.currentId || 'new'} {...props} />;
+}

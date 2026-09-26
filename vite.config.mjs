@@ -83,12 +83,56 @@ function cjsToEsm() {
 }
 
 
-export default defineConfig(({ mode }) => {
+export function resolveRuntime(env, command = 'serve') {
+  const urls = {};
+  const relativeApi = /^\/(?![\/\\])/.test(env.VITE_API_URL || '') && !env.VITE_API_URL.includes('\\');
+  for (const [name, value] of Object.entries({
+    VITE_APP_URL: env.VITE_APP_URL === undefined ? 'http://localhost:3000' : env.VITE_APP_URL,
+    VITE_API_URL: env.VITE_API_URL,
+  })) {
+    try {
+      const url = name === 'VITE_API_URL' && relativeApi ? new URL(value, 'http://vite.local') : new URL(value);
+      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.search || url.hash || url.port === '0') throw new Error();
+      if (name === 'VITE_APP_URL' && url.pathname !== '/') throw new Error();
+      urls[name] = url;
+    } catch {
+      throw new Error(`${name} must be an HTTP(S) URL without credentials, query or fragment; VITE_APP_URL must be an origin and VITE_API_URL also accepts a root-relative path such as /api.`);
+    }
+  }
+  const port = Number(urls.VITE_APP_URL.port || (urls.VITE_APP_URL.protocol === 'https:' ? 443 : 80));
+  const api = urls.VITE_API_URL;
+  let proxy;
+  if (relativeApi && command === 'serve') {
+    let target;
+    try {
+      target = new URL(env.BACKOFFICE_GATE_URL);
+      if (!['http:', 'https:'].includes(target.protocol) || target.username || target.password || target.search || target.hash || target.pathname !== '/' || target.port === '0') throw new Error();
+    } catch {
+      throw new Error('BACKOFFICE_GATE_URL must be an absolute HTTP(S) origin without credentials, path, query or fragment when Vite proxies a relative VITE_API_URL.');
+    }
+    proxy = { [api.pathname.replace(/\/+$/, '') || '/']: { target: target.origin, changeOrigin: true } };
+  }
+  return {
+    port,
+    proxy,
+  };
+}
+
+export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const runtime = resolveRuntime(env, command);
   const shouldAnalyze = env.VITE_BUILD_ANALYZE === 'true';
 
   return {
     plugins: [
+      {
+        name: 'application-port',
+        configResolved(config) {
+          if (config.server.port !== runtime.port || config.preview.port !== runtime.port || !config.server.strictPort || !config.preview.strictPort) {
+            throw new Error('Set VITE_APP_URL instead of overriding the server/preview port or strictPort.');
+          }
+        },
+      },
       cjsToEsm(),
       jsxInJs(),
       react(),
@@ -105,16 +149,12 @@ export default defineConfig(({ mode }) => {
 
   // Dev server
     server: {
-      port: 3000,
+      port: runtime.port,
+      strictPort: true,
       open: true,
-      proxy: {
-        '/api': {
-          target: 'http://127.0.0.1:3001',
-          changeOrigin: true,
-          secure: false,
-        },
-      },
+      proxy: runtime.proxy,
     },
+    preview: { port: runtime.port, strictPort: true, proxy: runtime.proxy },
 
   // Build
     build: {

@@ -1,26 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { CheckCircle2, CloudDownload, ExternalLink, Loader2, RefreshCcw } from 'lucide-react';
+import { DovelaBadge, DovelaButton, DovelaInlineAlert } from '@/components/dovela-ui';
 import {
-  CheckCircle2,
-  CloudDownload,
-  Database,
-  Eye,
-  Loader2,
-  RefreshCcw,
-  ShieldCheck,
-} from 'lucide-react';
-import {
-  DovelaBadge,
-  DovelaButton,
-  DovelaCard,
-  DovelaCardContent,
-  DovelaField,
-  DovelaInlineAlert,
-  DovelaInput,
-  DovelaPageHeader,
-  DovelaSectionPanel,
-  DovelaTextarea,
-} from '@/components/dovela-ui';
-import { Checkbox } from '@/components/ui/checkbox';
+  AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import DocumentRequirementService from '../../../services/document_requirement.service.js';
 
 function unwrapResponse(response) {
@@ -28,398 +13,197 @@ function unwrapResponse(response) {
   return first?.data ?? first;
 }
 
-function asProfiles(payload) {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.profiles)) return payload.profiles;
-  if (Array.isArray(payload?.items)) return payload.items;
-  return [];
+function asConfigurations(payload) {
+  if (Array.isArray(payload?.configurations)) return payload.configurations;
+  throw new Error('Unexpected version list');
 }
 
-function getErrorMessage(error, fallback) {
-  return error?.response?.data?.message
-    || error?.response?.data?.error
-    || error?.message
-    || fallback;
+function centralPublicUrl() {
+  try {
+    const url = new URL(import.meta.env.VITE_DOVELA_CENTRAL_URL);
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.search || url.hash) return '';
+    return url.href;
+  } catch {
+    return '';
+  }
 }
 
 function formatDate(value) {
-  if (!value) return 'Fecha no informada';
+  if (!value) return '—';
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-  return new Intl.DateTimeFormat('es-CO', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
+  return Number.isNaN(date.getTime()) ? '—' : new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium' }).format(date);
 }
 
-function profileId(profile) {
-  return String(profile?.id ?? profile?.profileId ?? '');
+function configurationId(configuration) {
+  return String(configuration?.id ?? '');
 }
 
-function profileVersion(profile) {
-  const value = profile?.releaseVersion ?? profile?.version;
-  return value === undefined || value === null ? 'Sin versión' : `Release ${value}`;
+function configurationVersion(configuration) {
+  const value = configuration?.releaseVersion ?? configuration?.version;
+  return value === undefined || value === null ? 'Versión sin número' : `Versión ${value}`;
 }
 
-function profileJson(detail) {
-  const profile = detail?.profile ?? detail;
-  const raw = profile?.payloadJson
-    ?? profile?.payload_json
-    ?? profile?.payload
-    ?? detail?.payloadJson
-    ?? detail?.payload_json
-    ?? detail?.payload
-    ?? (detail?.tables || detail?.schemaVersion ? detail : null)
-    ?? null;
-
-  if (typeof raw === 'string') {
-    try {
-      return JSON.stringify(JSON.parse(raw), null, 2);
-    } catch (_error) {
-      return raw;
-    }
-  }
-
-  return raw ? JSON.stringify(raw, null, 2) : '';
+function isCurrent(configuration) {
+  const value = configuration?.isCurrent;
+  return value === true || value === 1 || value === '1';
 }
 
-function ProfileRow({ profile, selected, activating, onSelect, onActivate }) {
-  const id = profileId(profile);
-  const isDefault = Boolean(profile?.isDefault ?? profile?.is_default);
-  const enabled = profile?.enabled !== false;
-
-  return (
-    <DovelaCard
-      tone={selected ? 'primary' : 'default'}
-      className="overflow-hidden"
-    >
-      <DovelaCardContent compact className="flex flex-col gap-3 pt-[var(--card-padding-compact)] sm:flex-row sm:items-center sm:justify-between">
-        <button
-          type="button"
-          className="min-h-11 min-w-0 flex-1 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          onClick={() => onSelect(id)}
-          aria-pressed={selected}
-        >
-          <span className="flex flex-wrap items-center gap-2">
-            <strong className="truncate text-sm font-semibold text-foreground">
-              {profile?.name || `Configuración ${id}`}
-            </strong>
-            {isDefault ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-1 text-xs font-medium text-foreground">
-                <CheckCircle2 size={13} aria-hidden="true" /> Predeterminada
-              </span>
-            ) : null}
-            {!enabled ? (
-              <span className="inline-flex items-center rounded-full border border-warning/35 bg-warning/10 px-2 py-1 text-xs font-medium text-foreground">
-                Inactiva
-              </span>
-            ) : null}
-          </span>
-          <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs leading-5 text-muted-foreground">
-            <span>{profileVersion(profile)}</span>
-            <span>{profile?.tenantCode || profile?.tenant_code || 'Tenant no informado'}</span>
-            <span>{formatDate(profile?.publishedAt ?? profile?.published_at)}</span>
-          </span>
-        </button>
-
-        <div className="flex shrink-0 items-center gap-2">
-          <DovelaButton
-            tone="ghost"
-            size="sm"
-            leadingIcon={Eye}
-            onClick={() => onSelect(id)}
-            aria-label={`Ver JSON de ${profile?.name || id}`}
-          >
-            Ver JSON
-          </DovelaButton>
-          {!isDefault ? (
-            <DovelaButton
-              tone="neutral"
-              size="sm"
-              leadingIcon={ShieldCheck}
-              loading={activating}
-              loadingLabel="Activando..."
-              onClick={() => onActivate(id)}
-            >
-              Usar por defecto
-            </DovelaButton>
-          ) : null}
-        </div>
-      </DovelaCardContent>
-    </DovelaCard>
-  );
+function errorMessage(error, fallback) {
+  if (error?.response?.status === 403) return 'No tienes permiso para realizar esta acción. Consulta con la persona administradora.';
+  return fallback;
 }
 
 export default function CentralConfigurationPanel() {
-  const [profiles, setProfiles] = useState([]);
-  const [selectedId, setSelectedId] = useState('');
-  const [detail, setDetail] = useState(null);
-  const [name, setName] = useState('');
-  const [sourceUrl, setSourceUrl] = useState('');
-  const [setAsDefault, setSetAsDefault] = useState(false);
+  const [configurations, setConfigurations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingDetail, setLoadingDetail] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [activatingId, setActivatingId] = useState('');
+  const [pendingConfiguration, setPendingConfiguration] = useState(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const activationTriggerRef = useRef(null);
+  const titleRef = useRef(null);
+  const centralUrl = centralPublicUrl();
+  const busy = loading || syncing || Boolean(activatingId);
 
-  const loadProfiles = useCallback(async (preferredId = '') => {
+  const loadConfigurations = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
-      const response = await DocumentRequirementService.getCentralProfiles();
-      const nextProfiles = asProfiles(unwrapResponse(response));
-      setProfiles(nextProfiles);
-      setSelectedId((currentId) => {
-        const candidate = preferredId || currentId;
-        if (candidate && nextProfiles.some((profile) => profileId(profile) === String(candidate))) {
-          return String(candidate);
-        }
-        const preferred = nextProfiles.find((profile) => Boolean(profile?.isDefault ?? profile?.is_default))
-          || nextProfiles[0];
-        return preferred ? profileId(preferred) : '';
-      });
+      const response = await DocumentRequirementService.getCentralConfigurations();
+      setConfigurations(asConfigurations(unwrapResponse(response)));
+      return true;
     } catch (requestError) {
-      setProfiles([]);
-      setError(getErrorMessage(requestError, 'No fue posible consultar las configuraciones locales de Dovela Central.'));
+      // Do not present a stale version as current after a failed refresh.
+      setConfigurations([]);
+      setError(errorMessage(requestError, 'No fue posible consultar las versiones. Intenta actualizar la lista.'));
+      return false;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    loadProfiles();
-  }, [loadProfiles]);
+  useEffect(() => { loadConfigurations(); }, [loadConfigurations]);
 
-  useEffect(() => {
-    if (!selectedId) {
-      setDetail(null);
-      return undefined;
-    }
+  const handleRefresh = () => {
+    setError('');
+    setNotice('');
+    loadConfigurations();
+  };
 
-    let cancelled = false;
-    setLoadingDetail(true);
-    DocumentRequirementService.getCentralProfile(selectedId)
-      .then((response) => {
-        if (!cancelled) setDetail(unwrapResponse(response));
-      })
-      .catch((requestError) => {
-        if (!cancelled) {
-          setDetail(null);
-          setError(getErrorMessage(requestError, 'No fue posible cargar el JSON de la configuración seleccionada.'));
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingDetail(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedId]);
-
-  const selectedProfile = useMemo(
-    () => profiles.find((profile) => profileId(profile) === selectedId) || null,
-    [profiles, selectedId]
-  );
-  const jsonText = useMemo(() => profileJson(detail), [detail]);
-
-  const handleSync = async (event) => {
-    event.preventDefault();
-    const cleanName = name.trim();
-    const cleanSourceUrl = sourceUrl.trim();
-    if (!cleanName || !cleanSourceUrl) {
-      setError('Indica un nombre local y la URL base de Dovela Central.');
-      return;
-    }
-
+  const handleSync = async () => {
     setSyncing(true);
     setError('');
     setNotice('');
     try {
-      const response = await DocumentRequirementService.syncCentralProfile({
-        name: cleanName,
-        sourceUrl: cleanSourceUrl,
-        setDefault: setAsDefault,
-      });
-      const payload = unwrapResponse(response);
-      const imported = payload?.profile ?? payload;
-      const importedId = profileId(imported);
-      await loadProfiles(importedId);
-      setName('');
-      setSetAsDefault(false);
-      setNotice('Release importado. La copia local quedó disponible como un snapshot inmutable.');
+      // Central connection and credentials belong to the backend environment.
+      const result = unwrapResponse(await DocumentRequirementService.syncCentralProfile({ makeCurrent: false, setDefault: false }));
+      if (await loadConfigurations()) {
+        setNotice(result?.created === false
+          ? 'La última versión publicada ya estaba sincronizada.'
+          : 'La última versión publicada ya está disponible. Puedes elegirla como vigente.');
+      }
     } catch (requestError) {
-      setError(getErrorMessage(requestError, 'No fue posible importar la configuración desde Dovela Central.'));
+      setError(errorMessage(requestError, 'No fue posible sincronizar con Dovela Central. Intenta de nuevo o consulta con la persona administradora.'));
     } finally {
       setSyncing(false);
     }
   };
 
-  const handleActivate = async (id) => {
-    setActivatingId(id);
+  const handleActivate = async () => {
+    if (!pendingConfiguration || busy) return;
+    const selectedVersion = configurationVersion(pendingConfiguration);
+    setActivatingId(configurationId(pendingConfiguration));
     setError('');
     setNotice('');
     try {
-      await DocumentRequirementService.setDefaultCentralProfile(id);
-      await loadProfiles(id);
-      setNotice('La configuración seleccionada se usará por defecto en los proyectos sin asignación explícita.');
+      await DocumentRequirementService.setCurrentCentralConfiguration(configurationId(pendingConfiguration));
+      if (await loadConfigurations()) setNotice(`${selectedVersion} es ahora la vigente. Cambiar la versión vigente no modifica los expedientes existentes.`);
     } catch (requestError) {
-      setError(getErrorMessage(requestError, 'No fue posible cambiar la configuración predeterminada.'));
+      setError(errorMessage(requestError, 'No fue posible cambiar la versión vigente. Actualiza la lista e intenta de nuevo.'));
     } finally {
       setActivatingId('');
+      setPendingConfiguration(null);
     }
   };
 
   return (
-    <div className="flex flex-col gap-4" data-testid="central-configuration-panel">
-      <DovelaPageHeader
-        eyebrow="Integración documental"
-        title="Configuración documental de Dovela Central"
-        description="Importa releases publicados y conserva cada versión como un snapshot local. Los proyectos pueden usar la versión predeterminada o una asignación propia."
-        meta={(
-          <>
-            <DovelaBadge tone="info" icon={Database}>{profiles.length} snapshots locales</DovelaBadge>
-            <DovelaBadge tone="outline" icon={ShieldCheck}>Credencial protegida en backend</DovelaBadge>
-          </>
-        )}
-        actions={(
-          <DovelaButton
-            tone="ghost"
-            size="sm"
-            leadingIcon={RefreshCcw}
-            disabled={loading || syncing}
-            onClick={() => loadProfiles(selectedId)}
-          >
-            Recargar
+    <section className="flex min-w-0 flex-col gap-3" data-testid="central-configuration-panel" aria-labelledby="central-versions-title">
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 id="central-versions-title" ref={titleRef} tabIndex={-1} className="m-0 text-lg font-semibold text-foreground">Configuración documental</h2>
+          <p className="mb-0 mt-1 text-sm text-muted-foreground">Versiones sincronizadas desde Dovela Central.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {centralUrl ? (
+            <a href={centralUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-2 rounded-md px-3 text-sm font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              Abrir Dovela Central <ExternalLink size={14} aria-hidden="true" />
+            </a>
+          ) : null}
+          <DovelaButton size="sm" leadingIcon={CloudDownload} loading={syncing} loadingLabel="Sincronizando…" disabled={busy} onClick={handleSync}>
+            Sincronizar versiones
           </DovelaButton>
-        )}
-      />
+        </div>
+      </header>
 
-      <DovelaInlineAlert tone="info" title="Conexión segura y versionada">
-        Dovela actual solicita al backend la importación del release activo. El token de Dovela Central nunca se envía ni se almacena en el navegador.
-      </DovelaInlineAlert>
+      {!centralUrl && <DovelaInlineAlert tone="warning">El acceso a Dovela Central no está disponible. Consulta con la persona administradora.</DovelaInlineAlert>}
+      {error && <DovelaInlineAlert tone="danger" onDismiss={() => setError('')}>{error}</DovelaInlineAlert>}
+      {notice && <div role="status"><DovelaInlineAlert tone="success" onDismiss={() => setNotice('')}>{notice}</DovelaInlineAlert></div>}
 
-      {error ? (
-        <DovelaInlineAlert tone="danger" onDismiss={() => setError('')}>
-          {error}
-        </DovelaInlineAlert>
-      ) : null}
-      {notice ? (
-        <DovelaInlineAlert tone="success" onDismiss={() => setNotice('')}>
-          {notice}
-        </DovelaInlineAlert>
-      ) : null}
-
-      <DovelaSectionPanel
-        title="Importar release activo"
-        description="La URL corresponde a la instancia pública de Dovela Central. Si el checksum ya existe, se reutiliza el snapshot local."
-        actions={<CloudDownload size={18} aria-hidden="true" />}
-      >
-        <form className="grid gap-4" onSubmit={handleSync}>
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-            <DovelaField label="Nombre local" required helperText="Identifica la versión para quienes configuran los proyectos.">
-              <DovelaInput
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Ej. Catálogo documental agosto 2026"
-                maxLength={160}
-                disabled={syncing}
-              />
-            </DovelaField>
-            <DovelaField label="URL base de Dovela Central" required helperText="Se consultará /api/v1/releases/active desde el backend.">
-              <DovelaInput
-                type="url"
-                value={sourceUrl}
-                onChange={(event) => setSourceUrl(event.target.value)}
-                placeholder="https://central.ejemplo.gov.co"
-                autoComplete="url"
-                disabled={syncing}
-              />
-            </DovelaField>
-          </div>
-
-          <div className="flex flex-col gap-3 border-t border-border/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <label htmlFor="central-set-default" className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-foreground">
-              <Checkbox
-                id="central-set-default"
-                checked={setAsDefault}
-                onCheckedChange={(checked) => setSetAsDefault(checked === true)}
-                disabled={syncing}
-              />
-              Usar este release como configuración predeterminada
-            </label>
-            <DovelaButton
-              type="submit"
-              size="md"
-              leadingIcon={CloudDownload}
-              loading={syncing}
-              loadingLabel="Importando release..."
-            >
-              Importar configuración
-            </DovelaButton>
-          </div>
-        </form>
-      </DovelaSectionPanel>
-
-      <div className="grid gap-4 xl:grid-cols-[minmax(320px,0.85fr)_minmax(0,1.15fr)]">
-        <DovelaSectionPanel
-          title="Snapshots disponibles"
-          description="La configuración predeterminada aplica solo cuando un proyecto no tiene una versión asignada."
-        >
-          {loading ? (
-            <div className="flex min-h-28 items-center justify-center gap-2 text-sm text-muted-foreground" role="status">
-              <Loader2 className="animate-spin" size={18} aria-hidden="true" />
-              Consultando snapshots...
-            </div>
-          ) : profiles.length ? (
-            <div className="grid gap-3">
-              {profiles.map((profile) => (
-                <ProfileRow
-                  key={profileId(profile)}
-                  profile={profile}
-                  selected={profileId(profile) === selectedId}
-                  activating={activatingId === profileId(profile)}
-                  onSelect={setSelectedId}
-                  onActivate={handleActivate}
-                />
-              ))}
-            </div>
-          ) : (
-            <DovelaInlineAlert tone="warning" title="No hay configuraciones importadas">
-              Importa el release activo de Dovela Central para habilitar la asignación documental por proyecto.
-            </DovelaInlineAlert>
-          )}
-        </DovelaSectionPanel>
-
-        <DovelaSectionPanel
-          title={selectedProfile ? `JSON · ${selectedProfile.name || profileVersion(selectedProfile)}` : 'JSON del snapshot'}
-          description="Contenido completo recibido en el release. Es de solo lectura y no modifica la fuente Central."
-          actions={selectedProfile ? <DovelaBadge tone="outline">{profileVersion(selectedProfile)}</DovelaBadge> : null}
-        >
-          {loadingDetail ? (
-            <div className="flex min-h-48 items-center justify-center gap-2 text-sm text-muted-foreground" role="status">
-              <Loader2 className="animate-spin" size={18} aria-hidden="true" />
-              Cargando JSON...
-            </div>
-          ) : jsonText ? (
-            <DovelaTextarea
-              value={jsonText}
-              readOnly
-              spellCheck="false"
-              aria-label="JSON de configuración importada"
-              density="editor"
-              rows={22}
-              className="max-h-[34rem] resize-y font-mono text-xs leading-5"
-            />
-          ) : (
-            <DovelaInlineAlert tone="info">
-              Selecciona un snapshot para consultar su configuración JSON completa.
-            </DovelaInlineAlert>
-          )}
-        </DovelaSectionPanel>
+      <div className="overflow-hidden rounded-md border border-border bg-card" aria-busy={busy}>
+        <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
+          <span className="text-sm font-medium text-foreground">Versiones sincronizadas{!loading && !error ? ` (${configurations.length})` : ''}</span>
+          <DovelaButton tone="ghost" size="sm" leadingIcon={RefreshCcw} disabled={busy} onClick={handleRefresh}>Actualizar lista</DovelaButton>
+        </div>
+        <Table className="table-fixed sm:table-auto" aria-label="Versiones de configuración documental">
+          <TableHeader>
+            <TableRow>
+              <TableHead scope="col" className="h-9 px-3">Versión</TableHead>
+              <TableHead scope="col" className="hidden h-9 px-3 sm:table-cell">Publicada</TableHead>
+              <TableHead scope="col" className="h-9 px-3">Estado</TableHead>
+              <TableHead scope="col" className="h-9 px-3 text-right">Acción</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow><TableCell colSpan={4} className="px-3 py-6 text-center text-muted-foreground"><span role="status" className="inline-flex items-center gap-2"><Loader2 size={16} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />Consultando versiones…</span></TableCell></TableRow>
+            ) : configurations.length ? configurations.map((configuration) => (
+              <TableRow key={configurationId(configuration)}>
+                <TableCell className="break-words px-2 py-2 font-medium tabular-nums sm:px-3">{configurationVersion(configuration)}</TableCell>
+                <TableCell className="hidden px-3 py-2 text-muted-foreground sm:table-cell">{formatDate(configuration.publishedAt ?? configuration.published_at)}</TableCell>
+                <TableCell className="px-3 py-2">{isCurrent(configuration) ? <DovelaBadge tone="success" icon={CheckCircle2}>Vigente</DovelaBadge> : <span className="text-sm text-muted-foreground">Disponible</span>}</TableCell>
+                <TableCell className="px-3 py-2 text-right">
+                  {isCurrent(configuration) ? <span className="text-sm text-muted-foreground">En uso</span> : (
+                    <DovelaButton tone="neutral" size="sm" disabled={busy || configuration.enabled === false} className="min-h-11 w-full whitespace-normal px-2 sm:min-h-8 sm:w-auto" onClick={(event) => { activationTriggerRef.current = event.currentTarget; setPendingConfiguration(configuration); }} aria-label={`Usar esta versión: ${configurationVersion(configuration)}`}>
+                      Usar esta versión
+                    </DovelaButton>
+                  )}
+                </TableCell>
+              </TableRow>
+            )) : (
+              <TableRow><TableCell colSpan={4} className="px-3 py-6 text-center text-muted-foreground">{error ? 'La lista de versiones no está disponible.' : 'Aún no hay versiones sincronizadas. Sincroniza desde Dovela Central para comenzar.'}</TableCell></TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
-    </div>
+      <p className="m-0 text-xs leading-5 text-muted-foreground">Cambiar la versión vigente no modifica los expedientes existentes.</p>
+
+      <AlertDialog open={Boolean(pendingConfiguration)} onOpenChange={(open) => { if (!open && !activatingId) setPendingConfiguration(null); }}>
+        <AlertDialogContent onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          const trigger = activationTriggerRef.current;
+          if (trigger?.isConnected && !trigger.disabled) trigger.focus();
+          else titleRef.current?.focus();
+        }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Usar {configurationVersion(pendingConfiguration).toLowerCase()} como vigente?</AlertDialogTitle>
+            <AlertDialogDescription>Cambiar la versión vigente no modifica los expedientes existentes. Solo cambia la versión vigente del catálogo documental. Puedes volver a elegir otra versión sincronizada cuando lo necesites.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={Boolean(activatingId)}>Cancelar</AlertDialogCancel>
+            <DovelaButton loading={Boolean(activatingId)} loadingLabel="Activando…" disabled={busy} onClick={handleActivate}>Usar esta versión</DovelaButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </section>
   );
 }

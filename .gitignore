@@ -33,6 +33,7 @@ build.zip
 
 # misc
 .DS_Store
+runtime.local.json
 .env
 .env.local
 .env.development.local

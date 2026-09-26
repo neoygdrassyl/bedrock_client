@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bell, Bug, Check, Database, FileText, LayoutDashboard, Library, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Bug, Check, Database, FileText, LayoutDashboard, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
-import AlarmsV2ConfigPanel from './AlarmsV2ConfigPanel.jsx';
-import DocumentCatalogWorkspacePage, {
-  normalizeDocumentCatalogSection,
-} from './legal_config/DocumentCatalogWorkspacePage.jsx';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
 import CentralConfigurationPanel from './document_requirements/CentralConfigurationPanel.jsx';
 import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
@@ -22,16 +18,6 @@ import {
 import './SettingsPage.css';
 
 const NAV_ITEMS = [
-  {
-    key: 'alarmas',
-    label: 'Alarmas',
-    icon: Bell,
-  },
-  {
-    key: 'catalogo-documental',
-    label: 'Catálogo documental',
-    icon: Library,
-  },
   {
     key: 'configuracion-documental',
     label: 'Configuración documental',
@@ -54,10 +40,9 @@ const NAV_ITEMS = [
   },
 ];
 
-const LEGACY_DOCUMENT_CATALOG_TABS = Object.freeze({
-  'configuracion-actuaciones': 'actuaciones',
-  'revision-documentos': 'evaluacion-documentos',
-});
+const RETIRED_SETTINGS_TABS = new Set([
+  'alarmas', 'catalogo-documental', 'configuracion-actuaciones', 'revision-documentos',
+]);
 
 function formatLastLogin(value) {
   if (!value) return 'No disponible';
@@ -84,24 +69,25 @@ export default function SettingsPage() {
         },
       ]
     : NAV_ITEMS;
-  const requestedTab = searchParams.get('tab') || 'alarmas';
-  const legacyDocumentCatalogSection = LEGACY_DOCUMENT_CATALOG_TABS[requestedTab];
-  const requestedActiveKey = legacyDocumentCatalogSection ? 'catalogo-documental' : requestedTab;
-  const activeKey = navItems.some((item) => item.key === requestedActiveKey) ? requestedActiveKey : 'alarmas';
-  const documentCatalogSection = legacyDocumentCatalogSection
-    || normalizeDocumentCatalogSection(searchParams.get('section'));
+  const requestedTab = searchParams.get('tab') || 'configuracion-documental';
+  const activeKey = navItems.some((item) => item.key === requestedTab)
+    ? requestedTab : 'configuracion-documental';
+
+  useEffect(() => {
+    if (RETIRED_SETTINGS_TABS.has(requestedTab)) {
+      const next = new URLSearchParams(searchParams);
+      next.delete('tab');
+      next.delete('section');
+      setSearchParams(next, { replace: true });
+    }
+  }, [requestedTab, searchParams, setSearchParams]);
   const fullName = [user?.name, user?.surname].filter(Boolean).join(' ') || 'No disponible';
   const roleDesc = user?.roleDesc || 'No disponible';
   const lastLogin = formatLastLogin(user?.lastLoginAt || user?.lastLogin);
 
   const selectTab = (key) => {
-    if (key === 'alarmas') setSearchParams({});
-    else if (key === 'catalogo-documental') setSearchParams({ tab: key, section: documentCatalogSection });
+    if (key === 'configuracion-documental') setSearchParams({});
     else setSearchParams({ tab: key });
-  };
-
-  const selectDocumentCatalogSection = (section) => {
-    setSearchParams({ tab: 'catalogo-documental', section: normalizeDocumentCatalogSection(section) });
   };
 
   return (
@@ -138,13 +124,6 @@ export default function SettingsPage() {
         </aside>
 
         <div className="settings-panel">
-          {activeKey === 'alarmas' && <AlarmsV2ConfigPanel />}
-          {activeKey === 'catalogo-documental' && (
-            <DocumentCatalogWorkspacePage
-              activeSection={documentCatalogSection}
-              onSectionChange={selectDocumentCatalogSection}
-            />
-          )}
           {activeKey === 'configuracion-documental' && <CentralConfigurationPanel />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
           {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}

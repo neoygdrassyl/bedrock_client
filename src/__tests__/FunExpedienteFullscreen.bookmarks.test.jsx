@@ -9,6 +9,7 @@ const { setScopeMock, getFunByPublicMock, getFunMock, getSummaryByIdPublicMock }
   getFunMock: vi.fn(),
   getSummaryByIdPublicMock: vi.fn(),
 }));
+const documentaryMode = vi.hoisted(() => ({ canonical: false }));
 
 vi.mock('../app/pages/user/fun_forms/hooks/useBookmarks', () => ({
   useBookmarks: () => ({
@@ -69,6 +70,7 @@ vi.mock('../app/pages/user/fun_forms/fun_g', () => ({ __esModule: true, default:
 vi.mock('../app/pages/user/fun_forms/fun_c', () => ({ __esModule: true, default: () => <div data-testid="module-chequeo" /> }));
 vi.mock('../app/pages/user/fun_forms/fun_n', () => ({ __esModule: true, default: () => <div data-testid="module-actualizar" /> }));
 vi.mock('../app/pages/user/fun_forms/components/fun_docs', () => ({ __esModule: true, default: () => <div data-testid="module-documentos" /> }));
+vi.mock('../app/pages/user/expediente_documental/FunDocumentalNew.jsx', () => ({ __esModule: true, default: ({ traditionalContent }) => documentaryMode.canonical ? <div data-testid="canonical-entry" /> : traditionalContent || <div data-testid="module-documentos-new" /> }));
 vi.mock('../app/pages/user/fun_forms/fun_alertn', () => ({ __esModule: true, default: () => <div data-testid="module-publicidad" /> }));
 vi.mock('../app/pages/user/fun_forms/fun_clock', () => ({ __esModule: true, default: () => <div data-testid="module-tiempos" /> }));
 vi.mock('../app/pages/user/records/record_arc', () => ({ __esModule: true, default: () => <div data-testid="module-arc" /> }));
@@ -105,7 +107,15 @@ const phExpediente = {
 
 describe('FunExpedienteFullscreen bookmarks', () => {
   beforeEach(() => {
+    documentaryMode.canonical = false;
     getSummaryByIdPublicMock.mockResolvedValue({ data: null });
+  });
+
+  it.each(['documentos', 'documentos-new'])('resolves canonical origin before mounting legacy modules at %s', async (section) => {
+    documentaryMode.canonical = true;
+    render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} initialSection={section} />);
+    expect(await screen.findByTestId('canonical-entry')).toBeInTheDocument();
+    expect(screen.queryByTestId('module-documentos')).not.toBeInTheDocument();
   });
 
   afterEach(() => {
@@ -360,6 +370,17 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     await user.click(screen.getByRole('button', { name: /informe jurídico/i }));
     expect(screen.getByRole('button', { name: /informe jurídico/i })).toHaveAttribute('aria-current', 'page');
     expect(await screen.findByTestId('module-law')).toBeInTheDocument();
+  });
+
+  it('conserva Documentos new como módulo separado y permite volver al original', async () => {
+    const user = userEvent.setup();
+    render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} initialSection="documentos-new" />);
+    expect(screen.getByRole('button', { name: 'Documentos (new)' })).toHaveAttribute('aria-current', 'page');
+    expect(await screen.findByTestId('module-documentos-new')).toBeInTheDocument();
+    expect(screen.queryByTestId('module-documentos')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Documentos' }));
+    expect(screen.getByRole('button', { name: 'Documentos' })).toHaveAttribute('aria-current', 'page');
+    expect(await screen.findByTestId('module-documentos')).toBeInTheDocument();
   });
 
   it('usa una variante activa más visible y mantiene contraste fuerte en botones inactivos del workspace', () => {

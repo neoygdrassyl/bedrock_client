@@ -1,78 +1,31 @@
-import { useCallback, useState } from 'react';
-import { FileText, RotateCcw, Scale } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { useCallback, useMemo, useState } from 'react';
+import { Scale, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import ProjectDocumentConfigurationPanel from '../document_requirements/ProjectDocumentConfigurationPanel';
 import UnifiedDocumentEntryModal from '../shared/UnifiedDocumentEntryModal';
 import { useExpedienteDocumental } from './hooks/useExpedienteDocumental';
 import { useCentralProjectLegalForm } from './hooks/useCentralProjectLegalForm';
-import { DocumentalTable } from './ui/organisms/DocumentalTable';
-import { LegalFormProjectContext } from './ui/organisms/LegalFormProjectContext';
+import { DocumentalWorkspaceHeader } from './ui/organisms/DocumentalWorkspaceHeader';
+import { DocumentalReviewTable } from './ui/organisms/DocumentalReviewTable';
+import { LegalFormControls } from './ui/organisms/LegalFormControls';
 import { LegalFormVrDialog } from './ui/organisms/LegalFormVrDialog';
+import { useDocumentaryOrigin } from './hooks/useDocumentaryOrigin';
+import { DocumentaryOriginStatus, PublishedDocumentCatalogue } from './ui/organisms/DocumentaryOriginStatus';
+import { CanonicalDocumentaryWorkspace } from './ui/organisms/CanonicalDocumentaryWorkspace';
+import { DocumentaryGovernance } from './ui/organisms/DocumentaryGovernance';
 
-function DocumentSummary({ summary }) {
-  const items = [
-    ['Unidades documentales', summary.totalGroups],
-    ['Asientos', summary.totalEntries],
-    ['Físicos', summary.physical],
-    ['Digitales', summary.digital],
-    ['Escaneados', summary.scanned],
-  ];
-
-  return (
-    <div className="flex flex-wrap gap-2" aria-label="Resumen documental">
-      {items.map(([label, value]) => (
-        <Badge key={label} variant="outline" className="gap-1.5 rounded-full px-3 py-1">
-          <span className="text-muted-foreground">{label}</span>
-          <span className="font-mono text-foreground">{value}</span>
-        </Badge>
-      ))}
-    </div>
-  );
-}
-
-function Pagination({ page, totalPages, onPageChange }) {
-  if (totalPages <= 1) return null;
-
-  return (
-    <nav className="flex items-center justify-end gap-2" aria-label="Paginación documental">
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={page <= 1}
-        onClick={() => onPageChange(page - 1)}
-      >
-        Anterior
-      </Button>
-      <span className="text-xs text-muted-foreground">
-        Página <strong className="text-foreground">{page}</strong> de {totalPages}
-      </span>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={page >= totalPages}
-        onClick={() => onPageChange(page + 1)}
-      >
-        Siguiente
-      </Button>
-    </nav>
-  );
-}
-
-export function FunDocumentalNew({
+function LegacyDocumentalWorkspace({
   currentId,
   currentPublic,
   canManage = false,
+  centralLinked = false,
+  onOriginChange,
 }) {
-  const [activeTab, setActiveTab] = useState('documents');
   const [legalFormDialogOpen, setLegalFormDialogOpen] = useState(false);
   const [draftLegalFormVr, setDraftLegalFormVr] = useState('');
 
-  const centralProject = useCentralProjectLegalForm({ currentPublic });
+  const centralProject = useCentralProjectLegalForm({ currentPublic: centralLinked ? currentPublic : null });
   const centralDocumentMetadata = Array.isArray(centralProject.projectContext?.documentCatalog)
     ? centralProject.projectContext.documentCatalog
     : Array.isArray(centralProject.projectContext?.requirements?.documents)
@@ -92,6 +45,9 @@ export function FunDocumentalNew({
   const effectiveLegalFormVr = centralProject.selectedVr
     || centralProject.defaultVr
     || documental.latestVr;
+  const hasApplicableLegalControls = useMemo(() => (
+    (centralProject.legalForm?.controls || []).some((document) => (document.controls || []).length > 0)
+  ), [centralProject.legalForm]);
 
   const openLegalFormDialog = useCallback(() => {
     centralProject.clearSaveError();
@@ -100,8 +56,8 @@ export function FunDocumentalNew({
   }, [centralProject]);
 
   const handleRowAction = useCallback((row, action) => {
-    if (action === 'history') {
-      documental.entrySheet.openWith(row, 'history');
+    if (action === 'history' || action === 'evaluation') {
+      documental.entrySheet.openWith(row, action);
       return;
     }
 
@@ -109,9 +65,10 @@ export function FunDocumentalNew({
   }, [canEditLegalForm, documental.entrySheet, openLegalFormDialog]);
 
   const handleConfigurationChange = useCallback(() => {
+    onOriginChange?.();
     centralProject.refresh();
     documental.refresh();
-  }, [centralProject, documental]);
+  }, [centralProject, documental, onOriginChange]);
 
   const saveLegalFormVr = useCallback(async (vrIdPublic) => {
     const saved = await centralProject.saveSelection(vrIdPublic);
@@ -121,108 +78,76 @@ export function FunDocumentalNew({
   }, [centralProject, documental]);
 
   return (
-    <section className="space-y-4" aria-labelledby="documental-workspace-title">
-      <Card className="shadow-none">
-        <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 space-y-0 p-4">
-          <div>
-            <CardTitle id="documental-workspace-title" className="flex items-center gap-2 text-base">
-              <FileText className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-              Gestión documental
-            </CardTitle>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {currentPublic || 'Expediente sin radicado'} · una fila por unidad documental
-            </p>
-          </div>
-          <DocumentSummary summary={documental.summary} />
-        </CardHeader>
-      </Card>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid h-auto w-full grid-cols-2 sm:w-auto sm:min-w-[420px]">
-          <TabsTrigger value="documents">Documentos</TabsTrigger>
-          <TabsTrigger value="legal-form">Legal y debida forma</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="documents" className="space-y-3">
-          {documental.error ? (
-            <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-              {documental.error}
-            </div>
-          ) : null}
-
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground" aria-live="polite">
-              {documental.filteredCount} unidad(es) documental(es)
-            </p>
-            {documental.hasFilters ? (
-              <Button type="button" variant="ghost" size="sm" onClick={documental.resetFilters}>
-                <RotateCcw aria-hidden="true" />
-                Limpiar filtros
+    <section className="space-y-3" aria-labelledby="documental-workspace-title">
+      <DocumentalWorkspaceHeader
+        currentPublic={currentPublic}
+        summary={documental.summary}
+        loading={documental.loading}
+        configuration={canManage ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button type="button" variant="ghost" size="icon" aria-label="Configuración documental del expediente" title="Configuración documental del expediente">
+                <Settings2 className="h-4 w-4" aria-hidden="true" />
               </Button>
-            ) : null}
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-[420px] max-w-[90vw] max-h-[70vh] overflow-y-auto p-0">
+              <ProjectDocumentConfigurationPanel currentPublic={currentPublic} compact onConfigurationChange={handleConfigurationChange} />
+            </PopoverContent>
+          </Popover>
+        ) : null}
+      />
+
+      <div className="space-y-3">
+        {documental.error ? (
+          <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+            {documental.error}
           </div>
+        ) : null}
 
-          <DocumentalTable
-            rows={documental.visibleRows}
-            loading={documental.loading}
-            canManage={canEditLegalForm}
-            filters={documental.filters}
-            vrOptions={documental.vrOptions}
-            onFilterChange={documental.setFilter}
-            onRowAction={handleRowAction}
-          />
+        <DocumentalReviewTable
+          rows={documental.visibleRows}
+          loading={documental.loading}
+          filters={documental.filters}
+          vrOptions={documental.vrOptions}
+          resultCount={documental.filteredCount}
+          hasFilters={documental.hasFilters}
+          page={documental.page}
+          pageSize={documental.pageSize}
+          totalPages={documental.totalPages}
+          onFilterChange={documental.setFilter}
+          onResetFilters={documental.resetFilters}
+          onPageChange={documental.setPage}
+          onRowAction={handleRowAction}
+        />
 
-          <Pagination
-            page={documental.page}
-            totalPages={documental.totalPages}
-            onPageChange={documental.setPage}
-          />
-        </TabsContent>
-
-        <TabsContent value="legal-form" className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-semibold text-foreground">Contexto documental del proyecto</h2>
-              <p className="text-xs text-muted-foreground">
-                Requisitos, grupos, evidencias y advertencias resueltos desde Dovela Central.
-              </p>
+        {hasApplicableLegalControls ? (
+          <section className="space-y-3 border-t border-border pt-4" aria-labelledby="legal-form-section-title">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 id="legal-form-section-title" className="text-sm font-semibold text-foreground">Legal y debida forma</h2>
+                <p className="text-xs text-muted-foreground">Controles aplicables a los documentos de este expediente.</p>
+              </div>
+              {canEditLegalForm ? (
+                <Button type="button" variant="outline" size="sm" disabled={!centralProject.options.length} onClick={openLegalFormDialog}>
+                  <Scale aria-hidden="true" />
+                  Seleccionar VR
+                </Button>
+              ) : null}
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={!canEditLegalForm || !centralProject.options.length}
-              onClick={openLegalFormDialog}
-            >
-              <Scale aria-hidden="true" />
-              Editar VR LyF
-            </Button>
-          </div>
-
-          {canManage ? (
-            <ProjectDocumentConfigurationPanel
-              currentPublic={currentPublic}
-              compact
-              onConfigurationChange={handleConfigurationChange}
+            <LegalFormControls
+              controls={centralProject.legalForm?.controls || []}
+              selectedVr={effectiveLegalFormVr}
+              canManage={canEditLegalForm}
+              saving={centralProject.saving}
+              onSave={centralProject.saveReview}
             />
-          ) : null}
-
-          <LegalFormProjectContext
-            projectContext={centralProject.projectContext}
-            fallbackResult={documental.legal.result}
-            evidenceRows={documental.rows}
-            selectedVr={effectiveLegalFormVr}
-            sourceLabel={centralProject.sourceLabel}
-            loading={centralProject.loading}
-            error={centralProject.error}
-          />
-        </TabsContent>
-      </Tabs>
-
+          </section>
+        ) : null}
+      </div>
       <UnifiedDocumentEntryModal
         open={documental.entrySheet.open}
         group={documental.entrySheet.group}
-        mode="history"
+        mode={documental.entrySheet.mode}
         canManage={false}
         onClose={documental.entrySheet.close}
       />
@@ -244,6 +169,30 @@ export function FunDocumentalNew({
       />
     </section>
   );
+}
+
+function ProjectDocumentaryWorkspace(props) {
+  const source = useDocumentaryOrigin({ fun0Id: props.currentId });
+  const { origin } = source;
+  return (
+    <div className="space-y-3">
+      <DocumentaryOriginStatus origin={source.origin} error={source.error} loading={source.loading} refresh={source.refresh} />
+      {origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={origin.publication.configurationId} origin={origin} canManage={props.canManage} onOriginChange={source.refresh} /> : null}
+      {origin && origin.mode !== 'canonical' && props.canManage ? <DocumentaryGovernance origin={origin} canManage onSaved={source.refresh} onConflict={source.refresh} /> : null}
+      {origin?.mode === 'central-linked' ? <details><summary className="cursor-pointer py-2 text-sm">Consultar catálogo publicado en Central</summary><PublishedDocumentCatalogue origin={origin} /></details> : null}
+      {origin?.mode === 'traditional' && props.traditionalContent ? <>
+        {props.traditionalContent}
+        <details><summary className="cursor-pointer py-2 text-sm">Resumen de recepción documental</summary><LegacyDocumentalWorkspace {...props} onOriginChange={source.refresh} /></details>
+      </> : null}
+      {origin?.mode === 'central-linked' || (origin?.mode === 'traditional' && !props.traditionalContent)
+        ? <LegacyDocumentalWorkspace {...props} centralLinked={origin.mode === 'central-linked'} onOriginChange={source.refresh} /> : null}
+      {origin?.mode === 'central-linked' && props.traditionalContent ? <details><summary className="cursor-pointer py-2 text-sm">Documentos de la operación anterior</summary>{props.traditionalContent}</details> : null}
+    </div>
+  );
+}
+
+export function FunDocumentalNew(props) {
+  return <ProjectDocumentaryWorkspace key={props.currentId} {...props} />;
 }
 
 export default FunDocumentalNew;

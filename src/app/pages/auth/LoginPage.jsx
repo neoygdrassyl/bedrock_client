@@ -19,6 +19,8 @@ export default function LoginPage({ signin }) {
   const navigate = useNavigate();
   const recaptchaRef = React.useRef(null);
   const credentialsRef = React.useRef({ email: '', password: '' });
+  const submittingRef = React.useRef(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const recaptchaSiteKey = import.meta.env.VITE_GOOGLE_CAPTCHA_HTML?.trim();
   const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
@@ -27,7 +29,7 @@ export default function LoginPage({ signin }) {
   // ── Authentication logic (unchanged) ────────────────────────────────
 
   const performLogin = () => {
-    CustomsDataService.appLoginCompatible(credentialsRef.current)
+    return CustomsDataService.appLoginCompatible(credentialsRef.current)
       .then((response) => {
         let userInfo = {};
 
@@ -103,22 +105,48 @@ export default function LoginPage({ signin }) {
       });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if (submittingRef.current) return;
 
-    if (isLocalhost || !recaptchaSiteKey || !recaptchaRef.current) {
-      performLogin();
+    const { email, password } = credentialsRef.current;
+    if (!email.trim() || !password) {
+      swalError({
+        title: 'DATOS INCOMPLETOS',
+        text: 'Ingrese su correo electrónico y contraseña.',
+      });
       return;
     }
 
-    recaptchaRef.current
-      .executeAsync()
-      .then(() => {
-        performLogin();
-      })
-      .catch((e) => {
-        console.log(e);
+    submittingRef.current = true;
+    setIsSubmitting(true);
+    let captchaTimer;
+    try {
+      if (!isLocalhost && recaptchaSiteKey) {
+        if (!recaptchaRef.current) throw new Error('Captcha not ready');
+        recaptchaRef.current.reset();
+        const token = await Promise.race([
+          recaptchaRef.current.executeAsync(),
+          new Promise((_, reject) => {
+            captchaTimer = setTimeout(() => reject(new Error('Captcha timeout')), 15000);
+          }),
+        ]);
+        clearTimeout(captchaTimer);
+        if (!token) throw new Error('Captcha verification failed');
+      }
+      await performLogin();
+    } catch {
+      swalError({
+        title: 'VERIFICACIÓN NO DISPONIBLE',
+        text: 'La verificación de seguridad no respondió. Intente nuevamente.',
+        footer: 'Compruebe que su navegador permita cargar Google reCAPTCHA.',
       });
+    } finally {
+      clearTimeout(captchaTimer);
+      recaptchaRef.current?.reset();
+      submittingRef.current = false;
+      setIsSubmitting(false);
+    }
   };
 
   const doLogin = () => {
@@ -229,9 +257,11 @@ export default function LoginPage({ signin }) {
 
             <button
               type="submit"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
               className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 w-full border-0 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition-all duration-150 shadow-sm"
             >
-              Iniciar sesión
+              {isSubmitting ? 'Ingresando…' : 'Iniciar sesión'}
             </button>
 
             {recaptchaSiteKey ? (
