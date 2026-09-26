@@ -22,6 +22,8 @@ import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
+import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -140,11 +142,16 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
     const [tn, setTn] = useState(undefined);
+    const [actaSimple, setActaSimple] = useState(false);
 
     useEffect(() => {
         setItem_Record();
         retrieveItem(currentId);
     }, []);
+
+    useEffect(() => {
+        setActaSimple(false);
+    }, [currentId]);
 
     useEffect(() => {
         if (!currentItem?.id_public || !currentRecord) return;
@@ -243,19 +250,25 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         const mergedPdf = await PDFDocument.create();
 
         var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        var formPdfBytes = formPdfResponse.data;
         var pdfDocLaw = await PDFDocument.load(formPdfBytes);
         const copiedPagesA = await mergedPdf.copyPages(pdfDocLaw, pdfDocLaw.getPageIndices());
         copiedPagesA.forEach((page) => mergedPdf.addPage(page));
 
         formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
-        formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        formPdfBytes = formPdfResponse.data;
         var pdfDocArc = await PDFDocument.load(formPdfBytes);
         const copiedPagesB = await mergedPdf.copyPages(pdfDocArc, pdfDocArc.getPageIndices());
         copiedPagesB.forEach((page) => mergedPdf.addPage(page));
 
         formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
-        formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        formPdfBytes = formPdfResponse.data;
         var pdfDocEng = await PDFDocument.load(formPdfBytes);
         const copiedPagesC = await mergedPdf.copyPages(pdfDocEng, pdfDocEng.getPageIndices());
         copiedPagesC.forEach((page) => mergedPdf.addPage(page));
@@ -514,20 +527,17 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             if (_review !== false && _date !== false) return true
             return false;
         }
-        let _CHECK_ENG_REPORT = () => {
-            var _CHILD = currentItem.record_eng;
+        let _CHECK_ENG_REPORT = (item = currentItem) => {
+            var _CHILD = item?.record_eng;
             if (!_CHILD) return false;
             _CHILD = _CHILD.record_eng_reviews;
-            if (!_CHILD.length) return false;
-            let revision = currentItem.record_law.version;
-            revision = Number(revision) - 1;
-            if (!_CHILD[revision]) return false;
-
-            let _review = _CHILD[revision].check ?? false;
-            let _date = _CHILD[revision].date ?? false;
-
-            if (_review !== false && _date !== false) return true
-            return false;
+            if (!Array.isArray(_CHILD) || !_CHILD.length) return false;
+            return _CHILD.some((review) => (
+                Number(review.version) === Number(item?.version)
+                && review.check !== null
+                && review.check !== undefined
+                && Boolean(String(review.date ?? '').trim())
+            ));
         }
         let _CHECK_ARC_REPORT = () => {
             var _CHILD = currentItem.record_arc;
@@ -599,6 +609,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
         let _CHANGE_VALUES_ENG = (_reviews, i) => {
             document.getElementById('record_pdf_worker_name_eng').value = _reviews[i].worker;
+            document.getElementById('record_pdf_check_eng').value = _reviews[i].check == 1 ? 'VIABLE' : 'NO VIABLE';
             document.getElementById('record_pdf_date_eng').value = _reviews[i].date;
 
             document.getElementById('record_pdf_check_1_v_eng').value = _reviews[i].check == 1 ? 'VIABLE' : 'NO VIABLE';
@@ -1076,7 +1087,11 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             <input className='form-control' id={"record_pdf_worker_name_eng"} disabled defaultValue={reviews_eng[0].worker} />
                         </div>
                     </div>
-                    <div className="col"></div>
+                    <div className="col">
+                        <div className="input-group input-group-sm">
+                            <input className='form-control' id={"record_pdf_check_eng"} disabled defaultValue={reviews_eng[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
+                        </div>
+                    </div>
                     <div className="col">
                         <div className="input-group input-group-sm">
                             <input className='form-control' id={"record_pdf_date_eng"} disabled defaultValue={reviews_eng[0].date} />
@@ -1122,7 +1137,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 <div className="row my-3">
                     <div className="col d-flex justify-content-center">
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_simple" />
+                            <input type="checkbox" className="form-check-input" id="record_rew_simple" checked={actaSimple} onChange={(e) => setActaSimple(e.target.checked)} />
                             <label className="form-check-label" htmlFor="exampleCheck1">Acta simple</label>
                         </div>
                     </div>
@@ -1511,7 +1526,27 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 });
         }
 
-        let creae_pdf = () => {
+        let creae_pdf = async () => {
+            const structuralRequired = String(currentItem.rules || '').split(';')[1] !== '1';
+            if (structuralRequired) {
+                try {
+                    const response = await FUN_SERVICE.get(currentItem.id);
+                    if (!_CHECK_ENG_REPORT(response.data)) {
+                        return swalError({
+                            title: 'REVISIÓN ESTRUCTURAL INCOMPLETA',
+                            text: `Debe existir una revisión estructural completa para la versión ${currentItem.version} antes de generar el acta.`
+                        });
+                    }
+                } catch (e) {
+                    console.log(e);
+                    return swalError({
+                        title: 'ERROR AL VALIDAR REVISIÓN ESTRUCTURAL',
+                        text: 'No fue posible validar la revisión estructural. Inténtelo nuevamente.',
+                        icon: 'warning',
+                    });
+                }
+            }
+
             var formData = new FormData();
             formData.set('id', currentItem.id);
             formData.set('version', currentItem.version);
@@ -1524,8 +1559,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             formData.set('r_footer', r_footer);
             let r_pagination = document.getElementById("record_rew_pagination").checked;
             formData.set('r_pagination', r_pagination);
-            let r_simple = document.getElementById("record_rew_simple").checked;
-            formData.set('r_simple', r_simple);
+            formData.set('r_simple', actaSimple);
             //let r_notdig = document.getElementById("record_rew_notdig").checked;
             //formData.set('r_notdig', r_notdig);
             //let r_notdig_pro = document.getElementById("record_rew_notdig_pro").value;
@@ -1584,16 +1618,21 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_REVIEW_SERVICE.pdfgen(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.artifactId) {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordrew/" + "ACTA OBSERVACIONES Y CORECCIONES " + currentItem.id_public + ".pdf");
+                        const filename = `ACTA OBSERVACIONES Y CORECCIONES ${currentItem.id_public}.pdf`;
+                        return downloadGeneratedPdf(response, `/pdf/recordrew/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    swalError({
+                        title: swaMsg.generic_eror_title,
+                        text: e.response?.data?.message || swaMsg.generic_error_text,
+                        icon: 'warning'
+                    });
                 });
         }
         let CREATE_PDF_CHECK = () => {

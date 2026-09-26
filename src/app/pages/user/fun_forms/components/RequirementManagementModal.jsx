@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import Icon from '@/components/icon';
 import { Button } from '@/components/ui/button';
+import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
 import { buildDocumentPreviewUrl } from '@/app/pages/user/shared/expediente-documental.utils';
 import './fun_modal_shared.css';
 
@@ -269,10 +270,10 @@ export default function RequirementManagementModal({ open, requirement, vrs, dig
             {previewEntry && <p className="text-xs text-muted-foreground">{previewEntry.documentCode} · {previewEntry.documentName}</p>}
           </div>
           {previewEntry ? (
-            <iframe
+            <ProtectedDocumentPreview
               title="Previsualización de documento"
               className="h-[min(62vh,640px)] min-h-[420px] w-full rounded-lg border border-border"
-              src={previewEntry.previewUrl || 'about:blank'}
+              source={previewEntry.previewUrl}
             />
           ) : (
             <div className="flex h-[min(62vh,640px)] min-h-[420px] items-center justify-center rounded-lg border border-dashed border-border px-4 text-center text-sm text-muted-foreground">

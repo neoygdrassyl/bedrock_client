@@ -5,6 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documento</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .executory-closing {
+            margin-top: 0.75rem;
+        }
+
+        .executory-closing #document-issued {
+            margin: 0;
+        }
+
+        .executory-signature {
+            margin-top: 4.8em;
+        }
+
+        custom-header {
+            display: block;
+            margin: 0;
+        }
+
+        .document-title {
+            margin-top: 0.5rem;
+        }
+
+        #exec-act-header-call {
+            font-size: 9pt !important;
+            line-height: 1.2;
+            white-space: pre-line;
+            margin: 0.25rem auto 0 !important;
+            padding: 0 !important;
+        }
+    </style>
 
 </head>
 <body>
@@ -17,19 +47,16 @@
             <!-- Título y máster en mayúsculas -->
             <h4 id="exec-act-header-title" class="text-center leading-none bold m-0 p-0"></h4>
             <!-- Línea de llamada más pequeña Arial narrow-->
-            <p id="exec-act-header-call" class="text-center mt-1 mb-4 m-0 p-0 bold mx-auto" class="text-size-smaller" style="width: 50%;"></p>
+            <p id="exec-act-header-call" class="text-center bold mx-auto text-size-smaller" style="width: 50%;"></p>
         </div>
 
         <considerate-section></considerate-section>
         <resolutive-section></resolutive-section>
 
-        <div id="final-document" class="avoid-break text-size-small" style="text-align: left;  line-height: 1.6;">
-            <br>
+        <div id="final-document" class="avoid-break text-size-small executory-closing" style="text-align: left; line-height: 1.6;">
             <p id="document-issued">Expedida en [CIUDAD] el [FECHA]</p>
-            
-            <br><br><br><br>
 
-            <div style="margin:0;">
+            <div class="executory-signature">
                 <div id="signature-name" style="font-weight:700;"></div>
                 <div id="signature-job" style="font-weight:700; margin:0;"></div>
                 <div class="text-size-smaller" id="signature-name-law">Abg. XXXX</div>
@@ -46,5 +73,3 @@
     </script>
 </body>
 </html>
-
-

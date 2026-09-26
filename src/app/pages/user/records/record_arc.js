@@ -30,6 +30,7 @@ import RECORD_ARC_AREAS from './arc/record_arc_areas.component';
 import RECORD_ARC_DESC from './arc/record_arc_desc';
 import RECORD_ARC_CONTROL from './arc/record_arc_control.component';
 import RECORD_ARC_GEN_2_REVIEW from './arc/record_arc_gem2_review.component';
+import './arc/record_arc_typography.css';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 
@@ -41,6 +42,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
     const [loaded, setLoaded] = useState(false);
     const [pqrsxfun, setPqrsxfun] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
+    const [inventoryExpanded, setInventoryExpanded] = useState(false);
 
     const setItem_RecordArc = useCallback((id) => {
         RECORD_ARCSERVICE.getRecord(id || currentId)
@@ -190,86 +192,39 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                 { desc: 'ESPACIO PUBLICO', v: subc[2], id: 2, },
                 { desc: 'NSR10', v: subc[3], id: 3, },
             ]
-            return <>
-                <div className='row'>
-                    <div className='col-10 ms-5'>
-                        <label className='fw-bold'>3.2. Identificación de la Solicitud</label>
-                    </div>
-                    <div className='col text-end'>
-                        <div className="custom-control custom-switch">
-                            <div className="form-check form-switch">
-                                <input className="form-check-input" type="checkbox" checked readOnly disabled />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='col-10 ms-5'>
-                        <label className='fw-bold'>3.3 Descripción de la Actuación Urbanística</label>
-                    </div>
-                    <div className='col'>
-                        <div className="custom-control custom-switch">
-                            <div className="form-check form-switch">
-                                <input className="form-check-input" type="checkbox" checked readOnly disabled />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {_GET_CHILD_1().item_1.includes("F")
-                    ? <>
-                        <div className='row'>
-                            <div className='col-10 ms-5'>
-                                <label className='fw-bold'>CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO</label>
-                            </div>
-                            <div className='col text-end'>
-                                <div className="custom-control custom-switch">
-                                    <div className="form-check form-switch">
-                                        <input className="form-check-input" type="checkbox" checked readOnly disabled />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='row'>
-                            <div className='col-10 ms-5'>
-                                <label className='fw-bold'>INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL</label>
-                            </div>
-                            <div className='col'>
-                                <div className="custom-control custom-switch">
-                                    <div className="form-check form-switch">
-                                        <input className="form-check-input" type="checkbox" checked readOnly disabled />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </> : ''}
-                {subcategories.map((itemm, i) => {
-                    return <div key={`subcategory-${i}-${itemm.desc}`} className='row'>
-                        <div className='col-10 ms-5'>
-                            <label className='fw-bold'>3.{i + 4}. {itemm.desc}</label>
-                        </div>
-                        <div className='col text-end'>
-                            <div className="custom-control custom-switch">
-                                <div className="form-check form-switch">
-                                    <input className="form-check-input" type="checkbox" defaultChecked={itemm.v == '1' ? true : false}
-                                        name={'sc_checbox'} onChange={() => update_subcategory(false)} />
-                                </div>
-                            </div>
+            let contentControls = [
+                { id: 'identification', desc: '3.2. IDENTIFICACIÓN DE LA SOLICITUD', locked: true },
+                { id: 'description', desc: '3.3. DESCRIPCIÓN DE LA ACTUACIÓN URBANÍSTICA', locked: true },
+            ];
+
+            if (_GET_CHILD_1().item_1.includes('F')) {
+                contentControls.push(
+                    { id: 'decree-1077', desc: 'CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO', locked: true },
+                    { id: 'planning-secretariat', desc: 'INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL', locked: true },
+                );
+            }
+
+            contentControls = contentControls.concat(subcategories.map((itemm, i) => ({
+                id: `subcategory-${itemm.id}`,
+                desc: `3.${i + 4}. ${itemm.desc}`,
+                checked: itemm.v == '1',
+            })));
+            contentControls.push({ id: 'viability', desc: '3.8 VIABILIDAD ARQUITECTÓNICA', locked: true });
+
+            return <div className="record-arc-content-control-list">
+                {contentControls.map((item) => {
+                    const inputId = `record-arc-content-control-${item.id}`;
+                    return <div key={item.id} className="record-arc-content-control-row">
+                        <label htmlFor={inputId} className="record-arc-content-control-label fw-bold">{item.desc}</label>
+                        <div className="form-check form-switch record-arc-content-control-switch">
+                            {item.locked
+                                ? <input id={inputId} className="form-check-input" type="checkbox" checked readOnly disabled />
+                                : <input id={inputId} className="form-check-input" type="checkbox" defaultChecked={item.checked}
+                                    name="sc_checbox" onChange={() => update_subcategory(false)} />}
                         </div>
                     </div>
                 })}
-                <div className='row'>
-                    <div className='col-10 ms-5'>
-                        <label className='fw-bold'>3.8 VIABILIDAD ARQUITECTÓNICA</label>
-                    </div>
-                    <div className='col'>
-                        <div className="custom-control custom-switch">
-                            <div className="form-check form-switch">
-                                <input className="form-check-input" type="checkbox" checked readOnly disabled />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </>
+            </div>
         }
 
         let new_record_arc = () => {
@@ -320,61 +275,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                         {currentRecord
                             ? <>
                                 <fieldset className="p-3">
-                                    <legend className="my-2 px-3 Collapsible" id="record_arc_31">
-                                        <label className="app-p lead fw-normal">3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</label>
-                                    </legend>
-                                    <RecordReviewWorkspace
-                                        inventoryLabel="3.1.1 Inventario de Información Aportada"
-                                        documentsLabel="3.1.2 Expediente documental"
-                                        inventoryContent={<RECORD_LAW_DOCSCHECK
-                                            _FUN_1={_GET_CHILD_1()}
-                                            _FUN_6={_GET_CHILD_6()}
-                                            _FUN_R={_GET_CHILD_REVIEW()}
-                                            currentItem={currentItem}
-                                            currentVersion={currentVersion}
-                                            requestUpdate={requestUpdate}
-                                            requestUpdateRecord={requestUpdateRecord}
-                                            readOnly={false}
-                                            docsScope={'arc'}
-                                            hideNotApplicableDefault
-                                            showFilters
-                                        />}
-                                        documentsContent={<FUN_6_VIEW
-                                                translation={translation}
-                                                swaMsg={swaMsg}
-                                                globals={globals}
-                                                currentItem={currentItem}
-                                                currentId={currentId}
-                                                currentVersion={currentVersion}
-                                                requestUpdate={requestUpdate}
-                                                readOnly
-                                                mergeVentanilla
-                                            />}
-                                        professionalsLabel="Profesionales del proyecto"
-                                        professionalsContent={<RECORD_ENG_PROFESIONALS
-                                            _FUN_52={_GET_CHILD_52()}
-                                            _FUN_6={_GET_CHILD_6()}
-                                            currentRecord={currentRecord}
-                                            profs={[
-                                                ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
-                                                ['ARQUITECTO PROYECTISTA'],
-                                            ]}
-                                        />}
-                                    />
-
-                                </fieldset>
-                                {_GLOBAL_ID == 'cb1' ?
-                                    <fieldset className="p-3">
-                                        <legend className="my-2 px-3 bg-success" id="record_arc_sub">
-                                            <label className="app-p lead fw-normal text-light">CONTROL DE CONTENIDO</label>
-                                        </legend>
-                                        {_SUBCATEGORY_COMPONENT()}
-                                    </fieldset>
-                                    : ''}
-
-                                <fieldset className="p-3">
                                     <legend className="my-2 px-3 Collapsible" id="record_arc_32">
-                                        <label className="app-p lead fw-normal">3.2 Identificación de la Solicitud</label>
+                                        <label className="app-p lead fw-normal">3.2. IDENTIFICACIÓN DE LA SOLICITUD</label>
                                     </legend>
                                     <RECORD_ARC_32
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -415,12 +317,72 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                     </> : null}
 
                                 </fieldset>
+                                <fieldset className="p-3">
+                                    <legend className="my-2 px-3 Collapsible" id="record_arc_31">
+                                        <label className="app-p lead fw-normal">3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</label>
+                                    </legend>
+                                    <RecordReviewWorkspace
+                                        inventoryLabel="3.1.1 Inventario de Información Aportada"
+                                        documentsLabel="3.1.2 Expediente documental"
+                                        inventoryExpanded={inventoryExpanded}
+                                        inventoryContent={<RECORD_LAW_DOCSCHECK
+                                            _FUN_1={_GET_CHILD_1()}
+                                            _FUN_6={_GET_CHILD_6()}
+                                            _FUN_R={_GET_CHILD_REVIEW()}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            readOnly={false}
+                                            docsScope={'arc'}
+                                            compactModalityLabels
+                                            expandable
+                                            showAttachmentColumns={false}
+                                            useEditableGrid
+                                            expanded={inventoryExpanded}
+                                            onExpandedChange={setInventoryExpanded}
+                                            hideNotApplicableDefault
+                                            showFilters
+                                        />}
+                                        documentsContent={<FUN_6_VIEW
+                                                translation={translation}
+                                                swaMsg={swaMsg}
+                                                globals={globals}
+                                                currentItem={currentItem}
+                                                currentId={currentId}
+                                                currentVersion={currentVersion}
+                                                requestUpdate={requestUpdate}
+                                                readOnly
+                                                mergeVentanilla
+                                            />}
+                                        professionalsLabel="Profesionales del proyecto"
+                                        professionalsContent={<RECORD_ENG_PROFESIONALS
+                                            _FUN_52={_GET_CHILD_52()}
+                                            _FUN_6={_GET_CHILD_6()}
+                                            currentRecord={currentRecord}
+                                            profs={[
+                                                ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
+                                                ['ARQUITECTO PROYECTISTA'],
+                                            ]}
+                                        />}
+                                    />
+
+                                </fieldset>
+                                {_GLOBAL_ID == 'cb1' ?
+                                    <fieldset className="p-3">
+                                        <legend className="my-2 px-3 bg-success" id="record_arc_sub">
+                                            <label className="app-p lead fw-normal text-light">CONTROL DE CONTENIDO</label>
+                                        </legend>
+                                        {_SUBCATEGORY_COMPONENT()}
+                                    </fieldset>
+                                    : ''}
+
                                 {_GLOBAL_ID == 'cb1' ?
                                     <>
 
                                         <fieldset className="p-3">
                                             <legend className="my-2 px-3 Collapsible" id="record_arc_33">
-                                                <label className="app-p lead fw-normal">3.3 Descripción de la Actuación Urbanística</label>
+                                                <label className="app-p lead fw-normal">3.3. DESCRIPCIÓN DE LA ACTUACIÓN URBANÍSTICA</label>
                                             </legend>
                                             <RECORD_ARC_33
                                                 translation={translation} swaMsg={swaMsg} globals={globals}

@@ -33,6 +33,10 @@ vi.mock('../app/layouts/AppShell', () => ({
   AppShell: ({ children }) => <div data-testid="app-shell">{children}</div>,
 }));
 
+vi.mock('../app/layouts/BusinessCalendarBootstrap', () => ({
+  default: ({ children }) => children,
+}));
+
 vi.mock('@/components/ui/sonner', () => ({
   Toaster: () => <div data-testid="toaster" />,
 }));

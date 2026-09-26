@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
 import DataTable from '@/components/data-table-bridge';
@@ -6,11 +6,16 @@ import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
-function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
+function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, initialEdit }) {
     const [isNew, setIsNew] = useState(false);
     const [edit, setEdit] = useState(false);
     const [legal, setLegal] = useState(false);
+
+    useEffect(() => {
+        if (initialEdit?.id) setEdit(initialEdit);
+    }, [initialEdit]);
 
     useEffect(() => {
         if (edit !== false) {
@@ -65,11 +70,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
         // DATA COVERTERS
         let _CHILD_6_SELECT = () => {
             let _LIST = _GET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
-            }
-            return <>{_COMPONENT}</>
+            return _LIST.map((item, index) => (
+                <option key={`fun6-${item.id ?? index}`} value={item.id}>{item.description}</option>
+            ));
         }
         let _FIND_6 = (_ID) => {
             let _LIST = _GET_CHILD_6();
@@ -86,16 +89,16 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
+            _COMPONENT.push(<Fragment key="document-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
                     icon={'IdCard'} color={'DeepSkyBlue'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[1] > 0
+            _COMPONENT.push(<Fragment key="document-1">{_array[1] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
                     icon={'BadgeCheck'} color={'DarkOrchid'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
             return <>{_COMPONENT}</>
         }
@@ -681,9 +684,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 Collapsible" id="funn_51">
-                    <label className="app-p lead text-center fw-normal">5.1 Titular(es) de la Licencia</label>
-                </legend>
+                <FunUpdateSectionLegend id="funn_51" step="5.1">Titular(es) de la Licencia</FunUpdateSectionLegend>
                 <div className="form-check ms-5">
                     <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label className="form-check-label" htmlFor="flexCheckDefault">

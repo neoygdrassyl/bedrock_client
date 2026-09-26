@@ -1,4 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
+import { EditableDataGrid } from '@/components/editable-data-grid';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import perfilData from '../../../../components/jsons/perfilesData.json';
 import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
@@ -281,6 +282,59 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                 { name: 'Área Total construida', n: 'Mas de 0', p: totalBuild ?? '', e: totalBuild > 0 },
                 { name: 'Institucional Público', n: 'No', p: 'Profesional debe revisar', },
             ]
+            const liquidationColumns = [
+                { id: 'use', header: 'Uso', width: 175, align: 'center' },
+                { id: 'treatment', header: 'Trata.', width: 120, align: 'center' },
+                { id: 'zgu', header: 'ZGU', width: 150, align: 'center' },
+                { id: 'generator', header: 'Gen.', width: 100, align: 'center' },
+                { id: 'quantity', header: 'Cant.', width: 100, align: 'center' },
+                { id: 'area-quantity', header: 'm2*Cant.', width: 110, align: 'center' },
+                { id: 'area-compensation', header: 'm2*Comp.', width: 120, align: 'center' },
+                { id: 'compensation-value', header: 'Valor Comp.', width: 140, align: 'center' },
+            ];
+            let liquidationRows = [];
+            if (_CHECK[0] == 1) {
+                liquidationRows = [[
+                    { id: 'liquidation-summary', value: 'Consecutivo:', readOnly: true, className: 'font-semibold' },
+                    { value: currentItem.expedition ? (currentItem.expedition.cub2 ?? '') : '', readOnly: true },
+                    { value: 'Valor Liquidado:', readOnly: true, className: 'font-semibold' },
+                    { value: `$${Math.round(Number(m2comp * value35[2] * json34.zugm) + Number(0.06 * value35[0] * json34.zugm))}`, readOnly: true },
+                    { value: 'Nr Recibo:', readOnly: true, className: 'font-semibold' },
+                    { value: recipeId ? recipeId.id_payment_3 || '' : '', readOnly: true },
+                    { value: 'Cancelado', readOnly: true, className: 'font-semibold' },
+                    { value: dutyClock, readOnly: true },
+                ]];
+                if (Math.round(m2comp * value35[2] * json34.zugm) > 0) liquidationRows.push([
+                    { id: 'housing-liquidation', value: 'Diferente a vivienda', readOnly: true },
+                    { value: tra, readOnly: true },
+                    { value: `${json34.zgu} / $${json34.zugm}`, readOnly: true },
+                    { value: 'Unidad', readOnly: true },
+                    { value: value35[2], readOnly: true },
+                    { value: m2comp, readOnly: true },
+                    { value: `${m2comp * value35[2]} m2`, readOnly: true },
+                    { value: `$${Math.round(m2comp * value35[2] * json34.zugm)}`, readOnly: true },
+                ]);
+                if ((0.06 * value35[0] * json34.zugm).toFixed(0) > 0) liquidationRows.push([
+                    { id: 'commerce-liquidation', value: 'Comercio', readOnly: true },
+                    { value: tra, readOnly: true },
+                    { value: `${json34.zgu} / $${json34.zugm}`, readOnly: true },
+                    { value: 'm2', readOnly: true },
+                    { value: value35[0], readOnly: true },
+                    { value: 0.06, readOnly: true },
+                    { value: `${(0.06 * value35[0]).toFixed(2)} m2`, readOnly: true },
+                    { value: `$${(0.06 * value35[0] * json34.zugm).toFixed(0)}`, readOnly: true },
+                ]);
+                liquidationRows.push([
+                    { id: 'liquidation-total', value: '', readOnly: true },
+                    { value: '', readOnly: true },
+                    { value: '', readOnly: true },
+                    { value: '', readOnly: true },
+                    { value: '', readOnly: true },
+                    { value: 'TOTAL: ', readOnly: true, className: 'font-semibold' },
+                    { value: `${(Number(0.06 * value35[0]) + Number(m2comp * value35[2])).toFixed(2)} m2`, readOnly: true, className: 'font-semibold' },
+                    { value: `$${Math.round(Number(m2comp * value35[2] * json34.zugm) + Number(0.06 * value35[0] * json34.zugm))}`, readOnly: true, className: 'font-semibold' },
+                ]);
+            }
             return <>
                 <div className='row border text-center border-dark'>
                     <div className='col-3 fw-bold'>
@@ -325,63 +379,13 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                 </div>
                 {_CHECK[0] == 1 ?
-                    <>
-                        <div className='row border'>
-                            <div className='col text-end fw-bold'>Consecutivo:</div>
-                            <div className='col'>{currentItem.expedition ? (currentItem.expedition.cub2 ?? '') : ''}</div>
-                            <div className='col text-center fw-bold'>Valor Liquidado:</div>
-                            <div className='col'>${Math.round(Number(m2comp * value35[2] * json34.zugm) + Number(0.06 * value35[0] * json34.zugm))}</div>
-                            <div className='col text-center fw-bold'>Nr Recibo:</div>
-                            <div className='col'>{recipeId ? recipeId.id_payment_3 || '' : ''}</div>
-                            <div className='col text-center fw-bold'>Cancelado</div>
-                            <div className='col'>{dutyClock}</div>
-                        </div>
-                        <div className='row border mt-2'>
-                            <div className='col text-center fw-bold'>Uso</div>
-                            <div className='col text-center fw-bold'>Trata.</div>
-                            <div className='col text-center fw-bold'>ZGU</div>
-                            <div className='col text-center fw-bold'>Gen.</div>
-                            <div className='col text-center fw-bold'>Cant.</div>
-                            <div className='col text-center fw-bold'>m2*Cant.</div>
-                            <div className='col text-center fw-bold'>m2*Comp.</div>
-                            <div className='col text-center fw-bold'>Valor Comp.</div>
-                        </div>
-                        {Math.round(m2comp * value35[2] * json34.zugm) > 0 ?
-                            <div className='row border'>
-                                <div className='col text-center'>Diferente a vivienda</div>
-                                <div className='col text-center'>{tra}</div>
-                                <div className='col text-center'>{json34.zgu} / ${json34.zugm}</div>
-                                <div className='col text-center'>Unidad</div>
-                                <div className='col text-center'>{value35[2]}</div>
-                                <div className='col text-center'>{m2comp}</div>
-                                <div className='col text-center'>{m2comp * value35[2]} m2</div>
-                                <div className='col text-center'>${Math.round(m2comp * value35[2] * json34.zugm)}</div>
-                            </div>
-                            : ''}
-                        {(0.06 * value35[0] * json34.zugm).toFixed(0) > 0 ?
-                            <div className='row border'>
-                                <div className='col text-center'>Comercio</div>
-                                <div className='col text-center'>{tra}</div>
-                                <div className='col text-center'>{json34.zgu} / ${json34.zugm}</div>
-                                <div className='col text-center'>m2</div>
-                                <div className='col text-center'>{value35[0]}</div>
-                                <div className='col text-center'>{0.06}</div>
-                                <div className='col text-center'>{(0.06 * value35[0]).toFixed(2)} m2</div>
-                                <div className='col text-center'>${(0.06 * value35[0] * json34.zugm).toFixed(0)}</div>
-                            </div>
-                            : ''}
-
-                        <div className='row border'>
-                            <div className='col text-center'></div>
-                            <div className='col text-center'></div>
-                            <div className='col text-center'></div>
-                            <div className='col text-center'></div>
-                            <div className='col text-center'></div>
-                            <div className='col text-center fw-bold'>TOTAL: </div>
-                            <div className='col text-center fw-bold'>{(Number(0.06 * value35[0]) + Number(m2comp * value35[2])).toFixed(2)} m2</div>
-                            <div className='col text-center fw-bold'>${Math.round(Number(m2comp * value35[2] * json34.zugm) + Number(0.06 * value35[0] * json34.zugm))}</div>
-                        </div>
-                    </>
+                    <EditableDataGrid
+                        ariaLabel="Liquidación de deberes urbanísticos"
+                        columns={liquidationColumns}
+                        rows={liquidationRows}
+                        getRowId={(row) => row[0].id}
+                        spreadsheetInteractions={false}
+                    />
                     : ''}
 
             </>

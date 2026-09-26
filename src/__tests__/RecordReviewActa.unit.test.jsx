@@ -53,6 +53,22 @@ describe('resolveStructuralReviewDate', () => {
 });
 
 describe('acta de observaciones review rules', () => {
+    it('mantiene Acta simple en estado local y no lo lee desde el DOM global', () => {
+        const source = readRecordReviewSource();
+
+        expect(source).toContain('const [actaSimple, setActaSimple] = useState(false);');
+        expect(source).toContain('checked={actaSimple}');
+        expect(source).toContain("formData.set('r_simple', actaSimple);");
+        expect(source).not.toContain('document.getElementById("record_rew_simple").checked');
+    });
+
+    it('reinicia Acta simple al cambiar de expediente', () => {
+        const source = readRecordReviewSource();
+
+        expect(source).toContain('setActaSimple(false);');
+        expect(source).toContain('}, [currentId]);');
+    });
+
     it('REALIZAR REVISION no consulta informes disciplinares antes de confirmar el acta', () => {
         const source = readRecordReviewSource();
         const reviewHandler = sliceSource(source, 'let review = () => {', 'let save_review =');

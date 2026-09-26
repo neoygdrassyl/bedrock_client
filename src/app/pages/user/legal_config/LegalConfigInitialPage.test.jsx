@@ -572,10 +572,100 @@ describe('LegalConfigInitialPage', () => {
     await screen.findAllByText(/Plano principal/);
     fireEvent.change(screen.getByRole('textbox', { name: 'Buscar documentos' }), { target: { value: 'variante' } });
 
+    // Exact names: the variant row also reads "Variante de Plano principal".
     await waitFor(() => {
       const table = screen.getByRole('table');
-      expect(within(table).getByText(/Plano principal/)).toBeInTheDocument();
-      expect(within(table).getByText(/Plano variante/)).toBeInTheDocument();
+      expect(within(table).getByText('Plano principal')).toBeInTheDocument();
+      expect(within(table).getByText('Plano variante')).toBeInTheDocument();
     });
+  });
+
+  it('filters the actuation tree while preserving category, actuation, and modality context', async () => {
+    service.workspace.mockResolvedValue({
+      data: {
+        ...workspace,
+        actuations: [
+          { id: 'category', name: 'Licencias urbanísticas', code: 'D', node_kind: 'category', is_active: true, revision: 0 },
+          { id: 'construction', parent_id: 'category', name: 'Construcción', code: 'D_A', node_kind: 'actuation', is_active: true, revision: 0 },
+          { id: 'new-work', parent_id: 'construction', name: 'Obra nueva', code: 'D_A_01', node_kind: 'modality', is_active: true, revision: 0 },
+          ...workspace.actuations,
+        ],
+      },
+    });
+    render(<LegalConfigInitialPage />);
+
+    await screen.findByRole('button', { name: /^Licencias urbanísticas,/ });
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar actuación' }), { target: { value: 'obra nueva' } });
+
+    expect(actuationButton('Licencias urbanísticas')).toBeInTheDocument();
+    expect(actuationButton('Construcción')).toBeInTheDocument();
+    expect(actuationButton('Obra nueva')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Licencia,/ })).not.toBeInTheDocument();
+  });
+
+  it('gives document catalogue comboboxes distinct listbox IDs', async () => {
+    service.workspace.mockResolvedValue({ data: workspace });
+    render(<LegalConfigInitialPage />);
+
+    await findVariantInCatalog();
+    openDocumentForm();
+    const dialog = screen.getByRole('dialog', { name: 'Nuevo documento' });
+    const catalogueInputs = within(dialog).getAllByRole('combobox').filter((input) => input.hasAttribute('aria-controls'));
+    expect(catalogueInputs).toHaveLength(2);
+    expect(catalogueInputs[0].getAttribute('aria-controls')).not.toBe(catalogueInputs[1].getAttribute('aria-controls'));
+    fireEvent.keyDown(catalogueInputs[1], { key: 'ArrowDown' });
+    const listbox = within(dialog).getByRole('listbox');
+    expect(listbox.id).toBe(catalogueInputs[1].getAttribute('aria-controls'));
+    expect(within(listbox).getByRole('option', { name: 'Firmado' }).id).toMatch(new RegExp(`^${listbox.id}-`));
+  });
+
+  // Contextual evaluation is configured per typology unit (schemaVersion 2).
+  // The fixture's "Plano principal" has one variant, so the variant is the
+  // selectable unit for the "Plano" typology.
+  const evaluationRegion = () => screen.getByRole('region', { name: 'Evaluación documental de Licencia' });
+  const configureVariantRequirement = async (requirement) => {
+    const region = await screen.findByRole('region', { name: 'Evaluación documental de Licencia' });
+    await waitFor(() => expect(within(region).getByRole('button', { name: 'Guardar' })).toBeEnabled());
+    fireEvent.click(within(region).getByRole('checkbox', { name: /Plano variante/ }));
+    fireEvent.change(within(region).getByRole('combobox', { name: 'Exigencia de Plano variante' }), { target: { value: requirement } });
+    fireEvent.click(within(region).getByRole('button', { name: 'Guardar' }));
+  };
+
+  it('saves contextual legal requirements for the selected actuation', async () => {
+    service.workspace.mockResolvedValue({ data: workspace });
+    render(<LegalConfigInitialPage />);
+
+    await findVariantInCatalog();
+    await configureVariantRequirement('optional');
+
+    await waitFor(() => expect(service.updateEvaluationConfig).toHaveBeenCalledWith('a', {
+      evaluation_config: expect.objectContaining({
+        typology_policies: [expect.objectContaining({
+          typology_id: 't',
+          units: [expect.objectContaining({ document_id: 'v', legal_requirement: 'optional' })],
+        })],
+      }),
+    }));
+  });
+
+  it('shows an accessible error when contextual evaluation is unavailable', async () => {
+    service.workspace.mockResolvedValue({ data: workspace });
+    service.evaluationConfig.mockRejectedValue({ response: { status: 404 } });
+    render(<LegalConfigInitialPage />);
+
+    await findVariantInCatalog();
+    expect(await within(evaluationRegion()).findByRole('alert')).toHaveTextContent('La evaluación contextual aún no está disponible en el servicio.');
+    expect(actuationButton('Licencia')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('shows an accessible server error when contextual evaluation cannot be saved', async () => {
+    service.workspace.mockResolvedValue({ data: workspace });
+    service.updateEvaluationConfig.mockRejectedValue({ response: { data: { message: 'La configuración fue modificada por otro administrador.' } } });
+    render(<LegalConfigInitialPage />);
+
+    await findVariantInCatalog();
+    await configureVariantRequirement('optional');
+
+    expect(await within(evaluationRegion()).findByRole('alert')).toHaveTextContent('No fue posible guardar la evaluación contextual. La configuración fue modificada por otro administrador.');
   });
 });

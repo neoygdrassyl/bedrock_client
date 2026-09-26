@@ -22,7 +22,7 @@ vi.mock('./arc/recordArcRichTextUpload', () => ({
 }));
 
 describe('RECORDS_BINNACLE', () => {
-    it('usa el lenguaje visual de observaciones sin volverse desplegable', async () => {
+    it('usa el lenguaje visual de observaciones', async () => {
         const service = {
             getRecord: vi.fn().mockResolvedValue({ data: [{ id: 11, binnacle: 'Bitácora inicial' }] }),
             update: vi.fn(),
@@ -89,6 +89,80 @@ describe('RECORDS_BINNACLE', () => {
         await waitFor(() => expect(service.getRecord).toHaveBeenCalledWith(26));
 
         expect(screen.getByTestId('mock-rich-text-editor')).toHaveAttribute('data-min-height', '140');
+    });
+
+    it('amplía la bitácora de texto plano según su contenido', async () => {
+        const service = {
+            getRecord: vi.fn().mockResolvedValue({ data: [{ id: 13, binnacle: '' }] }),
+            update: vi.fn(),
+        };
+
+        render(
+            <RECORDS_BINNACLE
+                translation={{}}
+                swaMsg={{}}
+                globals={{}}
+                currentItem={{ id: 27 }}
+                currentVersion={1}
+                currentRecord={{ id: 13 }}
+                currentVersionR={1}
+                SERVICE={service}
+                AIM="Estructural"
+                readOnly={false}
+                compact
+            />,
+        );
+
+        await waitFor(() => expect(service.getRecord).toHaveBeenCalledWith(27));
+
+        const textarea = screen.getByRole('textbox');
+        Object.defineProperty(textarea, 'scrollHeight', { configurable: true, value: 180 });
+        fireEvent.input(textarea, { target: { value: 'Observación estructural con varias líneas de detalle.' } });
+
+        expect(textarea.style.height).toBe('180px');
+    });
+
+    it('permite minimizar y maximizar cada bitácora sin perder su contenido', async () => {
+        const service = {
+            getRecord: vi.fn().mockResolvedValue({ data: [{ id: 14, binnacle: 'Observación jurídica' }] }),
+            update: vi.fn(),
+        };
+
+        const { container } = render(
+            <RECORDS_BINNACLE
+                translation={{}}
+                swaMsg={{}}
+                globals={{}}
+                currentItem={{ id: 28 }}
+                currentVersion={1}
+                currentRecord={{ id: 14 }}
+                currentVersionR={1}
+                SERVICE={service}
+                AIM="Jurídico"
+                readOnly={false}
+                compact
+            />,
+        );
+
+        await waitFor(() => expect(service.getRecord).toHaveBeenCalledWith(28));
+
+        const body = container.querySelector('.op__static-body');
+        const textarea = screen.getByRole('textbox');
+        const toggle = screen.getByRole('button', { name: 'Minimizar' });
+
+        expect(toggle).toHaveAttribute('aria-expanded', 'true');
+        expect(body).not.toHaveAttribute('hidden');
+
+        fireEvent.click(toggle);
+
+        expect(screen.getByRole('button', { name: 'Maximizar' })).toHaveAttribute('aria-expanded', 'false');
+        expect(body).toHaveAttribute('hidden');
+        expect(textarea).toHaveValue('Observación jurídica');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Maximizar' }));
+
+        expect(screen.getByRole('button', { name: 'Minimizar' })).toHaveAttribute('aria-expanded', 'true');
+        expect(body).not.toHaveAttribute('hidden');
     });
 
     it('limita la barra enriquecida de arquitectura a negrilla e imagen', async () => {

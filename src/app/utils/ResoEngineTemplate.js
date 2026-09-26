@@ -33,7 +33,7 @@ export class ResoEngineTemplate extends BaseDocumentUtils {
 
         this.setText("document-issued", `Notifíquese y cumplase, Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this._DATA.reso.reso_date)}`);
         this.setText("signature-name", `${this.data.curaduriaInfo.title.toUpperCase()} ${this.data.curaduriaInfo.master.toUpperCase()}`);
-        this.setText("signature-job", this.data.curaduriaInfo.job);
+        this.setText("signature-job", this.data.curaduriaInfo.signature_job || this.data.curaduriaInfo.job);
         this.setText("signature-name-law", "Proyectado/revisado por: "+this.data.curaduriaInfo.law || "Proyectado/revisado por: Abg. XXXX");
         return this.tempDiv.innerHTML;
     }
@@ -315,12 +315,12 @@ export class ResoEngineTemplate extends BaseDocumentUtils {
         let ACONF = this.LOAD_STEP('s34', 'arc');
         let ac_json = ACONF ? ACONF.json ? ACONF.json : {} : {};
         ac_json = this.getJSON_Simple(ac_json);
-        let area = ac_json.m2;
+        let area = ac_json && ac_json.m2 !== undefined && ac_json.m2 !== null ? ac_json.m2 : '';
 
         //doc.on('pageAdded', () => { return false });
         if (_DATA.reso.art_1_cb_tb == 'true') {
-            this.F2_TABLE_MANUAL(_DATA.reso.art_1_txt_tb);
-        } else this.TABLE_F2();
+            this.F2_TABLE_MANUAL(_DATA.reso.art_1_txt_tb, area);
+        } else this.TABLE_F2(false, area);
       
         // Pronombre y cargo
         this.setText('resolutive-pronoun-job', `${cur.pronoum || ''} ${cur.job || ''}`);

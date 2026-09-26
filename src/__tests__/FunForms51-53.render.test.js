@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { render, act } from '@testing-library/react';
+import { render, act, fireEvent, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // ─── External mocks ──────────────────────────────────────────────────────────
@@ -109,8 +109,22 @@ vi.mock('../app/components/ui', () => ({
 
 vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
-  default: ({ data, noDataComponent }) =>
-    React.createElement('div', { 'data-testid': 'datatable-stub' }, noDataComponent),
+  default: ({ columns = [], data = [], noDataComponent }) =>
+    React.createElement(
+      'div',
+      { 'data-testid': 'datatable-stub' },
+      data.length
+        ? data.map((row) => React.createElement(
+          'div',
+          { key: row.id },
+          columns.map((column, index) => React.createElement(
+            'span',
+            { key: `${row.id}-${index}` },
+            column.cell ? column.cell(row) : column.selector?.(row),
+          )),
+        ))
+        : noDataComponent,
+    ),
 }));
 
 vi.mock('../app/components/vizualizer.component', () => ({
@@ -321,5 +335,97 @@ describe('FunForms51-53 — Render (fun_n_51, fun_n_52, fun_n_53)', () => {
       ));
     });
     expect(container).toBeTruthy();
+  }, 60000);
+
+  test('fun_n_53 shows the registration CTA until the active version has an effective responsable', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <FUNN53 {...baseProps} />
+        </MemoryRouter>
+      );
+    });
+
+    const registerButton = screen.getByRole('button', { name: /registrar responsable/i });
+    expect(document.querySelector('#form_fun_53_manage')).toBeNull();
+
+    fireEvent.click(registerButton);
+
+    expect(document.querySelector('#form_fun_53_manage')).not.toBeNull();
+    expect(screen.getByText('5.3.1 Nombre')).toBeTruthy();
+  }, 60000);
+
+  test('fun_n_53 preserves the active version responsable data in the table', async () => {
+    const props = {
+      ...baseProps,
+      currentItem: {
+        ...minimalCurrentItem,
+        fun_53s: [
+          {
+            id: 12,
+            version: 1,
+            name: 'Carlos',
+            surname: 'García',
+            id_number: '11223344',
+            role: 'APODERADO',
+            number: '3001122334',
+            email: 'carlos@test.com',
+            address: 'Calle 10 #5-20',
+            docs: '0,0',
+          },
+        ],
+      },
+    };
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <FUNN53 {...props} />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByTestId('datatable-stub')).toHaveTextContent('Carlos García');
+    expect(screen.getByTestId('datatable-stub')).toHaveTextContent('11223344');
+    expect(screen.getByTestId('datatable-stub')).toHaveTextContent('carlos@test.com');
+    expect(screen.queryByRole('button', { name: /registrar responsable/i })).toBeNull();
+    expect(document.querySelector('#form_fun_53_manage')).toBeNull();
+  }, 60000);
+
+  test('fun_n_53 opens the prefilled form from the table edit action', async () => {
+    const props = {
+      ...baseProps,
+      currentItem: {
+        ...minimalCurrentItem,
+        fun_53s: [
+          {
+            id: 12,
+            version: 1,
+            name: 'Carlos',
+            surname: 'García',
+            id_number: '11223344',
+            role: 'APODERADO',
+            number: '3001122334',
+            email: 'carlos@test.com',
+            address: 'Calle 10 #5-20',
+            docs: '0,0',
+          },
+        ],
+      },
+    };
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <FUNN53 {...props} />
+        </MemoryRouter>
+      );
+    });
+
+    fireEvent.click(screen.getByTitle('Modificar responsable'));
+
+    expect(document.querySelector('#form_fun_53_manage')).not.toBeNull();
+    expect(document.querySelector('#f_531').value).toBe('Carlos');
+    expect(document.querySelector('#f_535').value).toBe('carlos@test.com');
   }, 60000);
 });

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import HTMLDatalist from '../../../components/HTMLDatalist';
 import FUNService from '../../../services/fun.service'
@@ -8,6 +8,7 @@ import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../..
 import VIZUALIZER from '../../../components/vizualizer.component';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 import profesionalsService from '../../../services/profesionals.service';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 import dayjs from 'dayjs';
@@ -85,11 +86,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
         // DATA CONVERTERS
         let _CHILD_6_SELECT = () => {
             let _LIST = _GET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
-            }
-            return <>{_COMPONENT}</>
+            return _LIST.map((item, index) => (
+                <option key={`fun6-${item.id ?? index}`} value={item.id}>{item.description}</option>
+            ));
         }
         let _FIND_6 = (_ID) => {
             let _LIST = _GET_CHILD_6();
@@ -106,41 +105,41 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
+            _COMPONENT.push(<Fragment key="document-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
                     icon={'IdCard'} color={'DeepSkyBlue'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[1] > 0
+            _COMPONENT.push(<Fragment key="document-1">{_array[1] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'DarkOrchid'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[2] > 0
+            _COMPONENT.push(<Fragment key="document-2">{_array[2] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'GoldenRod'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[3] > 0
+            _COMPONENT.push(<Fragment key="document-3">{_array[3] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'LimeGreen'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[4] > 0
+            _COMPONENT.push(<Fragment key="document-4">{_array[4] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'tomato'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[5] > 0
+            _COMPONENT.push(<Fragment key="document-5">{_array[5] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[5]).path + "/" + _FIND_6(_array[5]).filename} apipath={'/files/'}
                     icon={'FileText'} color={'gray'} />
-                : ""}</>)
+                : ""}</Fragment>)
 
             return <>{_COMPONENT}</>
         }
@@ -1051,9 +1050,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 Collapsible" id="funn_52">
-                    <label className="app-p lead text-center fw-normal">5.2 Profesionales Responsables</label>
-                </legend>
+                <FunUpdateSectionLegend id="funn_52" step="5.2">Profesionales Responsables</FunUpdateSectionLegend>
 
                 <div className="form-check ms-5">
                     <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />

@@ -8,13 +8,14 @@ import FUN_SERVICE from '../../../services/fun.service';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
 
-import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints } from '../../../components/customClasses/typeParse';
+import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints, getJSONFull } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
 import dayjs from "dayjs";
 import { Icon } from '@/components/icon';
 import '../../../../styles/docs-expediente.css';
 import { richTextToPlainText } from '../../../utils/richTextBlockNote';
+import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -419,13 +420,14 @@ export default function EXP_RES(props) {
         const LIST = [
             { name: 'Arquitectónicos', v: 0, c: 0 },
             { name: 'Georreferenciado', v: 1, c: 1 },
-            { name: 'de Loteo', v: 2, c: 2 },
+            { name: 'de Reloteo', v: 2, c: 2 },
             { name: 'de Parcelación', v: 3, c: 3 },
             { name: 'de Seguridad Humana', v: 4, c: 4 },
             { name: 'de Subdivisión', v: 5, c: 5 },
             { name: 'Topográficos', v: 6, c: 6 },
             { name: 'Urbanístico General', v: 7, c: 7 },
             { name: 'Urbanísticos', v: 8, c: 8 },
+            { name: 'de Movimiento de tierras', v: 10, c: 9 },
         ];
 
         const eng_name = _GET_STEP_TYPE('s430o', 'value', 'eng');
@@ -468,6 +470,11 @@ export default function EXP_RES(props) {
 
         const art_9_dv = reso.art_9 || 'A juicio del curador, ordénese la publicación de la parte resolutiva de la licencia en un periódico de amplia circulación en el municipio.';
 
+        const step34 = (currentItem.record_arc_steps || []).find((step) => step.id_public == 's34' && step.version == currentVersionR) || LOAD_STEP('s34', 'arc');
+        const propertyArea = getJSONFull(step34.json) || {};
+        const propertyAreaText = propertyArea.m2 ? propertyArea.m2 + ' m2' : '';
+        const replacePropertyAreaPlaceholder = (text) => propertyAreaText ? text.replace(/XXX\s*m2/g, propertyAreaText) : text;
+
         let tb_text = () => {
             let text = `# |  Número predial | Matricula inmobiliaria | Dirección | Barrio | Área predio\n`;
             let f2 = _GET_CHILD_2();
@@ -497,14 +504,14 @@ export default function EXP_RES(props) {
                     let mat = f2.item_22.split('/')[i] || '';
                     let dir = f2.item_211.split('/')[i] || '';
 
-                    text += `${i + 1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | XXX m2\n`;
+                    text += `${i + 1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | ${propertyAreaText}\n`;
                 }
             }
 
             return text;
         }
         const art_1_cb_tb = reso.art_1_cb_tb ?? false;
-        const art_1_txt_tb = reso.art_1_txt_tb || tb_text();
+        const art_1_txt_tb = replacePropertyAreaPlaceholder(reso.art_1_txt_tb || tb_text());
         const art_1_cb = reso.art_1_cb ? reso.art_1_cb.split(',') : [1];
         const art_1_txt = reso.art_1_txt ? reso.art_1_txt : `Parágrafo. El área del predio fue tomada del cálculo de los linderos consignados en el certificado de libertad y tradición y/o títulos de propiedad; los trámites concernientes a la inscripción, aclaración y/o corrección de área y linderos del predio con fines registrales, deberá adelantarlos ante el Área Metropolitana de Bucaramanga (gestor catastral), mediante los procedimientos establecidos en la resolución conjunta IGAC No. 1101 SNR No. 11344 del 31 de Diciembre de 2020. Por lo anterior, se sugiere antes de radicar cualquier otra actuación, realizar la inscripción del área conforme a lo antes indicado, para asegurar un trámite notarial y registral exitoso.`;
         const primero = reso.primero ? reso.primero : '';
@@ -2125,7 +2132,7 @@ export default function EXP_RES(props) {
         let parcon_7 = parcon[2] || `Que las Áreas de Cesión Tipo A, efectivamente fueron consignadas, según paz y salvo N° 0000-000 expedido por la Oficina Asesora de Planeación de Piedecuesta y consignación bancaria realizada el xxxxxxxx (xxx) de marzo de dos mil veintidós (2022) en el Banco de xxxxxxxxx en cuenta a nombre del Municipio de Piedecuesta.`
         let parcon_8 = parcon[3] || `Que el Área Metropolitana de Bucaramanga –AMB- expidió la Resolución N° 000000 del xxxxx (x) de xxxx de dos mil veintidós (2022) “Por la cual se efectúa la liquidación de Áreas de Cesión Tipo C”, correspondientes al tres por ciento (3%) del área neta urbanizable, es decir, equivalente a 00,0000 m2 de la Licencia de Parcelación con fundamento en el Avalúo xxxxxxxxxxxxxx N° 0000-2022 del xxxxxx (xx) de xxxxxxx de dos mil veintidós (2022), elaborado por la Corporación Lonja Inmobiliaria xxxxxxx y el Plano del proyecto con su respectivo cuadro de áreas.`
         let parcon_9 = parcon[4] || `Que el valor de la compensación en dinero de las Áreas de Cesión Tipo C fue consignado por parte del titular de la licencia según paz y salvo de la Subdirectora Administrativa y Financiera del Área Metropolitana de Bucaramanga –AMB-, expedido el xxxxxx (xx) de xxxxxxx de dos mil veintidós (2022).`
-        let parcon_10 = parcon[5] || `Que, de conformidad con lo anterior, las áreas de cesión han sido compensadas en dinero por el titular de la Licencia al Municipio de Piedecuesta y al Área Metropolitana de Bucaramanga, según lo establecido en los actos administrativos emitidos por dichas entidades, en concordancia con el P.B.O.T. de Piedecuesta, los artículos 2.2.6.1.4.5; 2.2.6.1.4.6 y 2.2.6.1.4.7 del Decreto 1077 de 2015 y demás normas aplicables.`
+        let parcon_10 = parcon[5] || `Que, de conformidad con lo anterior, las áreas de cesión han sido compensadas en dinero por el titular de la Licencia al Municipio de Piedecuesta y al Área Metropolitana de Bucaramanga, según lo establecido en los actos administrativos emitidos por dichas entidades, en concordancia con el POT de Piedecuesta, los artículos 2.2.6.1.4.5; 2.2.6.1.4.6 y 2.2.6.1.4.7 del Decreto 1077 de 2015 y demás normas aplicables.`
         let parcon_11 = parcon[6] || `Que la ELECTRIFICADORA DE SANTANDER S.A. E.S.P., expidió Oficio mediante el cual otorga la disponibilidad / factibilidad del servicio de energía.`
         let parcon_12 = parcon[7] || `Que la EMPRESA PIEDECUESTA DE SERVICIOS PÚBLICOS E.S.P., certificó el xxxxxx (xx) de xxxxxxx de dos mil veintidós (2022) que el predio con número catastral 68547-00-00-0000-0000-000 puede acceder al servicio de acueducto para xxxxxxxxxxxxxxxxxxx, por lo tanto cuenta con disponibilidad del servicio de acueducto y aseo.`
         let parcon_13 = parcon[8] || `Que el titular de la licencia presentó memoria técnica del sistema de tratamiento a implementar en la recolección de aguas servidas y disposición final de la red sanitaria para la edificación. `
@@ -2255,7 +2262,7 @@ export default function EXP_RES(props) {
 
         let parcon = reso.sub ? reso.sub.split('&&') : [];
 
-        let parcon_6 = parcon[0] || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso principal xxxxxxxxxxxxx como uso compatible de acuerdo a lo establecido por Acuerdo N° 028 de 2003 PBOT.`
+        let parcon_6 = parcon[0] || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso principal xxxxxxxxxxxxx como uso compatible de acuerdo a lo establecido por Acuerdo N° 028 de 2003 POT.`
 
         return <>
             <div className="row mb-1">
@@ -3017,7 +3024,7 @@ export default function EXP_RES(props) {
 
     let _MODEL_REC_RURAL = () => {
         var reso = _GET_EXPEDITION_JSON('reso');
-        let dv = reso.primero_5 || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso ___________________ de acuerdo a lo establecido por Acuerdo N° 028 de 2003 PBOT. `
+        let dv = reso.primero_5 || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso ___________________ de acuerdo a lo establecido por Acuerdo N° 028 de 2003 POT. `
         
         return <>
             <div className="row mb-1">
@@ -3122,7 +3129,7 @@ export default function EXP_RES(props) {
                     <div className="input-group">
                         <input type="text" className="form-control" id="expedition_doc_res_id"
                             defaultValue={currentRecord.id_public} />
-                        <Button size="sm" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</Button>
+                        <Button type="button" size="sm" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</Button>
                     </div>
                 </div>
                 <div className="col">
@@ -3154,7 +3161,7 @@ export default function EXP_RES(props) {
             {canSave ?
                 <div className="row text-center">
                     <div className="col">
-                        <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                        <Button type="submit" size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                 </div>
                 : ''}
@@ -3348,11 +3355,11 @@ export default function EXP_RES(props) {
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
                     <div className="d-flex flex-wrap justify-content-center gap-3">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_res()}>
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_res()}>
                             <Icon name="file-pdf" size={16} /> GENERAR PDF
                         </Button>
                         {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
-                            <Button variant="outline" size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
+                            <Button type="button" variant="outline" size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
                                 <Icon name="edit" size={16} /> EDITAR PDF
                             </Button>
                         )}
@@ -3793,7 +3800,8 @@ export default function EXP_RES(props) {
                         swalClose();
                     } else {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
+                        const filename = `Resolucion ${currentItem.id_public}.pdf`;
+                        return downloadGeneratedPdf(response, `/pdf/expdocres/${encodeURIComponent(filename)}`, filename);
                     }
                 } else {
                     console.warn('⚠️ Status no es OK:', response.data);
@@ -3831,6 +3839,7 @@ export default function EXP_RES(props) {
     }
     let save_exp_res = (e) => {
         e.preventDefault();
+        formData = new FormData();
 
         var _CHILD_1 = _GET_CHILD_1();
 

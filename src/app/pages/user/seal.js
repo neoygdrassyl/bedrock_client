@@ -8,6 +8,7 @@ import DataTable from '@/components/data-table-bridge';
 import { formsParser1_exlucde2, dateParser, formsParser1 } from '../../components/customClasses/typeParse'
 import dayjs from 'dayjs';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 function Seals({ translation, swaMsg, breadCrums }) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -207,11 +208,13 @@ function Seals({ translation, swaMsg, breadCrums }) {
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
+                        const filename = "Sello_" + id_request + ".pdf";
+                        const download = downloadProtectedPdf(`/seal/${encodeURIComponent(filename)}`, filename);
                         document.getElementById("app-form").reset();
                         formData = new FormData();
                         refreshList();
                         swalClose();
+                        return download;
                     }
                 })
                 .catch(e => {

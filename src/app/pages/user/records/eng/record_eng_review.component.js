@@ -12,6 +12,8 @@ import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/components/icon';
 import ObservationPanel from '../../../../components/ObservationPanel';
+import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -129,7 +131,9 @@ function RECORD_ENG_REVIEW(props) {
         var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
         if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
         if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra2022";
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        var formPdfBytes = formPdfResponse.data;
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
         let page = pdfDoc.getPage(0)
@@ -387,16 +391,17 @@ function RECORD_ENG_REVIEW(props) {
         }
         let _COMPONENT_DETAILS_3 = () => {
             let _CHILD = _GET_REVIEW();
-            return <>
-                <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                    <div className='col'>
-                        <label>Notas del Ingeniero Revisor</label>
-                    </div>
-                </div>
-                <textarea className="input-group" id="record_eng_docs_desc" maxLength={4000}
-                    defaultValue={_CHILD.detail_3 ?? ""} onBlur={() => save_item_d3()} rows="3"></textarea>
-                <label> (Máximo 4000 Caracteres)</label>
-            </>
+            return <ObservationPanel
+                title="Notas del Ingeniero Revisor"
+                collapsible={false}
+                helperText="(máximo 4000 caracteres)"
+                textareaProps={{
+                    id: 'record_eng_docs_desc',
+                    maxLength: 4000,
+                    defaultValue: _CHILD.detail_3 ?? "",
+                    onBlur: () => save_item_d3(),
+                }}
+            />
         }
         let _COMPONENT_REVIEW = () => {
             let _CHILD = _GET_REVIEW();
@@ -1056,10 +1061,15 @@ function RECORD_ENG_REVIEW(props) {
 
         // pdf gen
         let CREATE_PDF = () => {
+            const structuralVersion = Number(currentRecord?.version);
+            if (!Number.isInteger(structuralVersion) || structuralVersion < 1) {
+                swalError({ title: swaMsg.generic_eror_title, text: 'No se encontró una versión estructural válida para generar el informe.', icon: 'warning' });
+                return;
+            }
+
             var formData = new FormData();
             formData.set('id', currentItem.id);
-            let version = document.getElementById("record_version").value;
-            formData.set('version', version);
+            formData.set('version', structuralVersion);
             let header = document.getElementById("record_header").value;
             formData.set('header', header);
             let type = document.getElementById("record_version").value;
@@ -1088,16 +1098,17 @@ function RECORD_ENG_REVIEW(props) {
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             RECORD_ENG_SERVICE.pdfgen(formData)
                 .then(response => {
-                    if (response.data === 'OK') {
+                    if (response.data === 'OK' || response.data?.artifactId) {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordeng/" + "INFORME ESTRUCTURAL " + currentItem.id_public + ".pdf");
+                        const filename = `INFORME ESTRUCTURAL ${currentItem.id_public}.pdf`;
+                        return downloadGeneratedPdf(response, `/pdf/recordeng/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text, icon: 'warning' });
                 });
         }
         let _VERSIONS_SELECT = () => {

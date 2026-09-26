@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import { cities, states } from '../../../../components/jsons/vars';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -426,7 +427,8 @@ export default function FUN_CERTIFICATION(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     swalClose();
-                    window.open(import.meta.env.VITE_API_URL + "/pdf/cert/fun/" + "CERTIFICACION ACTUACION URBANISTICA " + currentItem.id_public + ".pdf");
+                    const filename = `CERTIFICACION ACTUACION URBANISTICA ${currentItem.id_public}.pdf`;
+                    return downloadProtectedPdf(`/pdf/cert/fun/${encodeURIComponent(filename)}`, filename);
                 } else {
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }

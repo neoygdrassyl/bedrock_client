@@ -1,8 +1,7 @@
 /* Justificación solo fuera de tablas */
 body,
 .document,
-.document p,
-.document strong {
+.document p {
   font-size: 12pt;
   font-family: "Arial Narrow", Arial, sans-serif;
   text-align: justify;
@@ -322,4 +321,3 @@ td, th {
 .considerative-subitem {
     padding-left: 20px; /* segunda indentación */
 }
-

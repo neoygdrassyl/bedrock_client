@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 export default function CERTIFICATE_WORKER(props) {
     const translation = props.translation
@@ -155,7 +156,8 @@ export default function CERTIFICATE_WORKER(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     swalClose();
-                    window.open(import.meta.env.VITE_API_URL + "/pdf/certificate_data/" + "Historial Progesional " + title + ".pdf");
+                    const filename = "Historial Progesional " + title + ".pdf";
+                    return downloadProtectedPdf(`/pdf/certificate_data/${encodeURIComponent(filename)}`, filename);
                 } else {
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }

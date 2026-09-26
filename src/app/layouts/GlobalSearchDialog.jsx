@@ -80,6 +80,10 @@ function normalizeQuery(value) {
   return String(value || '').trim();
 }
 
+function isCompletePublicId(value) {
+  return /^\d{5}-\d+-[a-z0-9]{2}-\d{4}$/i.test(value);
+}
+
 function normalizeSummaryPayload(payload) {
   if (!payload) return null;
   if (payload?.data && !Array.isArray(payload.data)) return payload.data;
@@ -312,8 +316,8 @@ export function GlobalSearchDialog({ open, onOpenChange }) {
     setResults([]);
 
     const lookups = [FUNService.getSearch(searchField, term)];
-    if (searchField === '1') {
-      lookups.push(FUNService.get_fun_IdPublic(term));
+    if (searchField === '1' && isCompletePublicId(term)) {
+      lookups.push(FUNService.get_fun_IdPublic(term, { skipDovelaErrorCapture: true }));
     }
 
     const settledLookups = await Promise.allSettled(lookups);
@@ -324,7 +328,10 @@ export function GlobalSearchDialog({ open, onOpenChange }) {
     const uniqueCandidates = dedupeCandidates(candidateRows);
 
     const summaryLookups = await Promise.allSettled(
-      uniqueCandidates.map((candidate) => FUNService.getSummaryByIdPublic(pickPublicId(candidate, term)))
+      uniqueCandidates.map((candidate) => FUNService.getSummaryByIdPublic(
+        pickPublicId(candidate, term),
+        { skipDovelaErrorCapture: true },
+      ))
     );
 
     const nextResults = uniqueCandidates.map((candidate, index) => {
