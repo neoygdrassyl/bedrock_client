@@ -149,10 +149,10 @@ describe('Smoke Test Suite — App shell post-redesign', () => {
     expect(document.querySelector('#email') || document.querySelector('#password')).toBeTruthy();
   });
 
-  test('5. ReCAPTCHA está presente en LoginPage', () => {
+  test('5. LoginPage no monta ReCAPTCHA', () => {
     render(<App />);
     const recaptcha = screen.queryByTestId('recaptcha-mock');
-    expect(recaptcha).toBeTruthy();
+    expect(recaptcha).toBeNull();
   });
 
   test('6. Root / redirige a /login', () => {

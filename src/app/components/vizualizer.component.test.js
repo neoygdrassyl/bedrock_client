@@ -1,6 +1,6 @@
 /**
- * Regression test for H-17: PDF viewer opened by `id` must request the real
- * file path, not the bare `/files/` apipath.
+ * Regression test for H-17: the document viewer opened by `id` must request
+ * the real file path, not the bare `/files/` apipath.
  */
 
 import React from 'react';
@@ -15,9 +15,8 @@ vi.mock('@/components/legacy-modal', () => ({
     LegacyModal: ({ children, isOpen }) => (isOpen ? React.createElement('div', null, children) : null),
 }));
 
-vi.mock('./pdfViewer.component', () => ({
-    __esModule: true,
-    default: (props) => React.createElement('div', { 'data-testid': 'pdf-viewer', 'data-apipath': props.apipath, 'data-url': props.url }),
+vi.mock('@/app/components/ProtectedDocument', () => ({
+    ProtectedDocumentPreview: ({ source }) => React.createElement('div', { 'data-testid': 'pdf-viewer', 'data-source': source }),
 }));
 
 vi.mock('../services/fun.service', () => ({
@@ -39,8 +38,7 @@ describe('VIZUALIZER PDF viewer request (H-17)', () => {
 
         const viewer = await waitFor(() => screen.getByTestId('pdf-viewer'));
 
-        expect(viewer.getAttribute('data-apipath')).toBe('/files/');
-        expect(viewer.getAttribute('data-url')).toBe('documents/2024/file.pdf?inline=1');
+        expect(viewer.getAttribute('data-source')).toBe('/files/documents/2024/file.pdf?inline=1');
     });
 
     it('keeps the non-id request unchanged', async () => {
@@ -50,8 +48,7 @@ describe('VIZUALIZER PDF viewer request (H-17)', () => {
 
         const viewer = await waitFor(() => screen.getByTestId('pdf-viewer'));
 
-        expect(viewer.getAttribute('data-apipath')).toBe('/files/');
-        expect(viewer.getAttribute('data-url')).toBe('documents/2024/file.pdf?inline=1');
+        expect(viewer.getAttribute('data-source')).toBe('/files/documents/2024/file.pdf?inline=1');
         expect(hoisted.getFun6).not.toHaveBeenCalled();
     });
 });
