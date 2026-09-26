@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import FUNService from '../../../../services/fun.service'
@@ -20,7 +21,7 @@ function FUN_0_RECIPE(props) {
         
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
-            var _CURRENT_VERSION = currentVersion - 1;
+            var _CURRENT_VERSION = documentaryVersionIndex(currentItem, _CHILD, currentVersion);
             var _CHILD_VARS = {
                 item_0: "",
                 description: "",
@@ -351,6 +352,7 @@ function FUN_0_RECIPE(props) {
             manage_fun_1(false);
         }
         let manage_fun_1 = (useMySwal) => {
+            appendDocumentarySourceCommand(formData, currentItem);
             var _CHILD = _GET_CHILD_1();
 
             if (useMySwal) {
@@ -372,7 +374,8 @@ function FUN_0_RECIPE(props) {
                             }
                         }
                     })
-                    .catch(e => {
+                    .catch(async e => {
+                        if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:props.requestUpdate,notify:swalError})) return;
                         console.log(e);
                     });
             } else {
@@ -389,7 +392,8 @@ function FUN_0_RECIPE(props) {
                             }
                         }
                     })
-                    .catch(e => {
+                    .catch(async e => {
+                        if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:props.requestUpdate,notify:swalError})) return;
                         console.log(e);
                         if (useMySwal) {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { appendDocumentarySourceCommand, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
@@ -1231,6 +1232,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     formData.set('engId', currentItem.record_eng.id);
                     formData.set('arcId', currentItem.record_arc.id);
 
+                    appendDocumentarySourceCommand(formData, currentItem);
                     RECORD_REVIEW_SERVICE.newVersion(formData)
                         .then(response => {
                             if (response.data === 'OK') {
@@ -1241,7 +1243,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                 swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                             }
                         })
-                        .catch(e => {
+                        .catch(async e => {
+                            if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:retrieveItem,notify:swalError})) return;
                             console.log(e);
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                         });

@@ -121,6 +121,24 @@ export function useCentralProjectLegalForm({
     }
   }, [currentPublic, saving]);
 
+  const saveReview = useCallback(async (review) => {
+    if (!currentPublic || saving) return false;
+    setSaving(true);
+    setSaveError('');
+    try {
+      const response = await DocumentRequirementService.saveCentralProjectLegalFormReview(currentPublic, review);
+      const payload = getCentralProjectPayload(response);
+      if (payload && typeof payload === 'object') setProjectContext(payload);
+      return true;
+    } catch (saveReviewError) {
+      console.warn('No fue posible guardar el control de Legal y debida forma.', saveReviewError);
+      setSaveError('No fue posible guardar la decisión del control.');
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  }, [currentPublic, saving]);
+
   return {
     projectContext,
     legalForm,
@@ -135,6 +153,7 @@ export function useCentralProjectLegalForm({
     clearSaveError: () => setSaveError(''),
     refresh,
     saveSelection,
+    saveReview,
   };
 }
 

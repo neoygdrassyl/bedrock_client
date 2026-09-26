@@ -126,7 +126,8 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 
 ## 7. Backend y limites de este repo
 
-- El frontend consume el backend ubicado en `backend/` dentro del workspace (`/home/diego/dovela/backend/`). Ese es el directorio real en este entorno Linux.
+- Este frontend vive en `/home/diego/dovela/backoffice/frontend/` y consume la API de `/home/diego/dovela/backoffice/backend/`. Son proyectos separados, con configuración, dependencias y despliegues propios. No confundir esta SPA con el portal ciudadano `/home/diego/dovela/frontoffice/`.
+- Runtime local habitual: SPA `http://localhost:3000` y API `http://localhost:3001`; verificar y reutilizar las instancias existentes.
 - El backend es Express 4 + Sequelize 6 + MySQL.
 - No todos los services frontend apuntan a ese backend; revisa `ai/system-map.md` antes de tocar integraciones.
 

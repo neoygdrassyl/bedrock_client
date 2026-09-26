@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../components/customClasses/funCustomArrays';
@@ -13,7 +14,7 @@ export default function FUN_ANEX(props) {
     // *********************** DATA GETTERS ************************** // 
     let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
-        var _CURRENT_VERSION = currentVersion - 1;
+        var _CURRENT_VERSION = documentaryVersionIndex(currentItem, _CHILD, currentVersion);
         var _CHILD_VARS = {
             item_0: false,
             item_102: "",
@@ -811,6 +812,7 @@ export default function FUN_ANEX(props) {
 
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
+        appendDocumentarySourceCommand(formData, currentItem);
         if (!_CHILD.item_0) {
             FUN_SERVICE.create_fun1(formData)
                 .then(response => {
@@ -821,7 +823,8 @@ export default function FUN_ANEX(props) {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
-                .catch(e => {
+                .catch(async e => {
+                    if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:props.requestUpdate,notify:swalError})) return;
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
@@ -837,7 +840,8 @@ export default function FUN_ANEX(props) {
                         }
                     }
                 })
-                .catch(e => {
+                .catch(async e => {
+                    if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:props.requestUpdate,notify:swalError})) return;
                     console.log(e);
                 });
         }

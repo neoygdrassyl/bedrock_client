@@ -38,7 +38,7 @@ class CustomlDataService {
     });
 
     try {
-      const response = await this.appLogin(plainPayload, { skipDovelaErrorCapture: true });
+      const response = await this.appLogin(plainPayload, { skipDovelaErrorCapture: true, timeout: 15000 });
       if (this.isRecognizedLoginResponse(response.data)) {
         return response;
       }
@@ -51,7 +51,7 @@ class CustomlDataService {
     const legacyPayload = this.buildLoginFormData(safeEmail, legacyPassword, {
       password_sha256: legacyPassword,
     });
-    return this.appLogin(legacyPayload);
+    return this.appLogin(legacyPayload, { timeout: 15000 });
   }
 
   getMe() {

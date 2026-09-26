@@ -51,8 +51,8 @@ function getSummary(rows) {
             totalEntries: summary.totalEntries + getDocumentSeatCount(row),
         };
 
-        if (row.medium === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL) nextSummary.physical += 1;
-        if (row.medium === DOCUMENT_PREVIEW_MEDIUM.DIGITAL) nextSummary.digital += 1;
+        if (row.mediumPresence?.physical || row.medium === DOCUMENT_PREVIEW_MEDIUM.PHYSICAL) nextSummary.physical += 1;
+        if (row.mediumPresence?.digital || row.medium === DOCUMENT_PREVIEW_MEDIUM.DIGITAL) nextSummary.digital += 1;
         if (row.scanned?.value) nextSummary.scanned += 1;
 
         return nextSummary;
@@ -271,6 +271,7 @@ export function useExpedienteDocumental({
         resetFilters,
         hasFilters,
         page,
+        pageSize,
         totalPages,
         setPage,
         legal: {

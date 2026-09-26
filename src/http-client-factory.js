@@ -30,7 +30,8 @@ export function createDovelaHttpClient({ baseURL, headers, attachAuth = true } =
   http.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (!error?.config?.skipDovelaErrorCapture) {
+      const isCanceledRequest = axios.isCancel(error) || error?.code === 'ERR_CANCELED';
+      if (!isCanceledRequest && !error?.config?.skipDovelaErrorCapture) {
         captureDovelaHttpError(error);
       }
       const isLoginRequest = (error?.config?.url || '').replace(/^\/+/, '') === 'login';

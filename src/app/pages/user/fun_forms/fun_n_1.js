@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
 import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
 import { Icon } from '@/components/icon';
@@ -22,7 +23,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         let _SET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
-            var _CURRENT_VERSION = currentVersion - 1;
+            var _CURRENT_VERSION = documentaryVersionIndex(currentItem, _CHILD, currentVersion);
             var _CHILD_VARS = {
                 item_0: "",
                 item_1: "",
@@ -727,7 +728,8 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             const fun1s = Array.isArray(currentItem.fun_1s) ? currentItem.fun_1s : [];
-            const currentFun1 = fun1s[currentVersion - 1];
+            const currentFun1 = fun1s[documentaryVersionIndex(currentItem, fun1s, currentVersion)];
+            appendDocumentarySourceCommand(formData, currentItem);
 
             if (currentFun1 == null) {
                 FUNService.create_fun1(formData)
@@ -739,7 +741,8 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
-                    .catch(e => {
+                    .catch(async e => {
+                        if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:requestUpdate,notify:swalError})) return;
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });
@@ -753,7 +756,8 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                         }
                     })
-                    .catch(e => {
+                    .catch(async e => {
+                        if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:requestUpdate,notify:swalError})) return;
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     });

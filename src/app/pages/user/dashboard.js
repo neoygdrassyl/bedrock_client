@@ -24,7 +24,6 @@ const ICON_COLORS = {
   '/licencias/gestion-nueva': 'bg-primary/8 text-primary',
   '/peticiones': 'bg-warning/8 text-warning',
   '/ventanilla': 'bg-accent/8 text-accent',
-  '/configuracion?tab=alarmas': 'bg-warning/8 text-warning',
   '/calendario': 'bg-accent/8 text-accent',
   '/normas': 'bg-primary/8 text-primary',
   '/uso-suelo': 'bg-accent/8 text-accent',
@@ -252,7 +251,6 @@ function Dashboard() {
         { title: 'Gestionar Licencias Nuevo', icon: 'Layers', desc: 'Dashboard operativo en desarrollo', link: '/licencias/gestion-nueva', status: 'En desarrollo' },
         { title: 'Gestionar Licencias', icon: 'FolderOpen', desc: 'Gestión clásica de expedientes', link: '/licencias/gestion' },
         { title: 'Peticiones PQRS', icon: 'FileSpreadsheet', desc: 'Quejas, reclamos y solicitudes', link: '/peticiones' },
-        { title: 'Alarmas', icon: 'BellRing', desc: 'Configuración y seguimiento SLA', link: '/configuracion?tab=alarmas', status: 'En desarrollo' },
       ],
     },
     {

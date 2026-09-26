@@ -1,0 +1,40 @@
+import {beforeEach,expect,it,vi} from 'vitest';
+import {fireEvent,render,screen,waitFor} from '@testing-library/react';
+import {DocumentaryGovernance} from './DocumentaryGovernance';
+import * as api from '@/app/services/documentaryOperations.service';
+vi.mock('@/app/services/documentaryOperations.service',()=>({getDocumentaryGovernance:vi.fn(),getDocumentaryConfigurationOptions:vi.fn(),activateDocumentaryProject:vi.fn(),saveDocumentaryInputs:vi.fn(),refreshDocumentaryRequirements:vi.fn(),changeDocumentaryConfiguration:vi.fn()}));
+vi.mock('@/app/services/documentary.service',()=>({documentaryError:error=>error.message||'Error',getDocumentaryConfigurations:vi.fn(async()=>[{id:2,releaseVersion:5,checksum:'hash'}])}));
+beforeEach(()=>vi.clearAllMocks());
+it('requires an explicit ready publication and acknowledgement before activation',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue({mode:'legacy',capabilities:{activationReady:true}});
+  api.getDocumentaryConfigurationOptions.mockResolvedValue({projectionReady:true,actuations:[{id:'A',name:'Actuación A',code:'A'}],typologyOptions:[]});
+  api.activateDocumentaryProject.mockResolvedValue({});const changed=vi.fn();
+  render(<DocumentaryGovernance origin={{mode:'traditional',project:{fun0Id:1}}} canManage onSaved={changed}/>);
+  fireEvent.change(await screen.findByLabelText('Publicación documental'),{target:{value:'2'}});
+  fireEvent.click(await screen.findByLabelText('A · Actuación A'));
+  fireEvent.change(screen.getByLabelText('Motivo del cambio documental'),{target:{value:'Activación explícita'}});
+  expect(screen.getByRole('button',{name:'Activar para futuras recepciones'})).toBeDisabled();
+  fireEvent.click(screen.getByLabelText(/Solo gobernará/));fireEvent.click(screen.getByRole('button',{name:'Activar para futuras recepciones'}));
+  await waitFor(()=>expect(api.activateDocumentaryProject).toHaveBeenCalledWith(1,expect.objectContaining({configurationId:2,expectedChecksum:'hash',expectedInputRevision:0,explicitActuationIds:['A']})));
+  expect(changed).toHaveBeenCalled();
+});
+it('keeps a central-linked publication in explicit activation mode',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue({mode:'legacy',capabilities:{activationReady:true}});
+  api.getDocumentaryConfigurationOptions.mockResolvedValue({projectionReady:true,actuations:[],typologyOptions:[]});
+  render(<DocumentaryGovernance origin={{mode:'central-linked',project:{fun0Id:1},publication:{configurationId:2,checksum:'hash'}}} canManage/>);
+  expect(await screen.findByRole('button',{name:'Activar para futuras recepciones'})).toBeDisabled();
+  expect(screen.queryByRole('button',{name:'Guardar selecciones'})).not.toBeInTheDocument();
+});
+it('does not reuse an uncertain inputs command for a different refresh operation',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue({mode:'canonical',inputRevision:3,inputs:{explicitActuationIds:[],typologySelections:{}},capabilities:{activationReady:true}});
+  api.getDocumentaryConfigurationOptions.mockResolvedValue({projectionReady:true,actuations:[],typologyOptions:[]});
+  api.saveDocumentaryInputs.mockRejectedValueOnce(new Error('Network unavailable'));api.refreshDocumentaryRequirements.mockResolvedValue({});
+  render(<DocumentaryGovernance origin={{mode:'canonical',project:{fun0Id:1},publication:{configurationId:2,checksum:'hash'}}} canManage/>);
+  await waitFor(()=>expect(screen.getByRole('button',{name:'Guardar selecciones'})).toBeEnabled());
+  fireEvent.change(screen.getByLabelText('Motivo del cambio documental'),{target:{value:'Revisión'}});
+  fireEvent.click(screen.getByRole('button',{name:'Guardar selecciones'}));await screen.findByText('Network unavailable');
+  fireEvent.click(screen.getByRole('button',{name:'Actualizar requisitos'}));
+  await waitFor(()=>expect(api.refreshDocumentaryRequirements).toHaveBeenCalled());
+  const first=api.saveDocumentaryInputs.mock.calls[0][1],next=api.refreshDocumentaryRequirements.mock.calls[0][1];
+  expect(next.idempotencyKey).not.toBe(first.idempotencyKey);expect(next).not.toHaveProperty('explicitActuationIds');
+});

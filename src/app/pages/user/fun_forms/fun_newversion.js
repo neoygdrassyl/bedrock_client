@@ -1,5 +1,6 @@
 
 import Icon from '@/components/icon';
+import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
 import { Button } from '@/components/ui/button';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUNService from '../../../services/fun.service'
@@ -90,7 +91,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
 
         let _SET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
-            var _CURRENT_VERSION = currentVersion - 1;
+            var _CURRENT_VERSION = documentaryVersionIndex(currentItem, _CHILD, currentVersion);
             var _CHILD_VARS = {
                 item_0: "",
                 item_1: "",
@@ -162,7 +163,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
         }
         let _SET_CHILD_53 = () => {
             var _CHILD = currentItem.fun_53s;
-            var _CURRENT_VERSION = currentItem.version - 1;
+            var _CURRENT_VERSION = documentaryVersionIndex(currentItem, _CHILD, currentItem.version);
             var _CHILD_VARS = {
                 item_530: "",
                 item_5311: "",
@@ -189,7 +190,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
         }
         let _SET_CHILD_C = () => {
             var _CHILD = currentItem.fun_cs;
-            var _CURRENT_VERSION = currentItem.version - 1;
+            var _CURRENT_VERSION = documentaryVersionIndex(currentItem, _CHILD, currentItem.version);
             var _CHILD_VARS = {
                 item_c0: "",
                 item_c1: "",
@@ -703,17 +704,20 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
         }
 
         let create_version = () => {
+            appendDocumentarySourceCommand(formData, currentItem);
             formData.set('fun2Id', _SET_CHILD_2().item_20);
             formData.set('law_id', _SET_CHILD_LAW().id);
             FUNService.create_version(formData)
                 .then(response => handleSuccessfulSave(response))
-                .catch(e => {
+                .catch(async e => {
+                    if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:requestUpdate,notify:swalError})) return;
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
         }
 
         let update_version = () => {
+            appendDocumentarySourceCommand(formData, currentItem);
             formData.set('fun1Id', _SET_CHILD_1().item_0);
             formData.set('fun2Id', _SET_CHILD_2().item_20);
             formData.set('fun53Id', _SET_CHILD_53().item_530);
@@ -722,7 +726,8 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
             formData.set('law_id', _SET_CHILD_LAW().id);
             FUNService.update_version(currentItem.id, formData)
                 .then(response => handleSuccessfulSave(response))
-                .catch(e => {
+                .catch(async e => {
+                    if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:requestUpdate,notify:swalError})) return;
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 });
